@@ -1,0 +1,19 @@
+Source: kiplot.inti-cmnb
+Section: electronics
+Priority: optional
+Maintainer: Salvador Eduardo Tropea <salvador@inti.gob.ar>
+Build-Depends: debhelper (>=11~), dh-python, python3-all, python3-setuptools
+Standards-Version: 4.1.4
+Homepage: https://github.com/INTI-CMNB/kiplot
+X-Python3-Version: >= 3.2
+
+Package: kiplot.inti-cmnb
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${python3:Depends}, python3-yaml
+Description: KiCad Plotter (KiPlot)
+ KiPlot is a program which helps you to plot your KiCad PCBs to output
+ formats easily, repeatable, and most of all, scriptably.
+ .
+ This means you can use a Makefile to export your KiCad PCBs just as
+ needed.

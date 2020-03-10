@@ -1,0 +1,6 @@
+kiplot.inti-cmnb for Debian
+
+This is a KiCad plotter that uses the Python interface to plot gerbers and
+other files.
+
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Tue, 10 Mar 2020 13:27:48 -0300

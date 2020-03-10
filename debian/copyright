@@ -1,0 +1,28 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: kiplot.inti-cmnb
+Source: https://github.com/INTI-CMNB/kiplot
+
+Files:     README.md
+           docs/samples/generic_plot.kiplot.yaml
+           setup.cfg
+           setup.py
+           src/kiplot
+           src/kiplot_module/__init__.py
+           src/kiplot_module/__main__.py
+           src/kiplot_module/__version__.py
+           src/kiplot_module/config_reader.py
+           src/kiplot_module/error.py
+           src/kiplot_module/kiplot.py
+           src/kiplot_module/plot_config.py
+           tests/board_samples/simple_2layer.kicad_pcb
+           tests/conftest.py
+           tests/test_plot/README.md
+           tests/test_plot/__init__.py
+           tests/test_plot/plotting_test_utils.py
+           tests/test_plot/test_simple_2layer.py
+           tests/test_yaml.py
+           tests/yaml_samples/simple_2layer.kiplot.yaml
+Copyright: 2018 John Beard
+License:   GPL-3.0
+
+
