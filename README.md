@@ -6,7 +6,7 @@ can use a Makefile to export your KiCad PCBs just as needed.
 
 For example, it's common that you might want for each board rev:
 
-* Check DRC one last time (currently not possible)
+* Check DRC one last time (use [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/))
 * Gerbers, drills and drill maps for a fab in their favourite format
 * Fab docs for the assembler
 * Pick and place files
@@ -26,7 +26,7 @@ somewhat unwieldy to write.
 You can call `kiplot` directly, passing a PCB file and a config file:
 
 ```
--b $(PCB) -c $(KIPLOT_CFG) -v
+kiplot -b $(PCB) -c $(KIPLOT_CFG) -v
 ```
 
 A simple target can be added to your `makefile`, so you can just run
@@ -39,65 +39,11 @@ pcb_files:
 
 ## Installing
 
-### Set up a virtualenv (if you installed KiCad normally)
+### Installation on Ubuntu/Debian:
 
-If you installed KiCad from a package manager, or you used `make install`,
-you probably have the packages and libraries on you system paths.
-
+Get the Debian package from the [releases section](https://github.com/INTI-CMNB/kiplot/releases) and run:
 ```
-virtualenv --python /usr/bin/python2.7 --system-site-packages ~/venv/kiplot
+sudo apt install ./kiplot.inti-cmnb_*_all.deb
 ```
 
-### Set up a virtualenv (if you installed KiCad locally)
 
-
-If the `pcbnew` Python package is *not* installed at a system level (e.g. if
-you are building locally and not installing to the system, you should not
-need any system packages:
-
-```
-virtualenv --python /usr/bin/python2.7 ~/venv/kiplot
-```
-However, you must make sure `pcbnew` is accessible to KiPlot.
-You might need to add it to the `PYTHONPATH`.
-
-You might also need to set `LD_LIBRARY_PATH` (you need to be able to load
-`libkicad_3dsg.so`).
-
-For example, if you installed in `~/local/kicad`, you might have:
-
-```
-export PYTHONPATH=~/local/kicad/lib/python2.7/site-packages
-export LD_LIBRARY_PATH=~/local/kicad/lib64
-```
-
-### Install KiPlot to the virtualenv
-
-Activate the virtualenv:
-
-```
-source ~/venv/kiplot/bin/activate
-```
-
-Install `kiplot` with `pip -e`:
-
-```
-cd path/to/kiplot
-pip install -e .
-```
-
-## Testing
-
-There are some tests. Run them with pytest:
-
-```
-pytest
-```
-
-# TODO list
-
-There are some things that still need work:
-
-* DRC checking - that can't be done over the Python interface yet. If/when
-  this is added to KiCad, KiPlot will be able to also be used for DRC
-  functional tests instead of a complex additonal test harness in C++.
