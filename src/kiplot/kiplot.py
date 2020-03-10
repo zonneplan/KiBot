@@ -10,6 +10,7 @@ from . import error
 
 try:
     import pcbnew
+    from pcbnew import GERBER_JOBFILE_WRITER
 except ImportError:
     logging.error("Failed to import pcbnew Python module."
                   " Do you need to add it to PYTHONPATH?")
@@ -48,14 +49,13 @@ class Plotter(object):
             self._configure_output_dir(pc, op)
 
             if self._output_is_layer(op):
-                self._do_layer_plot(board, pc, op)
+                self._do_layer_plot(board, pc, op, brd_file)
             elif self._output_is_drill(op):
                 self._do_drill_plot(board, pc, op)
             else:
                 raise PlotError("Don't know how to plot type {}"
                                 .format(op.options.type))
 
-            pc.ClosePlot()
 
     def _preflight_checks(self, board):
 
@@ -107,13 +107,21 @@ class Plotter(object):
         raise ValueError("Don't know how to translate plot type: {}"
                          .format(output.options.type))
 
-    def _do_layer_plot(self, board, plot_ctrl, output):
+    def _do_layer_plot(self, board, plot_ctrl, output, file_name):
 
         # set up plot options for the whole output
         self._configure_plot_ctrl(plot_ctrl, output)
 
         po = plot_ctrl.GetPlotOptions()
         layer_cnt = board.GetCopperLayerCount()
+
+        # Gerber Job files aren't automagically created
+        # We need to assist KiCad
+        create_job = po.GetCreateGerberJobFile()
+        if create_job:
+            jobfile_writer = GERBER_JOBFILE_WRITER(board)
+
+        plot_ctrl.SetColorMode(True)
 
         # plot every layer in the output
         for l in output.layers:
@@ -148,6 +156,17 @@ class Plotter(object):
             logging.debug("Plotting layer {} to {}".format(
                 layer.layer, plot_ctrl.GetPlotFileName()))
             plot_ctrl.PlotLayer()
+            plot_ctrl.ClosePlot()
+            if create_job:
+                jobfile_writer.AddGbrFile(layer.layer,
+                     os.path.basename(plot_ctrl.GetPlotFileName()));
+
+        if create_job:
+            base_fn = os.path.dirname(plot_ctrl.GetPlotFileName())+'/'+os.path.basename(file_name)
+            base_fn = os.path.splitext(base_fn)[0]
+            job_fn = base_fn+'-job.gbrjob'
+            jobfile_writer.CreateJobFile(job_fn)
+
 
     def _configure_excellon_drill_writer(self, board, offset, options):
 
