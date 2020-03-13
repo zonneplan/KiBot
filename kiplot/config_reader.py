@@ -425,7 +425,7 @@ class CfgYamlReader(CfgReader):
             raise self.YamlError("Output needs a name")
 
         try:
-            desc = o_obj['description']
+            desc = o_obj['comment']
         except KeyError:
             desc = None
 
