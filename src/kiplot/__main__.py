@@ -16,8 +16,11 @@ def main():
 
     parser = argparse.ArgumentParser(
         description='Command-line Plotting for KiCad')
-    parser.add_argument('-v', '--verbose', action='store_true',
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-v', '--verbose', action='store_true',
                         help='show debugging information')
+    group.add_argument('-q', '--quiet', action='store_true',
+                        help='remove information logs')
     parser.add_argument('-b', '--board-file', required=True,
                         help='The PCB .kicad-pcb board file')
     parser.add_argument('-c', '--plot-config', required=True,
@@ -27,7 +30,11 @@ def main():
 
     args = parser.parse_args()
 
-    log_level = logging.DEBUG if args.verbose else logging.INFO
+    log_level = logging.INFO
+    if args.verbose:
+        log_level = logging.DEBUG
+    if args.quiet:
+        log_level = logging.WARNING
     logging.basicConfig(level=log_level)
 
     if not os.path.isfile(args.board_file):

@@ -41,6 +41,7 @@ class Plotter(object):
         for op in self.cfg.outputs:
 
             logging.debug("Processing output: {}".format(op.name))
+            logging.info('- %s (%s)' % (op.description,op.name))
 
             # fresh plot controller
             pc = pcbnew.PLOT_CONTROLLER(board)
