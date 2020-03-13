@@ -34,3 +34,12 @@ outputs:
         suffix: F_Cu
       - layer: F.SilkS
         suffix: F_SilkS
+
+  - name: 'position'
+    comment: "Pick and place file"
+    type: position
+    dir: positiondir
+    options:
+      format: ASCII   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: true
