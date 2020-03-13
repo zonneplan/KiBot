@@ -1,3 +1,11 @@
+kiplot.inti-cmnb (0.1.1-1) stable; urgency=medium
+
+  * Added position file generation from https://github.com/johnbeard/kiplot/pull/10
+    and some changes:
+    https://github.com/INTI-CMNB/kiplot/commit/bce849b44b0310be261cf0ae46c3b2e6a6c38388
+
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Fri, 13 Mar 2020 13:11:34 -0300
+
 kiplot.inti-cmnb (0.1.0-1) testing; urgency=low
 
   * Initial release.
