@@ -43,3 +43,4 @@ outputs:
       format: ASCII   # CSV or ASCII format
       units: millimeters  # millimeters or inches
       separate_files_for_front_and_back: true
+      only_smd: true

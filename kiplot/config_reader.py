@@ -343,6 +343,12 @@ class CfgYamlReader(CfgReader):
                 'types': ['position'],
                 'to': 'separate_files_for_front_and_back',
                 'required': lambda opts: True,
+            },
+            {
+                'key': 'only_smd',
+                'types': ['position'],
+                'to': 'only_smd',
+                'required': lambda opts: True,
             }
         ]
 

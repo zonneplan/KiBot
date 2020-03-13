@@ -5,6 +5,7 @@ Main Kiplot code
 from datetime import datetime
 import logging
 import os
+import operator
 
 from . import plot_config as PCfg
 from . import error
@@ -266,19 +267,19 @@ class Plotter(object):
         files = [f for f in [topf, botf, bothf] if f is not None]
         for f in files:
             f.write('### Module positions - created on {} ###\n'.format(
-                datetime.now().strftime("%a %d %b %Y %I:%M:%S %p %Z")
+                datetime.now().strftime("%a %d %b %Y %X %Z")
             ))
             f.write('### Printed by KiPlot\n')
             unit = {'millimeters': 'mm',
                     'inches': 'in'}[to.units]
-            f.write('## Unit: {}, Angle = deg\n'.format(unit))
+            f.write('## Unit = {}, Angle = deg.\n'.format(unit))
 
         if topf is not None:
-            topf.write('## Side: top\n')
+            topf.write('## Side : top\n')
         if botf is not None:
-            botf.write('## Side: bottom\n')
+            botf.write('## Side : bottom\n')
         if bothf is not None:
-            bothf.write('## Side: both\n')
+            bothf.write('## Side : both\n')
 
         for f in files:
             f.write('# ')
@@ -359,7 +360,7 @@ class Plotter(object):
     def _do_position_plot(self, board, plot_ctrl, output):
         to = output.options.type_options
 
-        columns = ["ref", "val", "package", "posx", "posy", "rot", "side"]
+        columns = ["Ref", "Val", "Package", "PosX", "PosY", "Rot", "Side"]
         colcount = len(columns)
 
         conv = 1.0
@@ -372,19 +373,20 @@ class Plotter(object):
 
         # Format all strings
         modules = []
-        for m in board.GetModules():
-            center = m.GetCenter()
-            # See PLACE_FILE_EXPORTER::GenPositionData() in
-            # export_footprints_placefile.cpp for C++ version of this.
-            modules.append([
-                "{}".format(m.GetReference()),
-                "{}".format(m.GetValue()),
-                "{}".format(m.GetFPID().GetLibItemName()),
-                "{:.4f}".format(center.x * conv),
-                "{:.4f}".format(center.y * conv),
-                "{:.4f}".format(m.GetOrientationDegrees()),
-                "{}".format("bottom" if m.IsFlipped() else "top")
-            ])
+        for m in sorted(board.GetModules(), key=operator.methodcaller('GetReference')):
+            if (to.only_smd and m.GetAttributes()==1) or not to.only_smd:
+                center = m.GetCenter()
+                # See PLACE_FILE_EXPORTER::GenPositionData() in
+                # export_footprints_placefile.cpp for C++ version of this.
+                modules.append([
+                    "{}".format(m.GetReference()),
+                    "{}".format(m.GetValue()),
+                    "{}".format(m.GetFPID().GetLibItemName()),
+                    "{:.4f}".format(center.x * conv),
+                    "{:.4f}".format(-center.y * conv),
+                    "{:.4f}".format(m.GetOrientationDegrees()),
+                    "{}".format("bottom" if m.IsFlipped() else "top")
+                ])
 
         # Find max width for all columns
         maxlengths = [0] * colcount
