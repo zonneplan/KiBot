@@ -29,3 +29,4 @@ MANIFEST
 .pytest_cache
 
 *.kicad_pcb-bak
+*.epr
