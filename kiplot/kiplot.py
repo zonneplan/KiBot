@@ -3,20 +3,26 @@ Main Kiplot code
 """
 
 from datetime import datetime
-import logging
 import os
 import operator
 
 from . import plot_config as PCfg
 from . import error
+from . import log
+from . import misc
+
+logger = log.get_logger(__name__)
 
 try:
     import pcbnew
     from pcbnew import GERBER_JOBFILE_WRITER
 except ImportError:
-    logging.error("Failed to import pcbnew Python module."
+    log.init(False,False)
+    logger.error("Failed to import pcbnew Python module."
+                  " Is KiCad installed?"
                   " Do you need to add it to PYTHONPATH?")
-    raise
+    import sys
+    sys.exit(misc.NO_PCBNEW_MODULE)
 
 
 class PlotError(error.KiPlotError):
@@ -33,18 +39,18 @@ class Plotter(object):
 
     def plot(self, brd_file):
 
-        logging.debug("Starting plot of board {}".format(brd_file))
+        logger.debug("Starting plot of board {}".format(brd_file))
 
         board = pcbnew.LoadBoard(brd_file)
 
-        logging.debug("Board loaded")
+        logger.debug("Board loaded")
 
         self._preflight_checks(board)
 
         for op in self.cfg.outputs:
 
-            logging.debug("Processing output: {}".format(op.name))
-            logging.info('- %s (%s)' % (op.description,op.name))
+            logger.debug("Processing output: {}".format(op.name))
+            logger.info('- %s (%s)' % (op.description,op.name))
 
             # fresh plot controller
             pc = pcbnew.PLOT_CONTROLLER(board)
@@ -64,7 +70,7 @@ class Plotter(object):
 
     def _preflight_checks(self, board):
 
-        logging.debug("Preflight checks")
+        logger.debug("Preflight checks")
 
         if self.cfg.check_zone_fills:
             raise PlotError("Not sure if Python scripts can do zone check!")
@@ -157,11 +163,11 @@ class Plotter(object):
             plot_format = self._get_layer_plot_format(output)
 
             # Plot single layer to file
-            logging.debug("Opening plot file for layer {} ({})"
+            logger.debug("Opening plot file for layer {} ({})"
                           .format(layer.layer, suffix))
             plot_ctrl.OpenPlotfile(suffix, plot_format, desc)
 
-            logging.debug("Plotting layer {} to {}".format(
+            logger.debug("Plotting layer {} to {}".format(
                 layer.layer, plot_ctrl.GetPlotFileName()))
             plot_ctrl.PlotLayer()
             plot_ctrl.ClosePlot()
@@ -230,12 +236,12 @@ class Plotter(object):
         gen_report = to.generate_report
 
         if gen_drill:
-            logging.debug("Generating drill files in {}"
+            logger.debug("Generating drill files in {}"
                           .format(outdir))
 
         if gen_map:
             drill_writer.SetMapFileFormat(to.map_options.type)
-            logging.debug("Generating drill map type {} in {}"
+            logger.debug("Generating drill map type {} in {}"
                           .format(to.map_options.type, outdir))
 
         drill_writer.CreateDrillandMapFilesSet(outdir, gen_drill, gen_map)
@@ -243,7 +249,7 @@ class Plotter(object):
         if gen_report:
             drill_report_file = os.path.join(outdir,
                                              to.report_options.filename)
-            logging.debug("Generating drill report: {}"
+            logger.debug("Generating drill report: {}"
                           .format(drill_report_file))
 
             drill_writer.GenDrillReportFile(drill_report_file)
@@ -464,13 +470,13 @@ class Plotter(object):
         # outdir is a combination of the config and output
         outdir = os.path.join(self.cfg.outdir, output.outdir)
 
-        logging.debug("Output destination: {}".format(outdir))
+        logger.debug("Output destination: {}".format(outdir))
 
         po.SetOutputDirectory(outdir)
 
     def _configure_plot_ctrl(self, plot_ctrl, output):
 
-        logging.debug("Configuring plot controller for output")
+        logger.debug("Configuring plot controller for output")
 
         po = plot_ctrl.GetPlotOptions()
 

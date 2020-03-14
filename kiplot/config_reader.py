@@ -2,8 +2,6 @@
 Class to read KiPlot config files
 """
 
-import logging
-import yaml
 import os
 import re
 
@@ -11,10 +9,21 @@ import pcbnew
 
 from . import plot_config as PC
 from . import error
+from . import log
+from . import misc
+
+logger = log.get_logger(__name__)
+
+try:
+    import yaml
+except:
+    log.init(False,False)
+    logger.error('No yaml module for Python, install python3-yaml')
+    import sys
+    sys.exit(misc.NO_YAML_MODULE)
 
 
 class CfgReader(object):
-
     def __init__(self):
         pass
 
@@ -443,7 +452,7 @@ class CfgYamlReader(CfgReader):
         except KeyError:
             raise YamlError("Output need to have options specified")
 
-        logging.debug("Parsing output options for {} ({})".format(name, otype))
+        logger.debug("Parsing output options for {} ({})".format(name, otype))
 
         outdir = self._get_required(o_obj, 'dir')
 
@@ -464,7 +473,7 @@ class CfgYamlReader(CfgReader):
 
     def _parse_preflight(self, pf, cfg):
 
-        logging.debug("Parsing preflight options: {}".format(pf))
+        logger.debug("Parsing preflight options: {}".format(pf))
 
         if 'check_zone_fills' in pf:
             cfg.check_zone_fills = pf['check_zone_fills']

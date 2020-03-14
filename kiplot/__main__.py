@@ -7,6 +7,7 @@ import sys
 
 from . import kiplot
 from . import config_reader
+from . import log
 
 
 def main():
@@ -30,18 +31,14 @@ def main():
 
     args = parser.parse_args()
 
-    log_level = logging.INFO
-    if args.verbose:
-        log_level = logging.DEBUG
-    if args.quiet:
-        log_level = logging.WARNING
-    logging.basicConfig(level=log_level)
+    # Create a logger with the specified verbosity
+    logger = log.init(args.verbose, args.quiet)
 
     if not os.path.isfile(args.board_file):
-        logging.error("Board file not found: {}".format(args.board_file))
+        logger.error("Board file not found: {}".format(args.board_file))
 
     if not os.path.isfile(args.plot_config):
-        logging.error("Plot config file not found: {}"
+        logger.error("Plot config file not found: {}"
                       .format(args.plot_config))
         sys.exit(EXIT_BAD_ARGS)
 
@@ -58,7 +55,7 @@ def main():
     errs = cfg.validate()
 
     if errs:
-        logging.error('Invalid config:\n\n' + "\n".join(errs))
+        logger.error('Invalid config:\n\n' + "\n".join(errs))
         sys.exit(EXIT_BAD_CONFIG)
 
     # Set up the plotter and do it
