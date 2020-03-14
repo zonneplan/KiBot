@@ -50,7 +50,7 @@ class Plotter(object):
         for op in self.cfg.outputs:
 
             logger.debug("Processing output: {}".format(op.name))
-            logger.info('- %s (%s)' % (op.description,op.name))
+            logger.info('- %s (%s) [%s]' % (op.description,op.name,op.options.type))
 
             # fresh plot controller
             pc = pcbnew.PLOT_CONTROLLER(board)
