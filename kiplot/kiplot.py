@@ -4,6 +4,7 @@ Main Kiplot code
 
 from datetime import datetime
 import os
+import sys
 import operator
 
 from . import plot_config as PCfg
@@ -82,10 +83,12 @@ class Plotter(object):
         logger.debug("Preflight checks")
 
         if self.cfg.check_zone_fills:
-            raise PlotError("Not sure if Python scripts can do zone check!")
+            logger.error('check_zone_fills not yet supported')
+            sys.exit(misc.USUPPORTED_OPTION)
 
         if self.cfg.run_drc:
-            raise PlotError("Not sure if Python scripts can run DRC!")
+            logger.error('run_drc not yet supported')
+            sys.exit(misc.USUPPORTED_OPTION)
 
     def _output_is_layer(self, output):
 
