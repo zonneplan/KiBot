@@ -37,7 +37,7 @@ class Plotter(object):
     def __init__(self, cfg):
         self.cfg = cfg
 
-    def plot(self, brd_file):
+    def plot(self, brd_file, target, invert):
 
         logger.debug("Starting plot of board {}".format(brd_file))
 
@@ -47,25 +47,34 @@ class Plotter(object):
 
         self._preflight_checks(board)
 
+        n = len(target)
+        if n == 0 and invert:
+            # Skip all targets
+            logger.debug('Skipping all outputs')
+            return
+
         for op in self.cfg.outputs:
 
-            logger.debug("Processing output: {}".format(op.name))
-            logger.info('- %s (%s) [%s]' % (op.description,op.name,op.options.type))
+            if (n == 0) or ((op.name in target) ^ invert):
+                logger.debug("Processing output: {}".format(op.name))
+                logger.info('- %s (%s) [%s]' % (op.description,op.name,op.options.type))
 
-            # fresh plot controller
-            pc = pcbnew.PLOT_CONTROLLER(board)
+                # fresh plot controller
+                pc = pcbnew.PLOT_CONTROLLER(board)
 
-            self._configure_output_dir(pc, op)
+                self._configure_output_dir(pc, op)
 
-            if self._output_is_layer(op):
-                self._do_layer_plot(board, pc, op, brd_file)
-            elif self._output_is_drill(op):
-                self._do_drill_plot(board, pc, op)
-            elif self._output_is_position(op):
-                self._do_position_plot(board, pc, op)
+                if self._output_is_layer(op):
+                    self._do_layer_plot(board, pc, op, brd_file)
+                elif self._output_is_drill(op):
+                    self._do_drill_plot(board, pc, op)
+                elif self._output_is_position(op):
+                    self._do_position_plot(board, pc, op)
+                else:
+                    raise PlotError("Don't know how to plot type {}"
+                                    .format(op.options.type))
             else:
-                raise PlotError("Don't know how to plot type {}"
-                                .format(op.options.type))
+                logger.debug('Skipping %s output', op.name)
 
 
     def _preflight_checks(self, board):

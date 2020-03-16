@@ -17,6 +17,8 @@ def main():
 
     parser = argparse.ArgumentParser(
         description='Command-line Plotting for KiCad')
+    parser.add_argument('target', nargs='*',
+                        help='Outputs to generate, default is all')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-v', '--verbose', action='store_true',
                         help='show debugging information')
@@ -28,6 +30,8 @@ def main():
                         help='The plotting config file to use')
     parser.add_argument('-d', '--out-dir', default='.',
                         help='The output directory (cwd if not given)')
+    parser.add_argument('-i', '--invert-sel', action='store_true',
+                        help='Generate the outputs not listed as targets')
 
     args = parser.parse_args()
 
@@ -60,7 +64,7 @@ def main():
 
     # Set up the plotter and do it
     plotter = kiplot.Plotter(cfg)
-    plotter.plot(args.board_file)
+    plotter.plot(args.board_file, args.target, args.invert_sel)
 
 
 if __name__ == "__main__":
