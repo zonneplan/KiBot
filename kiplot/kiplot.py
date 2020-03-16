@@ -4,7 +4,7 @@ Main Kiplot code
 
 from datetime import datetime
 import os
-import sys
+from sys import exit
 import operator
 from shutil import which
 from subprocess import call
@@ -26,7 +26,7 @@ except ImportError:
                   " Is KiCad installed?"
                   " Do you need to add it to PYTHONPATH?")
     import sys
-    sys.exit(misc.NO_PCBNEW_MODULE)
+    exit(misc.NO_PCBNEW_MODULE)
 
 
 class PlotError(error.KiPlotError):
@@ -87,7 +87,7 @@ class Plotter(object):
 
         if self.cfg.check_zone_fills:
             logger.error('check_zone_fills not yet supported')
-            sys.exit(misc.USUPPORTED_OPTION)
+            exit(misc.USUPPORTED_OPTION)
 
         if self.cfg.run_drc:
             self._run_drc(brd_file, self.cfg.ignore_unconnected)
@@ -96,7 +96,7 @@ class Plotter(object):
         if which('pcbnew_run_drc') is None:
             logger.error('No `pcbnew_run_drc` command found.\n'
                          'Please install it, visit: https://github.com/INTI-CMNB/kicad-automation-scripts')
-            sys.exit(misc.MISSING_TOOL)
+            exit(misc.MISSING_TOOL)
         cmd = ['pcbnew_run_drc', brd_file, '.']
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
@@ -112,7 +112,7 @@ class Plotter(object):
                 logger.error('DRC errors: %d', -ret)
             else:
                 logger.error('DRC returned %d', ret)
-            sys.exit(DRC_ERROR)
+            exit(DRC_ERROR)
 
     def _output_is_layer(self, output):
 
