@@ -6,6 +6,9 @@ from datetime import datetime
 import os
 import sys
 import operator
+from shutil import which
+from subprocess import call
+import logging
 
 from . import plot_config as PCfg
 from . import error
@@ -46,7 +49,7 @@ class Plotter(object):
 
         logger.debug("Board loaded")
 
-        self._preflight_checks(board)
+        self._preflight_checks(brd_file)
 
         n = len(target)
         if n == 0 and invert:
@@ -78,7 +81,7 @@ class Plotter(object):
                 logger.debug('Skipping %s output', op.name)
 
 
-    def _preflight_checks(self, board):
+    def _preflight_checks(self, brd_file):
 
         logger.debug("Preflight checks")
 
@@ -87,8 +90,29 @@ class Plotter(object):
             sys.exit(misc.USUPPORTED_OPTION)
 
         if self.cfg.run_drc:
-            logger.error('run_drc not yet supported')
-            sys.exit(misc.USUPPORTED_OPTION)
+            self._run_drc(brd_file, self.cfg.ignore_unconnected)
+
+    def _run_drc(self, brd_file, ignore_unconnected):
+        if which('pcbnew_run_drc') is None:
+            logger.error('No `pcbnew_run_drc` command found.\n'
+                         'Please install it, visit: https://github.com/INTI-CMNB/kicad-automation-scripts')
+            sys.exit(misc.MISSING_TOOL)
+        cmd = ['pcbnew_run_drc', brd_file, '.']
+        # If we are in verbose mode enable debug in the child
+        if logger.getEffectiveLevel() <= logging.DEBUG:
+            cmd.insert(1, '-vv')
+            cmd.insert(1, '-r')
+        if ignore_unconnected:
+            cmd.insert(1, '-i')
+        logger.info('- Running the DRC')
+        logger.debug('Executing: '+str(cmd))
+        ret = call(cmd)
+        if ret:
+            if ret < 0:
+                logger.error('DRC errors: %d', -ret)
+            else:
+                logger.error('DRC returned %d', ret)
+            sys.exit(DRC_ERROR)
 
     def _output_is_layer(self, output):
 

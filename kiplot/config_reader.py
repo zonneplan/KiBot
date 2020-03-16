@@ -481,6 +481,9 @@ class CfgYamlReader(CfgReader):
         if 'run_drc' in pf:
             cfg.run_drc = pf['run_drc']
 
+        if 'ignore_unconnected' in pf:
+            cfg.ignore_unconnected = pf['ignore_unconnected']
+
     def read(self, fstream):
         """
         Read a file object into a config object
