@@ -20,10 +20,6 @@ def main():
     parser.add_argument('target', nargs='*',
                         help='Outputs to generate, default is all')
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('-v', '--verbose', action='store_true',
-                        help='show debugging information')
-    group.add_argument('-q', '--quiet', action='store_true',
-                        help='remove information logs')
     parser.add_argument('-b', '--board-file', required=True,
                         help='The PCB .kicad-pcb board file')
     parser.add_argument('-c', '--plot-config', required=True,
@@ -32,6 +28,10 @@ def main():
                         help='The output directory (cwd if not given)')
     parser.add_argument('-i', '--invert-sel', action='store_true',
                         help='Generate the outputs not listed as targets')
+    group.add_argument('-q', '--quiet', action='store_true',
+                        help='remove information logs')
+    group.add_argument('-v', '--verbose', action='store_true',
+                        help='show debugging information')
 
     args = parser.parse_args()
 
