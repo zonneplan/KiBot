@@ -82,17 +82,11 @@ class Plotter(object):
 
 
     def _preflight_checks(self, brd_file):
-
         logger.debug("Preflight checks")
-
-        if self.cfg.check_zone_fills:
-            logger.error('check_zone_fills not yet supported')
-            sys.exit(misc.USUPPORTED_OPTION)
-
         if self.cfg.run_drc:
-            self._run_drc(brd_file, self.cfg.ignore_unconnected)
+            self._run_drc(brd_file, self.cfg.ignore_unconnected, self.cfg.check_zone_fills)
 
-    def _run_drc(self, brd_file, ignore_unconnected):
+    def _run_drc(self, brd_file, ignore_unconnected, check_zone_fills):
         if which('pcbnew_run_drc') is None:
             logger.error('No `pcbnew_run_drc` command found.\n'
                          'Please install it, visit: https://github.com/INTI-CMNB/kicad-automation-scripts')
@@ -104,6 +98,8 @@ class Plotter(object):
             cmd.insert(1, '-r')
         if ignore_unconnected:
             cmd.insert(1, '-i')
+        if check_zone_fills:
+            cmd.insert(1, '-s')
         logger.info('- Running the DRC')
         logger.debug('Executing: '+str(cmd))
         ret = call(cmd)
