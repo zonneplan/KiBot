@@ -8,12 +8,10 @@ import sys
 from . import kiplot
 from . import config_reader
 from . import log
+from . import misc
 
 
 def main():
-
-    EXIT_BAD_ARGS = 1
-    EXIT_BAD_CONFIG = 2
 
     parser = argparse.ArgumentParser(
         description='Command-line Plotting for KiCad')
@@ -30,8 +28,8 @@ def main():
                         help='Generate the outputs not listed as targets')
     group.add_argument('-q', '--quiet', action='store_true',
                         help='remove information logs')
-    parser.add_argument('-s', '--skip-pre', action='store_true',
-                        help='skip pre-flight actions')
+    parser.add_argument('-s', '--skip-pre', nargs=1,
+                        help='skip pre-flight actions, comma separated list or `all`')
     group.add_argument('-v', '--verbose', action='store_true',
                         help='show debugging information')
 
@@ -42,11 +40,12 @@ def main():
 
     if not os.path.isfile(args.board_file):
         logger.error("Board file not found: {}".format(args.board_file))
+        sys.exit(misc.NO_PCB_FILE)
 
     if not os.path.isfile(args.plot_config):
         logger.error("Plot config file not found: {}"
                       .format(args.plot_config))
-        sys.exit(EXIT_BAD_ARGS)
+        sys.exit(misc.EXIT_BAD_ARGS)
 
     cr = config_reader.CfgYamlReader()
 
@@ -62,7 +61,7 @@ def main():
 
     if errs:
         logger.error('Invalid config:\n\n' + "\n".join(errs))
-        sys.exit(EXIT_BAD_CONFIG)
+        sys.exit(misc.EXIT_BAD_CONFIG)
 
     # Set up the plotter and do it
     plotter = kiplot.Plotter(cfg)

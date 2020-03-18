@@ -49,10 +49,7 @@ class Plotter(object):
 
         logger.debug("Board loaded")
 
-        if not skip_pre:
-            self._preflight_checks(brd_file)
-        else:
-            logger.debug("Skipping pre-flight actions")
+        self._preflight_checks(brd_file, skip_pre)
 
         n = len(target)
         if n == 0 and invert:
@@ -84,8 +81,25 @@ class Plotter(object):
                 logger.debug('Skipping %s output', op.name)
 
 
-    def _preflight_checks(self, brd_file):
+    def _preflight_checks(self, brd_file, skip_pre):
         logger.debug("Preflight checks")
+
+        if not skip_pre is None:
+            if skip_pre[0] == 'all':
+                logger.debug("Skipping all pre-flight actions")
+                return
+            else:
+                skip_list = skip_pre[0].split(',')
+                for skip in skip_list:
+                    if skip == 'all':
+                        logger.error('All can\'t be part of a list of actions to skip. Use `--skip all`')
+                        exit(misc.EXIT_BAD_ARGS)
+                    elif skip == 'run_drc':
+                        self.cfg.run_drc = False
+                        logger.debug('Skipping run_drc')
+                    else:
+                        logger.error('Unknown action to skip: '+skip)
+                        exit(misc.EXIT_BAD_ARGS)
         if self.cfg.run_drc:
             self._run_drc(brd_file, self.cfg.ignore_unconnected, self.cfg.check_zone_fills)
 
