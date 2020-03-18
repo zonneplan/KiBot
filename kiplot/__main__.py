@@ -30,6 +30,8 @@ def main():
                         help='Generate the outputs not listed as targets')
     group.add_argument('-q', '--quiet', action='store_true',
                         help='remove information logs')
+    parser.add_argument('-s', '--skip-pre', action='store_true',
+                        help='skip pre-flight actions')
     group.add_argument('-v', '--verbose', action='store_true',
                         help='show debugging information')
 
@@ -64,7 +66,7 @@ def main():
 
     # Set up the plotter and do it
     plotter = kiplot.Plotter(cfg)
-    plotter.plot(args.board_file, args.target, args.invert_sel)
+    plotter.plot(args.board_file, args.target, args.invert_sel, args.skip_pre)
 
 
 if __name__ == "__main__":

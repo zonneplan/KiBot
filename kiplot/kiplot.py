@@ -41,7 +41,7 @@ class Plotter(object):
     def __init__(self, cfg):
         self.cfg = cfg
 
-    def plot(self, brd_file, target, invert):
+    def plot(self, brd_file, target, invert, skip_pre):
 
         logger.debug("Starting plot of board {}".format(brd_file))
 
@@ -49,7 +49,10 @@ class Plotter(object):
 
         logger.debug("Board loaded")
 
-        self._preflight_checks(brd_file)
+        if not skip_pre:
+            self._preflight_checks(brd_file)
+        else:
+            logger.debug("Skipping pre-flight actions")
 
         n = len(target)
         if n == 0 and invert:
