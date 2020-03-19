@@ -129,7 +129,7 @@ class Plotter(object):
                         logger.debug('Skipping run_drc')
                     elif skip == 'update_xml':
                         self.cfg.update_xml = False
-                        logger.debug('Skipping run_drc')
+                        logger.debug('Skipping update_xml')
                     elif skip == 'run_erc':
                         self.cfg.run_erc = False
                         logger.debug('Skipping run_erc')
