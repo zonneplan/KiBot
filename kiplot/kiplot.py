@@ -153,6 +153,7 @@ class Plotter(object):
             logger.error('No `pcbnew_run_drc` command found.\n'
                          'Please install it, visit: https://github.com/INTI-CMNB/kicad-automation-scripts')
             exit(misc.MISSING_TOOL)
+        check_version('pcbnew_run_drc','1.1.0')
         cmd = ['pcbnew_run_drc', brd_file, '.']
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
@@ -170,7 +171,7 @@ class Plotter(object):
                 logger.error('DRC errors: %d', -ret)
             else:
                 logger.error('DRC returned %d', ret)
-            exit(DRC_ERROR)
+            exit(misc.DRC_ERROR)
 
     def _output_is_layer(self, output):
 
