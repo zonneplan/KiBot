@@ -464,6 +464,7 @@ class PlotConfig(object):
         self.check_zone_fills = False
         self.run_drc = False
         self.ignore_unconnected = False
+        self.run_erc = False
 
     def add_output(self, new_op):
         self._outputs.append(new_op)

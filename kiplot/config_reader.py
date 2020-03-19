@@ -481,6 +481,9 @@ class CfgYamlReader(CfgReader):
         if 'run_drc' in pf:
             cfg.run_drc = pf['run_drc']
 
+        if 'run_erc' in pf:
+            cfg.run_erc = pf['run_erc']
+
         if 'ignore_unconnected' in pf:
             cfg.ignore_unconnected = pf['ignore_unconnected']
 

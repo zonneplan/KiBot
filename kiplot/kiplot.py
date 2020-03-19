@@ -7,8 +7,10 @@ import os
 from sys import exit
 import operator
 from shutil import which
-from subprocess import call
+from subprocess import call, run, PIPE
 import logging
+from distutils.version import StrictVersion
+import re
 
 from . import plot_config as PCfg
 from . import error
@@ -28,6 +30,19 @@ except ImportError:
     import sys
     exit(misc.NO_PCBNEW_MODULE)
 
+
+def check_version(command, version):
+    cmd = [command, '--version']
+    logger.debug('Running: '+str(cmd))
+    result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    z=re.match(command+' (\d+\.\d+\.\d+)', result.stdout)
+    if not z:
+        logger.error('Unable to determine '+command+' version:\n'+result.stdout)
+        exit(misc.MISSING_TOOL)
+    res=z.groups()
+    if StrictVersion(res[0]) < StrictVersion(version):
+        logger.error('Wrong version for `'+command+'` ('+res[0]+'), must be '+version+' or newer.')
+        exit(misc.MISSING_TOOL)
 
 class PlotError(error.KiPlotError):
     pass
@@ -97,11 +112,41 @@ class Plotter(object):
                     elif skip == 'run_drc':
                         self.cfg.run_drc = False
                         logger.debug('Skipping run_drc')
+                    elif skip == 'run_erc':
+                        self.cfg.run_erc = False
+                        logger.debug('Skipping run_erc')
                     else:
                         logger.error('Unknown action to skip: '+skip)
                         exit(misc.EXIT_BAD_ARGS)
+        if self.cfg.run_erc:
+            self._run_erc(brd_file)
         if self.cfg.run_drc:
             self._run_drc(brd_file, self.cfg.ignore_unconnected, self.cfg.check_zone_fills)
+
+    def _run_erc(self, brd_file):
+        if which('eeschema_do') is None:
+            logger.error('No `eeschema_do` command found.\n'
+                         'Please install it, visit: https://github.com/INTI-CMNB/kicad-automation-scripts')
+            exit(misc.MISSING_TOOL)
+        check_version('eeschema_do','1.1.1')
+        sch_file = os.path.splitext(brd_file)[0] + '.sch'
+        if not os.path.isfile(sch_file):
+            logger.error('Missing schematic file: ' + sch_file)
+            exit(misc.NO_SCH_FILE)
+        cmd = ['eeschema_do', 'run_erc', sch_file, '.']
+        # If we are in verbose mode enable debug in the child
+        if logger.getEffectiveLevel() <= logging.DEBUG:
+            cmd.insert(1, '-vv')
+            cmd.insert(1, '-r')
+        logger.info('- Running the ERC')
+        logger.debug('Executing: '+str(cmd))
+        ret = call(cmd)
+        if ret:
+            if ret < 0:
+                logger.error('ERC errors: %d', -ret)
+            else:
+                logger.error('ERC returned %d', ret)
+            exit(misc.ERC_ERROR)
 
     def _run_drc(self, brd_file, ignore_unconnected, check_zone_fills):
         if which('pcbnew_run_drc') is None:
