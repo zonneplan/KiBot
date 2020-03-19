@@ -7,7 +7,7 @@ import os
 from sys import exit
 import operator
 from shutil import which
-from subprocess import call, run, PIPE
+from subprocess import call, run, PIPE, check_output, CalledProcessError, STDOUT
 import logging
 from distutils.version import StrictVersion
 import re
@@ -102,6 +102,8 @@ class Plotter(object):
                     self._do_drill_plot(board, pc, op)
                 elif self._output_is_position(op):
                     self._do_position_plot(board, pc, op)
+                elif self._output_is_bom(op):
+                    self._do_bom(board, pc, op, brd_file)
                 else:
                     raise PlotError("Don't know how to plot type {}"
                                     .format(op.options.type))
@@ -217,6 +219,12 @@ class Plotter(object):
 
     def _output_is_position(self, output):
         return output.options.type == PCfg.OutputOptions.POSITION
+
+    def _output_is_bom(self, output):
+        return output.options.type in [
+            PCfg.OutputOptions.KIBOM,
+            PCfg.OutputOptions.IBOM,
+        ]
 
     def _get_layer_plot_format(self, output):
         """
@@ -528,6 +536,59 @@ class Plotter(object):
         else:
             raise PlotError("Format is invalid: {}".format(to.format))
 
+    def _do_bom(self, board, plot_ctrl, output, brd_file):
+        if output.options.type == 'kibom':
+            self._do_kibom(board, plot_ctrl, output, brd_file)
+        else:
+            self._do_ibom(board, plot_ctrl, output, brd_file)
+
+    def _do_kibom(self, board, plot_ctrl, output, brd_file):
+        if which('KiBOM_CLI.py') is None:
+            logger.error('No `KiBOM_CLI.py` command found.\n'
+                         'Please install it, visit: https://github.com/INTI-CMNB/KiBoM')
+            exit(misc.MISSING_TOOL)
+        to = output.options.type_options
+        format = to.format.lower()
+        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        prj = os.path.splitext(os.path.relpath(brd_file))[0]
+        logger.debug('Doing BoM, format '+format+' prj: '+prj)
+        cmd = [ 'KiBOM_CLI.py', prj+'.xml', os.path.join(outdir, prj)+'.'+format ]
+        logger.debug('Running: '+str(cmd))
+        try:
+            check_output(cmd, stderr=STDOUT)
+        except CalledProcessError as e:
+            logger.error('Failed to create BoM, error %d', e.returncode)
+            exit(misc.BOM_ERROR)
+
+    def _do_ibom(self, board, plot_ctrl, output, brd_file):
+        if which('generate_interactive_bom.py') is None:
+            logger.error('No `generate_interactive_bom.py` command found.\n'
+                         'Please install it, visit: https://github.com/INTI-CMNB/InteractiveHtmlBom')
+            exit(misc.MISSING_TOOL)
+        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        prj = os.path.splitext(os.path.relpath(brd_file))[0]
+        logger.debug('Doing Interactive BoM, prj: '+prj)
+        cmd = [ 'generate_interactive_bom.py', brd_file,
+                '--dest-dir', outdir,
+                '--no-browser', ]
+        to = output.options.type_options
+        if to.blacklist:
+            cmd.append('--blacklist')
+            cmd.append(to.blacklist)
+        if to.name_format:
+            cmd.append('--name-format')
+            cmd.append(to.name_format)
+        logger.debug('Running: '+str(cmd))
+        try:
+            check_output(cmd, stderr=STDOUT)
+        except CalledProcessError as e:
+            logger.error('Failed to create BoM, error %d', e.returncode)
+            exit(misc.BOM_ERROR)
+
     def _configure_gerber_opts(self, po, output):
 
         # true if gerber
@@ -581,6 +642,14 @@ class Plotter(object):
     def _configure_position_opts(self, po, output):
 
         assert(output.options.type == PCfg.OutputOptions.POSITION)
+
+    def _configure_kibom_opts(self, po, output):
+
+        assert(output.options.type == PCfg.OutputOptions.KIBOM)
+
+    def _configure_ibom_opts(self, po, output):
+
+        assert(output.options.type == PCfg.OutputOptions.IBOM)
 
     def _configure_output_dir(self, plot_ctrl, output):
 
@@ -637,6 +706,10 @@ class Plotter(object):
             self._configure_hpgl_opts(po, output)
         elif output.options.type == PCfg.OutputOptions.POSITION:
             self._configure_position_opts(po, output)
+        elif output.options.type == PCfg.OutputOptions.KIBOM:
+            self._configure_kibom_opts(po, output)
+        elif output.options.type == PCfg.OutputOptions.IBOM:
+            self._configure_ibom_opts(po, output)
 
         po.SetDrillMarksType(opts.drill_marks)
 

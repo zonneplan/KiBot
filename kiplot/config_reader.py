@@ -108,7 +108,7 @@ class CfgYamlReader(CfgReader):
                 if mapping['required'](cfg_options):
 
                     cfg_val = self._get_required(cfg_options, key)
-                elif key in cfg_options:
+                elif not(cfg_options is None) and key in cfg_options:
                     # not required but given anyway
                     cfg_val = cfg_options[key]
                 else:
@@ -337,7 +337,7 @@ class CfgYamlReader(CfgReader):
             },
             {
                 'key': 'format',
-                'types': ['position'],
+                'types': ['position','kibom'],
                 'to': 'format',
                 'required': lambda opts: True,
             },
@@ -358,7 +358,19 @@ class CfgYamlReader(CfgReader):
                 'types': ['position'],
                 'to': 'only_smd',
                 'required': lambda opts: True,
-            }
+            },
+            {
+                'key': 'blacklist',
+                'types': ['ibom'],
+                'to': 'blacklist',
+                'required': lambda opts: False,
+            },
+            {
+                'key': 'name_format',
+                'types': ['ibom'],
+                'to': 'name_format',
+                'required': lambda opts: False,
+            },
         ]
 
         po = PC.OutputOptions(otype)
@@ -444,13 +456,16 @@ class CfgYamlReader(CfgReader):
             raise YamlError("Output needs a type")
 
         if otype not in ['gerber', 'ps', 'hpgl', 'dxf', 'pdf', 'svg',
-                         'gerb_drill', 'excellon', 'position']:
+                         'gerb_drill', 'excellon', 'position',
+                         'kibom', 'ibom']:
             raise YamlError("Unknown output type: {}".format(otype))
 
         try:
             options = o_obj['options']
         except KeyError:
-            raise YamlError("Output need to have options specified")
+            if otype != 'ibom':
+                raise YamlError("Output need to have options specified")
+            options = None
 
         logger.debug("Parsing output options for {} ({})".format(name, otype))
 

@@ -377,6 +377,25 @@ class PositionOptions(TypeOptions):
         return errs
 
 
+class KiBoMOptions(TypeOptions):
+
+    def __init__(self):
+        self.format = None
+
+    def validate(self):
+        errs = []
+        if self.format not in ["HTML", "CSV"]:
+            errs.append("Format must be either HTML or CSV")
+        return errs
+
+
+class IBoMOptions(TypeOptions):
+
+    def __init__(self):
+        self.blacklist = None
+        self.name_format = None
+
+
 class OutputOptions(object):
 
     GERBER = 'gerber'
@@ -389,6 +408,8 @@ class OutputOptions(object):
     EXCELLON = 'excellon'
     GERB_DRILL = 'gerb_drill'
     POSITION = 'position'
+    KIBOM = 'kibom'
+    IBOM = 'ibom'
 
     def __init__(self, otype):
         self.type = otype
@@ -411,12 +432,16 @@ class OutputOptions(object):
             self.type_options = GerberDrillOptions()
         elif otype == self.POSITION:
             self.type_options = PositionOptions()
+        elif otype == self.KIBOM:
+            self.type_options = KiBoMOptions()
+        elif otype == self.IBOM:
+            self.type_options = IBoMOptions()
         else:
             self.type_options = None
 
     def validate(self):
 
-        if self.type_options is None:
+        if self.type_options is None and self.type != self.IBOM:
             return ["No type specific options found"]
 
         return self.type_options.validate()
