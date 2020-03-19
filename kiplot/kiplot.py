@@ -44,12 +44,16 @@ def check_version(command, version):
         logger.error('Wrong version for `'+command+'` ('+res[0]+'), must be '+version+' or newer.')
         exit(misc.MISSING_TOOL)
 
-def check_eeschema_do(file):
-    if which('eeschema_do') is None:
-        logger.error('No `eeschema_do` command found.\n'
-                     'Please install it, visit: https://github.com/INTI-CMNB/kicad-automation-scripts')
+def check_script(cmd, url, version=None):
+    if which(cmd) is None:
+        logger.error('No `'+cmd+'` command found.\n'
+                     'Please install it, visit: '+url)
         exit(misc.MISSING_TOOL)
-    check_version('eeschema_do','1.1.1')
+    if not version is None:
+        check_version(cmd, version)
+
+def check_eeschema_do(file):
+    check_script(misc.CMD_EESCHEMA_DO, misc.URL_EESCHEMA_DO, '1.1.1')
     sch_file = os.path.splitext(file)[0] + '.sch'
     if not os.path.isfile(sch_file):
         logger.error('Missing schematic file: ' + sch_file)
@@ -145,7 +149,7 @@ class Plotter(object):
 
     def _run_erc(self, brd_file):
         sch_file = check_eeschema_do(brd_file)
-        cmd = ['eeschema_do', 'run_erc', sch_file, '.']
+        cmd = [misc.CMD_EESCHEMA_DO, 'run_erc', sch_file, '.']
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
             cmd.insert(1, '-vv')
@@ -162,7 +166,7 @@ class Plotter(object):
 
     def _update_xml(self, brd_file):
         sch_file = check_eeschema_do(brd_file)
-        cmd = ['eeschema_do', 'bom_xml', sch_file, '.']
+        cmd = [misc.CMD_EESCHEMA_DO, 'bom_xml', sch_file, '.']
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
             cmd.insert(1, '-vv')
@@ -175,12 +179,8 @@ class Plotter(object):
             exit(misc.BOM_ERROR)
 
     def _run_drc(self, brd_file, ignore_unconnected, check_zone_fills):
-        if which('pcbnew_run_drc') is None:
-            logger.error('No `pcbnew_run_drc` command found.\n'
-                         'Please install it, visit: https://github.com/INTI-CMNB/kicad-automation-scripts')
-            exit(misc.MISSING_TOOL)
-        check_version('pcbnew_run_drc','1.1.0')
-        cmd = ['pcbnew_run_drc', brd_file, '.']
+        check_script(misc.CMD_PCBNEW_RUN_DRC, misc.URL_PCBNEW_RUN_DRC, '1.1.0')
+        cmd = [misc.CMD_PCBNEW_RUN_DRC, brd_file, '.']
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
             cmd.insert(1, '-vv')
@@ -543,10 +543,7 @@ class Plotter(object):
             self._do_ibom(board, plot_ctrl, output, brd_file)
 
     def _do_kibom(self, board, plot_ctrl, output, brd_file):
-        if which('KiBOM_CLI.py') is None:
-            logger.error('No `KiBOM_CLI.py` command found.\n'
-                         'Please install it, visit: https://github.com/INTI-CMNB/KiBoM')
-            exit(misc.MISSING_TOOL)
+        check_script(misc.CMD_KIBOM,misc.URL_KIBOM)
         to = output.options.type_options
         format = to.format.lower()
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
@@ -554,7 +551,7 @@ class Plotter(object):
             os.makedirs(outdir)
         prj = os.path.splitext(os.path.relpath(brd_file))[0]
         logger.debug('Doing BoM, format '+format+' prj: '+prj)
-        cmd = [ 'KiBOM_CLI.py', prj+'.xml', os.path.join(outdir, prj)+'.'+format ]
+        cmd = [ misc.CMD_KIBOM, prj+'.xml', os.path.join(outdir, prj)+'.'+format ]
         logger.debug('Running: '+str(cmd))
         try:
             check_output(cmd, stderr=STDOUT)
@@ -563,16 +560,13 @@ class Plotter(object):
             exit(misc.BOM_ERROR)
 
     def _do_ibom(self, board, plot_ctrl, output, brd_file):
-        if which('generate_interactive_bom.py') is None:
-            logger.error('No `generate_interactive_bom.py` command found.\n'
-                         'Please install it, visit: https://github.com/INTI-CMNB/InteractiveHtmlBom')
-            exit(misc.MISSING_TOOL)
+        check_script(misc.CMD_IBOM,misc.URL_IBOM)
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         prj = os.path.splitext(os.path.relpath(brd_file))[0]
         logger.debug('Doing Interactive BoM, prj: '+prj)
-        cmd = [ 'generate_interactive_bom.py', brd_file,
+        cmd = [ misc.CMD_IBOM, brd_file,
                 '--dest-dir', outdir,
                 '--no-browser', ]
         to = output.options.type_options
