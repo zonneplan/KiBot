@@ -395,6 +395,17 @@ class IBoMOptions(TypeOptions):
         self.blacklist = None
         self.name_format = None
 
+class SchPrintOptions(TypeOptions):
+
+    def __init__(self):
+        self.output = None
+
+
+class PcbPrintOptions(TypeOptions):
+
+    def __init__(self):
+        self.output = None
+
 
 class OutputOptions(object):
 
@@ -410,6 +421,8 @@ class OutputOptions(object):
     POSITION = 'position'
     KIBOM = 'kibom'
     IBOM = 'ibom'
+    PDF_SCH_PRINT = 'pdf_sch_print'
+    PDF_PCB_PRINT = 'pdf_pcb_print'
 
     def __init__(self, otype):
         self.type = otype
@@ -436,6 +449,10 @@ class OutputOptions(object):
             self.type_options = KiBoMOptions()
         elif otype == self.IBOM:
             self.type_options = IBoMOptions()
+        elif otype == self.PDF_SCH_PRINT:
+            self.type_options = SchPrintOptions()
+        elif otype == self.PDF_PCB_PRINT:
+            self.type_options = PcbPrintOptions()
         else:
             self.type_options = None
 

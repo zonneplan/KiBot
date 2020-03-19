@@ -108,6 +108,10 @@ class Plotter(object):
                     self._do_position_plot(board, pc, op)
                 elif self._output_is_bom(op):
                     self._do_bom(board, pc, op, brd_file)
+                elif self._output_is_sch_print(op):
+                    self._do_sch_print(board, pc, op, brd_file)
+                elif self._output_is_pcb_print(op):
+                    self._do_pcb_print(board, pc, op, brd_file)
                 else:
                     raise PlotError("Don't know how to plot type {}"
                                     .format(op.options.type))
@@ -219,6 +223,12 @@ class Plotter(object):
 
     def _output_is_position(self, output):
         return output.options.type == PCfg.OutputOptions.POSITION
+
+    def _output_is_sch_print(self, output):
+        return output.options.type == PCfg.OutputOptions.PDF_SCH_PRINT
+
+    def _output_is_pcb_print(self, output):
+        return output.options.type == PCfg.OutputOptions.PDF_PCB_PRINT
 
     def _output_is_bom(self, output):
         return output.options.type in [
@@ -536,6 +546,27 @@ class Plotter(object):
         else:
             raise PlotError("Format is invalid: {}".format(to.format))
 
+    def _do_sch_print(self, board, plot_ctrl, output, brd_file):
+        sch_file = check_eeschema_do(brd_file)
+        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
+        cmd = [misc.CMD_EESCHEMA_DO, 'export', '--all_pages',
+               '--file_format', 'pdf', sch_file, outdir]
+        if logger.getEffectiveLevel() <= logging.DEBUG:
+            cmd.insert(1, '-vv')
+            cmd.insert(1, '-r')
+        logger.debug('Executing: '+str(cmd))
+        ret = call(cmd)
+        if ret:
+            logger.error(misc.CMD_EESCHEMA_DO+' returned %d', ret)
+            exit(misc.PDF_SCH_PRINT)
+        to = output.options.type_options
+        if to.output:
+            cur = os.path.join(outdir, os.path.splitext(brd_file)[0]) + '.pdf'
+            new = os.path.join(outdir, to.output)
+            logger.debug('Moving '+cur+' -> '+new)
+            os.rename(cur,new)
+
+
     def _do_bom(self, board, plot_ctrl, output, brd_file):
         if output.options.type == 'kibom':
             self._do_kibom(board, plot_ctrl, output, brd_file)
@@ -637,6 +668,14 @@ class Plotter(object):
 
         assert(output.options.type == PCfg.OutputOptions.POSITION)
 
+    def _configure_sch_print_opts(self, po, output):
+
+        assert(output.options.type == PCfg.OutputOptions.PDF_SCH_PRINT)
+
+    def _configure_pcb_print_opts(self, po, output):
+
+        assert(output.options.type == PCfg.OutputOptions.PDF_PCB_PRINT)
+
     def _configure_kibom_opts(self, po, output):
 
         assert(output.options.type == PCfg.OutputOptions.KIBOM)
@@ -704,6 +743,11 @@ class Plotter(object):
             self._configure_kibom_opts(po, output)
         elif output.options.type == PCfg.OutputOptions.IBOM:
             self._configure_ibom_opts(po, output)
+        elif output.options.type == PCfg.OutputOptions.PDF_SCH_PRINT:
+            self._configure_sch_print_opts(po, output)
+        elif output.options.type == PCfg.OutputOptions.PDF_PCB_PRINT:
+            self._configure_pcb_print_opts(po, output)
+
 
         po.SetDrillMarksType(opts.drill_marks)
 

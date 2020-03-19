@@ -4,6 +4,7 @@ Class to read KiPlot config files
 
 import os
 import re
+import sys
 
 import pcbnew
 
@@ -19,7 +20,6 @@ try:
 except:
     log.init(False,False)
     logger.error('No yaml module for Python, install python3-yaml')
-    import sys
     sys.exit(misc.NO_YAML_MODULE)
 
 
@@ -371,6 +371,18 @@ class CfgYamlReader(CfgReader):
                 'to': 'name_format',
                 'required': lambda opts: False,
             },
+            {
+                'key': 'output',
+                'types': ['pdf_sch_print'],
+                'to': 'output',
+                'required': lambda opts: False,
+            },
+            {
+                'key': 'output_name',
+                'types': ['pdf_pcb_print'],
+                'to': 'output_name',
+                'required': lambda opts: True,
+            },
         ]
 
         po = PC.OutputOptions(otype)
@@ -457,14 +469,15 @@ class CfgYamlReader(CfgReader):
 
         if otype not in ['gerber', 'ps', 'hpgl', 'dxf', 'pdf', 'svg',
                          'gerb_drill', 'excellon', 'position',
-                         'kibom', 'ibom']:
+                         'kibom', 'ibom', 'pdf_sch_print', 'pdf_pcb_print']:
             raise YamlError("Unknown output type: {}".format(otype))
 
         try:
             options = o_obj['options']
         except KeyError:
-            if otype != 'ibom':
-                raise YamlError("Output need to have options specified")
+            if not otype in ['ibom', 'pdf_sch_print']:
+                logger.error('Output "'+name+'" needs options')
+                sys.exit(misc.EXIT_BAD_CONFIG)
             options = None
 
         logger.debug("Parsing output options for {} ({})".format(name, otype))

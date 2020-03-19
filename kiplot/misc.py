@@ -13,6 +13,7 @@ NO_PCB_FILE = 8
 NO_SCH_FILE = 9
 ERC_ERROR = 10
 BOM_ERROR = 11
+PDF_SCH_PRINT = 12
 
 CMD_EESCHEMA_DO = 'eeschema_do'
 URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/kicad-automation-scripts'
