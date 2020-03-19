@@ -463,6 +463,7 @@ class PlotConfig(object):
 
         self.check_zone_fills = False
         self.run_drc = False
+        self.update_xml = False
         self.ignore_unconnected = False
         self.run_erc = False
 

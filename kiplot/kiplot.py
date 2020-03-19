@@ -44,6 +44,19 @@ def check_version(command, version):
         logger.error('Wrong version for `'+command+'` ('+res[0]+'), must be '+version+' or newer.')
         exit(misc.MISSING_TOOL)
 
+def check_eeschema_do(file):
+    if which('eeschema_do') is None:
+        logger.error('No `eeschema_do` command found.\n'
+                     'Please install it, visit: https://github.com/INTI-CMNB/kicad-automation-scripts')
+        exit(misc.MISSING_TOOL)
+    check_version('eeschema_do','1.1.1')
+    sch_file = os.path.splitext(file)[0] + '.sch'
+    if not os.path.isfile(sch_file):
+        logger.error('Missing schematic file: ' + sch_file)
+        exit(misc.NO_SCH_FILE)
+    return sch_file
+
+
 class PlotError(error.KiPlotError):
     pass
 
@@ -112,6 +125,9 @@ class Plotter(object):
                     elif skip == 'run_drc':
                         self.cfg.run_drc = False
                         logger.debug('Skipping run_drc')
+                    elif skip == 'update_xml':
+                        self.cfg.update_xml = False
+                        logger.debug('Skipping run_drc')
                     elif skip == 'run_erc':
                         self.cfg.run_erc = False
                         logger.debug('Skipping run_erc')
@@ -120,19 +136,13 @@ class Plotter(object):
                         exit(misc.EXIT_BAD_ARGS)
         if self.cfg.run_erc:
             self._run_erc(brd_file)
+        if self.cfg.update_xml:
+            self._update_xml(brd_file)
         if self.cfg.run_drc:
             self._run_drc(brd_file, self.cfg.ignore_unconnected, self.cfg.check_zone_fills)
 
     def _run_erc(self, brd_file):
-        if which('eeschema_do') is None:
-            logger.error('No `eeschema_do` command found.\n'
-                         'Please install it, visit: https://github.com/INTI-CMNB/kicad-automation-scripts')
-            exit(misc.MISSING_TOOL)
-        check_version('eeschema_do','1.1.1')
-        sch_file = os.path.splitext(brd_file)[0] + '.sch'
-        if not os.path.isfile(sch_file):
-            logger.error('Missing schematic file: ' + sch_file)
-            exit(misc.NO_SCH_FILE)
+        sch_file = check_eeschema_do(brd_file)
         cmd = ['eeschema_do', 'run_erc', sch_file, '.']
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
@@ -147,6 +157,20 @@ class Plotter(object):
             else:
                 logger.error('ERC returned %d', ret)
             exit(misc.ERC_ERROR)
+
+    def _update_xml(self, brd_file):
+        sch_file = check_eeschema_do(brd_file)
+        cmd = ['eeschema_do', 'bom_xml', sch_file, '.']
+        # If we are in verbose mode enable debug in the child
+        if logger.getEffectiveLevel() <= logging.DEBUG:
+            cmd.insert(1, '-vv')
+            cmd.insert(1, '-r')
+        logger.info('- Updating BoM in XML format')
+        logger.debug('Executing: '+str(cmd))
+        ret = call(cmd)
+        if ret:
+            logger.error('Failed to update the BoM, error %d', ret)
+            exit(misc.BOM_ERROR)
 
     def _run_drc(self, brd_file, ignore_unconnected, check_zone_fills):
         if which('pcbnew_run_drc') is None:
