@@ -14,11 +14,14 @@ NO_SCH_FILE = 9
 ERC_ERROR = 10
 BOM_ERROR = 11
 PDF_SCH_PRINT = 12
+PDF_PCB_PRINT = 13
 
 CMD_EESCHEMA_DO = 'eeschema_do'
 URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/kicad-automation-scripts'
 CMD_PCBNEW_RUN_DRC = 'pcbnew_run_drc'
 URL_PCBNEW_RUN_DRC = URL_EESCHEMA_DO
+CMD_PCBNEW_PRINT_LAYERS = 'pcbnew_print_layers'
+URL_PCBNEW_PRINT_LAYERS = URL_EESCHEMA_DO
 CMD_KIBOM = 'KiBOM_CLI.py'
 URL_KIBOM = 'https://github.com/INTI-CMNB/KiBoM'
 CMD_IBOM = 'generate_interactive_bom.py'

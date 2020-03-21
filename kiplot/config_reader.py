@@ -425,17 +425,18 @@ class CfgYamlReader(CfgReader):
         layer = None
 
         if s in D:
-            layer = PC.LayerInfo(D[s], False)
+            layer = PC.LayerInfo(D[s], False, s)
         elif s.startswith("Inner"):
             m = re.match(r"^Inner\.([0-9]+)$", s)
 
             if not m:
-                raise YamlError("Malformed inner layer name: {}"
-                                .format(s))
+                logger.error('Malformed inner layer name: '+s+', use Inner.N')
+                sys.exit(misc.EXIT_BAD_CONFIG)
 
-            layer = PC.LayerInfo(int(m.group(1)), True)
+            layer = PC.LayerInfo(int(m.group(1)), True, s)
         else:
-            raise YamlError("Unknown layer name: {}".format(s))
+            logger.error('Unknown layer name: '+s)
+            sys.exit(misc.EXIT_BAD_CONFIG)
 
         return layer
 
@@ -492,6 +493,9 @@ class CfgYamlReader(CfgReader):
         try:
             layers = o_obj['layers']
         except KeyError:
+            if otype == 'pdf_pcb_print':
+                logger.error('You must specify the layers for `'+name+'` ('+otype+')')
+                sys.exit(misc.EXIT_BAD_CONFIG)
             layers = []
 
         for l in layers:

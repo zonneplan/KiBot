@@ -466,10 +466,11 @@ class OutputOptions(object):
 
 class LayerInfo(object):
 
-    def __init__(self, layer, is_inner):
+    def __init__(self, layer, is_inner, name):
 
         self.layer = layer
         self.is_inner = is_inner
+        self.name = name
 
 
 class LayerConfig(object):

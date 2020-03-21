@@ -566,6 +566,24 @@ class Plotter(object):
             logger.debug('Moving '+cur+' -> '+new)
             os.rename(cur,new)
 
+    def _do_pcb_print(self, board, plot_ctrl, output, brd_file):
+        check_script(misc.CMD_PCBNEW_PRINT_LAYERS,misc.URL_PCBNEW_PRINT_LAYERS,'1.1.2')
+        to = output.options.type_options
+        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
+        cmd = [misc.CMD_PCBNEW_PRINT_LAYERS,
+               '--output_name', to.output_name,
+               brd_file, outdir]
+        if logger.getEffectiveLevel() <= logging.DEBUG:
+            cmd.insert(1, '-vv')
+            cmd.insert(1, '-r')
+        # Add the layers
+        for l in output.layers:
+            cmd.append(l.layer.name)
+        logger.debug('Executing: '+str(cmd))
+        ret = call(cmd)
+        if ret:
+            logger.error(misc.CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)
+            exit(misc.PDF_PCB_PRINT)
 
     def _do_bom(self, board, plot_ctrl, output, brd_file):
         if output.options.type == 'kibom':
