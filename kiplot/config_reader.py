@@ -31,11 +31,32 @@ class CfgReader(object):
 class YamlError(error.KiPlotError):
     pass
 
+def load_layers(kicad_pcb_file):
+    layer_names=['-']*50
+    pcb_file = open(kicad_pcb_file,"r")
+    collect_layers=False
+    for line in pcb_file:
+        if collect_layers:
+           z=re.match('\s+\((\d+)\s+(\S+)',line)
+           if z:
+              res=z.groups()
+              #print(res[1]+'->'+res[0])
+              layer_names[int(res[0])]=res[1]
+           else:
+              if re.search('^\s+\)$',line):
+                 collect_layers=False
+                 break
+        else:
+           if re.search('\s+\(layers',line):
+              collect_layers=True
+    pcb_file.close()
+    return layer_names
 
 class CfgYamlReader(CfgReader):
 
-    def __init__(self):
+    def __init__(self, brd_file):
         super(CfgYamlReader, self).__init__()
+        self.layer_names = load_layers(brd_file)
 
     def _check_version(self, data):
 
@@ -424,19 +445,28 @@ class CfgYamlReader(CfgReader):
 
         layer = None
 
+        # Priority
+        # 1) Internal list
         if s in D:
             layer = PC.LayerInfo(D[s], False, s)
-        elif s.startswith("Inner"):
-            m = re.match(r"^Inner\.([0-9]+)$", s)
-
-            if not m:
-                logger.error('Malformed inner layer name: '+s+', use Inner.N')
-                sys.exit(misc.EXIT_BAD_CONFIG)
-
-            layer = PC.LayerInfo(int(m.group(1)), True, s)
         else:
-            logger.error('Unknown layer name: '+s)
-            sys.exit(misc.EXIT_BAD_CONFIG)
+            try:
+                # 2) List from the PCB
+                id = self.layer_names.index(s)
+                layer = PC.LayerInfo(id, id<pcbnew.B_Cu, s)
+            except:
+                # 3) Inner.N names
+                if s.startswith("Inner"):
+                    m = re.match(r"^Inner\.([0-9]+)$", s)
+
+                    if not m:
+                        logger.error('Malformed inner layer name: '+s+', use Inner.N')
+                        sys.exit(misc.EXIT_BAD_CONFIG)
+
+                    layer = PC.LayerInfo(int(m.group(1)), True, s)
+                else:
+                    logger.error('Unknown layer name: '+s)
+                    sys.exit(misc.EXIT_BAD_CONFIG)
 
         return layer
 

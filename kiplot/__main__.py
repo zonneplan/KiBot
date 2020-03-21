@@ -47,7 +47,7 @@ def main():
                       .format(args.plot_config))
         sys.exit(misc.EXIT_BAD_ARGS)
 
-    cr = config_reader.CfgYamlReader()
+    cr = config_reader.CfgYamlReader(args.board_file)
 
     with open(args.plot_config) as cf_file:
         cfg = cr.read(cf_file)
