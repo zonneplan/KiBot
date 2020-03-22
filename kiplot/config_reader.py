@@ -27,9 +27,9 @@ class CfgReader(object):
     def __init__(self):
         pass
 
-
-class YamlError(error.KiPlotError):
-    pass
+def config_error(msg):
+    logger.error(msg)
+    sys.exit(misc.EXIT_BAD_CONFIG)
 
 def load_layers(kicad_pcb_file):
     layer_names=['-']*50
@@ -62,23 +62,20 @@ class CfgYamlReader(CfgReader):
 
         try:
             version = data['kiplot']['version']
-        except KeyError:
-            raise YamlError("YAML config needs kiplot.version.")
-            return None
+        except (KeyError, TypeError):
+            config_error("YAML config needs kiplot.version.")
 
         if version != 1:
-            raise YamlError("Unknown KiPlot config version: {}"
-                            .format(version))
-            return None
+            config_error("Unknown KiPlot config version: "+str(version))
 
         return version
 
-    def _get_required(self, data, key):
+    def _get_required(self, data, key, context=None):
 
         try:
             val = data[key]
-        except KeyError:
-            raise YamlError("Value is needed for {}".format(key))
+        except (KeyError, TypeError):
+            config_error("Missing `"+key+"' "+('' if context is None else context))
 
         return val
 
@@ -95,12 +92,12 @@ class CfgYamlReader(CfgReader):
             'pdf': pcbnew.PLOT_FORMAT_PDF
         }
 
-        type_s = self._get_required(map_opts, 'type')
+        type_s = self._get_required(map_opts, 'type', 'in drill map section')
 
         try:
             mo.type = TYPES[type_s]
         except KeyError:
-            raise YamlError("Unknown drill map type: {}".format(type_s))
+            config_error("Unknown drill map type: "+type_s)
 
         return mo
 
@@ -108,7 +105,7 @@ class CfgYamlReader(CfgReader):
 
         opts = PC.DrillReportOptions()
 
-        opts.filename = self._get_required(report_opts, 'filename')
+        opts.filename = self._get_required(report_opts, 'filename', 'in drill report section')
 
         return opts
 
@@ -128,7 +125,7 @@ class CfgYamlReader(CfgReader):
                 # set the internal option as needed
                 if mapping['required'](cfg_options):
 
-                    cfg_val = self._get_required(cfg_options, key)
+                    cfg_val = self._get_required(cfg_options, key, 'in '+otype+' section')
                 elif not(cfg_options is None) and key in cfg_options:
                     # not required but given anyway
                     cfg_val = cfg_options[key]
@@ -458,21 +455,17 @@ class CfgYamlReader(CfgReader):
                 # 3) Inner.N names
                 if s.startswith("Inner"):
                     m = re.match(r"^Inner\.([0-9]+)$", s)
-
                     if not m:
-                        logger.error('Malformed inner layer name: '+s+', use Inner.N')
-                        sys.exit(misc.EXIT_BAD_CONFIG)
+                        config_error('Malformed inner layer name: '+s+', use Inner.N')
 
                     layer = PC.LayerInfo(int(m.group(1)), True, s)
                 else:
-                    logger.error('Unknown layer name: '+s)
-                    sys.exit(misc.EXIT_BAD_CONFIG)
-
+                    config_error('Unknown layer name: '+s)
         return layer
 
-    def _parse_layer(self, l_obj):
+    def _parse_layer(self, l_obj, context):
 
-        l_str = self._get_required(l_obj, 'layer')
+        l_str = self._get_required(l_obj, 'layer', context)
         layer_id = self._get_layer_from_str(l_str)
         layer = PC.LayerConfig(layer_id)
 
@@ -486,7 +479,7 @@ class CfgYamlReader(CfgReader):
         try:
             name = o_obj['name']
         except KeyError:
-            raise self.YamlError("Output needs a name")
+            config_error("Output needs a name in: "+str(o_obj))
 
         try:
             desc = o_obj['comment']
@@ -496,24 +489,23 @@ class CfgYamlReader(CfgReader):
         try:
             otype = o_obj['type']
         except KeyError:
-            raise YamlError("Output needs a type")
+            config_error("Output '"+name+"' needs a type")
 
         if otype not in ['gerber', 'ps', 'hpgl', 'dxf', 'pdf', 'svg',
                          'gerb_drill', 'excellon', 'position',
                          'kibom', 'ibom', 'pdf_sch_print', 'pdf_pcb_print']:
-            raise YamlError("Unknown output type: {}".format(otype))
+            config_error("Unknown output type '"+otype+"' in '"+name+"'")
 
         try:
             options = o_obj['options']
         except KeyError:
             if not otype in ['ibom', 'pdf_sch_print']:
-                logger.error('Output "'+name+'" needs options')
-                sys.exit(misc.EXIT_BAD_CONFIG)
+                config_error("Output '"+name+"' needs options")
             options = None
 
         logger.debug("Parsing output options for {} ({})".format(name, otype))
 
-        outdir = self._get_required(o_obj, 'dir')
+        outdir = self._get_required(o_obj, 'dir', 'in section `'+name+'` ('+otype+')')
 
         output_opts = self._parse_out_opts(otype, options)
 
@@ -529,7 +521,7 @@ class CfgYamlReader(CfgReader):
             layers = []
 
         for l in layers:
-            o_cfg.layers.append(self._parse_layer(l))
+            o_cfg.layers.append(self._parse_layer(l, 'in section '+name+' ('+otype+')'))
 
         return o_cfg
 
@@ -562,8 +554,7 @@ class CfgYamlReader(CfgReader):
         try:
             data = yaml.load(fstream)
         except yaml.YAMLError as e:
-            raise YamlError("Error loading YAML")
-            return None
+            config_error("Error loading YAML")
 
         self._check_version(data)
 
