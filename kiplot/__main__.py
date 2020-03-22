@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import logging
 import os
 import sys
 
@@ -27,11 +26,12 @@ def main():
     parser.add_argument('-i', '--invert-sel', action='store_true',
                         help='Generate the outputs not listed as targets')
     group.add_argument('-q', '--quiet', action='store_true',
-                        help='remove information logs')
+                       help='remove information logs')
     parser.add_argument('-s', '--skip-pre', nargs=1,
-                        help='skip pre-flight actions, comma separated list or `all`')
+                        help='skip pre-flight actions, comma separated list '
+                        'or `all`')
     group.add_argument('-v', '--verbose', action='store_true',
-                        help='show debugging information')
+                       help='show debugging information')
 
     args = parser.parse_args()
 
@@ -39,12 +39,11 @@ def main():
     logger = log.init(args.verbose, args.quiet)
 
     if not os.path.isfile(args.board_file):
-        logger.error("Board file not found: {}".format(args.board_file))
+        logger.error("Board file not found: "+args.board_file)
         sys.exit(misc.NO_PCB_FILE)
 
     if not os.path.isfile(args.plot_config):
-        logger.error("Plot config file not found: {}"
-                      .format(args.plot_config))
+        logger.error("Plot config file not found: "+args.plot_config)
         sys.exit(misc.EXIT_BAD_ARGS)
 
     cr = config_reader.CfgYamlReader(args.board_file)

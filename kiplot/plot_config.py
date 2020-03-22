@@ -395,6 +395,7 @@ class IBoMOptions(TypeOptions):
         self.blacklist = None
         self.name_format = None
 
+
 class SchPrintOptions(TypeOptions):
 
     def __init__(self):

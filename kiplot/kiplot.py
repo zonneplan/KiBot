@@ -7,7 +7,8 @@ import os
 from sys import exit
 import operator
 from shutil import which
-from subprocess import call, run, PIPE, check_output, CalledProcessError, STDOUT
+from subprocess import (call, run, PIPE, check_output, CalledProcessError,
+                        STDOUT)
 import logging
 from distutils.version import StrictVersion
 import re
@@ -23,11 +24,10 @@ try:
     import pcbnew
     from pcbnew import GERBER_JOBFILE_WRITER
 except ImportError:
-    log.init(False,False)
+    log.init(False, False)
     logger.error("Failed to import pcbnew Python module."
-                  " Is KiCad installed?"
-                  " Do you need to add it to PYTHONPATH?")
-    import sys
+                 " Is KiCad installed?"
+                 " Do you need to add it to PYTHONPATH?")
     exit(misc.NO_PCBNEW_MODULE)
 
 
@@ -35,22 +35,26 @@ def check_version(command, version):
     cmd = [command, '--version']
     logger.debug('Running: '+str(cmd))
     result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-    z=re.match(command+' (\d+\.\d+\.\d+)', result.stdout)
+    z = re.match(command + r' (\d+\.\d+\.\d+)', result.stdout)
     if not z:
-        logger.error('Unable to determine '+command+' version:\n'+result.stdout)
+        logger.error('Unable to determine ' + command + ' version:\n' +
+                     result.stdout)
         exit(misc.MISSING_TOOL)
-    res=z.groups()
+    res = z.groups()
     if StrictVersion(res[0]) < StrictVersion(version):
-        logger.error('Wrong version for `'+command+'` ('+res[0]+'), must be '+version+' or newer.')
+        logger.error('Wrong version for `'+command+'` ('+res[0]+'), must be ' +
+                     version+' or newer.')
         exit(misc.MISSING_TOOL)
+
 
 def check_script(cmd, url, version=None):
     if which(cmd) is None:
         logger.error('No `'+cmd+'` command found.\n'
                      'Please install it, visit: '+url)
         exit(misc.MISSING_TOOL)
-    if not version is None:
+    if version is not None:
         check_version(cmd, version)
+
 
 def check_eeschema_do(file):
     check_script(misc.CMD_EESCHEMA_DO, misc.URL_EESCHEMA_DO, '1.1.1')
@@ -93,7 +97,8 @@ class Plotter(object):
 
             if (n == 0) or ((op.name in target) ^ invert):
                 logger.debug("Processing output: {}".format(op.name))
-                logger.info('- %s (%s) [%s]' % (op.description,op.name,op.options.type))
+                logger.info('- %s (%s) [%s]' % (op.description, op.name,
+                            op.options.type))
 
                 # fresh plot controller
                 pc = pcbnew.PLOT_CONTROLLER(board)
@@ -118,11 +123,10 @@ class Plotter(object):
             else:
                 logger.debug('Skipping %s output', op.name)
 
-
     def _preflight_checks(self, brd_file, skip_pre):
         logger.debug("Preflight checks")
 
-        if not skip_pre is None:
+        if skip_pre is not None:
             if skip_pre[0] == 'all':
                 logger.debug("Skipping all pre-flight actions")
                 return
@@ -130,7 +134,8 @@ class Plotter(object):
                 skip_list = skip_pre[0].split(',')
                 for skip in skip_list:
                     if skip == 'all':
-                        logger.error('All can\'t be part of a list of actions to skip. Use `--skip all`')
+                        logger.error('All can\'t be part of a list of actions '
+                                     'to skip. Use `--skip all`')
                         exit(misc.EXIT_BAD_ARGS)
                     elif skip == 'run_drc':
                         self.cfg.run_drc = False
@@ -149,7 +154,8 @@ class Plotter(object):
         if self.cfg.update_xml:
             self._update_xml(brd_file)
         if self.cfg.run_drc:
-            self._run_drc(brd_file, self.cfg.ignore_unconnected, self.cfg.check_zone_fills)
+            self._run_drc(brd_file, self.cfg.ignore_unconnected,
+                          self.cfg.check_zone_fills)
 
     def _run_erc(self, brd_file):
         sch_file = check_eeschema_do(brd_file)
@@ -301,7 +307,7 @@ class Plotter(object):
 
             # Plot single layer to file
             logger.debug("Opening plot file for layer {} ({})"
-                          .format(layer.layer, suffix))
+                         .format(layer.layer, suffix))
             plot_ctrl.OpenPlotfile(suffix, plot_format, desc)
 
             logger.debug("Plotting layer {} to {}".format(
@@ -309,15 +315,16 @@ class Plotter(object):
             plot_ctrl.PlotLayer()
             plot_ctrl.ClosePlot()
             if create_job:
-                jobfile_writer.AddGbrFile(layer.layer,
-                     os.path.basename(plot_ctrl.GetPlotFileName()));
+                jobfile_writer.AddGbrFile(layer.layer, os.path.basename(
+                                          plot_ctrl.GetPlotFileName()))
 
         if create_job:
-            base_fn = os.path.dirname(plot_ctrl.GetPlotFileName())+'/'+os.path.basename(file_name)
+            base_fn = os.path.join(
+                         os.path.dirname(plot_ctrl.GetPlotFileName()),
+                         os.path.basename(file_name))
             base_fn = os.path.splitext(base_fn)[0]
             job_fn = base_fn+'-job.gbrjob'
             jobfile_writer.CreateJobFile(job_fn)
-
 
     def _configure_excellon_drill_writer(self, board, offset, options):
 
@@ -373,25 +380,24 @@ class Plotter(object):
         gen_report = to.generate_report
 
         if gen_drill:
-            logger.debug("Generating drill files in {}"
-                          .format(outdir))
+            logger.debug("Generating drill files in "+outdir)
 
         if gen_map:
             drill_writer.SetMapFileFormat(to.map_options.type)
             logger.debug("Generating drill map type {} in {}"
-                          .format(to.map_options.type, outdir))
+                         .format(to.map_options.type, outdir))
 
         drill_writer.CreateDrillandMapFilesSet(outdir, gen_drill, gen_map)
 
         if gen_report:
             drill_report_file = os.path.join(outdir,
                                              to.report_options.filename)
-            logger.debug("Generating drill report: {}"
-                          .format(drill_report_file))
+            logger.debug("Generating drill report: "+drill_report_file)
 
             drill_writer.GenDrillReportFile(drill_report_file)
 
-    def _do_position_plot_ascii(self, board, plot_ctrl, output, columns, modulesStr, maxSizes):
+    def _do_position_plot_ascii(self, board, plot_ctrl, output, columns,
+                                modulesStr, maxSizes):
         to = output.options.type_options
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         if not os.path.exists(outdir):
@@ -459,7 +465,8 @@ class Plotter(object):
         if bothf is not None:
             bothf.close()
 
-    def _do_position_plot_csv(self, board, plot_ctrl, output, columns, modulesStr):
+    def _do_position_plot_csv(self, board, plot_ctrl, output, columns,
+                              modulesStr):
         to = output.options.type_options
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         if not os.path.exists(outdir):
@@ -517,8 +524,9 @@ class Plotter(object):
 
         # Format all strings
         modules = []
-        for m in sorted(board.GetModules(), key=operator.methodcaller('GetReference')):
-            if (to.only_smd and m.GetAttributes()==1) or not to.only_smd:
+        for m in sorted(board.GetModules(),
+                        key=operator.methodcaller('GetReference')):
+            if (to.only_smd and m.GetAttributes() == 1) or not to.only_smd:
                 center = m.GetCenter()
                 # See PLACE_FILE_EXPORTER::GenPositionData() in
                 # export_footprints_placefile.cpp for C++ version of this.
@@ -539,10 +547,11 @@ class Plotter(object):
                 maxlengths[col] = max(maxlengths[col], len(modules[row][col]))
 
         if to.format.lower() == 'ascii':
-            self._do_position_plot_ascii(board, plot_ctrl, output, columns, modules,
-                                         maxlengths)
+            self._do_position_plot_ascii(board, plot_ctrl, output, columns,
+                                         modules, maxlengths)
         elif to.format.lower() == 'csv':
-            self._do_position_plot_csv(board, plot_ctrl, output, columns, modules)
+            self._do_position_plot_csv(board, plot_ctrl, output, columns,
+                                       modules)
         else:
             raise PlotError("Format is invalid: {}".format(to.format))
 
@@ -564,10 +573,11 @@ class Plotter(object):
             cur = os.path.join(outdir, os.path.splitext(brd_file)[0]) + '.pdf'
             new = os.path.join(outdir, to.output)
             logger.debug('Moving '+cur+' -> '+new)
-            os.rename(cur,new)
+            os.rename(cur, new)
 
     def _do_pcb_print(self, board, plot_ctrl, output, brd_file):
-        check_script(misc.CMD_PCBNEW_PRINT_LAYERS,misc.URL_PCBNEW_PRINT_LAYERS,'1.1.2')
+        check_script(misc.CMD_PCBNEW_PRINT_LAYERS,
+                     misc.URL_PCBNEW_PRINT_LAYERS, '1.1.2')
         to = output.options.type_options
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         cmd = [misc.CMD_PCBNEW_PRINT_LAYERS,
@@ -592,7 +602,7 @@ class Plotter(object):
             self._do_ibom(board, plot_ctrl, output, brd_file)
 
     def _do_kibom(self, board, plot_ctrl, output, brd_file):
-        check_script(misc.CMD_KIBOM,misc.URL_KIBOM)
+        check_script(misc.CMD_KIBOM, misc.URL_KIBOM)
         to = output.options.type_options
         format = to.format.lower()
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
@@ -600,7 +610,8 @@ class Plotter(object):
             os.makedirs(outdir)
         prj = os.path.splitext(os.path.relpath(brd_file))[0]
         logger.debug('Doing BoM, format '+format+' prj: '+prj)
-        cmd = [ misc.CMD_KIBOM, prj+'.xml', os.path.join(outdir, prj)+'.'+format ]
+        cmd = [misc.CMD_KIBOM, prj+'.xml',
+               os.path.join(outdir, prj)+'.'+format]
         logger.debug('Running: '+str(cmd))
         try:
             check_output(cmd, stderr=STDOUT)
@@ -609,15 +620,15 @@ class Plotter(object):
             exit(misc.BOM_ERROR)
 
     def _do_ibom(self, board, plot_ctrl, output, brd_file):
-        check_script(misc.CMD_IBOM,misc.URL_IBOM)
+        check_script(misc.CMD_IBOM, misc.URL_IBOM)
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         prj = os.path.splitext(os.path.relpath(brd_file))[0]
         logger.debug('Doing Interactive BoM, prj: '+prj)
-        cmd = [ misc.CMD_IBOM, brd_file,
-                '--dest-dir', outdir,
-                '--no-browser', ]
+        cmd = [misc.CMD_IBOM, brd_file,
+               '--dest-dir', outdir,
+               '--no-browser', ]
         to = output.options.type_options
         if to.blacklist:
             cmd.append('--blacklist')
@@ -765,7 +776,6 @@ class Plotter(object):
             self._configure_sch_print_opts(po, output)
         elif output.options.type == PCfg.OutputOptions.PDF_PCB_PRINT:
             self._configure_pcb_print_opts(po, output)
-
 
         po.SetDrillMarksType(opts.drill_marks)
 

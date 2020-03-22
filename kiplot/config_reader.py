@@ -2,14 +2,12 @@
 Class to read KiPlot config files
 """
 
-import os
 import re
 import sys
 
 import pcbnew
 
 from . import plot_config as PC
-from . import error
 from . import log
 from . import misc
 
@@ -17,8 +15,8 @@ logger = log.get_logger(__name__)
 
 try:
     import yaml
-except:
-    log.init(False,False)
+except ImportError:
+    log.init(False, False)
     logger.error('No yaml module for Python, install python3-yaml')
     sys.exit(misc.NO_YAML_MODULE)
 
@@ -27,30 +25,33 @@ class CfgReader(object):
     def __init__(self):
         pass
 
+
 def config_error(msg):
     logger.error(msg)
     sys.exit(misc.EXIT_BAD_CONFIG)
 
+
 def load_layers(kicad_pcb_file):
-    layer_names=['-']*50
-    pcb_file = open(kicad_pcb_file,"r")
-    collect_layers=False
+    layer_names = ['-']*50
+    pcb_file = open(kicad_pcb_file, "r")
+    collect_layers = False
     for line in pcb_file:
         if collect_layers:
-           z=re.match('\s+\((\d+)\s+(\S+)',line)
-           if z:
-              res=z.groups()
-              #print(res[1]+'->'+res[0])
-              layer_names[int(res[0])]=res[1]
-           else:
-              if re.search('^\s+\)$',line):
-                 collect_layers=False
-                 break
+            z = re.match(r'\s+\((\d+)\s+(\S+)', line)
+            if z:
+                res = z.groups()
+                # print(res[1]+'->'+res[0])
+                layer_names[int(res[0])] = res[1]
+            else:
+                if re.search(r'^\s+\)$', line):
+                    collect_layers = False
+                    break
         else:
-           if re.search('\s+\(layers',line):
-              collect_layers=True
+            if re.search(r'\s+\(layers', line):
+                collect_layers = True
     pcb_file.close()
     return layer_names
+
 
 class CfgYamlReader(CfgReader):
 
@@ -75,7 +76,8 @@ class CfgYamlReader(CfgReader):
         try:
             val = data[key]
         except (KeyError, TypeError):
-            config_error("Missing `"+key+"' "+('' if context is None else context))
+            config_error("Missing `"+key+"' "+(''
+                         if context is None else context))
 
         return val
 
@@ -105,11 +107,12 @@ class CfgYamlReader(CfgReader):
 
         opts = PC.DrillReportOptions()
 
-        opts.filename = self._get_required(report_opts, 'filename', 'in drill report section')
+        opts.filename = self._get_required(report_opts, 'filename',
+                                           'in drill report section')
 
         return opts
 
-    def _perform_config_mapping(self, otype, cfg_options, mapping_list, 
+    def _perform_config_mapping(self, otype, cfg_options, mapping_list,
                                 target):
         """
         Map a config dict onto a target object given a mapping list
@@ -125,7 +128,8 @@ class CfgYamlReader(CfgReader):
                 # set the internal option as needed
                 if mapping['required'](cfg_options):
 
-                    cfg_val = self._get_required(cfg_options, key, 'in '+otype+' section')
+                    cfg_val = self._get_required(cfg_options, key, 'in ' +
+                                                 otype + ' section')
                 elif not(cfg_options is None) and key in cfg_options:
                     # not required but given anyway
                     cfg_val = cfg_options[key]
@@ -355,7 +359,7 @@ class CfgYamlReader(CfgReader):
             },
             {
                 'key': 'format',
-                'types': ['position','kibom'],
+                'types': ['position', 'kibom'],
                 'to': 'format',
                 'required': lambda opts: True,
             },
@@ -450,13 +454,14 @@ class CfgYamlReader(CfgReader):
             try:
                 # 2) List from the PCB
                 id = self.layer_names.index(s)
-                layer = PC.LayerInfo(id, id<pcbnew.B_Cu, s)
-            except:
+                layer = PC.LayerInfo(id, id < pcbnew.B_Cu, s)
+            except ValueError:
                 # 3) Inner.N names
                 if s.startswith("Inner"):
                     m = re.match(r"^Inner\.([0-9]+)$", s)
                     if not m:
-                        config_error('Malformed inner layer name: '+s+', use Inner.N')
+                        config_error('Malformed inner layer name: ' +
+                                     s + ', use Inner.N')
 
                     layer = PC.LayerInfo(int(m.group(1)), True, s)
                 else:
@@ -499,13 +504,14 @@ class CfgYamlReader(CfgReader):
         try:
             options = o_obj['options']
         except KeyError:
-            if not otype in ['ibom', 'pdf_sch_print']:
+            if otype not in ['ibom', 'pdf_sch_print']:
                 config_error("Output '"+name+"' needs options")
             options = None
 
         logger.debug("Parsing output options for {} ({})".format(name, otype))
 
-        outdir = self._get_required(o_obj, 'dir', 'in section `'+name+'` ('+otype+')')
+        outdir = self._get_required(o_obj, 'dir', 'in section `' + name +
+                                    '` ('+otype+')')
 
         output_opts = self._parse_out_opts(otype, options)
 
@@ -516,12 +522,14 @@ class CfgYamlReader(CfgReader):
             layers = o_obj['layers']
         except KeyError:
             if otype == 'pdf_pcb_print':
-                logger.error('You must specify the layers for `'+name+'` ('+otype+')')
+                logger.error('You must specify the layers for `' + name +
+                             '` ('+otype+')')
                 sys.exit(misc.EXIT_BAD_CONFIG)
             layers = []
 
         for l in layers:
-            o_cfg.layers.append(self._parse_layer(l, 'in section '+name+' ('+otype+')'))
+            o_cfg.layers.append(self._parse_layer(l, 'in section ' + name +
+                                ' ('+otype+')'))
 
         return o_cfg
 
@@ -553,7 +561,7 @@ class CfgYamlReader(CfgReader):
 
         try:
             data = yaml.load(fstream)
-        except yaml.YAMLError as e:
+        except yaml.YAMLError:
             config_error("Error loading YAML")
 
         self._check_version(data)
