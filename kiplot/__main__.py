@@ -59,7 +59,7 @@ def main():
     errs = cfg.validate()
 
     if errs:
-        logger.error('Invalid config:\n\n' + "\n".join(errs))
+        logger.error('Invalid config:\n' + "\n".join(errs))
         sys.exit(misc.EXIT_BAD_CONFIG)
 
     # Set up the plotter and do it

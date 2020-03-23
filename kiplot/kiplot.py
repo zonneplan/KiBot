@@ -31,6 +31,11 @@ except ImportError:
     exit(misc.NO_PCBNEW_MODULE)
 
 
+def plot_error(msg):
+    logger.error(msg)
+    exit(misc.PLOT_ERROR)
+
+
 def check_version(command, version):
     cmd = [command, '--version']
     logger.debug('Running: '+str(cmd))
@@ -63,10 +68,6 @@ def check_eeschema_do(file):
         logger.error('Missing schematic file: ' + sch_file)
         exit(misc.NO_SCH_FILE)
     return sch_file
-
-
-class PlotError(error.KiPlotError):
-    pass
 
 
 class Plotter(object):
@@ -118,8 +119,7 @@ class Plotter(object):
                 elif self._output_is_pcb_print(op):
                     self._do_pcb_print(board, pc, op, brd_file)
                 else:
-                    raise PlotError("Don't know how to plot type {}"
-                                    .format(op.options.type))
+                    plot_error("Don't know how to plot type "+op.options.type)
             else:
                 logger.debug('Skipping %s output', op.name)
 
@@ -289,11 +289,9 @@ class Plotter(object):
 
             # for inner layers, we can now check if the layer exists
             if layer.is_inner:
-
                 if layer.layer < 1 or layer.layer >= layer_cnt - 1:
-                    raise PlotError(
-                        "Inner layer {} is not valid for this board"
-                        .format(layer.layer))
+                    plot_error("Inner layer {} is not valid for this board"
+                               .format(layer.layer))
 
             # Set current layer
             plot_ctrl.SetLayer(layer.layer)
@@ -372,8 +370,7 @@ class Plotter(object):
             drill_writer = self._configure_gerber_drill_writer(
                 board, offset, output.options)
         else:
-            raise error.PlotError("Can't make a writer for type {}"
-                                  .format(output.options.type))
+            plot_error("Can't make a writer for type "+output.options.type)
 
         gen_drill = True
         gen_map = to.generate_map
@@ -514,13 +511,12 @@ class Plotter(object):
         columns = ["Ref", "Val", "Package", "PosX", "PosY", "Rot", "Side"]
         colcount = len(columns)
 
+        # Note: the parser already checked the units are milimeters or inches
         conv = 1.0
         if to.units == 'millimeters':
             conv = 1.0 / pcbnew.IU_PER_MM
-        elif to.units == 'inches':
+        else: # to.units == 'inches':
             conv = 0.001 / pcbnew.IU_PER_MILS
-        else:
-            raise PlotError('Invalid units: {}'.format(to.units))
 
         # Format all strings
         modules = []
@@ -546,14 +542,13 @@ class Plotter(object):
             for col in range(colcount):
                 maxlengths[col] = max(maxlengths[col], len(modules[row][col]))
 
+        # Note: the parser already checked the format is ASCII or CSV
         if to.format.lower() == 'ascii':
             self._do_position_plot_ascii(board, plot_ctrl, output, columns,
                                          modules, maxlengths)
-        elif to.format.lower() == 'csv':
+        else: # if to.format.lower() == 'csv':
             self._do_position_plot_csv(board, plot_ctrl, output, columns,
                                        modules)
-        else:
-            raise PlotError("Format is invalid: {}".format(to.format))
 
     def _do_sch_print(self, board, plot_ctrl, output, brd_file):
         sch_file = check_eeschema_do(brd_file)

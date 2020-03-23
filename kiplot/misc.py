@@ -15,6 +15,7 @@ ERC_ERROR = 10
 BOM_ERROR = 11
 PDF_SCH_PRINT = 12
 PDF_PCB_PRINT = 13
+PLOT_ERROR = 14
 
 CMD_EESCHEMA_DO = 'eeschema_do'
 URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/kicad-automation-scripts'
