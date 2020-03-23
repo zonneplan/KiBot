@@ -113,7 +113,7 @@ class CfgYamlReader(CfgReader):
         return opts
 
     def _perform_config_mapping(self, otype, cfg_options, mapping_list,
-                                target):
+                                target, name):
         """
         Map a config dict onto a target object given a mapping list
         """
@@ -140,9 +140,12 @@ class CfgYamlReader(CfgReader):
                 if 'transform' in mapping:
                     cfg_val = mapping['transform'](cfg_val)
 
-                setattr(target, mapping['to'], cfg_val)
+                try:
+                    setattr(target, mapping['to'], cfg_val)
+                except PC.KiPlotConfigurationError as e:
+                    config_error("In section '"+name+"' ("+otype+"): "+str(e))
 
-    def _parse_out_opts(self, otype, options):
+    def _parse_out_opts(self, otype, options, name):
 
         # note - type IDs are strings form the _config_, not the internal
         # strings used as enums (in plot_config)
@@ -412,7 +415,7 @@ class CfgYamlReader(CfgReader):
         # options that apply to the specific output type
         to = po.type_options
 
-        self._perform_config_mapping(otype, options, MAPPINGS, to)
+        self._perform_config_mapping(otype, options, MAPPINGS, to, name)
 
         return po
 
@@ -513,7 +516,7 @@ class CfgYamlReader(CfgReader):
         outdir = self._get_required(o_obj, 'dir', 'in section `' + name +
                                     '` ('+otype+')')
 
-        output_opts = self._parse_out_opts(otype, options)
+        output_opts = self._parse_out_opts(otype, options, name)
 
         o_cfg = PC.PlotOutput(name, desc, otype, output_opts)
         o_cfg.outdir = outdir
