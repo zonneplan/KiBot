@@ -583,6 +583,16 @@ class Plotter(object):
         check_script(misc.CMD_PCBNEW_PRINT_LAYERS,
                      misc.URL_PCBNEW_PRINT_LAYERS, '1.1.2')
         to = output.options.type_options
+        # Verify the inner layers
+        layer_cnt = board.GetCopperLayerCount()
+        for l in output.layers:
+            layer = l.layer
+            # for inner layers, we can now check if the layer exists
+            if layer.is_inner:
+                if layer.layer < 1 or layer.layer >= layer_cnt - 1:
+                    raise PlotError(
+                            "Inner layer {} is not valid for this board"
+                            .format(layer.layer))
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         cmd = [misc.CMD_PCBNEW_PRINT_LAYERS,
                '--output_name', to.output_name,
