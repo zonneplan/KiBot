@@ -31,6 +31,11 @@ except ImportError:
     exit(misc.NO_PCBNEW_MODULE)
 
 
+class PlotError(error.KiPlotError):
+
+    pass
+
+
 def plot_error(msg):
     logger.error(msg)
     exit(misc.PLOT_ERROR)
@@ -106,20 +111,23 @@ class Plotter(object):
 
                 self._configure_output_dir(pc, op)
 
-                if self._output_is_layer(op):
-                    self._do_layer_plot(board, pc, op, brd_file)
-                elif self._output_is_drill(op):
-                    self._do_drill_plot(board, pc, op)
-                elif self._output_is_position(op):
-                    self._do_position_plot(board, pc, op)
-                elif self._output_is_bom(op):
-                    self._do_bom(board, pc, op, brd_file)
-                elif self._output_is_sch_print(op):
-                    self._do_sch_print(board, pc, op, brd_file)
-                elif self._output_is_pcb_print(op):
-                    self._do_pcb_print(board, pc, op, brd_file)
-                else:
-                    plot_error("Don't know how to plot type "+op.options.type)
+                try:
+                    if self._output_is_layer(op):
+                        self._do_layer_plot(board, pc, op, brd_file)
+                    elif self._output_is_drill(op):
+                        self._do_drill_plot(board, pc, op)
+                    elif self._output_is_position(op):
+                        self._do_position_plot(board, pc, op)
+                    elif self._output_is_bom(op):
+                        self._do_bom(board, pc, op, brd_file)
+                    elif self._output_is_sch_print(op):
+                        self._do_sch_print(board, pc, op, brd_file)
+                    elif self._output_is_pcb_print(op):
+                        self._do_pcb_print(board, pc, op, brd_file)
+                    else:
+                        plot_error("Don't know how to plot type "+op.options.type)
+                except PlotError as e:
+                    plot_error("In section '"+op.name+"' ("+op.options.type+"): "+str(e))
             else:
                 logger.debug('Skipping %s output', op.name)
 
@@ -290,8 +298,9 @@ class Plotter(object):
             # for inner layers, we can now check if the layer exists
             if layer.is_inner:
                 if layer.layer < 1 or layer.layer >= layer_cnt - 1:
-                    plot_error("Inner layer {} is not valid for this board"
-                               .format(layer.layer))
+                    raise PlotError(
+                            "Inner layer {} is not valid for this board"
+                            .format(layer.layer))
 
             # Set current layer
             plot_ctrl.SetLayer(layer.layer)
