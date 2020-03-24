@@ -259,11 +259,23 @@ pcb_files:
 
 ## Installing
 
+### Dependencies
+
+- For ERC, DRC, BoM XML update and PCB/SCH print install [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/)
+- For HTML/CSV BoM install [KiBoM](https://github.com/INTI-CMNB/KiBoM)
+- For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
+
 ### Installation on Ubuntu/Debian:
 
 Get the Debian package from the [releases section](https://github.com/INTI-CMNB/kiplot/releases) and run:
 ```
 sudo apt install ./kiplot.inti-cmnb_*_all.deb
 ```
+
+### Installation on other targets
+
+- Install KiCad 5.x
+- Install Python 3.5 or newer
+- Run the script *src/kiplot*
 
 
