@@ -48,6 +48,9 @@ def main():
             board_file = board_files[0]
             logger.warning('More than one PCB file found in current directory.\n'
                            '  Using '+board_file+ ' if you want to use another use -b option.')
+        else:
+            logger.error('No PCB file found (*.kicad_pcb), use -b to specify one.')
+            sys.exit(misc.EXIT_BAD_ARGS)
     else:
         board_file = args.board_file
     if not os.path.isfile(board_file):
