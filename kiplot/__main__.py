@@ -3,6 +3,7 @@
 import argparse
 import os
 import sys
+from glob import glob
 
 from . import kiplot
 from . import config_reader
@@ -17,7 +18,7 @@ def main():
     parser.add_argument('target', nargs='*',
                         help='Outputs to generate, default is all')
     group = parser.add_mutually_exclusive_group()
-    parser.add_argument('-b', '--board-file', required=True,
+    parser.add_argument('-b', '--board-file',
                         help='The PCB .kicad-pcb board file')
     parser.add_argument('-c', '--plot-config', required=True,
                         help='The plotting config file to use')
@@ -38,15 +39,26 @@ def main():
     # Create a logger with the specified verbosity
     logger = log.init(args.verbose, args.quiet)
 
-    if not os.path.isfile(args.board_file):
-        logger.error("Board file not found: "+args.board_file)
+    if args.board_file is None:
+        board_files = glob('*.kicad_pcb')
+        if len(board_files) == 1:
+            board_file = board_files[0]
+            logger.info('Using PCB file: '+board_file)
+        elif len(board_files) > 1:
+            board_file = board_files[0]
+            logger.warning('More than one PCB file found in current directory.\n'
+                           '  Using '+board_file+ ' if you want to use another use -b option.')
+    else:
+        board_file = args.board_file
+    if not os.path.isfile(board_file):
+        logger.error("Board file not found: "+board_file)
         sys.exit(misc.NO_PCB_FILE)
 
     if not os.path.isfile(args.plot_config):
         logger.error("Plot config file not found: "+args.plot_config)
         sys.exit(misc.EXIT_BAD_ARGS)
 
-    cr = config_reader.CfgYamlReader(args.board_file)
+    cr = config_reader.CfgYamlReader(board_file)
 
     with open(args.plot_config) as cf_file:
         cfg = cr.read(cf_file)
@@ -64,7 +76,7 @@ def main():
 
     # Set up the plotter and do it
     plotter = kiplot.Plotter(cfg)
-    plotter.plot(args.board_file, args.target, args.invert_sel, args.skip_pre)
+    plotter.plot(board_file, args.target, args.invert_sel, args.skip_pre)
 
 
 if __name__ == "__main__":
