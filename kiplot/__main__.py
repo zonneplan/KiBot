@@ -20,7 +20,7 @@ def main():
     group = parser.add_mutually_exclusive_group()
     parser.add_argument('-b', '--board-file',
                         help='The PCB .kicad-pcb board file')
-    parser.add_argument('-c', '--plot-config', required=True,
+    parser.add_argument('-c', '--plot-config',
                         help='The plotting config file to use')
     parser.add_argument('-d', '--out-dir', default='.',
                         help='The output directory (cwd if not given)')
@@ -54,13 +54,27 @@ def main():
         logger.error("Board file not found: "+board_file)
         sys.exit(misc.NO_PCB_FILE)
 
-    if not os.path.isfile(args.plot_config):
-        logger.error("Plot config file not found: "+args.plot_config)
+    if args.plot_config is None:
+        plot_configs = glob('*.kiplot.yaml')
+        if len(plot_configs) == 1:
+            plot_config = plot_configs[0]
+            logger.info('Using config file: '+plot_config)
+        elif len(plot_configs) > 1:
+            plot_config = plot_configs[0]
+            logger.warning('More than one config file found in current directory.\n'
+                           '  Using '+plot_config+ ' if you want to use another use -c option.')
+        else:
+            logger.error('No config file found (*.kiplot.yaml), use -c to specify one.')
+            sys.exit(misc.EXIT_BAD_ARGS)
+    else:
+        plot_config = args.plot_config
+    if not os.path.isfile(plot_config):
+        logger.error("Plot config file not found: "+plot_config)
         sys.exit(misc.EXIT_BAD_ARGS)
 
     cr = config_reader.CfgYamlReader(board_file)
 
-    with open(args.plot_config) as cf_file:
+    with open(plot_config) as cf_file:
         cfg = cr.read(cf_file)
 
     # relative to CWD (absolute path overrides)
