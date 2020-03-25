@@ -10,7 +10,7 @@ X-Python3-Version: >= 3.2
 Package: kiplot.inti-cmnb
 Architecture: all
 Multi-Arch: foreign
-Depends: ${misc:Depends}, ${python3:Depends}, python3-yaml
+Depends: ${misc:Depends}, ${python3:Depends}, python3-yaml, kicad (>= 5.1.0), python3-wxgtk4.0
 Description: KiCad Plotter (KiPlot)
  KiPlot is a program which helps you to plot your KiCad PCBs to output
  formats easily, repeatable, and most of all, scriptably.
