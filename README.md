@@ -243,10 +243,14 @@ The valid formats are `hpgl`, `ps`, `gerber`, `dxf`, `svg` and `pdf`. Example:
 
 ## Using KiPlot
 
-You can call `kiplot` directly, passing a PCB file and a config file:
+If the current directory contains only one PCB file and only one configuration file (named *.kiplot.yaml)
+you can just call `kiplot`. No arguments needed. The tool will figure out which files to use.
+
+If more than one file is found in the current directory `kiplot` will use the first found and issue a
+warning. If you need to use other file just tell it explicitly:
 
 ```
-kiplot -b $(PCB) -c $(KIPLOT_CFG) -v
+kiplot -b PCB_FILE.kicad_pcb -c CONFIG.kiplot.yaml
 ```
 
 A simple target can be added to your `makefile`, so you can just run
@@ -254,8 +258,44 @@ A simple target can be added to your `makefile`, so you can just run
 
 ```
 pcb_files:
-    kiplot -b $(PCB) -c $(KIPLOT_CFG) -v
+    kiplot -b $(PCB) -c $(KIPLOT_CFG)
 ```
+
+If you need to supress messages use `--quiet` or `-q` and if you need to get more informatio about
+what's going on use `--verbose` or `-v`.
+
+If you want to generate only some of the outputs use:
+
+```
+kiplot OUTPUT_1 OUTPUT_2
+```
+
+If you want to generate all outputs with some exceptions use:
+
+
+```
+kiplot --invert-sel OUTPUT_1 OUTPUT_2
+```
+
+If you want to skip the DRC and ERC use:
+
+```
+kiplot --skip-pre run_erc,run_drc
+```
+
+If you want to skip all the `preflight` tasks use:
+
+```
+kiplot --skip-pre all
+```
+
+All outputs are generated using the current directory as base. If you want to use another
+directory as base use:
+
+```
+kiplot --out-dir OTHER_PLACE
+```
+
 
 ## Installing
 
@@ -276,6 +316,7 @@ sudo apt install ./kiplot.inti-cmnb_*_all.deb
 
 - Install KiCad 5.x
 - Install Python 3.5 or newer
+- Install the Python Yaml module
 - Run the script *src/kiplot*
 
 
