@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+__author__   ='John Beard, Salvador E. Tropea'
+__copyright__='Copyright 2018-2020, INTI/John Beard/Salvador E. Tropea'
+__credits__  =['Salvador E. Tropea','John Beard']
+__license__  ='GPL v3+'
+__email__    ='salvador@inti.gob.ar'
+__status__   ='beta'
 
 import argparse
 import os
@@ -9,6 +15,7 @@ from . import kiplot
 from . import config_reader
 from . import log
 from . import misc
+from .__version__ import __version__
 
 
 def main():
@@ -33,6 +40,9 @@ def main():
                         'or `all`')
     group.add_argument('-v', '--verbose', action='store_true',
                        help='show debugging information')
+    parser.add_argument('--version','-V',action='version',
+                        version='%(prog)s '+__version__+' - '+
+                        __copyright__+' - License: '+__license__)
 
     args = parser.parse_args()
 
