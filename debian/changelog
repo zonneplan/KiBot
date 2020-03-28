@@ -1,3 +1,11 @@
+kiplot.inti-cmnb (0.2.0-1) stable; urgency=medium
+
+  * Added KiBoM and InteractiveHtmlBom support
+  * Added DRC, ERC and update XML BoM
+  * Added Print as PDF (PCB/SCH)
+
+ -- Salvador E. Tropea <salvador@kaira.inti.gov.ar>  Sat, 28 Mar 2020 16:39:57 -0300
+
 kiplot.inti-cmnb (0.1.1-1) stable; urgency=medium
 
   * Added position file generation from https://github.com/johnbeard/kiplot/pull/10
