@@ -1,3 +1,9 @@
+kiplot.inti-cmnb (0.2.1-1) stable; urgency=medium
+
+  * Fixed problem when excellon drill target didn't exist
+
+ -- Salvador E. Tropea <salvador@kaira.inti.gov.ar>  Sat, 18 Apr 2020 15:58:59 -0300
+
 kiplot.inti-cmnb (0.2.0-1) stable; urgency=medium
 
   * Added KiBoM and InteractiveHtmlBom support
