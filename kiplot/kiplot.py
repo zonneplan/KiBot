@@ -388,6 +388,9 @@ class Plotter(object):
         if gen_drill:
             logger.debug("Generating drill files in "+outdir)
 
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+
         if gen_map:
             drill_writer.SetMapFileFormat(to.map_options.type)
             logger.debug("Generating drill map type {} in {}"
