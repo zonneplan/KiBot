@@ -167,7 +167,7 @@ class Plotter(object):
 
     def _run_erc(self, brd_file):
         sch_file = check_eeschema_do(brd_file)
-        cmd = [misc.CMD_EESCHEMA_DO, 'run_erc', sch_file, '.']
+        cmd = [misc.CMD_EESCHEMA_DO, 'run_erc', sch_file, self.cfg.outdir]
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
             cmd.insert(1, '-vv')
@@ -184,7 +184,7 @@ class Plotter(object):
 
     def _update_xml(self, brd_file):
         sch_file = check_eeschema_do(brd_file)
-        cmd = [misc.CMD_EESCHEMA_DO, 'bom_xml', sch_file, '.']
+        cmd = [misc.CMD_EESCHEMA_DO, 'bom_xml', sch_file, self.cfg.outdir]
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
             cmd.insert(1, '-vv')
@@ -198,7 +198,7 @@ class Plotter(object):
 
     def _run_drc(self, brd_file, ignore_unconnected, check_zone_fills):
         check_script(misc.CMD_PCBNEW_RUN_DRC, misc.URL_PCBNEW_RUN_DRC, '1.1.0')
-        cmd = [misc.CMD_PCBNEW_RUN_DRC, brd_file, '.']
+        cmd = [misc.CMD_PCBNEW_RUN_DRC, brd_file, self.cfg.outdir]
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
             cmd.insert(1, '-vv')
