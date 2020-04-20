@@ -1,3 +1,10 @@
+kiplot.inti-cmnb (0.2.2-1) stable; urgency=medium
+
+  *  Removed KiBoM temporal files
+  *  Fixed pre-flight tasks that didn't honor --out-dir
+
+ -- Salvador E. Tropea <salvador@kaira.inti.gov.ar>  Mon, 20 Apr 2020 18:35:00 -0300
+
 kiplot.inti-cmnb (0.2.1-1) stable; urgency=medium
 
   * Fixed problem when excellon drill target didn't exist
