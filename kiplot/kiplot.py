@@ -7,6 +7,7 @@ import os
 from sys import exit
 import operator
 from shutil import which
+from glob import glob
 from subprocess import (call, run, PIPE, check_output, CalledProcessError,
                         STDOUT)
 import logging
@@ -635,6 +636,8 @@ class Plotter(object):
         except CalledProcessError as e:
             logger.error('Failed to create BoM, error %d', e.returncode)
             exit(misc.BOM_ERROR)
+        for f in glob(os.path.join(outdir, prj)+'*.tmp'):
+            os.remove(f)
 
     def _do_ibom(self, board, plot_ctrl, output, brd_file):
         check_script(misc.CMD_IBOM, misc.URL_IBOM)
