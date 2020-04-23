@@ -33,6 +33,8 @@ def main():
                         help='The output directory (cwd if not given)')
     parser.add_argument('-i', '--invert-sel', action='store_true',
                         help='Generate the outputs not listed as targets')
+    parser.add_argument('-l', '--list', action='store_true',
+                        help='List available outputs')
     group.add_argument('-q', '--quiet', action='store_true',
                        help='remove information logs')
     parser.add_argument('-s', '--skip-pre', nargs=1,
@@ -100,6 +102,17 @@ def main():
     if errs:
         logger.error('Invalid config:\n' + "\n".join(errs))
         sys.exit(misc.EXIT_BAD_CONFIG)
+
+    if args.list:
+       logger.info('\npre-flight:\n'
+                   'run_erc: '+str(cfg.run_erc)+'\n'
+                   'run_drc: '+str(cfg.run_drc)+'\n'
+                   'update_xml: '+str(cfg.update_xml)+'\n')
+       logger.info('Outputs:')
+       for op in cfg.outputs:
+           logger.info('%s (%s) [%s]' % (op.name, op.description,
+                       op.options.type))
+       sys.exit(0)
 
     # Set up the plotter and do it
     plotter = kiplot.Plotter(cfg)
