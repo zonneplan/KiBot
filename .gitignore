@@ -24,7 +24,7 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
+.pybuild/
 
 .pytest_cache
 

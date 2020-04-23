@@ -1,0 +1,7 @@
+.debhelper/
+debhelper-build-stamp
+files
+kiplot.inti-cmnb.postinst.debhelper
+kiplot.inti-cmnb.prerm.debhelper
+kiplot.inti-cmnb.substvars
+kiplot.inti-cmnb/
