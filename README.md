@@ -296,6 +296,11 @@ directory as base use:
 kiplot --out-dir OTHER_PLACE
 ```
 
+If you want to list the available outputs defined in the configuration file use:
+
+```
+kiplot --list
+```
 
 ## Installing
 
@@ -319,4 +324,14 @@ sudo apt install ./kiplot.inti-cmnb_*_all.deb
 - Install the Python Yaml module
 - Run the script *src/kiplot*
 
+
+## Using for CI/CD
+
+When using a GitHub or GitLab repo you can use KiPlot to generate all the needed stuff each time you commit a change to the schematic and/or PCB file.
+
+Examples of how to do it can be found [here for GitHub](https://github.com/INTI-CMNB/kicad_ci_test) and [here for GitLab](https://gitlab.com/set-soft/kicad-ci-test).
+
+In order to run KiPlot on these environments you need a lot of software installed. The usual mechanism to achieve this is using [docker](https://www.docker.com/). Docker images containing KiPlot, all the supporting scripts and a corresponding KiCad can be found at [Docker Hub](https://hub.docker.com/) as [setsoft/kicad_auto:latest](https://hub.docker.com/repository/docker/setsoft/kicad_auto). This image is based on [setsoft/kicad_debian:latest](https://hub.docker.com/repository/docker/setsoft/kicad_debian), containing KiCad on Debian GNU/Linux.
+
+For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
