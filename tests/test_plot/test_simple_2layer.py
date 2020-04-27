@@ -18,10 +18,12 @@ def expect_file_at(filename):
 def get_gerber_filename(board_name, layer_slug, ext='.gbr'):
     return board_name + '-' + layer_slug + ext
 
+def get_gerber_job_filename(board_name):
+    return board_name + '-job.gbrjob'
 
 def find_gerber_aperture(s, ap_desc):
 
-    m = re.search(r'%AD(.*)' + ap_desc + r'\*%', s)
+    m = re.search(rb'%AD(.*)' + ap_desc + rb'\*%', s)
 
     if not m:
         return None
@@ -60,7 +62,7 @@ def expect_gerber_flash_at(gbr_data, pos):
         y=int(pos[1] * 100000)
     )
 
-    m = re.search(repat, gbr_data, re.MULTILINE)
+    m = re.search(repat.encode(), gbr_data, re.MULTILINE)
 
     assert(m)
 
@@ -78,8 +80,8 @@ def test_2layer():
 
     ctx = plotting_test_utils.KiPlotTestContext('simple_2layer')
 
-    ctx.load_yaml_config_file('simple_2layer.kiplot.yaml')
     ctx.board_name = 'simple_2layer'
+    ctx.load_yaml_config_file('simple_2layer.kiplot.yaml')
 
     ctx.do_plot()
 
@@ -90,12 +92,17 @@ def test_2layer():
 
     expect_file_at(f_cu_gbr)
 
+    # The gerber job file
+    job_file = os.path.join(gbr_dir,
+                            get_gerber_job_filename(ctx.board_name))
+    expect_file_at(f_cu_gbr)
+
     f_cu_data = get_mmapped_data(f_cu_gbr)
 
     ap_ids = expect_gerber_has_apertures(f_cu_data, [
-        "C,0.200000",
-        "R,2.000000X2.000000",
-        "C,1.000000"])
+        rb"C,0.200000",
+        rb"R,2.000000X2.000000",
+        rb"C,1.000000"])
 
     # expect a flash for the square pad
     expect_gerber_flash_at(f_cu_data, (140, -100))
