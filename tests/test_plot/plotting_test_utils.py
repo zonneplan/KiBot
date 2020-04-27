@@ -4,7 +4,10 @@ import shutil
 import tempfile
 import logging
 import pytest
+import sys
 
+here = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.dirname(here)))
 
 from kiplot import kiplot
 from kiplot import config_reader
@@ -54,8 +57,10 @@ class KiPlotTestContext(object):
         """
 
         cfg_file = os.path.join(self._get_text_cfg_dir(), filename)
+        pcb_file = os.path.join(self._get_board_cfg_dir(),
+                                self.board_name + KICAD_PCB_EXT)
 
-        cr = config_reader.CfgYamlReader()
+        cr = config_reader.CfgYamlReader(pcb_file)
 
         with open(cfg_file) as cf_file:
             cfg = cr.read(cf_file)
@@ -95,11 +100,13 @@ class KiPlotTestContext(object):
                 os.makedirs(self.output_dir)
 
         self.cfg.outdir = self.output_dir
-        logging.info(self.output_dir)
+        logging.info('Output dir: '+self.output_dir)
 
     def clean_up(self):
 
+        logging.debug('Clean-up')
         if self._del_dir_after:
+            logging.debug('Removing dir')
             shutil.rmtree(self.output_dir)
 
     def do_plot(self):
@@ -111,4 +118,4 @@ class KiPlotTestContext(object):
         self._set_up_output_dir()
 
         plotter = kiplot.Plotter(self.cfg)
-        plotter.plot(self.board_file)
+        plotter.plot(self.board_file, '', False, ['all'])
