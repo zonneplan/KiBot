@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-__author__   ='John Beard, Salvador E. Tropea'
-__copyright__='Copyright 2018-2020, INTI/John Beard/Salvador E. Tropea'
-__credits__  =['Salvador E. Tropea','John Beard']
-__license__  ='GPL v3+'
-__email__    ='salvador@inti.gob.ar'
-__status__   ='beta'
+__author__ = 'John Beard, Salvador E. Tropea'
+__copyright__ = 'Copyright 2018-2020, INTI/John Beard/Salvador E. Tropea'
+__credits__ = ['Salvador E. Tropea', 'John Beard']
+__license__ = 'GPL v3+'
+__email__ = 'salvador@inti.gob.ar'
+__status__ = 'beta'
 
 import argparse
 import os
@@ -42,8 +42,8 @@ def main():
                         'or `all`')
     group.add_argument('-v', '--verbose', action='store_true',
                        help='show debugging information')
-    parser.add_argument('--version','-V',action='version',
-                        version='%(prog)s '+__version__+' - '+
+    parser.add_argument('--version', '-V', action='version',
+                        version='%(prog)s '+__version__+' - ' +
                         __copyright__+' - License: '+__license__)
 
     args = parser.parse_args()
@@ -59,7 +59,7 @@ def main():
         elif len(board_files) > 1:
             board_file = board_files[0]
             logger.warning('More than one PCB file found in current directory.\n'
-                           '  Using '+board_file+ ' if you want to use another use -b option.')
+                           '  Using '+board_file+' if you want to use another use -b option.')
         else:
             logger.error('No PCB file found (*.kicad_pcb), use -b to specify one.')
             sys.exit(misc.EXIT_BAD_ARGS)
@@ -77,7 +77,7 @@ def main():
         elif len(plot_configs) > 1:
             plot_config = plot_configs[0]
             logger.warning('More than one config file found in current directory.\n'
-                           '  Using '+plot_config+ ' if you want to use another use -c option.')
+                           '  Using '+plot_config+' if you want to use another use -c option.')
         else:
             logger.error('No config file found (*.kiplot.yaml), use -c to specify one.')
             sys.exit(misc.EXIT_BAD_ARGS)
@@ -104,15 +104,15 @@ def main():
         sys.exit(misc.EXIT_BAD_CONFIG)
 
     if args.list:
-       logger.info('\npre-flight:\n'
-                   'run_erc: '+str(cfg.run_erc)+'\n'
-                   'run_drc: '+str(cfg.run_drc)+'\n'
-                   'update_xml: '+str(cfg.update_xml)+'\n')
-       logger.info('Outputs:')
-       for op in cfg.outputs:
-           logger.info('%s (%s) [%s]' % (op.name, op.description,
-                       op.options.type))
-       sys.exit(0)
+        logger.info('\npre-flight:\n'
+                    'run_erc: '+str(cfg.run_erc)+'\n'
+                    'run_drc: '+str(cfg.run_drc)+'\n'
+                    'update_xml: '+str(cfg.update_xml)+'\n')
+        logger.info('Outputs:')
+        for op in cfg.outputs:
+            logger.info('%s (%s) [%s]' % (op.name, op.description,
+                        op.options.type))
+        sys.exit(0)
 
     # Set up the plotter and do it
     plotter = kiplot.Plotter(cfg)

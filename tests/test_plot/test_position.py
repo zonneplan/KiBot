@@ -25,11 +25,14 @@ def expect_file_at(filename):
 
     assert(os.path.isfile(filename))
 
+
 def get_pos_top_filename(board_name):
     return board_name + '-top.pos'
 
+
 def get_pos_bot_filename(board_name):
     return board_name + '-bottom.pos'
+
 
 def get_pos_both_filename(board_name):
     return board_name + '-both.pos'
@@ -40,7 +43,7 @@ def expect_position(pos_data, side, ref, x, y, expected, inches=False):
     Check if a component is or isn't in the file
     """
 
-    #expr = rb'^'+ref.encode()+rb'\s+\S+\s+\S+\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+(\S+)$'
+    # expr = rb'^'+ref.encode()+rb'\s+\S+\s+\S+\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+(\S+)$'
     expr = rb'^'+ref.encode()+rb'\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$'
 
     m = re.search(expr, pos_data, re.MULTILINE)
@@ -58,11 +61,10 @@ def expect_position(pos_data, side, ref, x, y, expected, inches=False):
         assert(abs(float(x) - float(m.group(1))) < 0.001)
         assert(abs(float(y) + float(m.group(2))) < 0.001)
         assert(side == m.group(4).decode())
-        #logging.debug(ref+' '+str(x)+' '+str(y)+' -> '+m.group(1).decode()+' '+m.group(2).decode()+' '+m.group(3).decode()+' '+m.group(4).decode())
+        # logging.debug(ref+' '+str(x)+' '+str(y)+' -> '+m.group(1).decode()+' '+m.group(2).decode()+' '+m.group(3).decode()+
+        # ' '+m.group(4).decode())
     else:
         assert(m is None)
-
-
 
 
 def get_mmapped_data(filename):
@@ -100,7 +102,6 @@ def test_3Rs_position():
     ctx.clean_up()
 
 
-
 def test_3Rs_position_unified():
 
     ctx = plotting_test_utils.KiPlotTestContext('3Rs_position_unified')
@@ -122,7 +123,6 @@ def test_3Rs_position_unified():
     expect_position(both, '', 'R3', 110, 45, False)
 
     ctx.clean_up()
-
 
 
 def test_3Rs_position_unified_th():
@@ -175,4 +175,3 @@ def test_3Rs_position_inches():
     expect_position(bot, 'bottom', 'R3', 110, 45, False, True)
 
     ctx.clean_up()
-

@@ -18,8 +18,10 @@ def expect_file_at(filename):
 def get_gerber_filename(board_name, layer_slug, ext='.gbr'):
     return board_name + '-' + layer_slug + ext
 
+
 def get_gerber_job_filename(board_name):
     return board_name + '-job.gbrjob'
+
 
 def find_gerber_aperture(s, ap_desc):
 
@@ -95,11 +97,11 @@ def test_2layer():
     # The gerber job file
     job_file = os.path.join(gbr_dir,
                             get_gerber_job_filename(ctx.board_name))
-    expect_file_at(f_cu_gbr)
+    expect_file_at(job_file)
 
     f_cu_data = get_mmapped_data(f_cu_gbr)
 
-    ap_ids = expect_gerber_has_apertures(f_cu_data, [
+    expect_gerber_has_apertures(f_cu_data, [
         rb"C,0.200000",
         rb"R,2.000000X2.000000",
         rb"C,1.000000"])

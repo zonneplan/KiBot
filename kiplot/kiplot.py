@@ -528,7 +528,7 @@ class Plotter(object):
         conv = 1.0
         if to.units == 'millimeters':
             conv = 1.0 / pcbnew.IU_PER_MM
-        else: # to.units == 'inches':
+        else:  # to.units == 'inches':
             conv = 0.001 / pcbnew.IU_PER_MILS
 
         # Format all strings
@@ -559,7 +559,7 @@ class Plotter(object):
         if to.format.lower() == 'ascii':
             self._do_position_plot_ascii(board, plot_ctrl, output, columns,
                                          modules, maxlengths)
-        else: # if to.format.lower() == 'csv':
+        else:  # if to.format.lower() == 'csv':
             self._do_position_plot_csv(board, plot_ctrl, output, columns,
                                        modules)
 
