@@ -53,10 +53,10 @@ def expect_position(ctx, file, comp, no_comp=[], inches=False):
 
 
 def test_3Rs_position():
-    ctx = context.TestContext('3Rs_position', '3Rs', 'simple_position')
+    ctx = context.TestContext('3Rs_position', '3Rs', 'simple_position', POS_DIR)
     ctx.run()
-    pos_top = ctx.get_pos_top_filename(POS_DIR)
-    pos_bot = ctx.get_pos_bot_filename(POS_DIR)
+    pos_top = ctx.get_pos_top_filename()
+    pos_bot = ctx.get_pos_bot_filename()
     ctx.expect_out_file(pos_top)
     ctx.expect_out_file(pos_bot)
     expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'])
@@ -65,24 +65,24 @@ def test_3Rs_position():
 
 
 def test_3Rs_position_unified():
-    ctx = context.TestContext('3Rs_position_unified', '3Rs', 'simple_position_unified')
+    ctx = context.TestContext('3Rs_position_unified', '3Rs', 'simple_position_unified', POS_DIR)
     ctx.run()
-    expect_position(ctx, ctx.get_pos_both_filename(POS_DIR), ['R1', 'R2'], ['R3'])
+    expect_position(ctx, ctx.get_pos_both_filename(), ['R1', 'R2'], ['R3'])
     ctx.clean_up()
 
 
 def test_3Rs_position_unified_th():
-    ctx = context.TestContext('3Rs_position_unified_th', '3Rs', 'simple_position_unified_th')
+    ctx = context.TestContext('3Rs_position_unified_th', '3Rs', 'simple_position_unified_th', POS_DIR)
     ctx.run()
-    expect_position(ctx, ctx.get_pos_both_filename(POS_DIR), ['R1', 'R2', 'R3'])
+    expect_position(ctx, ctx.get_pos_both_filename(), ['R1', 'R2', 'R3'])
     ctx.clean_up()
 
 
 def test_3Rs_position_inches():
-    ctx = context.TestContext('3Rs_position_inches', '3Rs', 'simple_position_inches')
+    ctx = context.TestContext('3Rs_position_inches', '3Rs', 'simple_position_inches', POS_DIR)
     ctx.run()
-    pos_top = ctx.get_pos_top_filename(POS_DIR)
-    pos_bot = ctx.get_pos_bot_filename(POS_DIR)
+    pos_top = ctx.get_pos_top_filename()
+    pos_bot = ctx.get_pos_bot_filename()
     ctx.expect_out_file(pos_top)
     ctx.expect_out_file(pos_bot)
     expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'], True)

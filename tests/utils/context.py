@@ -19,7 +19,7 @@ MODE_PCB = 0
 
 class TestContext(object):
 
-    def __init__(self, test_name, board_name, yaml_name):
+    def __init__(self, test_name, board_name, yaml_name, sub_dir):
         # We are using PCBs
         self.mode = MODE_PCB
         # The name used for the test output dirs and other logging
@@ -32,6 +32,8 @@ class TestContext(object):
         self._get_yaml_name(yaml_name)
         # The actual output dir for this run
         self._set_up_output_dir(pytest.config.getoption('test_dir'))
+        # Where are we expecting to get the outputs (inside test_name)
+        self.sub_dir = sub_dir
         # stdout and stderr from the run
         self.out = None
         self.err = None
@@ -77,20 +79,38 @@ class TestContext(object):
     def get_out_path(self, filename):
         return os.path.join(self.output_dir, filename)
 
-    def get_gerber_job_filename(self, dir):
-        return os.path.join(dir, self.board_name+'-job.gbrjob')
+    def get_gerber_job_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-job.gbrjob')
 
-    def get_gerber_filename(self, dir, layer_slug, ext='.gbr'):
-        return os.path.join(dir, self.board_name+'-'+layer_slug+ext)
+    def get_gerber_filename(self, layer_slug, ext='.gbr'):
+        return os.path.join(self.sub_dir, self.board_name+'-'+layer_slug+ext)
 
-    def get_pos_top_filename(self, dir):
-        return os.path.join(dir, self.board_name+'-top.pos')
+    def get_pos_top_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-top.pos')
 
-    def get_pos_bot_filename(self, dir):
-        return os.path.join(dir, self.board_name+'-bottom.pos')
+    def get_pos_bot_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-bottom.pos')
 
-    def get_pos_both_filename(self, dir):
-        return os.path.join(dir, self.board_name+'-both.pos')
+    def get_pos_both_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-both.pos')
+
+    def get_pth_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-PTH.drl')
+
+    def get_pth_gbr_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-PTH-drl.gbr')
+
+    def get_pth_pdf_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-PTH-drl_map.pdf')
+
+    def get_npth_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-NPTH.drl')
+
+    def get_npth_gbr_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-NPTH-drl.gbr')
+
+    def get_npth_pdf_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-NPTH-drl_map.pdf')
 
     def expect_out_file(self, filename):
         file = self.get_out_path(filename)
@@ -253,6 +273,35 @@ class TestContext(object):
             txt = f.read()
         with open(fname, 'w') as f:
             f.write(re.sub(pattern, repl, txt))
+
+    def expect_gerber_flash_at(self, file, res, pos):
+        """
+        Check for a gerber flash at a given point
+        (it's hard to check that aperture is right without a real gerber parser
+        """
+        if res == 6:  # 4.6
+            mult = 1000000
+        else:  # 4.5
+            mult = 100000
+        repat = r'^X{x}Y{y}D03\*$'.format(x=int(pos[0]*mult), y=int(pos[1]*mult))
+        self.search_in_file(file, [repat])
+        logging.debug("Gerber flash found: "+repat)
+
+    def expect_gerber_has_apertures(self, file, ap_list):
+        ap_matches = []
+        for ap in ap_list:
+            # find the circular aperture for the outline
+            ap_matches.append(r'%AD(.*)'+ap+r'\*%')
+        grps = self.search_in_file(file, ap_matches)
+        aps = []
+        for grp in grps:
+            ap_no = grp[0]
+            assert ap_no is not None
+            # apertures from D10 to D999
+            assert len(ap_no) in [2, 3]
+            aps.append(ap_no)
+        logging.debug("Found apertures {}".format(aps))
+        return aps
 
 
 class TestContextSCH(TestContext):
