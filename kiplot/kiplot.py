@@ -89,7 +89,7 @@ class Plotter(object):
         logger.debug("Starting plot of board {}".format(brd_file))
 
         board = pcbnew.LoadBoard(brd_file)
-
+        assert board is not None
         logger.debug("Board loaded")
 
         self._preflight_checks(brd_file, skip_pre)
@@ -103,9 +103,7 @@ class Plotter(object):
         for op in self.cfg.outputs:
 
             if (n == 0) or ((op.name in target) ^ invert):
-                logger.debug("Processing output: {}".format(op.name))
-                logger.info('- %s (%s) [%s]' % (op.description, op.name,
-                            op.options.type))
+                logger.info('- %s (%s) [%s]' % (op.description, op.name, op.options.type))
 
                 # fresh plot controller
                 pc = pcbnew.PLOT_CONTROLLER(board)
@@ -314,9 +312,10 @@ class Plotter(object):
             plot_format = self._get_layer_plot_format(output)
 
             # Plot single layer to file
-            logger.debug("Opening plot file for layer {} ({})"
-                         .format(layer.layer, suffix))
-            plot_ctrl.OpenPlotfile(suffix, plot_format, desc)
+            logger.debug("Opening plot file for layer {} ({}) {} {}"
+                         .format(layer.layer, suffix, plot_format, desc))
+            if not plot_ctrl.OpenPlotfile(suffix, plot_format, desc):
+                plot_error("OpenPlotfile failed!")
 
             logger.debug("Plotting layer {} to {}".format(
                 layer.layer, plot_ctrl.GetPlotFileName()))
@@ -735,13 +734,14 @@ class Plotter(object):
 
     def _configure_output_dir(self, plot_ctrl, output):
 
-        po = plot_ctrl.GetPlotOptions()
-
         # outdir is a combination of the config and output
         outdir = os.path.join(self.cfg.outdir, output.outdir)
 
         logger.debug("Output destination: {}".format(outdir))
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
 
+        po = plot_ctrl.GetPlotOptions()
         po.SetOutputDirectory(outdir)
 
     def _configure_plot_ctrl(self, plot_ctrl, output):
