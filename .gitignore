@@ -30,3 +30,7 @@ MANIFEST
 
 *.kicad_pcb-bak
 *.epr
+htmlcov/
+pp/
+output/
+.coverage
