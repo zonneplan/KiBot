@@ -39,12 +39,12 @@ class TestContext(object):
         self.err = None
         self.proc = None
 
-    def _get_board_dir(self):
+    def get_board_dir(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))
         return os.path.join(this_dir, '../board_samples')
 
     def _get_board_file(self):
-        self.board_file = os.path.abspath(os.path.join(self._get_board_dir(),
+        self.board_file = os.path.abspath(os.path.join(self.get_board_dir(),
                                           self.board_name +
                                           (KICAD_PCB_EXT if self.mode == MODE_PCB else KICAD_SCH_EXT)))
         logging.info('KiCad file: '+self.board_file)
@@ -116,6 +116,7 @@ class TestContext(object):
         file = self.get_out_path(filename)
         assert os.path.isfile(file)
         assert os.path.getsize(file) > 0
+        logging.debug(filename+' OK')
         return file
 
     def dont_expect_out_file(self, filename):
@@ -132,6 +133,7 @@ class TestContext(object):
         # Change the command to be local and add the board and output arguments
         cmd = [COVERAGE_SCRIPT, 'run', '-a']
         cmd.append(os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/../../src/kiplot'))
+        cmd.append('-vv')
         cmd = cmd+['-b', filename if filename else self.board_file]
         cmd = cmd+['-c', self.yaml_file]
         cmd = cmd+['-d', self.output_dir]
@@ -306,7 +308,7 @@ class TestContext(object):
 
 class TestContextSCH(TestContext):
 
-    def __init__(self, test_name, board_name, yaml_name):
-        super().__init__(test_name, board_name, yaml_name)
+    def __init__(self, test_name, board_name, yaml_name, sub_dir):
+        super().__init__(test_name, board_name, yaml_name, sub_dir)
         self.mode = MODE_SCH
         self._get_board_file()
