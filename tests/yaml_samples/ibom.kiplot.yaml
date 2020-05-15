@@ -1,0 +1,13 @@
+# Example KiPlot config file
+kiplot:
+  version: 1
+
+outputs:
+  - name: 'interactive_bom'
+    comment: "Interactive Bill of Materials (HTML)"
+    type: ibom
+    dir: BoM
+    options:
+      blacklist: 'DNF*'
+      name_format: '%f_iBoM'
+
