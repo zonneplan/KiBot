@@ -1,9 +1,9 @@
 """
 Tests of KiBoM BoM files
 
-The 3Rs.kicad_pcb has R1 on top, R2 on bottom and a thru-hole component R3 on top.
+The bom.sch has R1, R2 and C1
 We test:
-- Separated N/PTH files with DRL, Gerber and PDF map
+- HTML and CSV
 
 For debug information use:
 pytest-3 --log-cli-level debug
