@@ -3,6 +3,7 @@ Tests of drill files
 
 The 3Rs.kicad_pcb has R1 on top, R2 on bottom and a thru-hole component R3 on top.
 We test:
+- Separated N/PTH files with DRL, Gerber and PDF map
 
 For debug information use:
 pytest-3 --log-cli-level debug
