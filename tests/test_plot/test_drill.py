@@ -22,33 +22,6 @@ DRILL_DIR = 'Drill'
 positions = {'R1': (105, 35, 'top'), 'R2': (110, 35, 'bottom'), 'R3': (110, 45, 'top')}
 
 
-def expect_position(ctx, file, comp, no_comp=[], inches=False):
-    """
-    Check if a list of components are or aren't in the file
-    """
-    # Components that must be found
-    texts = []
-    for k in comp:
-        texts.append('^'+k+r'\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$')
-    res = ctx.search_in_file(file, texts)
-    for k in comp:
-        x, y, side = positions[k]
-        if inches:
-            x = x/25.4
-            y = y/25.4
-        matches = res.pop(0)
-        assert(abs(float(x) - float(matches[0])) < 0.001)
-        assert(abs(float(y) + float(matches[1])) < 0.001)
-        assert(side == matches[3])
-
-    # Components that must not be found
-    texts = []
-    for k in no_comp:
-        expr = '^'+k+r'\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$'
-        texts.append(expr)
-    ctx.search_not_in_file(file, texts)
-
-
 def test_3Rs_drill():
     ctx = context.TestContext('3Rs_drill', '3Rs', 'drill', DRILL_DIR)
     ctx.run()
