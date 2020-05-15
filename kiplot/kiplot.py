@@ -628,7 +628,7 @@ class Plotter(object):
         prj = os.path.splitext(os.path.relpath(brd_file))[0]
         logger.debug('Doing BoM, format '+format+' prj: '+prj)
         cmd = [misc.CMD_KIBOM, prj+'.xml',
-               os.path.join(outdir, prj)+'.'+format]
+               os.path.join(outdir, os.path.basename(prj))+'.'+format]
         logger.debug('Running: '+str(cmd))
         try:
             check_output(cmd, stderr=STDOUT)
