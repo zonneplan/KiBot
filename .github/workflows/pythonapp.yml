@@ -5,11 +5,11 @@ name: Python application
 
 on:
   push:
-    paths:
-    - '**.py'
-    - 'src/kiplot'
-    - 'tests/**'
-    - '.github/workflows/pythonapp.yml'
+#     paths:
+#     - '**.py'
+#     - 'src/kiplot'
+#     - 'tests/**'
+#     - '.github/workflows/pythonapp.yml'
     tags-ignore:
     - "v*"
   pull_request:
