@@ -5,19 +5,25 @@ name: Python application
 
 on:
   push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# on:
+#   push:
 #     paths:
 #     - '**.py'
 #     - 'src/kiplot'
 #     - 'tests/**'
 #     - '.github/workflows/pythonapp.yml'
-    tags-ignore:
-    - "v*"
-  pull_request:
-    paths:
-    - '**.py'
-    - 'src/kiplot'
-    - 'tests/**'
-    - '.github/workflows/pythonapp.yml'
+#     tags-ignore:
+#     - "v*"
+#   pull_request:
+#     paths:
+#     - '**.py'
+#     - 'src/kiplot'
+#     - 'tests/**'
+#     - '.github/workflows/pythonapp.yml'
 
 jobs:
   build:
