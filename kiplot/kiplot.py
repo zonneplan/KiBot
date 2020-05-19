@@ -196,8 +196,8 @@ class Plotter(object):
             exit(misc.BOM_ERROR)
 
     def _run_drc(self, brd_file, ignore_unconnected, check_zone_fills):
-        check_script(misc.CMD_PCBNEW_RUN_DRC, misc.URL_PCBNEW_RUN_DRC, '1.1.0')
-        cmd = [misc.CMD_PCBNEW_RUN_DRC, brd_file, self.cfg.outdir]
+        check_script(misc.CMD_PCBNEW_RUN_DRC, misc.URL_PCBNEW_RUN_DRC, '1.3.1')
+        cmd = [misc.CMD_PCBNEW_RUN_DRC, 'run_drc', brd_file, self.cfg.outdir]
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
             cmd.insert(1, '-vv')
@@ -584,7 +584,7 @@ class Plotter(object):
 
     def _do_pcb_print(self, board, plot_ctrl, output, brd_file):
         check_script(misc.CMD_PCBNEW_PRINT_LAYERS,
-                     misc.URL_PCBNEW_PRINT_LAYERS, '1.1.2')
+                     misc.URL_PCBNEW_PRINT_LAYERS, '1.3.1')
         to = output.options.type_options
         # Verify the inner layers
         layer_cnt = board.GetCopperLayerCount()
@@ -597,7 +597,7 @@ class Plotter(object):
                             "Inner layer {} is not valid for this board"
                             .format(layer.layer))
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
-        cmd = [misc.CMD_PCBNEW_PRINT_LAYERS,
+        cmd = [misc.CMD_PCBNEW_PRINT_LAYERS, 'export',
                '--output_name', to.output_name,
                brd_file, outdir]
         if logger.getEffectiveLevel() <= logging.DEBUG:
