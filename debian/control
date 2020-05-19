@@ -2,7 +2,7 @@ Source: kiplot.inti-cmnb
 Section: electronics
 Priority: optional
 Maintainer: Salvador Eduardo Tropea <salvador@inti.gob.ar>
-Build-Depends: debhelper (>=11~), dh-python, python3-all, python3-setuptools, python3-pytest
+Build-Depends: debhelper (>=11~), dh-python, python3-all
 Standards-Version: 4.1.4
 Homepage: https://github.com/INTI-CMNB/kiplot
 X-Python3-Version: >= 3.2
