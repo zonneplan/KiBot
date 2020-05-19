@@ -577,8 +577,8 @@ class Plotter(object):
             exit(misc.PDF_SCH_PRINT)
         to = output.options.type_options
         if to.output:
-            cur = os.path.join(outdir, os.path.splitext(brd_file)[0]) + '.pdf'
-            new = os.path.join(outdir, to.output)
+            cur = os.path.abspath(os.path.join(outdir, os.path.splitext(os.path.basename(brd_file))[0]) + '.pdf')
+            new = os.path.abspath(os.path.join(outdir, to.output))
             logger.debug('Moving '+cur+' -> '+new)
             os.rename(cur, new)
 
