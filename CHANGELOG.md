@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Problems for kibom output when the PCB name included a path
+- Problems for kibom and print_sch outputs when the PCB name included a path
 
 
 ## [0.2.3] - 2020-04-23
