@@ -24,7 +24,7 @@ logger = log.get_logger(__name__)
 try:
     import pcbnew
     from pcbnew import GERBER_JOBFILE_WRITER
-except ImportError:
+except ImportError:  # pragma: no cover
     log.init(False, False)
     logger.error("Failed to import pcbnew Python module."
                  " Is KiCad installed?"
