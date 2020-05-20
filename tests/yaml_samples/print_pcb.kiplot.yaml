@@ -1,0 +1,15 @@
+# Example KiPlot config file
+kiplot:
+  version: 1
+
+outputs:
+  - name: 'print_front'
+    comment: "Print F.Cu+F.SilkS"
+    type: pdf_pcb_print
+    dir: Layers
+    options:
+      output_name: PCB_Top.pdf
+    layers:
+      - layer: F.Cu
+      - layer: F.SilkS
+
