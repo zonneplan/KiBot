@@ -2,7 +2,7 @@
 Tests of position file
 
 The 3Rs.kicad_pcb has R1 on top, R2 on bottom and a thru-hole component R3 on top.
-We test:
+We test (both CSV and ASCII):
 - Separated files, mm, only SMD
 - Unified file, mm, only SMD
 - Unified file, mm, not only SMD
