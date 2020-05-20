@@ -94,6 +94,15 @@ class TestContext(object):
     def get_pos_both_filename(self):
         return os.path.join(self.sub_dir, self.board_name+'-both.pos')
 
+    def get_pos_top_csv_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-top-pos.csv')
+
+    def get_pos_bot_csv_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-bottom-pos.csv')
+
+    def get_pos_both_csv_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-both-pos.csv')
+
     def get_pth_drl_filename(self):
         return os.path.join(self.sub_dir, self.board_name+'-PTH.drl')
 

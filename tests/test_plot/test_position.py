@@ -23,16 +23,21 @@ from utils import context
 
 POS_DIR = 'positiondir'
 positions = {'R1': (105, 35, 'top'), 'R2': (110, 35, 'bottom'), 'R3': (110, 45, 'top')}
+CSV_EXPR = r'^"%s",[^,]+,[^,]+,"([-\d\.]+)","([-\d\.]+)","([-\d\.]+)","(\S+)"$'
+ASCII_EXPR = r'^%s\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$'
 
 
-def expect_position(ctx, file, comp, no_comp=[], inches=False):
+def expect_position(ctx, file, comp, no_comp=[], inches=False, csv=False):
     """
     Check if a list of components are or aren't in the file
     """
     # Components that must be found
     texts = []
     for k in comp:
-        texts.append('^'+k+r'\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$')
+        if csv:
+            texts.append(CSV_EXPR % k)
+        else:
+            texts.append(ASCII_EXPR % k)
     res = ctx.search_in_file(file, texts)
     for k in comp:
         x, y, side = positions[k]
@@ -47,7 +52,10 @@ def expect_position(ctx, file, comp, no_comp=[], inches=False):
     # Components that must not be found
     texts = []
     for k in no_comp:
-        expr = '^'+k+r'\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$'
+        if csv:
+            expr = CSV_EXPR % k
+        else:
+            expr = ASCII_EXPR % k
         texts.append(expr)
     ctx.search_not_in_file(file, texts)
 
@@ -88,3 +96,42 @@ def test_3Rs_position_inches():
     expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'], True)
     expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'], True)
     ctx.clean_up()
+
+
+def test_3Rs_position_csv():
+    ctx = context.TestContext('3Rs_position_csv', '3Rs', 'simple_position_csv', POS_DIR)
+    ctx.run()
+    pos_top = ctx.get_pos_top_csv_filename()
+    pos_bot = ctx.get_pos_bot_csv_filename()
+    ctx.expect_out_file(pos_top)
+    ctx.expect_out_file(pos_bot)
+    expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'], csv=True)
+    expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'], csv=True)
+    ctx.clean_up()
+
+
+def test_3Rs_position_unified_csv():
+    ctx = context.TestContext('3Rs_position_unified_csv', '3Rs', 'simple_position_unified_csv', POS_DIR)
+    ctx.run()
+    expect_position(ctx, ctx.get_pos_both_csv_filename(), ['R1', 'R2'], ['R3'], csv=True)
+    ctx.clean_up()
+
+
+def test_3Rs_position_unified_th_csv():
+    ctx = context.TestContext('3Rs_position_unified_th_csv', '3Rs', 'simple_position_unified_th_csv', POS_DIR)
+    ctx.run()
+    expect_position(ctx, ctx.get_pos_both_csv_filename(), ['R1', 'R2', 'R3'], csv=True)
+    ctx.clean_up()
+
+
+def test_3Rs_position_inches_csv():
+    ctx = context.TestContext('3Rs_position_inches_csv', '3Rs', 'simple_position_inches_csv', POS_DIR)
+    ctx.run()
+    pos_top = ctx.get_pos_top_csv_filename()
+    pos_bot = ctx.get_pos_bot_csv_filename()
+    ctx.expect_out_file(pos_top)
+    ctx.expect_out_file(pos_bot)
+    expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'], inches=True, csv=True)
+    expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'], inches=True, csv=True)
+    ctx.clean_up()
+
