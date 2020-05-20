@@ -574,9 +574,11 @@ class CfgYamlReader(CfgReader):
         if 'preflight' in data:
             self._parse_preflight(data['preflight'], cfg)
 
-        for o in data['outputs']:
-
-            op_cfg = self._parse_output(o)
-            cfg.add_output(op_cfg)
+        try:
+            for o in data['outputs']:
+                op_cfg = self._parse_output(o)
+                cfg.add_output(op_cfg)
+        except KeyError:
+            pass
 
         return cfg

@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
-
+### Added
+- Tolerate config files without outputs
 
 ## [0.2.4] - 2020-05-19
 ### Changed
