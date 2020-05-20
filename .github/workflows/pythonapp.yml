@@ -28,7 +28,7 @@ on:
 #     - '.github/workflows/pythonapp.yml'
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
     container: setsoft/kicad_auto_test:latest
