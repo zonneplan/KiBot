@@ -3,6 +3,7 @@ Tests for the preflight options
 
 We test:
 - ERC
+- DRC
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -24,6 +25,13 @@ def test_erc():
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'.erc')
-    # We don't have a project, and we don't want one
-    os.remove(os.path.join(ctx.get_board_dir(), prj+'.pro'))
+    ctx.clean_up()
+
+
+def test_drc():
+    prj = 'bom'
+    ctx = context.TestContext('DRC', prj, 'drc', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file('drc_result.rpt')
     ctx.clean_up()
