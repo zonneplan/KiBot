@@ -27,8 +27,4 @@ def test_print_sch():
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(os.path.join(PDF_DIR, PDF_FILE))
-    # We don't have a project, and we don't want one
-    os.remove(os.path.join(ctx.get_board_dir(), prj+'.pro'))
-    # We don't have a footprint cache, and we don't want one
-    os.remove(os.path.join(ctx.get_board_dir(), 'fp-info-cache'))
     ctx.clean_up()

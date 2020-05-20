@@ -75,6 +75,14 @@ class TestContext(object):
         if self._del_dir_after:
             logging.debug('Removing dir')
             shutil.rmtree(self.output_dir)
+        # We don't have a project, and we don't want one
+        pro = os.path.join(self.get_board_dir(), self.board_name+'.pro')
+        if os.path.isfile(pro):
+            os.remove(pro)
+        # We don't have a footprint cache, and we don't want one
+        fp_cache = os.path.join(self.get_board_dir(), 'fp-info-cache')
+        if os.path.isfile(fp_cache):
+            os.remove(fp_cache)
 
     def get_out_path(self, filename):
         return os.path.join(self.output_dir, filename)

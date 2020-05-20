@@ -27,6 +27,4 @@ def test_print_sch():
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(PDF_FILE)
-    # We don't have a project, and we don't want one
-    os.remove(os.path.join(ctx.get_board_dir(), prj+'.pro'))
     ctx.clean_up()

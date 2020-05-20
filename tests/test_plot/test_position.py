@@ -134,4 +134,3 @@ def test_3Rs_position_inches_csv():
     expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'], inches=True, csv=True)
     expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'], inches=True, csv=True)
     ctx.clean_up()
-
