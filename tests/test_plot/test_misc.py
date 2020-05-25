@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(prev_dir))
 # Utils import
 from utils import context
 sys.path.insert(0, os.path.dirname(prev_dir))
-from kiplot.misc import (EXIT_BAD_ARGS)
+from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG)
 
 
 POS_DIR = 'positiondir'
@@ -68,5 +68,16 @@ def test_skip_pre_and_outputs_4():
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
     assert ctx.search_err('Unknown action to skip: bogus')
+
+    ctx.clean_up()
+
+
+def test_unknown_out():
+    prj = 'simple_2layer'
+    ctx = context.TestContext('UnknownOut', prj, 'unknown_out', POS_DIR)
+    ctx.run(EXIT_BAD_CONFIG)
+
+    ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
+    assert ctx.search_err("Unknown output type 'bogus'")
 
     ctx.clean_up()
