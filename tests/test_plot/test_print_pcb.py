@@ -21,7 +21,7 @@ PDF_DIR = 'Layers'
 PDF_FILE = 'PCB_Top.pdf'
 
 
-def test_print_sch():
+def test_print_pcb():
     prj = 'bom'
     ctx = context.TestContext('PrPCB', prj, 'print_pcb', PDF_DIR)
     ctx.run()
