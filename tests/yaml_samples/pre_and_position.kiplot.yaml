@@ -1,0 +1,21 @@
+# Example KiPlot config file
+kiplot:
+  version: 1
+
+preflight:
+  run_erc: true
+  update_xml: true
+  run_drc: true
+  check_zone_fills: true
+  ignore_unconnected: false
+
+outputs:
+  - name: 'position'
+    comment: "Pick and place file"
+    type: position
+    dir: positiondir
+    options:
+      format: CSV   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: false
+      only_smd: true
