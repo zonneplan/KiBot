@@ -773,6 +773,8 @@ class Plotter(object):
 
         # in general, false, but gerber will set it back later
         po.SetUseGerberAttributes(False)
+        # Only useful for gerber outputs
+        po.SetCreateGerberJobFile(False)
 
         if output.options.type == PCfg.OutputOptions.GERBER:
             self._configure_gerber_opts(po, output)

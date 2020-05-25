@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Tolerate config files without outputs
 
+### Fixed
+- All pcbnew plot formats generated gerber job files
+
 ## [0.2.4] - 2020-05-19
 ### Changed
 - Now kicad-automation-scripts 1.3.1 or newer is needed.
