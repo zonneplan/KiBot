@@ -7,6 +7,8 @@ Tests miscellaneous stuff.
 - -s bogus
 - An unknown output type
 - -s all and_one_of_two_outs
+- Missing schematic
+- Missing PCB
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -20,7 +22,7 @@ sys.path.insert(0, os.path.dirname(prev_dir))
 # Utils import
 from utils import context
 sys.path.insert(0, os.path.dirname(prev_dir))
-from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG)
+from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_SCH_FILE, NO_PCB_FILE)
 
 
 POS_DIR = 'positiondir'
@@ -93,5 +95,26 @@ def test_select_output():
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
     ctx.expect_out_file(ctx.get_pos_both_filename())
     assert ctx.search_err('Skipping position output')
+
+    ctx.clean_up()
+
+
+def test_select_miss_sch():
+    prj = '3Rs'
+    ctx = context.TestContext('MissingSCH', prj, 'pre_and_position', POS_DIR)
+    ctx.run(NO_SCH_FILE, extra=['pos_ascii'])
+
+    assert ctx.search_err('Missing schematic')
+
+    ctx.clean_up()
+
+
+def test_select_miss_pcb():
+    prj = '3Rs'
+    ctx = context.TestContext('MissingPCB', prj, 'pre_and_position', POS_DIR)
+    ctx.board_file = 'bogus'
+    ctx.run(NO_PCB_FILE, extra=['-s', 'run_erc,update_xml', 'pos_ascii'])
+
+    assert ctx.search_err('Board file not found')
 
     ctx.clean_up()
