@@ -702,36 +702,6 @@ class Plotter(object):
 
         po.SetDXFPlotPolygonMode(dxf_opts.polygon_mode)
 
-    def _configure_pdf_opts(self, po, output):
-
-        assert(output.options.type == PCfg.OutputOptions.PDF)
-        # pdf_opts = output.options.type_options
-
-    def _configure_svg_opts(self, po, output):
-
-        assert(output.options.type == PCfg.OutputOptions.SVG)
-        # pdf_opts = output.options.type_options
-
-    def _configure_position_opts(self, po, output):
-
-        assert(output.options.type == PCfg.OutputOptions.POSITION)
-
-    def _configure_sch_print_opts(self, po, output):
-
-        assert(output.options.type == PCfg.OutputOptions.PDF_SCH_PRINT)
-
-    def _configure_pcb_print_opts(self, po, output):
-
-        assert(output.options.type == PCfg.OutputOptions.PDF_PCB_PRINT)
-
-    def _configure_kibom_opts(self, po, output):
-
-        assert(output.options.type == PCfg.OutputOptions.KIBOM)
-
-    def _configure_ibom_opts(self, po, output):
-
-        assert(output.options.type == PCfg.OutputOptions.IBOM)
-
     def _configure_output_dir(self, plot_ctrl, output):
 
         # outdir is a combination of the config and output
@@ -782,22 +752,8 @@ class Plotter(object):
             self._configure_ps_opts(po, output)
         elif output.options.type == PCfg.OutputOptions.DXF:
             self._configure_dxf_opts(po, output)
-        elif output.options.type == PCfg.OutputOptions.SVG:
-            self._configure_svg_opts(po, output)
-        elif output.options.type == PCfg.OutputOptions.PDF:
-            self._configure_pdf_opts(po, output)
         elif output.options.type == PCfg.OutputOptions.HPGL:
             self._configure_hpgl_opts(po, output)
-        elif output.options.type == PCfg.OutputOptions.POSITION:
-            self._configure_position_opts(po, output)
-        elif output.options.type == PCfg.OutputOptions.KIBOM:
-            self._configure_kibom_opts(po, output)
-        elif output.options.type == PCfg.OutputOptions.IBOM:
-            self._configure_ibom_opts(po, output)
-        elif output.options.type == PCfg.OutputOptions.PDF_SCH_PRINT:
-            self._configure_sch_print_opts(po, output)
-        elif output.options.type == PCfg.OutputOptions.PDF_PCB_PRINT:
-            self._configure_pcb_print_opts(po, output)
 
         po.SetDrillMarksType(opts.drill_marks)
 
