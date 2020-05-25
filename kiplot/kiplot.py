@@ -123,7 +123,8 @@ class Plotter(object):
                         self._do_sch_print(board, pc, op, brd_file)
                     elif self._output_is_pcb_print(op):
                         self._do_pcb_print(board, pc, op, brd_file)
-                    else:
+                    else:  # pragma no cover
+                        # We shouldn't get here, means the above if is incomplete
                         plot_error("Don't know how to plot type "+op.options.type)
                 except PlotError as e:
                     plot_error("In section '"+op.name+"' ("+op.options.type+"): "+str(e))
