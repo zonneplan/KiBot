@@ -5,6 +5,8 @@ Tests miscellaneous stuff.
 - -s run_erc,update_xml,run_drc -i
 - -s all,run_drc
 - -s bogus
+- An unknown output type
+- -s all and_one_of_two_outs
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -79,5 +81,17 @@ def test_unknown_out():
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
     assert ctx.search_err("Unknown output type 'bogus'")
+
+    ctx.clean_up()
+
+
+def test_select_output():
+    prj = '3Rs'
+    ctx = context.TestContext('DoASCIISkipCSV', prj, 'pre_and_position', POS_DIR)
+    ctx.run(extra=['-s', 'all', 'pos_ascii'])
+
+    ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
+    ctx.expect_out_file(ctx.get_pos_both_filename())
+    assert ctx.search_err('Skipping position output')
 
     ctx.clean_up()
