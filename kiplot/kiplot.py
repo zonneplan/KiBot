@@ -407,8 +407,6 @@ class Plotter(object):
                                 modulesStr, maxSizes):
         to = output.options.type_options
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
         name = os.path.splitext(os.path.basename(board.GetFileName()))[0]
 
         topf = None
