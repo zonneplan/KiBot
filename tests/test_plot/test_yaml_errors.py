@@ -9,9 +9,11 @@ Tests various errors in the config file
   - Incorrect name
   - Inner.1, but no inner layers
   - Inner_1 (malformed)
-- No output.name
-- No output.type
-- No output.options
+- No output:
+  - name
+  - type
+  - options
+  - layers
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -95,4 +97,11 @@ def test_no_options():
     ctx = context.TestContext('ErrorNoOptions', '3Rs', 'error_no_options', None)
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Output 'PDF' needs options")
+    ctx.clean_up()
+
+
+def test_no_layers():
+    ctx = context.TestContext('ErrorNoLayers', '3Rs', 'error_no_layers', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("You must specify the layers for `PDF`")
     ctx.clean_up()
