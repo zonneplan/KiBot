@@ -1,5 +1,3 @@
-import os
-
 import pcbnew
 
 from . import error
