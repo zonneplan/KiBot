@@ -4,6 +4,7 @@ Tests various errors in the config file
 - No kiplot.version
 - Wrong kiplot.version
 - Missing drill map type
+- Wrong drill map type
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -38,4 +39,11 @@ def test_drill_map_no_type():
     ctx = context.TestContext('ErrorDrillMapNoType', '3Rs', 'error_drill_map_no_type', None)
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Missing `type' in drill map section")
+    ctx.clean_up()
+
+
+def test_drill_map_wrong_type():
+    ctx = context.TestContext('ErrorDrillMapWrongType', '3Rs', 'error_drill_map_wrong_type', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Unknown drill map type: bogus")
     ctx.clean_up()
