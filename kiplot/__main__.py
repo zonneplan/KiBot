@@ -11,9 +11,11 @@ import os
 import sys
 from glob import glob
 
+# Import log first to set the domain
+from . import log
+log.set_domain('kiplot')
 from . import kiplot
 from . import config_reader
-from . import log
 from . import misc
 from .__version__ import __version__
 
