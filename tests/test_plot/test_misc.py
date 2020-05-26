@@ -175,6 +175,7 @@ def test_auto_pcb_and_cfg():
 
     ctx.clean_up()
 
+
 def test_auto_pcb_and_cfg_2():
     prj = '3Rs'
     ctx = context.TestContext('GuessPCB_cfg_rep', prj, 'pre_and_position', POS_DIR)
@@ -211,4 +212,3 @@ def test_list():
     assert ctx.search_err(r'pos_ascii \(Pick and place file\) \[position\]')
 
     ctx.clean_up()
-
