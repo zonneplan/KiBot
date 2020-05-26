@@ -1,5 +1,7 @@
 # KiPlot
 
+![Python application](https://github.com/INTI-CMNB/kiplot/workflows/Python%20application/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/INTI-CMNB/kiplot/badge.svg?branch=master&service=github)](https://coveralls.io/github/INTI-CMNB/kiplot?branch=master)
+
 KiPlot is a program which helps you to plot your KiCad PCBs to output
 formats easily, repeatable, and most of all, scriptably. This means you
 can use a Makefile to export your KiCad PCBs just as needed.
