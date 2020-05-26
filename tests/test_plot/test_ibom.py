@@ -31,3 +31,11 @@ def test_ibom():
     html = name+'.html'
     ctx.expect_out_file(html)
     ctx.clean_up()
+
+
+def test_ibom_no_ops():
+    prj = 'bom'
+    ctx = context.TestContext('BoM_interactiveNoOps', prj, 'ibom_no_ops', BOM_DIR)
+    ctx.run()
+    ctx.expect_out_file(os.path.join(BOM_DIR, 'ibom.html'))
+    ctx.clean_up()
