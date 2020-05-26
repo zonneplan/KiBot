@@ -513,34 +513,10 @@ class PlotConfig(object):
     def add_output(self, new_op):
         self._outputs.append(new_op)
 
-    def get_output_by_name(self, output_name):
-        """
-        Gets an output with a given name.
-
-        @param output_name the name of the output to find
-        """
-        for o in self.outputs:
-
-            if o.name == output_name:
-                return o
-
-        return None
-
-    def resolve_output_dir_for_name(self, output_name):
-        """
-        Get the output dir for a given output name
-        """
-
-        o = self.get_output_by_name(output_name)
-        return os.path.join(self.outdir, o.outdir) if o else None
-
     def validate(self):
-
         errs = []
-
         for o in self._outputs:
             errs += o.validate()
-
         return errs
 
     @property
