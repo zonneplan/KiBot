@@ -7,6 +7,7 @@ We test (both CSV and ASCII):
 - Unified file, mm, only SMD
 - Unified file, mm, not only SMD
 - Separated files, inches, only SMD
+- Also test a case without 'comment' field
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -99,6 +100,7 @@ def test_3Rs_position_inches():
 
 
 def test_3Rs_position_csv():
+    """ Also test a case without comment """
     ctx = context.TestContext('3Rs_position_csv', '3Rs', 'simple_position_csv', POS_DIR)
     ctx.run()
     pos_top = ctx.get_pos_top_csv_filename()

@@ -5,7 +5,6 @@ kiplot:
 outputs:
 
   - name: 'position'
-    comment: "Pick and place file"
     type: position
     dir: positiondir
     options:
