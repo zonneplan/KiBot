@@ -389,9 +389,6 @@ class Plotter(object):
         if gen_drill:
             logger.debug("Generating drill files in "+outdir)
 
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
-
         if gen_map:
             drill_writer.SetMapFileFormat(to.map_options.type)
             logger.debug("Generating drill map type {} in {}"
@@ -479,8 +476,6 @@ class Plotter(object):
                               modulesStr):
         to = output.options.type_options
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
         name = os.path.splitext(os.path.basename(board.GetFileName()))[0]
 
         topf = None
@@ -624,8 +619,6 @@ class Plotter(object):
         to = output.options.type_options
         format = to.format.lower()
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
         prj = os.path.splitext(os.path.relpath(brd_file))[0]
         logger.debug('Doing BoM, format '+format+' prj: '+prj)
         cmd = [misc.CMD_KIBOM, prj+'.xml',
@@ -642,8 +635,6 @@ class Plotter(object):
     def _do_ibom(self, board, plot_ctrl, output, brd_file):
         check_script(misc.CMD_IBOM, misc.URL_IBOM)
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
         prj = os.path.splitext(os.path.relpath(brd_file))[0]
         logger.debug('Doing Interactive BoM, prj: '+prj)
         cmd = [misc.CMD_IBOM, brd_file,
