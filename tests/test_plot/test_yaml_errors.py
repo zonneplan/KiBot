@@ -24,3 +24,10 @@ def test_no_version():
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err('YAML config needs kiplot.version')
     ctx.clean_up()
+
+
+def test_wrong_version():
+    ctx = context.TestContext('ErrorWrongVersion', '3Rs', 'error_wrong_version', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err('Unknown KiPlot config version: 20')
+    ctx.clean_up()
