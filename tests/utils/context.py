@@ -146,7 +146,7 @@ class TestContext(object):
             f.write('Dummy file\n')
 
     def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None, no_out_dir=False, no_board_file=False,
-            no_yaml_file=False, chdir_out=False):
+            no_yaml_file=False, chdir_out=False, no_verbose=False):
         logging.debug('Running '+self.test_name)
         # Change the command to be local and add the board and output arguments
         cmd = [COVERAGE_SCRIPT, 'run', '-a']
@@ -154,7 +154,8 @@ class TestContext(object):
             cmd.append('--rcfile=../../.coveragerc')
             os.environ['COVERAGE_FILE'] = os.path.join(os.getcwd(), '.coverage')
         cmd.append(os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/../../src/kiplot'))
-        cmd.append('-vv')
+        if not no_verbose:
+            cmd.append('-vv')
         if not no_board_file:
             cmd = cmd+['-b', filename if filename else self.board_file]
         if not no_yaml_file:

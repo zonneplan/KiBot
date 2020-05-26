@@ -7,7 +7,10 @@ We test (both CSV and ASCII):
 - Unified file, mm, only SMD
 - Unified file, mm, not only SMD
 - Separated files, inches, only SMD
-- Also test a case without 'comment' field
+- Also test a case:
+  - without 'comment' field
+  - with coloured logs
+  - in quiet mode
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -100,22 +103,25 @@ def test_3Rs_position_inches():
 
 
 def test_3Rs_position_csv():
-    """ Also test a case without comment """
+    """ Also test a case without comment and color logs """
     ctx = context.TestContext('3Rs_position_csv', '3Rs', 'simple_position_csv', POS_DIR)
-    ctx.run()
+    ctx.run(use_a_tty=True)
     pos_top = ctx.get_pos_top_csv_filename()
     pos_bot = ctx.get_pos_bot_csv_filename()
     ctx.expect_out_file(pos_top)
     ctx.expect_out_file(pos_bot)
     expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'], csv=True)
     expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'], csv=True)
+    assert ctx.search_err(r"\[36;1mDEBUG:") is not None
     ctx.clean_up()
 
 
 def test_3Rs_position_unified_csv():
+    """ Also test the quiet mode """
     ctx = context.TestContext('3Rs_position_unified_csv', '3Rs', 'simple_position_unified_csv', POS_DIR)
-    ctx.run()
+    ctx.run(no_verbose=True, extra=['-q'])
     expect_position(ctx, ctx.get_pos_both_csv_filename(), ['R1', 'R2'], ['R3'], csv=True)
+    assert os.path.getsize(ctx.get_out_path('error.txt')) == 0
     ctx.clean_up()
 
 
