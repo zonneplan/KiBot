@@ -11,6 +11,7 @@ Tests various errors in the config file
   - Inner_1 (malformed)
 - No output.name
 - No output.type
+- No output.options
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -87,4 +88,11 @@ def test_no_type():
     ctx = context.TestContext('ErrorNoType', '3Rs', 'error_no_type', None)
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Output 'PDF' needs a type")
+    ctx.clean_up()
+
+
+def test_no_options():
+    ctx = context.TestContext('ErrorNoOptions', '3Rs', 'error_no_options', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Output 'PDF' needs options")
     ctx.clean_up()
