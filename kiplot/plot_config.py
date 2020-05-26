@@ -458,10 +458,6 @@ class OutputOptions(object):
             raise KiPlotConfigurationError("Output options not implemented for "+otype)
 
     def validate(self):
-
-        if self.type_options is None and self.type != self.IBOM:
-            return ["No type specific options found"]
-
         return self.type_options.validate()
 
 
