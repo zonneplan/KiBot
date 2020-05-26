@@ -9,6 +9,9 @@ Tests miscellaneous stuff.
 - -s all and_one_of_two_outs
 - Missing schematic
 - Missing PCB
+- Missing config
+- Guess the PCB and YAML
+- Guess the PCB and YAML when more than one is present
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -16,6 +19,7 @@ pytest-3 --log-cli-level debug
 
 import os
 import sys
+import shutil
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(prev_dir))
@@ -99,7 +103,7 @@ def test_select_output():
     ctx.clean_up()
 
 
-def test_select_miss_sch():
+def test_miss_sch():
     prj = '3Rs'
     ctx = context.TestContext('MissingSCH', prj, 'pre_and_position', POS_DIR)
     ctx.run(NO_SCH_FILE, extra=['pos_ascii'])
@@ -109,12 +113,65 @@ def test_select_miss_sch():
     ctx.clean_up()
 
 
-def test_select_miss_pcb():
+def test_miss_pcb():
     prj = '3Rs'
     ctx = context.TestContext('MissingPCB', prj, 'pre_and_position', POS_DIR)
     ctx.board_file = 'bogus'
     ctx.run(NO_PCB_FILE, extra=['-s', 'run_erc,update_xml', 'pos_ascii'])
 
     assert ctx.search_err('Board file not found')
+
+    ctx.clean_up()
+
+
+def test_miss_yaml():
+    prj = '3Rs'
+    ctx = context.TestContext('MissingYaml', prj, 'pre_and_position', POS_DIR)
+    ctx.run(EXIT_BAD_ARGS, no_yaml_file=True)
+
+    #assert ctx.search_err('Board file not found')
+
+    ctx.clean_up()
+
+
+def test_auto_pcb_and_cfg():
+    prj = '3Rs'
+    ctx = context.TestContext('GuessPCB_cfg', prj, 'pre_and_position', POS_DIR)
+
+    board_file = os.path.basename(ctx.board_file)
+    shutil.copy2(ctx.board_file, ctx.get_out_path(board_file))
+    yaml_file = os.path.basename(ctx.yaml_file)
+    shutil.copy2(ctx.yaml_file, ctx.get_out_path(yaml_file))
+
+    ctx.run(extra=['-s', 'all', '-i', 'pos_ascii'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
+
+    ctx.dont_expect_out_file(ctx.get_pos_both_filename())
+    ctx.expect_out_file(ctx.get_pos_both_csv_filename())
+    assert ctx.search_err('Using PCB file: '+board_file)
+    assert ctx.search_err('Using config file: '+yaml_file)
+
+    ctx.clean_up()
+
+def test_auto_pcb_and_cfg_2():
+    prj = '3Rs'
+    ctx = context.TestContext('GuessPCB_cfg_rep', prj, 'pre_and_position', POS_DIR)
+
+    board_file = os.path.basename(ctx.board_file)
+    shutil.copy2(ctx.board_file, ctx.get_out_path(board_file))
+    shutil.copy2(ctx.board_file, ctx.get_out_path('b_'+board_file))
+    yaml_file = os.path.basename(ctx.yaml_file)
+    shutil.copy2(ctx.yaml_file, ctx.get_out_path(yaml_file))
+    shutil.copy2(ctx.yaml_file, ctx.get_out_path('b_'+yaml_file))
+
+    ctx.run(extra=['-s', 'all', '-i', 'pos_ascii'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
+
+    assert ctx.search_err('WARNING:More than one PCB')
+    assert ctx.search_err('WARNING:More than one config')
+    m = ctx.search_err('Using (.*).kicad_pcb')
+    assert m
+    ctx.board_name = m.group(1)
+
+    ctx.dont_expect_out_file(ctx.get_pos_both_filename())
+    ctx.expect_out_file(ctx.get_pos_both_csv_filename())
 
     ctx.clean_up()

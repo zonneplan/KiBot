@@ -145,15 +145,22 @@ class TestContext(object):
         with open(file, 'w') as f:
             f.write('Dummy file\n')
 
-    def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None):
+    def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None, no_out_dir=False, no_board_file=False,
+            no_yaml_file=False, chdir_out=False):
         logging.debug('Running '+self.test_name)
         # Change the command to be local and add the board and output arguments
         cmd = [COVERAGE_SCRIPT, 'run', '-a']
+        if chdir_out:
+            cmd.append('--rcfile=../../.coveragerc')
+            os.environ['COVERAGE_FILE'] = os.path.join(os.getcwd(), '.coverage')
         cmd.append(os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/../../src/kiplot'))
         cmd.append('-vv')
-        cmd = cmd+['-b', filename if filename else self.board_file]
-        cmd = cmd+['-c', self.yaml_file]
-        cmd = cmd+['-d', self.output_dir]
+        if not no_out_dir:
+            cmd = cmd+['-b', filename if filename else self.board_file]
+        if not no_yaml_file:
+            cmd = cmd+['-c', self.yaml_file]
+        if not no_out_dir:
+            cmd = cmd+['-d', self.output_dir]
         if extra is not None:
             cmd = cmd+extra
         logging.debug(cmd)
@@ -169,7 +176,13 @@ class TestContext(object):
             f_out = os.open(out_filename, os.O_RDWR | os.O_CREAT)
             f_err = os.open(err_filename, os.O_RDWR | os.O_CREAT)
         # Run the process
+        if chdir_out:
+            cwd = os.getcwd()
+            os.chdir(self.output_dir)
         process = subprocess.Popen(cmd, stdout=f_out, stderr=f_err)
+        if chdir_out:
+            os.chdir(cwd)
+            del os.environ['COVERAGE_FILE']
         ret_code = process.wait()
         logging.debug('ret_code '+str(ret_code))
         if use_a_tty:
