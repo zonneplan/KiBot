@@ -10,6 +10,7 @@ Tests miscellaneous stuff.
 - Missing schematic
 - Missing PCB
 - Missing config
+- Wrong config name
 - Guess the PCB and YAML
 - Guess the PCB and YAML when more than one is present
 
@@ -129,7 +130,18 @@ def test_miss_yaml():
     ctx = context.TestContext('MissingYaml', prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, no_yaml_file=True)
 
-    #assert ctx.search_err('Board file not found')
+    assert ctx.search_err('No config file')
+
+    ctx.clean_up()
+
+
+def test_miss_yaml_2():
+    prj = '3Rs'
+    ctx = context.TestContext('MissingYaml_wrong', prj, 'pre_and_position', POS_DIR)
+    ctx.yaml_file = 'bogus'
+    ctx.run(EXIT_BAD_ARGS)
+
+    assert ctx.search_err('Plot config file not found: bogus')
 
     ctx.clean_up()
 
