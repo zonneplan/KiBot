@@ -21,6 +21,12 @@ except ImportError:  # pragma: no cover
     sys.exit(misc.NO_YAML_MODULE)
 
 
+# note - type IDs are strings form the _config_, not the internal
+# strings used as enums (in plot_config)
+ANY_LAYER = ['gerber', 'ps', 'svg', 'hpgl', 'pdf', 'dxf']
+ANY_DRILL = ['excellon', 'gerb_drill']
+
+
 class CfgReader(object):
     def __init__(self):
         pass
@@ -146,11 +152,6 @@ class CfgYamlReader(CfgReader):
                     config_error("In section '"+name+"' ("+otype+"): "+str(e))
 
     def _parse_out_opts(self, otype, options, name):
-
-        # note - type IDs are strings form the _config_, not the internal
-        # strings used as enums (in plot_config)
-        ANY_LAYER = ['gerber', 'ps', 'svg', 'hpgl', 'pdf', 'dxf']
-        ANY_DRILL = ['excellon', 'gerb_drill']
 
         # mappings from YAML keys to type_option keys
         MAPPINGS = [
@@ -524,7 +525,7 @@ class CfgYamlReader(CfgReader):
         try:
             layers = o_obj['layers']
         except KeyError:
-            if otype == 'pdf_pcb_print':
+            if otype == 'pdf_pcb_print' or otype in ANY_LAYER:
                 logger.error('You must specify the layers for `' + name +
                              '` ('+otype+')')
                 sys.exit(misc.EXIT_BAD_CONFIG)
