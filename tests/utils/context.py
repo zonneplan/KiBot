@@ -155,7 +155,7 @@ class TestContext(object):
             os.environ['COVERAGE_FILE'] = os.path.join(os.getcwd(), '.coverage')
         cmd.append(os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/../../src/kiplot'))
         cmd.append('-vv')
-        if not no_out_dir:
+        if not no_board_file:
             cmd = cmd+['-b', filename if filename else self.board_file]
         if not no_yaml_file:
             cmd = cmd+['-c', self.yaml_file]

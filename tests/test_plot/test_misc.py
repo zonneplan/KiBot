@@ -8,6 +8,7 @@ Tests miscellaneous stuff.
 - An unknown output type
 - -s all and_one_of_two_outs
 - Missing schematic
+- Wrong PCB name
 - Missing PCB
 - Missing config
 - Wrong config name
@@ -122,6 +123,15 @@ def test_miss_pcb():
     ctx.run(NO_PCB_FILE, extra=['-s', 'run_erc,update_xml', 'pos_ascii'])
 
     assert ctx.search_err('Board file not found')
+
+    ctx.clean_up()
+
+
+def test_miss_pcb_2():
+    ctx = context.TestContext('MissingPCB_2', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.run(EXIT_BAD_ARGS, no_board_file=True)
+
+    assert ctx.search_err('No PCB file found')
 
     ctx.clean_up()
 
