@@ -9,6 +9,8 @@ Tests various errors in the config file
   - Incorrect name
   - Inner.1, but no inner layers
   - Inner_1 (malformed)
+- No output.name
+- No output.type
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -71,4 +73,18 @@ def test_wrong_layer_3():
     ctx = context.TestContext('ErrorWrongLayer3', '3Rs', 'error_wrong_layer_3', None)
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Malformed inner layer name: Inner_1,")
+    ctx.clean_up()
+
+
+def test_no_name():
+    ctx = context.TestContext('ErrorNoName', '3Rs', 'error_no_name', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Output needs a name")
+    ctx.clean_up()
+
+
+def test_no_type():
+    ctx = context.TestContext('ErrorNoType', '3Rs', 'error_no_type', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Output 'PDF' needs a type")
     ctx.clean_up()
