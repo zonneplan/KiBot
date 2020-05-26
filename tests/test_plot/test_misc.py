@@ -13,6 +13,7 @@ Tests miscellaneous stuff.
 - Wrong config name
 - Guess the PCB and YAML
 - Guess the PCB and YAML when more than one is present
+- --list
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -187,3 +188,17 @@ def test_auto_pcb_and_cfg_2():
     ctx.expect_out_file(ctx.get_pos_both_csv_filename())
 
     ctx.clean_up()
+
+
+def test_list():
+    ctx = context.TestContext('List', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.run(extra=['--list'])
+
+    assert ctx.search_err('run_erc: True')
+    assert ctx.search_err('run_drc: True')
+    assert ctx.search_err('update_xml: True')
+    assert ctx.search_err(r'position \(Pick and place file\) \[position\]')
+    assert ctx.search_err(r'pos_ascii \(Pick and place file\) \[position\]')
+
+    ctx.clean_up()
+
