@@ -453,8 +453,9 @@ class OutputOptions(object):
             self.type_options = SchPrintOptions()
         elif otype == self.PDF_PCB_PRINT:
             self.type_options = PcbPrintOptions()
-        else:
-            self.type_options = None
+        else:  # pragma: no cover
+            # If we get here it means the above if is incomplete
+            raise KiPlotConfigurationError("Output options not implemented for "+otype)
 
     def validate(self):
 
