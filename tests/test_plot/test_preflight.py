@@ -39,6 +39,16 @@ def test_drc():
     ctx.clean_up()
 
 
+def test_drc_filter():
+    prj = 'fail-project'
+    ctx = context.TestContext('DRC_Filter', prj, 'drc_filter', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file('drc_result.rpt')
+    ctx.expect_out_file('kiplot_errors.filter')
+    ctx.clean_up()
+
+
 def test_update_xml():
     prj = 'bom'
     ctx = context.TestContext('Update_XML', prj, 'update_xml', '')
