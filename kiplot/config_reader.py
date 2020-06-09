@@ -537,6 +537,26 @@ class CfgYamlReader(CfgReader):
 
         return o_cfg
 
+    def _parse_filters(self, filters, cfg):
+        for filter in filters:
+            if 'filter' in filter:
+                comment = filter['filter']
+                if 'number' in filter:
+                    number = filter['number']
+                    if number is None:
+                        config_error("empty 'number' in 'filter' definition ("+str(filter)+")")
+                else:
+                    config_error("missing 'number' for 'filter' definition ("+str(filter)+")")
+                if 'regex' in filter:
+                    regex = filter['regex']
+                    if regex is None:
+                        config_error("empty 'regex' in 'filter' definition ("+str(filter)+")")
+                else:
+                    config_error("missing 'regex' for 'filter' definition ("+str(filter)+")")
+                cfg.add_filter(comment, number, regex)
+            else:
+                config_error("'filters' section of 'preflight' must contain 'filter' definitions (not "+str(filter)+")")
+
     def _parse_preflight(self, pf, cfg):
 
         logger.debug("Parsing preflight options: {}".format(pf))
@@ -555,6 +575,9 @@ class CfgYamlReader(CfgReader):
 
         if 'ignore_unconnected' in pf:
             cfg.ignore_unconnected = pf['ignore_unconnected']
+
+        if 'filters' in pf:
+            self._parse_filters(pf['filters'], cfg)
 
     def read(self, fstream):
         """
