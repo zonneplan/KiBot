@@ -105,7 +105,13 @@ And you want to ignore them. You can add the following filters:
       regex:  'Pad 2 of C4'
 ```
 
-Important note: this will create a file named *kiplot_errors.filter* in the output directory.
+If you need to match text from two different lines in the error message try using `(?s)TEXT(.*)TEXT_IN_OTHER_LINE`.
+
+If you have two or more different options for a text to match try using `(OPTION1|OPTION2)`.
+
+A complete Python regular expressions explanation is out the scope of this manual. For a complete reference consult the [Python manual](https://docs.python.org/3/library/re.html).
+
+**Important note**: this will create a file named *kiplot_errors.filter* in the output directory.
 
 ### The *outputs* section
 
