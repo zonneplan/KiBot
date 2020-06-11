@@ -1,3 +1,12 @@
+kiplot.inti-cmnb (0.2.5-1) stable; urgency=medium
+
+  * Added: tolerate config files without outputs
+  * Added: mechanism to filter ERC/DRC errors
+  * Fixed: All pcbnew plot formats generated gerber job files
+  * Fixed: Most formats that needed layers didn't complain when ommited
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Thu, 11 Jun 2020 13:06:12 -0300
+
 kiplot.inti-cmnb (0.2.4-1) stable; urgency=medium
 
   * Changed: Now kicad-automation-scripts 1.3.1 or newer is needed.
