@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Tolerate config files without outputs
+- Mechanism to filter ERC/DRC errors
 
 ### Fixed
 - All pcbnew plot formats generated gerber job files

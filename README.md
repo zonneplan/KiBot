@@ -66,6 +66,53 @@ preflight:
   ignore_unconnected: false
 ```
 
+### Filtering DRC/ERC errors
+
+Sometimes KiCad reports DRC or ERC errors that you can't get rid off. This could be just because you are part of a team including lazzy people that doesn't want to take the extra effort to solve some errors that aren't in fact errors, just small violations made on purpose. In this case you could exclude some known errors.
+
+For this you must declare `filters` entry in the `preflight` section. Then you can add as many `filter` entries as you want. Each filter entry has an optional description and defines to which error type is applied (`number`) and a regular expression that the error must match to be ignored (`regex`). Like this:
+
+```
+  filters:
+    - filter: 'Optional filter description'
+      number: Numeric_error_type
+      regex:  'Expression to match'
+```
+
+Here is an example, suppose you are getting the following errors:
+
+```
+** Found 1 DRC errors **
+ErrType(4): Track too close to pad
+    @(177.185 mm, 78.315 mm): Track 1.000 mm [Net-(C3-Pad1)] on F.Cu, length: 1.591 mm
+    @(177.185 mm, 80.715 mm): Pad 2 of C3 on F.Cu and others
+
+** Found 1 unconnected pads **
+ErrType(2): Unconnected items
+    @(177.185 mm, 73.965 mm): Pad 2 of C4 on F.Cu and others
+    @(177.185 mm, 80.715 mm): Pad 2 of C3 on F.Cu and others
+```
+
+And you want to ignore them. You can add the following filters:
+
+```
+  filters:
+    - filter: 'Ignore C3 pad 2 too close to anything'
+      number: 4
+      regex:  'Pad 2 of C3'
+    - filter: 'Ignore unconnected pad 2 of C4'
+      number: 2
+      regex:  'Pad 2 of C4'
+```
+
+If you need to match text from two different lines in the error message try using `(?s)TEXT(.*)TEXT_IN_OTHER_LINE`.
+
+If you have two or more different options for a text to match try using `(OPTION1|OPTION2)`.
+
+A complete Python regular expressions explanation is out the scope of this manual. For a complete reference consult the [Python manual](https://docs.python.org/3/library/re.html).
+
+**Important note**: this will create a file named *kiplot_errors.filter* in the output directory.
+
 ### The *outputs* section
 
 In this section you put all the things that you want to generate.  This section contains one or more **outputs**. Each output contain the following data:

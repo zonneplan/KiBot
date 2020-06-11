@@ -1,6 +1,9 @@
 import pcbnew
 
 from . import error
+from . import log
+
+logger = log.get_logger(__name__)
 
 
 class KiPlotConfigurationError(error.KiPlotError):
@@ -504,9 +507,18 @@ class PlotConfig(object):
         self.update_xml = False
         self.ignore_unconnected = False
         self.run_erc = False
+        self.filters = None
 
     def add_output(self, new_op):
         self._outputs.append(new_op)
+
+    def add_filter(self, comment, number, regex):
+        logger.debug("Adding DRC/ERC filter '{}','{}','{}'".format(comment, number, regex))
+        if self.filters is None:
+            self.filters = ''
+        if comment:
+            self.filters += '# '+comment+'\n'
+        self.filters += '{},{}\n'.format(number, regex)
 
     def validate(self):
         errs = []

@@ -68,7 +68,7 @@ def check_script(cmd, url, version=None):
 
 
 def check_eeschema_do(file):
-    check_script(misc.CMD_EESCHEMA_DO, misc.URL_EESCHEMA_DO, '1.1.1')
+    check_script(misc.CMD_EESCHEMA_DO, misc.URL_EESCHEMA_DO, '1.4.0')
     sch_file = os.path.splitext(file)[0] + '.sch'
     if not os.path.isfile(sch_file):
         logger.error('Missing schematic file: ' + sch_file)
@@ -157,17 +157,26 @@ class Plotter(object):
                     else:
                         logger.error('Unknown action to skip: '+skip)
                         exit(misc.EXIT_BAD_ARGS)
+        # Create the filters file
+        filter_file = None
+        if (self.cfg.run_erc or self.cfg.run_drc) and self.cfg.filters:
+            filter_file = os.path.join(self.cfg.outdir, 'kiplot_errors.filter')
+            with open(filter_file, 'w') as f:
+                f.write(self.cfg.filters)
         if self.cfg.run_erc:
-            self._run_erc(brd_file)
+            self._run_erc(brd_file, filter_file)
         if self.cfg.update_xml:
             self._update_xml(brd_file)
         if self.cfg.run_drc:
             self._run_drc(brd_file, self.cfg.ignore_unconnected,
-                          self.cfg.check_zone_fills)
+                          self.cfg.check_zone_fills, filter_file)
 
-    def _run_erc(self, brd_file):
+    def _run_erc(self, brd_file, filter_file):
         sch_file = check_eeschema_do(brd_file)
-        cmd = [misc.CMD_EESCHEMA_DO, 'run_erc', sch_file, self.cfg.outdir]
+        cmd = [misc.CMD_EESCHEMA_DO, 'run_erc']
+        if filter_file:
+            cmd.extend(['-f', filter_file])
+        cmd.extend([sch_file, self.cfg.outdir])
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
             cmd.insert(1, '-vv')
@@ -196,9 +205,12 @@ class Plotter(object):
             logger.error('Failed to update the BoM, error %d', ret)
             exit(misc.BOM_ERROR)
 
-    def _run_drc(self, brd_file, ignore_unconnected, check_zone_fills):
-        check_script(misc.CMD_PCBNEW_RUN_DRC, misc.URL_PCBNEW_RUN_DRC, '1.3.1')
-        cmd = [misc.CMD_PCBNEW_RUN_DRC, 'run_drc', brd_file, self.cfg.outdir]
+    def _run_drc(self, brd_file, ignore_unconnected, check_zone_fills, filter_file):
+        check_script(misc.CMD_PCBNEW_RUN_DRC, misc.URL_PCBNEW_RUN_DRC, '1.4.0')
+        cmd = [misc.CMD_PCBNEW_RUN_DRC, 'run_drc']
+        if filter_file:
+            cmd.extend(['-f', filter_file])
+        cmd.extend([brd_file, self.cfg.outdir])
         # If we are in verbose mode enable debug in the child
         if logger.getEffectiveLevel() <= logging.DEBUG:
             cmd.insert(1, '-vv')
@@ -407,8 +419,6 @@ class Plotter(object):
                                 modulesStr, maxSizes):
         to = output.options.type_options
         outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
         name = os.path.splitext(os.path.basename(board.GetFileName()))[0]
 
         topf = None
