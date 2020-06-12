@@ -13,10 +13,12 @@ pytest-3 --log-cli-level debug
 import os
 import sys
 # Look for the 'utils' module from where the script is running
-script_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(script_dir))
+prev_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(prev_dir))
 # Utils import
 from utils import context
+sys.path.insert(0, os.path.dirname(prev_dir))
+from kiplot.misc import (BOM_ERROR)
 
 BOM_DIR = 'BoM'
 
@@ -38,4 +40,10 @@ def test_ibom_no_ops():
     ctx = context.TestContext('BoM_interactiveNoOps', prj, 'ibom_no_ops', BOM_DIR)
     ctx.run()
     ctx.expect_out_file(os.path.join(BOM_DIR, 'ibom.html'))
+    ctx.clean_up()
+
+
+def test_ibom_fail():
+    ctx = context.TestContext('BoM_interactiveFail', 'bom_no_xml', 'ibom', BOM_DIR)
+    ctx.run(BOM_ERROR)
     ctx.clean_up()

@@ -13,10 +13,12 @@ pytest-3 --log-cli-level debug
 import os
 import sys
 # Look for the 'utils' module from where the script is running
-script_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(script_dir))
+prev_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(prev_dir))
 # Utils import
 from utils import context
+sys.path.insert(0, os.path.dirname(prev_dir))
+from kiplot.misc import (BOM_ERROR)
 
 BOM_DIR = 'BoM'
 
@@ -34,4 +36,10 @@ def test_bom():
     ctx.expect_out_file(html)
     ctx.search_in_file(csv, ['R,R1,100', 'R,R2,200', 'C,C1,1uF'])
     os.remove(os.path.join(ctx.get_board_dir(), 'bom.ini'))
+    ctx.clean_up()
+
+
+def test_bom_fail():
+    ctx = context.TestContext('BoM_fail', 'bom_no_xml', 'bom', BOM_DIR)
+    ctx.run(BOM_ERROR)
     ctx.clean_up()

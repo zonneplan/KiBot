@@ -42,6 +42,11 @@ def plot_error(msg):
     exit(misc.PLOT_ERROR)
 
 
+def level_debug():
+    """ Determine if we are in debug mode """
+    return logger.getEffectiveLevel() <= logging.DEBUG
+
+
 def check_version(command, version):
     cmd = [command, '--version']
     logger.debug('Running: '+str(cmd))
@@ -87,11 +92,6 @@ class Plotter(object):
     def plot(self, brd_file, target, invert, skip_pre):
 
         logger.debug("Starting plot of board {}".format(brd_file))
-
-        board = pcbnew.LoadBoard(brd_file)
-        assert board is not None
-        logger.debug("Board loaded")
-
         self._preflight_checks(brd_file, skip_pre)
 
         n = len(target)
@@ -100,29 +100,29 @@ class Plotter(object):
             logger.debug('Skipping all outputs')
             return
 
+        board = None
         for op in self.cfg.outputs:
 
             if (n == 0) or ((op.name in target) ^ invert):
                 logger.info('- %s (%s) [%s]' % (op.description, op.name, op.options.type))
 
-                # fresh plot controller
-                pc = pcbnew.PLOT_CONTROLLER(board)
-
-                self._configure_output_dir(pc, op)
+                output_dir = self._get_output_dir(op)
+                if (not self._output_is_schematic(op)) and (board is None):
+                    board = self._load_board(brd_file)
 
                 try:
                     if self._output_is_layer(op):
-                        self._do_layer_plot(board, pc, op, brd_file)
+                        self._do_layer_plot(board, output_dir, op, brd_file)
                     elif self._output_is_drill(op):
-                        self._do_drill_plot(board, pc, op)
+                        self._do_drill_plot(board, output_dir, op)
                     elif self._output_is_position(op):
-                        self._do_position_plot(board, pc, op)
+                        self._do_position_plot(board, output_dir, op)
                     elif self._output_is_bom(op):
-                        self._do_bom(board, pc, op, brd_file)
+                        self._do_bom(output_dir, op, brd_file)
                     elif self._output_is_sch_print(op):
-                        self._do_sch_print(board, pc, op, brd_file)
+                        self._do_sch_print(output_dir, op, brd_file)
                     elif self._output_is_pcb_print(op):
-                        self._do_pcb_print(board, pc, op, brd_file)
+                        self._do_pcb_print(board, output_dir, op, brd_file)
                     else:  # pragma no cover
                         # We shouldn't get here, means the above if is incomplete
                         plot_error("Don't know how to plot type "+op.options.type)
@@ -130,6 +130,17 @@ class Plotter(object):
                     plot_error("In section '"+op.name+"' ("+op.options.type+"): "+str(e))
             else:
                 logger.debug('Skipping %s output', op.name)
+
+    def _load_board(self, brd_file):
+        try:
+            board = pcbnew.LoadBoard(brd_file)
+        except OSError as e:
+            logger.error('Error loading PCB file. Currupted?')
+            logger.error(e)
+            exit(misc.CORRUPTED_PCB)
+        assert board is not None
+        logger.debug("Board loaded")
+        return board
 
     def _preflight_checks(self, brd_file, skip_pre):
         logger.debug("Preflight checks")
@@ -178,7 +189,7 @@ class Plotter(object):
             cmd.extend(['-f', filter_file])
         cmd.extend([sch_file, self.cfg.outdir])
         # If we are in verbose mode enable debug in the child
-        if logger.getEffectiveLevel() <= logging.DEBUG:
+        if level_debug():
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
         logger.info('- Running the ERC')
@@ -195,7 +206,7 @@ class Plotter(object):
         sch_file = check_eeschema_do(brd_file)
         cmd = [misc.CMD_EESCHEMA_DO, 'bom_xml', sch_file, self.cfg.outdir]
         # If we are in verbose mode enable debug in the child
-        if logger.getEffectiveLevel() <= logging.DEBUG:
+        if level_debug():
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
         logger.info('- Updating BoM in XML format')
@@ -212,7 +223,7 @@ class Plotter(object):
             cmd.extend(['-f', filter_file])
         cmd.extend([brd_file, self.cfg.outdir])
         # If we are in verbose mode enable debug in the child
-        if logger.getEffectiveLevel() <= logging.DEBUG:
+        if level_debug():
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
         if ignore_unconnected:
@@ -230,7 +241,7 @@ class Plotter(object):
             exit(misc.DRC_ERROR)
 
     def _output_is_layer(self, output):
-
+        """ All the formats for 'PCB|Plot' """
         return output.options.type in [
             PCfg.OutputOptions.GERBER,
             PCfg.OutputOptions.POSTSCRIPT,
@@ -241,7 +252,7 @@ class Plotter(object):
         ]
 
     def _output_is_drill(self, output):
-
+        """ All the drill formats' """
         return output.options.type in [
             PCfg.OutputOptions.EXCELLON,
             PCfg.OutputOptions.GERB_DRILL,
@@ -261,6 +272,10 @@ class Plotter(object):
             PCfg.OutputOptions.KIBOM,
             PCfg.OutputOptions.IBOM,
         ]
+
+    def _output_is_schematic(self, output):
+        """ All the outputs involving the SCH and not the PCB """
+        return self._output_is_bom(output) or self._output_is_sch_print(output)
 
     def _get_layer_plot_format(self, output):
         """
@@ -284,10 +299,12 @@ class Plotter(object):
         raise ValueError("Don't know how to translate plot type: {}"
                          .format(output.options.type))
 
-    def _do_layer_plot(self, board, plot_ctrl, output, file_name):
+    def _do_layer_plot(self, board, output_dir, output, file_name):
 
+        # fresh plot controller
+        plot_ctrl = pcbnew.PLOT_CONTROLLER(board)
         # set up plot options for the whole output
-        self._configure_plot_ctrl(plot_ctrl, output)
+        self._configure_plot_ctrl(plot_ctrl, output, output_dir)
 
         po = plot_ctrl.GetPlotOptions()
         layer_cnt = board.GetCopperLayerCount()
@@ -373,11 +390,9 @@ class Plotter(object):
 
         return drill_writer
 
-    def _do_drill_plot(self, board, plot_ctrl, output):
+    def _do_drill_plot(self, board, output_dir, output):
 
         to = output.options.type_options
-
-        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
 
         # dialog_gendrill.cpp:357
         if to.use_aux_axis_as_origin:
@@ -399,37 +414,36 @@ class Plotter(object):
         gen_report = to.generate_report
 
         if gen_drill:
-            logger.debug("Generating drill files in "+outdir)
+            logger.debug("Generating drill files in "+output_dir)
 
         if gen_map:
             drill_writer.SetMapFileFormat(to.map_options.type)
             logger.debug("Generating drill map type {} in {}"
-                         .format(to.map_options.type, outdir))
+                         .format(to.map_options.type, output_dir))
 
-        drill_writer.CreateDrillandMapFilesSet(outdir, gen_drill, gen_map)
+        drill_writer.CreateDrillandMapFilesSet(output_dir, gen_drill, gen_map)
 
         if gen_report:
-            drill_report_file = os.path.join(outdir,
+            drill_report_file = os.path.join(output_dir,
                                              to.report_options.filename)
             logger.debug("Generating drill report: "+drill_report_file)
 
             drill_writer.GenDrillReportFile(drill_report_file)
 
-    def _do_position_plot_ascii(self, board, plot_ctrl, output, columns,
+    def _do_position_plot_ascii(self, board, output_dir, output, columns,
                                 modulesStr, maxSizes):
         to = output.options.type_options
-        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         name = os.path.splitext(os.path.basename(board.GetFileName()))[0]
 
         topf = None
         botf = None
         bothf = None
         if to.separate_files_for_front_and_back:
-            topf = open(os.path.join(outdir, "{}-top.pos".format(name)), 'w')
-            botf = open(os.path.join(outdir, "{}-bottom.pos".format(name)),
+            topf = open(os.path.join(output_dir, "{}-top.pos".format(name)), 'w')
+            botf = open(os.path.join(output_dir, "{}-bottom.pos".format(name)),
                         'w')
         else:
-            bothf = open(os.path.join(outdir, "{}-both.pos").format(name), 'w')
+            bothf = open(os.path.join(output_dir, "{}-both.pos").format(name), 'w')
 
         files = [f for f in [topf, botf, bothf] if f is not None]
         for f in files:
@@ -482,22 +496,21 @@ class Plotter(object):
         if bothf is not None:
             bothf.close()
 
-    def _do_position_plot_csv(self, board, plot_ctrl, output, columns,
+    def _do_position_plot_csv(self, board, output_dir, output, columns,
                               modulesStr):
         to = output.options.type_options
-        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         name = os.path.splitext(os.path.basename(board.GetFileName()))[0]
 
         topf = None
         botf = None
         bothf = None
         if to.separate_files_for_front_and_back:
-            topf = open(os.path.join(outdir, "{}-top-pos.csv".format(name)),
+            topf = open(os.path.join(output_dir, "{}-top-pos.csv".format(name)),
                         'w')
-            botf = open(os.path.join(outdir, "{}-bottom-pos.csv".format(name)),
+            botf = open(os.path.join(output_dir, "{}-bottom-pos.csv".format(name)),
                         'w')
         else:
-            bothf = open(os.path.join(outdir, "{}-both-pos.csv").format(name),
+            bothf = open(os.path.join(output_dir, "{}-both-pos.csv").format(name),
                          'w')
 
         files = [f for f in [topf, botf, bothf] if f is not None]
@@ -523,7 +536,7 @@ class Plotter(object):
         if bothf is not None:
             bothf.close()
 
-    def _do_position_plot(self, board, plot_ctrl, output):
+    def _do_position_plot(self, board, output_dir, output):
         to = output.options.type_options
 
         columns = ["Ref", "Val", "Package", "PosX", "PosY", "Rot", "Side"]
@@ -562,18 +575,17 @@ class Plotter(object):
 
         # Note: the parser already checked the format is ASCII or CSV
         if to.format.lower() == 'ascii':
-            self._do_position_plot_ascii(board, plot_ctrl, output, columns,
+            self._do_position_plot_ascii(board, output_dir, output, columns,
                                          modules, maxlengths)
         else:  # if to.format.lower() == 'csv':
-            self._do_position_plot_csv(board, plot_ctrl, output, columns,
+            self._do_position_plot_csv(board, output_dir, output, columns,
                                        modules)
 
-    def _do_sch_print(self, board, plot_ctrl, output, brd_file):
+    def _do_sch_print(self, output_dir, output, brd_file):
         sch_file = check_eeschema_do(brd_file)
-        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         cmd = [misc.CMD_EESCHEMA_DO, 'export', '--all_pages',
-               '--file_format', 'pdf', sch_file, outdir]
-        if logger.getEffectiveLevel() <= logging.DEBUG:
+               '--file_format', 'pdf', sch_file, output_dir]
+        if level_debug():
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
         logger.debug('Executing: '+str(cmd))
@@ -583,12 +595,12 @@ class Plotter(object):
             exit(misc.PDF_SCH_PRINT)
         to = output.options.type_options
         if to.output:
-            cur = os.path.abspath(os.path.join(outdir, os.path.splitext(os.path.basename(brd_file))[0]) + '.pdf')
-            new = os.path.abspath(os.path.join(outdir, to.output))
+            cur = os.path.abspath(os.path.join(output_dir, os.path.splitext(os.path.basename(brd_file))[0]) + '.pdf')
+            new = os.path.abspath(os.path.join(output_dir, to.output))
             logger.debug('Moving '+cur+' -> '+new)
             os.rename(cur, new)
 
-    def _do_pcb_print(self, board, plot_ctrl, output, brd_file):
+    def _do_pcb_print(self, board, output_dir, output, brd_file):
         check_script(misc.CMD_PCBNEW_PRINT_LAYERS,
                      misc.URL_PCBNEW_PRINT_LAYERS, '1.3.1')
         to = output.options.type_options
@@ -602,11 +614,10 @@ class Plotter(object):
                     raise PlotError(
                             "Inner layer {} is not valid for this board"
                             .format(layer.layer))
-        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         cmd = [misc.CMD_PCBNEW_PRINT_LAYERS, 'export',
                '--output_name', to.output_name,
-               brd_file, outdir]
-        if logger.getEffectiveLevel() <= logging.DEBUG:
+               brd_file, output_dir]
+        if level_debug():
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
         # Add the layers
@@ -618,37 +629,38 @@ class Plotter(object):
             logger.error(misc.CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)
             exit(misc.PDF_PCB_PRINT)
 
-    def _do_bom(self, board, plot_ctrl, output, brd_file):
+    def _do_bom(self, output_dir, output, brd_file):
         if output.options.type == 'kibom':
-            self._do_kibom(board, plot_ctrl, output, brd_file)
+            self._do_kibom(output_dir, output, brd_file)
         else:
-            self._do_ibom(board, plot_ctrl, output, brd_file)
+            self._do_ibom(output_dir, output, brd_file)
 
-    def _do_kibom(self, board, plot_ctrl, output, brd_file):
+    def _do_kibom(self, output_dir, output, brd_file):
         check_script(misc.CMD_KIBOM, misc.URL_KIBOM)
         to = output.options.type_options
         format = to.format.lower()
-        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         prj = os.path.splitext(os.path.relpath(brd_file))[0]
         logger.debug('Doing BoM, format '+format+' prj: '+prj)
         cmd = [misc.CMD_KIBOM, prj+'.xml',
-               os.path.join(outdir, os.path.basename(prj))+'.'+format]
+               os.path.join(output_dir, os.path.basename(prj))+'.'+format]
         logger.debug('Running: '+str(cmd))
         try:
-            check_output(cmd, stderr=STDOUT)
+            cmd_output = check_output(cmd, stderr=STDOUT)
         except CalledProcessError as e:
             logger.error('Failed to create BoM, error %d', e.returncode)
+            if e.output:
+                logger.debug('Output from command: '+e.output.decode())
             exit(misc.BOM_ERROR)
-        for f in glob(os.path.join(outdir, prj)+'*.tmp'):
+        for f in glob(os.path.join(output_dir, prj)+'*.tmp'):
             os.remove(f)
+        logger.debug('Output from command:\n'+cmd_output.decode())
 
-    def _do_ibom(self, board, plot_ctrl, output, brd_file):
+    def _do_ibom(self, output_dir, output, brd_file):
         check_script(misc.CMD_IBOM, misc.URL_IBOM)
-        outdir = plot_ctrl.GetPlotOptions().GetOutputDirectory()
         prj = os.path.splitext(os.path.relpath(brd_file))[0]
         logger.debug('Doing Interactive BoM, prj: '+prj)
         cmd = [misc.CMD_IBOM, brd_file,
-               '--dest-dir', outdir,
+               '--dest-dir', output_dir,
                '--no-browser', ]
         to = output.options.type_options
         if to.blacklist:
@@ -659,10 +671,13 @@ class Plotter(object):
             cmd.append(to.name_format)
         logger.debug('Running: '+str(cmd))
         try:
-            check_output(cmd, stderr=STDOUT)
+            cmd_output = check_output(cmd, stderr=STDOUT)
         except CalledProcessError as e:
             logger.error('Failed to create BoM, error %d', e.returncode)
+            if e.output:
+                logger.debug('Output from command: '+e.output.decode())
             exit(misc.BOM_ERROR)
+        logger.debug('Output from command:\n'+cmd_output.decode()+'\n')
 
     def _configure_gerber_opts(self, po, output):
 
@@ -704,7 +719,7 @@ class Plotter(object):
 
         po.SetDXFPlotPolygonMode(dxf_opts.polygon_mode)
 
-    def _configure_output_dir(self, plot_ctrl, output):
+    def _get_output_dir(self, output):
 
         # outdir is a combination of the config and output
         outdir = os.path.join(self.cfg.outdir, output.outdir)
@@ -713,14 +728,14 @@ class Plotter(object):
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
-        po = plot_ctrl.GetPlotOptions()
-        po.SetOutputDirectory(outdir)
+        return outdir
 
-    def _configure_plot_ctrl(self, plot_ctrl, output):
+    def _configure_plot_ctrl(self, plot_ctrl, output, output_dir):
 
         logger.debug("Configuring plot controller for output")
 
         po = plot_ctrl.GetPlotOptions()
+        po.SetOutputDirectory(output_dir)
 
         opts = output.options.type_options
 

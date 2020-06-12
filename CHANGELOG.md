@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- Better debug information when a BoM fails to be generated.
+### Changed
+- Allowed operations that doesn't involve a PCB now can run if the PCB file is
+  missing or corrupted.
+### Fixed
+- Error codes that overlapped.
 
 ## [0.2.5] - 2020-06-11
 ### Added

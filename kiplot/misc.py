@@ -2,8 +2,8 @@
 """
 
 # Error levels
-NO_YAML_MODULE = 1
-NO_PCBNEW_MODULE = 2
+INTERNAL_ERROR = 1    # Unhandled exceptions
+WRONG_ARGUMENTS = 2   # This is what argsparse uses
 USUPPORTED_OPTION = 3
 MISSING_TOOL = 4
 DRC_ERROR = 5
@@ -16,6 +16,9 @@ BOM_ERROR = 11
 PDF_SCH_PRINT = 12
 PDF_PCB_PRINT = 13
 PLOT_ERROR = 14
+NO_YAML_MODULE = 15
+NO_PCBNEW_MODULE = 16
+CORRUPTED_PCB = 17
 
 CMD_EESCHEMA_DO = 'eeschema_do'
 URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/kicad-automation-scripts'
