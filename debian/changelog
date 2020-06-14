@@ -1,3 +1,14 @@
+kiplot.inti-cmnb (0.3.0-1) stable; urgency=medium
+
+  * Added better debug information when a BoM fails to be generated.
+  * Added support for compressed YAML files.
+  * Changed to allow operations that doesn't involve a PCB to run if the PCB
+    file is missing or corrupted.
+  * The 'check_zone_fills' option is now independent of 'run_drc'
+  * Fixed error codes that overlapped.
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Sun, 14 Jun 2020 15:24:36 -0300
+
 kiplot.inti-cmnb (0.2.5-1) stable; urgency=medium
 
   * Added: tolerate config files without outputs
