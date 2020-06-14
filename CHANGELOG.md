@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Better debug information when a BoM fails to be generated.
+- Support for compressed YAML files.
 ### Changed
 - Allowed operations that doesn't involve a PCB now can run if the PCB file is
   missing or corrupted.

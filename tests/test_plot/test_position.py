@@ -11,6 +11,7 @@ We test (both CSV and ASCII):
   - without 'comment' field
   - with coloured logs
   - in quiet mode
+  - compressed YAML file
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -133,7 +134,8 @@ def test_3Rs_position_unified_th_csv():
 
 
 def test_3Rs_position_inches_csv():
-    ctx = context.TestContext('3Rs_position_inches_csv', '3Rs', 'simple_position_inches_csv', POS_DIR)
+    """ Also test a compressed configuration YAML file """
+    ctx = context.TestContext('3Rs_position_inches_csv', '3Rs', 'simple_position_inches_csv', POS_DIR, yaml_compressed=True)
     ctx.run()
     pos_top = ctx.get_pos_top_csv_filename()
     pos_bot = ctx.get_pos_bot_csv_filename()

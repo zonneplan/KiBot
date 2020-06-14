@@ -9,6 +9,7 @@ __status__ = 'beta'
 import argparse
 import os
 import sys
+import gzip
 from glob import glob
 
 # Import log first to set the domain
@@ -91,8 +92,13 @@ def main():
 
     cr = config_reader.CfgYamlReader(board_file)
 
-    with open(plot_config) as cf_file:
-        cfg = cr.read(cf_file)
+    try:
+        # The Python way ...
+        with gzip.open(plot_config) as cf_file:
+            cfg = cr.read(cf_file)
+    except gzip.BadGzipFile:
+        with open(plot_config) as cf_file:
+            cfg = cr.read(cf_file)
 
     # relative to CWD (absolute path overrides)
     outdir = os.path.join(os.getcwd(), args.out_dir)

@@ -19,7 +19,7 @@ MODE_PCB = 0
 
 class TestContext(object):
 
-    def __init__(self, test_name, board_name, yaml_name, sub_dir):
+    def __init__(self, test_name, board_name, yaml_name, sub_dir, yaml_compressed=False):
         # We are using PCBs
         self.mode = MODE_PCB
         # The name used for the test output dirs and other logging
@@ -29,7 +29,7 @@ class TestContext(object):
         # The actual board file that will be loaded
         self._get_board_file()
         # The YAML file we'll use
-        self._get_yaml_name(yaml_name)
+        self._get_yaml_name(yaml_name, yaml_compressed)
         # The actual output dir for this run
         self._set_up_output_dir(pytest.config.getoption('test_dir'))
         # Where are we expecting to get the outputs (inside test_name)
@@ -54,8 +54,10 @@ class TestContext(object):
         this_dir = os.path.dirname(os.path.realpath(__file__))
         return os.path.join(this_dir, '../yaml_samples')
 
-    def _get_yaml_name(self, name):
+    def _get_yaml_name(self, name, yaml_compressed):
         self.yaml_file = os.path.abspath(os.path.join(self._get_yaml_dir(), name+'.kiplot.yaml'))
+        if yaml_compressed:
+           self.yaml_file += '.gz'
         logging.info('YAML file: '+self.yaml_file)
         assert os.path.isfile(self.yaml_file)
 

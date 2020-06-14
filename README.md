@@ -29,8 +29,9 @@ Kiplot uses a configuration file where you can specify what *outputs* to
 generate. By default you'll generate all of them, but you can specify which
 ones from the command line.
 
-The configuration file should be named **.kiplot.yaml*. The format used is
+The configuration file should be named **.kiplot.yaml**. The format used is
 [YAML](https://yaml.org/). This is basically a text file with some structure.
+This file can be compressed using *gzip* file format.
 
 ### The header
 
