@@ -1,9 +1,10 @@
 #!/usr/bin/make
 PY_COV=python3-coverage
+REFDIR=tests/reference/
+REFILL=tests/board_samples/zone-refill.kicad_pcb
 CWD := $(abspath $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST))))))
 USER_ID=$(shell id -u)
 GROUP_ID=$(shell id -g)
-
 
 deb:
 	fakeroot dpkg-buildpackage -uc -b
@@ -43,4 +44,11 @@ test_docker_local:
 deb_clean:
 	fakeroot debian/rules clean
 
-.PHONY: deb deb_clean lint test test_local
+gen_ref:
+	# Reference outputs, must be manually inspected if regenerated
+	cp -a $(REFILL).refill $(REFILL)
+	src/kiplot -c tests/yaml_samples/pdf_zone-refill.kiplot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)
+	src/kiplot -c tests/yaml_samples/print_pcb_zone-refill.kiplot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)
+	cp -a $(REFILL).ok $(REFILL)
+
+.PHONY: deb deb_clean lint test test_local gen_ref

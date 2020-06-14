@@ -134,6 +134,8 @@ class Plotter(object):
     def _load_board(self, brd_file):
         try:
             board = pcbnew.LoadBoard(brd_file)
+            if self.cfg.check_zone_fills:
+                pcbnew.ZONE_FILLER(board).Fill(board.Zones())
         except OSError as e:
             logger.error('Error loading PCB file. Currupted?')
             logger.error(e)
@@ -165,6 +167,9 @@ class Plotter(object):
                     elif skip == 'run_erc':
                         self.cfg.run_erc = False
                         logger.debug('Skipping run_erc')
+                    elif skip == 'check_zone_fills':
+                        self.cfg.check_zone_fills = False
+                        logger.debug('Skipping run_erc')
                     else:
                         logger.error('Unknown action to skip: '+skip)
                         exit(misc.EXIT_BAD_ARGS)
@@ -179,8 +184,7 @@ class Plotter(object):
         if self.cfg.update_xml:
             self._update_xml(brd_file)
         if self.cfg.run_drc:
-            self._run_drc(brd_file, self.cfg.ignore_unconnected,
-                          self.cfg.check_zone_fills, filter_file)
+            self._run_drc(brd_file, self.cfg.ignore_unconnected, filter_file)
 
     def _run_erc(self, brd_file, filter_file):
         sch_file = check_eeschema_do(brd_file)
@@ -216,7 +220,7 @@ class Plotter(object):
             logger.error('Failed to update the BoM, error %d', ret)
             exit(misc.BOM_ERROR)
 
-    def _run_drc(self, brd_file, ignore_unconnected, check_zone_fills, filter_file):
+    def _run_drc(self, brd_file, ignore_unconnected, filter_file):
         check_script(misc.CMD_PCBNEW_RUN_DRC, misc.URL_PCBNEW_RUN_DRC, '1.4.0')
         cmd = [misc.CMD_PCBNEW_RUN_DRC, 'run_drc']
         if filter_file:
@@ -228,8 +232,6 @@ class Plotter(object):
             cmd.insert(1, '-r')
         if ignore_unconnected:
             cmd.insert(1, '-i')
-        if check_zone_fills:
-            cmd.insert(1, '-s')
         logger.info('- Running the DRC')
         logger.debug('Executing: '+str(cmd))
         ret = call(cmd)
@@ -602,7 +604,7 @@ class Plotter(object):
 
     def _do_pcb_print(self, board, output_dir, output, brd_file):
         check_script(misc.CMD_PCBNEW_PRINT_LAYERS,
-                     misc.URL_PCBNEW_PRINT_LAYERS, '1.3.1')
+                     misc.URL_PCBNEW_PRINT_LAYERS, '1.4.1')
         to = output.options.type_options
         # Verify the inner layers
         layer_cnt = board.GetCopperLayerCount()
@@ -615,8 +617,10 @@ class Plotter(object):
                             "Inner layer {} is not valid for this board"
                             .format(layer.layer))
         cmd = [misc.CMD_PCBNEW_PRINT_LAYERS, 'export',
-               '--output_name', to.output_name,
-               brd_file, output_dir]
+               '--output_name', to.output_name]
+        if self.cfg.check_zone_fills:
+            cmd.append('-f')
+        cmd.extend([brd_file, output_dir])
         if level_debug():
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')

@@ -11,7 +11,8 @@ from pty import openpty
 COVERAGE_SCRIPT = 'python3-coverage'
 KICAD_PCB_EXT = '.kicad_pcb'
 KICAD_SCH_EXT = '.sch'
-REF_DIR = 'N/A'
+REF_DIR = 'tests/reference'
+
 
 MODE_SCH = 1
 MODE_PCB = 0
@@ -57,7 +58,7 @@ class TestContext(object):
     def _get_yaml_name(self, name, yaml_compressed):
         self.yaml_file = os.path.abspath(os.path.join(self._get_yaml_dir(), name+'.kiplot.yaml'))
         if yaml_compressed:
-           self.yaml_file += '.gz'
+            self.yaml_file += '.gz'
         logging.info('YAML file: '+self.yaml_file)
         assert os.path.isfile(self.yaml_file)
 

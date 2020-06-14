@@ -19,6 +19,7 @@ from utils import context
 
 PDF_DIR = 'Layers'
 PDF_FILE = 'PCB_Top.pdf'
+PDF_FILE_B = 'PCB_Bot.pdf'
 
 
 def test_print_pcb():
@@ -28,3 +29,12 @@ def test_print_pcb():
     # Check all outputs are there
     ctx.expect_out_file(os.path.join(PDF_DIR, PDF_FILE))
     ctx.clean_up()
+
+
+def test_print_pcb_refill():
+    prj = 'zone-refill'
+    ctx = context.TestContext('PrPCB_Refill', prj, 'print_pcb_zone-refill', '')
+    ctx.run()
+
+    ctx.expect_out_file(PDF_FILE_B)
+    ctx.compare_image(PDF_FILE_B)

@@ -29,3 +29,13 @@ def test_pdf():
     ctx.dont_expect_out_file(ctx.get_gerber_job_filename())
 
     ctx.clean_up()
+
+
+def test_pdf_refill():
+    prj = 'zone-refill'
+    ctx = context.TestContext('Plot_PDF_Refill', prj, 'pdf_zone-refill', '')
+    ctx.run()
+
+    b_cu = ctx.get_gerber_filename('B_Cu', '.pdf')
+    ctx.expect_out_file(b_cu)
+    ctx.compare_image(b_cu)

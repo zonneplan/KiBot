@@ -51,9 +51,9 @@ This section is used to specify tasks that will executed before generating any o
 - `run_erc` To run the ERC (Electrical Rules Check). To ensure the schematic is electrically correct. 
 - `run_drc` To run the DRC (Distance Rules Check). To ensure we have a valid PCB.
 - `update_xml` To update the XML version of the BoM (Bill of Materials). To ensure our generated BoM is up to date.
+- `check_zone_fills` Zones are filled before doing any operation involving PCB layers.
  
-The `run_drc` command has the following options:
-- `check_zone_fills` Every time we run the DRC the zones are filled again. This option saves the PCB to disk updating the zones.
+The `run_drc` command has the following option:
 - `ignore_unconnected` Ignores the unconnected nets. Useful if you didn't finish the routing.
 
 Here is an example of a *preflight* section:
@@ -169,7 +169,6 @@ outputs:
       plot_footprint_values: true
       force_plot_invisible_refs_vals: false
       tent_vias: true
-      check_zone_fills: true
       line_width: 0.15
 
       # gerber options
@@ -199,7 +198,6 @@ Most options are the same you'll find in the KiCad dialogs.
 - `plot_footprint_values` include the footprint values
 - `force_plot_invisible_refs_vals` include references and values even when they are marked as invisible
 - `tent_vias` cover the vias
-- `check_zone_fills` currently without effect
 
 Note that each layer is generated in a separated file.
 
