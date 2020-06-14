@@ -96,7 +96,7 @@ def main():
         # The Python way ...
         with gzip.open(plot_config) as cf_file:
             cfg = cr.read(cf_file)
-    except gzip.BadGzipFile:
+    except OSError:
         with open(plot_config) as cf_file:
             cfg = cr.read(cf_file)
 
