@@ -203,3 +203,14 @@ outputs:
         suffix: F_Cu
       - layer: B.SilkS
         suffix: B_Silks
+
+  - name: Step
+    comment: "Generate 3D model (STEP)"
+    type: step
+    dir: 3D
+    options:
+      units: millimeters  # millimeters or inches
+      origin: grid        # "grid" or "drill" o "X,Y"
+      no_virtual: false   # exclude 3D models for components with 'virtual' attribute
+      #min_distance: 0.01 # Minimum distance between points to treat them as separate ones (default 0.01 mm)
+

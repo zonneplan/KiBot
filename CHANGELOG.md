@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- STEP 3D model generation
 
 ## [0.3.0] - 2020-06-14
 ### Added

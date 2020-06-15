@@ -339,7 +339,7 @@ class CfgYamlReader(CfgReader):
             },
             {
                 'key': 'metric_units',
-                'types': ['excellon'],
+                'types': ['excellon', 'step'],
                 'to': 'metric_units',
                 'required': lambda opts: True,
             },
@@ -408,6 +408,24 @@ class CfgYamlReader(CfgReader):
                 'types': ['pdf_pcb_print'],
                 'to': 'output_name',
                 'required': lambda opts: True,
+            },
+            {
+                'key': 'origin',
+                'types': ['step'],
+                'to': 'origin',
+                'required': lambda opts: True,
+            },
+            {
+                'key': 'no_virtual',
+                'types': ['step'],
+                'to': 'no_virtual',
+                'required': lambda opts: False,
+            },
+            {
+                'key': 'min_distance',
+                'types': ['step'],
+                'to': 'min_distance',
+                'required': lambda opts: False,
             },
         ]
 
@@ -501,7 +519,7 @@ class CfgYamlReader(CfgReader):
             config_error("Output '"+name+"' needs a type")
 
         if otype not in ['gerber', 'ps', 'hpgl', 'dxf', 'pdf', 'svg',
-                         'gerb_drill', 'excellon', 'position',
+                         'gerb_drill', 'excellon', 'position', 'step',
                          'kibom', 'ibom', 'pdf_sch_print', 'pdf_pcb_print']:
             config_error("Unknown output type '"+otype+"' in '"+name+"'")
 
