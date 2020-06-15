@@ -639,7 +639,9 @@ class Plotter(object):
         logger.debug('Executing: '+str(cmd))
         try:
             cmd_output = check_output(cmd, stderr=STDOUT)
-        except CalledProcessError as e:
+        except CalledProcessError as e: # pragma: no cover
+            # Current kicad2step always returns 0!!!!
+            # This is why I'm excluding it from coverage
             logger.error('Failed to create Step file, error %d', e.returncode)
             if e.output:
                 logger.debug('Output from command: '+e.output.decode())
