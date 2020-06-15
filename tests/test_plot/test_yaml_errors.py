@@ -5,6 +5,8 @@ Tests various errors in the config file
 - Wrong kiplot.version
 - Missing drill map type
 - Wrong drill map type
+- Wrong step origin
+- Wrong step min_distance
 - Wrong layer:
   - Incorrect name
   - Inner.1, but no inner layers
@@ -104,4 +106,18 @@ def test_no_layers():
     ctx = context.TestContext('ErrorNoLayers', '3Rs', 'error_no_layers', None)
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("You must specify the layers for `PDF`")
+    ctx.clean_up()
+
+
+def test_error_step_origin():
+    ctx = context.TestContext('ErrorStepOrigin', 'bom', 'error_step_origin', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Origin must be")
+    ctx.clean_up()
+
+
+def test_error_step_min_distance():
+    ctx = context.TestContext('ErrorStepMinDistance', 'bom', 'error_step_min_distance', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("min_distance must be a number")
     ctx.clean_up()
