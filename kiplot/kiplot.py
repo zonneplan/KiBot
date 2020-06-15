@@ -625,21 +625,20 @@ class Plotter(object):
         if to.no_virtual:
             cmd.append('--no-virtual')
         if to.min_distance is not None:
-            cmd.append('--min-distance="{}{}"'.format(to.min_distance, units))
+            cmd.extend(['--min-distance', "{}{}".format(to.min_distance, units)])
         if to.origin == 'drill':
             cmd.append('--drill-origin')
         elif to.origin == 'grid':
             cmd.append('--grid-origin')
         else:
-            to.origin.replace(',', 'x')
-            cmd.append('--user-origin="{}{}"'.format(to.origin, units))
+            cmd.extend(['--user-origin', "{}{}".format(to.origin.replace(',', 'x'), units)])
         # The board
         cmd.append(brd_file)
         # Execute and inform is successful
         logger.debug('Executing: '+str(cmd))
         try:
             cmd_output = check_output(cmd, stderr=STDOUT)
-        except CalledProcessError as e: # pragma: no cover
+        except CalledProcessError as e:  # pragma: no cover
             # Current kicad2step always returns 0!!!!
             # This is why I'm excluding it from coverage
             logger.error('Failed to create Step file, error %d', e.returncode)

@@ -1,0 +1,14 @@
+kiplot:
+  version: 1
+
+outputs:
+  - name: Step
+    comment: "Generate 3D model (STEP)"
+    type: step
+    dir: 3D
+    options:
+      metric_units: false
+      origin: "3.2,-10"    # "grid" or "drill" o "X,Y" i.e. 3.2,-10
+      no_virtual: true     # exclude 3D models for components with 'virtual' attribute
+      min_distance: 0.0004 # Minimum distance between points to treat them as separate ones (default 0.01 mm)
+      #output: project.step

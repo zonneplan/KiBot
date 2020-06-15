@@ -29,3 +29,21 @@ def test_step_1():
     # Check all outputs are there
     ctx.expect_out_file(os.path.join(STEP_DIR, prj+'.step'))
     ctx.clean_up()
+
+
+def test_step_2():
+    prj = 'bom'
+    ctx = context.TestContext('STEP_2', prj, 'step_simple_2', STEP_DIR)
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(os.path.join(STEP_DIR, prj+'.step'))
+    ctx.clean_up()
+
+
+def test_step_3():
+    prj = 'bom'
+    ctx = context.TestContext('STEP_3', prj, 'step_simple_3', STEP_DIR)
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(os.path.join(STEP_DIR, prj+'.step'))
+    ctx.clean_up()
