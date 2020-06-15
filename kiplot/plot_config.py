@@ -1,4 +1,5 @@
 import pcbnew
+import re
 
 from . import error
 from . import log
@@ -377,6 +378,26 @@ class PositionOptions(TypeOptions):
         return errs
 
 
+class StepOptions(TypeOptions):
+
+    def __init__(self):
+        self.metric_units = True
+        self.origin = None
+        self.min_distance = None
+        self.no_virtual = False
+        self.output = None
+
+    def validate(self):
+        errs = []
+        # origin (required)
+        if (self.origin not in ['grid', 'drill']) and (re.match(r'[-\d\.]+\s*,\s*[-\d\.]+\s*$', self.origin) is None):
+            errs.append('Origin must be "grid" or "drill" or "X,Y"')
+        # min_distance (not required)
+        if (self.min_distance is not None) and (not isinstance(self.min_distance, (int, float))):
+            errs.append('min_distance must be a number')
+        return errs
+
+
 class KiBoMOptions(TypeOptions):
 
     def __init__(self):
@@ -424,6 +445,7 @@ class OutputOptions(object):
     IBOM = 'ibom'
     PDF_SCH_PRINT = 'pdf_sch_print'
     PDF_PCB_PRINT = 'pdf_pcb_print'
+    STEP = 'step'
 
     def __init__(self, otype):
         self.type = otype
@@ -454,6 +476,8 @@ class OutputOptions(object):
             self.type_options = SchPrintOptions()
         elif otype == self.PDF_PCB_PRINT:
             self.type_options = PcbPrintOptions()
+        elif otype == self.STEP:
+            self.type_options = StepOptions()
         else:  # pragma: no cover
             # If we get here it means the above if is incomplete
             raise KiPlotConfigurationError("Output options not implemented for "+otype)

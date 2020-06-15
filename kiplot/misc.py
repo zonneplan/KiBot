@@ -19,6 +19,7 @@ PLOT_ERROR = 14
 NO_YAML_MODULE = 15
 NO_PCBNEW_MODULE = 16
 CORRUPTED_PCB = 17
+KICAD2STEP_ERR = 18
 
 CMD_EESCHEMA_DO = 'eeschema_do'
 URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/kicad-automation-scripts'
@@ -30,3 +31,4 @@ CMD_KIBOM = 'KiBOM_CLI.py'
 URL_KIBOM = 'https://github.com/INTI-CMNB/KiBoM'
 CMD_IBOM = 'generate_interactive_bom.py'
 URL_IBOM = 'https://github.com/INTI-CMNB/InteractiveHtmlBom'
+KICAD2STEP = 'kicad2step'

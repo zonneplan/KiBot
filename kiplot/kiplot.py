@@ -123,6 +123,8 @@ class Plotter(object):
                         self._do_sch_print(output_dir, op, brd_file)
                     elif self._output_is_pcb_print(op):
                         self._do_pcb_print(board, output_dir, op, brd_file)
+                    elif self._output_is_step(op):
+                        self._do_step(output_dir, op, brd_file)
                     else:  # pragma no cover
                         # We shouldn't get here, means the above if is incomplete
                         plot_error("Don't know how to plot type "+op.options.type)
@@ -268,6 +270,9 @@ class Plotter(object):
 
     def _output_is_pcb_print(self, output):
         return output.options.type == PCfg.OutputOptions.PDF_PCB_PRINT
+
+    def _output_is_step(self, output):
+        return output.options.type == PCfg.OutputOptions.STEP
 
     def _output_is_bom(self, output):
         return output.options.type in [
@@ -601,6 +606,45 @@ class Plotter(object):
             new = os.path.abspath(os.path.join(output_dir, to.output))
             logger.debug('Moving '+cur+' -> '+new)
             os.rename(cur, new)
+
+    def _do_step(self, output_dir, op, brd_file):
+        to = op.options.type_options
+        # Output file name
+        output = to.output
+        if output is None:
+            output = os.path.splitext(os.path.basename(brd_file))[0]+'.step'
+        output = os.path.abspath(os.path.join(output_dir, output))
+        # Make units explicit
+        if to.metric_units:
+            units = 'mm'
+        else:
+            units = 'in'
+        # Base command with overwrite
+        cmd = [misc.KICAD2STEP, '-o', output, '-f']
+        # Add user options
+        if to.no_virtual:
+            cmd.append('--no-virtual')
+        if to.min_distance is not None:
+            cmd.append('--min-distance="{}{}"'.format(to.min_distance, units))
+        if to.origin == 'drill':
+            cmd.append('--drill-origin')
+        elif to.origin == 'grid':
+            cmd.append('--grid-origin')
+        else:
+            to.origin.replace(',', 'x')
+            cmd.append('--user-origin="{}{}"'.format(to.origin, units))
+        # The board
+        cmd.append(brd_file)
+        # Execute and inform is successful
+        logger.debug('Executing: '+str(cmd))
+        try:
+            cmd_output = check_output(cmd, stderr=STDOUT)
+        except CalledProcessError as e:
+            logger.error('Failed to create Step file, error %d', e.returncode)
+            if e.output:
+                logger.debug('Output from command: '+e.output.decode())
+            exit(misc.KICAD2STEP_ERR)
+        logger.debug('Output from command:\n'+cmd_output.decode())
 
     def _do_pcb_print(self, board, output_dir, output, brd_file):
         check_script(misc.CMD_PCBNEW_PRINT_LAYERS,
