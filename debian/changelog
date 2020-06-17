@@ -1,3 +1,9 @@
+kiplot.inti-cmnb (0.4.0-1) stable; urgency=medium
+
+  * Added STEP 3D model generation
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Wed, 17 Jun 2020 15:38:08 -0300
+
 kiplot.inti-cmnb (0.3.0-1) stable; urgency=medium
 
   * Added better debug information when a BoM fails to be generated.
