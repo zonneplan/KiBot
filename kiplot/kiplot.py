@@ -708,6 +708,8 @@ class Plotter(object):
         check_script(misc.CMD_IBOM, misc.URL_IBOM)
         prj = os.path.splitext(os.path.relpath(brd_file))[0]
         logger.debug('Doing Interactive BoM, prj: '+prj)
+        # Tell ibom we don't want to use the screen
+        os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = ''
         cmd = [misc.CMD_IBOM, brd_file,
                '--dest-dir', output_dir,
                '--no-browser', ]
