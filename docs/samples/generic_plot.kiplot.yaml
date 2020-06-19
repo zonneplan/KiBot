@@ -3,10 +3,18 @@ kiplot:
   version: 1
 
 preflight:
-
-  # one day....
-  check_zone_fills: false
-  run_drc: false
+   run_drc: true
+   run_erc: true
+   update_xml: true
+   check_zone_fills: true
+   ignore_unconnected: false
+   filters:
+     - filter: 'Ignore C3 pad 2 too close to anything'
+       number: 4
+       regex:  'Pad 2 of C3'
+     - filter: 'Ignore unconnected pad 2 of C4'
+       number: 2
+       regex:  'Pad 2 of C4'
 
 outputs:
 
@@ -72,7 +80,6 @@ outputs:
     options:
       exclude_edge_layer: false
       exclude_pads_from_silkscreen: false
-      use_aux_axis_as_origin: false
       plot_sheet_reference: false
       plot_footprint_refs: true
       plot_footprint_values: true
@@ -114,9 +121,8 @@ outputs:
       tent_vias: true
       check_zone_fills: true
 
-      # PS options
+      # DXF options
       drill_marks: full
-      sketch_plot: true
       use_aux_axis_as_origin: false
       polygon_mode: true
     layers:
@@ -132,7 +138,6 @@ outputs:
     options:
       exclude_edge_layer: false
       exclude_pads_from_silkscreen: false
-      use_aux_axis_as_origin: false
       plot_sheet_reference: false
       plot_footprint_refs: true
       plot_footprint_values: true
@@ -158,7 +163,6 @@ outputs:
     options:
       exclude_edge_layer: false
       exclude_pads_from_silkscreen: false
-      use_aux_axis_as_origin: false
       plot_sheet_reference: false
       plot_footprint_refs: true
       plot_footprint_values: true
@@ -185,7 +189,6 @@ outputs:
     options:
       exclude_edge_layer: false
       exclude_pads_from_silkscreen: false
-      use_aux_axis_as_origin: false
       plot_sheet_reference: false
       plot_footprint_refs: true
       plot_footprint_values: true
@@ -204,13 +207,54 @@ outputs:
       - layer: B.SilkS
         suffix: B_Silks
 
+  - name: 'position'
+    type: position
+    dir: positiondir
+    options:
+      format: CSV   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: true
+      only_smd: true
+
+  - name: 'print_sch'
+    comment: "Print schematic (PDF)"
+    type: pdf_sch_print
+    dir: .
+    options:
+      output: Schematic.pdf
+
+  - name: 'print_front'
+    comment: "Print F.Cu+Dwgs.User"
+    type: pdf_pcb_print
+    dir: .
+    options:
+      output_name: PCB_Top.pdf
+    layers:
+      - layer: F.Cu
+      - layer: Dwgs.User
+
   - name: Step
     comment: "Generate 3D model (STEP)"
     type: step
     dir: 3D
     options:
-      units: millimeters  # millimeters or inches
+      metric_units: true
       origin: grid        # "grid" or "drill" o "X,Y"
       no_virtual: false   # exclude 3D models for components with 'virtual' attribute
       #min_distance: 0.01 # Minimum distance between points to treat them as separate ones (default 0.01 mm)
+
+  - name: 'interactive_bom'
+    comment: "Interactive Bill of Materials (HTML)"
+    type: ibom
+    dir: BoM
+    options:
+      blacklist: 'DNF*'
+      name_format: '%f_%r_iBoM'
+
+  - name: 'bom_html'
+    comment: "Bill of Materials in HTML format"
+    type: kibom
+    dir: BoM
+    options:
+      format: HTML  # HTML or CSV
 
