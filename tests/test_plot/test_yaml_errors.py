@@ -14,7 +14,6 @@ Tests various errors in the config file
 - No output:
   - name
   - type
-  - options
   - layers
 
 For debug information use:
@@ -35,7 +34,7 @@ from kiplot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR)
 def test_no_version():
     ctx = context.TestContext('ErrorNoVersion', '3Rs', 'error_no_version', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err('YAML config needs kiplot.version')
+    assert ctx.search_err('YAML config needs `kiplot.version`.')
     ctx.clean_up()
 
 
@@ -49,14 +48,14 @@ def test_wrong_version():
 def test_drill_map_no_type():
     ctx = context.TestContext('ErrorDrillMapNoType', '3Rs', 'error_drill_map_no_type', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Missing `type' in drill map section")
+    assert ctx.search_err("Empty drill `map` section")
     ctx.clean_up()
 
 
 def test_drill_map_wrong_type():
     ctx = context.TestContext('ErrorDrillMapWrongType', '3Rs', 'error_drill_map_wrong_type', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Unknown drill map type: bogus")
+    assert ctx.search_err("Unknown drill `map` `type`: bogus")
     ctx.clean_up()
 
 
@@ -70,7 +69,7 @@ def test_wrong_layer_1():
 def test_wrong_layer_2():
     ctx = context.TestContext('ErrorWrongLayer2', '3Rs', 'error_wrong_layer_2', None)
     ctx.run(PLOT_ERROR)
-    assert ctx.search_err("Inner layer 1 is not valid for this board")
+    assert ctx.search_err("Inner layer (.*) is not valid for this board")
     ctx.clean_up()
 
 
@@ -91,21 +90,22 @@ def test_no_name():
 def test_no_type():
     ctx = context.TestContext('ErrorNoType', '3Rs', 'error_no_type', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Output 'PDF' needs a type")
+    assert ctx.search_err("Output .PDF. needs a type")
     ctx.clean_up()
 
 
-def test_no_options():
-    ctx = context.TestContext('ErrorNoOptions', '3Rs', 'error_no_options', None)
-    ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Output 'PDF' needs options")
-    ctx.clean_up()
+# Now is valid
+# def test_no_options():
+#     ctx = context.TestContext('ErrorNoOptions', '3Rs', 'error_no_options', None)
+#     ctx.run(EXIT_BAD_CONFIG)
+#     assert ctx.search_err("Output .PDF. needs options")
+#     ctx.clean_up()
 
 
 def test_no_layers():
     ctx = context.TestContext('ErrorNoLayers', '3Rs', 'error_no_layers', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("You must specify the layers for `PDF`")
+    assert ctx.search_err("Missing `layers` list")
     ctx.clean_up()
 
 
@@ -119,5 +119,5 @@ def test_error_step_origin():
 def test_error_step_min_distance():
     ctx = context.TestContext('ErrorStepMinDistance', 'bom', 'error_step_min_distance', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("min_distance must be a number")
+    assert ctx.search_err("`min_distance` must be a number")
     ctx.clean_up()

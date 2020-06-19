@@ -56,9 +56,9 @@ def test_skip_pre_and_outputs_2():
     ctx.run(extra=['-s', 'run_erc,update_xml,run_drc', '-i'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
-    assert ctx.search_err('Skipping run_erc')
-    assert ctx.search_err('Skipping run_drc')
-    assert ctx.search_err('Skipping update_xml')
+    assert ctx.search_err('Skipping .?run_erc')
+    assert ctx.search_err('Skipping .?run_drc')
+    assert ctx.search_err('Skipping .?update_xml')
     assert ctx.search_err('Skipping all outputs')
 
     ctx.clean_up()
@@ -81,7 +81,7 @@ def test_skip_pre_and_outputs_4():
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'bogus'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
-    assert ctx.search_err('Unknown action to skip: bogus')
+    assert ctx.search_err('Unknown preflight .?bogus')
 
     ctx.clean_up()
 
@@ -92,7 +92,7 @@ def test_unknown_out():
     ctx.run(EXIT_BAD_CONFIG)
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
-    assert ctx.search_err("Unknown output type 'bogus'")
+    assert ctx.search_err("Unknown output type:? .?bogus")
 
     ctx.clean_up()
 
@@ -104,13 +104,13 @@ def test_select_output():
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
     ctx.expect_out_file(ctx.get_pos_both_filename())
-    assert ctx.search_err('Skipping position output')
+    assert ctx.search_err('Skipping (.*)position(.*) output')
 
     ctx.clean_up()
 
 
 def test_miss_sch():
-    prj = '3Rs'
+    prj = 'fail-project'
     ctx = context.TestContext('MissingSCH', prj, 'pre_and_position', POS_DIR)
     ctx.run(NO_SCH_FILE, extra=['pos_ascii'])
 
@@ -211,7 +211,7 @@ def test_list():
     assert ctx.search_err('run_erc: True')
     assert ctx.search_err('run_drc: True')
     assert ctx.search_err('update_xml: True')
-    assert ctx.search_err(r'position \(Pick and place file\) \[position\]')
-    assert ctx.search_err(r'pos_ascii \(Pick and place file\) \[position\]')
+    assert ctx.search_err(r'Pick and place file.? \(position\) \[position\]')
+    assert ctx.search_err(r'Pick and place file.? \(pos_ascii\) \[position\]')
 
     ctx.clean_up()
