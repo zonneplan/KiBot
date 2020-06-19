@@ -7,9 +7,35 @@ import sys
 
 import pcbnew
 
-from . import plot_config as PC
+from .error import (KiPlotConfigurationError)
+from .kiplot import (Layer, get_layer_id_from_pcb)
+from .misc import (NO_YAML_MODULE, EXIT_BAD_CONFIG)
+# Output classes
+from .out_base import BaseOutput
+from . import out_gerber          # noqa: F401
+from . import out_ps              # noqa: F401
+from . import out_hpgl            # noqa: F401
+from . import out_dxf             # noqa: F401
+from . import out_pdf             # noqa: F401
+from . import out_svg             # noqa: F401
+from . import out_gerb_drill      # noqa: F401
+from . import out_excellon        # noqa: F401
+from . import out_position        # noqa: F401
+from . import out_step            # noqa: F401
+from . import out_kibom           # noqa: F401
+from . import out_ibom            # noqa: F401
+from . import out_pdf_sch_print   # noqa: F401
+from . import out_pdf_pcb_print   # noqa: F401
+# PreFlight classes
+from .pre_base import BasePreFlight
+from . import pre_drc                 # noqa: F401
+from . import pre_erc                 # noqa: F401
+from . import pre_update_xml          # noqa: F401
+from . import pre_check_zone_fills    # noqa: F401
+from . import pre_ignore_unconnected  # noqa: F401
+from . import pre_filters             # noqa: F401
+# Logger
 from . import log
-from . import misc
 
 logger = log.get_logger(__name__)
 
@@ -18,431 +44,33 @@ try:
 except ImportError:  # pragma: no cover
     log.init(False, False)
     logger.error('No yaml module for Python, install python3-yaml')
-    sys.exit(misc.NO_YAML_MODULE)
-
-
-# note - type IDs are strings form the _config_, not the internal
-# strings used as enums (in plot_config)
-ANY_LAYER = ['gerber', 'ps', 'svg', 'hpgl', 'pdf', 'dxf']
-ANY_DRILL = ['excellon', 'gerb_drill']
-
-
-class CfgReader(object):
-    def __init__(self):
-        pass
+    sys.exit(NO_YAML_MODULE)
 
 
 def config_error(msg):
     logger.error(msg)
-    sys.exit(misc.EXIT_BAD_CONFIG)
+    sys.exit(EXIT_BAD_CONFIG)
 
 
-def load_layers(kicad_pcb_file):
-    layer_names = ['-']*50
-    pcb_file = open(kicad_pcb_file, "r")
-    collect_layers = False
-    for line in pcb_file:
-        if collect_layers:
-            z = re.match(r'\s+\((\d+)\s+(\S+)', line)
-            if z:
-                res = z.groups()
-                # print(res[1]+'->'+res[0])
-                layer_names[int(res[0])] = res[1]
-            else:
-                if re.search(r'^\s+\)$', line):
-                    collect_layers = False
-                    break
-        else:
-            if re.search(r'\s+\(layers', line):
-                collect_layers = True
-    pcb_file.close()
-    return layer_names
-
-
-class CfgYamlReader(CfgReader):
-
+class CfgYamlReader(object):
     def __init__(self, brd_file):
         super(CfgYamlReader, self).__init__()
-        self.layer_names = load_layers(brd_file)
 
-    def _check_version(self, data):
-
-        try:
-            version = data['kiplot']['version']
-        except (KeyError, TypeError):
-            config_error("YAML config needs kiplot.version.")
-
+    def _check_version(self, v):
+        if not isinstance(v, dict):
+            config_error("Incorrect `kiplot` section")
+        if 'version' not in v:
+            config_error("YAML config needs `kiplot.version`.")
+        version = v['version']
+        # Only version 1 is known
         if version != 1:
             config_error("Unknown KiPlot config version: "+str(version))
-
         return version
-
-    def _get_required(self, data, key, context=None):
-
-        try:
-            val = data[key]
-        except (KeyError, TypeError):
-            config_error("Missing `"+key+"' "+(''
-                         if context is None else context))
-
-        return val
-
-    def _parse_drill_map(self, map_opts):
-
-        mo = PC.DrillMapOptions()
-
-        TYPES = {
-            'hpgl': pcbnew.PLOT_FORMAT_HPGL,
-            'ps': pcbnew.PLOT_FORMAT_POST,
-            'gerber': pcbnew.PLOT_FORMAT_GERBER,
-            'dxf': pcbnew.PLOT_FORMAT_DXF,
-            'svg': pcbnew.PLOT_FORMAT_SVG,
-            'pdf': pcbnew.PLOT_FORMAT_PDF
-        }
-
-        type_s = self._get_required(map_opts, 'type', 'in drill map section')
-
-        try:
-            mo.type = TYPES[type_s]
-        except KeyError:
-            config_error("Unknown drill map type: "+type_s)
-
-        return mo
-
-    def _parse_drill_report(self, report_opts):
-
-        opts = PC.DrillReportOptions()
-
-        opts.filename = self._get_required(report_opts, 'filename',
-                                           'in drill report section')
-
-        return opts
-
-    def _perform_config_mapping(self, otype, cfg_options, mapping_list,
-                                target, name):
-        """
-        Map a config dict onto a target object given a mapping list
-        """
-
-        for mapping in mapping_list:
-
-            # if this output type matches the mapping specification:
-            if otype in mapping['types']:
-
-                key = mapping['key']
-
-                # set the internal option as needed
-                if mapping['required'](cfg_options):
-
-                    cfg_val = self._get_required(cfg_options, key, 'in ' +
-                                                 otype + ' section')
-                elif not(cfg_options is None) and key in cfg_options:
-                    # not required but given anyway
-                    cfg_val = cfg_options[key]
-                else:
-                    continue
-
-                # transform the value if needed
-                if 'transform' in mapping:
-                    cfg_val = mapping['transform'](cfg_val)
-
-                try:
-                    setattr(target, mapping['to'], cfg_val)
-                except PC.KiPlotConfigurationError as e:
-                    config_error("In section '"+name+"' ("+otype+"): "+str(e))
-
-    def _parse_out_opts(self, otype, options, name):
-
-        # mappings from YAML keys to type_option keys
-        MAPPINGS = [
-            {
-                'key': 'use_aux_axis_as_origin',
-                'types': ['gerber', 'dxf'],
-                'to': 'use_aux_axis_as_origin',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'exclude_edge_layer',
-                'types': ANY_LAYER,
-                'to': 'exclude_edge_layer',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'exclude_pads_from_silkscreen',
-                'types': ANY_LAYER,
-                'to': 'exclude_pads_from_silkscreen',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'plot_sheet_reference',
-                'types': ANY_LAYER,
-                'to': 'plot_sheet_reference',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'plot_footprint_refs',
-                'types': ANY_LAYER,
-                'to': 'plot_footprint_refs',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'plot_footprint_values',
-                'types': ANY_LAYER,
-                'to': 'plot_footprint_values',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'force_plot_invisible_refs_vals',
-                'types': ANY_LAYER,
-                'to': 'force_plot_invisible_refs_vals',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'tent_vias',
-                'types': ANY_LAYER,
-                'to': 'tent_vias',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'check_zone_fills',
-                'types': ANY_LAYER,
-                'to': 'check_zone_fills',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'line_width',
-                'types': ['gerber', 'ps', 'svg', 'pdf'],
-                'to': 'line_width',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'subtract_mask_from_silk',
-                'types': ['gerber'],
-                'to': 'subtract_mask_from_silk',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'mirror_plot',
-                'types': ['ps', 'svg', 'hpgl', 'pdf'],
-                'to': 'mirror_plot',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'negative_plot',
-                'types': ['ps', 'svg', 'pdf'],
-                'to': 'negative_plot',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'sketch_plot',
-                'types': ['ps', 'hpgl'],
-                'to': 'sketch_plot',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'scaling',
-                'types': ['ps', 'hpgl'],
-                'to': 'scaling',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'drill_marks',
-                'types': ['ps', 'svg', 'dxf', 'hpgl', 'pdf'],
-                'to': 'drill_marks',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'use_protel_extensions',
-                'types': ['gerber'],
-                'to': 'use_protel_extensions',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'gerber_precision',
-                'types': ['gerber'],
-                'to': 'gerber_precision',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'create_gerber_job_file',
-                'types': ['gerber'],
-                'to': 'create_gerber_job_file',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'use_gerber_x2_attributes',
-                'types': ['gerber'],
-                'to': 'use_gerber_x2_attributes',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'use_gerber_net_attributes',
-                'types': ['gerber'],
-                'to': 'use_gerber_net_attributes',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'scale_adjust_x',
-                'types': ['ps'],
-                'to': 'scale_adjust_x',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'scale_adjust_y',
-                'types': ['ps'],
-                'to': 'scale_adjust_y',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'width_adjust',
-                'types': ['ps'],
-                'to': 'width_adjust',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'a4_output',
-                'types': ['ps'],
-                'to': 'a4_output',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'pen_width',
-                'types': ['hpgl'],
-                'to': 'pen_width',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'polygon_mode',
-                'types': ['dxf'],
-                'to': 'polygon_mode',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'use_aux_axis_as_origin',
-                'types': ANY_DRILL,
-                'to': 'use_aux_axis_as_origin',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'map',
-                'types': ANY_DRILL,
-                'to': 'map_options',
-                'required': lambda opts: False,
-                'transform': self._parse_drill_map
-            },
-            {
-                'key': 'report',
-                'types': ANY_DRILL,
-                'to': 'report_options',
-                'required': lambda opts: False,
-                'transform': self._parse_drill_report
-            },
-            {
-                'key': 'metric_units',
-                'types': ['excellon', 'step'],
-                'to': 'metric_units',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'pth_and_npth_single_file',
-                'types': ['excellon'],
-                'to': 'pth_and_npth_single_file',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'minimal_header',
-                'types': ['excellon'],
-                'to': 'minimal_header',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'mirror_y_axis',
-                'types': ['excellon'],
-                'to': 'mirror_y_axis',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'format',
-                'types': ['position', 'kibom'],
-                'to': 'format',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'units',
-                'types': ['position'],
-                'to': 'units',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'separate_files_for_front_and_back',
-                'types': ['position'],
-                'to': 'separate_files_for_front_and_back',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'only_smd',
-                'types': ['position'],
-                'to': 'only_smd',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'blacklist',
-                'types': ['ibom'],
-                'to': 'blacklist',
-                'required': lambda opts: False,
-            },
-            {
-                'key': 'name_format',
-                'types': ['ibom'],
-                'to': 'name_format',
-                'required': lambda opts: False,
-            },
-            {
-                'key': 'output',
-                'types': ['pdf_sch_print'],
-                'to': 'output',
-                'required': lambda opts: False,
-            },
-            {
-                'key': 'output_name',
-                'types': ['pdf_pcb_print'],
-                'to': 'output_name',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'origin',
-                'types': ['step'],
-                'to': 'origin',
-                'required': lambda opts: True,
-            },
-            {
-                'key': 'no_virtual',
-                'types': ['step'],
-                'to': 'no_virtual',
-                'required': lambda opts: False,
-            },
-            {
-                'key': 'min_distance',
-                'types': ['step'],
-                'to': 'min_distance',
-                'required': lambda opts: False,
-            },
-        ]
-
-        po = PC.OutputOptions(otype)
-
-        # options that apply to the specific output type
-        to = po.type_options
-
-        self._perform_config_mapping(otype, options, MAPPINGS, to, name)
-
-        return po
 
     def _get_layer_from_str(self, s):
         """
         Get the pcbnew layer from a string in the config
         """
-
         D = {
             'F.Cu': pcbnew.F_Cu,
             'B.Cu': pcbnew.B_Cu,
@@ -465,97 +93,112 @@ class CfgYamlReader(CfgReader):
             'F.Fab': pcbnew.F_Fab,
             'B.Fab': pcbnew.B_Fab,
         }
-
         layer = None
-
         # Priority
         # 1) Internal list
         if s in D:
-            layer = PC.LayerInfo(D[s], False, s)
+            layer = Layer(D[s], False, s)
         else:
-            try:
+            id = get_layer_id_from_pcb(s)
+            if id is not None:
                 # 2) List from the PCB
-                id = self.layer_names.index(s)
-                layer = PC.LayerInfo(id, id < pcbnew.B_Cu, s)
-            except ValueError:
+                layer = Layer(id, id < pcbnew.B_Cu, s)
+            elif s.startswith("Inner"):
                 # 3) Inner.N names
-                if s.startswith("Inner"):
-                    m = re.match(r"^Inner\.([0-9]+)$", s)
-                    if not m:
-                        config_error('Malformed inner layer name: ' +
-                                     s + ', use Inner.N')
+                m = re.match(r"^Inner\.([0-9]+)$", s)
+                if not m:
+                    raise KiPlotConfigurationError("Malformed inner layer name: {}, use Inner.N".format(s))
+                layer = Layer(int(m.group(1)), True, s)
+            else:
+                raise KiPlotConfigurationError('Unknown layer name: '+s)
+        return layer
 
-                    layer = PC.LayerInfo(int(m.group(1)), True, s)
+    def _parse_layers(self, layers_to_parse):
+        # Check we have a list of layers
+        if not layers_to_parse:
+            raise KiPlotConfigurationError("Missing `layers` definition")
+        if not isinstance(layers_to_parse, list):
+            raise KiPlotConfigurationError("`layers` must be a list")
+        # Parse the elements
+        layers = []
+        for l in layers_to_parse:
+            # Check they are dictionaries
+            if not isinstance(l, dict):
+                raise KiPlotConfigurationError("Malformed `layer` entry ({})".format(l))
+            # Extract the attributes
+            layer = None
+            description = 'no desc'
+            suffix = ''
+            for k, v in l.items():
+                if k == 'layer':
+                    layer = v
+                elif k == 'description':
+                    description = v
+                elif k == 'suffix':
+                    suffix = v
                 else:
-                    config_error('Unknown layer name: '+s)
-        return layer
-
-    def _parse_layer(self, l_obj, context):
-
-        l_str = self._get_required(l_obj, 'layer', context)
-        layer_id = self._get_layer_from_str(l_str)
-        layer = PC.LayerConfig(layer_id)
-
-        layer.desc = l_obj['description'] if 'description' in l_obj else None
-        layer.suffix = l_obj['suffix'] if 'suffix' in l_obj else ""
-
-        return layer
+                    raise KiPlotConfigurationError("Unknown {} attribute for `layer`".format(v))
+            # Check we got the layer name
+            if layer is None:
+                raise KiPlotConfigurationError("Missing `layer` attribute for layer entry ({})".format(l))
+            # Create an object for it
+            layer = self._get_layer_from_str(layer)
+            layer.set_extra(suffix, description)
+            layers.append(layer)
+        return layers
 
     def _parse_output(self, o_obj):
-
-        try:
-            name = o_obj['name']
-        except KeyError:
+        # Default values
+        name = None
+        desc = None
+        otype = None
+        options = None
+        outdir = '.'
+        layers = []
+        # Parse all of them
+        for k, v in o_obj.items():
+            if k == 'name':
+                name = v
+            elif k == 'comment':
+                desc = v
+            elif k == 'type':
+                otype = v
+            elif k == 'options':
+                options = v
+            elif k == 'dir':
+                outdir = v
+            elif k == 'layers':
+                layers = v
+            else:
+                config_error("Unknown key `{}` in `{}` ({})".format(k, name, otype))
+        # Validate them
+        if not name:
             config_error("Output needs a name in: "+str(o_obj))
+        if not otype:
+            config_error("Output `"+name+"` needs a type")
+        name_type = "`"+name+"` ("+otype+")"
 
+        # Is a valid type?
+        if not BaseOutput.is_registered(otype):
+            config_error("Unknown output type: `{}`".format(otype))
+        # Load it
+        logger.debug("Parsing output options for "+name_type)
+        o_out = BaseOutput.get_class_for(otype)(name, otype, desc)
+        # Apply the options
         try:
-            desc = o_obj['comment']
-        except KeyError:
-            desc = None
+            # If we have layers parse them
+            if layers:
+                layers = self._parse_layers(layers)
+            o_out.config(outdir, options, layers)
+        except KiPlotConfigurationError as e:
+            config_error("In section '"+name+"' ("+otype+"): "+str(e))
 
-        try:
-            otype = o_obj['type']
-        except KeyError:
-            config_error("Output '"+name+"' needs a type")
+        return o_out
 
-        if otype not in ['gerber', 'ps', 'hpgl', 'dxf', 'pdf', 'svg',
-                         'gerb_drill', 'excellon', 'position', 'step',
-                         'kibom', 'ibom', 'pdf_sch_print', 'pdf_pcb_print']:
-            config_error("Unknown output type '"+otype+"' in '"+name+"'")
-
-        try:
-            options = o_obj['options']
-        except KeyError:
-            if otype not in ['ibom', 'pdf_sch_print']:
-                config_error("Output '"+name+"' needs options")
-            options = None
-
-        logger.debug("Parsing output options for {} ({})".format(name, otype))
-
-        outdir = self._get_required(o_obj, 'dir', 'in section `' + name +
-                                    '` ('+otype+')')
-
-        output_opts = self._parse_out_opts(otype, options, name)
-
-        o_cfg = PC.PlotOutput(name, desc, otype, output_opts)
-        o_cfg.outdir = outdir
-
-        try:
-            layers = o_obj['layers']
-        except KeyError:
-            if otype == 'pdf_pcb_print' or otype in ANY_LAYER:
-                logger.error('You must specify the layers for `' + name +
-                             '` ('+otype+')')
-                sys.exit(misc.EXIT_BAD_CONFIG)
-            layers = []
-
-        for l in layers:
-            o_cfg.layers.append(self._parse_layer(l, 'in section ' + name +
-                                ' ('+otype+')'))
-
-        return o_cfg
-
-    def _parse_filters(self, filters, cfg):
+    def _parse_filters(self, filters):
+        if not isinstance(filters, list):
+            config_error("'filters' must be a list")
+        parsed = None
         for filter in filters:
             if 'filter' in filter:
                 comment = filter['filter']
@@ -571,31 +214,32 @@ class CfgYamlReader(CfgReader):
                         config_error("empty 'regex' in 'filter' definition ("+str(filter)+")")
                 else:
                     config_error("missing 'regex' for 'filter' definition ("+str(filter)+")")
-                cfg.add_filter(comment, number, regex)
+                logger.debug("Adding DRC/ERC filter '{}','{}','{}'".format(comment, number, regex))
+                if parsed is None:
+                    parsed = ''
+                if not comment:
+                    parsed += '# '+comment+'\n'
+                parsed += '{},{}\n'.format(number, regex)
             else:
                 config_error("'filters' section of 'preflight' must contain 'filter' definitions (not "+str(filter)+")")
+        return parsed
 
-    def _parse_preflight(self, pf, cfg):
-
+    def _parse_preflight(self, pf):
         logger.debug("Parsing preflight options: {}".format(pf))
+        if not isinstance(pf, dict):
+            config_error("Incorrect `preflight` section")
 
-        if 'check_zone_fills' in pf:
-            cfg.check_zone_fills = pf['check_zone_fills']
-
-        if 'run_drc' in pf:
-            cfg.run_drc = pf['run_drc']
-
-        if 'run_erc' in pf:
-            cfg.run_erc = pf['run_erc']
-
-        if 'update_xml' in pf:
-            cfg.update_xml = pf['update_xml']
-
-        if 'ignore_unconnected' in pf:
-            cfg.ignore_unconnected = pf['ignore_unconnected']
-
-        if 'filters' in pf:
-            self._parse_filters(pf['filters'], cfg)
+        for k, v in pf.items():
+            if not BasePreFlight.is_registered(k):
+                config_error("Unknown preflight: `{}`".format(k))
+            try:
+                logger.debug("Parsing preflight "+k)
+                if k == 'filters':
+                    v = self._parse_filters(v)
+                o_pre = BasePreFlight.get_class_for(k)(k, v)
+            except KiPlotConfigurationError as e:
+                config_error("In preflight '"+k+"': "+str(e))
+            BasePreFlight.add_preflight(o_pre)
 
     def read(self, fstream):
         """
@@ -603,24 +247,28 @@ class CfgYamlReader(CfgReader):
 
         :param fstream: file stream of a config YAML file
         """
-
         try:
             data = yaml.load(fstream)
-        except yaml.YAMLError:
-            config_error("Error loading YAML")
-
-        self._check_version(data)
-
-        cfg = PC.PlotConfig()
-
-        if 'preflight' in data:
-            self._parse_preflight(data['preflight'], cfg)
-
-        try:
-            for o in data['outputs']:
-                op_cfg = self._parse_output(o)
-                cfg.add_output(op_cfg)
-        except KeyError:
-            pass
-
-        return cfg
+        except yaml.YAMLError as e:
+            config_error("Error loading YAML "+str(e))
+        # List of outputs
+        outputs = []
+        version = None
+        # Analize each section
+        for k, v in data.items():
+            # logger.debug('{} {}'.format(k, v))
+            if k == 'kiplot':
+                version = self._check_version(v)
+            elif k == 'preflight':
+                self._parse_preflight(v)
+            elif k == 'outputs':
+                if isinstance(v, list):
+                    for o in v:
+                        outputs.append(self._parse_output(o))
+                else:
+                    config_error("`outputs` must be a list")
+            else:
+                logger.warning('Skipping unknown `{}` section in config.'.format(k))
+        if version is None:
+            config_error("YAML config needs `kiplot.version`.")
+        return outputs
