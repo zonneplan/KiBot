@@ -115,29 +115,24 @@ class CfgYamlReader(object):
 
     def _parse_layers(self, layers_to_parse):
         # Check we have a list of layers
-        if not layers_to_parse:
-            raise KiPlotConfigurationError("Missing `layers` definition")
         if not isinstance(layers_to_parse, list):
             raise KiPlotConfigurationError("`layers` must be a list")
         # Parse the elements
         layers = []
         for l in layers_to_parse:
-            # Check they are dictionaries
-            if not isinstance(l, dict):
-                raise KiPlotConfigurationError("Malformed `layer` entry ({})".format(l))
             # Extract the attributes
             layer = None
             description = 'no desc'
             suffix = ''
             for k, v in l.items():
                 if k == 'layer':
-                    layer = v
+                    layer = str(v)
                 elif k == 'description':
-                    description = v
+                    description = str(v)
                 elif k == 'suffix':
-                    suffix = v
+                    suffix = str(v)
                 else:
-                    raise KiPlotConfigurationError("Unknown {} attribute for `layer`".format(v))
+                    raise KiPlotConfigurationError("Unknown `{}` attribute for `layer`".format(k))
             # Check we got the layer name
             if layer is None:
                 raise KiPlotConfigurationError("Missing `layer` attribute for layer entry ({})".format(l))
@@ -217,7 +212,7 @@ class CfgYamlReader(object):
                 logger.debug("Adding DRC/ERC filter '{}','{}','{}'".format(comment, number, regex))
                 if parsed is None:
                     parsed = ''
-                if not comment:
+                if comment:
                     parsed += '# '+comment+'\n'
                 parsed += '{},{}\n'.format(number, regex)
             else:
@@ -268,7 +263,7 @@ class CfgYamlReader(object):
                 else:
                     config_error("`outputs` must be a list")
             else:
-                logger.warning('Skipping unknown `{}` section in config.'.format(k))
+                config_error('Unknown section `{}` in config.'.format(k))
         if version is None:
             config_error("YAML config needs `kiplot.version`.")
         return outputs

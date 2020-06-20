@@ -1,0 +1,6 @@
+kiplot: 1
+
+preflight:
+  run_drc: true
+
+

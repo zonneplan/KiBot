@@ -1,6 +1,7 @@
 """
-Tests of simple 2-layer PCBs.
-We generate the gerbers.
+Tests of Gerber format.
+- Simple 2 layers
+- Inner layer
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -19,7 +20,7 @@ from utils import context
 GERBER_DIR = 'gerberdir'
 
 
-def test_2layer():
+def test_gerber_2layer():
     prj = 'simple_2layer'
     ctx = context.TestContext('Simple_2_layer', prj, prj, GERBER_DIR)
     ctx.run()
@@ -36,4 +37,15 @@ def test_2layer():
     # expect a flash for the square pad
     ctx.expect_gerber_flash_at(f_cu, 5, (140, -100))
 
+    ctx.clean_up()
+
+
+def test_gerber_inner():
+    prj = 'good-project'
+    ctx = context.TestContext('Gerber_Inner', prj, 'gerber_inner', GERBER_DIR)
+    ctx.run()
+
+    ctx.expect_out_file(ctx.get_gerber_filename('GND_Cu'))
+    ctx.expect_out_file(ctx.get_gerber_filename('Signal1'))
+    ctx.expect_out_file(ctx.get_gerber_job_filename())
     ctx.clean_up()
