@@ -243,7 +243,7 @@ class CfgYamlReader(object):
         :param fstream: file stream of a config YAML file
         """
         try:
-            data = yaml.load(fstream)
+            data = yaml.safe_load(fstream)
         except yaml.YAMLError as e:
             config_error("Error loading YAML "+str(e))
         # List of outputs
