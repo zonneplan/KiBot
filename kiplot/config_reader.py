@@ -10,6 +10,7 @@ import pcbnew
 from .error import (KiPlotConfigurationError)
 from .kiplot import (Layer, get_layer_id_from_pcb)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_CONFIG)
+from mcpy import activate
 # Output classes
 from .out_base import BaseOutput
 from . import out_gerber          # noqa: F401

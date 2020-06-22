@@ -2,6 +2,7 @@ from pcbnew import (PLOT_FORMAT_GERBER)
 from .out_base import (BaseOutput)
 from .out_any_layer import (AnyLayer)
 from .error import KiPlotConfigurationError
+from kiplot.macros import macros, document
 
 
 class Gerber(AnyLayer):
@@ -9,14 +10,16 @@ class Gerber(AnyLayer):
         super(Gerber, self).__init__(name, type, description)
         self._plot_format = PLOT_FORMAT_GERBER
         # Options
-        self.use_aux_axis_as_origin = False
-        self.line_width = 0.1
-        self.subtract_mask_from_silk = False
-        self.use_protel_extensions = False
-        self._gerber_precision = 4.6
-        self.create_gerber_job_file = True
-        self.use_gerber_x2_attributes = True
-        self.use_gerber_net_attributes = True
+        with document:
+            self.use_aux_axis_as_origin = False
+            """ Auxiliar origin """
+            self.line_width = 0.1
+            self.subtract_mask_from_silk = False
+            self.use_protel_extensions = False
+            self._gerber_precision = 4.6
+            self.create_gerber_job_file = True
+            self.use_gerber_x2_attributes = True
+            self.use_gerber_net_attributes = True
 
     @property
     def gerber_precision(self):
