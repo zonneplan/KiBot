@@ -1,15 +1,15 @@
 from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store)
 
 
-def document(sentences, to_source, **kw):
+def document(tree, **kw):
     """ This macro takes literal strings and converts them into:
         _help_ID = type_hint+STRING
         where:
         ID is the first target of the last assignment.
         type_hint is the assigned type and default value (only works for a few types)
         STRING is the literal string """
-    for n in range(len(sentences)):
-        s = sentences[n]
+    for n in range(len(tree)):
+        s = tree[n]
         if not n:
             prev = s
             continue
@@ -48,7 +48,7 @@ def document(sentences, to_source, **kw):
                 target = Attribute(value=Name(id='self', ctx=Load()), attr=doc_id, ctx=Store())
             else:
                 target = Name(id=doc_id, ctx=Store())
-            sentences[n] = Assign(targets=[target], value=Str(s=type_hint+s.value.s))
+            tree[n] = Assign(targets=[target], value=Str(s=type_hint+s.value.s))
         prev = s
     # Return the modified AST
-    return sentences
+    return tree

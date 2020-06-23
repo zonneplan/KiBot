@@ -1,6 +1,5 @@
 from mymacros import macros, document  # noqa: F401
 
-
 with document:
     # comentario a
     a = "5.1"
