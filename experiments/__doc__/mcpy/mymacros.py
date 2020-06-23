@@ -1,4 +1,5 @@
-from ast import *
+from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store)
+
 
 def document(sentences, to_source, **kw):
     """ This macro takes literal strings and converts them into:
@@ -15,7 +16,7 @@ def document(sentences, to_source, **kw):
         # The whole sentence is a string?
         if (isinstance(s, Expr) and isinstance(s.value, Str) and
            # and the previous is an assign
-           isinstance(prev, Assign)):
+           isinstance(prev, Assign)):  # noqa: E128
             # Apply it to the first target
             target = prev.targets[0]
             value = prev.value

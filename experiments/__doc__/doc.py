@@ -5,9 +5,11 @@ def my_decorator(func):
         print("Something is happening after the function is called.")
     return wrapper
 
+
 @my_decorator
 def say_whee():
     print("Whee!")
+
 
 class PP(object):
     """ Class PP bla bla """

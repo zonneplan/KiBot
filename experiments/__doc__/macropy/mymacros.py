@@ -1,7 +1,8 @@
 from macropy.core.macros import Macros
-from ast import *
+from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store)
 
 macros = Macros()
+
 
 @macros.block
 def document(tree, **kw):
@@ -19,7 +20,7 @@ def document(tree, **kw):
         # The whole sentence is a string?
         if (isinstance(s, Expr) and isinstance(s.value, Str) and
            # and the previous is an assign
-           isinstance(prev, Assign)):
+           isinstance(prev, Assign)):  # noqa: E128
             # Apply it to the first target
             target = prev.targets[0]
             value = prev.value
