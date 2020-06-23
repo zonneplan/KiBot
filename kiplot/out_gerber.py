@@ -2,7 +2,7 @@ from pcbnew import (PLOT_FORMAT_GERBER)
 from .out_base import (BaseOutput)
 from .out_any_layer import (AnyLayer)
 from .error import KiPlotConfigurationError
-from kiplot.macros import macros, document
+from kiplot.macros import macros, document  # noqa: F401
 
 
 class Gerber(AnyLayer):
@@ -20,6 +20,7 @@ class Gerber(AnyLayer):
             self.create_gerber_job_file = True
             self.use_gerber_x2_attributes = True
             self.use_gerber_net_attributes = True
+        #  print("Help for self.use_aux_axis_as_origin: "+self._help_use_aux_axis_as_origin)
 
     @property
     def gerber_precision(self):
