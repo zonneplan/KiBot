@@ -3,18 +3,26 @@ from subprocess import (check_output, STDOUT, CalledProcessError)
 from .out_base import (BaseOutput)
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR)
 from .kiplot import (GS, check_script)
+from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
 class IBoM(BaseOutput):
+    """ IBoM (Interactive HTML BoM)
+        Generates an interactive web page useful to identify the position of the components in the PCB.
+        For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
+        This output is what you get from the InteractiveHtmlBom plug-in (pcbnew). """
     def __init__(self, name, type, description):
         super(IBoM, self).__init__(name, type, description)
         self._sch_related = True
         # Options
-        self.blacklist = ''
-        self.name_format = ''
+        with document:
+            self.blacklist = ''
+            """ regular expression for the components to exclude (using the Config field) """
+            self.name_format = 'ibom.html'
+            """ format of the output name, example: %f_%r_iBoM will generate a file with revision and _iBoM. """
 
     def run(self, output_dir, board):
         check_script(CMD_IBOM, URL_IBOM)

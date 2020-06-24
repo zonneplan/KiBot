@@ -3,6 +3,7 @@ from pcbnew import (GERBER_JOBFILE_WRITER, PCB_PLOT_PARAMS, FromMM, PLOT_CONTROL
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
 from .kiplot import (GS)
+from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
@@ -13,13 +14,21 @@ class AnyLayer(BaseOutput):
     def __init__(self, name, type, description):
         super(AnyLayer, self).__init__(name, type, description)
         # Options
-        self.exclude_edge_layer = True
-        self.exclude_pads_from_silkscreen = False
-        self.plot_sheet_reference = False
-        self.plot_footprint_refs = True
-        self.plot_footprint_values = True
-        self.force_plot_invisible_refs_vals = False
-        self.tent_vias = True
+        with document:
+            self.exclude_edge_layer = True
+            """ do not include the PCB edge layer """
+            self.exclude_pads_from_silkscreen = False
+            """ do not plot the component pads in the silk screen """
+            self.plot_sheet_reference = False
+            """ currently without effect """
+            self.plot_footprint_refs = True
+            """ include the footprint references """
+            self.plot_footprint_values = True
+            """ include the footprint values """
+            self.force_plot_invisible_refs_vals = False
+            """ include references and values even when they are marked as invisible """
+            self.tent_vias = True
+            """ the vias """
         self.check_zone_fills = True
         # Mappings to KiCad values
         self._drill_marks_map = {

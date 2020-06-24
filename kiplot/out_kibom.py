@@ -5,17 +5,24 @@ from .out_base import (BaseOutput)
 from .error import KiPlotConfigurationError
 from .misc import (CMD_KIBOM, URL_KIBOM, BOM_ERROR)
 from .kiplot import (GS, check_script)
+from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
 class KiBoM(BaseOutput):
+    """ KiBoM (KiCad Bill of Materials)
+        Used to generate the BoM in HTML or CSV format using the KiBoM plug-in.
+        For more information: https://github.com/INTI-CMNB/KiBoM
+        This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema. """
     def __init__(self, name, type, description):
         super(KiBoM, self).__init__(name, type, description)
         self._sch_related = True
         # Options
-        self._format = 'HTML'
+        with document:
+            self._format = 'HTML'
+            """  can be HTML or CSV. """
 
     @property
     def format(self):

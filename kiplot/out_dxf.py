@@ -2,17 +2,26 @@ from pcbnew import PLOT_FORMAT_DXF
 from .error import KiPlotConfigurationError
 from .out_base import (BaseOutput)
 from .out_any_layer import (AnyLayer)
+from kiplot.macros import macros, document  # noqa: F401
 
 
 class DXF(AnyLayer):
+    """
+    DXF (Drawing Exchange Format)
+    Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
+    This output is what you get from the File/Plot menu in pcbnew. """
     def __init__(self, name, type, description):
         super(DXF, self).__init__(name, type, description)
         self._plot_format = PLOT_FORMAT_DXF
         # Options
-        self.use_aux_axis_as_origin = False
-        self._drill_marks = 'full'
-        self.polygon_mode = True
-        self.sketch_plot = True
+        with document:
+            self.use_aux_axis_as_origin = False
+            """ use the auxiliar axis as origin for coordinates """
+            self._drill_marks = 'full'
+            """ drill_marks what to use to indicate the drill places, can be none, small or full (for real scale) """
+            self.polygon_mode = True
+            """ plot using the contour, instead of the center line """
+            self.sketch_plot = True
 
     @property
     def drill_marks(self):

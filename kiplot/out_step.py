@@ -5,20 +5,31 @@ from .out_base import BaseOutput
 from .error import KiPlotConfigurationError
 from .misc import (KICAD2STEP, KICAD2STEP_ERR)
 from .kiplot import (GS)
+from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
 class STEP(BaseOutput):
+    """ STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
+        Exports the PCB as a 3D model.
+        This is the most common 3D format for exchange purposes.
+        This output is what you get from the 'File/Export/STEP' menu in pcbnew. """
     def __init__(self, name, type, description):
         super(STEP, self).__init__(name, type, description)
         # Options
-        self.metric_units = True
-        self._origin = 'grid'
-        self.no_virtual = False   # exclude 3D models for components with 'virtual' attribute
-        self.min_distance = -1    # Minimum distance between points to treat them as separate ones (default 0.01 mm)
-        self.output = ''
+        with document:
+            self.metric_units = True
+            """ use metric units instead of inches. """
+            self._origin = 'grid'
+            """ determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet. The drill option uses the auxiliar reference defined by the user. You can define any other origin using the format 'X,Y', i.e. '3.2,-10'. """
+            self.no_virtual = False
+            """ used to exclude 3D models for components with 'virtual' attribute. """
+            self.min_distance = -1
+            """ the minimum distance between points to treat them as separate ones. (-1 id KiCad default: 0.01 mm) """
+            self.output = ''
+            """ name for the generated STEP file. """
 
     @property
     def origin(self):

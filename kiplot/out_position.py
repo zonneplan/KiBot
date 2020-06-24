@@ -4,16 +4,25 @@ from datetime import datetime
 from pcbnew import (IU_PER_MM, IU_PER_MILS)
 from .out_base import BaseOutput
 from .error import KiPlotConfigurationError
+from kiplot.macros import macros, document  # noqa: F401
 
 
 class Position(BaseOutput):
+    """ Pick & place
+        Generates the file with position information for the PCB components, used by the pick and place machine.
+        This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew. """
     def __init__(self, name, type, description):
         super(Position, self).__init__(name, type, description)
         # Options
-        self._format = 'ASCII'
-        self.separate_files_for_front_and_back = True
-        self.only_smd = True
-        self._units = 'millimeters'
+        with document:
+            self._format = 'ASCII'
+            """ can be ASCII or CSV. """
+            self.separate_files_for_front_and_back = True
+            """ generate two separated files, one for the top and another for the bottom. """
+            self.only_smd = True
+            """ only include the surface mount components. """
+            self._units = 'millimeters'
+            """ can be millimeters or inches. """
 
     @property
     def format(self):

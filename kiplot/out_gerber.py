@@ -6,20 +6,30 @@ from kiplot.macros import macros, document  # noqa: F401
 
 
 class Gerber(AnyLayer):
+    """ Gerber format
+        This is the main fabrication format for the PCB.
+        This output is what you get from the File/Plot menu in pcbnew. """
     def __init__(self, name, type, description):
         super(Gerber, self).__init__(name, type, description)
         self._plot_format = PLOT_FORMAT_GERBER
         # Options
         with document:
             self.use_aux_axis_as_origin = False
-            """ Auxiliar origin """
+            """ use the auxiliar axis as origin for coordinates """
             self.line_width = 0.1
+            """ line_width for objects without width [mm] """
             self.subtract_mask_from_silk = False
+            """ substract the solder mask from the silk screen """
             self.use_protel_extensions = False
+            """ use legacy Protel file extensions """
             self._gerber_precision = 4.6
+            """ this the gerber coordinate format, can be 4.5 or 4.6 """
             self.create_gerber_job_file = True
+            """ creates a file with information about all the generated gerbers. You can use it in gerbview to load all gerbers at once. """
             self.use_gerber_x2_attributes = True
+            """ use the extended X2 format """
             self.use_gerber_net_attributes = True
+            """ include netlist metadata """
         #  print("Help for self.use_aux_axis_as_origin: "+self._help_use_aux_axis_as_origin)
 
     @property

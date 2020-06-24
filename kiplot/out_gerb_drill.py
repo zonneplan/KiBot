@@ -4,6 +4,10 @@ from .out_any_drill import (AnyDrill)
 
 
 class GerbDrill(AnyDrill):
+    """ Gerber drill format
+        This is the information for the drilling machine in gerber format.
+        You can create a map file for documentation purposes.
+        This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew. """
     def __init__(self, name, type, description):
         super(GerbDrill, self).__init__(name, type, description)
 

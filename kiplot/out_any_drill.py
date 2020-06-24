@@ -3,6 +3,7 @@ from pcbnew import (PLOT_FORMAT_HPGL, PLOT_FORMAT_POST, PLOT_FORMAT_GERBER, PLOT
                     PLOT_FORMAT_PDF, wxPoint)
 from .out_base import BaseOutput
 from .error import KiPlotConfigurationError
+from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
@@ -12,9 +13,13 @@ class AnyDrill(BaseOutput):
     def __init__(self, name, type, description):
         super(AnyDrill, self).__init__(name, type, description)
         # Options
-        self.use_aux_axis_as_origin = False
-        self._map = None
-        self._report = None
+        with document:
+            self.use_aux_axis_as_origin = False
+            """ use the auxiliar axis as origin for coordinates """
+            self._map = None
+            """ this is an optional subsection to indicate the format for a graphical drill map. The valid formats are hpgl, ps, gerber, dxf, svg and pdf. """
+            self._report = None
+            """ this is an optional subsection to indicate the name of the drill report """
         # Mappings to KiCad values
         self._map_map = {
                          'hpgl': PLOT_FORMAT_HPGL,
