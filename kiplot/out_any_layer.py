@@ -1,5 +1,5 @@
 import os
-from pcbnew import (GERBER_JOBFILE_WRITER, PCB_PLOT_PARAMS, FromMM, PLOT_CONTROLLER, IsCopperLayer)
+from pcbnew import (GERBER_JOBFILE_WRITER, PCB_PLOT_PARAMS, FromMM, PLOT_CONTROLLER, IsCopperLayer, SKETCH)
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
 from .kiplot import (GS)
@@ -72,6 +72,8 @@ class AnyLayer(BaseOutput):
         po.SetDrillMarksType(self.get_drill_marks())
         # We'll come back to this on a per-layer basis
         po.SetSkipPlotNPTH_Pads(False)
+        if self.get_sketch_plot():
+            po.SetPlotMode(SKETCH)
 
     def get_plot_format(self):
         return self._plot_format
@@ -151,3 +153,6 @@ class AnyLayer(BaseOutput):
 
     def get_drill_marks(self):
         return self.drill_marks if '_drill_marks' in self.__dict__ else PCB_PLOT_PARAMS.NO_DRILL_SHAPE
+
+    def get_sketch_plot(self):
+        return self.sketch_plot if 'sketch_plot' in self.__dict__ else False
