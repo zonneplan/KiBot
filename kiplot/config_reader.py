@@ -9,7 +9,7 @@ import pcbnew
 
 from .error import (KiPlotConfigurationError)
 from .kiplot import (Layer, get_layer_id_from_pcb)
-from .misc import (NO_YAML_MODULE, EXIT_BAD_CONFIG)
+from .misc import (NO_YAML_MODULE, EXIT_BAD_CONFIG, EXIT_BAD_ARGS)
 from mcpy import activate  # noqa: F401
 # Output classes
 from .out_base import BaseOutput
@@ -268,3 +268,75 @@ class CfgYamlReader(object):
         if version is None:
             config_error("YAML config needs `kiplot.version`.")
         return outputs
+
+
+def trim(docstring):
+    """ PEP 257 recommended trim for __doc__ """
+    if not docstring:
+        return ''
+    # Convert tabs to spaces (following the normal Python rules)
+    # and split into a list of lines:
+    lines = docstring.expandtabs().splitlines()
+    # Determine minimum indentation (first line doesn't count):
+    indent = sys.maxsize
+    for line in lines[1:]:
+        stripped = line.lstrip()
+        if stripped:
+            indent = min(indent, len(line) - len(stripped))
+    # Remove indentation (first line is special):
+    trimmed = [lines[0].strip()]
+    if indent < sys.maxsize:
+        for line in lines[1:]:
+            trimmed.append(line[indent:].rstrip())
+    # Strip off trailing and leading blank lines:
+    while trimmed and not trimmed[-1]:
+        trimmed.pop()
+    while trimmed and not trimmed[0]:
+        trimmed.pop(0)
+    # Return a single string:
+    return trimmed
+
+
+def print_output_options(name, cl):
+    obj = cl('', name, '')
+    print('  * Options:')
+    num_opts = 0
+    for k, v in obj.__dict__.items():
+        if k[0] != '_':
+            help_attr = '_help_'+k
+            help = obj.__dict__.get(help_attr)
+            print('    - {}: {}'.format(k, help if help else 'Undocumented'))
+            num_opts = num_opts+1
+    if num_opts == 0:
+        print('    - No available options')
+
+
+def print_one_out_help(details, n, o):
+    lines = trim(o.__doc__)
+    if len(lines) == 0:
+        lines = ['Undocumented', 'No description']
+    if details:
+        print('* '+lines[0])
+        print('  * Type: `{}`'.format(n))
+        print('  * Description: '+lines[1])
+        for ln in range(2, len(lines)):
+            print('                 '+lines[ln])
+        print_output_options(n, o)
+    else:
+        print('* {} [{}]'.format(lines[0], n))
+
+
+def print_outputs_help(details=False):
+    outs = BaseOutput.get_registered()
+    logger.debug('{} supported outputs'.format(len(outs)))
+    for n, o in outs.items():
+        if details:
+            print()
+        print_one_out_help(details, n, o)
+
+
+def print_output_help(name):
+    if not BaseOutput.is_registered(name):
+        logger.error('Unknown output type `{}`, try --help-list-outputs'.format(name))
+        sys.exit(EXIT_BAD_ARGS)
+    print_one_out_help(True, name, BaseOutput.get_class_for(name))

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- Help for the supported outputs (--help-list-outputs, --help-outputs and
+  --help-output)
+- Better YAML validation.
 
 ## [0.4.0] - 2020-06-17
 ### Added

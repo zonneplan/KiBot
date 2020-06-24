@@ -18,7 +18,7 @@ from . import log
 log.set_domain('kiplot')
 from .kiplot import (GS, generate_outputs)
 from .pre_base import (BasePreFlight)
-from .config_reader import (CfgYamlReader)
+from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help)
 from .misc import (NO_PCB_FILE, EXIT_BAD_ARGS)
 from .__version__ import __version__
 
@@ -30,8 +30,11 @@ def main():
     parser.add_argument('-b', '--board-file', help='The PCB .kicad-pcb board file')
     parser.add_argument('-c', '--plot-config', help='The plotting config file to use')
     parser.add_argument('-d', '--out-dir', default='.', help='The output directory (cwd if not given)')
+    parser.add_argument('--help-list-outputs', action='store_true', help='List supported outputs')
+    parser.add_argument('--help-output', help='Help for this particular output')
+    parser.add_argument('--help-outputs', action='store_true', help='List supported outputs and details')
     parser.add_argument('-i', '--invert-sel', action='store_true', help='Generate the outputs not listed as targets')
-    parser.add_argument('-l', '--list', action='store_true', help='List available outputs')
+    parser.add_argument('-l', '--list', action='store_true', help='List available outputs (in the config file)')
     group.add_argument('-q', '--quiet', action='store_true', help='remove information logs')
     parser.add_argument('-s', '--skip-pre', nargs=1, help='skip pre-flight actions, comma separated list or `all`')
     group.add_argument('-v', '--verbose', action='store_true', help='show debugging information')
@@ -45,6 +48,13 @@ def main():
 
     # Output dir: relative to CWD (absolute path overrides)
     GS.out_dir = os.path.join(os.getcwd(), args.out_dir)
+
+    if args.help_outputs or args.help_list_outputs:
+        print_outputs_help(details=args.help_outputs)
+        sys.exit(0)
+    if args.help_output:
+        print_output_help(args.help_output)
+        sys.exit(0)
 
     # Determine the PCB file
     if args.board_file is None:

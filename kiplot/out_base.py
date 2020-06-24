@@ -59,6 +59,10 @@ class BaseOutput(object):
     def get_class_for(name):
         return BaseOutput._registered[name]
 
+    @staticmethod
+    def get_registered():
+        return BaseOutput._registered
+
     def __str__(self):
         return "'{}' ({}) [{}]".format(self._description, self._name, self._type)
 
