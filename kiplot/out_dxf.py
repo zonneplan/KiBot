@@ -21,7 +21,8 @@ class DXF(AnyLayer):
             """ drill_marks what to use to indicate the drill places, can be none, small or full (for real scale) """
             self.polygon_mode = True
             """ plot using the contour, instead of the center line """
-            self.sketch_plot = True
+            self.sketch_plot = False
+            """ don't fill objects, just draw the outline """
 
     @property
     def drill_marks(self):

@@ -20,7 +20,8 @@ class PS(AnyLayer):
             """ plot mirrored """
             self.negative_plot = False
             """ invert black and white """
-            self.sketch_plot = True
+            self.sketch_plot = False
+            """ don't fill objects, just draw the outline """
             self.scaling = 2
             """ scale factor """
             self._drill_marks = 'full'

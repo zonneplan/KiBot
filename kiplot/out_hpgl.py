@@ -16,7 +16,8 @@ class HPGL(AnyLayer):
         with document:
             self.mirror_plot = False
             """ plot mirrored """
-            self.sketch_plot = True
+            self.sketch_plot = False
+            """ don't fill objects, just draw the outline """
             self.scaling = 0
             """ scale factor """
             self._drill_marks = 'full'
