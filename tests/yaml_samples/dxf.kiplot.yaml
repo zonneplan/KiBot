@@ -18,7 +18,7 @@ outputs:
 
       # PS options
       drill_marks: full
-      sketch_plot: true
+      sketch_plot: false
       use_aux_axis_as_origin: false
       polygon_mode: true
     layers:

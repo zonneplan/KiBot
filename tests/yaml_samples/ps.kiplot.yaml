@@ -20,7 +20,7 @@ outputs:
       line_width: 0.15
       drill_marks: full
       scaling: 2
-      sketch_plot: true
+      sketch_plot: false
       scale_adjust_x: 1.0
       scale_adjust_y: 1.0
       width_adjust: 0

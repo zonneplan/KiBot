@@ -18,7 +18,7 @@ outputs:
       # HPGL options
       drill_marks: full
       mirror_plot: true
-      sketch_plot: true
+      sketch_plot: false
       scaling: 0 # auto
       pen_width: 0.5
     layers:
