@@ -28,8 +28,7 @@ class AnyLayer(BaseOutput):
             self.force_plot_invisible_refs_vals = False
             """ include references and values even when they are marked as invisible """
             self.tent_vias = True
-            """ the vias """
-        self.check_zone_fills = True
+            """ cover the vias """
         # Mappings to KiCad values
         self._drill_marks_map = {
                                  'none': PCB_PLOT_PARAMS.NO_DRILL_SHAPE,

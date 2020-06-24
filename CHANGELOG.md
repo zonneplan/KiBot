@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Changed
+- Removed the "plot" option "check_zone_fills". Use the preflight option.
+
 ### Added
 - Help for the supported outputs (--help-list-outputs, --help-outputs and
   --help-output)

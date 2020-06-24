@@ -15,7 +15,6 @@ outputs:
       plot_footprint_values: true
       force_plot_invisible_refs_vals: false
       tent_vias: true
-      check_zone_fills: true
 
       # PDF options
       drill_marks: small

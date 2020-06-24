@@ -32,7 +32,6 @@ outputs:
       plot_footprint_values: true
       force_plot_invisible_refs_vals: false
       tent_vias: true
-      check_zone_fills: true
 
       # gerber options
       line_width: 0.15
@@ -85,7 +84,6 @@ outputs:
       plot_footprint_values: true
       force_plot_invisible_refs_vals: false
       tent_vias: true
-      check_zone_fills: true
 
       # PS options
       line_width: 0.15
@@ -119,7 +117,6 @@ outputs:
       plot_footprint_values: true
       force_plot_invisible_refs_vals: false
       tent_vias: true
-      check_zone_fills: true
 
       # DXF options
       drill_marks: full
@@ -143,7 +140,6 @@ outputs:
       plot_footprint_values: true
       force_plot_invisible_refs_vals: false
       tent_vias: true
-      check_zone_fills: true
 
       # SVG options
       line_width: 0.25
@@ -168,7 +164,6 @@ outputs:
       plot_footprint_values: true
       force_plot_invisible_refs_vals: false
       tent_vias: true
-      check_zone_fills: true
 
       # HPGL options
       drill_marks: full
@@ -194,7 +189,6 @@ outputs:
       plot_footprint_values: true
       force_plot_invisible_refs_vals: false
       tent_vias: true
-      check_zone_fills: true
 
       # PDF options
       drill_marks: small
