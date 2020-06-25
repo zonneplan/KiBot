@@ -23,8 +23,8 @@ DRILL_DIR = 'Drill'
 positions = {'R1': (105, 35, 'top'), 'R2': (110, 35, 'bottom'), 'R3': (110, 45, 'top')}
 
 
-def test_3Rs_drill():
-    ctx = context.TestContext('3Rs_drill', '3Rs', 'drill', DRILL_DIR)
+def do_3Rs(conf, dir):
+    ctx = context.TestContext(dir, '3Rs', conf, DRILL_DIR)
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(os.path.join(DRILL_DIR, 'report.rpt'))
@@ -49,3 +49,11 @@ def test_3Rs_drill():
     ctx.expect_gerber_flash_at(npth_gbr_drl, 6, (120, -29))
     ctx.expect_gerber_has_apertures(npth_gbr_drl, ['C,2.100000'])
     ctx.clean_up()
+
+
+def test_drill_3Rs():
+    do_3Rs('drill', 'Drill_3Rs')
+
+
+def test_drill_legacy_3Rs():
+    do_3Rs('drill_legacy', 'DrillLegacy_3Rs')

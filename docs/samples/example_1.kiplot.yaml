@@ -144,10 +144,8 @@ outputs:
       use_aux_axis_as_origin: false
       minimal_header: false
       mirror_y_axis: false
-      report:
-        filename: 'Conjunto-drl.rpt'
-      map:
-        type: 'pdf'
+      report: 'Conjunto-drl.rpt'
+      map: 'pdf'
 
   - name: gerber_drills
     comment: "Gerber drill files"

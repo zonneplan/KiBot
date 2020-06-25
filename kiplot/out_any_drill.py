@@ -17,10 +17,10 @@ class AnyDrill(BaseOutput):
             self.use_aux_axis_as_origin = False
             """ use the auxiliar axis as origin for coordinates """
             self._map = None
-            """ this is an optional subsection to indicate the format for a graphical drill map.
-                The valid formats are hpgl, ps, gerber, dxf, svg and pdf """
+            """ [string=None] format for a graphical drill map. The valid formats are hpgl, ps, gerber, dxf, svg and pdf.
+                Not generated unless a format is specified """
             self._report = None
-            """ this is an optional subsection to indicate the name of the drill report """
+            """ [string=None] name of the drill report. Not generated unless a name is specified """
         # Mappings to KiCad values
         self._map_map = {
                          'hpgl': PLOT_FORMAT_HPGL,
@@ -37,6 +37,8 @@ class AnyDrill(BaseOutput):
 
     @map.setter
     def map(self, val):
+        # In the original "version 1" of the format this is a dict with one key named `type`.
+        # Currently we spect a string, but we support the old mechanism.
         if val is None:
             raise KiPlotConfigurationError("Empty drill `map` section")
         # Setting from a dict
@@ -57,6 +59,10 @@ class AnyDrill(BaseOutput):
 
     @report.setter
     def report(self, val):
+        # In the original "version 1" of the format this is a dict with one key named `filename`.
+        # Currently we spect a string, but we support the old mechanism.
+        if val is None:
+            raise KiPlotConfigurationError("Empty drill `report` section")
         # Setting from a dict
         if isinstance(val, dict):
             if 'filename' not in val:

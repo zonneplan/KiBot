@@ -60,10 +60,8 @@ outputs:
       use_aux_axis_as_origin: false
       minimal_header: false
       mirror_y_axis: false
-      report:
-        filename: 'drill_report.rpt'
-      map:
-        type: 'pdf'
+      report: 'drill_report.rpt'
+      map: 'pdf'
 
   - name: gerber drills
     comment: "Gerber drill files"
