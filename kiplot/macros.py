@@ -1,4 +1,4 @@
-from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store)
+from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store, UnaryOp, USub)
 
 
 def document(sentences, to_source, **kw):
@@ -39,6 +39,9 @@ def document(sentences, to_source, **kw):
             type_hint = ''
             if isinstance(value, Num):
                 type_hint = '[number={}]'.format(value.n)
+            elif isinstance(value, UnaryOp) and isinstance(value.operand, Num) and isinstance(value.op, USub):
+                # -Num
+                type_hint = '[number={}]'.format(-value.operand.n)
             elif isinstance(value, Str):
                 type_hint = "[string='{}']".format(value.s)
             elif isinstance(value, NameConstant) and isinstance(value.value, bool):
