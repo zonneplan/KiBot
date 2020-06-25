@@ -1,10 +1,10 @@
 from pcbnew import (PLOT_FORMAT_HPGL)
-from .out_base import (BaseOutput)
 from .out_any_layer import (AnyLayer)
 from .error import KiPlotConfigurationError
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
+@output_class
 class HPGL(AnyLayer):
     """ HPGL (Hewlett & Packard Graphics Language)
         Exports the PCB for plotters and laser printers.
@@ -41,7 +41,3 @@ class HPGL(AnyLayer):
     def _configure_plot_ctrl(self, po, output_dir):
         super()._configure_plot_ctrl(po, output_dir)
         po.SetHPGLPenDiameter(self.pen_width)
-
-
-# Register it
-BaseOutput.register('hpgl', HPGL)

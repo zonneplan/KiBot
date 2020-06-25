@@ -1,10 +1,10 @@
 from pcbnew import (PLOT_FORMAT_GERBER)
-from .out_base import (BaseOutput)
 from .out_any_layer import (AnyLayer)
 from .error import KiPlotConfigurationError
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
+@output_class
 class Gerber(AnyLayer):
     """ Gerber format
         This is the main fabrication format for the PCB.
@@ -52,7 +52,3 @@ class Gerber(AnyLayer):
         po.SetCreateGerberJobFile(self.create_gerber_job_file)
         po.SetUseGerberAttributes(self.use_gerber_x2_attributes)
         po.SetIncludeGerberNetlistInfo(self.use_gerber_net_attributes)
-
-
-# Register it
-BaseOutput.register('gerber', Gerber)

@@ -1,10 +1,10 @@
 from pcbnew import PLOT_FORMAT_POST
-from .out_base import BaseOutput
 from .out_any_layer import AnyLayer
 from .error import KiPlotConfigurationError
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
+@output_class
 class PS(AnyLayer):
     """ PS (Postscript)
         Exports the PCB to a format suitable for printing.
@@ -56,7 +56,3 @@ class PS(AnyLayer):
         po.SetFineScaleAdjustX(self.scale_adjust_x)
         po.SetFineScaleAdjustX(self.scale_adjust_y)
         po.SetA4Output(self.a4_output)
-
-
-# Register it
-BaseOutput.register('ps', PS)

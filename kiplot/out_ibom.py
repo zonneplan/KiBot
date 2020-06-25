@@ -1,15 +1,15 @@
 import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
-from .out_base import (BaseOutput)
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR)
 from .kiplot import (GS, check_script)
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-class IBoM(BaseOutput):
+@output_class
+class IBoM(BaseOutput):  # noqa: F821
     """ IBoM (Interactive HTML BoM)
         Generates an interactive web page useful to identify the position of the components in the PCB.
         For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
@@ -45,7 +45,3 @@ class IBoM(BaseOutput):
                 logger.debug('Output from command: '+e.output.decode())
             exit(BOM_ERROR)
         logger.debug('Output from command:\n'+cmd_output.decode()+'\n')
-
-
-# Register it
-BaseOutput.register('ibom', IBoM)

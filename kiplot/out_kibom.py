@@ -1,17 +1,17 @@
 import os
 from glob import (glob)
 from subprocess import (check_output, STDOUT, CalledProcessError)
-from .out_base import (BaseOutput)
 from .error import KiPlotConfigurationError
 from .misc import (CMD_KIBOM, URL_KIBOM, BOM_ERROR)
 from .kiplot import (GS, check_script)
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-class KiBoM(BaseOutput):
+@output_class
+class KiBoM(BaseOutput):  # noqa: F821
     """ KiBoM (KiCad Bill of Materials)
         Used to generate the BoM in HTML or CSV format using the KiBoM plug-in.
         For more information: https://github.com/INTI-CMNB/KiBoM
@@ -52,7 +52,3 @@ class KiBoM(BaseOutput):
         for f in glob(os.path.join(output_dir, prj)+'*.tmp'):
             os.remove(f)
         logger.debug('Output from command:\n'+cmd_output.decode())
-
-
-# Register it
-BaseOutput.register('kibom', KiBoM)

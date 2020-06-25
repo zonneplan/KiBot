@@ -1,17 +1,17 @@
 import os
 import re
 from subprocess import (check_output, STDOUT, CalledProcessError)
-from .out_base import BaseOutput
 from .error import KiPlotConfigurationError
 from .misc import (KICAD2STEP, KICAD2STEP_ERR)
 from .kiplot import (GS)
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-class STEP(BaseOutput):
+@output_class
+class STEP(BaseOutput):  # noqa: F821
     """ STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
         Exports the PCB as a 3D model.
         This is the most common 3D format for exchange purposes.
@@ -81,7 +81,3 @@ class STEP(BaseOutput):
                 logger.debug('Output from command: '+e.output.decode())
             exit(KICAD2STEP_ERR)
         logger.debug('Output from command:\n'+cmd_output.decode())
-
-
-# Register it
-BaseOutput.register('step', STEP)

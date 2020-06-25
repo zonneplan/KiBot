@@ -2,12 +2,12 @@ import os
 import operator
 from datetime import datetime
 from pcbnew import (IU_PER_MM, IU_PER_MILS)
-from .out_base import BaseOutput
 from .error import KiPlotConfigurationError
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
-class Position(BaseOutput):
+@output_class
+class Position(BaseOutput):  # noqa: F821
     """ Pick & place
         Generates the file with position information for the PCB components, used by the pick and place machine.
         This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew. """
@@ -174,7 +174,3 @@ class Position(BaseOutput):
             self._do_position_plot_ascii(board, output_dir, columns, modules, maxlengths)
         else:  # if self.format == 'CSV':
             self._do_position_plot_csv(board, output_dir, columns, modules)
-
-
-# Register it
-BaseOutput.register('position', Position)

@@ -1,10 +1,10 @@
 from pcbnew import PLOT_FORMAT_DXF
 from .error import KiPlotConfigurationError
-from .out_base import (BaseOutput)
 from .out_any_layer import (AnyLayer)
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
+@output_class
 class DXF(AnyLayer):
     """
     DXF (Drawing Exchange Format)
@@ -41,7 +41,3 @@ class DXF(AnyLayer):
     def _configure_plot_ctrl(self, po, output_dir):
         super()._configure_plot_ctrl(po, output_dir)
         po.SetDXFPlotPolygonMode(self.polygon_mode)
-
-
-# Register it
-BaseOutput.register('dxf', DXF)

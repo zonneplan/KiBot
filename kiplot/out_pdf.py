@@ -1,10 +1,10 @@
 from pcbnew import PLOT_FORMAT_PDF
-from .out_base import BaseOutput
 from .out_any_layer import AnyLayer
 from .error import KiPlotConfigurationError
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
+@output_class
 class PDF(AnyLayer):
     """ PDF (Portable Document Format)
         Exports the PCB to the most common exhange format. Suitable for printing.
@@ -37,7 +37,3 @@ class PDF(AnyLayer):
     def config(self, outdir, options, layers):
         super().config(outdir, options, layers)
         self._drill_marks = self._drill_marks_map[self._drill_marks]
-
-
-# Register it
-BaseOutput.register('pdf', PDF)

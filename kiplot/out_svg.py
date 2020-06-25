@@ -1,10 +1,10 @@
 from pcbnew import PLOT_FORMAT_SVG
-from .out_base import BaseOutput
 from .out_any_layer import AnyLayer
 from .error import KiPlotConfigurationError
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
+@output_class
 class SVG(AnyLayer):
     """ SVG (Scalable Vector Graphics)
         Exports the PCB to a format suitable for 2D graphics software.
@@ -37,7 +37,3 @@ class SVG(AnyLayer):
     def config(self, outdir, options, layers):
         super().config(outdir, options, layers)
         self._drill_marks = self._drill_marks_map[self._drill_marks]
-
-
-# Register it
-BaseOutput.register('svg', SVG)

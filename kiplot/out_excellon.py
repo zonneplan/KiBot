@@ -1,9 +1,9 @@
 from pcbnew import (EXCELLON_WRITER)
-from .out_base import (BaseOutput)
 from .out_any_drill import (AnyDrill)
-from kiplot.macros import macros, document  # noqa: F401
+from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
+@output_class
 class Excellon(AnyDrill):
     """ Excellon drill format
         This is the main format for the drilling machine.
@@ -26,7 +26,3 @@ class Excellon(AnyDrill):
         drill_writer.SetOptions(self.mirror_y_axis, self.minimal_header, offset, self.pth_and_npth_single_file)
         drill_writer.SetFormat(self.metric_units, EXCELLON_WRITER.DECIMAL_FORMAT)
         return drill_writer
-
-
-# Register it
-BaseOutput.register('excellon', Excellon)

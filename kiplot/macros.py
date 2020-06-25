@@ -1,4 +1,5 @@
-from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store, UnaryOp, USub)
+from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store, UnaryOp, USub,
+                 ClassDef, Call, ImportFrom, alias)
 
 
 def document(sentences, to_source, **kw):
@@ -55,3 +56,20 @@ def document(sentences, to_source, **kw):
         prev = s
     # Return the modified AST
     return sentences
+
+
+def output_class(tree, **kw):
+    if isinstance(tree, ClassDef):
+        # Create the register call
+        name = tree.name
+        reg_name = name.lower()
+        # BaseOutput.register member:
+        attr = Attribute(value=Name(id='BaseOutput', ctx=Load()), attr='register', ctx=Load())
+        # Function call to it passing reg_name and name
+        do_register = Expr(value=Call(func=attr, args=[Str(s=reg_name), Name(id=name, ctx=Load())], keywords=[]))
+
+        # Create the import
+        do_import = ImportFrom(module='out_base', names=[alias(name='BaseOutput', asname=None)], level=1)
+
+        return [do_import, tree, do_register]
+    return tree
