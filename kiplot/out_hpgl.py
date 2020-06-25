@@ -19,11 +19,11 @@ class HPGL(AnyLayer):
             self.sketch_plot = False
             """ don't fill objects, just draw the outline """
             self.scaling = 0
-            """ scale factor """
+            """ scale factor (0 means autoscaling) """
             self._drill_marks = 'full'
             """ what to use to indicate the drill places, can be none, small or full (for real scale) """
             self.pen_width = 0.5
-            """ default trace width """
+            """ pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files """
     @property
     def drill_marks(self):
         return self._drill_marks

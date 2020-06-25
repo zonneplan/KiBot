@@ -25,7 +25,8 @@ class Gerber(AnyLayer):
             self._gerber_precision = 4.6
             """ this the gerber coordinate format, can be 4.5 or 4.6 """
             self.create_gerber_job_file = True
-            """ creates a file with information about all the generated gerbers. You can use it in gerbview to load all gerbers at once. """
+            """ creates a file with information about all the generated gerbers.
+                You can use it in gerbview to load all gerbers at once """
             self.use_gerber_x2_attributes = True
             """ use the extended X2 format """
             self.use_gerber_net_attributes = True

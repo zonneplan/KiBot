@@ -20,7 +20,7 @@ class PDFSchPrint(BaseOutput):
         # Options
         with document:
             self.output = ''
-            """ filename for the output PDF """
+            """ filename for the output PDF (the name of the schematic if empty) """
 
     def run(self, output_dir, board):
         check_eeschema_do()

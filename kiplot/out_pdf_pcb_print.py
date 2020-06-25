@@ -1,3 +1,4 @@
+import os
 from subprocess import (call)
 from .out_base import BaseOutput
 from .pre_base import BasePreFlight
@@ -19,8 +20,8 @@ class PDFPcbPrint(BaseOutput):
         super(PDFPcbPrint, self).__init__(name, type, description)
         # Options
         with document:
-            self.output_name = 'pdf_pcb_print.pdf'
-            """ filename for the output PDF """
+            self.output_name = ''
+            """ filename for the output PDF (the name of the PCB if empty) """
 
     def config(self, outdir, options, layers):
         super().config(outdir, options, layers)
@@ -37,7 +38,12 @@ class PDFPcbPrint(BaseOutput):
             if l.is_inner:
                 if l.id < 1 or l.id >= layer_cnt - 1:
                     raise PlotError("Inner layer `{}` is not valid for this board".format(l))
-        cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', self.output_name]
+        # Output file name
+        output = self.output_name
+        if not output:
+            output = os.path.splitext(os.path.basename(GS.pcb_file))[0]+'.pdf'
+        output = os.path.abspath(os.path.join(output_dir, output))
+        cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):
             cmd.append('-f')
         cmd.extend([GS.pcb_file, output_dir])

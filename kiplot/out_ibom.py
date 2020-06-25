@@ -21,8 +21,8 @@ class IBoM(BaseOutput):
         with document:
             self.blacklist = ''
             """ regular expression for the components to exclude (using the Config field) """
-            self.name_format = 'ibom.html'
-            """ format of the output name, example: %f_%r_iBoM will generate a file with revision and _iBoM. """
+            self.name_format = 'ibom'
+            """ format of the output name, example: %f_%r_iBoM will generate a file with revision and _iBoM """
 
     def run(self, output_dir, board):
         check_script(CMD_IBOM, URL_IBOM)

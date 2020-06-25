@@ -16,13 +16,13 @@ class Position(BaseOutput):
         # Options
         with document:
             self._format = 'ASCII'
-            """ can be ASCII or CSV. """
+            """ can be ASCII or CSV """
             self.separate_files_for_front_and_back = True
-            """ generate two separated files, one for the top and another for the bottom. """
+            """ generate two separated files, one for the top and another for the bottom """
             self.only_smd = True
-            """ only include the surface mount components. """
+            """ only include the surface mount components """
             self._units = 'millimeters'
-            """ can be millimeters or inches. """
+            """ can be millimeters or inches """
 
     @property
     def format(self):

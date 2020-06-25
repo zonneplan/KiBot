@@ -22,7 +22,7 @@ class KiBoM(BaseOutput):
         # Options
         with document:
             self._format = 'HTML'
-            """  can be HTML or CSV. """
+            """ can be `HTML` or `CSV` """
 
     @property
     def format(self):

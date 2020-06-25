@@ -301,11 +301,12 @@ def print_output_options(name, cl):
     obj = cl('', name, '')
     print('  * Options:')
     num_opts = 0
-    for k, v in obj.__dict__.items():
+    attrs = BaseOutput.get_attrs_for(obj)
+    for k, v in attrs.items():
         if k[0] != '_':
             help_attr = '_help_'+k
-            help = obj.__dict__.get(help_attr)
-            print('    - {}: {}'.format(k, help if help else 'Undocumented'))
+            help = attrs.get(help_attr)
+            print('    - {}: {}.'.format(k, help.rstrip() if help else 'Undocumented'))
             num_opts = num_opts+1
     if num_opts == 0:
         print('    - No available options')

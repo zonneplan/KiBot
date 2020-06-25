@@ -17,7 +17,8 @@ class AnyDrill(BaseOutput):
             self.use_aux_axis_as_origin = False
             """ use the auxiliar axis as origin for coordinates """
             self._map = None
-            """ this is an optional subsection to indicate the format for a graphical drill map. The valid formats are hpgl, ps, gerber, dxf, svg and pdf. """
+            """ this is an optional subsection to indicate the format for a graphical drill map.
+                The valid formats are hpgl, ps, gerber, dxf, svg and pdf """
             self._report = None
             """ this is an optional subsection to indicate the name of the drill report """
         # Mappings to KiCad values

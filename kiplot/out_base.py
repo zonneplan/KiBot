@@ -20,7 +20,7 @@ class BaseOutput(object):
 
     def _perform_config_mapping(self):
         """ Map the options to class attributes """
-        attrs = dict(inspect.getmembers(self, filter))
+        attrs = BaseOutput.get_attrs_for(self)
         for k, v in self._options.items():
             # Map known attributes and avoid mapping private ones
             if (k[0] == '_') or (k not in attrs):
@@ -46,6 +46,10 @@ class BaseOutput(object):
         self._layers = layers
         if options:
             self._perform_config_mapping()
+
+    @staticmethod
+    def get_attrs_for(obj):
+        return dict(inspect.getmembers(obj, filter))
 
     @staticmethod
     def register(name, aclass):

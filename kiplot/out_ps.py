@@ -22,8 +22,8 @@ class PS(AnyLayer):
             """ invert black and white """
             self.sketch_plot = False
             """ don't fill objects, just draw the outline """
-            self.scaling = 2
-            """ scale factor """
+            self.scaling = 1
+            """ scale factor (0 means autoscaling)"""
             self._drill_marks = 'full'
             """ what to use to indicate the drill places, can be none, small or full (for real scale) """
             self.scale_adjust_x = 1.0
@@ -31,6 +31,8 @@ class PS(AnyLayer):
             self.scale_adjust_y = 1.0
             """ fine grain adjust for the Y scale (floating point multiplier) """
             self.width_adjust = 0
+            """ this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
+                Only used to plot pads and tracks """
             self.a4_output = True
             """ force A4 paper size """
 
