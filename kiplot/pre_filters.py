@@ -4,6 +4,7 @@ from .pre_base import (BasePreFlight)
 
 
 class Filters(BasePreFlight):
+    """ A list of entries to filter out ERC/DRC messages. Keys: `filter`, `number` and `regex` """
     def __init__(self, name, value):
         super().__init__(name, value)
 

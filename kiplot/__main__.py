@@ -18,7 +18,7 @@ from . import log
 log.set_domain('kiplot')
 from .kiplot import (GS, generate_outputs)
 from .pre_base import (BasePreFlight)
-from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help)
+from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help)
 from .misc import (NO_PCB_FILE, EXIT_BAD_ARGS)
 from .__version__ import __version__
 
@@ -33,6 +33,7 @@ def main():
     parser.add_argument('--help-list-outputs', action='store_true', help='List supported outputs')
     parser.add_argument('--help-output', help='Help for this particular output')
     parser.add_argument('--help-outputs', action='store_true', help='List supported outputs and details')
+    parser.add_argument('--help-preflights', action='store_true', help='List supported preflights and details')
     parser.add_argument('-i', '--invert-sel', action='store_true', help='Generate the outputs not listed as targets')
     parser.add_argument('-l', '--list', action='store_true', help='List available outputs (in the config file)')
     group.add_argument('-q', '--quiet', action='store_true', help='remove information logs')
@@ -54,6 +55,9 @@ def main():
         sys.exit(0)
     if args.help_output:
         print_output_help(args.help_output)
+        sys.exit(0)
+    if args.help_preflights:
+        print_preflights_help()
         sys.exit(0)
 
     # Determine the PCB file

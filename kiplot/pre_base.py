@@ -24,6 +24,10 @@ class BasePreFlight(object):
         return name in BasePreFlight._registered
 
     @staticmethod
+    def get_registered():
+        return BasePreFlight._registered
+
+    @staticmethod
     def get_class_for(name):
         return BasePreFlight._registered[name]
 

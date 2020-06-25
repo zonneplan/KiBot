@@ -10,6 +10,7 @@ logger = get_logger(__name__)
 
 
 class UpdateXML(BasePreFlight):
+    """ [boolean=false] Update the XML version of the BoM (Bill of Materials). To ensure our generated BoM is up to date """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):

@@ -10,6 +10,7 @@ logger = get_logger(__name__)
 
 
 class DRC(BasePreFlight):
+    """ [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):

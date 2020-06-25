@@ -3,6 +3,7 @@ from .error import (KiPlotConfigurationError)
 
 
 class IgnoreUnconnected(BasePreFlight):
+    """ [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):

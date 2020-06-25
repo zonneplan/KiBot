@@ -330,6 +330,7 @@ def print_one_out_help(details, n, o):
 def print_outputs_help(details=False):
     outs = BaseOutput.get_registered()
     logger.debug('{} supported outputs'.format(len(outs)))
+    print('Supported outputs:')
     for n, o in outs.items():
         if details:
             print()
@@ -341,3 +342,14 @@ def print_output_help(name):
         logger.error('Unknown output type `{}`, try --help-list-outputs'.format(name))
         sys.exit(EXIT_BAD_ARGS)
     print_one_out_help(True, name, BaseOutput.get_class_for(name))
+
+
+def print_preflights_help():
+    pres = BasePreFlight.get_registered()
+    logger.debug('{} supported preflights'.format(len(pres)))
+    print('Supported preflight options:\n')
+    for n, o in pres.items():
+        help = o.__doc__
+        if help is None:
+            help = 'Undocumented'
+        print('- {}: {}.'.format(n, help.rstrip()))

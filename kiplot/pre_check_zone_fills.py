@@ -3,6 +3,7 @@ from .error import (KiPlotConfigurationError)
 
 
 class CheckZoneFills(BasePreFlight):
+    """ [boolean=false] Zones are filled before doing any operation involving PCB layers """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):

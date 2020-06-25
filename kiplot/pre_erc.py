@@ -10,6 +10,7 @@ logger = get_logger(__name__)
 
 
 class ERC(BasePreFlight):
+    """ [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):

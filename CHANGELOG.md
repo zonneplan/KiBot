@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Help for the supported outputs (--help-list-outputs, --help-outputs and
   --help-output)
+- Help for the supported preflights (--help-preflights)
 - Better YAML validation.
 
 ### Fixed
