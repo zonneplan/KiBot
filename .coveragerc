@@ -2,6 +2,7 @@
 source = 
     kiplot
     src
+omit = */kiplot/docopt.py
 
 [report]
 exclude_lines =
