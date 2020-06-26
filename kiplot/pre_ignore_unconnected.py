@@ -1,8 +1,9 @@
-from .pre_base import (BasePreFlight)
+from kiplot.macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
 
 
-class IgnoreUnconnected(BasePreFlight):
+@pre_class
+class Ignore_Unconnected(BasePreFlight):  # noqa: F821
     """ [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing """
     def __init__(self, name, value):
         super().__init__(name, value)
@@ -15,8 +16,4 @@ class IgnoreUnconnected(BasePreFlight):
         pass
 
     def apply(self):
-        BasePreFlight._set_option('ignore_unconnected', self._enabled)
-
-
-# Register it
-BasePreFlight.register('ignore_unconnected', IgnoreUnconnected)
+        BasePreFlight._set_option('ignore_unconnected', self._enabled)  # noqa: F821

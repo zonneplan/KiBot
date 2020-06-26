@@ -1,6 +1,6 @@
 from sys import (exit)
 from subprocess import (call)
-from .pre_base import (BasePreFlight)
+from kiplot.macros import macros, pre_class  # noqa: F401
 from .kiplot import (GS, check_eeschema_do)
 from .error import (KiPlotConfigurationError)
 from .misc import (CMD_EESCHEMA_DO, ERC_ERROR)
@@ -9,7 +9,8 @@ from .log import (get_logger)
 logger = get_logger(__name__)
 
 
-class ERC(BasePreFlight):
+@pre_class
+class Run_ERC(BasePreFlight):  # noqa: F821
     """ [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct """
     def __init__(self, name, value):
         super().__init__(name, value)
@@ -40,7 +41,3 @@ class ERC(BasePreFlight):
 
     def apply(self):
         pass
-
-
-# Register it
-BasePreFlight.register('run_erc', ERC)

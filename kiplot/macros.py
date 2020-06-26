@@ -58,25 +58,40 @@ def document(sentences, to_source, **kw):
     return sentences
 
 
+def _do_wrap_class_register(tree, mod, base_class):
+    if isinstance(tree, ClassDef):
+        # Create the register call
+        name = tree.name
+        reg_name = name.lower()
+        # BaseOutput.register member:
+        attr = Attribute(value=Name(id=base_class, ctx=Load()), attr='register', ctx=Load())
+        # Function call to it passing reg_name and name
+        do_register = Expr(value=Call(func=attr, args=[Str(s=reg_name), Name(id=name, ctx=Load())], keywords=[]))
+
+        # Create the import
+        do_import = ImportFrom(module=mod, names=[alias(name=base_class, asname=None)], level=1)
+
+        return [do_import, tree, do_register]
+    return tree
+
+
 def output_class(tree, **kw):
-    """A decorator to wraps a class with:
+    """A decorator to wrap a class with:
 
        from .out_base import BaseOutput
        ... Class definition
        BaseOutput.register(CLASS_NAME_LOWER_STRING, CLASS_NAME)
 
        Allowing to register the class as an output. """
-    if isinstance(tree, ClassDef):
-        # Create the register call
-        name = tree.name
-        reg_name = name.lower()
-        # BaseOutput.register member:
-        attr = Attribute(value=Name(id='BaseOutput', ctx=Load()), attr='register', ctx=Load())
-        # Function call to it passing reg_name and name
-        do_register = Expr(value=Call(func=attr, args=[Str(s=reg_name), Name(id=name, ctx=Load())], keywords=[]))
+    return _do_wrap_class_register(tree, 'out_base', 'BaseOutput')
 
-        # Create the import
-        do_import = ImportFrom(module='out_base', names=[alias(name='BaseOutput', asname=None)], level=1)
 
-        return [do_import, tree, do_register]
-    return tree
+def pre_class(tree, **kw):
+    """A decorator to wrap a class with:
+
+       from .pre_base import BasePreFlight
+       ... Class definition
+       BasePreFlight.register(CLASS_NAME_LOWER_STRING, CLASS_NAME)
+
+       Allowing to register the class as an output. """
+    return _do_wrap_class_register(tree, 'pre_base', 'BasePreFlight')
