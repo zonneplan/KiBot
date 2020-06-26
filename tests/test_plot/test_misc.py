@@ -215,3 +215,43 @@ def test_list():
     assert ctx.search_err(r'Pick and place file.? \(pos_ascii\) \[position\]')
 
     ctx.clean_up()
+
+
+def test_help():
+    ctx = context.TestContext('Help', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.run(extra=['--help'], no_verbose=True, no_out_dir=True, no_yaml_file=True)
+    assert ctx.search_out('Usage:')
+    assert ctx.search_out('Arguments:')
+    assert ctx.search_out('Options:')
+    ctx.clean_up()
+
+
+def test_help_list_outputs():
+    ctx = context.TestContext('HelpListOutputs', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.run(extra=['--help-list-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('Supported outputs:')
+    assert ctx.search_out('Gerber format')
+    ctx.clean_up()
+
+
+def test_help_output():
+    ctx = context.TestContext('HelpOutput', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.run(extra=['--help-output', 'gerber'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('Gerber format')
+    assert ctx.search_out('Type: .?gerber.?')
+    ctx.clean_up()
+
+
+def test_help_outputs():
+    ctx = context.TestContext('HelpOutputs', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.run(extra=['--help-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('Gerber format')
+    assert ctx.search_out('Type: .?gerber.?')
+    ctx.clean_up()
+
+
+def test_help_preflights():
+    ctx = context.TestContext('HelpPreflights', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('Supported preflight options')
+    ctx.clean_up()
