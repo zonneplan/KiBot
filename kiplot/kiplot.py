@@ -133,11 +133,11 @@ def preflight_checks(skip_pre):
     logger.debug("Preflight checks")
 
     if skip_pre is not None:
-        if skip_pre[0] == 'all':
+        if skip_pre == 'all':
             logger.debug("Skipping all pre-flight actions")
             return
         else:
-            skip_list = skip_pre[0].split(',')
+            skip_list = skip_pre.split(',')
             for skip in skip_list:
                 if skip == 'all':
                     logger.error('All can\'t be part of a list of actions '

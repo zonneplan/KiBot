@@ -54,7 +54,7 @@ def config_error(msg):
 
 
 class CfgYamlReader(object):
-    def __init__(self, brd_file):
+    def __init__(self):
         super(CfgYamlReader, self).__init__()
 
     def _check_version(self, v):

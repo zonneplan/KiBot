@@ -1,4 +1,37 @@
 # -*- coding: utf-8 -*-
+"""KiPlot: Command-line Plotting for KiCad
+
+Usage:
+  kiplot [-b BOARD] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-q | -v...] [-i]
+         [TARGET...]
+  kiplot [-b BOARD] [-c PLOT_CONFIG] --list
+  kiplot --help-list-outputs
+  kiplot --help-output=HELP_OUTPUT
+  kiplot --help-outputs
+  kiplot --help-preflights
+  kiplot -h | --help
+  kiplot --version
+
+Arguments:
+  TARGET    Outputs to generate, default is all
+
+Options:
+  -h, --help                       Show this help message and exit
+  -b BOARD, --board-file BOARD     The PCB .kicad-pcb board file
+  -c CONFIG, --plot-config CONFIG  The plotting config file to use
+  -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
+  --help-list-outputs              List supported outputs
+  --help-output HELP_OUTPUT        Help for this particular output
+  --help-outputs                   List supported outputs and details
+  --help-preflights                List supported preflights and details
+  -i, --invert-sel                 Generate the outputs not listed as targets
+  -l, --list                       List available outputs (in the config file)
+  -q, --quiet                      Remove information logs
+  -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
+  -v, --verbose                    Show debugging information
+  --version, -V                    Show program's version number and exit
+
+"""
 __author__ = 'John Beard, Salvador E. Tropea'
 __copyright__ = 'Copyright 2018-2020, INTI/John Beard/Salvador E. Tropea'
 __credits__ = ['Salvador E. Tropea', 'John Beard']
@@ -6,7 +39,6 @@ __license__ = 'GPL v3+'
 __email__ = 'salvador@inti.gob.ar'
 __status__ = 'beta'
 
-import argparse
 import os
 import sys
 import gzip
@@ -20,28 +52,26 @@ from .kiplot import (GS, generate_outputs)
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help)
 from .misc import (NO_PCB_FILE, EXIT_BAD_ARGS)
+from .docopt import docopt
 from .__version__ import __version__
 
 
+def list_pre_and_outs(logger, outputs):
+    logger.info('Available actions:\n')
+    pf = BasePreFlight.get_in_use_objs()
+    if len(pf):
+        logger.info('Pre-flight:')
+        for c in pf:
+            logger.info('- '+str(c))
+    if len(outputs):
+        logger.info('Outputs:')
+        for o in outputs:
+            logger.info('- '+str(o))
+
+
 def main():
-    parser = argparse.ArgumentParser(description='Command-line Plotting for KiCad')
-    parser.add_argument('target', nargs='*', help='Outputs to generate, default is all')
-    group = parser.add_mutually_exclusive_group()
-    parser.add_argument('-b', '--board-file', help='The PCB .kicad-pcb board file')
-    parser.add_argument('-c', '--plot-config', help='The plotting config file to use')
-    parser.add_argument('-d', '--out-dir', default='.', help='The output directory (cwd if not given)')
-    parser.add_argument('--help-list-outputs', action='store_true', help='List supported outputs')
-    parser.add_argument('--help-output', help='Help for this particular output')
-    parser.add_argument('--help-outputs', action='store_true', help='List supported outputs and details')
-    parser.add_argument('--help-preflights', action='store_true', help='List supported preflights and details')
-    parser.add_argument('-i', '--invert-sel', action='store_true', help='Generate the outputs not listed as targets')
-    parser.add_argument('-l', '--list', action='store_true', help='List available outputs (in the config file)')
-    group.add_argument('-q', '--quiet', action='store_true', help='remove information logs')
-    parser.add_argument('-s', '--skip-pre', nargs=1, help='skip pre-flight actions, comma separated list or `all`')
-    group.add_argument('-v', '--verbose', action='store_true', help='show debugging information')
-    parser.add_argument('--version', '-V', action='version', version='%(prog)s '+__version__+' - ' +
-                        __copyright__+' - License: '+__license__)
-    args = parser.parse_args()
+    ver = 'KiPlot '+__version__+' - '+__copyright__+' - License: '+__license__
+    args = docopt(__doc__, version=ver, options_first=True)
 
     # Create a logger with the specified verbosity
     logger = log.init(args.verbose, args.quiet)
@@ -104,7 +134,7 @@ def main():
         sys.exit(EXIT_BAD_ARGS)
 
     # Read the config file
-    cr = CfgYamlReader(board_file)
+    cr = CfgYamlReader()
     outputs = None
     try:
         # The Python way ...
@@ -116,17 +146,12 @@ def main():
         with open(plot_config) as cf_file:
             outputs = cr.read(cf_file)
 
-    # Actions
+    # Is just list the available targets?
     if args.list:
-        logger.info('\nPre-flight:')
-        pf = BasePreFlight.get_in_use_objs()
-        for c in pf:
-            logger.info('- '+str(c))
-        logger.info('Outputs:')
-        for o in outputs:
-            logger.info('- '+str(o))
-    else:
-        generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre)
+        list_pre_and_outs(logger, outputs)
+        sys.exit(0)
+
+    generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre)
 
 
 if __name__ == "__main__":
