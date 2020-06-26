@@ -59,6 +59,13 @@ def document(sentences, to_source, **kw):
 
 
 def output_class(tree, **kw):
+    """A decorator to wraps a class with:
+
+       from .out_base import BaseOutput
+       ... Class definition
+       BaseOutput.register(CLASS_NAME_LOWER_STRING, CLASS_NAME)
+
+       Allowing to register the class as an output. """
     if isinstance(tree, ClassDef):
         # Create the register call
         name = tree.name
