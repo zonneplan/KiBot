@@ -20,7 +20,7 @@ class PDF_Sch_Print(BaseOutput):  # noqa: F821
         # Options
         with document:
             self.output = ''
-            """ filename for the output PDF (the name of the schematic if empty) """
+            """ filename for the output PDF (the name of the schematic if empty) """  # pragma: no cover
 
     def run(self, output_dir, board):
         check_eeschema_do()

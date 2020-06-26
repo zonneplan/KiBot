@@ -30,8 +30,7 @@ class Gerber(AnyLayer):
             self.use_gerber_x2_attributes = True
             """ use the extended X2 format """
             self.use_gerber_net_attributes = True
-            """ include netlist metadata """
-        #  print("Help for self.use_aux_axis_as_origin: "+self._help_use_aux_axis_as_origin)
+            """ include netlist metadata """  # pragma: no cover
 
     @property
     def gerber_precision(self):

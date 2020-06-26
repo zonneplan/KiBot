@@ -23,7 +23,8 @@ class HPGL(AnyLayer):
             self._drill_marks = 'full'
             """ what to use to indicate the drill places, can be none, small or full (for real scale) """
             self.pen_width = 0.5
-            """ pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files """
+            """ pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files """  # pragma: no cover
+
     @property
     def drill_marks(self):
         return self._drill_marks

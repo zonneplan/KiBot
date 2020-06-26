@@ -22,7 +22,7 @@ class IBoM(BaseOutput):  # noqa: F821
             self.blacklist = ''
             """ regular expression for the components to exclude (using the Config field) """
             self.name_format = 'ibom'
-            """ format of the output name, example: %f_%r_iBoM will generate a file with revision and _iBoM """
+            """ format of the output name, example: %f_%r_iBoM will contain the revision and _iBoM """  # pragma: no cover
 
     def run(self, output_dir, board):
         check_script(CMD_IBOM, URL_IBOM)

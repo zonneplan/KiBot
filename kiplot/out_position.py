@@ -22,7 +22,7 @@ class Position(BaseOutput):  # noqa: F821
             self.only_smd = True
             """ only include the surface mount components """
             self._units = 'millimeters'
-            """ can be millimeters or inches """
+            """ can be millimeters or inches """  # pragma: no cover
 
     @property
     def format(self):

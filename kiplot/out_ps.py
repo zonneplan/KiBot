@@ -34,7 +34,7 @@ class PS(AnyLayer):
             """ this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                 Only used to plot pads and tracks """
             self.a4_output = True
-            """ force A4 paper size """
+            """ force A4 paper size """  # pragma: no cover
 
     @property
     def drill_marks(self):

@@ -22,7 +22,7 @@ class PDF(AnyLayer):
             self.negative_plot = False
             """ invert black and white """
             self._drill_marks = 'full'
-            """ what to use to indicate the drill places, can be none, small or full (for real scale) """
+            """ what to use to indicate the drill places, can be none, small or full (for real scale) """  # pragma: no cover
 
     @property
     def drill_marks(self):

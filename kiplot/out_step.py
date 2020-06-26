@@ -31,7 +31,7 @@ class STEP(BaseOutput):  # noqa: F821
             self.min_distance = -1
             """ the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm) """
             self.output = ''
-            """ name for the generated STEP file (the name of the PCB if empty) """
+            """ name for the generated STEP file (the name of the PCB if empty) """  # pragma: no cover
 
     @property
     def origin(self):

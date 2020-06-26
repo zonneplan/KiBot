@@ -20,7 +20,7 @@ class AnyDrill(BaseOutput):
             """ [string=None] format for a graphical drill map. The valid formats are hpgl, ps, gerber, dxf, svg and pdf.
                 Not generated unless a format is specified """
             self._report = None
-            """ [string=None] name of the drill report. Not generated unless a name is specified """
+            """ [string=None] name of the drill report. Not generated unless a name is specified """  # pragma: no cover
         # Mappings to KiCad values
         self._map_map = {
                          'hpgl': PLOT_FORMAT_HPGL,

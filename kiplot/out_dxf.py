@@ -22,7 +22,7 @@ class DXF(AnyLayer):
             self.polygon_mode = True
             """ plot using the contour, instead of the center line """
             self.sketch_plot = False
-            """ don't fill objects, just draw the outline """
+            """ don't fill objects, just draw the outline """  # pragma: no cover
 
     @property
     def drill_marks(self):

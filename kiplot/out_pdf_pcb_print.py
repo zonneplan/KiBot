@@ -21,7 +21,7 @@ class PDF_Pcb_Print(BaseOutput):  # noqa: F821
         # Options
         with document:
             self.output_name = ''
-            """ filename for the output PDF (the name of the PCB if empty) """
+            """ filename for the output PDF (the name of the PCB if empty) """  # pragma: no cover
 
     def config(self, outdir, options, layers):
         super().config(outdir, options, layers)
