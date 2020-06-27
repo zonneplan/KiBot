@@ -23,14 +23,16 @@ def document(sentences, to_source, **kw):
             value = prev.value
             # Extract its name
             # variables and attributes are supported
-            if isinstance(target, Name):
+            if isinstance(target, Name):  # pragma: no cover
+                # Note: The support for variables isn't currently used
                 name = target.id
                 is_attr = False
             elif isinstance(target, Attribute):
                 name = target.attr
                 is_attr = True
             else:
-                continue
+                # Just in case we put anything other than an attr/var assignment
+                continue  # pragma: no cover
             # Remove starting underscore
             if name[0] == '_':
                 name = name[1:]
@@ -50,7 +52,7 @@ def document(sentences, to_source, **kw):
             # Transform the string into an assign for _help_ID
             if is_attr:
                 target = Attribute(value=Name(id='self', ctx=Load()), attr=doc_id, ctx=Store())
-            else:
+            else:  # pragma: no cover
                 target = Name(id=doc_id, ctx=Store())
             sentences[n] = Assign(targets=[target], value=Str(s=type_hint+s.value.s))
         prev = s
@@ -72,7 +74,8 @@ def _do_wrap_class_register(tree, mod, base_class):
         do_import = ImportFrom(module=mod, names=[alias(name=base_class, asname=None)], level=1)
 
         return [do_import, tree, do_register]
-    return tree
+    # Just in case somebody applies it to anything other than a class
+    return tree  # pragma: no cover
 
 
 def output_class(tree, **kw):
