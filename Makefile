@@ -51,4 +51,7 @@ gen_ref:
 	src/kiplot -c tests/yaml_samples/print_pcb_zone-refill.kiplot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)
 	cp -a $(REFILL).ok $(REFILL)
 
-.PHONY: deb deb_clean lint test test_local gen_ref
+doc:
+	make -C docs
+
+.PHONY: deb deb_clean lint test test_local gen_ref doc

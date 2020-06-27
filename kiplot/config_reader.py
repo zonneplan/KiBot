@@ -4,6 +4,7 @@ Class to read KiPlot config files
 
 import re
 import sys
+from collections import OrderedDict
 
 import pcbnew
 
@@ -303,7 +304,7 @@ def print_output_options(name, cl):
     num_opts = 0
     for k, v in BaseOutput.get_attrs_gen(obj):
         help = getattr(obj, '_help_'+k)
-        print('    - {}: {}.'.format(k, help.rstrip() if help else 'Undocumented'))
+        print('    - `{}`: {}.'.format(k, help.rstrip() if help else 'Undocumented'))
         num_opts = num_opts+1
     if num_opts == 0:
         print('    - No available options')
@@ -328,7 +329,7 @@ def print_outputs_help(details=False):
     outs = BaseOutput.get_registered()
     logger.debug('{} supported outputs'.format(len(outs)))
     print('Supported outputs:')
-    for n, o in outs.items():
+    for n, o in OrderedDict(sorted(outs.items())).items():
         if details:
             print()
         print_one_out_help(details, n, o)
