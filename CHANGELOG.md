@@ -17,6 +17,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   --help-output)
 - Help for the supported preflights (--help-preflights)
 - Better YAML validation.
+- Added the following InteractiveHtmlBom options:
+  - dark_mode
+  - hide_pads
+  - show_fabrication
+  - hide_silkscreen
+  - highlight_pin1
+  - no_redraw_on_drag
+  - board_rotation
+  - checkboxes
+  - bom_view
+  - layer_view
+  - include_tracks
+  - include_nets
+  - sort_order
+  - no_blacklist_virtual
+  - blacklist_empty_val
+  - netlist_file
+  - extra_fields
+  - normalize_field_case
+  - variant_field
+  - variants_whitelist
+  - variants_blacklist
+  - dnp_field
 
 ### Fixed
 - The `sketch_plot` option is now implemented.

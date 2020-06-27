@@ -49,7 +49,18 @@ class BaseOutput(object):
 
     @staticmethod
     def get_attrs_for(obj):
+        """ Returns all attributes """
         return dict(inspect.getmembers(obj, filter))
+
+    @staticmethod
+    def get_attrs_gen(obj):
+        """ Returns a (key, val) iterator on public attributes """
+        attrs = BaseOutput.get_attrs_for(obj)
+        return ((k, v) for k, v in attrs.items() if k[0] != '_')
+
+    @staticmethod
+    def attr2longopt(attr):
+        return '--'+attr.replace('_', '-')
 
     @staticmethod
     def register(name, aclass):
