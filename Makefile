@@ -9,7 +9,7 @@ GROUP_ID=$(shell id -g)
 deb:
 	fakeroot dpkg-buildpackage -uc -b
 
-lint:
+lint: doc
 	# flake8 --filename is broken
 	ln -sf src/kiplot kiplot.py
 	# stop the build if there are Python syntax errors or undefined names
