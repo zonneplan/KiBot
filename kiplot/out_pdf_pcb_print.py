@@ -1,7 +1,7 @@
 import os
 from subprocess import (call)
 from .pre_base import BasePreFlight
-from .error import (KiPlotConfigurationError, PlotError)
+from .error import (KiPlotConfigurationError)
 from .kiplot import (check_script, GS)
 from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT)
 from kiplot.macros import macros, document, output_class  # noqa: F401
@@ -34,10 +34,7 @@ class PDF_Pcb_Print(BaseOutput):  # noqa: F821
         # Verify the inner layers
         layer_cnt = board.GetCopperLayerCount()
         for l in self._layers:
-            # for inner layers, we can now check if the layer exists
-            if l.is_inner:
-                if l.id < 1 or l.id >= layer_cnt - 1:
-                    raise PlotError("Inner layer `{}` is not valid for this board".format(l))
+            l.get_layer_id_from_name(layer_cnt)
         # Output file name
         output = self.output_name
         if not output:

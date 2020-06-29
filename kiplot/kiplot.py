@@ -36,51 +36,76 @@ class GS(object):
     out_dir = None
     filter_file = None
     debug_enabled = False
-    pcb_layers = None
 
 
 class Layer(object):
     """ A layer description """
-    def __init__(self, id, is_inner, name):
-        self.id = id
-        self.is_inner = is_inner
-        self.name = name
-        self.suffix = None
-        self.desc = None
+    # Default names
+    DEFAULT_LAYER_NAMES = {
+        'F.Cu': pcbnew.F_Cu,
+        'B.Cu': pcbnew.B_Cu,
+        'F.Adhes': pcbnew.F_Adhes,
+        'B.Adhes': pcbnew.B_Adhes,
+        'F.Paste': pcbnew.F_Paste,
+        'B.Paste': pcbnew.B_Paste,
+        'F.SilkS': pcbnew.F_SilkS,
+        'B.SilkS': pcbnew.B_SilkS,
+        'F.Mask': pcbnew.F_Mask,
+        'B.Mask': pcbnew.B_Mask,
+        'Dwgs.User': pcbnew.Dwgs_User,
+        'Cmts.User': pcbnew.Cmts_User,
+        'Eco1.User': pcbnew.Eco1_User,
+        'Eco2.User': pcbnew.Eco2_User,
+        'Edge.Cuts': pcbnew.Edge_Cuts,
+        'Margin': pcbnew.Margin,
+        'F.CrtYd': pcbnew.F_CrtYd,
+        'B.CrtYd': pcbnew.B_CrtYd,
+        'F.Fab': pcbnew.F_Fab,
+        'B.Fab': pcbnew.B_Fab,
+    }
+    # Names from the board file
+    pcb_layers = {}
 
-    def set_extra(self, suffix, desc):
+    def __init__(self, name, suffix, desc):
+        self.id = pcbnew.UNDEFINED_LAYER
+        self.is_inner = False
+        self.name = name
         self.suffix = suffix
         self.desc = desc
 
+    @staticmethod
+    def set_pcb_layers(board):
+        for id in range(pcbnew.PCBNEW_LAYER_ID_START, pcbnew.PCB_LAYER_ID_COUNT):
+            Layer.pcb_layers[board.GetLayerName(id)] = id
+
+    def get_layer_id_from_name(self, layer_cnt):
+        """ Get the pcbnew layer from the string provided in the config """
+        # Priority
+        # 1) Internal list
+        if self.name in Layer.DEFAULT_LAYER_NAMES:
+            self.id = Layer.DEFAULT_LAYER_NAMES[self.name]
+        else:
+            id = Layer.pcb_layers.get(self.name)
+            if id is not None:
+                # 2) List from the PCB
+                self.id = id
+                self.is_inner = id < pcbnew.B_Cu
+            elif self.name.startswith("Inner"):
+                # 3) Inner.N names
+                m = re.match(r"^Inner\.([0-9]+)$", self.name)
+                if not m:
+                    raise PlotError("Malformed inner layer name: {}, use Inner.N".format(self.name))
+                self.id = int(m.group(1))
+                self.is_inner = True
+            else:
+                raise PlotError("Unknown layer name: "+self.name)
+            # Check if the layer is in use
+            if self.is_inner and (self.id < 1 or self.id >= layer_cnt - 1):
+                raise PlotError("Inner layer `{}` is not valid for this board".format(self))
+        return self.id
+
     def __str__(self):
         return "{} ({} '{}' {})".format(self.name, self.id, self.desc, self.suffix)
-
-
-def load_pcb_layers():
-    """ Load layer names from the PCB """
-    GS.pcb_layers = {}
-    with open(GS.pcb_file, "r") as pcb_file:
-        collect_layers = False
-        for line in pcb_file:
-            if collect_layers:
-                z = re.match(r'\s+\((\d+)\s+(\S+)', line)
-                if z:
-                    res = z.groups()
-                    # print(res[1]+'->'+res[0])
-                    GS.pcb_layers[res[1]] = int(res[0])
-                else:
-                    if re.search(r'^\s+\)$', line):
-                        collect_layers = False
-                        break
-            else:
-                if re.search(r'\s+\(layers', line):
-                    collect_layers = True
-
-
-def get_layer_id_from_pcb(name):
-    if GS.pcb_layers is None:
-        load_pcb_layers()
-    return GS.pcb_layers.get(name)
 
 
 def check_version(command, version):
@@ -120,6 +145,8 @@ def load_board():
         board = pcbnew.LoadBoard(GS.pcb_file)
         if BasePreFlight.get_option('check_zone_fills'):
             pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+        # Now we know the names of the layers for this board
+        Layer.set_pcb_layers(board)
     except OSError as e:
         logger.error('Error loading PCB file. Currupted?')
         logger.error(e)

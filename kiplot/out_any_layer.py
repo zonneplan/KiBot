@@ -99,11 +99,7 @@ class AnyLayer(BaseOutput):
         for l in self._layers:
             suffix = l.suffix
             desc = l.desc
-            id = l.id
-            # for inner layers, we can now check if the layer exists
-            if l.is_inner:
-                if id < 1 or id >= layer_cnt - 1:
-                    raise PlotError("Inner layer `{}` is not valid for this board".format(l))
+            id = l.get_layer_id_from_name(layer_cnt)
             # Set current layer
             plot_ctrl.SetLayer(id)
             # Skipping NPTH is controlled by whether or not this is

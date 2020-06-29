@@ -4,7 +4,7 @@
 Usage:
   kiplot [-b BOARD] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-q | -v...] [-i]
          [TARGET...]
-  kiplot [-b BOARD] [-c PLOT_CONFIG] --list
+  kiplot [-c PLOT_CONFIG] --list
   kiplot --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
   kiplot --help-outputs
@@ -90,30 +90,6 @@ def main():
         print_preflights_help()
         sys.exit(0)
 
-    # Determine the PCB file
-    if args.board_file is None:
-        board_files = glob('*.kicad_pcb')
-        if len(board_files) == 1:
-            board_file = board_files[0]
-            logger.info('Using PCB file: '+board_file)
-        elif len(board_files) > 1:
-            board_file = board_files[0]
-            logger.warning('More than one PCB file found in current directory.\n'
-                           '  Using '+board_file+' if you want to use another use -b option.')
-        else:
-            logger.error('No PCB file found (*.kicad_pcb), use -b to specify one.')
-            sys.exit(EXIT_BAD_ARGS)
-    else:
-        board_file = args.board_file
-    if not os.path.isfile(board_file):
-        logger.error("Board file not found: "+board_file)
-        sys.exit(NO_PCB_FILE)
-    GS.pcb_file = board_file
-    GS.sch_file = os.path.splitext(board_file)[0] + '.sch'
-    if not os.path.isfile(GS.sch_file):
-        logger.warning('Missing schematic file: ' + GS.sch_file)
-        GS.sch_file = None
-
     # Determine the YAML file
     if args.plot_config is None:
         plot_configs = glob('*.kiplot.yaml')
@@ -150,6 +126,30 @@ def main():
     if args.list:
         list_pre_and_outs(logger, outputs)
         sys.exit(0)
+
+    # Determine the PCB file
+    if args.board_file is None:
+        board_files = glob('*.kicad_pcb')
+        if len(board_files) == 1:
+            board_file = board_files[0]
+            logger.info('Using PCB file: '+board_file)
+        elif len(board_files) > 1:
+            board_file = board_files[0]
+            logger.warning('More than one PCB file found in current directory.\n'
+                           '  Using '+board_file+' if you want to use another use -b option.')
+        else:
+            logger.error('No PCB file found (*.kicad_pcb), use -b to specify one.')
+            sys.exit(EXIT_BAD_ARGS)
+    else:
+        board_file = args.board_file
+    if not os.path.isfile(board_file):
+        logger.error("Board file not found: "+board_file)
+        sys.exit(NO_PCB_FILE)
+    GS.pcb_file = board_file
+    GS.sch_file = os.path.splitext(board_file)[0] + '.sch'
+    if not os.path.isfile(GS.sch_file):
+        logger.warning('Missing schematic file: ' + GS.sch_file)
+        GS.sch_file = None
 
     generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre)
 

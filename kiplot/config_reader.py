@@ -2,14 +2,11 @@
 Class to read KiPlot config files
 """
 
-import re
 import sys
 from collections import OrderedDict
 
-import pcbnew
-
 from .error import (KiPlotConfigurationError)
-from .kiplot import (Layer, get_layer_id_from_pcb)
+from .kiplot import (Layer)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_CONFIG, EXIT_BAD_ARGS)
 from mcpy import activate  # noqa: F401
 # Output classes
@@ -69,52 +66,6 @@ class CfgYamlReader(object):
             config_error("Unknown KiPlot config version: "+str(version))
         return version
 
-    def _get_layer_from_str(self, s):
-        """
-        Get the pcbnew layer from a string in the config
-        """
-        D = {
-            'F.Cu': pcbnew.F_Cu,
-            'B.Cu': pcbnew.B_Cu,
-            'F.Adhes': pcbnew.F_Adhes,
-            'B.Adhes': pcbnew.B_Adhes,
-            'F.Paste': pcbnew.F_Paste,
-            'B.Paste': pcbnew.B_Paste,
-            'F.SilkS': pcbnew.F_SilkS,
-            'B.SilkS': pcbnew.B_SilkS,
-            'F.Mask': pcbnew.F_Mask,
-            'B.Mask': pcbnew.B_Mask,
-            'Dwgs.User': pcbnew.Dwgs_User,
-            'Cmts.User': pcbnew.Cmts_User,
-            'Eco1.User': pcbnew.Eco1_User,
-            'Eco2.User': pcbnew.Eco2_User,
-            'Edge.Cuts': pcbnew.Edge_Cuts,
-            'Margin': pcbnew.Margin,
-            'F.CrtYd': pcbnew.F_CrtYd,
-            'B.CrtYd': pcbnew.B_CrtYd,
-            'F.Fab': pcbnew.F_Fab,
-            'B.Fab': pcbnew.B_Fab,
-        }
-        layer = None
-        # Priority
-        # 1) Internal list
-        if s in D:
-            layer = Layer(D[s], False, s)
-        else:
-            id = get_layer_id_from_pcb(s)
-            if id is not None:
-                # 2) List from the PCB
-                layer = Layer(id, id < pcbnew.B_Cu, s)
-            elif s.startswith("Inner"):
-                # 3) Inner.N names
-                m = re.match(r"^Inner\.([0-9]+)$", s)
-                if not m:
-                    raise KiPlotConfigurationError("Malformed inner layer name: {}, use Inner.N".format(s))
-                layer = Layer(int(m.group(1)), True, s)
-            else:
-                raise KiPlotConfigurationError('Unknown layer name: '+s)
-        return layer
-
     def _parse_layers(self, layers_to_parse):
         # Check we have a list of layers
         if not isinstance(layers_to_parse, list):
@@ -139,9 +90,7 @@ class CfgYamlReader(object):
             if layer is None:
                 raise KiPlotConfigurationError("Missing `layer` attribute for layer entry ({})".format(l))
             # Create an object for it
-            layer = self._get_layer_from_str(layer)
-            layer.set_extra(suffix, description)
-            layers.append(layer)
+            layers.append(Layer(layer, suffix, description))
         return layers
 
     def _parse_output(self, o_obj):

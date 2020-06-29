@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Drill outputs: map.type and report.filename now should be map and report.
   The old mechanism is currently supported, but deprecated.
 - Now the command line usage is more clearly documented, but also more strict.
+- The --list option doesn't need a PCB file anymore.
+  Note that passing it is now considered an error.
 
 ### Added
 - Help for the supported outputs (--help-list-outputs, --help-outputs and

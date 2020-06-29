@@ -99,7 +99,7 @@ def test_drill_map_wrong_type():
 
 def test_wrong_layer_1():
     ctx = context.TestContext('ErrorWrongLayer1', '3Rs', 'error_wrong_layer_1', None)
-    ctx.run(EXIT_BAD_CONFIG)
+    ctx.run(PLOT_ERROR)
     assert ctx.search_err("Unknown layer name: F.Bogus")
     ctx.clean_up()
 
@@ -113,7 +113,7 @@ def test_wrong_layer_2():
 
 def test_wrong_layer_3():
     ctx = context.TestContext('ErrorWrongLayer3', '3Rs', 'error_wrong_layer_3', None)
-    ctx.run(EXIT_BAD_CONFIG)
+    ctx.run(PLOT_ERROR)
     assert ctx.search_err("Malformed inner layer name: Inner_1,")
     ctx.clean_up()
 
