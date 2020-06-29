@@ -192,9 +192,7 @@ outputs:
 
 Most options are the same you'll find in the KiCad dialogs.
 
-### Supported outputs
-
-@outputs@
+### @outputs@
 
 ## Using KiPlot
 

@@ -192,9 +192,7 @@ outputs:
 
 Most options are the same you'll find in the KiCad dialogs.
 
-### Supported outputs
-
-Supported outputs:
+### Supported outputs:
 
 * DXF (Drawing Exchange Format)
   * Type: `dxf`
@@ -496,7 +494,7 @@ KiPlot: Command-line Plotting for KiCad
 Usage:
   kiplot [-b BOARD] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-q | -v...] [-i]
          [TARGET...]
-  kiplot [-b BOARD] [-c PLOT_CONFIG] --list
+  kiplot [-c PLOT_CONFIG] --list
   kiplot --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
   kiplot --help-outputs
