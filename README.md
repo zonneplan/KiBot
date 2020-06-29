@@ -199,7 +199,7 @@ Most options are the same you'll find in the KiCad dialogs.
   * Description: Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
                  This output is what you get from the File/Plot menu in pcbnew.
   * Options:
-    - `drill_marks`: [string='full'] drill_marks what to use to indicate the drill places, can be none, small or full (for real scale).
+    - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
     - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
     - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.

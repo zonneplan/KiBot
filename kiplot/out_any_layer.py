@@ -29,12 +29,6 @@ class AnyLayer(BaseOutput):
             """ include references and values even when they are marked as invisible """
             self.tent_vias = True
             """ cover the vias """  # pragma: no cover
-        # Mappings to KiCad values
-        self._drill_marks_map = {
-                                 'none': PCB_PLOT_PARAMS.NO_DRILL_SHAPE,
-                                 'small': PCB_PLOT_PARAMS.SMALL_DRILL_SHAPE,
-                                 'full': PCB_PLOT_PARAMS.FULL_DRILL_SHAPE,
-                                }
 
     def config(self, outdir, options, layers):
         super().config(outdir, options, layers)
