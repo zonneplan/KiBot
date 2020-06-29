@@ -45,9 +45,8 @@ class TestContext(object):
         return os.path.join(this_dir, '../board_samples')
 
     def _get_board_file(self):
-        self.board_file = os.path.abspath(os.path.join(self.get_board_dir(),
-                                          self.board_name +
-                                          (KICAD_PCB_EXT if self.mode == MODE_PCB else KICAD_SCH_EXT)))
+        self.board_file = os.path.abspath(os.path.join(self.get_board_dir(), self.board_name + KICAD_PCB_EXT))
+        self.sch_file = os.path.abspath(os.path.join(self.get_board_dir(), self.board_name + KICAD_SCH_EXT))
         logging.info('KiCad file: '+self.board_file)
         assert os.path.isfile(self.board_file)
 

@@ -9,6 +9,7 @@ from shutil import which
 from subprocess import (run, PIPE)
 from distutils.version import StrictVersion
 
+from .gs import (GS)
 from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, NO_SCH_FILE, CORRUPTED_PCB,
                    EXIT_BAD_ARGS)
 from .error import (PlotError)
@@ -25,17 +26,6 @@ except ImportError:  # pragma: no cover
                  " Is KiCad installed?"
                  " Do you need to add it to PYTHONPATH?")
     exit(NO_PCBNEW_MODULE)
-
-
-class GS(object):
-    """
-    Class to keep the global settings.
-    Is a static class, just a placeholder for some global variables.
-    """
-    pcb_file = None
-    out_dir = None
-    filter_file = None
-    debug_enabled = False
 
 
 class Layer(object):
@@ -141,6 +131,7 @@ def check_eeschema_do():
 
 
 def load_board():
+    GS.check_pcb()
     try:
         board = pcbnew.LoadBoard(GS.pcb_file)
         if BasePreFlight.get_option('check_zone_fills'):
@@ -210,6 +201,8 @@ def generate_outputs(outputs, target, invert, skip_pre):
             # Should we load the PCB?
             if out.is_pcb() and (board is None):
                 board = load_board()
+            if out.is_sch():
+                GS.check_sch()
             try:
                 out.run(get_output_dir(out.get_outdir()), board)
             except PlotError as e:

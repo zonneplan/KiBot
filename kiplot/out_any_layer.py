@@ -2,7 +2,7 @@ import os
 from pcbnew import (GERBER_JOBFILE_WRITER, PCB_PLOT_PARAMS, FromMM, PLOT_CONTROLLER, IsCopperLayer, SKETCH)
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
-from .kiplot import (GS)
+from .gs import (GS)
 from kiplot.macros import macros, document  # noqa: F401
 from . import log
 

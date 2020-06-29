@@ -10,10 +10,13 @@ Tests miscellaneous stuff.
 - Missing schematic
 - Wrong PCB name
 - Missing PCB
+- Missing SCH
 - Missing config
 - Wrong config name
 - Guess the PCB and YAML
 - Guess the PCB and YAML when more than one is present
+- Guess the SCH and YAML
+- Guess the SCH and YAML when more than one is present
 - --list
 
 For debug information use:
@@ -32,7 +35,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_SCH_FILE, NO_PCB_FILE)
+from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE)
 
 
 POS_DIR = 'positiondir'
@@ -112,9 +115,19 @@ def test_select_output():
 def test_miss_sch():
     prj = 'fail-project'
     ctx = context.TestContext('MissingSCH', prj, 'pre_and_position', POS_DIR)
-    ctx.run(NO_SCH_FILE, extra=['pos_ascii'])
+    ctx.run(EXIT_BAD_ARGS, extra=['pos_ascii'])
 
-    assert ctx.search_err('Missing schematic')
+    assert ctx.search_err('No SCH file found')
+
+    ctx.clean_up()
+
+
+def test_miss_sch_2():
+    prj = 'fail-project'
+    ctx = context.TestContext('MissingSCH_2', prj, 'pre_and_position', POS_DIR)
+    ctx.run(NO_SCH_FILE, no_board_file=True, extra=['-e', 'bogus', 'pos_ascii'])
+
+    assert ctx.search_err('Schematic file not found')
 
     ctx.clean_up()
 
@@ -132,7 +145,7 @@ def test_miss_pcb():
 
 def test_miss_pcb_2():
     ctx = context.TestContext('MissingPCB_2', '3Rs', 'pre_and_position', POS_DIR)
-    ctx.run(EXIT_BAD_ARGS, no_board_file=True)
+    ctx.run(EXIT_BAD_ARGS, no_board_file=True, extra=['-s', 'run_erc,update_xml', 'pos_ascii'])
 
     assert ctx.search_err('No PCB file found')
 
@@ -161,6 +174,8 @@ def test_miss_yaml_2():
 
 
 def test_auto_pcb_and_cfg():
+    """ Test guessing the PCB and config file.
+        Only one them is there. """
     prj = '3Rs'
     ctx = context.TestContext('GuessPCB_cfg', prj, 'pre_and_position', POS_DIR)
 
@@ -180,6 +195,8 @@ def test_auto_pcb_and_cfg():
 
 
 def test_auto_pcb_and_cfg_2():
+    """ Test guessing the PCB and config file.
+        Two of them are there. """
     prj = '3Rs'
     ctx = context.TestContext('GuessPCB_cfg_rep', prj, 'pre_and_position', POS_DIR)
 
@@ -200,6 +217,68 @@ def test_auto_pcb_and_cfg_2():
 
     ctx.dont_expect_out_file(ctx.get_pos_both_filename())
     ctx.expect_out_file(ctx.get_pos_both_csv_filename())
+
+    ctx.clean_up()
+
+
+def test_auto_pcb_and_cfg_3():
+    """ Test guessing the SCH and config file.
+        Only one them is there. """
+    prj = '3Rs'
+    ctx = context.TestContext('GuessSCH_cfg', prj, 'pre_and_position', POS_DIR)
+
+    sch = os.path.basename(ctx.sch_file)
+    shutil.copy2(ctx.sch_file, ctx.get_out_path(sch))
+    yaml_file = os.path.basename(ctx.yaml_file)
+    shutil.copy2(ctx.yaml_file, ctx.get_out_path(yaml_file))
+
+    ctx.run(extra=['-s', 'all', '-i'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
+
+    assert ctx.search_err('Using SCH file: '+sch)
+    assert ctx.search_err('Using config file: '+yaml_file)
+
+    ctx.clean_up()
+
+
+def test_auto_pcb_and_cfg_4():
+    """ Test guessing the SCH and config file.
+        Two SCHs and one PCB.
+        The SCH with same name as the PCB should be selected. """
+    prj = '3Rs'
+    ctx = context.TestContext('GuessSCH_cfg_2', prj, 'pre_and_position', POS_DIR)
+
+    sch = os.path.basename(ctx.sch_file)
+    shutil.copy2(ctx.sch_file, ctx.get_out_path(sch))
+    shutil.copy2(ctx.sch_file, ctx.get_out_path('b_'+sch))
+    brd = os.path.basename(ctx.board_file)
+    shutil.copy2(ctx.board_file, ctx.get_out_path(brd))
+    yaml_file = os.path.basename(ctx.yaml_file)
+    shutil.copy2(ctx.yaml_file, ctx.get_out_path(yaml_file))
+
+    ctx.run(extra=['-s', 'all', '-i'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
+
+    assert ctx.search_err('Using '+sch)
+    assert ctx.search_err('Using config file: '+yaml_file)
+
+    ctx.clean_up()
+
+
+def test_auto_pcb_and_cfg_5():
+    """ Test guessing the SCH and config file.
+        Two SCHs. """
+    prj = '3Rs'
+    ctx = context.TestContext('GuessSCH_cfg_3', prj, 'pre_and_position', POS_DIR)
+
+    sch = os.path.basename(ctx.sch_file)
+    shutil.copy2(ctx.sch_file, ctx.get_out_path(sch))
+    shutil.copy2(ctx.sch_file, ctx.get_out_path('b_'+sch))
+    yaml_file = os.path.basename(ctx.yaml_file)
+    shutil.copy2(ctx.yaml_file, ctx.get_out_path(yaml_file))
+
+    ctx.run(extra=['-s', 'all', '-i'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
+
+    assert ctx.search_err('Using (b_)?'+sch)
+    assert ctx.search_err('Using config file: '+yaml_file)
 
     ctx.clean_up()
 

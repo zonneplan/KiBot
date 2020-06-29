@@ -492,8 +492,8 @@ kiplot --list
 KiPlot: Command-line Plotting for KiCad
 
 Usage:
-  kiplot [-b BOARD] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-q | -v...] [-i]
-         [TARGET...]
+  kiplot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
+         [-q | -v...] [-i] [TARGET...]
   kiplot [-c PLOT_CONFIG] --list
   kiplot --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
@@ -510,6 +510,7 @@ Options:
   -b BOARD, --board-file BOARD     The PCB .kicad-pcb board file
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
+  -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
   --help-list-outputs              List supported outputs
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details

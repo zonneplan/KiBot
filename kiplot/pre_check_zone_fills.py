@@ -10,7 +10,6 @@ class Check_Zone_Fills(BasePreFlight):  # noqa: F821
         if not isinstance(value, bool):
             raise KiPlotConfigurationError('must be boolean')
         self._enabled = value
-        self._pcb_related = True
 
     def run(self):
         pass

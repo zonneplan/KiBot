@@ -26,10 +26,10 @@ from kiplot.misc import (BOM_ERROR)
 BOM_DIR = 'BoM'
 
 
-def test_bom():
+def test_bom_ok():
     prj = 'bom'
     ctx = context.TestContext('BoM_simple', prj, prj, BOM_DIR)
-    ctx.run()
+    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
     # Check all outputs are there
     # Default format is PRJ_bom_REVISION
     name = os.path.join(BOM_DIR, prj+'_bom_')

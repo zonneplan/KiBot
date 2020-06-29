@@ -13,8 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now the command line usage is more clearly documented, but also more strict.
 - The --list option doesn't need a PCB file anymore.
   Note that passing it is now considered an error.
+- Now we test the PCB and/or SCH only when we are doing something that needs
+  them.
 
 ### Added
+- -e/--schematic option to specify any schematic (not just derived from the PCB
+  name.
 - Help for the supported outputs (--help-list-outputs, --help-outputs and
   --help-output)
 - Help for the supported preflights (--help-preflights)

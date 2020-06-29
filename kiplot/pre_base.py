@@ -1,6 +1,7 @@
-from . import log
+from .gs import (GS)
+from .log import (get_logger)
 
-logger = log.get_logger(__name__)
+logger = get_logger(__name__)
 
 
 class BasePreFlight(object):
@@ -55,6 +56,10 @@ class BasePreFlight(object):
     def run_enabled():
         for k, v in BasePreFlight._in_use.items():
             if v._enabled:
+                if v.is_sch():
+                    GS.check_sch()
+                if v.is_pcb():
+                    GS.check_pcb()
                 logger.debug('Preflight apply '+k)
                 v.apply()
         for k, v in BasePreFlight._in_use.items():
@@ -72,11 +77,11 @@ class BasePreFlight(object):
         return "{}: {}".format(self._name, self._enabled)
 
     def is_sch(self):
-        """ True for outputs that works on the schematic """
+        """ True for preflights that needs the schematic """
         return self._sch_related
 
     def is_pcb(self):
-        """ True for outputs that works on the PCB """
+        """ True for preflights that needs the PCB """
         return self._pcb_related
 
     def run(self, brd_file):  # pragma: no cover

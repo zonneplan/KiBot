@@ -3,7 +3,8 @@ from glob import (glob)
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from .error import KiPlotConfigurationError
 from .misc import (CMD_KIBOM, URL_KIBOM, BOM_ERROR)
-from .kiplot import (GS, check_script)
+from .kiplot import (check_script)
+from .gs import (GS)
 from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 

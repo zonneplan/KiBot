@@ -3,7 +3,7 @@ import re
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from .error import KiPlotConfigurationError
 from .misc import (KICAD2STEP, KICAD2STEP_ERR)
-from .kiplot import (GS)
+from .gs import (GS)
 from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 

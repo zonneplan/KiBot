@@ -1,5 +1,5 @@
 import os
-from .kiplot import (GS)
+from .gs import (GS)
 from kiplot.macros import macros, pre_class  # noqa: F401
 
 

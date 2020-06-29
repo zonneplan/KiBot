@@ -1,6 +1,7 @@
 import os
 from subprocess import (call)
-from .kiplot import (check_eeschema_do, GS)
+from .gs import (GS)
+from .kiplot import (check_eeschema_do)
 from .misc import (CMD_EESCHEMA_DO, PDF_SCH_PRINT)
 from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log

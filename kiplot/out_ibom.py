@@ -1,7 +1,8 @@
 import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR)
-from .kiplot import (GS, check_script)
+from .gs import (GS)
+from .kiplot import (check_script)
 from .error import KiPlotConfigurationError
 from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log

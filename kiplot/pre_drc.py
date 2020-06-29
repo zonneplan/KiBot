@@ -2,7 +2,8 @@ from sys import (exit)
 from subprocess import (call)
 from kiplot.macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
-from .kiplot import (GS, check_script)
+from .gs import (GS)
+from .kiplot import (check_script)
 from .misc import (CMD_PCBNEW_RUN_DRC, URL_PCBNEW_RUN_DRC, DRC_ERROR)
 from .log import (get_logger)
 

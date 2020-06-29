@@ -1,7 +1,8 @@
 from sys import (exit)
 from subprocess import (call)
 from kiplot.macros import macros, pre_class  # noqa: F401
-from .kiplot import (GS, check_eeschema_do)
+from .gs import (GS)
+from .kiplot import (check_eeschema_do)
 from .error import (KiPlotConfigurationError)
 from .misc import (CMD_EESCHEMA_DO, ERC_ERROR)
 from .log import (get_logger)
