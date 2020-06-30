@@ -510,7 +510,7 @@ Usage:
   kiplot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-i] [TARGET...]
   kiplot [-c PLOT_CONFIG] --list
-  kiplot [-b BOARD] --example
+  kiplot [-b BOARD] [-d OUT_DIR] --example
   kiplot --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
   kiplot --help-outputs

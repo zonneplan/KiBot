@@ -18,6 +18,9 @@ Tests miscellaneous stuff.
 - Guess the SCH and YAML
 - Guess the SCH and YAML when more than one is present
 - --list
+- Create example
+  - with PCB
+  - already exists
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -35,7 +38,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE)
+from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE)
 
 
 POS_DIR = 'positiondir'
@@ -333,4 +336,30 @@ def test_help_preflights():
     ctx = context.TestContext('HelpPreflights', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Supported preflight options')
+    ctx.clean_up()
+
+
+def test_example_1():
+    ctx = context.TestContext('Example1', '3Rs', 'pre_and_position', '')
+    ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.expect_out_file(EXAMPLE_CFG)
+    os.remove(ctx.get_out_path(EXAMPLE_CFG))
+    ctx.clean_up()
+
+
+def test_example_2():
+    ctx = context.TestContext('Example2', 'good-project', 'pre_and_position', '')
+    ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
+    assert ctx.expect_out_file(EXAMPLE_CFG)
+    ctx.search_in_file(EXAMPLE_CFG, ['GND.Cu'])
+    os.remove(ctx.get_out_path(EXAMPLE_CFG))
+    ctx.clean_up()
+
+
+def test_example_3():
+    ctx = context.TestContext('Example3', 'good-project', 'pre_and_position', '')
+    ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
+    assert ctx.expect_out_file(EXAMPLE_CFG)
+    ctx.run(WONT_OVERWRITE, extra=['--example'], no_verbose=True, no_yaml_file=True)
+    os.remove(ctx.get_out_path(EXAMPLE_CFG))
     ctx.clean_up()

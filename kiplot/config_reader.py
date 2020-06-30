@@ -303,12 +303,15 @@ def print_preflights_help():
         print('- {}: {}.'.format(n, help.rstrip()))
 
 
-def create_example(pcb_file):
-    if os.path.isfile(EXAMPLE_CFG):
-        logger.error(EXAMPLE_CFG+" already exists, won't overwrite")
+def create_example(pcb_file, out_dir):
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    fname = os.path.join(out_dir, EXAMPLE_CFG)
+    if os.path.isfile(fname):
+        logger.error(fname+" already exists, won't overwrite")
         exit(WONT_OVERWRITE)
-    with open(EXAMPLE_CFG, 'w') as f:
-        logger.info('Creating {} example configuration'.format(EXAMPLE_CFG))
+    with open(fname, 'w') as f:
+        logger.info('Creating {} example configuration'.format(fname))
         f.write('kiplot:\n  version: 1\n')
         # Preflights
         f.write('\npreflight:\n')

@@ -5,7 +5,7 @@ Usage:
   kiplot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-i] [TARGET...]
   kiplot [-c PLOT_CONFIG] --list
-  kiplot [-b BOARD] --example
+  kiplot [-b BOARD] [-d OUT_DIR] --example
   kiplot --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
   kiplot --help-outputs
@@ -172,7 +172,7 @@ def main():
         sys.exit(0)
     if args.example:
         check_board_file(args.board_file)
-        create_example(args.board_file)
+        create_example(args.board_file, GS.out_dir)
         sys.exit(0)
 
     # Determine the YAML file
