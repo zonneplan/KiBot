@@ -49,7 +49,11 @@ class AnyDrill(BaseOutput):
             if not isinstance(type, str):
                 raise KiPlotConfigurationError("drill `map` `type` must be a string")
             val = type
-        if val not in self._map_map:
+        elif not isinstance(val, str):
+            raise KiPlotConfigurationError("drill `map` must be a string")
+        if val == 'None':
+            val = None
+        elif val not in self._map_map:
             raise KiPlotConfigurationError("Unknown drill `map` `type`: {}".format(val))
         self._map = val
 
@@ -71,6 +75,10 @@ class AnyDrill(BaseOutput):
             if not isinstance(filename, str):
                 raise KiPlotConfigurationError("drill `report` `filename` must be a string")
             val = filename
+        elif not isinstance(val, str):
+            raise KiPlotConfigurationError("drill `report` must be a string")
+        if val == 'None':
+            val = None
         self._report = val
 
     def config(self, outdir, options, layers):
