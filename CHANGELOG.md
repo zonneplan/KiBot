@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - -e/--schematic option to specify any schematic (not just derived from the PCB
   name.
+- -x/--example option to generate a complete configuration example.
 - Help for the supported outputs (--help-list-outputs, --help-outputs and
   --help-output)
 - Help for the supported preflights (--help-preflights)

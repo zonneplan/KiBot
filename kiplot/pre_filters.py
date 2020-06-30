@@ -9,6 +9,10 @@ class Filters(BasePreFlight):  # noqa: F821
     def __init__(self, name, value):
         super().__init__(name, value)
 
+    def get_example():
+        """ Returns a YAML value for the example config """
+        return "\n    - filter: 'Filter description'\n      number: 10\n      regex: 'Regular expression to match'"
+
     def run(self):
         pass
 

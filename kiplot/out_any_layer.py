@@ -13,6 +13,8 @@ AUTO_SCALE = 0
 class AnyLayer(BaseOutput):
     def __init__(self, name, type, description):
         super(AnyLayer, self).__init__(name, type, description)
+        # We need layers, so we define it
+        self._layers = None
         # Options
         with document:
             self.exclude_edge_layer = True

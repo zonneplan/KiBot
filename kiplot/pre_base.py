@@ -84,6 +84,10 @@ class BasePreFlight(object):
         """ True for preflights that needs the PCB """
         return self._pcb_related
 
+    def get_example():
+        """ Returns a YAML value for the example config """
+        return 'true'
+
     def run(self, brd_file):  # pragma: no cover
         logger.error("The run method for the preflight class name `{}` isn't implemented".format(self._name))
 

@@ -11,6 +11,10 @@ class Ignore_Unconnected(BasePreFlight):  # noqa: F821
             raise KiPlotConfigurationError('must be boolean')
         self._enabled = value
 
+    def get_example():
+        """ Returns a YAML value for the example config """
+        return 'false'
+
     def run(self, brd_file):
         pass
 

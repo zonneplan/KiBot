@@ -53,6 +53,29 @@ class Layer(object):
         'F.Fab': pcbnew.F_Fab,
         'B.Fab': pcbnew.B_Fab,
     }
+    # Default names
+    DEFAULT_LAYER_DESC = {
+        'F.Cu': 'Front copper',
+        'B.Cu': 'Bottom copper',
+        'F.Adhes': 'Front adhesive (glue)',
+        'B.Adhes': 'Bottom adhesive (glue)',
+        'F.Paste': 'Front solder paste',
+        'B.Paste': 'Bottom solder paste',
+        'F.SilkS': 'Front silkscreen (artwork)',
+        'B.SilkS': 'Bottom silkscreen (artwork)',
+        'F.Mask': 'Front soldermask (negative)',
+        'B.Mask': 'Bottom soldermask (negative)',
+        'Dwgs.User': 'User drawings',
+        'Cmts.User': 'User comments',
+        'Eco1.User': 'For user usage 1',
+        'Eco2.User': 'For user usage 2',
+        'Edge.Cuts': 'Board shape',
+        'Margin': 'Margin relative to edge cut',
+        'F.CrtYd': 'Front courtyard area',
+        'B.CrtYd': 'Bottom courtyard area',
+        'F.Fab': 'Front documentation',
+        'B.Fab': 'Bottom documentation',
+    }
     # Names from the board file
     pcb_layers = {}
 
@@ -61,12 +84,23 @@ class Layer(object):
         self.is_inner = False
         self.name = name
         self.suffix = suffix
+        if desc is None and name in Layer.DEFAULT_LAYER_DESC:
+            desc = Layer.DEFAULT_LAYER_DESC[name]
         self.desc = desc
 
     @staticmethod
     def set_pcb_layers(board):
-        for id in range(pcbnew.PCBNEW_LAYER_ID_START, pcbnew.PCB_LAYER_ID_COUNT):
+        for id in board.GetEnabledLayers().Seq():
             Layer.pcb_layers[board.GetLayerName(id)] = id
+
+    @staticmethod
+    def get_pcb_layers():
+        layers = []
+        for n, id in Layer.pcb_layers.items():
+            s = n.replace('.', '_')
+            d = Layer.DEFAULT_LAYER_DESC.get(n)
+            layers.append(Layer(n, s, d))
+        return layers
 
     def get_layer_id_from_name(self, layer_cnt):
         """ Get the pcbnew layer from the string provided in the config """
@@ -93,6 +127,14 @@ class Layer(object):
             if self.is_inner and (self.id < 1 or self.id >= layer_cnt - 1):
                 raise PlotError("Inner layer `{}` is not valid for this board".format(self))
         return self.id
+
+    @staticmethod
+    def get_default_layers():
+        layers = []
+        for n, d in Layer.DEFAULT_LAYER_DESC.items():
+            s = n.replace('.', '_')
+            layers.append(Layer(n, s, d))
+        return layers
 
     def __str__(self):
         return "{} ({} '{}' {})".format(self.name, self.id, self.desc, self.suffix)
@@ -130,10 +172,12 @@ def check_eeschema_do():
         exit(NO_SCH_FILE)
 
 
-def load_board():
-    GS.check_pcb()
+def load_board(pcb_file=None):
+    if not pcb_file:
+        GS.check_pcb()
+        pcb_file = GS.pcb_file
     try:
-        board = pcbnew.LoadBoard(GS.pcb_file)
+        board = pcbnew.LoadBoard(pcb_file)
         if BasePreFlight.get_option('check_zone_fills'):
             pcbnew.ZONE_FILLER(board).Fill(board.Zones())
         # Now we know the names of the layers for this board

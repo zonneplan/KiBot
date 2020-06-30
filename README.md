@@ -427,6 +427,21 @@ Most options are the same you'll find in the KiCad dialogs.
 
 ## Using KiPlot
 
+If you need a template for the configuration file try:
+
+```
+kiplot --example
+```
+
+This will generate a file named `example.kiplot.yaml` containing all the available options and comments about them.
+You can use it to create your own configuration file.
+
+If you want to use the layers of a particular PCB in the example use:
+
+```
+kiplot -b PCB_FILE --example
+```
+
 If the current directory contains only one PCB file and only one configuration file (named *.kiplot.yaml)
 you can just call `kiplot`. No arguments needed. The tool will figure out which files to use.
 
@@ -495,6 +510,7 @@ Usage:
   kiplot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-i] [TARGET...]
   kiplot [-c PLOT_CONFIG] --list
+  kiplot [-b BOARD] --example
   kiplot --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
   kiplot --help-outputs
@@ -520,7 +536,8 @@ Options:
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
   -v, --verbose                    Show debugging information
-  --version, -V                    Show program's version number and exit
+  -V, --version                    Show program's version number and exit
+  -x, --example                    Create an example configuration file.
 
 ```
 

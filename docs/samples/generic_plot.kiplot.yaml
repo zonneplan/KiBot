@@ -1,252 +1,829 @@
-# Example KiPlot config file
 kiplot:
   version: 1
 
 preflight:
-   run_drc: true
-   run_erc: true
-   update_xml: true
-   check_zone_fills: true
-   ignore_unconnected: false
-   filters:
-     - filter: 'Ignore C3 pad 2 too close to anything'
-       number: 4
-       regex:  'Pad 2 of C3'
-     - filter: 'Ignore unconnected pad 2 of C4'
-       number: 2
-       regex:  'Pad 2 of C4'
+  # [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB
+  run_drc: true
+  # [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct
+  run_erc: true
+  # [boolean=false] Update the XML version of the BoM (Bill of Materials). To ensure our generated BoM is up to date
+  update_xml: true
+  # [boolean=false] Zones are filled before doing any operation involving PCB layers
+  check_zone_fills: true
+  # [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing
+  ignore_unconnected: false
+  # A list of entries to filter out ERC/DRC messages. Keys: `filter`, `number` and `regex`
+  filters: 
+    - filter: 'Filter description'
+      number: 10
+      regex: 'Regular expression to match'
 
 outputs:
-
-  - name: 'gerbers'
-    comment: "Gerbers for the board house"
-    type: gerber
-    dir: gerberdir
+  # DXF (Drawing Exchange Format):
+  # This output is what you get from the File/Plot menu in pcbnew.
+  - name: 'dxf_example'
+    comment: 'Exports the PCB to 2D mechanical EDA tools (like AutoCAD).'
+    type: 'dxf'
+    dir: 'Example/dxf_dir'
     options:
-      # generic layer options
-      exclude_edge_layer: false
+      # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
+      drill_marks: 'full'
+      # [boolean=true] do not include the PCB edge layer
+      exclude_edge_layer: true
+      # [boolean=false] do not plot the component pads in the silk screen
       exclude_pads_from_silkscreen: false
-      use_aux_axis_as_origin: false
-      plot_sheet_reference: false
-      plot_footprint_refs: true
-      plot_footprint_values: true
+      # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
-      tent_vias: true
-
-      # gerber options
-      line_width: 0.15
-      subtract_mask_from_silk: true
-      use_protel_extensions: false
-      gerber_precision: 4.5
-      create_gerber_job_file: true
-      use_gerber_x2_attributes: true
-      use_gerber_net_attributes: false
-
-    layers:
-      - layer: F.Cu
-        suffix: F_Cu
-      - layer: F.SilkS
-        suffix: F_SilkS
-      # - layer: Inner.1
-      #   suffix: Inner_1
-
-  - name: excellon_drill
-    comment: "Excellon drill files"
-    type: excellon
-    dir: gerberdir
-    options:
-      metric_units: true
-      pth_and_npth_single_file: true
-      use_aux_axis_as_origin: false
-      minimal_header: false
-      mirror_y_axis: false
-      report: 'drill_report.rpt'
-      map: 'pdf'
-
-  - name: gerber drills
-    comment: "Gerber drill files"
-    type: gerb_drill
-    dir: gerberdir
-    options:
-      use_aux_axis_as_origin: false
-
-  - name: postscript
-    comment: "Postscript files"
-    type: ps
-    dir: gerberdir
-    options:
-      exclude_edge_layer: false
-      exclude_pads_from_silkscreen: false
-      plot_sheet_reference: false
+      # [boolean=true] include the footprint references
       plot_footprint_refs: true
+      # [boolean=true] include the footprint values
       plot_footprint_values: true
-      force_plot_invisible_refs_vals: false
-      tent_vias: true
-
-      # PS options
-      line_width: 0.15
-      drill_marks: full
-      scaling: 2
-      sketch_plot: false
-      scale_adjust_x: 1.0
-      scale_adjust_y: 1.0
-      width_adjust: 0
-      mirror_plot: false
-      negative_plot: false
-      a4_output: true
-    layers:
-      - layer: F.Cu
-        suffix: F_Cu
-      - layer: F.Fab
-        suffix: F_Fab
-      # - layer: Inner.1
-      #   suffix: Inner_1
-      #   
-  - name: DXF
-    comment: "DXF files"
-    type: dxf
-    dir: gerberdir
-    options:
-      exclude_edge_layer: false
-      exclude_pads_from_silkscreen: false
-      use_aux_axis_as_origin: false
+      # [boolean=false] currently without effect
       plot_sheet_reference: false
-      plot_footprint_refs: true
-      plot_footprint_values: true
-      force_plot_invisible_refs_vals: false
-      tent_vias: true
-
-      # DXF options
-      drill_marks: full
-      use_aux_axis_as_origin: false
+      # [boolean=true] plot using the contour, instead of the center line
       polygon_mode: true
-    layers:
-      - layer: F.Cu
-        suffix: F_Cu
-      - layer: F.Fab
-        suffix: F_Fab
-
-  - name: SVG
-    comment: "SVG files"
-    type: svg
-    dir: gerberdir
-    options:
-      exclude_edge_layer: false
-      exclude_pads_from_silkscreen: false
-      plot_sheet_reference: false
-      plot_footprint_refs: true
-      plot_footprint_values: true
-      force_plot_invisible_refs_vals: false
-      tent_vias: true
-
-      # SVG options
-      line_width: 0.25
-      drill_marks: full
-      mirror_plot: true
-      negative_plot: true
-    layers:
-      - layer: F.Cu
-        suffix: F_Cu
-      - layer: F.Fab
-        suffix: F_Fab
-
-  - name: HPGL
-    comment: "HPGL files"
-    type: hpgl
-    dir: gerberdir
-    options:
-      exclude_edge_layer: false
-      exclude_pads_from_silkscreen: false
-      plot_sheet_reference: false
-      plot_footprint_refs: true
-      plot_footprint_values: true
-      force_plot_invisible_refs_vals: false
-      tent_vias: true
-
-      # HPGL options
-      drill_marks: full
-      mirror_plot: true
+      # [boolean=false] don't fill objects, just draw the outline
       sketch_plot: false
-      scaling: 0 # auto
-      pen_width: 0.5
-    layers:
-      - layer: F.Cu
-        suffix: F_Cu
-      - layer: B.SilkS
-        suffix: B_Silks
-
-  - name: PDF
-    comment: "PDF files"
-    type: pdf
-    dir: gerberdir
-    options:
-      exclude_edge_layer: false
-      exclude_pads_from_silkscreen: false
-      plot_sheet_reference: false
-      plot_footprint_refs: true
-      plot_footprint_values: true
-      force_plot_invisible_refs_vals: false
+      # [boolean=true] cover the vias
       tent_vias: true
-
-      # PDF options
-      drill_marks: small
-      mirror_plot: false
-      negative_plot: false
-      line_width: 0.01
+      # [boolean=false] use the auxiliar axis as origin for coordinates
+      use_aux_axis_as_origin: false
     layers:
-      - layer: F.Cu
-        suffix: F_Cu
-      - layer: B.SilkS
-        suffix: B_Silks
+      - layer: 'F.Cu'
+        suffix: 'F_Cu'
+        description: 'Front copper'
+      - layer: 'B.Cu'
+        suffix: 'B_Cu'
+        description: 'Bottom copper'
+      - layer: 'F.Adhes'
+        suffix: 'F_Adhes'
+        description: 'Front adhesive (glue)'
+      - layer: 'B.Adhes'
+        suffix: 'B_Adhes'
+        description: 'Bottom adhesive (glue)'
+      - layer: 'F.Paste'
+        suffix: 'F_Paste'
+        description: 'Front solder paste'
+      - layer: 'B.Paste'
+        suffix: 'B_Paste'
+        description: 'Bottom solder paste'
+      - layer: 'F.SilkS'
+        suffix: 'F_SilkS'
+        description: 'Front silkscreen (artwork)'
+      - layer: 'B.SilkS'
+        suffix: 'B_SilkS'
+        description: 'Bottom silkscreen (artwork)'
+      - layer: 'F.Mask'
+        suffix: 'F_Mask'
+        description: 'Front soldermask (negative)'
+      - layer: 'B.Mask'
+        suffix: 'B_Mask'
+        description: 'Bottom soldermask (negative)'
+      - layer: 'Dwgs.User'
+        suffix: 'Dwgs_User'
+        description: 'User drawings'
+      - layer: 'Cmts.User'
+        suffix: 'Cmts_User'
+        description: 'User comments'
+      - layer: 'Eco1.User'
+        suffix: 'Eco1_User'
+        description: 'For user usage 1'
+      - layer: 'Eco2.User'
+        suffix: 'Eco2_User'
+        description: 'For user usage 2'
+      - layer: 'Edge.Cuts'
+        suffix: 'Edge_Cuts'
+        description: 'Board shape'
+      - layer: 'Margin'
+        suffix: 'Margin'
+        description: 'Margin relative to edge cut'
+      - layer: 'F.CrtYd'
+        suffix: 'F_CrtYd'
+        description: 'Front courtyard area'
+      - layer: 'B.CrtYd'
+        suffix: 'B_CrtYd'
+        description: 'Bottom courtyard area'
+      - layer: 'F.Fab'
+        suffix: 'F_Fab'
+        description: 'Front documentation'
+      - layer: 'B.Fab'
+        suffix: 'B_Fab'
+        description: 'Bottom documentation'
 
-  - name: 'position'
-    type: position
-    dir: positiondir
+  # Excellon drill format:
+  # You can create a map file for documentation purposes.
+  # This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
+  - name: 'excellon_example'
+    comment: 'This is the main format for the drilling machine.'
+    type: 'excellon'
+    dir: 'Example/excellon_dir'
     options:
-      format: CSV   # CSV or ASCII format
-      units: millimeters  # millimeters or inches
-      separate_files_for_front_and_back: true
-      only_smd: true
-
-  - name: 'print_sch'
-    comment: "Print schematic (PDF)"
-    type: pdf_sch_print
-    dir: .
-    options:
-      output: Schematic.pdf
-
-  - name: 'print_front'
-    comment: "Print F.Cu+Dwgs.User"
-    type: pdf_pcb_print
-    dir: .
-    options:
-      output_name: PCB_Top.pdf
-    layers:
-      - layer: F.Cu
-      - layer: Dwgs.User
-
-  - name: Step
-    comment: "Generate 3D model (STEP)"
-    type: step
-    dir: 3D
-    options:
+      # [string=None] format for a graphical drill map. The valid formats are hpgl, ps, gerber, dxf, svg and pdf.
+      # Not generated unless a format is specified
+      map: None
+      # [boolean=true] use metric units instead of inches
       metric_units: true
-      origin: grid        # "grid" or "drill" o "X,Y"
-      no_virtual: false   # exclude 3D models for components with 'virtual' attribute
-      #min_distance: 0.01 # Minimum distance between points to treat them as separate ones (default 0.01 mm)
+      # [boolean=false] use a minimal header in the file
+      minimal_header: false
+      # [boolean=false] invert the Y axis
+      mirror_y_axis: false
+      # [boolean=true] generate one file for both, plated holes and non-plated holes, instead of two separated files
+      pth_and_npth_single_file: true
+      # [string=None] name of the drill report. Not generated unless a name is specified
+      report: None
+      # [boolean=false] use the auxiliar axis as origin for coordinates
+      use_aux_axis_as_origin: false
 
-  - name: 'interactive_bom'
-    comment: "Interactive Bill of Materials (HTML)"
-    type: ibom
-    dir: BoM
+  # Gerber drill format:
+  # You can create a map file for documentation purposes.
+  # This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
+  - name: 'gerb_drill_example'
+    comment: 'This is the information for the drilling machine in gerber format.'
+    type: 'gerb_drill'
+    dir: 'Example/gerb_drill_dir'
     options:
-      blacklist: 'DNF*'
-      name_format: '%f_%r_iBoM'
+      # [string=None] format for a graphical drill map. The valid formats are hpgl, ps, gerber, dxf, svg and pdf.
+      # Not generated unless a format is specified
+      map: None
+      # [string=None] name of the drill report. Not generated unless a name is specified
+      report: None
+      # [boolean=false] use the auxiliar axis as origin for coordinates
+      use_aux_axis_as_origin: false
 
-  - name: 'bom_html'
-    comment: "Bill of Materials in HTML format"
-    type: kibom
-    dir: BoM
+  # Gerber format:
+  # This output is what you get from the File/Plot menu in pcbnew.
+  - name: 'gerber_example'
+    comment: 'This is the main fabrication format for the PCB.'
+    type: 'gerber'
+    dir: 'Example/gerber_dir'
     options:
-      format: HTML  # HTML or CSV
+      # [boolean=true] creates a file with information about all the generated gerbers.
+      # You can use it in gerbview to load all gerbers at once
+      create_gerber_job_file: true
+      # [boolean=true] do not include the PCB edge layer
+      exclude_edge_layer: true
+      # [boolean=false] do not plot the component pads in the silk screen
+      exclude_pads_from_silkscreen: false
+      # [boolean=false] include references and values even when they are marked as invisible
+      force_plot_invisible_refs_vals: false
+      # [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6
+      gerber_precision: 4.6
+      # [number=0.1] line_width for objects without width [mm]
+      line_width: 0.1
+      # [boolean=true] include the footprint references
+      plot_footprint_refs: true
+      # [boolean=true] include the footprint values
+      plot_footprint_values: true
+      # [boolean=false] currently without effect
+      plot_sheet_reference: false
+      # [boolean=false] substract the solder mask from the silk screen
+      subtract_mask_from_silk: false
+      # [boolean=true] cover the vias
+      tent_vias: true
+      # [boolean=false] use the auxiliar axis as origin for coordinates
+      use_aux_axis_as_origin: false
+      # [boolean=true] include netlist metadata
+      use_gerber_net_attributes: true
+      # [boolean=true] use the extended X2 format
+      use_gerber_x2_attributes: true
+      # [boolean=false] use legacy Protel file extensions
+      use_protel_extensions: false
+    layers:
+      - layer: 'F.Cu'
+        suffix: 'F_Cu'
+        description: 'Front copper'
+      - layer: 'B.Cu'
+        suffix: 'B_Cu'
+        description: 'Bottom copper'
+      - layer: 'F.Adhes'
+        suffix: 'F_Adhes'
+        description: 'Front adhesive (glue)'
+      - layer: 'B.Adhes'
+        suffix: 'B_Adhes'
+        description: 'Bottom adhesive (glue)'
+      - layer: 'F.Paste'
+        suffix: 'F_Paste'
+        description: 'Front solder paste'
+      - layer: 'B.Paste'
+        suffix: 'B_Paste'
+        description: 'Bottom solder paste'
+      - layer: 'F.SilkS'
+        suffix: 'F_SilkS'
+        description: 'Front silkscreen (artwork)'
+      - layer: 'B.SilkS'
+        suffix: 'B_SilkS'
+        description: 'Bottom silkscreen (artwork)'
+      - layer: 'F.Mask'
+        suffix: 'F_Mask'
+        description: 'Front soldermask (negative)'
+      - layer: 'B.Mask'
+        suffix: 'B_Mask'
+        description: 'Bottom soldermask (negative)'
+      - layer: 'Dwgs.User'
+        suffix: 'Dwgs_User'
+        description: 'User drawings'
+      - layer: 'Cmts.User'
+        suffix: 'Cmts_User'
+        description: 'User comments'
+      - layer: 'Eco1.User'
+        suffix: 'Eco1_User'
+        description: 'For user usage 1'
+      - layer: 'Eco2.User'
+        suffix: 'Eco2_User'
+        description: 'For user usage 2'
+      - layer: 'Edge.Cuts'
+        suffix: 'Edge_Cuts'
+        description: 'Board shape'
+      - layer: 'Margin'
+        suffix: 'Margin'
+        description: 'Margin relative to edge cut'
+      - layer: 'F.CrtYd'
+        suffix: 'F_CrtYd'
+        description: 'Front courtyard area'
+      - layer: 'B.CrtYd'
+        suffix: 'B_CrtYd'
+        description: 'Bottom courtyard area'
+      - layer: 'F.Fab'
+        suffix: 'F_Fab'
+        description: 'Front documentation'
+      - layer: 'B.Fab'
+        suffix: 'B_Fab'
+        description: 'Bottom documentation'
+
+  # HPGL (Hewlett & Packard Graphics Language):
+  # This output is what you get from the File/Plot menu in pcbnew.
+  - name: 'hpgl_example'
+    comment: 'Exports the PCB for plotters and laser printers.'
+    type: 'hpgl'
+    dir: 'Example/hpgl_dir'
+    options:
+      # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
+      drill_marks: 'full'
+      # [boolean=true] do not include the PCB edge layer
+      exclude_edge_layer: true
+      # [boolean=false] do not plot the component pads in the silk screen
+      exclude_pads_from_silkscreen: false
+      # [boolean=false] include references and values even when they are marked as invisible
+      force_plot_invisible_refs_vals: false
+      # [boolean=false] plot mirrored
+      mirror_plot: false
+      # [number=0.5] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files
+      pen_width: 0.5
+      # [boolean=true] include the footprint references
+      plot_footprint_refs: true
+      # [boolean=true] include the footprint values
+      plot_footprint_values: true
+      # [boolean=false] currently without effect
+      plot_sheet_reference: false
+      # [number=0] scale factor (0 means autoscaling)
+      scaling: 0
+      # [boolean=false] don't fill objects, just draw the outline
+      sketch_plot: false
+      # [boolean=true] cover the vias
+      tent_vias: true
+    layers:
+      - layer: 'F.Cu'
+        suffix: 'F_Cu'
+        description: 'Front copper'
+      - layer: 'B.Cu'
+        suffix: 'B_Cu'
+        description: 'Bottom copper'
+      - layer: 'F.Adhes'
+        suffix: 'F_Adhes'
+        description: 'Front adhesive (glue)'
+      - layer: 'B.Adhes'
+        suffix: 'B_Adhes'
+        description: 'Bottom adhesive (glue)'
+      - layer: 'F.Paste'
+        suffix: 'F_Paste'
+        description: 'Front solder paste'
+      - layer: 'B.Paste'
+        suffix: 'B_Paste'
+        description: 'Bottom solder paste'
+      - layer: 'F.SilkS'
+        suffix: 'F_SilkS'
+        description: 'Front silkscreen (artwork)'
+      - layer: 'B.SilkS'
+        suffix: 'B_SilkS'
+        description: 'Bottom silkscreen (artwork)'
+      - layer: 'F.Mask'
+        suffix: 'F_Mask'
+        description: 'Front soldermask (negative)'
+      - layer: 'B.Mask'
+        suffix: 'B_Mask'
+        description: 'Bottom soldermask (negative)'
+      - layer: 'Dwgs.User'
+        suffix: 'Dwgs_User'
+        description: 'User drawings'
+      - layer: 'Cmts.User'
+        suffix: 'Cmts_User'
+        description: 'User comments'
+      - layer: 'Eco1.User'
+        suffix: 'Eco1_User'
+        description: 'For user usage 1'
+      - layer: 'Eco2.User'
+        suffix: 'Eco2_User'
+        description: 'For user usage 2'
+      - layer: 'Edge.Cuts'
+        suffix: 'Edge_Cuts'
+        description: 'Board shape'
+      - layer: 'Margin'
+        suffix: 'Margin'
+        description: 'Margin relative to edge cut'
+      - layer: 'F.CrtYd'
+        suffix: 'F_CrtYd'
+        description: 'Front courtyard area'
+      - layer: 'B.CrtYd'
+        suffix: 'B_CrtYd'
+        description: 'Bottom courtyard area'
+      - layer: 'F.Fab'
+        suffix: 'F_Fab'
+        description: 'Front documentation'
+      - layer: 'B.Fab'
+        suffix: 'B_Fab'
+        description: 'Bottom documentation'
+
+  # IBoM (Interactive HTML BoM):
+  # For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
+  # This output is what you get from the InteractiveHtmlBom plug-in (pcbnew).
+  - name: 'ibom_example'
+    comment: 'Generates an interactive web page useful to identify the position of the components in the PCB.'
+    type: 'ibom'
+    dir: 'Example/ibom_dir'
+    options:
+      # [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'
+      blacklist: ''
+      # [boolean=false] Blacklist components with empty value
+      blacklist_empty_val: false
+      # [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5
+      board_rotation: 0
+      # [string='left-right'] Default BOM view {bom-only,left-right,top-bottom}
+      bom_view: 'left-right'
+      # [string='Sourced,Placed'] Comma separated list of checkbox columns
+      checkboxes: 'Sourced,Placed'
+      # [boolean=false] Default to dark mode
+      dark_mode: false
+      # [string=''] Name of the extra field that indicates do not populate status. Components with this field not empty will be
+      # blacklisted
+      dnp_field: ''
+      # [string=''] Comma separated list of extra fields to pull from netlist or xml file
+      extra_fields: ''
+      # [boolean=false] Hide footprint pads by default
+      hide_pads: false
+      # [boolean=false] Hide silkscreen by default
+      hide_silkscreen: false
+      # [boolean=false] Highlight pin1 by default
+      highlight_pin1: false
+      # [boolean=false] Include netlist information in output.
+      include_nets: false
+      # [boolean=false] Include track/zone information in output. F.Cu and B.Cu layers only
+      include_tracks: false
+      # [string='FB'] Default layer view {F,FB,B}
+      layer_view: 'FB'
+      # [string='ibom'] Output file name format supports substitutions:
+      # %f : original pcb file name without extension.
+      # %p : pcb/project title from pcb metadata.
+      # %c : company from pcb metadata.
+      # %r : revision from pcb metadata.
+      # %d : pcb date from metadata if available, file modification date otherwise.
+      # %D : bom generation date.
+      # %T : bom generation time. Extension .html will be added automatically
+      name_format: 'ibom'
+      # [string=''] Path to netlist or xml file
+      netlist_file: ''
+      # [boolean=false] Do not blacklist virtual components
+      no_blacklist_virtual: false
+      # [boolean=false] Do not redraw pcb on drag by default
+      no_redraw_on_drag: false
+      # [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field
+      normalize_field_case: false
+      # [boolean=false] Show fabrication layer by default
+      show_fabrication: false
+      # [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once
+      sort_order: 'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'
+      # [string=''] Name of the extra field that stores board variant for component
+      variant_field: ''
+      # [string=''] List of board variants to exclude from the BOM
+      variants_blacklist: ''
+      # [string=''] List of board variants to include in the BOM
+      variants_whitelist: ''
+
+  # KiBoM (KiCad Bill of Materials):
+  # For more information: https://github.com/INTI-CMNB/KiBoM
+  # This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
+  - name: 'kibom_example'
+    comment: 'Used to generate the BoM in HTML or CSV format using the KiBoM plug-in.'
+    type: 'kibom'
+    dir: 'Example/kibom_dir'
+    options:
+      # [string='HTML'] can be `HTML` or `CSV`
+      format: 'HTML'
+
+  # PDF (Portable Document Format):
+  # Note that this output isn't the best for documating your project.
+  # This output is what you get from the File/Plot menu in pcbnew.
+  - name: 'pdf_example'
+    comment: 'Exports the PCB to the most common exhange format. Suitable for printing.'
+    type: 'pdf'
+    dir: 'Example/pdf_dir'
+    options:
+      # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
+      drill_marks: 'full'
+      # [boolean=true] do not include the PCB edge layer
+      exclude_edge_layer: true
+      # [boolean=false] do not plot the component pads in the silk screen
+      exclude_pads_from_silkscreen: false
+      # [boolean=false] include references and values even when they are marked as invisible
+      force_plot_invisible_refs_vals: false
+      # [number=0.1] for objects without width [mm]
+      line_width: 0.1
+      # [boolean=false] plot mirrored
+      mirror_plot: false
+      # [boolean=false] invert black and white
+      negative_plot: false
+      # [boolean=true] include the footprint references
+      plot_footprint_refs: true
+      # [boolean=true] include the footprint values
+      plot_footprint_values: true
+      # [boolean=false] currently without effect
+      plot_sheet_reference: false
+      # [boolean=true] cover the vias
+      tent_vias: true
+    layers:
+      - layer: 'F.Cu'
+        suffix: 'F_Cu'
+        description: 'Front copper'
+      - layer: 'B.Cu'
+        suffix: 'B_Cu'
+        description: 'Bottom copper'
+      - layer: 'F.Adhes'
+        suffix: 'F_Adhes'
+        description: 'Front adhesive (glue)'
+      - layer: 'B.Adhes'
+        suffix: 'B_Adhes'
+        description: 'Bottom adhesive (glue)'
+      - layer: 'F.Paste'
+        suffix: 'F_Paste'
+        description: 'Front solder paste'
+      - layer: 'B.Paste'
+        suffix: 'B_Paste'
+        description: 'Bottom solder paste'
+      - layer: 'F.SilkS'
+        suffix: 'F_SilkS'
+        description: 'Front silkscreen (artwork)'
+      - layer: 'B.SilkS'
+        suffix: 'B_SilkS'
+        description: 'Bottom silkscreen (artwork)'
+      - layer: 'F.Mask'
+        suffix: 'F_Mask'
+        description: 'Front soldermask (negative)'
+      - layer: 'B.Mask'
+        suffix: 'B_Mask'
+        description: 'Bottom soldermask (negative)'
+      - layer: 'Dwgs.User'
+        suffix: 'Dwgs_User'
+        description: 'User drawings'
+      - layer: 'Cmts.User'
+        suffix: 'Cmts_User'
+        description: 'User comments'
+      - layer: 'Eco1.User'
+        suffix: 'Eco1_User'
+        description: 'For user usage 1'
+      - layer: 'Eco2.User'
+        suffix: 'Eco2_User'
+        description: 'For user usage 2'
+      - layer: 'Edge.Cuts'
+        suffix: 'Edge_Cuts'
+        description: 'Board shape'
+      - layer: 'Margin'
+        suffix: 'Margin'
+        description: 'Margin relative to edge cut'
+      - layer: 'F.CrtYd'
+        suffix: 'F_CrtYd'
+        description: 'Front courtyard area'
+      - layer: 'B.CrtYd'
+        suffix: 'B_CrtYd'
+        description: 'Bottom courtyard area'
+      - layer: 'F.Fab'
+        suffix: 'F_Fab'
+        description: 'Front documentation'
+      - layer: 'B.Fab'
+        suffix: 'B_Fab'
+        description: 'Bottom documentation'
+
+  # PDF PCB Print (Portable Document Format):
+  # This is the main format to document your PCB.
+  # This output is what you get from the 'File/Print' menu in pcbnew.
+  - name: 'pdf_pcb_print_example'
+    comment: 'Exports the PCB to the most common exhange format. Suitable for printing.'
+    type: 'pdf_pcb_print'
+    dir: 'Example/pdf_pcb_print_dir'
+    options:
+      # [string=''] filename for the output PDF (the name of the PCB if empty)
+      output_name: ''
+    layers:
+      - layer: 'F.Cu'
+        suffix: 'F_Cu'
+        description: 'Front copper'
+      - layer: 'B.Cu'
+        suffix: 'B_Cu'
+        description: 'Bottom copper'
+      - layer: 'F.Adhes'
+        suffix: 'F_Adhes'
+        description: 'Front adhesive (glue)'
+      - layer: 'B.Adhes'
+        suffix: 'B_Adhes'
+        description: 'Bottom adhesive (glue)'
+      - layer: 'F.Paste'
+        suffix: 'F_Paste'
+        description: 'Front solder paste'
+      - layer: 'B.Paste'
+        suffix: 'B_Paste'
+        description: 'Bottom solder paste'
+      - layer: 'F.SilkS'
+        suffix: 'F_SilkS'
+        description: 'Front silkscreen (artwork)'
+      - layer: 'B.SilkS'
+        suffix: 'B_SilkS'
+        description: 'Bottom silkscreen (artwork)'
+      - layer: 'F.Mask'
+        suffix: 'F_Mask'
+        description: 'Front soldermask (negative)'
+      - layer: 'B.Mask'
+        suffix: 'B_Mask'
+        description: 'Bottom soldermask (negative)'
+      - layer: 'Dwgs.User'
+        suffix: 'Dwgs_User'
+        description: 'User drawings'
+      - layer: 'Cmts.User'
+        suffix: 'Cmts_User'
+        description: 'User comments'
+      - layer: 'Eco1.User'
+        suffix: 'Eco1_User'
+        description: 'For user usage 1'
+      - layer: 'Eco2.User'
+        suffix: 'Eco2_User'
+        description: 'For user usage 2'
+      - layer: 'Edge.Cuts'
+        suffix: 'Edge_Cuts'
+        description: 'Board shape'
+      - layer: 'Margin'
+        suffix: 'Margin'
+        description: 'Margin relative to edge cut'
+      - layer: 'F.CrtYd'
+        suffix: 'F_CrtYd'
+        description: 'Front courtyard area'
+      - layer: 'B.CrtYd'
+        suffix: 'B_CrtYd'
+        description: 'Bottom courtyard area'
+      - layer: 'F.Fab'
+        suffix: 'F_Fab'
+        description: 'Front documentation'
+      - layer: 'B.Fab'
+        suffix: 'B_Fab'
+        description: 'Bottom documentation'
+
+  # PDF Schematic Print (Portable Document Format):
+  # This is the main format to document your schematic.
+  # This output is what you get from the 'File/Print' menu in eeschema.
+  - name: 'pdf_sch_print_example'
+    comment: 'Exports the PCB to the most common exhange format. Suitable for printing.'
+    type: 'pdf_sch_print'
+    dir: 'Example/pdf_sch_print_dir'
+    options:
+      # [string=''] filename for the output PDF (the name of the schematic if empty)
+      output: ''
+
+  # Pick & place:
+  # This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew.
+  - name: 'position_example'
+    comment: 'Generates the file with position information for the PCB components, used by the pick and place machine.'
+    type: 'position'
+    dir: 'Example/position_dir'
+    options:
+      # [string='ASCII'] can be ASCII or CSV
+      format: 'ASCII'
+      # [boolean=true] only include the surface mount components
+      only_smd: true
+      # [boolean=true] generate two separated files, one for the top and another for the bottom
+      separate_files_for_front_and_back: true
+      # [string='millimeters'] can be millimeters or inches
+      units: 'millimeters'
+
+  # PS (Postscript):
+  # This output is what you get from the File/Plot menu in pcbnew.
+  - name: 'ps_example'
+    comment: 'Exports the PCB to a format suitable for printing.'
+    type: 'ps'
+    dir: 'Example/ps_dir'
+    options:
+      # [boolean=true] force A4 paper size
+      a4_output: true
+      # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
+      drill_marks: 'full'
+      # [boolean=true] do not include the PCB edge layer
+      exclude_edge_layer: true
+      # [boolean=false] do not plot the component pads in the silk screen
+      exclude_pads_from_silkscreen: false
+      # [boolean=false] include references and values even when they are marked as invisible
+      force_plot_invisible_refs_vals: false
+      # [number=0.15] for objects without width [mm]
+      line_width: 0.15
+      # [boolean=false] plot mirrored
+      mirror_plot: false
+      # [boolean=false] invert black and white
+      negative_plot: false
+      # [boolean=true] include the footprint references
+      plot_footprint_refs: true
+      # [boolean=true] include the footprint values
+      plot_footprint_values: true
+      # [boolean=false] currently without effect
+      plot_sheet_reference: false
+      # [number=1.0] fine grain adjust for the X scale (floating point multiplier)
+      scale_adjust_x: 1.0
+      # [number=1.0] fine grain adjust for the Y scale (floating point multiplier)
+      scale_adjust_y: 1.0
+      # [number=1] scale factor (0 means autoscaling)
+      scaling: 1
+      # [boolean=false] don't fill objects, just draw the outline
+      sketch_plot: false
+      # [boolean=true] cover the vias
+      tent_vias: true
+      # [number=0] this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
+      # Only used to plot pads and tracks
+      width_adjust: 0
+    layers:
+      - layer: 'F.Cu'
+        suffix: 'F_Cu'
+        description: 'Front copper'
+      - layer: 'B.Cu'
+        suffix: 'B_Cu'
+        description: 'Bottom copper'
+      - layer: 'F.Adhes'
+        suffix: 'F_Adhes'
+        description: 'Front adhesive (glue)'
+      - layer: 'B.Adhes'
+        suffix: 'B_Adhes'
+        description: 'Bottom adhesive (glue)'
+      - layer: 'F.Paste'
+        suffix: 'F_Paste'
+        description: 'Front solder paste'
+      - layer: 'B.Paste'
+        suffix: 'B_Paste'
+        description: 'Bottom solder paste'
+      - layer: 'F.SilkS'
+        suffix: 'F_SilkS'
+        description: 'Front silkscreen (artwork)'
+      - layer: 'B.SilkS'
+        suffix: 'B_SilkS'
+        description: 'Bottom silkscreen (artwork)'
+      - layer: 'F.Mask'
+        suffix: 'F_Mask'
+        description: 'Front soldermask (negative)'
+      - layer: 'B.Mask'
+        suffix: 'B_Mask'
+        description: 'Bottom soldermask (negative)'
+      - layer: 'Dwgs.User'
+        suffix: 'Dwgs_User'
+        description: 'User drawings'
+      - layer: 'Cmts.User'
+        suffix: 'Cmts_User'
+        description: 'User comments'
+      - layer: 'Eco1.User'
+        suffix: 'Eco1_User'
+        description: 'For user usage 1'
+      - layer: 'Eco2.User'
+        suffix: 'Eco2_User'
+        description: 'For user usage 2'
+      - layer: 'Edge.Cuts'
+        suffix: 'Edge_Cuts'
+        description: 'Board shape'
+      - layer: 'Margin'
+        suffix: 'Margin'
+        description: 'Margin relative to edge cut'
+      - layer: 'F.CrtYd'
+        suffix: 'F_CrtYd'
+        description: 'Front courtyard area'
+      - layer: 'B.CrtYd'
+        suffix: 'B_CrtYd'
+        description: 'Bottom courtyard area'
+      - layer: 'F.Fab'
+        suffix: 'F_Fab'
+        description: 'Front documentation'
+      - layer: 'B.Fab'
+        suffix: 'B_Fab'
+        description: 'Bottom documentation'
+
+  # STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure):
+  # This is the most common 3D format for exchange purposes.
+  # This output is what you get from the 'File/Export/STEP' menu in pcbnew.
+  - name: 'step_example'
+    comment: 'Exports the PCB as a 3D model.'
+    type: 'step'
+    dir: 'Example/step_dir'
+    options:
+      # [boolean=true] use metric units instead of inches.
+      metric_units: true
+      # [number=-1] the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm)
+      min_distance: -1
+      # [boolean=false] used to exclude 3D models for components with 'virtual' attribute
+      no_virtual: false
+      # [string='grid'] determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
+      # The drill option uses the auxiliar reference defined by the user.
+      # You can define any other origin using the format 'X,Y', i.e. '3.2,-10'
+      origin: 'grid'
+      # [string=''] name for the generated STEP file (the name of the PCB if empty)
+      output: ''
+
+  # SVG (Scalable Vector Graphics):
+  # Unlike bitmaps SVG drawings can be scaled without losing resolution.
+  # This output is what you get from the File/Plot menu in pcbnew.
+  - name: 'svg_example'
+    comment: 'Exports the PCB to a format suitable for 2D graphics software.'
+    type: 'svg'
+    dir: 'Example/svg_dir'
+    options:
+      # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
+      drill_marks: 'full'
+      # [boolean=true] do not include the PCB edge layer
+      exclude_edge_layer: true
+      # [boolean=false] do not plot the component pads in the silk screen
+      exclude_pads_from_silkscreen: false
+      # [boolean=false] include references and values even when they are marked as invisible
+      force_plot_invisible_refs_vals: false
+      # [number=0.25] for objects without width [mm]
+      line_width: 0.25
+      # [boolean=false] plot mirrored
+      mirror_plot: false
+      # [boolean=false] invert black and white
+      negative_plot: false
+      # [boolean=true] include the footprint references
+      plot_footprint_refs: true
+      # [boolean=true] include the footprint values
+      plot_footprint_values: true
+      # [boolean=false] currently without effect
+      plot_sheet_reference: false
+      # [boolean=true] cover the vias
+      tent_vias: true
+    layers:
+      - layer: 'F.Cu'
+        suffix: 'F_Cu'
+        description: 'Front copper'
+      - layer: 'B.Cu'
+        suffix: 'B_Cu'
+        description: 'Bottom copper'
+      - layer: 'F.Adhes'
+        suffix: 'F_Adhes'
+        description: 'Front adhesive (glue)'
+      - layer: 'B.Adhes'
+        suffix: 'B_Adhes'
+        description: 'Bottom adhesive (glue)'
+      - layer: 'F.Paste'
+        suffix: 'F_Paste'
+        description: 'Front solder paste'
+      - layer: 'B.Paste'
+        suffix: 'B_Paste'
+        description: 'Bottom solder paste'
+      - layer: 'F.SilkS'
+        suffix: 'F_SilkS'
+        description: 'Front silkscreen (artwork)'
+      - layer: 'B.SilkS'
+        suffix: 'B_SilkS'
+        description: 'Bottom silkscreen (artwork)'
+      - layer: 'F.Mask'
+        suffix: 'F_Mask'
+        description: 'Front soldermask (negative)'
+      - layer: 'B.Mask'
+        suffix: 'B_Mask'
+        description: 'Bottom soldermask (negative)'
+      - layer: 'Dwgs.User'
+        suffix: 'Dwgs_User'
+        description: 'User drawings'
+      - layer: 'Cmts.User'
+        suffix: 'Cmts_User'
+        description: 'User comments'
+      - layer: 'Eco1.User'
+        suffix: 'Eco1_User'
+        description: 'For user usage 1'
+      - layer: 'Eco2.User'
+        suffix: 'Eco2_User'
+        description: 'For user usage 2'
+      - layer: 'Edge.Cuts'
+        suffix: 'Edge_Cuts'
+        description: 'Board shape'
+      - layer: 'Margin'
+        suffix: 'Margin'
+        description: 'Margin relative to edge cut'
+      - layer: 'F.CrtYd'
+        suffix: 'F_CrtYd'
+        description: 'Front courtyard area'
+      - layer: 'B.CrtYd'
+        suffix: 'B_CrtYd'
+        description: 'Bottom courtyard area'
+      - layer: 'F.Fab'
+        suffix: 'F_Fab'
+        description: 'Front documentation'
+      - layer: 'B.Fab'
+        suffix: 'B_Fab'
+        description: 'Bottom documentation'
 

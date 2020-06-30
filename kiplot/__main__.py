@@ -5,6 +5,7 @@ Usage:
   kiplot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-i] [TARGET...]
   kiplot [-c PLOT_CONFIG] --list
+  kiplot [-b BOARD] --example
   kiplot --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
   kiplot --help-outputs
@@ -30,7 +31,8 @@ Options:
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
   -v, --verbose                    Show debugging information
-  --version, -V                    Show program's version number and exit
+  -V, --version                    Show program's version number and exit
+  -x, --example                    Create an example configuration file.
 
 """
 __author__ = 'John Beard, Salvador E. Tropea'
@@ -52,7 +54,7 @@ log.set_domain('kiplot')
 from .gs import (GS)
 from .kiplot import (generate_outputs)
 from .pre_base import (BasePreFlight)
-from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help)
+from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example)
 from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS)
 from .docopt import docopt
 from .__version__ import __version__
@@ -122,6 +124,12 @@ def solve_config(a_plot_config):
     return plot_config
 
 
+def check_board_file(board_file):
+    if board_file and not os.path.isfile(board_file):
+        logger.error("Board file not found: "+board_file)
+        sys.exit(NO_PCB_FILE)
+
+
 def solve_board_file(schematic, a_board_file):
     board_file = a_board_file
     if not board_file and schematic:
@@ -137,9 +145,7 @@ def solve_board_file(schematic, a_board_file):
             board_file = board_files[0]
             logger.warning('More than one PCB file found in current directory.\n'
                            '  Using '+board_file+' if you want to use another use -b option.')
-    if board_file and not os.path.isfile(board_file):
-        logger.error("Board file not found: "+board_file)
-        sys.exit(NO_PCB_FILE)
+    check_board_file(board_file)
     return board_file
 
 
@@ -163,6 +169,10 @@ def main():
         sys.exit(0)
     if args.help_preflights:
         print_preflights_help()
+        sys.exit(0)
+    if args.example:
+        check_board_file(args.board_file)
+        create_example(args.board_file)
         sys.exit(0)
 
     # Determine the YAML file

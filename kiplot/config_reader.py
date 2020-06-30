@@ -2,12 +2,13 @@
 Class to read KiPlot config files
 """
 
-import sys
+import os
+from sys import (exit, maxsize)
 from collections import OrderedDict
 
 from .error import (KiPlotConfigurationError)
-from .kiplot import (Layer)
-from .misc import (NO_YAML_MODULE, EXIT_BAD_CONFIG, EXIT_BAD_ARGS)
+from .kiplot import (Layer, load_board)
+from .misc import (NO_YAML_MODULE, EXIT_BAD_CONFIG, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE)
 from mcpy import activate  # noqa: F401
 # Output classes
 from .out_base import BaseOutput
@@ -43,12 +44,12 @@ try:
 except ImportError:  # pragma: no cover
     log.init(False, False)
     logger.error('No yaml module for Python, install python3-yaml')
-    sys.exit(NO_YAML_MODULE)
+    exit(NO_YAML_MODULE)
 
 
 def config_error(msg):
     logger.error(msg)
-    sys.exit(EXIT_BAD_CONFIG)
+    exit(EXIT_BAD_CONFIG)
 
 
 class CfgYamlReader(object):
@@ -228,14 +229,14 @@ def trim(docstring):
     # and split into a list of lines:
     lines = docstring.expandtabs().splitlines()
     # Determine minimum indentation (first line doesn't count):
-    indent = sys.maxsize
+    indent = maxsize
     for line in lines[1:]:
         stripped = line.lstrip()
         if stripped:
             indent = min(indent, len(line) - len(stripped))
     # Remove indentation (first line is special):
     trimmed = [lines[0].strip()]
-    if indent < sys.maxsize:
+    if indent < maxsize:
         for line in lines[1:]:
             trimmed.append(line[indent:].rstrip())
     # Strip off trailing and leading blank lines:
@@ -287,7 +288,7 @@ def print_outputs_help(details=False):
 def print_output_help(name):
     if not BaseOutput.is_registered(name):
         logger.error('Unknown output type `{}`, try --help-list-outputs'.format(name))
-        sys.exit(EXIT_BAD_ARGS)
+        exit(EXIT_BAD_ARGS)
     print_one_out_help(True, name, BaseOutput.get_class_for(name))
 
 
@@ -300,3 +301,63 @@ def print_preflights_help():
         if help is None:
             help = 'Undocumented'
         print('- {}: {}.'.format(n, help.rstrip()))
+
+
+def create_example(pcb_file):
+    if os.path.isfile(EXAMPLE_CFG):
+        logger.error(EXAMPLE_CFG+" already exists, won't overwrite")
+        exit(WONT_OVERWRITE)
+    with open(EXAMPLE_CFG, 'w') as f:
+        logger.info('Creating {} example configuration'.format(EXAMPLE_CFG))
+        f.write('kiplot:\n  version: 1\n')
+        # Preflights
+        f.write('\npreflight:\n')
+        pres = BasePreFlight.get_registered()
+        for n, o in pres.items():
+            if o.__doc__:
+                f.write('  #'+o.__doc__.rstrip()+'\n')
+            f.write('  {}: {}\n'.format(n, o.get_example()))
+        # Outputs
+        outs = BaseOutput.get_registered()
+        f.write('\noutputs:\n')
+        # List of layers
+        if pcb_file:
+            # We have a PCB to take as reference
+            load_board(pcb_file)
+            layers = Layer.get_pcb_layers()
+        else:
+            # Use the default list of layers
+            layers = Layer.get_default_layers()
+        for n, o in OrderedDict(sorted(outs.items())).items():
+            lines = trim(o.__doc__)
+            if len(lines) == 0:
+                lines = ['Undocumented', 'No description']
+            f.write('  # '+lines[0].rstrip()+':\n')
+            for ln in range(2, len(lines)):
+                f.write('  # '+lines[ln].rstrip()+'\n')
+            f.write("  - name: '{}_example'\n".format(n))
+            f.write("    comment: '{}'\n".format(lines[1]))
+            f.write("    type: '{}'\n".format(n))
+            f.write("    dir: 'Example/{}_dir'\n".format(n))
+            f.write("    options:\n")
+            obj = o('', n, '')
+            for k, v in BaseOutput.get_attrs_gen(obj):
+                help = getattr(obj, '_help_'+k)
+                if help:
+                    help_lines = help.split('\n')
+                    for hl in help_lines:
+                        f.write('      # '+hl.strip()+'\n')
+                val = getattr(obj, k)
+                if isinstance(val, str):
+                    val = "'{}'".format(val)
+                elif isinstance(val, bool):
+                    val = str(val).lower()
+                f.write('      {}: {}\n'.format(k, val))
+            if '_layers' in obj.__dict__:
+                f.write('    layers:\n')
+                for layer in layers:
+                    f.write("      - layer: '{}'\n".format(layer.name))
+                    f.write("        suffix: '{}'\n".format(layer.suffix))
+                    if layer.desc:
+                        f.write("        description: '{}'\n".format(layer.desc))
+            f.write('\n')
