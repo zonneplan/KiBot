@@ -83,17 +83,66 @@ def test_wrong_version_3():
     ctx.clean_up()
 
 
-def test_drill_map_no_type():
-    ctx = context.TestContext('ErrorDrillMapNoType', '3Rs', 'error_drill_map_no_type', None)
+def test_drill_map_no_type_1():
+    ctx = context.TestContext('ErrorDrillMapNoType1', '3Rs', 'error_drill_map_no_type', None)
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Empty drill `map` section")
     ctx.clean_up()
 
 
-def test_drill_map_wrong_type():
-    ctx = context.TestContext('ErrorDrillMapWrongType', '3Rs', 'error_drill_map_wrong_type', None)
+def test_drill_map_no_type_2():
+    ctx = context.TestContext('ErrorDrillMapNoType2', '3Rs', 'error_drill_map_no_type_2', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("drill `map` must contain a `type`")
+    ctx.clean_up()
+
+
+def test_drill_map_wrong_type_1():
+    ctx = context.TestContext('ErrorDrillMapWrongType1', '3Rs', 'error_drill_map_wrong_type', None)
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown drill `map` `type`: bogus")
+    ctx.clean_up()
+
+
+def test_drill_map_wrong_type_2():
+    ctx = context.TestContext('ErrorDrillMapWrongType2', '3Rs', 'error_drill_map_wrong_type_2', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("drill `map` `type` must be a string")
+    ctx.clean_up()
+
+
+def test_drill_map_wrong_type_3():
+    ctx = context.TestContext('ErrorDrillMapWrongType3', '3Rs', 'error_drill_map_wrong_type_3', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("drill `map` must be a string")
+    ctx.clean_up()
+
+
+def test_drill_report_no_type_1():
+    ctx = context.TestContext('ErrorDrillReportNoType1', '3Rs', 'error_drill_report_no_type', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Empty drill `report` section")
+    ctx.clean_up()
+
+
+def test_drill_report_no_type_2():
+    ctx = context.TestContext('ErrorDrillReportNoType2', '3Rs', 'error_drill_report_no_type_2', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("drill `report` must contain a `filename`")
+    ctx.clean_up()
+
+
+def test_drill_report_wrong_type_2():
+    ctx = context.TestContext('ErrorDrillReportWrongType2', '3Rs', 'error_drill_report_wrong_type_2', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("drill `report` `filename` must be a string")
+    ctx.clean_up()
+
+
+def test_drill_report_wrong_type_3():
+    ctx = context.TestContext('ErrorDrillReportWrongType3', '3Rs', 'error_drill_report_wrong_type_3', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("drill `report` must be a string")
     ctx.clean_up()
 
 

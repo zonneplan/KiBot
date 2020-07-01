@@ -11,7 +11,7 @@ outputs:
     options:
       metric_units: true
       pth_and_npth_single_file: false
-      use_aux_axis_as_origin: false
+      use_aux_axis_as_origin: true
       minimal_header: false
       mirror_y_axis: false
       report:

@@ -14,8 +14,10 @@ outputs:
       use_aux_axis_as_origin: false
       minimal_header: false
       mirror_y_axis: false
-      report: None
+      report:
+        filename: 'report.rpt'
       map:
+        types: 'bogus'
 
   - name: gerber_drills
     comment: "Gerber drill files"
