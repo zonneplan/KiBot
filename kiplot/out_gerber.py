@@ -17,7 +17,7 @@ class Gerber(AnyLayer):
             self.use_aux_axis_as_origin = False
             """ use the auxiliar axis as origin for coordinates """
             self.line_width = 0.1
-            """ line_width for objects without width [mm] """
+            """ [0.02,2] line_width for objects without width [mm] """
             self.subtract_mask_from_silk = False
             """ substract the solder mask from the silk screen """
             self.use_protel_extensions = False

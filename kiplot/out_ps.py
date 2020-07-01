@@ -16,7 +16,7 @@ class PS(AnyLayer, DrillMarks):
         # Options
         with document:
             self.line_width = 0.15
-            """ for objects without width [mm] """
+            """ [0.02,2] for objects without width [mm] """
             self.mirror_plot = False
             """ plot mirrored """
             self.negative_plot = False
