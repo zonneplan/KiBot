@@ -303,7 +303,7 @@ def print_preflights_help():
         print('- {}: {}.'.format(n, help.rstrip()))
 
 
-def create_example(pcb_file, out_dir):
+def create_example(pcb_file, out_dir, copy_options):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     fname = os.path.join(out_dir, EXAMPLE_CFG)
@@ -324,15 +324,21 @@ def create_example(pcb_file, out_dir):
         outs = BaseOutput.get_registered()
         f.write('\noutputs:\n')
         # List of layers
+        po = None
         if pcb_file:
             # We have a PCB to take as reference
-            load_board(pcb_file)
-            layers = Layer.get_pcb_layers()
+            board = load_board(pcb_file)
+            if copy_options:
+                # Layers and plot options from the PCB
+                layers = Layer.get_plot_layers()
+                po = board.GetPlotOptions()
+            else:
+                layers = Layer.get_pcb_layers()
         else:
             # Use the default list of layers
             layers = Layer.get_default_layers()
-        for n, o in OrderedDict(sorted(outs.items())).items():
-            lines = trim(o.__doc__)
+        for n, cls in OrderedDict(sorted(outs.items())).items():
+            lines = trim(cls.__doc__)
             if len(lines) == 0:
                 lines = ['Undocumented', 'No description']
             f.write('  # '+lines[0].rstrip()+':\n')
@@ -343,7 +349,9 @@ def create_example(pcb_file, out_dir):
             f.write("    type: '{}'\n".format(n))
             f.write("    dir: 'Example/{}_dir'\n".format(n))
             f.write("    options:\n")
-            obj = o('', n, '')
+            obj = cls('', n, '')
+            if po:
+                obj.read_vals_from_po(po)
             for k, v in BaseOutput.get_attrs_gen(obj):
                 help = getattr(obj, '_help_'+k)
                 if help:

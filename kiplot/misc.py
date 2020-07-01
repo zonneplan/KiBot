@@ -34,3 +34,4 @@ CMD_IBOM = 'generate_interactive_bom.py'
 URL_IBOM = 'https://github.com/INTI-CMNB/InteractiveHtmlBom'
 KICAD2STEP = 'kicad2step'
 EXAMPLE_CFG = 'example.kiplot.yaml'
+AUTO_SCALE = 0

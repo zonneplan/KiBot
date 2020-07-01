@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - -e/--schematic option to specify any schematic (not just derived from the PCB
   name.
 - -x/--example option to generate a complete configuration example.
+- --example supports --copy-options to copy the plot options from the PCB file.
 - Help for the supported outputs (--help-list-outputs, --help-outputs and
   --help-output)
 - Help for the supported preflights (--help-preflights)
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added HPGL options:
   - pen_number
   - pen_speed
+- Added metric_units to DXF options
 - Added the following InteractiveHtmlBom options:
   - dark_mode
   - hide_pads

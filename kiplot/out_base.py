@@ -1,5 +1,5 @@
 import inspect
-from re import (compile, match)
+from re import (compile)
 from .error import KiPlotConfigurationError
 from . import log
 
@@ -45,7 +45,7 @@ class BaseOutput(object):
                     logger.debug('Verificando')
                     min = float(m.group(1))
                     max = float(m.group(2))
-                    if v<min or v>max:
+                    if v < min or v > max:
                         raise KiPlotConfigurationError("Option `{}` outside its range [{},{}]".format(k, min, max))
             elif isinstance(cur_val, str):
                 if not isinstance(v, str):
@@ -103,6 +103,10 @@ class BaseOutput(object):
     def is_pcb(self):
         """ True for outputs that works on the PCB """
         return not self._sch_related
+
+    def read_vals_from_po(self, po):
+        """ Set attributes from a PCB_PLOT_PARAMS (plot options) """
+        return
 
     # These get_* aren't really needed.
     # _* members aren't supposed to be used by the user, not the code.

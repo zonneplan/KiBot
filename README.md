@@ -203,6 +203,7 @@ Most options are the same you'll find in the KiCad dialogs.
     - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
     - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
+    - `metric_units`: [boolean=false] use mm instead of inches.
     - `plot_footprint_refs`: [boolean=true] include the footprint references.
     - `plot_footprint_values`: [boolean=true] include the footprint values.
     - `plot_sheet_reference`: [boolean=false] currently without effect.
@@ -248,7 +249,7 @@ Most options are the same you'll find in the KiCad dialogs.
     - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
     - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
     - `gerber_precision`: [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6.
-    - `line_width`: [number=0.1] line_width for objects without width [mm].
+    - `line_width`: [number=0.1] [0.02,2] line_width for objects without width [mm].
     - `plot_footprint_refs`: [boolean=true] include the footprint references.
     - `plot_footprint_values`: [boolean=true] include the footprint values.
     - `plot_sheet_reference`: [boolean=false] currently without effect.
@@ -269,7 +270,9 @@ Most options are the same you'll find in the KiCad dialogs.
     - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
     - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
     - `mirror_plot`: [boolean=false] plot mirrored.
-    - `pen_width`: [number=0.5] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
+    - `pen_number`: [number=1] [1,16] pen number.
+    - `pen_speed`: [number=20] [1,99] pen speed.
+    - `pen_width`: [number=15] [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
     - `plot_footprint_refs`: [boolean=true] include the footprint references.
     - `plot_footprint_values`: [boolean=true] include the footprint values.
     - `plot_sheet_reference`: [boolean=false] currently without effect.
@@ -334,7 +337,7 @@ Most options are the same you'll find in the KiCad dialogs.
     - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
     - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-    - `line_width`: [number=0.1] for objects without width [mm].
+    - `line_width`: [number=0.1] [0.02,2] for objects without width [mm].
     - `mirror_plot`: [boolean=false] plot mirrored.
     - `negative_plot`: [boolean=false] invert black and white.
     - `plot_footprint_refs`: [boolean=true] include the footprint references.
@@ -378,7 +381,7 @@ Most options are the same you'll find in the KiCad dialogs.
     - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
     - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-    - `line_width`: [number=0.15] for objects without width [mm].
+    - `line_width`: [number=0.15] [0.02,2] for objects without width [mm].
     - `mirror_plot`: [boolean=false] plot mirrored.
     - `negative_plot`: [boolean=false] invert black and white.
     - `plot_footprint_refs`: [boolean=true] include the footprint references.
@@ -416,7 +419,7 @@ Most options are the same you'll find in the KiCad dialogs.
     - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
     - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-    - `line_width`: [number=0.25] for objects without width [mm].
+    - `line_width`: [number=0.25] [0.02,2] for objects without width [mm].
     - `mirror_plot`: [boolean=false] plot mirrored.
     - `negative_plot`: [boolean=false] invert black and white.
     - `plot_footprint_refs`: [boolean=true] include the footprint references.
@@ -440,6 +443,12 @@ If you want to use the layers of a particular PCB in the example use:
 
 ```
 kiplot -b PCB_FILE --example
+```
+
+And if you want to use the same options selected in the plot dialog use:
+
+```
+kiplot -b PCB_FILE -p --example
 ```
 
 If the current directory contains only one PCB file and only one configuration file (named *.kiplot.yaml)
@@ -510,7 +519,7 @@ Usage:
   kiplot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-i] [TARGET...]
   kiplot [-c PLOT_CONFIG] --list
-  kiplot [-b BOARD] [-d OUT_DIR] --example
+  kiplot [-b BOARD] [-d OUT_DIR] [-p] --example
   kiplot --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
   kiplot --help-outputs
@@ -533,6 +542,7 @@ Options:
   --help-preflights                List supported preflights and details
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
+  -p, --copy-options               Copy plot options from the PCB file
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
   -v, --verbose                    Show debugging information

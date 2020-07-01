@@ -1,4 +1,4 @@
-from pcbnew import (PLOT_FORMAT_GERBER)
+from pcbnew import (PLOT_FORMAT_GERBER, FromMM, ToMM)
 from .out_any_layer import (AnyLayer)
 from .error import KiPlotConfigurationError
 from kiplot.macros import macros, document, output_class  # noqa: F401
@@ -44,10 +44,30 @@ class Gerber(AnyLayer):
 
     def _configure_plot_ctrl(self, po, output_dir):
         super()._configure_plot_ctrl(po, output_dir)
-        po.SetUseGerberAttributes(True)
         po.SetSubtractMaskFromSilk(self.subtract_mask_from_silk)
         po.SetUseGerberProtelExtensions(self.use_protel_extensions)
         po.SetGerberPrecision(5 if self.gerber_precision == 4.5 else 6)
         po.SetCreateGerberJobFile(self.create_gerber_job_file)
-        po.SetUseGerberAttributes(self.use_gerber_x2_attributes)
+        po.SetUseGerberX2format(self.use_gerber_x2_attributes)
         po.SetIncludeGerberNetlistInfo(self.use_gerber_net_attributes)
+        po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
+        po.SetLineWidth(FromMM(self.line_width))
+
+    def read_vals_from_po(self, po):
+        super().read_vals_from_po(po)
+        # usegerberattributes
+        self.use_gerber_x2_attributes = po.GetUseGerberX2format()
+        # usegerberextensions
+        self.use_protel_extensions = po.GetUseGerberProtelExtensions()
+        # usegerberadvancedattributes
+        self.use_gerber_net_attributes = po.GetIncludeGerberNetlistInfo()
+        # creategerberjobfile
+        self.create_gerber_job_file = po.GetCreateGerberJobFile()
+        # gerberprecision
+        self.gerber_precision = 4.0 + po.GetGerberPrecision()/10.0
+        # subtractmaskfromsilk
+        self.subtract_mask_from_silk = po.GetSubtractMaskFromSilk()
+        # useauxorigin
+        self.use_aux_axis_as_origin = po.GetUseAuxOrigin()
+        # linewidth
+        self.line_width = ToMM(po.GetLineWidth())

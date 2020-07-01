@@ -12,6 +12,11 @@ class DrillMarks(object):
                         'small': PCB_PLOT_PARAMS.SMALL_DRILL_SHAPE,
                         'full': PCB_PLOT_PARAMS.FULL_DRILL_SHAPE,
                        }
+    _drill_marks_rev_map = {
+                            PCB_PLOT_PARAMS.NO_DRILL_SHAPE: 'none',
+                            PCB_PLOT_PARAMS.SMALL_DRILL_SHAPE: 'small',
+                            PCB_PLOT_PARAMS.FULL_DRILL_SHAPE: 'full',
+                           }
 
     def __init__(self):
         with document:
@@ -30,3 +35,10 @@ class DrillMarks(object):
 
     def config(self):
         self._drill_marks = DrillMarks._drill_marks_map[self._drill_marks]
+
+    def _configure_plot_ctrl(self, po, output_dir):
+        # How we draw drill marks
+        po.SetDrillMarksType(self._drill_marks)
+
+    def read_vals_from_po(self, po):
+        self._drill_marks = DrillMarks._drill_marks_rev_map[po.GetDrillMarksType()]

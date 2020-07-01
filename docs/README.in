@@ -211,6 +211,12 @@ If you want to use the layers of a particular PCB in the example use:
 kiplot -b PCB_FILE --example
 ```
 
+And if you want to use the same options selected in the plot dialog use:
+
+```
+kiplot -b PCB_FILE -p --example
+```
+
 If the current directory contains only one PCB file and only one configuration file (named *.kiplot.yaml)
 you can just call `kiplot`. No arguments needed. The tool will figure out which files to use.
 

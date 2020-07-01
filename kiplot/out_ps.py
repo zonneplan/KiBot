@@ -1,4 +1,5 @@
-from pcbnew import PLOT_FORMAT_POST
+from pcbnew import (PLOT_FORMAT_POST, SKETCH, FILLED, FromMM, ToMM)
+from kiplot.misc import AUTO_SCALE
 from kiplot.out_any_layer import AnyLayer
 from kiplot.drill_marks import DrillMarks
 from kiplot.macros import macros, document, output_class  # noqa: F401
@@ -40,8 +41,37 @@ class PS(AnyLayer, DrillMarks):
         DrillMarks.config(self)
 
     def _configure_plot_ctrl(self, po, output_dir):
-        super()._configure_plot_ctrl(po, output_dir)
+        AnyLayer._configure_plot_ctrl(self, po, output_dir)
+        DrillMarks._configure_plot_ctrl(self, po, output_dir)
         po.SetWidthAdjust(self.width_adjust)
         po.SetFineScaleAdjustX(self.scale_adjust_x)
         po.SetFineScaleAdjustX(self.scale_adjust_y)
         po.SetA4Output(self.a4_output)
+        po.SetPlotMode(SKETCH if self.sketch_plot else FILLED)
+        po.SetLineWidth(FromMM(self.line_width))
+        po.SetNegative(self.negative_plot)
+        po.SetMirror(self.mirror_plot)
+        # Scaling/Autoscale
+        if self.scaling == AUTO_SCALE:
+            po.SetAutoScale(True)
+            po.SetScale(1)
+        else:
+            po.SetAutoScale(False)
+            po.SetScale(self.scaling)
+
+    def read_vals_from_po(self, po):
+        AnyLayer.read_vals_from_po(self, po)
+        DrillMarks.read_vals_from_po(self, po)
+        self.width_adjust = po.GetWidthAdjust()
+        self.scale_adjust_x = po.GetFineScaleAdjustX()
+        self.scale_adjust_y = po.GetFineScaleAdjustX()
+        self.a4_output = po.GetA4Output()
+        self.sketch_plot = po.GetPlotMode() == SKETCH
+        self.line_width = ToMM(po.GetLineWidth())
+        self.negative_plot = po.GetNegative()
+        self.mirror_plot = po.GetMirror()
+        # scaleselection
+        if po.GetAutoScale():
+            self.scaling = AUTO_SCALE
+        else:
+            self.scaling = po.GetScale()

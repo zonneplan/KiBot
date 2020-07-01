@@ -78,6 +78,7 @@ class Layer(object):
     }
     # Names from the board file
     pcb_layers = {}
+    plot_layers = {}
 
     def __init__(self, name, suffix, desc):
         self.id = pcbnew.UNDEFINED_LAYER
@@ -94,13 +95,28 @@ class Layer(object):
             Layer.pcb_layers[board.GetLayerName(id)] = id
 
     @staticmethod
-    def get_pcb_layers():
+    def _get_layers(d_layers):
         layers = []
-        for n, id in Layer.pcb_layers.items():
+        for n, id in d_layers.items():
             s = n.replace('.', '_')
             d = Layer.DEFAULT_LAYER_DESC.get(n)
             layers.append(Layer(n, s, d))
         return layers
+
+    @staticmethod
+    def get_pcb_layers():
+        return Layer._get_layers(Layer.pcb_layers)
+
+    @staticmethod
+    def set_plot_layers(board):
+        enabled = board.GetEnabledLayers().Seq()
+        for id in board.GetPlotOptions().GetLayerSelection().Seq():
+            if id in enabled:
+                Layer.plot_layers[board.GetLayerName(id)] = id
+
+    @staticmethod
+    def get_plot_layers():
+        return Layer._get_layers(Layer.plot_layers)
 
     def get_layer_id_from_name(self, layer_cnt):
         """ Get the pcbnew layer from the string provided in the config """
@@ -182,6 +198,7 @@ def load_board(pcb_file=None):
             pcbnew.ZONE_FILLER(board).Fill(board.Zones())
         # Now we know the names of the layers for this board
         Layer.set_pcb_layers(board)
+        Layer.set_plot_layers(board)
     except OSError as e:
         logger.error('Error loading PCB file. Currupted?')
         logger.error(e)

@@ -16,11 +16,12 @@ outputs:
       force_plot_invisible_refs_vals: false
       tent_vias: true
 
-      # PS options
+      # DXF options
       drill_marks: full
       sketch_plot: false
       use_aux_axis_as_origin: false
       polygon_mode: true
+      metric_units: false
     layers:
       - layer: F.Cu
         suffix: F_Cu

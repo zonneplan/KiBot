@@ -1,4 +1,4 @@
-from pcbnew import PLOT_FORMAT_DXF
+from pcbnew import (PLOT_FORMAT_DXF, SKETCH, FILLED)
 from kiplot.out_any_layer import AnyLayer
 from kiplot.drill_marks import DrillMarks
 from kiplot.macros import macros, document, output_class  # noqa: F401
@@ -20,6 +20,8 @@ class DXF(AnyLayer, DrillMarks):
             """ use the auxiliar axis as origin for coordinates """
             self.polygon_mode = True
             """ plot using the contour, instead of the center line """
+            self.metric_units = False
+            """ use mm instead of inches """
             self.sketch_plot = False
             """ don't fill objects, just draw the outline """  # pragma: no cover
 
@@ -29,4 +31,18 @@ class DXF(AnyLayer, DrillMarks):
 
     def _configure_plot_ctrl(self, po, output_dir):
         AnyLayer._configure_plot_ctrl(self, po, output_dir)
+        DrillMarks._configure_plot_ctrl(self, po, output_dir)
         po.SetDXFPlotPolygonMode(self.polygon_mode)
+        # DXF_PLOTTER::DXF_UNITS isn't available
+        # According to https://docs.kicad-pcb.org/doxygen/classDXF__PLOTTER.html 1 is mm
+        po.SetDXFPlotUnits(1 if self.metric_units else 0)
+        po.SetPlotMode(SKETCH if self.sketch_plot else FILLED)
+        po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
+
+    def read_vals_from_po(self, po):
+        AnyLayer.read_vals_from_po(self, po)
+        DrillMarks.read_vals_from_po(self, po)
+        self.polygon_mode = po.GetDXFPlotPolygonMode()
+        self.metric_units = po.GetDXFPlotUnits() == 1
+        self.sketch_plot = po.GetPlotMode() == SKETCH
+        self.use_aux_axis_as_origin = po.GetUseAuxOrigin()

@@ -1,4 +1,5 @@
-from pcbnew import PLOT_FORMAT_HPGL
+from pcbnew import (PLOT_FORMAT_HPGL, SKETCH, FILLED)
+from kiplot.misc import AUTO_SCALE
 from kiplot.out_any_layer import AnyLayer
 from kiplot.drill_marks import DrillMarks
 from kiplot.macros import macros, document, output_class  # noqa: F401
@@ -33,7 +34,31 @@ class HPGL(AnyLayer, DrillMarks):
         DrillMarks.config(self)
 
     def _configure_plot_ctrl(self, po, output_dir):
-        super()._configure_plot_ctrl(po, output_dir)
+        AnyLayer._configure_plot_ctrl(self, po, output_dir)
+        DrillMarks._configure_plot_ctrl(self, po, output_dir)
         po.SetHPGLPenDiameter(self.pen_width)
         po.SetHPGLPenNum(self.pen_number)
         po.SetHPGLPenSpeed(self.pen_speed)
+        po.SetPlotMode(SKETCH if self.sketch_plot else FILLED)
+        po.SetMirror(self.mirror_plot)
+        # Scaling/Autoscale
+        if self.scaling == AUTO_SCALE:
+            po.SetAutoScale(True)
+            po.SetScale(1)
+        else:
+            po.SetAutoScale(False)
+            po.SetScale(self.scaling)
+
+    def read_vals_from_po(self, po):
+        AnyLayer.read_vals_from_po(self, po)
+        DrillMarks.read_vals_from_po(self, po)
+        self.pen_width = po.GetHPGLPenDiameter()
+        self.pen_number = po.GetHPGLPenNum()
+        self.pen_speed = po.GetHPGLPenSpeed()
+        self.sketch_plot = po.GetPlotMode() == SKETCH
+        self.mirror_plot = po.GetMirror()
+        # scaleselection
+        if po.GetAutoScale():
+            self.scaling = AUTO_SCALE
+        else:
+            self.scaling = po.GetScale()

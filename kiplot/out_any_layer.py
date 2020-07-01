@@ -1,5 +1,5 @@
 import os
-from pcbnew import (GERBER_JOBFILE_WRITER, PCB_PLOT_PARAMS, FromMM, PLOT_CONTROLLER, IsCopperLayer, SKETCH)
+from pcbnew import (GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer)
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
 from .gs import (GS)
@@ -7,10 +7,10 @@ from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
-AUTO_SCALE = 0
 
 
 class AnyLayer(BaseOutput):
+    """ Base class for: DXF, Gerber, HPGL, PDF, PS and SVG """
     def __init__(self, name, type, description):
         super(AnyLayer, self).__init__(name, type, description)
         # We need layers, so we define it
@@ -41,38 +41,17 @@ class AnyLayer(BaseOutput):
     def _configure_plot_ctrl(self, po, output_dir):
         logger.debug("Configuring plot controller for output")
         po.SetOutputDirectory(output_dir)
-        po.SetLineWidth(FromMM(self.get_line_width()))
-        # Scaling/Autoscale
-        scaling = self.get_scaling()
-        if scaling == AUTO_SCALE:
-            po.SetAutoScale(True)
-            po.SetScale(1)
-        else:
-            po.SetAutoScale(False)
-            po.SetScale(scaling)
-        po.SetMirror(self.get_mirror_plot())
-        po.SetNegative(self.get_negative_plot())
         po.SetPlotFrameRef(self.plot_sheet_reference)
         po.SetPlotReference(self.plot_footprint_refs)
         po.SetPlotValue(self.plot_footprint_values)
         po.SetPlotInvisibleText(self.force_plot_invisible_refs_vals)
         po.SetExcludeEdgeLayer(self.exclude_edge_layer)
         po.SetPlotPadsOnSilkLayer(not self.exclude_pads_from_silkscreen)
-        po.SetUseAuxOrigin(self.get_use_aux_axis_as_origin())
         po.SetPlotViaOnMaskLayer(not self.tent_vias)
-        # in general, false, but gerber will set it back later
-        po.SetUseGerberAttributes(False)
         # Only useful for gerber outputs
         po.SetCreateGerberJobFile(False)
-        # How we draw drill marks
-        po.SetDrillMarksType(self.get_drill_marks())
         # We'll come back to this on a per-layer basis
         po.SetSkipPlotNPTH_Pads(False)
-        if self.get_sketch_plot():
-            po.SetPlotMode(SKETCH)
-
-    def get_plot_format(self):
-        return self._plot_format
 
     def run(self, output_dir, board):
         # fresh plot controller
@@ -103,11 +82,9 @@ class AnyLayer(BaseOutput):
             is_cu = IsCopperLayer(id)
             po.SetSkipPlotNPTH_Pads(is_cu)
 
-            plot_format = self.get_plot_format()
-
             # Plot single layer to file
-            logger.debug("Opening plot file for layer `{}` format `{}`".format(l, plot_format))
-            if not plot_ctrl.OpenPlotfile(suffix, plot_format, desc):
+            logger.debug("Opening plot file for layer `{}` format `{}`".format(l, self._plot_format))
+            if not plot_ctrl.OpenPlotfile(suffix, self._plot_format, desc):
                 raise PlotError("OpenPlotfile failed!")
 
             logger.debug("Plotting layer `{}` to `{}`".format(l, plot_ctrl.GetPlotFileName()))
@@ -124,27 +101,18 @@ class AnyLayer(BaseOutput):
             job_fn = base_fn+'-job.gbrjob'
             jobfile_writer.CreateJobFile(job_fn)
 
-    # Default values
-    # We concentrate all the KiCad plot initialization in one place.
-    # Here we provide default values for settings not contained in an output object
-    # TODO: avoid them?
-    def get_line_width(self):
-        return self.line_width if 'line_width' in self.__dict__ else 0
-
-    def get_scaling(self):
-        return self.scaling if 'scaling' in self.__dict__ else 1
-
-    def get_mirror_plot(self):
-        return self.mirror_plot if 'mirror_plot' in self.__dict__ else False
-
-    def get_negative_plot(self):
-        return self.negative_plot if 'negative_plot' in self.__dict__ else False
-
-    def get_use_aux_axis_as_origin(self):
-        return self.use_aux_axis_as_origin if 'use_aux_axis_as_origin' in self.__dict__ else False
-
-    def get_drill_marks(self):
-        return self.drill_marks if '_drill_marks' in self.__dict__ else PCB_PLOT_PARAMS.NO_DRILL_SHAPE
-
-    def get_sketch_plot(self):
-        return self.sketch_plot if 'sketch_plot' in self.__dict__ else False
+    def read_vals_from_po(self, po):
+        # excludeedgelayer
+        self.exclude_edge_layer = po.GetExcludeEdgeLayer()
+        # plotframeref
+        self.plot_sheet_reference = po.GetPlotFrameRef()
+        # plotreference
+        self.plot_footprint_refs = po.GetPlotReference()
+        # plotvalue
+        self.plot_footprint_values = po.GetPlotValue()
+        # plotinvisibletext
+        self.force_plot_invisible_refs_vals = po.GetPlotInvisibleText()
+        # viasonmask
+        self.tent_vias = not po.GetPlotViaOnMaskLayer()
+        # padsonsilk
+        self.exclude_pads_from_silkscreen = not po.GetPlotPadsOnSilkLayer()

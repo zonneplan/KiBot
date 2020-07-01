@@ -34,6 +34,8 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
+      # [boolean=false] use mm instead of inches
+      metric_units: false
       # [boolean=true] include the footprint references
       plot_footprint_refs: true
       # [boolean=true] include the footprint values
@@ -168,7 +170,7 @@ outputs:
       force_plot_invisible_refs_vals: false
       # [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6
       gerber_precision: 4.6
-      # [number=0.1] line_width for objects without width [mm]
+      # [number=0.1] [0.02,2] line_width for objects without width [mm]
       line_width: 0.1
       # [boolean=true] include the footprint references
       plot_footprint_refs: true
@@ -267,8 +269,12 @@ outputs:
       force_plot_invisible_refs_vals: false
       # [boolean=false] plot mirrored
       mirror_plot: false
-      # [number=0.5] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files
-      pen_width: 0.5
+      # [number=1] [1,16] pen number
+      pen_number: 1
+      # [number=20] [1,99] pen speed
+      pen_speed: 20
+      # [number=15] [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files
+      pen_width: 15
       # [boolean=true] include the footprint references
       plot_footprint_refs: true
       # [boolean=true] include the footprint values
@@ -435,7 +441,7 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
-      # [number=0.1] for objects without width [mm]
+      # [number=0.1] [0.02,2] for objects without width [mm]
       line_width: 0.1
       # [boolean=false] plot mirrored
       mirror_plot: false
@@ -627,7 +633,7 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
-      # [number=0.15] for objects without width [mm]
+      # [number=0.15] [0.02,2] for objects without width [mm]
       line_width: 0.15
       # [boolean=false] plot mirrored
       mirror_plot: false
@@ -751,7 +757,7 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
-      # [number=0.25] for objects without width [mm]
+      # [number=0.25] [0.02,2] for objects without width [mm]
       line_width: 0.25
       # [boolean=false] plot mirrored
       mirror_plot: false

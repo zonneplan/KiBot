@@ -363,3 +363,13 @@ def test_example_3():
     ctx.run(WONT_OVERWRITE, extra=['--example'], no_verbose=True, no_yaml_file=True)
     os.remove(ctx.get_out_path(EXAMPLE_CFG))
     ctx.clean_up()
+
+
+def test_example_4():
+    ctx = context.TestContext('Example4', 'good-project', 'pre_and_position', '')
+    ctx.run(extra=['--example', '-p'], no_verbose=True, no_yaml_file=True)
+    assert ctx.expect_out_file(EXAMPLE_CFG)
+    ctx.search_in_file(EXAMPLE_CFG, ['GND.Cu'])
+    ctx.search_not_in_file(EXAMPLE_CFG, ['F.Adhes'])
+    os.remove(ctx.get_out_path(EXAMPLE_CFG))
+    ctx.clean_up()
