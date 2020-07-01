@@ -21,8 +21,12 @@ class HPGL(AnyLayer, DrillMarks):
             """ don't fill objects, just draw the outline """
             self.scaling = 0
             """ scale factor (0 means autoscaling) """
-            self.pen_width = 0.5
-            """ pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files """  # pragma: no cover
+            self.pen_number = 1
+            """ [1,16] pen number """
+            self.pen_speed = 20
+            """ [1,99] pen speed """
+            self.pen_width = 15
+            """ [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files """  # pragma: no cover
 
     def config(self, outdir, options, layers):
         AnyLayer.config(self, outdir, options, layers)
@@ -31,3 +35,5 @@ class HPGL(AnyLayer, DrillMarks):
     def _configure_plot_ctrl(self, po, output_dir):
         super()._configure_plot_ctrl(po, output_dir)
         po.SetHPGLPenDiameter(self.pen_width)
+        po.SetHPGLPenNum(self.pen_number)
+        po.SetHPGLPenSpeed(self.pen_speed)

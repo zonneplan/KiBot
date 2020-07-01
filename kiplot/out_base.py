@@ -1,4 +1,5 @@
 import inspect
+from re import (compile, match)
 from .error import KiPlotConfigurationError
 from . import log
 
@@ -21,6 +22,7 @@ class BaseOutput(object):
     def _perform_config_mapping(self):
         """ Map the options to class attributes """
         attrs = BaseOutput.get_attrs_for(self)
+        num_range_re = compile(r"\[number=.*\] \[(-?\d+),(-?\d+)\]")
         for k, v in self._options.items():
             # Map known attributes and avoid mapping private ones
             if (k[0] == '_') or (k not in attrs):
@@ -28,14 +30,27 @@ class BaseOutput(object):
                 logger.warning("Unknown option `{}`".format(k))
                 continue
             # Check the data type
-            cur_val = self.__getattribute__(k)
-            if isinstance(cur_val, bool) and not isinstance(v, bool):
-                raise KiPlotConfigurationError("Option `{}` must be true/false".format(k))
-            if isinstance(cur_val, (int, float)) and not isinstance(v, (int, float)):
-                raise KiPlotConfigurationError("Option `{}` must be a number".format(k))
-            if isinstance(cur_val, str) and not isinstance(v, str):
-                raise KiPlotConfigurationError("Option `{}` must be a string".format(k))
-            if isinstance(v, list):
+            cur_val = getattr(self, k)
+            cur_doc = getattr(self, '_help_'+k).lstrip()
+            if isinstance(cur_val, bool):
+                if not isinstance(v, bool):
+                    raise KiPlotConfigurationError("Option `{}` must be true/false".format(k))
+            elif isinstance(cur_val, (int, float)):
+                # Note: booleans are also instance of int
+                if not isinstance(v, (int, float)):
+                    raise KiPlotConfigurationError("Option `{}` must be a number".format(k))
+                # If the docstring specifies a range in the form [from-to] enforce it
+                m = num_range_re.match(cur_doc)
+                if m:
+                    logger.debug('Verificando')
+                    min = float(m.group(1))
+                    max = float(m.group(2))
+                    if v<min or v>max:
+                        raise KiPlotConfigurationError("Option `{}` outside its range [{},{}]".format(k, min, max))
+            elif isinstance(cur_val, str):
+                if not isinstance(v, str):
+                    raise KiPlotConfigurationError("Option `{}` must be a string".format(k))
+            elif isinstance(v, list):
                 raise KiPlotConfigurationError("list not yet supported for `{}`".format(k))
             # Seems to be ok, map it
             setattr(self, k, v)

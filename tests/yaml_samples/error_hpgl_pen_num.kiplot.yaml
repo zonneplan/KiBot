@@ -20,7 +20,7 @@ outputs:
       mirror_plot: true
       sketch_plot: false
       scaling: 0 # auto
-      pen_number: 2
+      pen_number: 17
       pen_speed: 50
       pen_width: 0.5
     layers:

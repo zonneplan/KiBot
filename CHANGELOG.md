@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   --help-output)
 - Help for the supported preflights (--help-preflights)
 - Better YAML validation.
+- Added HPGL options:
+  - pen_number
+  - pen_speed
 - Added the following InteractiveHtmlBom options:
   - dark_mode
   - hide_pads

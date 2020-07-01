@@ -36,6 +36,7 @@ Tests various errors in the config file
   - Wrong type for entry (run_drc)
 - YAML syntax
 - Unknown section
+- HPGL wrong pen_number
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -319,4 +320,11 @@ def test_unk_section():
     ctx = context.TestContext('UnkSection', PRJ, 'error_unk_section', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown section .?bogus.? in config")
+    ctx.clean_up()
+
+
+def test_error_hpgl_pen_num():
+    ctx = context.TestContext('HPGLPenNum', PRJ, 'error_hpgl_pen_num', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Option .?pen_number.? outside its range")
     ctx.clean_up()
