@@ -7,7 +7,9 @@ import re
 from sys import exit
 from shutil import which
 from subprocess import (run, PIPE)
+from glob import glob
 from distutils.version import StrictVersion
+from importlib.util import (spec_from_file_location, module_from_spec)
 
 from .gs import (GS)
 from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, NO_SCH_FILE, CORRUPTED_PCB,
@@ -17,6 +19,7 @@ from .pre_base import BasePreFlight
 from . import log
 
 logger = log.get_logger(__name__)
+
 
 try:
     import pcbnew
@@ -154,6 +157,36 @@ class Layer(object):
 
     def __str__(self):
         return "{} ({} '{}' {})".format(self.name, self.id, self.desc, self.suffix)
+
+
+def _import(name, path):
+    # Python 3.4+ import mechanism
+    spec = spec_from_file_location("kiplot."+name, path)
+    mod = module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+
+def _load_actions(path):
+    logger.debug("Importing from "+path)
+    lst = glob(os.path.join(path, 'out_*.py')) + glob(os.path.join(path, 'pre_*.py'))
+    for p in lst:
+        name = os.path.splitext(os.path.basename(p))[0]
+        logger.debug("- Importing "+name)
+        _import(name, p)
+
+
+def load_actions():
+    """ Load all the available ouputs and preflights """
+    from mcpy import activate
+    _load_actions(os.path.abspath(os.path.dirname(__file__)))
+    home = os.environ.get('HOME')
+    if home:
+        dir = os.path.join(home, '.config', 'kiplot', 'plugins')
+        if os.path.isdir(dir):
+            _load_actions(dir)
+    if 'de_activate' in activate.__dict__:
+        logger.debug('Deactivating macros')
+        activate.de_activate()
 
 
 def check_version(command, version):

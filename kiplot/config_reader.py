@@ -9,31 +9,8 @@ from collections import OrderedDict
 from .error import (KiPlotConfigurationError)
 from .kiplot import (Layer, load_board)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_CONFIG, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE)
-from mcpy import activate  # noqa: F401
-# Output classes
 from .out_base import BaseOutput
-from . import out_gerber          # noqa: F401
-from . import out_ps              # noqa: F401
-from . import out_hpgl            # noqa: F401
-from . import out_dxf             # noqa: F401
-from . import out_pdf             # noqa: F401
-from . import out_svg             # noqa: F401
-from . import out_gerb_drill      # noqa: F401
-from . import out_excellon        # noqa: F401
-from . import out_position        # noqa: F401
-from . import out_step            # noqa: F401
-from . import out_kibom           # noqa: F401
-from . import out_ibom            # noqa: F401
-from . import out_pdf_sch_print   # noqa: F401
-from . import out_pdf_pcb_print   # noqa: F401
-# PreFlight classes
 from .pre_base import BasePreFlight
-from . import pre_drc                 # noqa: F401
-from . import pre_erc                 # noqa: F401
-from . import pre_update_xml          # noqa: F401
-from . import pre_check_zone_fills    # noqa: F401
-from . import pre_ignore_unconnected  # noqa: F401
-from . import pre_filters             # noqa: F401
 # Logger
 from . import log
 
@@ -316,7 +293,7 @@ def create_example(pcb_file, out_dir, copy_options):
         # Preflights
         f.write('\npreflight:\n')
         pres = BasePreFlight.get_registered()
-        for n, o in pres.items():
+        for n, o in OrderedDict(sorted(pres.items())).items():
             if o.__doc__:
                 f.write('  #'+o.__doc__.rstrip()+'\n')
             f.write('  {}: {}\n'.format(n, o.get_example()))

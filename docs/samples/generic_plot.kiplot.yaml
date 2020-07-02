@@ -2,21 +2,21 @@ kiplot:
   version: 1
 
 preflight:
+  # [boolean=false] Zones are filled before doing any operation involving PCB layers
+  check_zone_fills: true
+  # A list of entries to filter out ERC/DRC messages. Keys: `filter`, `number` and `regex`
+  filters: 
+    - filter: 'Filter description'
+      number: 10
+      regex: 'Regular expression to match'
+  # [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing
+  ignore_unconnected: false
   # [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB
   run_drc: true
   # [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct
   run_erc: true
   # [boolean=false] Update the XML version of the BoM (Bill of Materials). To ensure our generated BoM is up to date
   update_xml: true
-  # [boolean=false] Zones are filled before doing any operation involving PCB layers
-  check_zone_fills: true
-  # [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing
-  ignore_unconnected: false
-  # A list of entries to filter out ERC/DRC messages. Keys: `filter`, `number` and `regex`
-  filters: 
-    - filter: 'Filter description'
-      number: 10
-      regex: 'Regular expression to match'
 
 outputs:
   # DXF (Drawing Exchange Format):
