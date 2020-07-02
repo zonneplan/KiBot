@@ -1,7 +1,6 @@
 import os
 from glob import (glob)
 from subprocess import (check_output, STDOUT, CalledProcessError)
-from .error import KiPlotConfigurationError
 from .misc import (CMD_KIBOM, URL_KIBOM, BOM_ERROR)
 from .kiplot import (check_script)
 from .gs import (GS)
@@ -22,18 +21,8 @@ class KiBoM(BaseOutput):  # noqa: F821
         self._sch_related = True
         # Options
         with document:
-            self._format = 'HTML'
-            """ can be `HTML` or `CSV` """  # pragma: no cover
-
-    @property
-    def format(self):
-        return self._format
-
-    @format.setter
-    def format(self, val):
-        if val not in ['HTML', 'CSV']:
-            raise KiPlotConfigurationError("`format` must be either `HTML` or `CSV`")
-        self._format = val
+            self.format = 'HTML'
+            """ [HTML,CSV] format for the BoM """  # pragma: no cover
 
     def run(self, output_dir, board):
         check_script(CMD_KIBOM, URL_KIBOM)

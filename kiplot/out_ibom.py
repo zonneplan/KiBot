@@ -3,7 +3,6 @@ from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR)
 from .gs import (GS)
 from .kiplot import (check_script)
-from .error import KiPlotConfigurationError
 from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -37,10 +36,10 @@ class IBoM(BaseOutput):  # noqa: F821
             """ Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5 """
             self.checkboxes = 'Sourced,Placed'
             """ Comma separated list of checkbox columns """
-            self._bom_view = 'left-right'
-            """ Default BOM view {bom-only,left-right,top-bottom} """
-            self._layer_view = 'FB'
-            """ Default layer view {F,FB,B} """
+            self.bom_view = 'left-right'
+            """ [bom-only,left-right,top-bottom] Default BOM view """
+            self.layer_view = 'FB'
+            """ [F,FB,B] Default layer view """
             self.name_format = 'ibom'
             """ Output file name format supports substitutions:
                 %f : original pcb file name without extension.
@@ -77,28 +76,6 @@ class IBoM(BaseOutput):  # noqa: F821
             self.dnp_field = ''
             """ Name of the extra field that indicates do not populate status. Components with this field not empty will be
                 blacklisted """  # pragma: no cover
-
-    @property
-    def bom_view(self):
-        return self._bom_view
-
-    @bom_view.setter
-    def bom_view(self, val):
-        valid = ['bom-only', 'left-right', 'top-bottom']
-        if val not in valid:
-            raise KiPlotConfigurationError("`bom_view` must be any of "+str(valid))
-        self._bom_view = val
-
-    @property
-    def layer_view(self):
-        return self._layer_view
-
-    @layer_view.setter
-    def layer_view(self, val):
-        valid = ['F', 'FB', 'B']
-        if val not in valid:
-            raise KiPlotConfigurationError("`layer_view` must be any of "+str(valid))
-        self._layer_view = val
 
     def run(self, output_dir, board):
         check_script(CMD_IBOM, URL_IBOM)

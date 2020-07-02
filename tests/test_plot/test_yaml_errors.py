@@ -37,6 +37,7 @@ Tests various errors in the config file
 - YAML syntax
 - Unknown section
 - HPGL wrong pen_number
+- KiBoM wrong format
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -327,4 +328,11 @@ def test_error_hpgl_pen_num():
     ctx = context.TestContext('HPGLPenNum', PRJ, 'error_hpgl_pen_num', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Option .?pen_number.? outside its range")
+    ctx.clean_up()
+
+
+def test_error_bom_wrong_format():
+    ctx = context.TestContext('BoMWrongFormat', PRJ, 'error_bom_wrong_format', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Option .?format.? must be any of")
     ctx.clean_up()

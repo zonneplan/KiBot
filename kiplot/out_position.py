@@ -2,7 +2,6 @@ import os
 import operator
 from datetime import datetime
 from pcbnew import (IU_PER_MM, IU_PER_MILS)
-from .error import KiPlotConfigurationError
 from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
@@ -15,34 +14,14 @@ class Position(BaseOutput):  # noqa: F821
         super(Position, self).__init__(name, type, description)
         # Options
         with document:
-            self._format = 'ASCII'
-            """ can be ASCII or CSV """
+            self.format = 'ASCII'
+            """ [ASCII,CSV] format for the position file """
             self.separate_files_for_front_and_back = True
             """ generate two separated files, one for the top and another for the bottom """
             self.only_smd = True
             """ only include the surface mount components """
-            self._units = 'millimeters'
-            """ can be millimeters or inches """  # pragma: no cover
-
-    @property
-    def format(self):
-        return self._format
-
-    @format.setter
-    def format(self, val):
-        if val not in ['ASCII', 'CSV']:
-            raise KiPlotConfigurationError("`format` must be either `ASCII` or `CSV`")
-        self._format = val
-
-    @property
-    def units(self):
-        return self._units
-
-    @units.setter
-    def units(self, val):
-        if val not in ['millimeters', 'inches']:
-            raise KiPlotConfigurationError("`units` must be either `millimeters` or `inches`")
-        self._units = val
+            self.units = 'millimeters'
+            """ [millimeters,inches] units used for the positions """  # pragma: no cover
 
     def _do_position_plot_ascii(self, board, output_dir, columns, modulesStr, maxSizes):
         name = os.path.splitext(os.path.basename(board.GetFileName()))[0]

@@ -363,7 +363,7 @@ outputs:
       blacklist_empty_val: false
       # [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5
       board_rotation: 0
-      # [string='left-right'] Default BOM view {bom-only,left-right,top-bottom}
+      # [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view
       bom_view: 'left-right'
       # [string='Sourced,Placed'] Comma separated list of checkbox columns
       checkboxes: 'Sourced,Placed'
@@ -384,7 +384,7 @@ outputs:
       include_nets: false
       # [boolean=false] Include track/zone information in output. F.Cu and B.Cu layers only
       include_tracks: false
-      # [string='FB'] Default layer view {F,FB,B}
+      # [string='FB'] [F,FB,B] Default layer view
       layer_view: 'FB'
       # [string='ibom'] Output file name format supports substitutions:
       # %f : original pcb file name without extension.
@@ -422,7 +422,7 @@ outputs:
     type: 'kibom'
     dir: 'Example/kibom_dir'
     options:
-      # [string='HTML'] can be `HTML` or `CSV`
+      # [string='HTML'] [HTML,CSV] format for the BoM
       format: 'HTML'
 
   # PDF (Portable Document Format):
@@ -607,13 +607,13 @@ outputs:
     type: 'position'
     dir: 'Example/position_dir'
     options:
-      # [string='ASCII'] can be ASCII or CSV
+      # [string='ASCII'] [ASCII,CSV] format for the position file
       format: 'ASCII'
       # [boolean=true] only include the surface mount components
       only_smd: true
       # [boolean=true] generate two separated files, one for the top and another for the bottom
       separate_files_for_front_and_back: true
-      # [string='millimeters'] can be millimeters or inches
+      # [string='millimeters'] [millimeters,inches] units used for the positions
       units: 'millimeters'
 
   # PS (Postscript):

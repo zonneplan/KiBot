@@ -289,7 +289,7 @@ Most options are the same you'll find in the KiCad dialogs.
     - `blacklist`: [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
     - `blacklist_empty_val`: [boolean=false] Blacklist components with empty value.
     - `board_rotation`: [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
-    - `bom_view`: [string='left-right'] Default BOM view {bom-only,left-right,top-bottom}.
+    - `bom_view`: [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view.
     - `checkboxes`: [string='Sourced,Placed'] Comma separated list of checkbox columns.
     - `dark_mode`: [boolean=false] Default to dark mode.
     - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status. Components with this field not empty will be
@@ -300,7 +300,7 @@ Most options are the same you'll find in the KiCad dialogs.
     - `highlight_pin1`: [boolean=false] Highlight pin1 by default.
     - `include_nets`: [boolean=false] Include netlist information in output..
     - `include_tracks`: [boolean=false] Include track/zone information in output. F.Cu and B.Cu layers only.
-    - `layer_view`: [string='FB'] Default layer view {F,FB,B}.
+    - `layer_view`: [string='FB'] [F,FB,B] Default layer view.
     - `name_format`: [string='ibom'] Output file name format supports substitutions:
                 %f : original pcb file name without extension.
                 %p : pcb/project title from pcb metadata.
@@ -325,7 +325,7 @@ Most options are the same you'll find in the KiCad dialogs.
                  For more information: https://github.com/INTI-CMNB/KiBoM
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   * Options:
-    - `format`: [string='HTML'] can be `HTML` or `CSV`.
+    - `format`: [string='HTML'] [HTML,CSV] format for the BoM.
 
 * PDF (Portable Document Format)
   * Type: `pdf`
@@ -366,10 +366,10 @@ Most options are the same you'll find in the KiCad dialogs.
   * Description: Generates the file with position information for the PCB components, used by the pick and place machine.
                  This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew.
   * Options:
-    - `format`: [string='ASCII'] can be ASCII or CSV.
+    - `format`: [string='ASCII'] [ASCII,CSV] format for the position file.
     - `only_smd`: [boolean=true] only include the surface mount components.
     - `separate_files_for_front_and_back`: [boolean=true] generate two separated files, one for the top and another for the bottom.
-    - `units`: [string='millimeters'] can be millimeters or inches.
+    - `units`: [string='millimeters'] [millimeters,inches] units used for the positions.
 
 * PS (Postscript)
   * Type: `ps`

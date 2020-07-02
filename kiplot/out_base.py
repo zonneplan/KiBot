@@ -23,6 +23,7 @@ class BaseOutput(object):
         """ Map the options to class attributes """
         attrs = BaseOutput.get_attrs_for(self)
         num_range_re = compile(r"\[number=.*\] \[(-?\d+),(-?\d+)\]")
+        str_values_re = compile(r"\[string=.*\] \[([^\]]+)\]")
         for k, v in self._options.items():
             # Map known attributes and avoid mapping private ones
             if (k[0] == '_') or (k not in attrs):
@@ -42,7 +43,6 @@ class BaseOutput(object):
                 # If the docstring specifies a range in the form [from-to] enforce it
                 m = num_range_re.match(cur_doc)
                 if m:
-                    logger.debug('Verificando')
                     min = float(m.group(1))
                     max = float(m.group(2))
                     if v < min or v > max:
@@ -50,6 +50,12 @@ class BaseOutput(object):
             elif isinstance(cur_val, str):
                 if not isinstance(v, str):
                     raise KiPlotConfigurationError("Option `{}` must be a string".format(k))
+                # If the docstring specifies the allowed values in the form [v1,v2...] enforce it
+                m = str_values_re.match(cur_doc)
+                if m:
+                    vals = m.group(1).split(',')
+                    if v not in vals:
+                        raise KiPlotConfigurationError("Option `{}` must be any of {}".format(k, vals))
             elif isinstance(v, list):
                 raise KiPlotConfigurationError("list not yet supported for `{}`".format(k))
             # Seems to be ok, map it
