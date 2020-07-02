@@ -126,6 +126,16 @@ In this section you put all the things that you want to generate.  This section 
 - `options` contains one or more options to configure this output.
 - `layers` a list of layers used for this output. Not all outputs needs this subsection.
 
+**Important note about the layers**: In the original [kiplot](https://github.com/johnbeard/kiplot)
+(from [John Beard](https://github.com/johnbeard)) the name of the inner layers was *Inner.N* where
+*N* is the number of the layer, i.e. *Inner.1* is the first inner layer.
+This format is supported for compatibility.
+Note that this generated a lot of confusion because the default KiCad name for the first inner layer
+is *In1.Cu*.
+People filled issues and submitted pull-requests to fix it, thinking that inner layers weren't supported.
+Currently KiCad allows renaming these layers, so this version of kiplot supports the name used in
+KiCad. Just use the same name you see in the user interface.
+
 The available values for *type* are:
 - Plot formats:
     - `gerber` the gerbers for fabrication.
