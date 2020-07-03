@@ -422,8 +422,19 @@ outputs:
     type: 'kibom'
     dir: 'Example/kibom_dir'
     options:
+      # [string='bom.ini'] BoM configuration file, relative to PCB
+      conf: 'bom.ini'
       # [string='HTML'] [HTML,CSV] format for the BoM
       format: 'HTML'
+      # [number=1] Number of boards to build (components multiplier)
+      number: 1
+      # [string=','] CSV Separator
+      separator: ','
+      # [string=''] Board variant(s), used to determine which components
+      # are output to the BoM. To specify multiple variants,
+      # with a BOM file exported for each variant, separate
+      # variants with the ';' (semicolon) character
+      variant: ''
 
   # PDF (Portable Document Format):
   # Note that this output isn't the best for documating your project.

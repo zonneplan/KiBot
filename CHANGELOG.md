@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - pen_number
   - pen_speed
 - Added metric_units to DXF options
+- Added KiBoM options
+  - number
+  - variant
+  - conf
+  - separator
 - Added the following InteractiveHtmlBom options:
   - dark_mode
   - hide_pads

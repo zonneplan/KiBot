@@ -335,7 +335,14 @@ Most options are the same you'll find in the KiCad dialogs.
                  For more information: https://github.com/INTI-CMNB/KiBoM
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   * Options:
+    - `conf`: [string='bom.ini'] BoM configuration file, relative to PCB.
     - `format`: [string='HTML'] [HTML,CSV] format for the BoM.
+    - `number`: [number=1] Number of boards to build (components multiplier).
+    - `separator`: [string=','] CSV Separator.
+    - `variant`: [string=''] Board variant(s), used to determine which components
+                are output to the BoM. To specify multiple variants,
+                with a BOM file exported for each variant, separate
+                variants with the ';' (semicolon) character.
 
 * PDF (Portable Document Format)
   * Type: `pdf`
