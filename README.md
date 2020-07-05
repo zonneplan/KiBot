@@ -228,13 +228,17 @@ Most options are the same you'll find in the KiCad dialogs.
                  You can create a map file for documentation purposes.
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
   * Options:
-    - `map`:  [string=None] format for a graphical drill map. The valid formats are hpgl, ps, gerber, dxf, svg and pdf.
-                Not generated unless a format is specified.
+    - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
+             Not generated unless a format is specified.
+      * Options:
+        - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
     - `metric_units`: [boolean=true] use metric units instead of inches.
     - `minimal_header`: [boolean=false] use a minimal header in the file.
     - `mirror_y_axis`: [boolean=false] invert the Y axis.
     - `pth_and_npth_single_file`: [boolean=true] generate one file for both, plated holes and non-plated holes, instead of two separated files.
-    - `report`:  [string=None] name of the drill report. Not generated unless a name is specified.
+    - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
+      * Options:
+        - `filename`: [string=''] name of the drill report. Not generated unless a name is specified.
     - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
 
 * Gerber drill format
@@ -243,9 +247,13 @@ Most options are the same you'll find in the KiCad dialogs.
                  You can create a map file for documentation purposes.
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
   * Options:
-    - `map`:  [string=None] format for a graphical drill map. The valid formats are hpgl, ps, gerber, dxf, svg and pdf.
-                Not generated unless a format is specified.
-    - `report`:  [string=None] name of the drill report. Not generated unless a name is specified.
+    - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
+             Not generated unless a format is specified.
+      * Options:
+        - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
+    - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
+      * Options:
+        - `filename`: [string=''] name of the drill report. Not generated unless a name is specified.
     - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
 
 * Gerber format
@@ -254,7 +262,7 @@ Most options are the same you'll find in the KiCad dialogs.
                  This output is what you get from the File/Plot menu in pcbnew.
   * Options:
     - `create_gerber_job_file`: [boolean=true] creates a file with information about all the generated gerbers.
-                You can use it in gerbview to load all gerbers at once.
+                                You can use it in gerbview to load all gerbers at once.
     - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
     - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
@@ -303,7 +311,7 @@ Most options are the same you'll find in the KiCad dialogs.
     - `checkboxes`: [string='Sourced,Placed'] Comma separated list of checkbox columns.
     - `dark_mode`: [boolean=false] Default to dark mode.
     - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status. Components with this field not empty will be
-                blacklisted.
+                   blacklisted.
     - `extra_fields`: [string=''] Comma separated list of extra fields to pull from netlist or xml file.
     - `hide_pads`: [boolean=false] Hide footprint pads by default.
     - `hide_silkscreen`: [boolean=false] Hide silkscreen by default.
@@ -312,13 +320,13 @@ Most options are the same you'll find in the KiCad dialogs.
     - `include_tracks`: [boolean=false] Include track/zone information in output. F.Cu and B.Cu layers only.
     - `layer_view`: [string='FB'] [F,FB,B] Default layer view.
     - `name_format`: [string='ibom'] Output file name format supports substitutions:
-                %f : original pcb file name without extension.
-                %p : pcb/project title from pcb metadata.
-                %c : company from pcb metadata.
-                %r : revision from pcb metadata.
-                %d : pcb date from metadata if available, file modification date otherwise.
-                %D : bom generation date.
-                %T : bom generation time. Extension .html will be added automatically.
+                     %f : original pcb file name without extension.
+                     %p : pcb/project title from pcb metadata.
+                     %c : company from pcb metadata.
+                     %r : revision from pcb metadata.
+                     %d : pcb date from metadata if available, file modification date otherwise.
+                     %D : bom generation date.
+                     %T : bom generation time. Extension .html will be added automatically.
     - `netlist_file`: [string=''] Path to netlist or xml file.
     - `no_blacklist_virtual`: [boolean=false] Do not blacklist virtual components.
     - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
@@ -340,9 +348,9 @@ Most options are the same you'll find in the KiCad dialogs.
     - `number`: [number=1] Number of boards to build (components multiplier).
     - `separator`: [string=','] CSV Separator.
     - `variant`: [string=''] Board variant(s), used to determine which components
-                are output to the BoM. To specify multiple variants,
-                with a BOM file exported for each variant, separate
-                variants with the ';' (semicolon) character.
+                 are output to the BoM. To specify multiple variants,
+                 with a BOM file exported for each variant, separate
+                 variants with the ';' (semicolon) character.
 
 * PDF (Portable Document Format)
   * Type: `pdf`
@@ -410,7 +418,7 @@ Most options are the same you'll find in the KiCad dialogs.
     - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
     - `tent_vias`: [boolean=true] cover the vias.
     - `width_adjust`: [number=0] this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
-                Only used to plot pads and tracks.
+                      Only used to plot pads and tracks.
 
 * STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
   * Type: `step`

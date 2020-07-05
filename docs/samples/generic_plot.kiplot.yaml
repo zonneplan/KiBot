@@ -120,9 +120,11 @@ outputs:
     type: 'excellon'
     dir: 'Example/excellon_dir'
     options:
-      # [string=None] format for a graphical drill map. The valid formats are hpgl, ps, gerber, dxf, svg and pdf.
+      # [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
       # Not generated unless a format is specified
-      map: None
+      map:
+        # [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map
+        type: 'pdf'
       # [boolean=true] use metric units instead of inches
       metric_units: true
       # [boolean=false] use a minimal header in the file
@@ -131,8 +133,10 @@ outputs:
       mirror_y_axis: false
       # [boolean=true] generate one file for both, plated holes and non-plated holes, instead of two separated files
       pth_and_npth_single_file: true
-      # [string=None] name of the drill report. Not generated unless a name is specified
-      report: None
+      # [dict|string] name of the drill report. Not generated unless a name is specified
+      report:
+        # [string=''] name of the drill report. Not generated unless a name is specified
+        filename: ''
       # [boolean=false] use the auxiliar axis as origin for coordinates
       use_aux_axis_as_origin: false
 
@@ -144,11 +148,15 @@ outputs:
     type: 'gerb_drill'
     dir: 'Example/gerb_drill_dir'
     options:
-      # [string=None] format for a graphical drill map. The valid formats are hpgl, ps, gerber, dxf, svg and pdf.
+      # [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
       # Not generated unless a format is specified
-      map: None
-      # [string=None] name of the drill report. Not generated unless a name is specified
-      report: None
+      map:
+        # [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map
+        type: 'pdf'
+      # [dict|string] name of the drill report. Not generated unless a name is specified
+      report:
+        # [string=''] name of the drill report. Not generated unless a name is specified
+        filename: ''
       # [boolean=false] use the auxiliar axis as origin for coordinates
       use_aux_axis_as_origin: false
 

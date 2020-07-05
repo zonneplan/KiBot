@@ -3,12 +3,15 @@ Class to read KiPlot config files
 """
 
 import os
-from sys import (exit, maxsize)
+from sys import (exit, maxsize, exc_info)
+from traceback import print_tb
 from collections import OrderedDict
 
 from .error import (KiPlotConfigurationError)
+from .gs import GS
 from .kiplot import (Layer, load_board)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_CONFIG, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE)
+from .optionable import Optionable
 from .out_base import BaseOutput
 from .pre_base import BasePreFlight
 # Logger
@@ -25,6 +28,10 @@ except ImportError:  # pragma: no cover
 
 
 def config_error(msg):
+    if GS.debug_enabled:
+        logger.error('Trace stack:')
+        (type, value, traceback) = exc_info()
+        print_tb(traceback)
     logger.error(msg)
     exit(EXIT_BAD_CONFIG)
 
@@ -225,16 +232,30 @@ def trim(docstring):
     return trimmed
 
 
-def print_output_options(name, cl):
-    obj = cl('', name, '')
-    print('  * Options:')
+def print_output_options(name, cl, indent):
+    ind_str = indent*' '
+    if issubclass(cl, BaseOutput):
+        obj = cl('', name, '')
+    else:
+        obj = cl(name, '')
+    print(ind_str+'* Options:')
     num_opts = 0
-    for k, v in BaseOutput.get_attrs_gen(obj):
+    for k, v in Optionable.get_attrs_gen(obj):
         help = getattr(obj, '_help_'+k)
-        print('    - `{}`: {}.'.format(k, help.rstrip() if help else 'Undocumented'))
+        if help is None:
+            help = 'Undocumented'
+        lines = help.split('\n')
+        preface = ind_str+'  - `{}`: '.format(k)
+        clines = len(lines)
+        print('{}{}{}'.format(preface, lines[0].strip(), '.' if clines == 1 else ''))
+        ind_help = len(preface)*' '
+        for ln in range(1, clines):
+            print('{}{}'.format(ind_help+lines[ln].strip(), '.' if ln+1 == clines else ''))
         num_opts = num_opts+1
+        if isinstance(v, type):
+            print_output_options('', v, indent+4)
     if num_opts == 0:
-        print('    - No available options')
+        print(ind_str+'  - No available options')
 
 
 def print_one_out_help(details, n, o):
@@ -247,7 +268,7 @@ def print_one_out_help(details, n, o):
         print('  * Description: '+lines[1])
         for ln in range(2, len(lines)):
             print('                 '+lines[ln])
-        print_output_options(n, o)
+        print_output_options(n, o, 2)
     else:
         print('* {} [{}]'.format(lines[0], n))
 
@@ -278,6 +299,33 @@ def print_preflights_help():
         if help is None:
             help = 'Undocumented'
         print('- {}: {}.'.format(n, help.rstrip()))
+
+
+def print_example_options(f, cls, name, indent, po):
+    ind_str = indent*' '
+    if issubclass(cls, BaseOutput):
+        obj = cls('', name, '')
+    else:
+        obj = cls(name, '')
+    if po:
+        obj.read_vals_from_po(po)
+    for k, v in Optionable.get_attrs_gen(obj):
+        help = getattr(obj, '_help_'+k)
+        if help:
+            help_lines = help.split('\n')
+            for hl in help_lines:
+                f.write(ind_str+'# '+hl.strip()+'\n')
+        val = getattr(obj, k)
+        if isinstance(val, str):
+            val = "'{}'".format(val)
+        elif isinstance(val, bool):
+            val = str(val).lower()
+        if isinstance(val, type):
+            f.write(ind_str+'{}:\n'.format(k))
+            print_example_options(f, val, '', indent+2, None)
+        else:
+            f.write(ind_str+'{}: {}\n'.format(k, val))
+    return obj
 
 
 def create_example(pcb_file, out_dir, copy_options):
@@ -326,21 +374,7 @@ def create_example(pcb_file, out_dir, copy_options):
             f.write("    type: '{}'\n".format(n))
             f.write("    dir: 'Example/{}_dir'\n".format(n))
             f.write("    options:\n")
-            obj = cls('', n, '')
-            if po:
-                obj.read_vals_from_po(po)
-            for k, v in BaseOutput.get_attrs_gen(obj):
-                help = getattr(obj, '_help_'+k)
-                if help:
-                    help_lines = help.split('\n')
-                    for hl in help_lines:
-                        f.write('      # '+hl.strip()+'\n')
-                val = getattr(obj, k)
-                if isinstance(val, str):
-                    val = "'{}'".format(val)
-                elif isinstance(val, bool):
-                    val = str(val).lower()
-                f.write('      {}: {}\n'.format(k, val))
+            obj = print_example_options(f, cls, n, 6, po)
             if '_layers' in obj.__dict__:
                 f.write('    layers:\n')
                 for layer in layers:

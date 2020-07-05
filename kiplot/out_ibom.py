@@ -3,6 +3,7 @@ from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR)
 from .gs import (GS)
 from .kiplot import (check_script)
+from .optionable import Optionable
 from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -84,7 +85,7 @@ class IBoM(BaseOutput):  # noqa: F821
         os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = ''
         cmd = [CMD_IBOM, GS.pcb_file, '--dest-dir', output_dir, '--no-browser', ]
         # Convert attributes into options
-        for k, v in BaseOutput.get_attrs_gen(self):  # noqa: F821
+        for k, v in Optionable.get_attrs_gen(self):
             if not v:
                 continue
             cmd.append(BaseOutput.attr2longopt(k))  # noqa: F821

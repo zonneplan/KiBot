@@ -88,63 +88,63 @@ def test_wrong_version_3():
 def test_drill_map_no_type_1():
     ctx = context.TestContext('ErrorDrillMapNoType1', '3Rs', 'error_drill_map_no_type', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Empty drill `map` section")
+    assert ctx.search_err("Empty option .?map.?")
     ctx.clean_up()
 
 
 def test_drill_map_no_type_2():
     ctx = context.TestContext('ErrorDrillMapNoType2', '3Rs', 'error_drill_map_no_type_2', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("drill `map` must contain a `type`")
+    assert ctx.search_err("Unknown option .?types.?")
     ctx.clean_up()
 
 
 def test_drill_map_wrong_type_1():
     ctx = context.TestContext('ErrorDrillMapWrongType1', '3Rs', 'error_drill_map_wrong_type', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Unknown drill `map` `type`: bogus")
+    assert ctx.search_err("Option .?type.? must be any of")
     ctx.clean_up()
 
 
 def test_drill_map_wrong_type_2():
     ctx = context.TestContext('ErrorDrillMapWrongType2', '3Rs', 'error_drill_map_wrong_type_2', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("drill `map` `type` must be a string")
+    assert ctx.search_err("Option .?type.? must be a string")
     ctx.clean_up()
 
 
 def test_drill_map_wrong_type_3():
     ctx = context.TestContext('ErrorDrillMapWrongType3', '3Rs', 'error_drill_map_wrong_type_3', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("drill `map` must be a string")
+    assert ctx.search_err("Option .?map.? must be any of")
     ctx.clean_up()
 
 
 def test_drill_report_no_type_1():
     ctx = context.TestContext('ErrorDrillReportNoType1', '3Rs', 'error_drill_report_no_type', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Empty drill `report` section")
+    assert ctx.search_err("Empty option .?report.?")
     ctx.clean_up()
 
 
 def test_drill_report_no_type_2():
     ctx = context.TestContext('ErrorDrillReportNoType2', '3Rs', 'error_drill_report_no_type_2', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("drill `report` must contain a `filename`")
+    assert ctx.search_err("Unknown option .?filenames.?")
     ctx.clean_up()
 
 
 def test_drill_report_wrong_type_2():
     ctx = context.TestContext('ErrorDrillReportWrongType2', '3Rs', 'error_drill_report_wrong_type_2', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("drill `report` `filename` must be a string")
+    assert ctx.search_err("Option .?filename.? must be a string")
     ctx.clean_up()
 
 
 def test_drill_report_wrong_type_3():
     ctx = context.TestContext('ErrorDrillReportWrongType3', '3Rs', 'error_drill_report_wrong_type_3', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("drill `report` must be a string")
+    assert ctx.search_err("Option .?report.? must be any of")
     ctx.clean_up()
 
 
@@ -222,7 +222,7 @@ def test_out_unknown_attr():
 def test_no_layers():
     ctx = context.TestContext('ErrorNoLayers', '3Rs', 'error_no_layers', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Missing `layers` list")
+    assert ctx.search_err("Missing .?layers.? list")
     ctx.clean_up()
 
 
@@ -236,7 +236,7 @@ def test_error_step_origin():
 def test_error_step_min_distance():
     ctx = context.TestContext('ErrorStepMinDistance', 'bom', 'error_step_min_distance', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("`min_distance` must be a number")
+    assert ctx.search_err(".?min_distance.? must be a number")
     ctx.clean_up()
 
 
