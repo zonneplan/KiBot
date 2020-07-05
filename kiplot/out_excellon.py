@@ -10,7 +10,7 @@ class Excellon(AnyDrill):
         You can create a map file for documentation purposes.
         This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew. """
     def __init__(self, name, type, description):
-        super(Excellon, self).__init__(name, type, description)
+        super().__init__(name, type, description)
         with document:
             self.metric_units = True
             """ use metric units instead of inches """

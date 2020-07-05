@@ -11,8 +11,7 @@ class SVG(AnyLayer, DrillMarks):
         Unlike bitmaps SVG drawings can be scaled without losing resolution.
         This output is what you get from the File/Plot menu in pcbnew. """
     def __init__(self, name, type, description):
-        AnyLayer.__init__(self, name, type, description)
-        DrillMarks.__init__(self)
+        super().__init__(name, type, description)
         self._plot_format = PLOT_FORMAT_SVG
         # Options
         with document:

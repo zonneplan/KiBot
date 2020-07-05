@@ -10,7 +10,7 @@ class Gerber(AnyLayer):
         This is the main fabrication format for the PCB.
         This output is what you get from the File/Plot menu in pcbnew. """
     def __init__(self, name, type, description):
-        super(Gerber, self).__init__(name, type, description)
+        super().__init__(name, type, description)
         self._plot_format = PLOT_FORMAT_GERBER
         # Options
         with document:

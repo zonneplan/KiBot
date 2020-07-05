@@ -10,7 +10,7 @@ class Gerb_Drill(AnyDrill):
         You can create a map file for documentation purposes.
         This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew. """
     def __init__(self, name, type, description):
-        super(Gerb_Drill, self).__init__(name, type, description)
+        super().__init__(name, type, description)
 
     def _configure_writer(self, board, offset):
         drill_writer = GERBER_WRITER(board)

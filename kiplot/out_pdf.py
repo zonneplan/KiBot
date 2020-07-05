@@ -2,6 +2,9 @@ from pcbnew import (PLOT_FORMAT_PDF, FromMM, ToMM)
 from kiplot.out_any_layer import AnyLayer
 from kiplot.drill_marks import DrillMarks
 from kiplot.macros import macros, document, output_class  # noqa: F401
+from . import log
+
+logger = log.get_logger(__name__)
 
 
 @output_class
@@ -11,8 +14,7 @@ class PDF(AnyLayer, DrillMarks):
         Note that this output isn't the best for documating your project.
         This output is what you get from the File/Plot menu in pcbnew. """
     def __init__(self, name, type, description):
-        AnyLayer.__init__(self, name, type, description)
-        DrillMarks.__init__(self)
+        super().__init__(name, type, description)
         self._plot_format = PLOT_FORMAT_PDF
         # Options
         with document:

@@ -17,6 +17,7 @@ class Optionable(object):
     _num_range_re = compile(r"\[number=.*\] \[(-?\d+),(-?\d+)\]")
 
     def __init__(self, name, description):
+        super().__init__()
         self._name = name
         self._description = description
         self._unkown_is_error = True

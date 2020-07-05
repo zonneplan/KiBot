@@ -16,7 +16,7 @@ class PDF_Sch_Print(BaseOutput):  # noqa: F821
         This is the main format to document your schematic.
         This output is what you get from the 'File/Print' menu in eeschema. """
     def __init__(self, name, type, description):
-        super(PDF_Sch_Print, self).__init__(name, type, description)
+        super().__init__(name, type, description)
         self._sch_related = True
         # Options
         with document:

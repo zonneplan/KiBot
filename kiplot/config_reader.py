@@ -38,7 +38,7 @@ def config_error(msg):
 
 class CfgYamlReader(object):
     def __init__(self):
-        super(CfgYamlReader, self).__init__()
+        super().__init__()
 
     def _check_version(self, v):
         if not isinstance(v, dict):

@@ -8,7 +8,7 @@ class BaseOutput(Optionable):
     _registered = {}
 
     def __init__(self, name, type, description):
-        super(BaseOutput, self).__init__(name, description)
+        super().__init__(name, description)
         self._type = type
         self._sch_related = False
         self._unkown_is_error = False
@@ -16,7 +16,7 @@ class BaseOutput(Optionable):
     def config(self, outdir, options, layers):
         self._outdir = outdir
         self._layers = layers
-        super(BaseOutput, self).config(options)
+        super().config(options)
 
     @staticmethod
     def attr2longopt(attr):

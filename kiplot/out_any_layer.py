@@ -12,7 +12,7 @@ logger = log.get_logger(__name__)
 class AnyLayer(BaseOutput):
     """ Base class for: DXF, Gerber, HPGL, PDF, PS and SVG """
     def __init__(self, name, type, description):
-        super(AnyLayer, self).__init__(name, type, description)
+        super().__init__(name, type, description)
         # We need layers, so we define it
         self._layers = None
         # Options

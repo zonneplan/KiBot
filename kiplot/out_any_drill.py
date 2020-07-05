@@ -11,7 +11,7 @@ logger = log.get_logger(__name__)
 
 class DrillMap(Optionable):
     def __init__(self, name, description):
-        super(DrillMap, self).__init__(name, description)
+        super().__init__(name, description)
         with document:
             self.type = 'pdf'
             """ [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map """
@@ -19,7 +19,7 @@ class DrillMap(Optionable):
 
 class DrillReport(Optionable):
     def __init__(self, name, description):
-        super(DrillReport, self).__init__(name, description)
+        super().__init__(name, description)
         with document:
             self.filename = ''
             """ name of the drill report. Not generated unless a name is specified """
@@ -27,7 +27,7 @@ class DrillReport(Optionable):
 
 class AnyDrill(BaseOutput):
     def __init__(self, name, type, description):
-        super(AnyDrill, self).__init__(name, type, description)
+        super().__init__(name, type, description)
         # Options
         with document:
             self.use_aux_axis_as_origin = False

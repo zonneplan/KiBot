@@ -18,7 +18,7 @@ class PDF_Pcb_Print(BaseOutput):  # noqa: F821
         This is the main format to document your PCB.
         This output is what you get from the 'File/Print' menu in pcbnew. """
     def __init__(self, name, type, description):
-        super(PDF_Pcb_Print, self).__init__(name, type, description)
+        super().__init__(name, type, description)
         # We need layers, so we define it
         self._layers = None
         # Options

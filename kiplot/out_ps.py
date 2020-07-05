@@ -11,8 +11,7 @@ class PS(AnyLayer, DrillMarks):
         Exports the PCB to a format suitable for printing.
         This output is what you get from the File/Plot menu in pcbnew. """
     def __init__(self, name, type, description):
-        AnyLayer.__init__(self, name, type, description)
-        DrillMarks.__init__(self)
+        super().__init__(name, type, description)
         self._plot_format = PLOT_FORMAT_POST
         # Options
         with document:

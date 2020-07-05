@@ -1,6 +1,9 @@
 from pcbnew import (PCB_PLOT_PARAMS)
 from .error import KiPlotConfigurationError
 from kiplot.macros import macros, document, output_class  # noqa: F401
+from . import log
+
+logger = log.get_logger(__name__)
 
 
 class DrillMarks(object):
@@ -19,6 +22,7 @@ class DrillMarks(object):
                            }
 
     def __init__(self):
+        super().__init__()
         with document:
             self._drill_marks = 'full'
             """ what to use to indicate the drill places, can be none, small or full (for real scale) """  # pragma: no cover

@@ -17,7 +17,7 @@ class KiBoM(BaseOutput):  # noqa: F821
         For more information: https://github.com/INTI-CMNB/KiBoM
         This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema. """
     def __init__(self, name, type, description):
-        super(KiBoM, self).__init__(name, type, description)
+        super().__init__(name, type, description)
         self._sch_related = True
         # Options
         with document:

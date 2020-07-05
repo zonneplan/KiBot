@@ -17,7 +17,7 @@ class STEP(BaseOutput):  # noqa: F821
         This is the most common 3D format for exchange purposes.
         This output is what you get from the 'File/Export/STEP' menu in pcbnew. """
     def __init__(self, name, type, description):
-        super(STEP, self).__init__(name, type, description)
+        super().__init__(name, type, description)
         # Options
         with document:
             self.metric_units = True

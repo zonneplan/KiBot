@@ -17,7 +17,7 @@ class IBoM(BaseOutput):  # noqa: F821
         For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
         This output is what you get from the InteractiveHtmlBom plug-in (pcbnew). """
     def __init__(self, name, type, description):
-        super(IBoM, self).__init__(name, type, description)
+        super().__init__(name, type, description)
         self._sch_related = True
         # Options
         with document:

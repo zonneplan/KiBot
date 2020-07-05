@@ -11,7 +11,7 @@ class Position(BaseOutput):  # noqa: F821
         Generates the file with position information for the PCB components, used by the pick and place machine.
         This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew. """
     def __init__(self, name, type, description):
-        super(Position, self).__init__(name, type, description)
+        super().__init__(name, type, description)
         # Options
         with document:
             self.format = 'ASCII'
