@@ -11,8 +11,5 @@ class Check_Zone_Fills(BasePreFlight):  # noqa: F821
             raise KiPlotConfigurationError('must be boolean')
         self._enabled = value
 
-    def run(self):
-        pass
-
     def apply(self):
         BasePreFlight._set_option('check_zone_fills', self._enabled)  # noqa: F821

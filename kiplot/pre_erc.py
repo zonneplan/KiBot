@@ -39,6 +39,3 @@ class Run_ERC(BasePreFlight):  # noqa: F821
             else:
                 logger.error('ERC returned %d', ret)
             exit(ERC_ERROR)
-
-    def apply(self):
-        pass

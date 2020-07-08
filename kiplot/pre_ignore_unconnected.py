@@ -15,8 +15,5 @@ class Ignore_Unconnected(BasePreFlight):  # noqa: F821
         """ Returns a YAML value for the example config """
         return 'false'
 
-    def run(self, brd_file):
-        pass
-
     def apply(self):
         BasePreFlight._set_option('ignore_unconnected', self._enabled)  # noqa: F821

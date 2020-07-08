@@ -88,8 +88,8 @@ class BasePreFlight(object):
         """ Returns a YAML value for the example config """
         return 'true'
 
-    def run(self, brd_file):  # pragma: no cover
-        logger.error("The run method for the preflight class name `{}` isn't implemented".format(self._name))
+    def run(self):
+        pass
 
-    def apply(self, brd_file):  # pragma: no cover
-        logger.error("The apply method for the preflight class  name `{}` isn't implemented".format(self._name))
+    def apply(self):
+        pass

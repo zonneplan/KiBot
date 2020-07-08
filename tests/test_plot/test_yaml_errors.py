@@ -320,9 +320,18 @@ def test_error_pre_unk():
 
 
 def test_error_wrong_type_1():
+    """ run_drc = number """
     ctx = context.TestContext('ErrorWrongType1', PRJ, 'error_pre_wrong_type_1', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("In preflight 'run_drc': must be boolean")
+    ctx.clean_up()
+
+
+def test_error_wrong_type_2():
+    """ ignore_unconnected = string """
+    ctx = context.TestContext('ErrorWrongType2', PRJ, 'error_pre_wrong_type_2', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("In preflight 'ignore_unconnected': must be boolean")
     ctx.clean_up()
 
 

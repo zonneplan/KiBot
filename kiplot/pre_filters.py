@@ -13,9 +13,6 @@ class Filters(BasePreFlight):  # noqa: F821
         """ Returns a YAML value for the example config """
         return "\n    - filter: 'Filter description'\n      number: 10\n      regex: 'Regular expression to match'"
 
-    def run(self):
-        pass
-
     def apply(self):
         # Create the filters file
         if self._value:

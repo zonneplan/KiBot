@@ -33,6 +33,3 @@ class Update_XML(BasePreFlight):  # noqa: F821
         if ret:
             logger.error('Failed to update the BoM, error %d', ret)
             exit(BOM_ERROR)
-
-    def apply(self):
-        pass

@@ -25,13 +25,13 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         cmd = [CMD_PCBNEW_RUN_DRC, 'run_drc']
         if GS.filter_file:
             cmd.extend(['-f', GS.filter_file])
+        if BasePreFlight.get_option('ignore_unconnected'):  # noqa: F821
+            cmd.append('-i')
         cmd.extend([GS.pcb_file, GS.out_dir])
         # If we are in verbose mode enable debug in the child
         if GS.debug_enabled:
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
-        if BasePreFlight.get_option('ignore_unconnected'):  # noqa: F821
-            cmd.insert(1, '-i')
         logger.info('- Running the DRC')
         logger.debug('Executing: '+str(cmd))
         ret = call(cmd)
@@ -41,6 +41,3 @@ class Run_DRC(BasePreFlight):  # noqa: F821
             else:
                 logger.error('DRC returned %d', ret)
             exit(DRC_ERROR)
-
-    def apply(self):
-        pass

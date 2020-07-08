@@ -50,6 +50,16 @@ def test_drc_filter():
     ctx.clean_up()
 
 
+def test_drc_unco():
+    """ Check we can ignore unconnected nets """
+    prj = 'warning-project'
+    ctx = context.TestContext('DRC', prj, 'drc_unco', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file('drc_result.rpt')
+    ctx.clean_up()
+
+
 def test_update_xml():
     prj = 'bom'
     ctx = context.TestContext('Update_XML', prj, 'update_xml', '')
