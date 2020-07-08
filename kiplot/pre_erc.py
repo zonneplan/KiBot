@@ -34,8 +34,10 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         logger.debug('Executing: '+str(cmd))
         ret = call(cmd)
         if ret:
+            if ret > 127:
+                ret = -(256-ret)
             if ret < 0:
                 logger.error('ERC errors: %d', -ret)
             else:
-                logger.error('ERC returned %d', ret)
+                logger.error('ERC returned %d', ret)  # pragma: no cover
             exit(ERC_ERROR)

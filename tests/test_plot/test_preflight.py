@@ -23,13 +23,22 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
-from kiplot.misc import (DRC_ERROR)
+from kiplot.misc import (DRC_ERROR, ERC_ERROR)
 
 
 def test_erc():
     prj = 'bom'
     ctx = context.TestContext('ERC', prj, 'erc', '')
     ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'.erc')
+    ctx.clean_up()
+
+
+def test_erc_fail():
+    prj = 'fail-erc'
+    ctx = context.TestContext('ERC', prj, 'erc', '')
+    ctx.run(ERC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file(prj+'.erc')
     ctx.clean_up()

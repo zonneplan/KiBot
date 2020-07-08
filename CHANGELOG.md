@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - The `sketch_plot` option is now implemented.
 - 'ignore_unconnected' preflight wasn't working.
+- The report of hwo many ERC/DRC errors we found.
 
 ## [0.4.0] - 2020-06-17
 ### Added
