@@ -335,6 +335,14 @@ def test_error_wrong_type_2():
     ctx.clean_up()
 
 
+def test_error_wrong_type_3():
+    """ run_erc = number """
+    ctx = context.TestContext('ErrorWrongType3', PRJ, 'error_pre_wrong_type_3', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("In preflight 'run_erc': must be boolean")
+    ctx.clean_up()
+
+
 def test_error_yaml():
     ctx = context.TestContext('ErrorYAML', PRJ, 'error_yaml', '')
     ctx.run(EXIT_BAD_CONFIG)
