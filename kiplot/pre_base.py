@@ -70,8 +70,8 @@ class BasePreFlight(object):
     def disable(self):
         self._enabled = False
 
-    def is_enabled(self):
-        return self._enabled
+    # def is_enabled(self):
+    #     return self._enabled
 
     def __str__(self):
         return "{}: {}".format(self._name, self._enabled)

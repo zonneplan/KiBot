@@ -351,6 +351,14 @@ def test_error_wrong_type_4():
     ctx.clean_up()
 
 
+def test_error_wrong_type_5():
+    """ check_zone_fills = number """
+    ctx = context.TestContext('ErrorWrongType5', PRJ, 'error_pre_wrong_type_5', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("In preflight 'check_zone_fills': must be boolean")
+    ctx.clean_up()
+
+
 def test_error_yaml():
     ctx = context.TestContext('ErrorYAML', PRJ, 'error_yaml', '')
     ctx.run(EXIT_BAD_CONFIG)
@@ -383,4 +391,18 @@ def test_error_bom_wrong_format():
     ctx = context.TestContext('BoMWrongFormat', PRJ, 'error_bom_wrong_format', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Option .?format.? must be any of")
+    ctx.clean_up()
+
+
+def test_error_gerber_precision():
+    ctx = context.TestContext('GerberPrecisionError', PRJ, 'error_gerber_precision', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(".?gerber_precision.? must be 4.5 or 4.6")
+    ctx.clean_up()
+
+
+def test_error_wrong_drill_marks():
+    ctx = context.TestContext('WrongDrillMarks', PRJ, 'error_wrong_drill_marks', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Unknown drill mark type: bogus")
     ctx.clean_up()

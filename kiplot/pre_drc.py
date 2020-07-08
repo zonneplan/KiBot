@@ -41,5 +41,5 @@ class Run_DRC(BasePreFlight):  # noqa: F821
             if ret < 0:
                 logger.error('DRC errors: %d', -ret)
             else:
-                logger.error('DRC returned %d', ret)  # pragma: no cover
+                logger.error('DRC returned %d', ret)
             exit(DRC_ERROR)

@@ -77,7 +77,8 @@ class AnyLayerOptions(BaseOptions):
             # Plot single layer to file
             logger.debug("Opening plot file for layer `{}` format `{}`".format(l, self._plot_format))
             if not plot_ctrl.OpenPlotfile(suffix, self._plot_format, desc):
-                raise PlotError("OpenPlotfile failed!")
+                # Shouldn't happen
+                raise PlotError("OpenPlotfile failed!")  # pragma: no cover
 
             logger.debug("Plotting layer `{}` to `{}`".format(l, plot_ctrl.GetPlotFileName()))
             plot_ctrl.PlotLayer()
