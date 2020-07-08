@@ -343,6 +343,14 @@ def test_error_wrong_type_3():
     ctx.clean_up()
 
 
+def test_error_wrong_type_4():
+    """ update_xml = number """
+    ctx = context.TestContext('ErrorWrongType4', PRJ, 'error_pre_wrong_type_4', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("In preflight 'update_xml': must be boolean")
+    ctx.clean_up()
+
+
 def test_error_yaml():
     ctx = context.TestContext('ErrorYAML', PRJ, 'error_yaml', '')
     ctx.run(EXIT_BAD_CONFIG)

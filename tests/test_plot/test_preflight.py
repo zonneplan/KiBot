@@ -23,7 +23,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
-from kiplot.misc import (DRC_ERROR, ERC_ERROR)
+from kiplot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR)
 
 
 def test_erc():
@@ -35,12 +35,21 @@ def test_erc():
     ctx.clean_up()
 
 
-def test_erc_fail():
+def test_erc_fail_1():
+    """ Using an SCH with ERC errors """
     prj = 'fail-erc'
-    ctx = context.TestContext('ERC', prj, 'erc', '')
+    ctx = context.TestContext('ERCFail1', prj, 'erc', '')
     ctx.run(ERC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file(prj+'.erc')
+    ctx.clean_up()
+
+
+def test_erc_fail_2():
+    """ Using a dummy SCH """
+    prj = '3Rs'
+    ctx = context.TestContext('ERCFail2', prj, 'erc', '')
+    ctx.run(ERC_ERROR)
     ctx.clean_up()
 
 
@@ -83,6 +92,14 @@ def test_drc_error():
     ctx.clean_up()
 
 
+def test_drc_fail():
+    """ Check we dummy PCB """
+    prj = 'bom_no_xml'
+    ctx = context.TestContext('DRCFail', prj, 'drc', '')
+    ctx.run(DRC_ERROR)
+    ctx.clean_up()
+
+
 def test_update_xml():
     prj = 'bom'
     ctx = context.TestContext('Update_XML', prj, 'update_xml', '')
@@ -99,4 +116,12 @@ def test_update_xml():
     finally:
         os.remove(xml)
         os.rename(xml+'-bak', xml)
+    ctx.clean_up()
+
+
+def test_update_xml_fail():
+    """ Using a dummy SCH """
+    prj = '3Rs'
+    ctx = context.TestContext('Update_XMLFail', prj, 'update_xml', '')
+    ctx.run(BOM_ERROR)
     ctx.clean_up()
