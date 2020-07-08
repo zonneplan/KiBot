@@ -3,17 +3,16 @@ Class to read KiPlot config files
 """
 
 import os
-from sys import (exit, maxsize, exc_info)
-from traceback import print_tb
+from sys import (exit, maxsize)
 from collections import OrderedDict
 
-from .error import (KiPlotConfigurationError)
-from .gs import GS
-from .kiplot import (Layer, load_board)
-from .misc import (NO_YAML_MODULE, EXIT_BAD_CONFIG, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE)
-from .optionable import Optionable
-from .out_base import BaseOutput
+from .error import (KiPlotConfigurationError, config_error)
+from .kiplot import (load_board)
+from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE)
+
+from .reg_out import RegOutput
 from .pre_base import BasePreFlight
+
 # Logger
 from . import log
 
@@ -25,15 +24,6 @@ except ImportError:  # pragma: no cover
     log.init(False, False)
     logger.error('No yaml module for Python, install python3-yaml')
     exit(NO_YAML_MODULE)
-
-
-def config_error(msg):
-    if GS.debug_enabled:
-        logger.error('Trace stack:')
-        (type, value, traceback) = exc_info()
-        print_tb(traceback)
-    logger.error(msg)
-    exit(EXIT_BAD_CONFIG)
 
 
 class CfgYamlReader(object):
@@ -51,76 +41,28 @@ class CfgYamlReader(object):
             config_error("Unknown KiPlot config version: "+str(version))
         return version
 
-    def _parse_layers(self, layers_to_parse):
-        # Check we have a list of layers
-        if not isinstance(layers_to_parse, list):
-            raise KiPlotConfigurationError("`layers` must be a list")
-        # Parse the elements
-        layers = []
-        for l in layers_to_parse:
-            # Extract the attributes
-            layer = None
-            description = 'no desc'
-            suffix = ''
-            for k, v in l.items():
-                if k == 'layer':
-                    layer = str(v)
-                elif k == 'description':
-                    description = str(v)
-                elif k == 'suffix':
-                    suffix = str(v)
-                else:
-                    raise KiPlotConfigurationError("Unknown `{}` attribute for `layer`".format(k))
-            # Check we got the layer name
-            if layer is None:
-                raise KiPlotConfigurationError("Missing `layer` attribute for layer entry ({})".format(l))
-            # Create an object for it
-            layers.append(Layer(layer, suffix, description))
-        return layers
-
     def _parse_output(self, o_obj):
-        # Default values
-        name = None
-        desc = None
-        otype = None
-        options = None
-        outdir = '.'
-        layers = []
-        # Parse all of them
-        for k, v in o_obj.items():
-            if k == 'name':
-                name = v
-            elif k == 'comment':
-                desc = v
-            elif k == 'type':
-                otype = v
-            elif k == 'options':
-                options = v
-            elif k == 'dir':
-                outdir = v
-            elif k == 'layers':
-                layers = v
-            else:
-                config_error("Unknown key `{}` in `{}` ({})".format(k, name, otype))
-        # Validate them
-        if not name:
+        try:
+            name = o_obj['name']
+        except KeyError:
             config_error("Output needs a name in: "+str(o_obj))
-        if not otype:
+
+        try:
+            otype = o_obj['type']
+        except KeyError:
             config_error("Output `"+name+"` needs a type")
+
         name_type = "`"+name+"` ("+otype+")"
 
         # Is a valid type?
-        if not BaseOutput.is_registered(otype):
+        if not RegOutput.is_registered(otype):
             config_error("Unknown output type: `{}`".format(otype))
         # Load it
         logger.debug("Parsing output options for "+name_type)
-        o_out = BaseOutput.get_class_for(otype)(name, otype, desc)
+        o_out = RegOutput.get_class_for(otype)()
         # Apply the options
         try:
-            # If we have layers parse them
-            if layers:
-                layers = self._parse_layers(layers)
-            o_out.config(outdir, options, layers)
+            o_out.config(o_obj)
         except KiPlotConfigurationError as e:
             config_error("In section '"+name+"' ("+otype+"): "+str(e))
 
@@ -207,8 +149,6 @@ class CfgYamlReader(object):
 
 def trim(docstring):
     """ PEP 257 recommended trim for __doc__ """
-    if not docstring:
-        return ''
     # Convert tabs to spaces (following the normal Python rules)
     # and split into a list of lines:
     lines = docstring.expandtabs().splitlines()
@@ -234,16 +174,16 @@ def trim(docstring):
 
 def print_output_options(name, cl, indent):
     ind_str = indent*' '
-    if issubclass(cl, BaseOutput):
-        obj = cl('', name, '')
-    else:
-        obj = cl(name, '')
-    print(ind_str+'* Options:')
+    obj = cl()
+    print(ind_str+'* Valid keys:')
     num_opts = 0
-    for k, v in Optionable.get_attrs_gen(obj):
+    for k, v in obj.get_attrs_gen():
+        if k == 'type':
+            # Type is fixed for an output
+            continue
         help = getattr(obj, '_help_'+k)
         if help is None:
-            help = 'Undocumented'
+            help = 'Undocumented'  # pragma: no cover
         lines = help.split('\n')
         preface = ind_str+'  - `{}`: '.format(k)
         clines = len(lines)
@@ -261,7 +201,7 @@ def print_output_options(name, cl, indent):
 def print_one_out_help(details, n, o):
     lines = trim(o.__doc__)
     if len(lines) == 0:
-        lines = ['Undocumented', 'No description']
+        lines = ['Undocumented', 'No description']  # pragma: no cover
     if details:
         print('* '+lines[0])
         print('  * Type: `{}`'.format(n))
@@ -274,7 +214,7 @@ def print_one_out_help(details, n, o):
 
 
 def print_outputs_help(details=False):
-    outs = BaseOutput.get_registered()
+    outs = RegOutput.get_registered()
     logger.debug('{} supported outputs'.format(len(outs)))
     print('Supported outputs:')
     for n, o in OrderedDict(sorted(outs.items())).items():
@@ -284,10 +224,10 @@ def print_outputs_help(details=False):
 
 
 def print_output_help(name):
-    if not BaseOutput.is_registered(name):
+    if not RegOutput.is_registered(name):
         logger.error('Unknown output type `{}`, try --help-list-outputs'.format(name))
         exit(EXIT_BAD_ARGS)
-    print_one_out_help(True, name, BaseOutput.get_class_for(name))
+    print_one_out_help(True, name, RegOutput.get_class_for(name))
 
 
 def print_preflights_help():
@@ -297,19 +237,16 @@ def print_preflights_help():
     for n, o in pres.items():
         help = o.__doc__
         if help is None:
-            help = 'Undocumented'
+            help = 'Undocumented'  # pragma: no cover
         print('- {}: {}.'.format(n, help.rstrip()))
 
 
 def print_example_options(f, cls, name, indent, po):
     ind_str = indent*' '
-    if issubclass(cls, BaseOutput):
-        obj = cls('', name, '')
-    else:
-        obj = cls(name, '')
+    obj = cls()
     if po:
         obj.read_vals_from_po(po)
-    for k, v in Optionable.get_attrs_gen(obj):
+    for k, v in obj.get_attrs_gen():
         help = getattr(obj, '_help_'+k)
         if help:
             help_lines = help.split('\n')
@@ -328,7 +265,7 @@ def print_example_options(f, cls, name, indent, po):
     return obj
 
 
-def create_example(pcb_file, out_dir, copy_options):
+def create_example(pcb_file, out_dir, copy_options, copy_expand):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     fname = os.path.join(out_dir, EXAMPLE_CFG)
@@ -346,26 +283,22 @@ def create_example(pcb_file, out_dir, copy_options):
                 f.write('  #'+o.__doc__.rstrip()+'\n')
             f.write('  {}: {}\n'.format(n, o.get_example()))
         # Outputs
-        outs = BaseOutput.get_registered()
+        outs = RegOutput.get_registered()
         f.write('\noutputs:\n')
         # List of layers
         po = None
+        layers = 'all'
         if pcb_file:
             # We have a PCB to take as reference
             board = load_board(pcb_file)
-            if copy_options:
+            if copy_options or copy_expand:
                 # Layers and plot options from the PCB
-                layers = Layer.get_plot_layers()
+                layers = 'selected'
                 po = board.GetPlotOptions()
-            else:
-                layers = Layer.get_pcb_layers()
-        else:
-            # Use the default list of layers
-            layers = Layer.get_default_layers()
         for n, cls in OrderedDict(sorted(outs.items())).items():
             lines = trim(cls.__doc__)
             if len(lines) == 0:
-                lines = ['Undocumented', 'No description']
+                lines = ['Undocumented', 'No description']  # pragma: no cover
             f.write('  # '+lines[0].rstrip()+':\n')
             for ln in range(2, len(lines)):
                 f.write('  # '+lines[ln].rstrip()+'\n')
@@ -374,12 +307,17 @@ def create_example(pcb_file, out_dir, copy_options):
             f.write("    type: '{}'\n".format(n))
             f.write("    dir: 'Example/{}_dir'\n".format(n))
             f.write("    options:\n")
-            obj = print_example_options(f, cls, n, 6, po)
-            if '_layers' in obj.__dict__:
-                f.write('    layers:\n')
-                for layer in layers:
-                    f.write("      - layer: '{}'\n".format(layer.name))
-                    f.write("        suffix: '{}'\n".format(layer.suffix))
-                    if layer.desc:
-                        f.write("        description: '{}'\n".format(layer.desc))
+            obj = cls()
+            print_example_options(f, obj.options, n, 6, po)
+            if 'layers' in obj.__dict__:
+                if copy_expand:
+                    f.write('    layers:\n')
+                    layers = obj.layers.solve(layers)
+                    for layer in layers:
+                        f.write("      - layer: '{}'\n".format(layer.layer))
+                        f.write("        suffix: '{}'\n".format(layer.suffix))
+                        if layer.description:
+                            f.write("        description: '{}'\n".format(layer.description))
+                else:
+                    f.write('    layers: {}\n'.format(layers))
             f.write('\n')

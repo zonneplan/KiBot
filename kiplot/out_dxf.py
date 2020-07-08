@@ -4,17 +4,9 @@ from kiplot.drill_marks import DrillMarks
 from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
-@output_class
-class DXF(AnyLayer, DrillMarks):
-    """
-    DXF (Drawing Exchange Format)
-    Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
-    This output is what you get from the File/Plot menu in pcbnew. """
-    def __init__(self, name, type, description):
-        AnyLayer.__init__(self, name, type, description)
-        DrillMarks.__init__(self)
-        self._plot_format = PLOT_FORMAT_DXF
-        # Options
+class DXFOptions(DrillMarks):
+    def __init__(self):
+        super().__init__()
         with document:
             self.use_aux_axis_as_origin = False
             """ use the auxiliar axis as origin for coordinates """
@@ -24,14 +16,10 @@ class DXF(AnyLayer, DrillMarks):
             """ use mm instead of inches """
             self.sketch_plot = False
             """ don't fill objects, just draw the outline """  # pragma: no cover
-
-    def config(self, outdir, options, layers):
-        AnyLayer.config(self, outdir, options, layers)
-        DrillMarks.config(self)
+        self._plot_format = PLOT_FORMAT_DXF
 
     def _configure_plot_ctrl(self, po, output_dir):
-        AnyLayer._configure_plot_ctrl(self, po, output_dir)
-        DrillMarks._configure_plot_ctrl(self, po, output_dir)
+        super()._configure_plot_ctrl(po, output_dir)
         po.SetDXFPlotPolygonMode(self.polygon_mode)
         # DXF_PLOTTER::DXF_UNITS isn't available
         # According to https://docs.kicad-pcb.org/doxygen/classDXF__PLOTTER.html 1 is mm
@@ -40,9 +28,21 @@ class DXF(AnyLayer, DrillMarks):
         po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
 
     def read_vals_from_po(self, po):
-        AnyLayer.read_vals_from_po(self, po)
-        DrillMarks.read_vals_from_po(self, po)
+        super().read_vals_from_po(po)
         self.polygon_mode = po.GetDXFPlotPolygonMode()
         self.metric_units = po.GetDXFPlotUnits() == 1
         self.sketch_plot = po.GetPlotMode() == SKETCH
         self.use_aux_axis_as_origin = po.GetUseAuxOrigin()
+
+
+@output_class
+class DXF(AnyLayer):
+    """
+    DXF (Drawing Exchange Format)
+    Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
+    This output is what you get from the File/Plot menu in pcbnew. """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.options = DXFOptions
+            """ [dict] Options for the `dxf` output """  # pragma: no cover

@@ -24,6 +24,7 @@ test: lint
 
 test_local: lint
 	rm -rf output
+	rm -f example.kiplot.yaml
 	$(PY_COV) erase
 	pytest-3 --test_dir output
 	$(PY_COV) report

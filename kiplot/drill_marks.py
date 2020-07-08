@@ -1,12 +1,13 @@
 from pcbnew import (PCB_PLOT_PARAMS)
 from .error import KiPlotConfigurationError
-from kiplot.macros import macros, document, output_class  # noqa: F401
+from .out_any_layer import AnyLayerOptions
+from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-class DrillMarks(object):
+class DrillMarks(AnyLayerOptions):
     """ This class provides the drill_marks attribute.
         Used by DXF, HPGL, PDF, PS and SVG formats. """
     # Mappings to KiCad values
@@ -37,12 +38,15 @@ class DrillMarks(object):
             raise KiPlotConfigurationError("Unknown drill mark type: {}".format(val))
         self._drill_marks = val
 
-    def config(self):
+    def config(self, tree):
+        super().config(tree)
         self._drill_marks = DrillMarks._drill_marks_map[self._drill_marks]
 
     def _configure_plot_ctrl(self, po, output_dir):
+        super()._configure_plot_ctrl(po, output_dir)
         # How we draw drill marks
         po.SetDrillMarksType(self._drill_marks)
 
     def read_vals_from_po(self, po):
+        super().read_vals_from_po(po)
         self._drill_marks = DrillMarks._drill_marks_rev_map[po.GetDrillMarksType()]

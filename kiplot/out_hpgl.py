@@ -5,15 +5,9 @@ from kiplot.drill_marks import DrillMarks
 from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
-@output_class
-class HPGL(AnyLayer, DrillMarks):
-    """ HPGL (Hewlett & Packard Graphics Language)
-        Exports the PCB for plotters and laser printers.
-        This output is what you get from the File/Plot menu in pcbnew. """
-    def __init__(self, name, type, description):
-        super().__init__(name, type, description)
-        self._plot_format = PLOT_FORMAT_HPGL
-        # Options
+class HPGLOptions(DrillMarks):
+    def __init__(self):
+        super().__init__()
         with document:
             self.mirror_plot = False
             """ plot mirrored """
@@ -27,14 +21,10 @@ class HPGL(AnyLayer, DrillMarks):
             """ [1,99] pen speed """
             self.pen_width = 15
             """ [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files """  # pragma: no cover
-
-    def config(self, outdir, options, layers):
-        AnyLayer.config(self, outdir, options, layers)
-        DrillMarks.config(self)
+        self._plot_format = PLOT_FORMAT_HPGL
 
     def _configure_plot_ctrl(self, po, output_dir):
-        AnyLayer._configure_plot_ctrl(self, po, output_dir)
-        DrillMarks._configure_plot_ctrl(self, po, output_dir)
+        super()._configure_plot_ctrl(po, output_dir)
         po.SetHPGLPenDiameter(self.pen_width)
         po.SetHPGLPenNum(self.pen_number)
         po.SetHPGLPenSpeed(self.pen_speed)
@@ -49,8 +39,7 @@ class HPGL(AnyLayer, DrillMarks):
             po.SetScale(self.scaling)
 
     def read_vals_from_po(self, po):
-        AnyLayer.read_vals_from_po(self, po)
-        DrillMarks.read_vals_from_po(self, po)
+        super().read_vals_from_po(po)
         self.pen_width = po.GetHPGLPenDiameter()
         self.pen_number = po.GetHPGLPenNum()
         self.pen_speed = po.GetHPGLPenSpeed()
@@ -61,3 +50,15 @@ class HPGL(AnyLayer, DrillMarks):
             self.scaling = AUTO_SCALE
         else:
             self.scaling = po.GetScale()
+
+
+@output_class
+class HPGL(AnyLayer):
+    """ HPGL (Hewlett & Packard Graphics Language)
+        Exports the PCB for plotters and laser printers.
+        This output is what you get from the File/Plot menu in pcbnew. """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.options = HPGLOptions
+            """ [dict] Options for the `hpgl` output """  # pragma: no cover

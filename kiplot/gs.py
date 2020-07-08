@@ -14,6 +14,7 @@ class GS(object):
     sch_file = None
     out_dir = None
     filter_file = None
+    board = None
     debug_enabled = False
 
     @staticmethod

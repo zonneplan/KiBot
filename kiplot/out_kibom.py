@@ -4,22 +4,16 @@ from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import (CMD_KIBOM, URL_KIBOM, BOM_ERROR)
 from .kiplot import (check_script)
 from .gs import (GS)
+from .optionable import BaseOptions
 from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-@output_class
-class KiBoM(BaseOutput):  # noqa: F821
-    """ KiBoM (KiCad Bill of Materials)
-        Used to generate the BoM in HTML or CSV format using the KiBoM plug-in.
-        For more information: https://github.com/INTI-CMNB/KiBoM
-        This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema. """
-    def __init__(self, name, type, description):
-        super().__init__(name, type, description)
-        self._sch_related = True
-        # Options
+class KiBoMOptions(BaseOptions):
+    def __init__(self):
+        super().__init__()
         with document:
             self.number = 1
             """ Number of boards to build (components multiplier) """
@@ -62,3 +56,17 @@ class KiBoM(BaseOutput):  # noqa: F821
         for f in glob(os.path.join(output_dir, prj)+'*.tmp'):
             os.remove(f)
         logger.debug('Output from command:\n'+cmd_output.decode())
+
+
+@output_class
+class KiBoM(BaseOutput):  # noqa: F821
+    """ KiBoM (KiCad Bill of Materials)
+        Used to generate the BoM in HTML or CSV format using the KiBoM plug-in.
+        For more information: https://github.com/INTI-CMNB/KiBoM
+        This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema. """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.options = KiBoMOptions
+            """ [dict] Options for the `kibom` output """  # pragma: no cover
+        self._sch_related = True

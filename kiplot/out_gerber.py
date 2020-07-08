@@ -1,18 +1,13 @@
 from pcbnew import (PLOT_FORMAT_GERBER, FromMM, ToMM)
-from .out_any_layer import (AnyLayer)
+from .out_any_layer import (AnyLayer, AnyLayerOptions)
 from .error import KiPlotConfigurationError
 from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
-@output_class
-class Gerber(AnyLayer):
-    """ Gerber format
-        This is the main fabrication format for the PCB.
-        This output is what you get from the File/Plot menu in pcbnew. """
-    def __init__(self, name, type, description):
-        super().__init__(name, type, description)
+class GerberOptions(AnyLayerOptions):
+    def __init__(self):
+        super().__init__()
         self._plot_format = PLOT_FORMAT_GERBER
-        # Options
         with document:
             self.use_aux_axis_as_origin = False
             """ use the auxiliar axis as origin for coordinates """
@@ -71,3 +66,15 @@ class Gerber(AnyLayer):
         self.use_aux_axis_as_origin = po.GetUseAuxOrigin()
         # linewidth
         self.line_width = ToMM(po.GetLineWidth())
+
+
+@output_class
+class Gerber(AnyLayer):
+    """ Gerber format
+        This is the main fabrication format for the PCB.
+        This output is what you get from the File/Plot menu in pcbnew. """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.options = GerberOptions
+            """ [dict] Options for the `gerber` output """  # pragma: no cover

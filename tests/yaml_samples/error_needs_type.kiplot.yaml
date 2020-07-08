@@ -4,8 +4,8 @@ kiplot:
 outputs:
   - name: PDF
     comment: "PDF files"
-    type: pdf
-    directory: PDF
+    types: pdf
+    dir: PDF
     options:
       exclude_edge_layer: false
       exclude_pads_from_silkscreen: false

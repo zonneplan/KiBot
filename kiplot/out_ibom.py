@@ -3,23 +3,16 @@ from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR)
 from .gs import (GS)
 from .kiplot import (check_script)
-from .optionable import Optionable
+from .optionable import BaseOptions
 from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-@output_class
-class IBoM(BaseOutput):  # noqa: F821
-    """ IBoM (Interactive HTML BoM)
-        Generates an interactive web page useful to identify the position of the components in the PCB.
-        For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
-        This output is what you get from the InteractiveHtmlBom plug-in (pcbnew). """
-    def __init__(self, name, type, description):
-        super().__init__(name, type, description)
-        self._sch_related = True
-        # Options
+class IBoMOptions(BaseOptions):
+    def __init__(self):
+        super().__init__()
         with document:
             self.dark_mode = False
             """ Default to dark mode """
@@ -85,7 +78,7 @@ class IBoM(BaseOutput):  # noqa: F821
         os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = ''
         cmd = [CMD_IBOM, GS.pcb_file, '--dest-dir', output_dir, '--no-browser', ]
         # Convert attributes into options
-        for k, v in Optionable.get_attrs_gen(self):
+        for k, v in self.get_attrs_gen():
             if not v:
                 continue
             cmd.append(BaseOutput.attr2longopt(k))  # noqa: F821
@@ -101,3 +94,17 @@ class IBoM(BaseOutput):  # noqa: F821
                 logger.debug('Output from command: '+e.output.decode())
             exit(BOM_ERROR)
         logger.debug('Output from command:\n'+cmd_output.decode()+'\n')
+
+
+@output_class
+class IBoM(BaseOutput):  # noqa: F821
+    """ IBoM (Interactive HTML BoM)
+        Generates an interactive web page useful to identify the position of the components in the PCB.
+        For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
+        This output is what you get from the InteractiveHtmlBom plug-in (pcbnew). """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.options = IBoMOptions
+            """ [dict] Options for the `ibom` output """  # pragma: no cover
+        self._sch_related = True

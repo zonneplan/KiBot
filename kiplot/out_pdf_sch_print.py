@@ -3,22 +3,16 @@ from subprocess import (call)
 from .gs import (GS)
 from .kiplot import (check_eeschema_do)
 from .misc import (CMD_EESCHEMA_DO, PDF_SCH_PRINT)
+from .optionable import BaseOptions
 from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-@output_class
-class PDF_Sch_Print(BaseOutput):  # noqa: F821
-    """ PDF Schematic Print (Portable Document Format)
-        Exports the PCB to the most common exhange format. Suitable for printing.
-        This is the main format to document your schematic.
-        This output is what you get from the 'File/Print' menu in eeschema. """
-    def __init__(self, name, type, description):
-        super().__init__(name, type, description)
-        self._sch_related = True
-        # Options
+class PDF_Sch_PrintOptions(BaseOptions):
+    def __init__(self):
+        super().__init__()
         with document:
             self.output = ''
             """ filename for the output PDF (the name of the schematic if empty) """  # pragma: no cover
@@ -39,3 +33,17 @@ class PDF_Sch_Print(BaseOutput):  # noqa: F821
             new = os.path.abspath(os.path.join(output_dir, self.output))
             logger.debug('Moving '+cur+' -> '+new)
             os.rename(cur, new)
+
+
+@output_class
+class PDF_Sch_Print(BaseOutput):  # noqa: F821
+    """ PDF Schematic Print (Portable Document Format)
+        Exports the PCB to the most common exhange format. Suitable for printing.
+        This is the main format to document your schematic.
+        This output is what you get from the 'File/Print' menu in eeschema. """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.options = PDF_Sch_PrintOptions
+            """ [dict] Options for the `pdf_sch_print` output """  # pragma: no cover
+        self._sch_related = True

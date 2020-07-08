@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   them.
 
 ### Added
+- The layers entry is much more flexible now.
+  Many changes, read the README.md
 - -e/--schematic option to specify any schematic (not just derived from the PCB
   name.
 - -x/--example option to generate a complete configuration example.

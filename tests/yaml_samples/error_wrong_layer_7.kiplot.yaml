@@ -5,7 +5,7 @@ outputs:
   - name: PDF
     comment: "PDF files"
     type: pdf
-    directory: PDF
+    dir: PDF
     options:
       exclude_edge_layer: false
       exclude_pads_from_silkscreen: false
@@ -22,7 +22,6 @@ outputs:
       negative_plot: false
       line_width: 0.01
     layers:
-      - layer: F.Cu
-        suffix: F_Cu
-      - layer: F.Bogus
-        suffix: B_Silks
+      - 1
+      - 2
+

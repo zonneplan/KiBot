@@ -3,19 +3,18 @@ from pcbnew import (GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer)
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
 from .gs import (GS)
+from .optionable import BaseOptions
+from .layer import Layer
 from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-class AnyLayer(BaseOutput):
+class AnyLayerOptions(BaseOptions):
     """ Base class for: DXF, Gerber, HPGL, PDF, PS and SVG """
-    def __init__(self, name, type, description):
-        super().__init__(name, type, description)
-        # We need layers, so we define it
-        self._layers = None
-        # Options
+    def __init__(self):
+        super().__init__()
         with document:
             self.exclude_edge_layer = True
             """ do not include the PCB edge layer """
@@ -32,12 +31,6 @@ class AnyLayer(BaseOutput):
             self.tent_vias = True
             """ cover the vias """  # pragma: no cover
 
-    def config(self, outdir, options, layers):
-        super().config(outdir, options, layers)
-        # We need layers
-        if not self._layers:
-            raise KiPlotConfigurationError("Missing `layers` list")
-
     def _configure_plot_ctrl(self, po, output_dir):
         logger.debug("Configuring plot controller for output")
         po.SetOutputDirectory(output_dir)
@@ -53,14 +46,12 @@ class AnyLayer(BaseOutput):
         # We'll come back to this on a per-layer basis
         po.SetSkipPlotNPTH_Pads(False)
 
-    def run(self, output_dir, board):
+    def run(self, output_dir, board, layers):
         # fresh plot controller
         plot_ctrl = PLOT_CONTROLLER(board)
         # set up plot options for the whole output
         po = plot_ctrl.GetPlotOptions()
         self._configure_plot_ctrl(po, output_dir)
-
-        layer_cnt = board.GetCopperLayerCount()
 
         # Gerber Job files aren't automagically created
         # We need to assist KiCad
@@ -70,11 +61,12 @@ class AnyLayer(BaseOutput):
 
         plot_ctrl.SetColorMode(True)
 
+        layers = Layer.solve(layers)
         # plot every layer in the output
-        for l in self._layers:
+        for l in layers:
             suffix = l.suffix
-            desc = l.desc
-            id = l.get_layer_id_from_name(layer_cnt)
+            desc = l.description
+            id = l.id
             # Set current layer
             plot_ctrl.SetLayer(id)
             # Skipping NPTH is controlled by whether or not this is
@@ -116,3 +108,21 @@ class AnyLayer(BaseOutput):
         self.tent_vias = not po.GetPlotViaOnMaskLayer()
         # padsonsilk
         self.exclude_pads_from_silkscreen = not po.GetPlotPadsOnSilkLayer()
+
+
+class AnyLayer(BaseOutput):
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.layers = Layer
+            """ [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                List of PCB layers to plot """  # pragma: no cover
+
+    def config(self, tree):
+        super().config(tree)
+        # We need layers
+        if isinstance(self.layers, type):
+            raise KiPlotConfigurationError("Missing `layers` list")
+
+    def run(self, output_dir, board):
+        self.options.run(output_dir, board, self.layers)

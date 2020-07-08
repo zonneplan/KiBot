@@ -1,8 +1,7 @@
 import os
 from pcbnew import (PLOT_FORMAT_HPGL, PLOT_FORMAT_POST, PLOT_FORMAT_GERBER, PLOT_FORMAT_DXF, PLOT_FORMAT_SVG,
                     PLOT_FORMAT_PDF, wxPoint)
-from .optionable import Optionable
-from .out_base import BaseOutput
+from .optionable import (Optionable, BaseOptions)
 from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
@@ -10,24 +9,26 @@ logger = log.get_logger(__name__)
 
 
 class DrillMap(Optionable):
-    def __init__(self, name, description):
-        super().__init__(name, description)
+    def __init__(self):
+        super().__init__()
         with document:
             self.type = 'pdf'
-            """ [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map """
+            """ [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map """  # pragma: no cover
+        self._unkown_is_error = True
 
 
 class DrillReport(Optionable):
-    def __init__(self, name, description):
-        super().__init__(name, description)
+    def __init__(self):
+        super().__init__()
         with document:
             self.filename = ''
-            """ name of the drill report. Not generated unless a name is specified """
+            """ name of the drill report. Not generated unless a name is specified """  # pragma: no cover
+        self._unkown_is_error = True
 
 
-class AnyDrill(BaseOutput):
-    def __init__(self, name, type, description):
-        super().__init__(name, type, description)
+class AnyDrill(BaseOptions):
+    def __init__(self):
+        super().__init__()
         # Options
         with document:
             self.use_aux_axis_as_origin = False
@@ -47,8 +48,8 @@ class AnyDrill(BaseOutput):
                          'pdf': PLOT_FORMAT_PDF
                         }
 
-    def config(self, outdir, options, layers):
-        super().config(outdir, options, layers)
+    def config(self, tree):
+        super().config(tree)
         # Solve the map for both cases
         if isinstance(self.map, str):
             self.map = self._map_map[self.map]

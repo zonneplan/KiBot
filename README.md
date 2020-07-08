@@ -194,13 +194,87 @@ outputs:
       use_gerber_net_attributes: false
 
     layers:
-      - layer: F.Cu
-        suffix: F_Cu
-      - layer: B.Cu
-        suffix: B_Cu
+      - 'F.Cu'
+      - 'B.Cu'
 ```
 
 Most options are the same you'll find in the KiCad dialogs.
+
+
+### Specifying the layers
+
+You have various ways to specify the layers. If you need to specify just one layer you can just use its name:
+
+```
+    layers: 'F.Cu'
+```
+
+If you want to specify all the available layers:
+
+```
+    layers: 'all'
+```
+
+You can also select the layers you want in KiCad (using File, Plot dialog) and save your PCB.
+Then you just need to use:
+
+```
+    layers: 'selected'
+```
+
+You can also use any of the following grup of layers:
+
+- **copper** all the copper layers
+- **technical** all the technical layers (silk sreen, solder mask, paste, adhesive, etc.)
+- **user** all the user layers (draw, comments, eco, margin, edge cuts, etc.)
+
+You can also mix the above definitions using a list:
+
+```
+    layers:
+      - 'copper'
+      - 'Dwgs.User'
+```
+
+This will select all the copper layers and the user drawings.
+Note that the above mentioned options will use file name suffixes and descriptions selected automatically.
+If you want to use a particular suffix and provide better descriptions you can use the following format:
+
+```
+    layers:
+      - layer: 'F.Cu'
+        suffix: 'F_Cu'
+        description: 'Front copper'
+      - layer: 'B.Cu'
+        suffix: 'B_Cu'
+        description: 'Bottom copper'
+```
+
+You can also mix the styles:
+
+```
+    layers:
+      - 'copper'
+      - layer: 'Cmts.User'
+        suffix: 'Cmts_User'
+        description: 'User comments'
+      - 'Dwgs.User'
+```
+
+If you need to use the same list of layers for various outputs you can use YAML anchors.
+The first time you define the list of layers just assign an ancho, here is an example:
+
+```
+    layers: &copper_and_cmts
+      - copper
+      - 'Cmts.User'
+```
+
+Next time you need this list just use an alias, like this:
+
+```
+    layers: *copper_and_cmts
+```
 
 ### Supported outputs:
 
@@ -208,163 +282,235 @@ Most options are the same you'll find in the KiCad dialogs.
   * Type: `dxf`
   * Description: Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
                  This output is what you get from the File/Plot menu in pcbnew.
-  * Options:
-    - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-    - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-    - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
-    - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-    - `metric_units`: [boolean=false] use mm instead of inches.
-    - `plot_footprint_refs`: [boolean=true] include the footprint references.
-    - `plot_footprint_values`: [boolean=true] include the footprint values.
-    - `plot_sheet_reference`: [boolean=false] currently without effect.
-    - `polygon_mode`: [boolean=true] plot using the contour, instead of the center line.
-    - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
-    - `tent_vias`: [boolean=true] cover the vias.
-    - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                List of PCB layers to plot.
+      * Valid keys:
+        - `description`: [string=''] A description for the layer, for documentation purposes.
+        - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+        - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `dxf` output.
+      * Valid keys:
+        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
+        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
+        - `metric_units`: [boolean=false] use mm instead of inches.
+        - `plot_footprint_refs`: [boolean=true] include the footprint references.
+        - `plot_footprint_values`: [boolean=true] include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] currently without effect.
+        - `polygon_mode`: [boolean=true] plot using the contour, instead of the center line.
+        - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
+        - `tent_vias`: [boolean=true] cover the vias.
+        - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
 
 * Excellon drill format
   * Type: `excellon`
   * Description: This is the main format for the drilling machine.
                  You can create a map file for documentation purposes.
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
-  * Options:
-    - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
-             Not generated unless a format is specified.
-      * Options:
-        - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
-    - `metric_units`: [boolean=true] use metric units instead of inches.
-    - `minimal_header`: [boolean=false] use a minimal header in the file.
-    - `mirror_y_axis`: [boolean=false] invert the Y axis.
-    - `pth_and_npth_single_file`: [boolean=true] generate one file for both, plated holes and non-plated holes, instead of two separated files.
-    - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
-      * Options:
-        - `filename`: [string=''] name of the drill report. Not generated unless a name is specified.
-    - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `excellon` output.
+      * Valid keys:
+        - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
+                 Not generated unless a format is specified.
+          * Valid keys:
+            - No available options
+        - `metric_units`: [boolean=true] use metric units instead of inches.
+        - `minimal_header`: [boolean=false] use a minimal header in the file.
+        - `mirror_y_axis`: [boolean=false] invert the Y axis.
+        - `pth_and_npth_single_file`: [boolean=true] generate one file for both, plated holes and non-plated holes, instead of two separated files.
+        - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
+          * Valid keys:
+            - `filename`: [string=''] name of the drill report. Not generated unless a name is specified.
+        - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
 
 * Gerber drill format
   * Type: `gerb_drill`
   * Description: This is the information for the drilling machine in gerber format.
                  You can create a map file for documentation purposes.
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
-  * Options:
-    - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
-             Not generated unless a format is specified.
-      * Options:
-        - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
-    - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
-      * Options:
-        - `filename`: [string=''] name of the drill report. Not generated unless a name is specified.
-    - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `gerb_drill` output.
+      * Valid keys:
+        - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
+                 Not generated unless a format is specified.
+          * Valid keys:
+            - No available options
+        - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
+          * Valid keys:
+            - `filename`: [string=''] name of the drill report. Not generated unless a name is specified.
+        - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
 
 * Gerber format
   * Type: `gerber`
   * Description: This is the main fabrication format for the PCB.
                  This output is what you get from the File/Plot menu in pcbnew.
-  * Options:
-    - `create_gerber_job_file`: [boolean=true] creates a file with information about all the generated gerbers.
-                                You can use it in gerbview to load all gerbers at once.
-    - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-    - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
-    - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-    - `gerber_precision`: [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6.
-    - `line_width`: [number=0.1] [0.02,2] line_width for objects without width [mm].
-    - `plot_footprint_refs`: [boolean=true] include the footprint references.
-    - `plot_footprint_values`: [boolean=true] include the footprint values.
-    - `plot_sheet_reference`: [boolean=false] currently without effect.
-    - `subtract_mask_from_silk`: [boolean=false] substract the solder mask from the silk screen.
-    - `tent_vias`: [boolean=true] cover the vias.
-    - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
-    - `use_gerber_net_attributes`: [boolean=true] include netlist metadata.
-    - `use_gerber_x2_attributes`: [boolean=true] use the extended X2 format.
-    - `use_protel_extensions`: [boolean=false] use legacy Protel file extensions.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                List of PCB layers to plot.
+      * Valid keys:
+        - `description`: [string=''] A description for the layer, for documentation purposes.
+        - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+        - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `gerber` output.
+      * Valid keys:
+        - `create_gerber_job_file`: [boolean=true] creates a file with information about all the generated gerbers.
+                                    You can use it in gerbview to load all gerbers at once.
+        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
+        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
+        - `gerber_precision`: [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6.
+        - `line_width`: [number=0.1] [0.02,2] line_width for objects without width [mm].
+        - `plot_footprint_refs`: [boolean=true] include the footprint references.
+        - `plot_footprint_values`: [boolean=true] include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] currently without effect.
+        - `subtract_mask_from_silk`: [boolean=false] substract the solder mask from the silk screen.
+        - `tent_vias`: [boolean=true] cover the vias.
+        - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
+        - `use_gerber_net_attributes`: [boolean=true] include netlist metadata.
+        - `use_gerber_x2_attributes`: [boolean=true] use the extended X2 format.
+        - `use_protel_extensions`: [boolean=false] use legacy Protel file extensions.
 
 * HPGL (Hewlett & Packard Graphics Language)
   * Type: `hpgl`
   * Description: Exports the PCB for plotters and laser printers.
                  This output is what you get from the File/Plot menu in pcbnew.
-  * Options:
-    - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-    - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-    - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
-    - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-    - `mirror_plot`: [boolean=false] plot mirrored.
-    - `pen_number`: [number=1] [1,16] pen number.
-    - `pen_speed`: [number=20] [1,99] pen speed.
-    - `pen_width`: [number=15] [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
-    - `plot_footprint_refs`: [boolean=true] include the footprint references.
-    - `plot_footprint_values`: [boolean=true] include the footprint values.
-    - `plot_sheet_reference`: [boolean=false] currently without effect.
-    - `scaling`: [number=0] scale factor (0 means autoscaling).
-    - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
-    - `tent_vias`: [boolean=true] cover the vias.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                List of PCB layers to plot.
+      * Valid keys:
+        - `description`: [string=''] A description for the layer, for documentation purposes.
+        - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+        - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `hpgl` output.
+      * Valid keys:
+        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
+        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
+        - `mirror_plot`: [boolean=false] plot mirrored.
+        - `pen_number`: [number=1] [1,16] pen number.
+        - `pen_speed`: [number=20] [1,99] pen speed.
+        - `pen_width`: [number=15] [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
+        - `plot_footprint_refs`: [boolean=true] include the footprint references.
+        - `plot_footprint_values`: [boolean=true] include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] currently without effect.
+        - `scaling`: [number=0] scale factor (0 means autoscaling).
+        - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
+        - `tent_vias`: [boolean=true] cover the vias.
 
 * IBoM (Interactive HTML BoM)
   * Type: `ibom`
   * Description: Generates an interactive web page useful to identify the position of the components in the PCB.
                  For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
                  This output is what you get from the InteractiveHtmlBom plug-in (pcbnew).
-  * Options:
-    - `blacklist`: [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
-    - `blacklist_empty_val`: [boolean=false] Blacklist components with empty value.
-    - `board_rotation`: [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
-    - `bom_view`: [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view.
-    - `checkboxes`: [string='Sourced,Placed'] Comma separated list of checkbox columns.
-    - `dark_mode`: [boolean=false] Default to dark mode.
-    - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status. Components with this field not empty will be
-                   blacklisted.
-    - `extra_fields`: [string=''] Comma separated list of extra fields to pull from netlist or xml file.
-    - `hide_pads`: [boolean=false] Hide footprint pads by default.
-    - `hide_silkscreen`: [boolean=false] Hide silkscreen by default.
-    - `highlight_pin1`: [boolean=false] Highlight pin1 by default.
-    - `include_nets`: [boolean=false] Include netlist information in output..
-    - `include_tracks`: [boolean=false] Include track/zone information in output. F.Cu and B.Cu layers only.
-    - `layer_view`: [string='FB'] [F,FB,B] Default layer view.
-    - `name_format`: [string='ibom'] Output file name format supports substitutions:
-                     %f : original pcb file name without extension.
-                     %p : pcb/project title from pcb metadata.
-                     %c : company from pcb metadata.
-                     %r : revision from pcb metadata.
-                     %d : pcb date from metadata if available, file modification date otherwise.
-                     %D : bom generation date.
-                     %T : bom generation time. Extension .html will be added automatically.
-    - `netlist_file`: [string=''] Path to netlist or xml file.
-    - `no_blacklist_virtual`: [boolean=false] Do not blacklist virtual components.
-    - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
-    - `normalize_field_case`: [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
-    - `show_fabrication`: [boolean=false] Show fabrication layer by default.
-    - `sort_order`: [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once.
-    - `variant_field`: [string=''] Name of the extra field that stores board variant for component.
-    - `variants_blacklist`: [string=''] List of board variants to exclude from the BOM.
-    - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `ibom` output.
+      * Valid keys:
+        - `blacklist`: [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
+        - `blacklist_empty_val`: [boolean=false] Blacklist components with empty value.
+        - `board_rotation`: [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
+        - `bom_view`: [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view.
+        - `checkboxes`: [string='Sourced,Placed'] Comma separated list of checkbox columns.
+        - `dark_mode`: [boolean=false] Default to dark mode.
+        - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status. Components with this field not empty will be
+                       blacklisted.
+        - `extra_fields`: [string=''] Comma separated list of extra fields to pull from netlist or xml file.
+        - `hide_pads`: [boolean=false] Hide footprint pads by default.
+        - `hide_silkscreen`: [boolean=false] Hide silkscreen by default.
+        - `highlight_pin1`: [boolean=false] Highlight pin1 by default.
+        - `include_nets`: [boolean=false] Include netlist information in output..
+        - `include_tracks`: [boolean=false] Include track/zone information in output. F.Cu and B.Cu layers only.
+        - `layer_view`: [string='FB'] [F,FB,B] Default layer view.
+        - `name_format`: [string='ibom'] Output file name format supports substitutions:
+                         %f : original pcb file name without extension.
+                         %p : pcb/project title from pcb metadata.
+                         %c : company from pcb metadata.
+                         %r : revision from pcb metadata.
+                         %d : pcb date from metadata if available, file modification date otherwise.
+                         %D : bom generation date.
+                         %T : bom generation time. Extension .html will be added automatically.
+        - `netlist_file`: [string=''] Path to netlist or xml file.
+        - `no_blacklist_virtual`: [boolean=false] Do not blacklist virtual components.
+        - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
+        - `normalize_field_case`: [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
+        - `show_fabrication`: [boolean=false] Show fabrication layer by default.
+        - `sort_order`: [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once.
+        - `variant_field`: [string=''] Name of the extra field that stores board variant for component.
+        - `variants_blacklist`: [string=''] List of board variants to exclude from the BOM.
+        - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
 
 * KiBoM (KiCad Bill of Materials)
   * Type: `kibom`
   * Description: Used to generate the BoM in HTML or CSV format using the KiBoM plug-in.
                  For more information: https://github.com/INTI-CMNB/KiBoM
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
-  * Options:
-    - `conf`: [string='bom.ini'] BoM configuration file, relative to PCB.
-    - `format`: [string='HTML'] [HTML,CSV] format for the BoM.
-    - `number`: [number=1] Number of boards to build (components multiplier).
-    - `separator`: [string=','] CSV Separator.
-    - `variant`: [string=''] Board variant(s), used to determine which components
-                 are output to the BoM. To specify multiple variants,
-                 with a BOM file exported for each variant, separate
-                 variants with the ';' (semicolon) character.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `kibom` output.
+      * Valid keys:
+        - `conf`: [string='bom.ini'] BoM configuration file, relative to PCB.
+        - `format`: [string='HTML'] [HTML,CSV] format for the BoM.
+        - `number`: [number=1] Number of boards to build (components multiplier).
+        - `separator`: [string=','] CSV Separator.
+        - `variant`: [string=''] Board variant(s), used to determine which components
+                     are output to the BoM. To specify multiple variants,
+                     with a BOM file exported for each variant, separate
+                     variants with the ';' (semicolon) character.
 
 * PDF (Portable Document Format)
   * Type: `pdf`
   * Description: Exports the PCB to the most common exhange format. Suitable for printing.
                  Note that this output isn't the best for documating your project.
                  This output is what you get from the File/Plot menu in pcbnew.
-  * Options:
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
     - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
     - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
     - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-    - `line_width`: [number=0.1] [0.02,2] for objects without width [mm].
-    - `mirror_plot`: [boolean=false] plot mirrored.
-    - `negative_plot`: [boolean=false] invert black and white.
+    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                List of PCB layers to plot.
+      * Valid keys:
+        - `description`: [string=''] A description for the layer, for documentation purposes.
+        - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+        - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `pdf` output.
+      * Valid keys:
+        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
+        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
+        - `line_width`: [number=0.1] [0.02,2] for objects without width [mm].
+        - `mirror_plot`: [boolean=false] plot mirrored.
+        - `negative_plot`: [boolean=false] invert black and white.
+        - `plot_footprint_refs`: [boolean=true] include the footprint references.
+        - `plot_footprint_values`: [boolean=true] include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] currently without effect.
+        - `tent_vias`: [boolean=true] cover the vias.
     - `plot_footprint_refs`: [boolean=true] include the footprint references.
     - `plot_footprint_values`: [boolean=true] include the footprint values.
     - `plot_sheet_reference`: [boolean=false] currently without effect.
@@ -375,82 +521,130 @@ Most options are the same you'll find in the KiCad dialogs.
   * Description: Exports the PCB to the most common exhange format. Suitable for printing.
                  This is the main format to document your PCB.
                  This output is what you get from the 'File/Print' menu in pcbnew.
-  * Options:
-    - `output_name`: [string=''] filename for the output PDF (the name of the PCB if empty).
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                List of PCB layers to include in the PDF.
+      * Valid keys:
+        - `description`: [string=''] A description for the layer, for documentation purposes.
+        - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+        - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `pdf_pcb_print` output.
+      * Valid keys:
+        - `output_name`: [string=''] filename for the output PDF (the name of the PCB if empty).
 
 * PDF Schematic Print (Portable Document Format)
   * Type: `pdf_sch_print`
   * Description: Exports the PCB to the most common exhange format. Suitable for printing.
                  This is the main format to document your schematic.
                  This output is what you get from the 'File/Print' menu in eeschema.
-  * Options:
-    - `output`: [string=''] filename for the output PDF (the name of the schematic if empty).
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `pdf_sch_print` output.
+      * Valid keys:
+        - `output`: [string=''] filename for the output PDF (the name of the schematic if empty).
 
 * Pick & place
   * Type: `position`
   * Description: Generates the file with position information for the PCB components, used by the pick and place machine.
                  This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew.
-  * Options:
-    - `format`: [string='ASCII'] [ASCII,CSV] format for the position file.
-    - `only_smd`: [boolean=true] only include the surface mount components.
-    - `separate_files_for_front_and_back`: [boolean=true] generate two separated files, one for the top and another for the bottom.
-    - `units`: [string='millimeters'] [millimeters,inches] units used for the positions.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `position` output.
+      * Valid keys:
+        - `format`: [string='ASCII'] [ASCII,CSV] format for the position file.
+        - `only_smd`: [boolean=true] only include the surface mount components.
+        - `separate_files_for_front_and_back`: [boolean=true] generate two separated files, one for the top and another for the bottom.
+        - `units`: [string='millimeters'] [millimeters,inches] units used for the positions.
 
 * PS (Postscript)
   * Type: `ps`
   * Description: Exports the PCB to a format suitable for printing.
                  This output is what you get from the File/Plot menu in pcbnew.
-  * Options:
-    - `a4_output`: [boolean=true] force A4 paper size.
-    - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-    - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-    - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
-    - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-    - `line_width`: [number=0.15] [0.02,2] for objects without width [mm].
-    - `mirror_plot`: [boolean=false] plot mirrored.
-    - `negative_plot`: [boolean=false] invert black and white.
-    - `plot_footprint_refs`: [boolean=true] include the footprint references.
-    - `plot_footprint_values`: [boolean=true] include the footprint values.
-    - `plot_sheet_reference`: [boolean=false] currently without effect.
-    - `scale_adjust_x`: [number=1.0] fine grain adjust for the X scale (floating point multiplier).
-    - `scale_adjust_y`: [number=1.0] fine grain adjust for the Y scale (floating point multiplier).
-    - `scaling`: [number=1] scale factor (0 means autoscaling).
-    - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
-    - `tent_vias`: [boolean=true] cover the vias.
-    - `width_adjust`: [number=0] this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
-                      Only used to plot pads and tracks.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                List of PCB layers to plot.
+      * Valid keys:
+        - `description`: [string=''] A description for the layer, for documentation purposes.
+        - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+        - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `ps` output.
+      * Valid keys:
+        - `a4_output`: [boolean=true] force A4 paper size.
+        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
+        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
+        - `line_width`: [number=0.15] [0.02,2] for objects without width [mm].
+        - `mirror_plot`: [boolean=false] plot mirrored.
+        - `negative_plot`: [boolean=false] invert black and white.
+        - `plot_footprint_refs`: [boolean=true] include the footprint references.
+        - `plot_footprint_values`: [boolean=true] include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] currently without effect.
+        - `scale_adjust_x`: [number=1.0] fine grain adjust for the X scale (floating point multiplier).
+        - `scale_adjust_y`: [number=1.0] fine grain adjust for the Y scale (floating point multiplier).
+        - `scaling`: [number=1] scale factor (0 means autoscaling).
+        - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
+        - `tent_vias`: [boolean=true] cover the vias.
+        - `width_adjust`: [number=0] this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
+                          Only used to plot pads and tracks.
 
 * STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
   * Type: `step`
   * Description: Exports the PCB as a 3D model.
                  This is the most common 3D format for exchange purposes.
                  This output is what you get from the 'File/Export/STEP' menu in pcbnew.
-  * Options:
-    - `metric_units`: [boolean=true] use metric units instead of inches..
-    - `min_distance`: [number=-1] the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
-    - `no_virtual`: [boolean=false] used to exclude 3D models for components with 'virtual' attribute.
-    - `origin`: [string='grid'] determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
-                The drill option uses the auxiliar reference defined by the user.
-                You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
-    - `output`: [string=''] name for the generated STEP file (the name of the PCB if empty).
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `step` output.
+      * Valid keys:
+        - `metric_units`: [boolean=true] use metric units instead of inches..
+        - `min_distance`: [number=-1] the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
+        - `no_virtual`: [boolean=false] used to exclude 3D models for components with 'virtual' attribute.
+        - `origin`: [string='grid'] determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
+                    The drill option uses the auxiliar reference defined by the user.
+                    You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
+        - `output`: [string=''] name for the generated STEP file (the name of the PCB if empty).
 
 * SVG (Scalable Vector Graphics)
   * Type: `svg`
   * Description: Exports the PCB to a format suitable for 2D graphics software.
                  Unlike bitmaps SVG drawings can be scaled without losing resolution.
                  This output is what you get from the File/Plot menu in pcbnew.
-  * Options:
-    - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-    - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-    - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
-    - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-    - `line_width`: [number=0.25] [0.02,2] for objects without width [mm].
-    - `mirror_plot`: [boolean=false] plot mirrored.
-    - `negative_plot`: [boolean=false] invert black and white.
-    - `plot_footprint_refs`: [boolean=true] include the footprint references.
-    - `plot_footprint_values`: [boolean=true] include the footprint values.
-    - `plot_sheet_reference`: [boolean=false] currently without effect.
-    - `tent_vias`: [boolean=true] cover the vias.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                List of PCB layers to plot.
+      * Valid keys:
+        - `description`: [string=''] A description for the layer, for documentation purposes.
+        - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+        - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `svg` output.
+      * Valid keys:
+        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
+        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
+        - `line_width`: [number=0.25] [0.02,2] for objects without width [mm].
+        - `mirror_plot`: [boolean=false] plot mirrored.
+        - `negative_plot`: [boolean=false] invert black and white.
+        - `plot_footprint_refs`: [boolean=true] include the footprint references.
+        - `plot_footprint_values`: [boolean=true] include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] currently without effect.
+        - `tent_vias`: [boolean=true] cover the vias.
 
 
 ## Using KiPlot
@@ -544,7 +738,7 @@ Usage:
   kiplot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-i] [TARGET...]
   kiplot [-c PLOT_CONFIG] --list
-  kiplot [-b BOARD] [-d OUT_DIR] [-p] --example
+  kiplot [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kiplot [-v] --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
   kiplot --help-outputs
@@ -568,6 +762,7 @@ Options:
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
   -p, --copy-options               Copy plot options from the PCB file
+  -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
   -v, --verbose                    Show debugging information

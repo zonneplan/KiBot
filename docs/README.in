@@ -194,13 +194,87 @@ outputs:
       use_gerber_net_attributes: false
 
     layers:
-      - layer: F.Cu
-        suffix: F_Cu
-      - layer: B.Cu
-        suffix: B_Cu
+      - 'F.Cu'
+      - 'B.Cu'
 ```
 
 Most options are the same you'll find in the KiCad dialogs.
+
+
+### Specifying the layers
+
+You have various ways to specify the layers. If you need to specify just one layer you can just use its name:
+
+```
+    layers: 'F.Cu'
+```
+
+If you want to specify all the available layers:
+
+```
+    layers: 'all'
+```
+
+You can also select the layers you want in KiCad (using File, Plot dialog) and save your PCB.
+Then you just need to use:
+
+```
+    layers: 'selected'
+```
+
+You can also use any of the following grup of layers:
+
+- **copper** all the copper layers
+- **technical** all the technical layers (silk sreen, solder mask, paste, adhesive, etc.)
+- **user** all the user layers (draw, comments, eco, margin, edge cuts, etc.)
+
+You can also mix the above definitions using a list:
+
+```
+    layers:
+      - 'copper'
+      - 'Dwgs.User'
+```
+
+This will select all the copper layers and the user drawings.
+Note that the above mentioned options will use file name suffixes and descriptions selected automatically.
+If you want to use a particular suffix and provide better descriptions you can use the following format:
+
+```
+    layers:
+      - layer: 'F.Cu'
+        suffix: 'F_Cu'
+        description: 'Front copper'
+      - layer: 'B.Cu'
+        suffix: 'B_Cu'
+        description: 'Bottom copper'
+```
+
+You can also mix the styles:
+
+```
+    layers:
+      - 'copper'
+      - layer: 'Cmts.User'
+        suffix: 'Cmts_User'
+        description: 'User comments'
+      - 'Dwgs.User'
+```
+
+If you need to use the same list of layers for various outputs you can use YAML anchors.
+The first time you define the list of layers just assign an ancho, here is an example:
+
+```
+    layers: &copper_and_cmts
+      - copper
+      - 'Cmts.User'
+```
+
+Next time you need this list just use an alias, like this:
+
+```
+    layers: *copper_and_cmts
+```
 
 ### @outputs@
 

@@ -150,8 +150,8 @@ def test_drill_report_wrong_type_3():
 
 def test_wrong_layer_1():
     ctx = context.TestContext('ErrorWrongLayer1', '3Rs', 'error_wrong_layer_1', None)
-    ctx.run(PLOT_ERROR)
-    assert ctx.search_err("Unknown layer name: F.Bogus")
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Unknown layer name: .?F.Bogus.?")
     ctx.clean_up()
 
 
@@ -164,29 +164,45 @@ def test_wrong_layer_2():
 
 def test_wrong_layer_3():
     ctx = context.TestContext('ErrorWrongLayer3', '3Rs', 'error_wrong_layer_3', None)
-    ctx.run(PLOT_ERROR)
-    assert ctx.search_err("Malformed inner layer name: Inner_1,")
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Malformed inner layer name: .?Inner_1.?,")
     ctx.clean_up()
 
 
 def test_wrong_layer_4():
     ctx = context.TestContext('ErrorWrongLayer4', '3Rs', 'error_wrong_layer_4', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err(".?layers.? must be a list")
+    assert ctx.search_err(".?layers.? must be any of")
     ctx.clean_up()
 
 
 def test_wrong_layer_5():
     ctx = context.TestContext('ErrorWrongLayer5', '3Rs', 'error_wrong_layer_5', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Unknown .?bogus.? attribute ")
+    assert ctx.search_err("Unknown option .?bogus.?")
     ctx.clean_up()
 
 
 def test_wrong_layer_6():
     ctx = context.TestContext('ErrorWrongLayer6', '3Rs', 'error_wrong_layer_6', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Missing .?layer.? attribute")
+    assert ctx.search_err("Missing or empty .?layer.? attribute")
+    ctx.clean_up()
+
+
+def test_wrong_layer_7():
+    """ List of numbers """
+    ctx = context.TestContext('ErrorWrongLayer7', '3Rs', 'error_wrong_layer_7', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(".?layers.? must be any of")
+    ctx.clean_up()
+
+
+def test_wrong_layer_8():
+    """ List of strings, but number in middle """
+    ctx = context.TestContext('ErrorWrongLayer8', '3Rs', 'error_wrong_layer_8', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(".?4.? must be any of")
     ctx.clean_up()
 
 
@@ -207,7 +223,14 @@ def test_no_type():
 def test_out_unknown_attr():
     ctx = context.TestContext('ErrorUnkOutAttr', '3Rs', 'error_unk_attr', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Unknown key .?types.?")
+    assert ctx.search_err("Unknown option .?directory.?")
+    ctx.clean_up()
+
+
+def test_out_needs_type():
+    ctx = context.TestContext('ErrorNeedsType', '3Rs', 'error_needs_type', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("needs a type")
     ctx.clean_up()
 
 

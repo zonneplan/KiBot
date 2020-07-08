@@ -4,21 +4,16 @@ from subprocess import (check_output, STDOUT, CalledProcessError)
 from .error import KiPlotConfigurationError
 from .misc import (KICAD2STEP, KICAD2STEP_ERR)
 from .gs import (GS)
+from .optionable import BaseOptions
 from kiplot.macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-@output_class
-class STEP(BaseOutput):  # noqa: F821
-    """ STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
-        Exports the PCB as a 3D model.
-        This is the most common 3D format for exchange purposes.
-        This output is what you get from the 'File/Export/STEP' menu in pcbnew. """
-    def __init__(self, name, type, description):
-        super().__init__(name, type, description)
-        # Options
+class STEPOptions(BaseOptions):
+    def __init__(self):
+        super().__init__()
         with document:
             self.metric_units = True
             """ use metric units instead of inches. """
@@ -81,3 +76,16 @@ class STEP(BaseOutput):  # noqa: F821
                 logger.debug('Output from command: '+e.output.decode())
             exit(KICAD2STEP_ERR)
         logger.debug('Output from command:\n'+cmd_output.decode())
+
+
+@output_class
+class STEP(BaseOutput):  # noqa: F821
+    """ STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
+        Exports the PCB as a 3D model.
+        This is the most common 3D format for exchange purposes.
+        This output is what you get from the 'File/Export/STEP' menu in pcbnew. """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.options = STEPOptions
+            """ [dict] Options for the `step` output """  # pragma: no cover

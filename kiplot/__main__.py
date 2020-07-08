@@ -5,7 +5,7 @@ Usage:
   kiplot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-i] [TARGET...]
   kiplot [-c PLOT_CONFIG] --list
-  kiplot [-b BOARD] [-d OUT_DIR] [-p] --example
+  kiplot [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kiplot [-v] --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
   kiplot --help-outputs
@@ -29,6 +29,7 @@ Options:
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
   -p, --copy-options               Copy plot options from the PCB file
+  -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
   -v, --verbose                    Show debugging information
@@ -179,7 +180,7 @@ def main():
         if args.copy_options and not args.board_file:
             logger.error('Asked to copy options but no PCB specified.')
             sys.exit(EXIT_BAD_ARGS)
-        create_example(args.board_file, GS.out_dir, args.copy_options)
+        create_example(args.board_file, GS.out_dir, args.copy_options, args.copy_and_expand)
         sys.exit(0)
 
     # Determine the YAML file

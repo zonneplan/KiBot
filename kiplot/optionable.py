@@ -11,16 +11,14 @@ def filter(v):
 
 
 class Optionable(object):
-    """ A class to validate and hold configuration options.
+    """ A class to validate and hold configuration outputs/options.
         Is configured from a dict and the collected values are stored in its attributes. """
     _str_values_re = compile(r"\[string=.*\] \[([^\]]+)\]")
     _num_range_re = compile(r"\[number=.*\] \[(-?\d+),(-?\d+)\]")
 
-    def __init__(self, name, description):
+    def __init__(self):
         super().__init__()
-        self._name = name
-        self._description = description
-        self._unkown_is_error = True
+        self._unkown_is_error = False
 
     @staticmethod
     def _check_str(key, val, doc):
@@ -61,13 +59,13 @@ class Optionable(object):
         if isinstance(v, dict):
             return 'dict'
         if isinstance(v, list):
-            return 'list'
+            return 'list({})'.format(Optionable._typeof(v[0]))
         return 'None'
 
     def _perform_config_mapping(self):
         """ Map the options to class attributes """
-        attrs = Optionable.get_attrs_for(self)
-        for k, v in self._options.items():
+        attrs = self.get_attrs_for()
+        for k, v in self._tree.items():
             # Map known attributes and avoid mapping private ones
             if (k[0] == '_') or (k not in attrs):
                 if self._unkown_is_error:
@@ -105,24 +103,47 @@ class Optionable(object):
                         # Dicts are solved using Optionable classes
                         new_val = v
                         # Create an object for the valid class
-                        v = cur_val(k, cur_doc)
+                        v = cur_val()
                         # Delegate the validation to the object
                         v.config(new_val)
+                    elif isinstance(v, list):
+                        new_val = []
+                        for element in v:
+                            e_type = 'list('+Optionable._typeof(element)+')'
+                            if e_type not in valid:
+                                raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".
+                                                               format(element, valid, e_type))
+                            if isinstance(element, dict):
+                                nv = cur_val()
+                                nv.config(element)
+                                new_val.append(nv)
+                            else:
+                                new_val.append(element)
+                        v = new_val
             # Seems to be ok, map it
             setattr(self, k, v)
 
-    def config(self, options):
-        self._options = options
-        if options:
+    def config(self, tree):
+        self._tree = tree
+        if tree:
             self._perform_config_mapping()
 
-    @staticmethod
-    def get_attrs_for(obj):
+    def get_attrs_for(self):
         """ Returns all attributes """
-        return dict(inspect.getmembers(obj, filter))
+        return dict(inspect.getmembers(self, filter))
 
-    @staticmethod
-    def get_attrs_gen(obj):
+    def get_attrs_gen(self):
         """ Returns a (key, val) iterator on public attributes """
-        attrs = Optionable.get_attrs_for(obj)
+        attrs = self.get_attrs_for()
         return ((k, v) for k, v in attrs.items() if k[0] != '_')
+
+
+class BaseOptions(Optionable):
+    """ A class to validate and hold output options.
+        Is configured from a dict and the collected values are stored in its attributes. """
+    def __init__(self):
+        super().__init__()
+
+    def read_vals_from_po(self, po):
+        """ Set attributes from a PCB_PLOT_PARAMS (plot options) """
+        return

@@ -343,7 +343,6 @@ def test_example_1():
     ctx = context.TestContext('Example1', '3Rs', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True, no_board_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
-    os.remove(ctx.get_out_path(EXAMPLE_CFG))
     ctx.clean_up()
 
 
@@ -351,8 +350,7 @@ def test_example_2():
     ctx = context.TestContext('Example2', 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
-    ctx.search_in_file(EXAMPLE_CFG, ['GND.Cu'])
-    os.remove(ctx.get_out_path(EXAMPLE_CFG))
+    ctx.search_in_file(EXAMPLE_CFG, ['layers: all'])
     ctx.clean_up()
 
 
@@ -361,15 +359,21 @@ def test_example_3():
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.run(WONT_OVERWRITE, extra=['--example'], no_verbose=True, no_yaml_file=True)
-    os.remove(ctx.get_out_path(EXAMPLE_CFG))
     ctx.clean_up()
 
 
 def test_example_4():
     ctx = context.TestContext('Example4', 'good-project', 'pre_and_position', '')
+    ctx.run(extra=['--example', '-P'], no_verbose=True, no_yaml_file=True)
+    assert ctx.expect_out_file(EXAMPLE_CFG)
+    ctx.search_in_file(EXAMPLE_CFG, ['GND.Cu', 'pen_width: 35.0'])
+    ctx.search_not_in_file(EXAMPLE_CFG, ['F.Adhes'])
+    ctx.clean_up()
+
+
+def test_example_5():
+    ctx = context.TestContext('Example5', 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example', '-p'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
-    ctx.search_in_file(EXAMPLE_CFG, ['GND.Cu'])
-    ctx.search_not_in_file(EXAMPLE_CFG, ['F.Adhes'])
-    os.remove(ctx.get_out_path(EXAMPLE_CFG))
+    ctx.search_in_file(EXAMPLE_CFG, ['layers: selected', 'pen_width: 35.0'])
     ctx.clean_up()

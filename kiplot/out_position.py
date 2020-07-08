@@ -2,17 +2,13 @@ import os
 import operator
 from datetime import datetime
 from pcbnew import (IU_PER_MM, IU_PER_MILS)
+from .optionable import BaseOptions
 from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
-@output_class
-class Position(BaseOutput):  # noqa: F821
-    """ Pick & place
-        Generates the file with position information for the PCB components, used by the pick and place machine.
-        This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew. """
-    def __init__(self, name, type, description):
-        super().__init__(name, type, description)
-        # Options
+class PositionOptions(BaseOptions):
+    def __init__(self):
+        super().__init__()
         with document:
             self.format = 'ASCII'
             """ [ASCII,CSV] format for the position file """
@@ -153,3 +149,15 @@ class Position(BaseOutput):  # noqa: F821
             self._do_position_plot_ascii(board, output_dir, columns, modules, maxlengths)
         else:  # if self.format == 'CSV':
             self._do_position_plot_csv(board, output_dir, columns, modules)
+
+
+@output_class
+class Position(BaseOutput):  # noqa: F821
+    """ Pick & place
+        Generates the file with position information for the PCB components, used by the pick and place machine.
+        This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew. """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.options = PositionOptions
+            """ [dict] Options for the `position` output """  # pragma: no cover
