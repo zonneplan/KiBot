@@ -4,6 +4,9 @@ Tests for the preflight options
 We test:
 - ERC
 - DRC
+  - ignore_unconnected
+  - error
+  - filter
 - XML update
 
 For debug information use:
@@ -20,6 +23,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
+from kiplot.misc import (DRC_ERROR)
 
 
 def test_erc():
@@ -53,8 +57,18 @@ def test_drc_filter():
 def test_drc_unco():
     """ Check we can ignore unconnected nets """
     prj = 'warning-project'
-    ctx = context.TestContext('DRC', prj, 'drc_unco', '')
+    ctx = context.TestContext('DRCUnco', prj, 'drc_unco', '')
     ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file('drc_result.rpt')
+    ctx.clean_up()
+
+
+def test_drc_error():
+    """ Check we catch DRC errors """
+    prj = 'warning-project'
+    ctx = context.TestContext('DRCError', prj, 'drc', '')
+    ctx.run(DRC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file('drc_result.rpt')
     ctx.clean_up()
