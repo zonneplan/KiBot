@@ -19,7 +19,7 @@ if prev_dir not in sys.path:
 from utils import context
 
 PDF_DIR = 'Layers'
-PDF_FILE = 'PCB_Top.pdf'
+PDF_FILE = 'bom.pdf'
 PDF_FILE_B = 'PCB_Bot.pdf'
 
 

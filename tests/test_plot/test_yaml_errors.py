@@ -421,3 +421,11 @@ def test_error_wrong_drill_marks():
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown drill mark type: bogus")
     ctx.clean_up()
+
+
+def test_error_print_pcb_no_layer():
+    prj = 'bom'
+    ctx = context.TestContext('PrPCB', prj, 'error_print_pcb_no_layer', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Missing .?layers.? list")
+    ctx.clean_up()
