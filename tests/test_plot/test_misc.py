@@ -325,6 +325,13 @@ def test_help_output():
     ctx.clean_up()
 
 
+def test_help_output_unk():
+    ctx = context.TestContext('HelpOutputUnk', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.run(EXIT_BAD_ARGS, extra=['--help-output', 'bogus'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_err('Unknown output type')
+    ctx.clean_up()
+
+
 def test_help_outputs():
     ctx = context.TestContext('HelpOutputs', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
@@ -379,9 +386,11 @@ def test_example_4():
 def test_example_5():
     """ Copy setting from PCB """
     ctx = context.TestContext('Example5', 'good-project', 'pre_and_position', '')
-    ctx.run(extra=['--example', '-p'], no_verbose=True, no_yaml_file=True)
-    assert ctx.expect_out_file(EXAMPLE_CFG)
-    ctx.search_in_file(EXAMPLE_CFG, ['layers: selected', 'pen_width: 35.0'])
+    output_dir = os.path.join(ctx.output_dir, 'pp')
+    ctx.run(extra=['--example', '-p', '-d', output_dir], no_verbose=True, no_yaml_file=True, no_out_dir=True)
+    file = os.path.join('pp', EXAMPLE_CFG)
+    assert ctx.expect_out_file(file)
+    ctx.search_in_file(file, ['layers: selected', 'pen_width: 35.0'])
     ctx.clean_up()
 
 

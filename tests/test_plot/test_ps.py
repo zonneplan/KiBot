@@ -34,7 +34,7 @@ def test_ps():
 
 def test_ps_auto():
     prj = 'simple_2layer'
-    ctx = context.TestContext('Postscript', prj, 'ps_auto', PS_DIR)
+    ctx = context.TestContext('PostscriptAuto', prj, 'ps_auto', PS_DIR)
     ctx.run()
 
     f_cu = ctx.get_gerber_filename('F_Cu', '.ps')
