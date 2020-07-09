@@ -227,3 +227,37 @@ def test_svg_anchor():
     ctx.dont_expect_out_file(ctx.get_gerber_job_filename())
 
     ctx.clean_up()
+
+
+def test_svg_technical():
+    prj = 'good-project'
+    ctx = context.TestContext('SVGTechnical', prj, 'svg_technical', PS_DIR)
+    ctx.run()
+
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('B_Cu', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('F_Cu', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('GND_Cu', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('Power_Cu', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('Signal1_Cu', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('Signal2_Cu', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('Cmts_User', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('Dwgs_User', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('Margin', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('Eco1_User', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('Eco2_User', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_filename('Edge_Cuts', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('B_Adhes', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('B_CrtYd', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('B_Fab', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('B_Mask', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('B_Paste', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('B_SilkS', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('F_Adhes', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('F_CrtYd', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('F_Fab', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('F_Mask', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('F_Paste', '.svg'))
+    ctx.expect_out_file(ctx.get_gerber_filename('F_SilkS', '.svg'))
+    ctx.dont_expect_out_file(ctx.get_gerber_job_filename())
+
+    ctx.clean_up()

@@ -15,6 +15,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
+from kiplot.misc import (PLOT_ERROR)
 
 
 GERBER_DIR = 'gerberdir'
@@ -48,4 +49,12 @@ def test_gerber_inner():
     ctx.expect_out_file(ctx.get_gerber_filename('GND_Cu'))
     ctx.expect_out_file(ctx.get_gerber_filename('Signal1'))
     ctx.expect_out_file(ctx.get_gerber_job_filename())
+    ctx.clean_up()
+
+
+def test_gerber_inner_wrong():
+    prj = 'good-project'
+    ctx = context.TestContext('Gerber_InnerWrong', prj, 'gerber_inner_wrong', GERBER_DIR)
+    ctx.run(PLOT_ERROR)
+    assert ctx.search_err('is not valid for this board')
     ctx.clean_up()

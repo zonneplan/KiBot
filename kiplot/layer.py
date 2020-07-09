@@ -67,7 +67,7 @@ class Layer(Optionable):
             self.suffix = ''
             """ Suffix used in file names related to this layer. Derived from the name if not specified """
             self.description = ''
-            """ A description for the layer, for documentation purposes """
+            """ A description for the layer, for documentation purposes """  # pragma: no cover
         self._unkown_is_error = True
 
     def config(self, tree):

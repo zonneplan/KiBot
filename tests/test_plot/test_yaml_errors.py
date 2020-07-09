@@ -198,6 +198,14 @@ def test_wrong_layer_7():
     ctx.clean_up()
 
 
+def test_wrong_layer_9():
+    """ A bogus string """
+    ctx = context.TestContext('ErrorWrongLayer9', '3Rs', 'error_wrong_layer_9', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Unknown layer spec: .?nada.?")
+    ctx.clean_up()
+
+
 def test_wrong_layer_8():
     """ List of strings, but number in middle """
     ctx = context.TestContext('ErrorWrongLayer8', '3Rs', 'error_wrong_layer_8', None)
