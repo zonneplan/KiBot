@@ -15,6 +15,7 @@ import sys
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
+from kiplot.misc import (PDF_SCH_PRINT)
 # Utils import
 from utils import context
 
@@ -28,4 +29,11 @@ def test_print_sch():
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(PDF_FILE)
+    ctx.clean_up()
+
+
+def test_print_sch_fail():
+    prj = '3Rs'
+    ctx = context.TestContext('PrSCHFail', prj, 'print_sch', PDF_DIR)
+    ctx.run(PDF_SCH_PRINT)
     ctx.clean_up()

@@ -9,6 +9,7 @@ outputs:
     dir: BoM
     options:
       format: HTML  # HTML or CSV
+      variant: pp
 
   - name: 'bom_csv'
     comment: "Bill of Materials in CSV format"
