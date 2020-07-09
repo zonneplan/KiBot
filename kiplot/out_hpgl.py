@@ -3,7 +3,6 @@ from kiplot.misc import AUTO_SCALE
 from kiplot.out_any_layer import AnyLayer
 from kiplot.drill_marks import DrillMarks
 from kiplot.macros import macros, document, output_class  # noqa: F401
-from . import log
 
 
 class HPGLOptions(DrillMarks):
