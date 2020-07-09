@@ -16,7 +16,7 @@ class STEPOptions(BaseOptions):
         super().__init__()
         with document:
             self.metric_units = True
-            """ use metric units instead of inches. """
+            """ use metric units instead of inches """
             self._origin = 'grid'
             """ determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
                 The drill option uses the auxiliar reference defined by the user.

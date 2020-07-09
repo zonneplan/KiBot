@@ -104,7 +104,7 @@ def load_board(pcb_file=None):
             pcbnew.ZONE_FILLER(board).Fill(board.Zones())
         GS.board = board
     except OSError as e:
-        logger.error('Error loading PCB file. Currupted?')
+        logger.error('Error loading PCB file. Corrupted?')
         logger.error(e)
         exit(CORRUPTED_PCB)
     assert board is not None

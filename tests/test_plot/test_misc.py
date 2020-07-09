@@ -22,6 +22,7 @@ Tests miscellaneous stuff.
   - with PCB
   - already exists
   - Copying
+- Load plugin
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -30,6 +31,7 @@ pytest-3 --log-cli-level debug
 import os
 import sys
 import shutil
+import logging
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -39,7 +41,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE)
+from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE, CORRUPTED_PCB)
 
 
 POS_DIR = 'positiondir'
@@ -90,6 +92,14 @@ def test_skip_pre_and_outputs_4():
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
     assert ctx.search_err('Unknown preflight .?bogus')
 
+    ctx.clean_up()
+
+
+def test_skip_pre_and_outputs_5():
+    prj = 'simple_2layer'
+    ctx = context.TestContext('SkipPreAndPos4', prj, 'pre_skip', POS_DIR)
+    ctx.run(extra=['-s', 'run_erc,run_drc'])
+    assert ctx.search_err('no need to skip')
     ctx.clean_up()
 
 
@@ -332,6 +342,20 @@ def test_help_output_unk():
     ctx.clean_up()
 
 
+def test_help_output_plugin():
+    ctx = context.TestContext('HelpOutputPlugin', '3Rs', 'pre_and_position', POS_DIR)
+    home = os.environ['HOME']
+    os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '..')
+    logging.debug('HOME='+os.environ['HOME'])
+    ctx.run(extra=['--help-output', 'test'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    os.environ['HOME'] = home
+    assert ctx.search_out('Test for plugin')
+    assert ctx.search_out('Type: .?test.?')
+    assert ctx.search_out('nothing')
+    assert ctx.search_out('chocolate')
+    ctx.clean_up()
+
+
 def test_help_outputs():
     ctx = context.TestContext('HelpOutputs', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
@@ -399,4 +423,12 @@ def test_example_6():
     ctx = context.TestContext('Example6', 'good-project', 'pre_and_position', '')
     ctx.run(EXIT_BAD_ARGS, extra=['--example', '-p'], no_verbose=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_err('no PCB specified')
+    ctx.clean_up()
+
+
+def test_corrupted_pcb():
+    prj = 'bom_no_xml'
+    ctx = context.TestContext('Corrupted', prj, 'print_pcb', '')
+    ctx.run(CORRUPTED_PCB)
+    assert ctx.search_err('Error loading PCB file')
     ctx.clean_up()
