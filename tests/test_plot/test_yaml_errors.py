@@ -394,6 +394,13 @@ def test_error_bom_wrong_format():
     ctx.clean_up()
 
 
+def test_error_wrong_boolean():
+    ctx = context.TestContext('WrongBoolean', PRJ, 'error_wrong_boolean', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(".?exclude_edge_layer.? must be true/false")
+    ctx.clean_up()
+
+
 def test_error_gerber_precision():
     ctx = context.TestContext('GerberPrecisionError', PRJ, 'error_gerber_precision', '')
     ctx.run(EXIT_BAD_CONFIG)
