@@ -30,3 +30,17 @@ def test_ps():
     ctx.dont_expect_out_file(ctx.get_gerber_job_filename())
 
     ctx.clean_up()
+
+
+def test_ps_auto():
+    prj = 'simple_2layer'
+    ctx = context.TestContext('Postscript', prj, 'ps_auto', PS_DIR)
+    ctx.run()
+
+    f_cu = ctx.get_gerber_filename('F_Cu', '.ps')
+    f_fab = ctx.get_gerber_filename('F_Fab', '.ps')
+    ctx.expect_out_file(f_cu)
+    ctx.expect_out_file(f_fab)
+    ctx.dont_expect_out_file(ctx.get_gerber_job_filename())
+
+    ctx.clean_up()

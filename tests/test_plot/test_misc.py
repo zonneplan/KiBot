@@ -21,6 +21,7 @@ Tests miscellaneous stuff.
 - Create example
   - with PCB
   - already exists
+  - Copying
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -340,6 +341,7 @@ def test_help_preflights():
 
 
 def test_example_1():
+    """ Example without board """
     ctx = context.TestContext('Example1', '3Rs', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True, no_board_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
@@ -347,6 +349,7 @@ def test_example_1():
 
 
 def test_example_2():
+    """ Example with board """
     ctx = context.TestContext('Example2', 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
@@ -355,6 +358,7 @@ def test_example_2():
 
 
 def test_example_3():
+    """ Overwrite error """
     ctx = context.TestContext('Example3', 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
@@ -363,6 +367,7 @@ def test_example_3():
 
 
 def test_example_4():
+    """ Expand copied layers """
     ctx = context.TestContext('Example4', 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example', '-P'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
@@ -372,8 +377,17 @@ def test_example_4():
 
 
 def test_example_5():
+    """ Copy setting from PCB """
     ctx = context.TestContext('Example5', 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example', '-p'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.search_in_file(EXAMPLE_CFG, ['layers: selected', 'pen_width: 35.0'])
+    ctx.clean_up()
+
+
+def test_example_6():
+    """ Copy setting but no PCB """
+    ctx = context.TestContext('Example6', 'good-project', 'pre_and_position', '')
+    ctx.run(EXIT_BAD_ARGS, extra=['--example', '-p'], no_verbose=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_err('no PCB specified')
     ctx.clean_up()
