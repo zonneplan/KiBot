@@ -200,12 +200,5 @@ class Layer(Optionable):
                 raise KiPlotConfigurationError("Unknown layer name: `{}`".format(self.layer))
         return self._id
 
-    def get_id(self, layer_cnt):
-        """ Returns the ID, also checks this is a valid inner layer """
-        # Check if the layer is in use
-        if self._is_inner and (self._id < 1 or self._id >= layer_cnt - 1):
-            raise PlotError("Inner layer `{}` is not valid for this board".format(self))
-        return self._id
-
     def __str__(self):
         return "{} ({} '{}' {})".format(self.layer, self._id, self.description, self.suffix)
