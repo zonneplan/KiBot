@@ -59,10 +59,9 @@ class PSOptions(DrillMarks):
         self.negative_plot = po.GetNegative()
         self.mirror_plot = po.GetMirror()
         # scaleselection
-        if po.GetAutoScale():
-            self.scaling = AUTO_SCALE
-        else:
-            self.scaling = po.GetScale()
+        sel = po.GetScaleSelection()
+        sel = sel if sel < 0 or sel > 4 else 4
+        self.scaling = (AUTO_SCALE, 1.0, 1.5, 2.0, 3.0)[sel]
 
 
 @output_class

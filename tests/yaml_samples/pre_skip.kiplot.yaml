@@ -3,5 +3,5 @@ kiplot:
   version: 1
 
 preflight:
-  run_drc: true
+  run_erc: true
 

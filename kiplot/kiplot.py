@@ -12,8 +12,7 @@ from distutils.version import StrictVersion
 from importlib.util import (spec_from_file_location, module_from_spec)
 
 from .gs import (GS)
-from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, NO_SCH_FILE, CORRUPTED_PCB,
-                   EXIT_BAD_ARGS)
+from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB, EXIT_BAD_ARGS)
 from .error import (PlotError, KiPlotConfigurationError, config_error)
 from .pre_base import BasePreFlight
 from . import log
@@ -89,9 +88,6 @@ def check_script(cmd, url, version=None):
 
 def check_eeschema_do():
     check_script(CMD_EESCHEMA_DO, URL_EESCHEMA_DO, '1.4.0')
-    if not GS.sch_file:
-        logger.error('Missing schematic file')
-        exit(NO_SCH_FILE)
 
 
 def load_board(pcb_file=None):

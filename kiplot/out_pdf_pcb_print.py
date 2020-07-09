@@ -40,7 +40,7 @@ class PDF_Pcb_PrintOptions(BaseOptions):
         # Execute it
         logger.debug('Executing: '+str(cmd))
         ret = call(cmd)
-        if ret: # pragma: no cover
+        if ret:  # pragma: no cover
             # We check all the arguments, we even load the PCB
             # A fail here isn't easy to reproduce
             logger.error(CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)

@@ -609,7 +609,7 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `step` output.
       * Valid keys:
-        - `metric_units`: [boolean=true] use metric units instead of inches..
+        - `metric_units`: [boolean=true] use metric units instead of inches.
         - `min_distance`: [number=-1] the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
         - `no_virtual`: [boolean=false] used to exclude 3D models for components with 'virtual' attribute.
         - `origin`: [string='grid'] determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.

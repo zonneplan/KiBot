@@ -3,6 +3,7 @@ from kiplot.misc import AUTO_SCALE
 from kiplot.out_any_layer import AnyLayer
 from kiplot.drill_marks import DrillMarks
 from kiplot.macros import macros, document, output_class  # noqa: F401
+from . import log
 
 
 class HPGLOptions(DrillMarks):
@@ -46,10 +47,9 @@ class HPGLOptions(DrillMarks):
         self.sketch_plot = po.GetPlotMode() == SKETCH
         self.mirror_plot = po.GetMirror()
         # scaleselection
-        if po.GetAutoScale():
-            self.scaling = AUTO_SCALE
-        else:
-            self.scaling = po.GetScale()
+        sel = po.GetScaleSelection()
+        sel = sel if sel < 0 or sel > 4 else 4
+        self.scaling = (AUTO_SCALE, 1.0, 1.5, 2.0, 3.0)[sel]
 
 
 @output_class

@@ -387,7 +387,7 @@ outputs:
     type: 'step'
     dir: 'Example/step_dir'
     options:
-      # [boolean=true] use metric units instead of inches.
+      # [boolean=true] use metric units instead of inches
       metric_units: true
       # [number=-1] the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm)
       min_distance: -1

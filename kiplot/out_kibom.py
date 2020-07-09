@@ -54,7 +54,8 @@ class KiBoMOptions(BaseOptions):
             exit(BOM_ERROR)
         prj = os.path.basename(prj)
         for f in glob(os.path.join(output_dir, prj)+'*.tmp'):
-            os.remove(f)
+            # I'm not sure when these files are left, but they are annoying
+            os.remove(f)  # pragma: no cover
         logger.debug('Output from command:\n'+cmd_output.decode())
 
 
