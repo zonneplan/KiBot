@@ -38,6 +38,8 @@ Tests various errors in the config file
 - Unknown section
 - HPGL wrong pen_number
 - KiBoM wrong format
+- PcbDraw
+  - Wrong color
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -428,4 +430,11 @@ def test_error_print_pcb_no_layer():
     ctx = context.TestContext('PrPCB', prj, 'error_print_pcb_no_layer', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Missing .?layers.? list")
+    ctx.clean_up()
+
+
+def test_error_color():
+    ctx = context.TestContext('PrPCB', 'bom', 'error_color', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Invalid color for .?board.?")
     ctx.clean_up()

@@ -42,7 +42,8 @@ class IBoMOptions(BaseOptions):
                 %r : revision from pcb metadata.
                 %d : pcb date from metadata if available, file modification date otherwise.
                 %D : bom generation date.
-                %T : bom generation time. Extension .html will be added automatically """
+                %T : bom generation time.
+                Extension .html will be added automatically """
             self.include_tracks = False
             """ Include track/zone information in output. F.Cu and B.Cu layers only """
             self.include_nets = False

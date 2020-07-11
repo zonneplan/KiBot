@@ -1,0 +1,22 @@
+kiplot:
+  version: 1
+
+outputs:
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDraw
+    options:
+      format: svg
+      style:
+        board: "bogus"
+        copper: "#00406a"
+        silk: "#d5dce4"
+        pads: "#cfb96e"
+        clad: "#72786c"
+        outline: "#000000"
+        vcut: "#bf2600"
+        highlight_on_top: false
+        highlight_style: "stroke:none;fill:#ff0000;opacity:0.5;"
+        highlight_padding: 1.5
+

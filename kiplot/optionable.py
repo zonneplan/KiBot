@@ -1,6 +1,10 @@
+import os
+import re
 import inspect
-from re import (compile)
+from re import compile
+from datetime import datetime
 from .error import KiPlotConfigurationError
+from .gs import GS
 from . import log
 
 logger = log.get_logger(__name__)
@@ -137,6 +141,39 @@ class Optionable(object):
         """ Returns a (key, val) iterator on public attributes """
         attrs = self.get_attrs_for()
         return ((k, v) for k, v in attrs.items() if k[0] != '_')
+
+    def expand_filename(self, name, id='', ext=''):
+        """ Expands %x values in filenames """
+        if GS.board:
+            # This is based on InterativeHtmlBom expansion
+            title_block = GS.board.GetTitleBlock()
+            file_date = title_block.GetDate()
+            if not file_date:
+                file_mtime = os.path.getmtime(GS.pcb_file)
+                file_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d_%H-%M-%S')
+            pcb_file_name = os.path.splitext(os.path.basename(GS.pcb_file))[0]
+            title = title_block.GetTitle()
+            if not title:
+                title = pcb_file_name
+            revision = title_block.GetRevision()
+            company = title_block.GetCompany()
+            n = datetime.now()
+            today = n.strftime('%Y-%m-%d')
+            time = n.strftime('%H-%M-%S')
+            # Do the replacements
+            name = name.replace('%f', pcb_file_name)
+            name = name.replace('%p', title)
+            name = name.replace('%c', company)
+            name = name.replace('%r', revision)
+            name = name.replace('%d', file_date)
+            name = name.replace('%D', today)
+            name = name.replace('%T', time)
+            name = name.replace('%i', id)
+            name = name.replace('%x', ext)
+            # sanitize the name to avoid characters illegal in file systems
+            name = name.replace('\\', '/')
+            name = re.sub(r'[?%*:|"<>]', '_', name)
+        return name
 
 
 class BaseOptions(Optionable):

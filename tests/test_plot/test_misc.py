@@ -41,7 +41,8 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE, CORRUPTED_PCB)
+from kiplot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE, CORRUPTED_PCB,
+                         PCBDRAW_ERR)
 
 
 POS_DIR = 'positiondir'
@@ -432,4 +433,12 @@ def test_corrupted_pcb():
     ctx = context.TestContext('Corrupted', prj, 'print_pcb', '')
     ctx.run(CORRUPTED_PCB)
     assert ctx.search_err('Error loading PCB file')
+    ctx.clean_up()
+
+
+def test_pcbdraw_fail():
+    prj = 'bom'
+    ctx = context.TestContext('PcbDrawFail', prj, 'pcbdraw_fail', '')
+    ctx.run(PCBDRAW_ERR)
+    assert ctx.search_err('Failed to run')
     ctx.clean_up()

@@ -1,0 +1,62 @@
+kiplot:
+  version: 1
+
+outputs:
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDraw
+    options: &pcb_draw_ops
+      format: svg
+      style:
+        board: "#1b1f44"
+        copper: "#00406a"
+        silk: "#d5dce4"
+        pads: "#cfb96e"
+        clad: "#72786c"
+        outline: "#000000"
+        vcut: "#bf2600"
+        highlight_on_top: false
+        highlight_style: "stroke:none;fill:#ff0000;opacity:0.5;"
+        highlight_padding: 1.5
+      libs:
+        - default
+        - eagle-default
+      remap:
+        L_G1: "LEDs:LED-5MM_green"
+        L_B1: "LEDs:LED-5MM_blue"
+        L_Y1: "LEDs:LED-5MM_yellow"
+        PHOTO1: "yaqwsx:R_PHOTO_7mm"
+        J8: "yaqwsx:Pin_Header_Straight_1x02_circle"
+        'REF**': "dummy:dummy"
+        G***: "dummy:dummy"
+        svg2mod: "dummy:dummy"
+        JP1: "dummy:dummy"
+        JP2: "dummy:dummy"
+        JP3: "dummy:dummy"
+        JP4: "dummy:dummy"
+      no_drillholes: False
+      mirror: False
+      highlight:
+        - L_G1
+        - L_B1
+        - R10
+        - RV1
+      show_components: all
+      vcuts: True
+      warnings: visible
+      dpi: 600
+
+  - name: PcbDraw
+    comment: "PcbDraw test bottom"
+    type: pcbdraw
+    dir: PcbDraw
+    options:
+      <<: *pcb_draw_ops
+      style: set-red-enig
+      bottom: True
+      show_components:
+        - L_G1
+        - L_B1
+      remap:
+

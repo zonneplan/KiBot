@@ -1,0 +1,16 @@
+kiplot:
+  version: 1
+
+outputs:
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDraw
+    options:
+      format: svg
+      style: bogus
+      no_drillholes: True
+      placeholder: True
+      mirror: True
+      vcuts: True
+      warnings: all

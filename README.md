@@ -321,7 +321,7 @@ Next time you need this list just use an alias, like this:
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
-            - No available options
+            - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
         - `metric_units`: [boolean=true] use metric units instead of inches.
         - `minimal_header`: [boolean=false] use a minimal header in the file.
         - `mirror_y_axis`: [boolean=false] invert the Y axis.
@@ -345,7 +345,7 @@ Next time you need this list just use an alias, like this:
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
-            - No available options
+            - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
         - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
           * Valid keys:
             - `filename`: [string=''] name of the drill report. Not generated unless a name is specified.
@@ -448,7 +448,8 @@ Next time you need this list just use an alias, like this:
                          %r : revision from pcb metadata.
                          %d : pcb date from metadata if available, file modification date otherwise.
                          %D : bom generation date.
-                         %T : bom generation time. Extension .html will be added automatically.
+                         %T : bom generation time.
+                         Extension .html will be added automatically.
         - `netlist_file`: [string=''] Path to netlist or xml file.
         - `no_blacklist_virtual`: [boolean=false] Do not blacklist virtual components.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
@@ -478,6 +479,44 @@ Next time you need this list just use an alias, like this:
                      are output to the BoM. To specify multiple variants,
                      with a BOM file exported for each variant, separate
                      variants with the ';' (semicolon) character.
+
+* PcbDraw - Beautiful 2D PCB render
+  * Type: `pcbdraw`
+  * Description: Exports the PCB as a 2D model (SVG, PNG or JPG).
+                 Uses configurable colors.
+                 Can also render the components if the 2D models are available
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `pcbdraw` output.
+      * Valid keys:
+        - `bottom`: [boolean=false] render the bottom side of the board (default is top side).
+        - `dpi`: [number=300] [10,1200] dots per inch (resolution) of the generated image.
+        - `format`: [string='svg'] [svg,png,jpg] output format. Only used if no `output` is specified.
+        - `highlight`: [list(string)] list of components to highlight.
+        - `libs`: [list(string)] list of libraries.
+        - `mirror`: [boolean=false] mirror the board.
+        - `no_drillholes`: [boolean=false] do not make holes transparent.
+        - `output`: [string='%f-%i.%x'] name for the generated file.
+        - `placeholder`: [boolean=false] show placeholder for missing components.
+        - `remap`: [dict|None] replacements for PCB references using components (lib:component).
+        - `show_components`: [string|list(string)] [none,all] list of components to draw, can be also a string for none or all.
+                             The default is none.
+        - `style`: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
+          * Valid keys:
+            - `board`: [string='#4ca06c'] color for the board without copper (covered by solder mask).
+            - `clad`: [string='#9c6b28'] color for the PCB core (not covered by solder mask).
+            - `copper`: [string='#417e5a'] color for the copper zones (covered by solder mask).
+            - `highlight_on_top`: [boolean=false] highlight over the component (not under).
+            - `highlight_padding`: [number=1.5] [0,1000] how much the highlight extends around the component [mm].
+            - `highlight_style`: [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style.
+            - `outline`: [string='#000000'] color for the outline.
+            - `pads`: [string='#b5ae30'] color for the exposed pads (metal finish).
+            - `silk`: [string='#f0f0f0'] color for the silk screen.
+            - `vcut`: [string='#bf2600'] color for the V-CUTS.
+        - `vcuts`: [boolean=false] render V-CUTS on the Cmts.User layer.
+        - `warnings`: [string='visible'] [visible,all,none] using visible only the warnings about components in the visible side are generated.
 
 * PDF (Portable Document Format)
   * Type: `pdf`

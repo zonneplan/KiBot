@@ -175,12 +175,14 @@ def trim(docstring):
 def print_output_options(name, cl, indent):
     ind_str = indent*' '
     obj = cl()
-    print(ind_str+'* Valid keys:')
     num_opts = 0
     for k, v in obj.get_attrs_gen():
-        if k == 'type':
+        if k == 'type' and indent == 2:
             # Type is fixed for an output
             continue
+        if not num_opts:
+            # We found one, put the title
+            print(ind_str+'* Valid keys:')
         help = getattr(obj, '_help_'+k)
         if help is None:
             help = 'Undocumented'  # pragma: no cover
@@ -194,8 +196,8 @@ def print_output_options(name, cl, indent):
         num_opts = num_opts+1
         if isinstance(v, type):
             print_output_options('', v, indent+4)
-    if num_opts == 0:
-        print(ind_str+'  - No available options')
+    # if num_opts == 0:
+    #     print(ind_str+'  - No available options')
 
 
 def print_one_out_help(details, n, o):
