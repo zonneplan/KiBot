@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [0.5.0] - 2020-07-11
 ### Changed
 - Removed the "plot" option "check_zone_fills". Use the preflight option.
 - Drill outputs: map.type and report.filename now should be map and report.

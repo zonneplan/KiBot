@@ -1,3 +1,63 @@
+kiplot.inti-cmnb (0.5.0-1) stable; urgency=medium
+
+  * Removed the "plot" option "check_zone_fills". Use the preflight option.
+  * Drill outputs: map.type and report.filename now should be map and report.
+    The old mechanism is currently supported, but deprecated.
+  * Now the command line usage is more clearly documented, but also more strict.
+  * The --list option doesn't need a PCB file anymore.
+    Note that passing it is now considered an error.
+  * Now we test the PCB and/or SCH only when we are doing something that needs
+    them.
+  * The layers entry is much more flexible now.
+    Many changes, read the README.md
+  * Added PcbDraw output.
+  * Added -e/--schematic option to specify any schematic (not just derived
+    from the PCB name.
+  * Added -x/--example option to generate a complete configuration example.
+  * Added  --example supports --copy-options to copy the plot options from the
+    PCB file.
+  * Added help for the supported outputs (--help-list-outputs, --help-outputs
+    and --help-output)
+  * Added help for the supported preflights (--help-preflights)
+  * Better YAML validation.
+  * Added HPGL options:
+    - pen_number
+    - pen_speed
+  * Added metric_units to DXF options
+  * Added KiBoM options
+    - number
+    - variant
+    - conf
+    - separator
+  * Added the following InteractiveHtmlBom options:
+    - dark_mode
+    - hide_pads
+    - show_fabrication
+    - hide_silkscreen
+    - highlight_pin1
+    - no_redraw_on_drag
+    - board_rotation
+    - checkboxes
+    - bom_view
+    - layer_view
+    - include_tracks
+    - include_nets
+    - sort_order
+    - no_blacklist_virtual
+    - blacklist_empty_val
+    - netlist_file
+    - extra_fields
+    - normalize_field_case
+    - variant_field
+    - variants_whitelist
+    - variants_blacklist
+    - dnp_field
+  * Fixed the `sketch_plot` option is now implemented.
+  * Fixed 'ignore_unconnected' preflight wasn't working.
+  * Fixed the report of hwo many ERC/DRC errors we found.
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Sat, 11 Jul 2020 13:56:36 -0300
+
 kiplot.inti-cmnb (0.4.0-1) stable; urgency=medium
 
   * Added STEP 3D model generation
