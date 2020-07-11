@@ -1,13 +1,16 @@
 #!/bin/sh
 set -e
-
-# Disabled because macros will fail.
-# Automatically added by dh_python3:
-#if which py3compile >/dev/null 2>&1; then
-#	py3compile -p kiplot.inti-cmnb -V 3.2-
-#fi
-#if which pypy3compile >/dev/null 2>&1; then
-#	pypy3compile -p kiplot.inti-cmnb -V 3.2- || true
-#fi
-
-# End automatically added section
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/__init__.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/__main__.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/__version__.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/config_reader.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/docopt.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/error.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/gs.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/kiplot.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/log.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/macros.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/misc.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/optionable.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/pre_base.py
+py3compile -V 3.2- /usr/lib/python3/dist-packages/kiplot/reg_out.py

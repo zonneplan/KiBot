@@ -7,6 +7,8 @@ USER_ID=$(shell id -u)
 GROUP_ID=$(shell id -g)
 
 deb:
+	perl debian/make_postinst.pl > debian/postinst
+	chmod +x debian/postinst
 	fakeroot dpkg-buildpackage -uc -b
 
 lint: doc
