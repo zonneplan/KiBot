@@ -15,7 +15,7 @@ outputs:
       minimal_header: false
       mirror_y_axis: false
       report:
-        filename: 'report.rpt'
+        filename: '%f-%i.%x'
       map:
         type: 'pdf'
 

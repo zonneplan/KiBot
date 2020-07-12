@@ -23,11 +23,11 @@ DRILL_DIR = 'Drill'
 positions = {'R1': (105, 35, 'top'), 'R2': (110, 35, 'bottom'), 'R3': (110, 45, 'top')}
 
 
-def do_3Rs(conf, dir):
+def do_3Rs(conf, dir, report):
     ctx = context.TestContext(dir, '3Rs', conf, DRILL_DIR)
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file(os.path.join(DRILL_DIR, 'report.rpt'))
+    ctx.expect_out_file(os.path.join(DRILL_DIR, report))
     pth_drl = ctx.get_pth_drl_filename()
     ctx.expect_out_file(pth_drl)
     npth_drl = ctx.get_npth_drl_filename()
@@ -52,8 +52,8 @@ def do_3Rs(conf, dir):
 
 
 def test_drill_3Rs():
-    do_3Rs('drill', 'Drill_3Rs')
+    do_3Rs('drill', 'Drill_3Rs', 'report.rpt')
 
 
 def test_drill_legacy_3Rs():
-    do_3Rs('drill_legacy', 'DrillLegacy_3Rs')
+    do_3Rs('drill_legacy', 'DrillLegacy_3Rs', '3Rs-drill_report.txt')
