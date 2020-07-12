@@ -22,8 +22,8 @@ class GerberOptions(AnyLayerOptions):
             self.create_gerber_job_file = True
             """ creates a file with information about all the generated gerbers.
                 You can use it in gerbview to load all gerbers at once """
-            self.gerber_job_file = '%f-job.%x'
-            """ name for the gerber job file """
+            self.gerber_job_file = '%f-%i.%x'
+            """ name for the gerber job file (%i='job', %x='gbrjob') """
             self.use_gerber_x2_attributes = True
             """ use the extended X2 format """
             self.use_gerber_net_attributes = True

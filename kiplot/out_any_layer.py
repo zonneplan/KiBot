@@ -96,7 +96,7 @@ class AnyLayerOptions(BaseOptions):
                 jobfile_writer.AddGbrFile(id, os.path.basename(filename))
 
         if create_job:
-            job_fn = self.expand_filename(po.gerber_job_file, ext='gbrjob')
+            job_fn = self.expand_filename(po.gerber_job_file, 'job', 'gbrjob')
             jobfile_writer.CreateJobFile(os.path.abspath(os.path.join(output_dir, job_fn)))
 
     def read_vals_from_po(self, po):
