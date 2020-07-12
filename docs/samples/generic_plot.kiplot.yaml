@@ -116,6 +116,8 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
+      # [string='%f-job.%x'] name for the gerber job file
+      gerber_job_file: '%f-job.%x'
       # [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6
       gerber_precision: 4.6
       # [number=0.1] [0.02,2] line_width for objects without width [mm]

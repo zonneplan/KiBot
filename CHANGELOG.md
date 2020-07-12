@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - filter_msg -> filter
   - error_number -> number
   - regexp -> regex
+- gerber.gerber_job_file option to control the gerber job file name.
 
 ## [0.5.0] - 2020-07-11
 ### Changed

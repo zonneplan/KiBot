@@ -381,6 +381,7 @@ Next time you need this list just use an alias, like this:
         - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
         - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
+        - `gerber_job_file`: [string='%f-job.%x'] name for the gerber job file.
         - `gerber_precision`: [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6.
         - `line_width`: [number=0.1] [0.02,2] line_width for objects without width [mm].
         - `plot_footprint_refs`: [boolean=true] include the footprint references.

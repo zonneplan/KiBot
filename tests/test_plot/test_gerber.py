@@ -48,7 +48,7 @@ def test_gerber_inner():
 
     ctx.expect_out_file(ctx.get_gerber_filename('GND_Cu'))
     ctx.expect_out_file(ctx.get_gerber_filename('Signal1'))
-    ctx.expect_out_file(ctx.get_gerber_job_filename())
+    ctx.expect_out_file(os.path.join(GERBER_DIR, 'test-'+prj+'.gbrjob'))
     ctx.clean_up()
 
 

@@ -22,6 +22,8 @@ class GerberOptions(AnyLayerOptions):
             self.create_gerber_job_file = True
             """ creates a file with information about all the generated gerbers.
                 You can use it in gerbview to load all gerbers at once """
+            self.gerber_job_file = '%f-job.%x'
+            """ name for the gerber job file """
             self.use_gerber_x2_attributes = True
             """ use the extended X2 format """
             self.use_gerber_net_attributes = True
@@ -47,6 +49,7 @@ class GerberOptions(AnyLayerOptions):
         po.SetIncludeGerberNetlistInfo(self.use_gerber_net_attributes)
         po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
         po.SetLineWidth(FromMM(self.line_width))
+        setattr(po, 'gerber_job_file', self.gerber_job_file)
 
     def read_vals_from_po(self, po):
         super().read_vals_from_po(po)

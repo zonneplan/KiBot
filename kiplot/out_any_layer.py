@@ -2,7 +2,6 @@ import os
 from pcbnew import (GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer)
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
-from .gs import (GS)
 from .optionable import BaseOptions
 from .layer import Layer
 from kiplot.macros import macros, document  # noqa: F401
@@ -87,12 +86,8 @@ class AnyLayerOptions(BaseOptions):
                 jobfile_writer.AddGbrFile(id, os.path.basename(plot_ctrl.GetPlotFileName()))
 
         if create_job:
-            base_fn = os.path.join(
-                         os.path.dirname(plot_ctrl.GetPlotFileName()),
-                         os.path.basename(GS.pcb_file))
-            base_fn = os.path.splitext(base_fn)[0]
-            job_fn = base_fn+'-job.gbrjob'
-            jobfile_writer.CreateJobFile(job_fn)
+            job_fn = self.expand_filename(po.gerber_job_file, ext='gbrjob')
+            jobfile_writer.CreateJobFile(os.path.abspath(os.path.join(output_dir, job_fn)))
 
     def read_vals_from_po(self, po):
         # excludeedgelayer
