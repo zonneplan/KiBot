@@ -20,7 +20,7 @@ class ExcellonOptions(AnyDrill):
         drill_writer = EXCELLON_WRITER(board)
         drill_writer.SetOptions(self.mirror_y_axis, self.minimal_header, offset, self.pth_and_npth_single_file)
         drill_writer.SetFormat(self.metric_units, EXCELLON_WRITER.DECIMAL_FORMAT)
-        return drill_writer
+        return drill_writer, 'drl'
 
 
 @output_class

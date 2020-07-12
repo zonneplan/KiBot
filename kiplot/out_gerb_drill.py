@@ -12,7 +12,7 @@ class Gerb_DrillOptions(AnyDrill):
         # hard coded in UI?
         drill_writer.SetFormat(5)
         drill_writer.SetOptions(offset)
-        return drill_writer
+        return drill_writer, 'gbr'
 
 
 @output_class

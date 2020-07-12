@@ -14,8 +14,9 @@ outputs:
       use_aux_axis_as_origin: true
       minimal_header: false
       mirror_y_axis: false
+      output: ''
       report:
-        filename: '%f-%i.%x'
+        filename: 'report.rpt'
       map:
         output: ''
         type: 'pdf'
@@ -25,5 +26,6 @@ outputs:
     type: gerb_drill
     dir: Drill
     options:
+      output: ''
       use_aux_axis_as_origin: false
 

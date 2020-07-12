@@ -40,6 +40,8 @@ class AnyDrill(BaseOptions):
             self.map = DrillMap
             """ [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
                 Not generated unless a format is specified """
+            self.output = '%f-%i.%x'
+            """ name for the drill file, KiCad defaults if empty (%i='PTH_drill') """
             self.report = DrillReport
             """ [dict|string] name of the drill report. Not generated unless a name is specified """  # pragma: no cover
         # Mappings to KiCad values
@@ -78,7 +80,7 @@ class AnyDrill(BaseOptions):
             offset = board.GetAuxOrigin()
         else:
             offset = wxPoint(0, 0)
-        drill_writer = self._configure_writer(board, offset)
+        drill_writer, ext = self._configure_writer(board, offset)
 
         logger.debug("Generating drill files in "+output_dir)
         gen_map = self.map is not None
@@ -88,16 +90,21 @@ class AnyDrill(BaseOptions):
         # We always generate the drill file
         drill_writer.CreateDrillandMapFilesSet(output_dir, True, gen_map)
         # Rename the files
-        if gen_map and self.map_output:
-            id = 'PTH_drill_map'
-            k_file = self.expand_filename(output_dir, '%f-PTH-drl_map.%x', '', self.map_ext)
-            file = self.expand_filename(output_dir, self.map_output, id, self.map_ext)
-            os.rename(k_file, file)
-            id = 'N'+id
-            k_file = self.expand_filename(output_dir, '%f-NPTH-drl_map.%x', '', self.map_ext)
-            file = self.expand_filename(output_dir, self.map_output, id, self.map_ext)
-            os.rename(k_file, file)
-
+        for d in ['', 'N']:
+            if self.output:
+                id = 'PTH_drill'
+                if ext == 'drl':
+                    k_file = self.expand_filename(output_dir, '%f-'+d+'PTH.%x', '', ext)
+                else:  # gbr
+                    k_file = self.expand_filename(output_dir, '%f-'+d+'PTH-drl.%x', '', ext)
+                file = self.expand_filename(output_dir, self.output, d+id, ext)
+                os.rename(k_file, file)
+            if gen_map and self.map_output:
+                id = 'PTH_drill_map'
+                k_file = self.expand_filename(output_dir, '%f-'+d+'PTH-drl_map.%x', '', self.map_ext)
+                file = self.expand_filename(output_dir, self.map_output, d+id, self.map_ext)
+                os.rename(k_file, file)
+        # Generate the report
         if self.report:
             drill_report_file = self.expand_filename(output_dir, self.report, 'drill_report', 'txt')
             logger.debug("Generating drill report: "+drill_report_file)
