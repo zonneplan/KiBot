@@ -17,7 +17,7 @@ class PositionOptions(BaseOptions):
             self.only_smd = True
             """ only include the surface mount components """
             self.output = '%f-%i.%x'
-            """ output file name (%i='top'|'bottom'|'both', %x='pos'|'csv') """
+            """ output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
             self.units = 'millimeters'
             """ [millimeters,inches] units used for the positions """  # pragma: no cover
 
@@ -26,10 +26,10 @@ class PositionOptions(BaseOptions):
         botf = None
         bothf = None
         if self.separate_files_for_front_and_back:
-            topf = open(self.expand_filename(output_dir, self.output, 'top', 'pos'), 'w')
-            botf = open(self.expand_filename(output_dir, self.output, 'bottom', 'pos'), 'w')
+            topf = open(self.expand_filename(output_dir, self.output, 'top_pos', 'pos'), 'w')
+            botf = open(self.expand_filename(output_dir, self.output, 'bottom_pos', 'pos'), 'w')
         else:
-            bothf = open(self.expand_filename(output_dir, self.output, 'both', 'pos'), 'w')
+            bothf = open(self.expand_filename(output_dir, self.output, 'both_pos', 'pos'), 'w')
 
         files = [f for f in [topf, botf, bothf] if f is not None]
         for f in files:
@@ -84,10 +84,10 @@ class PositionOptions(BaseOptions):
         botf = None
         bothf = None
         if self.separate_files_for_front_and_back:
-            topf = open(self.expand_filename(output_dir, self.output, 'top', 'csv'), 'w')
-            botf = open(self.expand_filename(output_dir, self.output, 'bottom', 'csv'), 'w')
+            topf = open(self.expand_filename(output_dir, self.output, 'top_pos', 'csv'), 'w')
+            botf = open(self.expand_filename(output_dir, self.output, 'bottom_pos', 'csv'), 'w')
         else:
-            bothf = open(self.expand_filename(output_dir, self.output, 'both', 'csv'), 'w')
+            bothf = open(self.expand_filename(output_dir, self.output, 'both_pos', 'csv'), 'w')
 
         files = [f for f in [topf, botf, bothf] if f is not None]
 

@@ -96,22 +96,22 @@ class TestContext(object):
         return os.path.join(self.sub_dir, self.board_name+'-'+layer_slug+ext)
 
     def get_pos_top_filename(self):
-        return os.path.join(self.sub_dir, self.board_name+'-top.pos')
+        return os.path.join(self.sub_dir, self.board_name+'-top_pos.pos')
 
     def get_pos_bot_filename(self):
-        return os.path.join(self.sub_dir, self.board_name+'-bottom.pos')
+        return os.path.join(self.sub_dir, self.board_name+'-bottom_pos.pos')
 
     def get_pos_both_filename(self):
-        return os.path.join(self.sub_dir, self.board_name+'-both.pos')
+        return os.path.join(self.sub_dir, self.board_name+'-both_pos.pos')
 
     def get_pos_top_csv_filename(self):
-        return os.path.join(self.sub_dir, self.board_name+'-top.csv')
+        return os.path.join(self.sub_dir, self.board_name+'-top_pos.csv')
 
     def get_pos_bot_csv_filename(self):
-        return os.path.join(self.sub_dir, self.board_name+'-bottom.csv')
+        return os.path.join(self.sub_dir, self.board_name+'-bottom_pos.csv')
 
     def get_pos_both_csv_filename(self):
-        return os.path.join(self.sub_dir, self.board_name+'-both.csv')
+        return os.path.join(self.sub_dir, self.board_name+'-both_pos.csv')
 
     def get_pth_drl_filename(self):
         return os.path.join(self.sub_dir, self.board_name+'-PTH.drl')
