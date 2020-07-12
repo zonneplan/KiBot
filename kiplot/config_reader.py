@@ -183,11 +183,16 @@ def print_output_options(name, cl, indent):
         if not num_opts:
             # We found one, put the title
             print(ind_str+'* Valid keys:')
-        help = getattr(obj, '_help_'+k)
+        help, alias, is_alias = obj.get_doc(k)
+        if is_alias:
+            help = 'Alias for '+alias
+            entry = '  - *{}*: '
+        else:
+            entry = '  - `{}`: '
         if help is None:
             help = 'Undocumented'  # pragma: no cover
         lines = help.split('\n')
-        preface = ind_str+'  - `{}`: '.format(k)
+        preface = ind_str+entry.format(k)
         clines = len(lines)
         print('{}{}{}'.format(preface, lines[0].strip(), '.' if clines == 1 else ''))
         ind_help = len(preface)*' '
@@ -249,7 +254,10 @@ def print_example_options(f, cls, name, indent, po):
     if po:
         obj.read_vals_from_po(po)
     for k, v in obj.get_attrs_gen():
-        help = getattr(obj, '_help_'+k)
+        help, alias, is_alias = obj.get_doc(k)
+        if is_alias:
+            f.write(ind_str+'# `{}` is an alias for `{}`\n'.format(k, alias))
+            continue
         if help:
             help_lines = help.split('\n')
             for hl in help_lines:

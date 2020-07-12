@@ -572,7 +572,8 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_pcb_print` output.
       * Valid keys:
-        - `output_name`: [string=''] filename for the output PDF (the name of the PCB if empty).
+        - `output`: [string='%f.pdf'] filename for the output PDF.
+        - *output_name*: Alias for output.
 
 * PDF Schematic Print (Portable Document Format)
   * Type: `pdf_sch_print`

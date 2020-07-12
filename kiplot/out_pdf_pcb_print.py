@@ -17,16 +17,15 @@ class PDF_Pcb_PrintOptions(BaseOptions):
     def __init__(self):
         super().__init__()
         with document:
-            self.output_name = ''
-            """ filename for the output PDF (the name of the PCB if empty) """  # pragma: no cover
+            self.output = '%f.pdf'
+            """ filename for the output PDF """
+            self.output_name = None
+            """ {output} """  # pragma: no cover
 
     def run(self, output_dir, board, layers):
         check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.4.1')
         # Output file name
-        output = self.output_name
-        if not output:
-            output = os.path.splitext(os.path.basename(GS.pcb_file))[0]+'.pdf'
-        output = os.path.abspath(os.path.join(output_dir, output))
+        output = os.path.abspath(os.path.join(output_dir, self.expand_filename(self.output)))
         cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):
             cmd.append('-f')

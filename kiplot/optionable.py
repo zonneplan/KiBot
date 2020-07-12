@@ -52,6 +52,13 @@ class Optionable(object):
         if not isinstance(val, bool):
             raise KiPlotConfigurationError("Option `{}` must be true/false".format(key))
 
+    def get_doc(self, name):
+        doc = getattr(self, '_help_'+name).strip()
+        if doc[0] == '{':
+            alias = doc[1:-1]
+            return getattr(self, '_help_'+alias).strip(), alias, True
+        return doc, name, False
+
     @staticmethod
     def _typeof(v):
         if isinstance(v, bool):
@@ -77,8 +84,8 @@ class Optionable(object):
                 logger.warning("Unknown option `{}`".format(k))
                 continue
             # Check the data type
-            cur_val = getattr(self, k)
-            cur_doc = getattr(self, '_help_'+k).lstrip()
+            cur_doc, alias, is_alias = self.get_doc(k)
+            cur_val = getattr(self, alias)
             if isinstance(cur_val, bool):
                 Optionable._check_bool(k, v)
             elif isinstance(cur_val, (int, float)):
@@ -126,7 +133,7 @@ class Optionable(object):
                                 new_val.append(element)
                         v = new_val
             # Seems to be ok, map it
-            setattr(self, k, v)
+            setattr(self, alias if is_alias else k, v)
 
     def config(self, tree):
         self._tree = tree
