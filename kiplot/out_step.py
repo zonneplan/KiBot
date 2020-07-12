@@ -25,8 +25,8 @@ class STEPOptions(BaseOptions):
             """ used to exclude 3D models for components with 'virtual' attribute """
             self.min_distance = -1
             """ the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm) """
-            self.output = ''
-            """ name for the generated STEP file (the name of the PCB if empty) """  # pragma: no cover
+            self.output = '%f-%i.%x'
+            """ name for the generated STEP file (%i='3D' %x='step') """  # pragma: no cover
 
     @property
     def origin(self):
@@ -40,10 +40,7 @@ class STEPOptions(BaseOptions):
 
     def run(self, output_dir, board):
         # Output file name
-        output = self.output
-        if not output:
-            output = os.path.splitext(os.path.basename(GS.pcb_file))[0]+'.step'
-        output = os.path.abspath(os.path.join(output_dir, output))
+        output = self.expand_filename(output_dir, self.output, '3D', 'step')
         # Make units explicit
         if self.metric_units:
             units = 'mm'

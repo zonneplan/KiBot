@@ -27,7 +27,7 @@ def test_step_1():
     ctx = context.TestContext('STEP_1', prj, 'step_simple', STEP_DIR)
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file(os.path.join(STEP_DIR, prj+'.step'))
+    ctx.expect_out_file(os.path.join(STEP_DIR, prj+'-3D.step'))
     ctx.clean_up()
 
 
@@ -36,7 +36,7 @@ def test_step_2():
     ctx = context.TestContext('STEP_2', prj, 'step_simple_2', STEP_DIR)
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file(os.path.join(STEP_DIR, prj+'.step'))
+    ctx.expect_out_file(os.path.join(STEP_DIR, prj+'-3D.step'))
     ctx.clean_up()
 
 

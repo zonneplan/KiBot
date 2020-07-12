@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - drill maps: uses drill instead of drl
   - dril: uses drill instead of drl, used in gbr and drl.
   - position: no -pos in CSVs
+  - step: adds -3D
 
 ## [0.5.0] - 2020-07-11
 ### Changed
