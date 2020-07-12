@@ -47,15 +47,24 @@ This tells to Kiplot that this file is using version 1 of the format.
 
 ### The *preflight* section
 
-This section is used to specify tasks that will executed before generating any output. The available tasks are:
+This section is used to specify tasks that will be executed before generating any output.
 
-- `run_erc` To run the ERC (Electrical Rules Check). To ensure the schematic is electrically correct. 
-- `run_drc` To run the DRC (Distance Rules Check). To ensure we have a valid PCB.
-- `update_xml` To update the XML version of the BoM (Bill of Materials). To ensure our generated BoM is up to date.
-- `check_zone_fills` Zones are filled before doing any operation involving PCB layers.
- 
-The `run_drc` command has the following option:
-- `ignore_unconnected` Ignores the unconnected nets. Useful if you didn't finish the routing.
+#### Supported preflight options:
+
+- check_zone_fills: [boolean=false] Zones are filled before doing any operation involving PCB layers.
+- filters: [list(dict)] A list of entries to filter out ERC/DRC messages.
+  * Valid keys:
+    - *error_number*: Alias for number.
+    - `filter`: [string=''] Name for the filter, for documentation purposes.
+    - *filter_msg*: Alias for filter.
+    - `number`: [number=0] Error number we want to exclude.
+    - `regex`: [string='None'] Regular expression to match the text for the error we want to exclude.
+    - *regexp*: Alias for regex.
+- ignore_unconnected: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
+- run_drc: [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+- run_erc: [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+- update_xml: [boolean=false] Update the XML version of the BoM (Bill of Materials). To ensure our generated BoM is up to date.
+
 
 Here is an example of a *preflight* section:
 

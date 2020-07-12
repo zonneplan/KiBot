@@ -8,8 +8,8 @@ preflight:
     - filter: 'Ignore C3 pad 2 too close to anything'
       number: 4
       regex:  'Pad 2 of C3'
-    - filter: 'Ignore unconnected pad 2 of C4'
-      number: 2
-      regex:  'Pad 2 of C4'
+    - filter_msg: 'Ignore unconnected pad 2 of C4'
+      error_number: 2
+      regexp:  'Pad 2 of C4'
 
 

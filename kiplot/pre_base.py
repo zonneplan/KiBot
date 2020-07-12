@@ -88,6 +88,10 @@ class BasePreFlight(object):
         """ Returns a YAML value for the example config """
         return 'true'
 
+    @classmethod
+    def get_doc(cls):
+        return cls.__doc__, None
+
     def run(self):
         pass
 

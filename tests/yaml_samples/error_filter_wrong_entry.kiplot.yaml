@@ -9,7 +9,7 @@ preflight:
       filter: 'Ignore C3 pad 2 too close to anything'
       regex:  'Pad 2 of C3'
     - regex:  'Pad 2 of C4'
-      number: 2
+      numerito: 2
 
 
 

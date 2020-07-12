@@ -1,17 +1,77 @@
 import os
-from .gs import (GS)
-from kiplot.macros import macros, pre_class  # noqa: F401
+from kiplot.gs import GS
+from kiplot.error import KiPlotConfigurationError
+from kiplot.optionable import Optionable
+from kiplot.macros import macros, document, pre_class  # noqa: F401
+from kiplot.log import get_logger
+
+logger = get_logger(__name__)
+
+
+class FilterOptions(Optionable):
+    """ Valid options for a filter entry """
+    def __init__(self):
+        super().__init__()
+        self._unkown_is_error = True
+        with document:
+            self.filter = ''
+            """ Name for the filter, for documentation purposes """
+            self.filter_msg = None
+            """ {filter} """
+            self.number = 0
+            """ Error number we want to exclude """
+            self.error_number = None
+            """ {number} """
+            self.regex = 'None'
+            """ Regular expression to match the text for the error we want to exclude """
+            self.regexp = None
+            """ {regex} """  # pragma: no cover
+
+
+class FiltersOptions(Optionable):
+    """ A list of filter entries """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.filters = FilterOptions
+            """ [list(dict)] DRC/ERC errors to be ignored """  # pragma: no cover
+
+    def config(self, tree):
+        super().config(tree)
+        parsed = None
+        for f in self.filters:
+            where = ' (in `{}` filter)'.format(f.filter) if f.filter else ''
+            number = f.number
+            if not number:
+                raise KiPlotConfigurationError('Missing `number`'+where)
+            regex = f.regex
+            if regex == 'None':
+                raise KiPlotConfigurationError('Missing `regex`'+where)
+            comment = f.filter
+            logger.debug("Adding DRC/ERC filter '{}','{}','{}'".format(comment, number, regex))
+            if parsed is None:
+                parsed = ''
+            if comment:
+                parsed += '# '+comment+'\n'
+            parsed += '{},{}\n'.format(number, regex)
+        self.filters = parsed
 
 
 @pre_class
 class Filters(BasePreFlight):  # noqa: F821
-    """ A list of entries to filter out ERC/DRC messages. Keys: `filter`, `number` and `regex` """
+    """ [list(dict)] A list of entries to filter out ERC/DRC messages """
     def __init__(self, name, value):
-        super().__init__(name, value)
+        f = FiltersOptions()
+        f.config({'filters': value})
+        super().__init__(name, f.filters)
 
     def get_example():
         """ Returns a YAML value for the example config """
         return "\n    - filter: 'Filter description'\n      number: 10\n      regex: 'Regular expression to match'"
+
+    @classmethod
+    def get_doc(cls):
+        return cls.__doc__, FilterOptions
 
     def apply(self):
         # Create the filters file

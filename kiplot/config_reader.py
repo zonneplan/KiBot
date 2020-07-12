@@ -68,35 +68,6 @@ class CfgYamlReader(object):
 
         return o_out
 
-    def _parse_filters(self, filters):
-        if not isinstance(filters, list):
-            config_error("'filters' must be a list")
-        parsed = None
-        for filter in filters:
-            if 'filter' in filter:
-                comment = filter['filter']
-                if 'number' in filter:
-                    number = filter['number']
-                    if number is None:
-                        config_error("empty 'number' in 'filter' definition ("+str(filter)+")")
-                else:
-                    config_error("missing 'number' for 'filter' definition ("+str(filter)+")")
-                if 'regex' in filter:
-                    regex = filter['regex']
-                    if regex is None:
-                        config_error("empty 'regex' in 'filter' definition ("+str(filter)+")")
-                else:
-                    config_error("missing 'regex' for 'filter' definition ("+str(filter)+")")
-                logger.debug("Adding DRC/ERC filter '{}','{}','{}'".format(comment, number, regex))
-                if parsed is None:
-                    parsed = ''
-                if comment:
-                    parsed += '# '+comment+'\n'
-                parsed += '{},{}\n'.format(number, regex)
-            else:
-                config_error("'filters' section of 'preflight' must contain 'filter' definitions (not "+str(filter)+")")
-        return parsed
-
     def _parse_preflight(self, pf):
         logger.debug("Parsing preflight options: {}".format(pf))
         if not isinstance(pf, dict):
@@ -107,8 +78,6 @@ class CfgYamlReader(object):
                 config_error("Unknown preflight: `{}`".format(k))
             try:
                 logger.debug("Parsing preflight "+k)
-                if k == 'filters':
-                    v = self._parse_filters(v)
                 o_pre = BasePreFlight.get_class_for(k)(k, v)
             except KiPlotConfigurationError as e:
                 config_error("In preflight '"+k+"': "+str(e))
@@ -241,11 +210,13 @@ def print_preflights_help():
     pres = BasePreFlight.get_registered()
     logger.debug('{} supported preflights'.format(len(pres)))
     print('Supported preflight options:\n')
-    for n, o in pres.items():
-        help = o.__doc__
+    for n, o in OrderedDict(sorted(pres.items())).items():
+        help, options = o.get_doc()
         if help is None:
             help = 'Undocumented'  # pragma: no cover
-        print('- {}: {}.'.format(n, help.rstrip()))
+        print('- {}: {}.'.format(n, help.strip()))
+        if options:
+            print_output_options(n, options, 2)
 
 
 def print_example_options(f, cls, name, indent, po):

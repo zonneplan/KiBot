@@ -47,15 +47,9 @@ This tells to Kiplot that this file is using version 1 of the format.
 
 ### The *preflight* section
 
-This section is used to specify tasks that will executed before generating any output. The available tasks are:
+This section is used to specify tasks that will be executed before generating any output.
 
-- `run_erc` To run the ERC (Electrical Rules Check). To ensure the schematic is electrically correct. 
-- `run_drc` To run the DRC (Distance Rules Check). To ensure we have a valid PCB.
-- `update_xml` To update the XML version of the BoM (Bill of Materials). To ensure our generated BoM is up to date.
-- `check_zone_fills` Zones are filled before doing any operation involving PCB layers.
- 
-The `run_drc` command has the following option:
-- `ignore_unconnected` Ignores the unconnected nets. Useful if you didn't finish the routing.
+#### @preflight@
 
 Here is an example of a *preflight* section:
 

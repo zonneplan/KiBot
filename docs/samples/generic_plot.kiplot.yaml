@@ -4,7 +4,7 @@ kiplot:
 preflight:
   # [boolean=false] Zones are filled before doing any operation involving PCB layers
   check_zone_fills: true
-  # A list of entries to filter out ERC/DRC messages. Keys: `filter`, `number` and `regex`
+  # [list(dict)] A list of entries to filter out ERC/DRC messages
   filters: 
     - filter: 'Filter description'
       number: 10

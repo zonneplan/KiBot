@@ -276,42 +276,42 @@ def test_error_step_min_distance():
 def test_filter_not_list():
     ctx = context.TestContext('FilterNotList', PRJ, 'error_filter_not_list', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err(".?filters.? must be a list ")
+    assert ctx.search_err("Option .?filters.? must be any of")
     ctx.clean_up()
 
 
 def test_filter_no_number():
     ctx = context.TestContext('FilterNoNumber', PRJ, 'error_filter_no_number', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("empty .?number.? in .?filter.?")
+    assert ctx.search_err("Option .?number.? must be a number")
     ctx.clean_up()
 
 
 def test_filter_no_number_2():
     ctx = context.TestContext('FilterNoNumber2', PRJ, 'error_filter_no_number_2', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("missing .?number.? for .?filter.?")
+    assert ctx.search_err("Missing .?number.?")
     ctx.clean_up()
 
 
 def test_filter_no_regex():
     ctx = context.TestContext('FilterNoRegex', PRJ, 'error_filter_no_regex', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("empty .?regex.? in .?filter.?")
+    assert ctx.search_err("Option .?regex.? must be a string")
     ctx.clean_up()
 
 
 def test_filter_no_regex_2():
     ctx = context.TestContext('FilterNoRegex2', PRJ, 'error_filter_no_regex_2', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("missing .?regex.? for .?filter.?")
+    assert ctx.search_err("Missing .?regex.?")
     ctx.clean_up()
 
 
 def test_filter_wrong_entry():
     ctx = context.TestContext('FilterWrongEntry', PRJ, 'error_filter_wrong_entry', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err(".?filters.? section of .?preflight.? must contain .?filter.?(.*)Pad 2 of C4")
+    assert ctx.search_err("Unknown option .?numerito.?")
     ctx.clean_up()
 
 
