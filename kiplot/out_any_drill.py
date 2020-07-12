@@ -22,7 +22,7 @@ class DrillReport(Optionable):
         super().__init__()
         with document:
             self.filename = ''
-            """ name of the drill report. Not generated unless a name is specified """  # pragma: no cover
+            """ name of the drill report. Not generated unless a name is specified. (%i='drill' %x='txt') """  # pragma: no cover
         self._unkown_is_error = True
 
 
@@ -80,6 +80,6 @@ class AnyDrill(BaseOptions):
         drill_writer.CreateDrillandMapFilesSet(output_dir, True, gen_map)
 
         if self.report:
-            drill_report_file = os.path.join(output_dir, self.report)
+            drill_report_file = self.expand_filename(output_dir, self.report, 'drill', 'txt')
             logger.debug("Generating drill report: "+drill_report_file)
             drill_writer.GenDrillReportFile(drill_report_file)

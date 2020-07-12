@@ -173,8 +173,7 @@ class PcbDrawOptions(BaseOptions):
 
     def run(self, output_dir, board):
         # Output file name
-        output = self.expand_filename(self.output, 'bottom' if self.bottom else 'top', self.format)
-        output = os.path.abspath(os.path.join(output_dir, output))
+        output = self.expand_filename(output_dir, self.output, 'bottom' if self.bottom else 'top', self.format)
         # Base command with overwrite
         cmd = [PCBDRAW]
         # Add user options

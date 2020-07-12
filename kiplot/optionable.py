@@ -149,7 +149,7 @@ class Optionable(object):
         attrs = self.get_attrs_for()
         return ((k, v) for k, v in attrs.items() if k[0] != '_')
 
-    def expand_filename(self, name, id='', ext=''):
+    def expand_filename(self, out_dir, name, id='', ext=''):
         """ Expands %x values in filenames """
         if GS.board:
             # This is based on InterativeHtmlBom expansion
@@ -180,7 +180,7 @@ class Optionable(object):
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')
             name = re.sub(r'[?%*:|"<>]', '_', name)
-        return name
+        return os.path.abspath(os.path.join(out_dir, name))
 
 
 class BaseOptions(Optionable):

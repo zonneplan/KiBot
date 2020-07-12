@@ -83,8 +83,7 @@ class AnyLayerOptions(BaseOptions):
 
             k_filename = plot_ctrl.GetPlotFileName()
             if self.output:
-                filename = self.expand_filename(self.output, suffix, os.path.splitext(k_filename)[1][1:])
-                filename = os.path.abspath(os.path.join(output_dir, filename))
+                filename = self.expand_filename(output_dir, self.output, suffix, os.path.splitext(k_filename)[1][1:])
             else:
                 filename = k_filename
             logger.debug("Plotting layer `{}` to `{}`".format(l, filename))
@@ -96,8 +95,7 @@ class AnyLayerOptions(BaseOptions):
                 jobfile_writer.AddGbrFile(id, os.path.basename(filename))
 
         if create_job:
-            job_fn = self.expand_filename(po.gerber_job_file, 'job', 'gbrjob')
-            jobfile_writer.CreateJobFile(os.path.abspath(os.path.join(output_dir, job_fn)))
+            jobfile_writer.CreateJobFile(self.expand_filename(output_dir, po.gerber_job_file, 'job', 'gbrjob'))
 
     def read_vals_from_po(self, po):
         # excludeedgelayer
