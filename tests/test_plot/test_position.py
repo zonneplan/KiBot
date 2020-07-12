@@ -88,7 +88,7 @@ def test_3Rs_position_unified():
 def test_3Rs_position_unified_th():
     ctx = context.TestContext('3Rs_position_unified_th', '3Rs', 'simple_position_unified_th', POS_DIR)
     ctx.run()
-    expect_position(ctx, ctx.get_pos_both_filename(), ['R1', 'R2', 'R3'])
+    expect_position(ctx, os.path.join(POS_DIR, ctx.board_name+'-both-pos.pos'), ['R1', 'R2', 'R3'])
     ctx.clean_up()
 
 

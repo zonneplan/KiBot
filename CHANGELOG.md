@@ -14,13 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `regexp` -> `regex`
 - `gerber.gerber_job_file` option to control the gerber job file name.
 - `output` option to control the file name to all plot output formats.
-- `drill` and `drill.map` file names can be configured.
+- `drill`, `drill.map` and `position` file names can be configured.
 
 ### Changed
 - Default file names for:
   - pdf_pcb_print: includes the used layers
   - drill maps: uses drill instead of drl
   - dril: uses drill instead of drl, used in gbr and drl.
+  - position: no -pos in CSVs
 
 ## [0.5.0] - 2020-07-11
 ### Changed

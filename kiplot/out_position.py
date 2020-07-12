@@ -16,19 +16,20 @@ class PositionOptions(BaseOptions):
             """ generate two separated files, one for the top and another for the bottom """
             self.only_smd = True
             """ only include the surface mount components """
+            self.output = '%f-%i.%x'
+            """ output file name (%i='top'|'bottom'|'both', %x='pos'|'csv') """
             self.units = 'millimeters'
             """ [millimeters,inches] units used for the positions """  # pragma: no cover
 
     def _do_position_plot_ascii(self, board, output_dir, columns, modulesStr, maxSizes):
-        name = os.path.splitext(os.path.basename(board.GetFileName()))[0]
         topf = None
         botf = None
         bothf = None
         if self.separate_files_for_front_and_back:
-            topf = open(os.path.join(output_dir, "{}-top.pos".format(name)), 'w')
-            botf = open(os.path.join(output_dir, "{}-bottom.pos".format(name)), 'w')
+            topf = open(self.expand_filename(output_dir, self.output, 'top', 'pos'), 'w')
+            botf = open(self.expand_filename(output_dir, self.output, 'bottom', 'pos'), 'w')
         else:
-            bothf = open(os.path.join(output_dir, "{}-both.pos").format(name), 'w')
+            bothf = open(self.expand_filename(output_dir, self.output, 'both', 'pos'), 'w')
 
         files = [f for f in [topf, botf, bothf] if f is not None]
         for f in files:
@@ -79,15 +80,14 @@ class PositionOptions(BaseOptions):
             bothf.close()
 
     def _do_position_plot_csv(self, board, output_dir, columns, modulesStr):
-        name = os.path.splitext(os.path.basename(board.GetFileName()))[0]
         topf = None
         botf = None
         bothf = None
         if self.separate_files_for_front_and_back:
-            topf = open(os.path.join(output_dir, "{}-top-pos.csv".format(name)), 'w')
-            botf = open(os.path.join(output_dir, "{}-bottom-pos.csv".format(name)), 'w')
+            topf = open(self.expand_filename(output_dir, self.output, 'top', 'csv'), 'w')
+            botf = open(self.expand_filename(output_dir, self.output, 'bottom', 'csv'), 'w')
         else:
-            bothf = open(os.path.join(output_dir, "{}-both-pos.csv").format(name), 'w')
+            bothf = open(self.expand_filename(output_dir, self.output, 'both', 'csv'), 'w')
 
         files = [f for f in [topf, botf, bothf] if f is not None]
 
