@@ -17,15 +17,17 @@ class PDF_Pcb_PrintOptions(BaseOptions):
     def __init__(self):
         super().__init__()
         with document:
-            self.output = '%f.pdf'
-            """ filename for the output PDF """
+            self.output = '%f-%i.%x'
+            """ filename for the output PDF (%i=layers, %x=pdf)"""
             self.output_name = None
             """ {output} """  # pragma: no cover
 
     def run(self, output_dir, board, layers):
         check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.4.1')
+        layers = Layer.solve(layers)
         # Output file name
-        output = os.path.abspath(os.path.join(output_dir, self.expand_filename(self.output)))
+        id = '+'.join([l.suffix for l in layers])
+        output = self.expand_filename(output_dir, self.output, id, 'pdf')
         cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):
             cmd.append('-f')
@@ -34,7 +36,6 @@ class PDF_Pcb_PrintOptions(BaseOptions):
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
         # Add the layers
-        layers = Layer.solve(layers)
         cmd.extend([l.layer for l in layers])
         # Execute it
         logger.debug('Executing: '+str(cmd))

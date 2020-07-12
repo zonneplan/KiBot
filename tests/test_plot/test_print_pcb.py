@@ -19,11 +19,11 @@ if prev_dir not in sys.path:
 from utils import context
 
 PDF_DIR = 'Layers'
-PDF_FILE = 'bom.pdf'
+PDF_FILE = 'bom-F_Cu+F_SilkS.pdf'
 PDF_FILE_B = 'PCB_Bot.pdf'
 
 
-def test_print_pcb():
+def test_print_pcb_simple():
     prj = 'bom'
     ctx = context.TestContext('PrPCB', prj, 'print_pcb', PDF_DIR)
     ctx.run()
