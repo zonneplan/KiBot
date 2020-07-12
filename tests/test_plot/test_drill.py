@@ -36,10 +36,6 @@ def do_3Rs(conf, dir, report):
     ctx.expect_out_file(pth_gbr_drl)
     npth_gbr_drl = ctx.get_npth_gbr_drl_filename()
     ctx.expect_out_file(npth_gbr_drl)
-    pth_pdf_drl = ctx.get_pth_pdf_drl_filename()
-    ctx.expect_out_file(pth_pdf_drl)
-    npth_pdf_drl = ctx.get_npth_pdf_drl_filename()
-    ctx.expect_out_file(npth_pdf_drl)
     # We have R3 at (110, 45) length is 9 mm on X, drill 1 mm
     ctx.search_in_file(pth_drl, ['X110.0Y-45.0', 'X119.0Y-45.0'])
     ctx.expect_gerber_flash_at(pth_gbr_drl, 6, (110, -45))
@@ -48,12 +44,22 @@ def do_3Rs(conf, dir, report):
     ctx.search_in_file(npth_drl, ['X120.0Y-29.0', 'T1C2.100'])
     ctx.expect_gerber_flash_at(npth_gbr_drl, 6, (120, -29))
     ctx.expect_gerber_has_apertures(npth_gbr_drl, ['C,2.100000'])
-    ctx.clean_up()
+    return ctx
 
 
 def test_drill_3Rs():
-    do_3Rs('drill', 'Drill_3Rs', 'report.rpt')
+    ctx = do_3Rs('drill', 'Drill_3Rs', 'report.rpt')
+    pth_pdf_drl = ctx.get_pth_pdf_drl_filename()
+    ctx.expect_out_file(pth_pdf_drl.replace('-drl', '_drill'))
+    npth_pdf_drl = ctx.get_npth_pdf_drl_filename()
+    ctx.expect_out_file(npth_pdf_drl.replace('-drl', '_drill'))
+    ctx.clean_up()
 
 
 def test_drill_legacy_3Rs():
-    do_3Rs('drill_legacy', 'DrillLegacy_3Rs', '3Rs-drill_report.txt')
+    ctx = do_3Rs('drill_legacy', 'DrillLegacy_3Rs', '3Rs-drill_report.txt')
+    pth_pdf_drl = ctx.get_pth_pdf_drl_filename()
+    ctx.expect_out_file(pth_pdf_drl)
+    npth_pdf_drl = ctx.get_npth_pdf_drl_filename()
+    ctx.expect_out_file(npth_pdf_drl)
+    ctx.clean_up()

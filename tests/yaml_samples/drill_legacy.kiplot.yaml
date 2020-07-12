@@ -17,6 +17,7 @@ outputs:
       report:
         filename: '%f-%i.%x'
       map:
+        output: ''
         type: 'pdf'
 
   - name: gerber_drills
