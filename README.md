@@ -308,6 +308,7 @@ Next time you need this list just use an alias, like this:
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
         - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
         - `metric_units`: [boolean=false] use mm instead of inches.
+        - `output`: [string=''] output file name, the default KiCad name if empty.
         - `plot_footprint_refs`: [boolean=true] include the footprint references.
         - `plot_footprint_values`: [boolean=true] include the footprint values.
         - `plot_sheet_reference`: [boolean=false] currently without effect.
@@ -384,6 +385,7 @@ Next time you need this list just use an alias, like this:
         - `gerber_job_file`: [string='%f-job.%x'] name for the gerber job file.
         - `gerber_precision`: [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6.
         - `line_width`: [number=0.1] [0.02,2] line_width for objects without width [mm].
+        - `output`: [string=''] output file name, the default KiCad name if empty.
         - `plot_footprint_refs`: [boolean=true] include the footprint references.
         - `plot_footprint_values`: [boolean=true] include the footprint values.
         - `plot_sheet_reference`: [boolean=false] currently without effect.
@@ -415,6 +417,7 @@ Next time you need this list just use an alias, like this:
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
         - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
         - `mirror_plot`: [boolean=false] plot mirrored.
+        - `output`: [string=''] output file name, the default KiCad name if empty.
         - `pen_number`: [number=1] [1,16] pen number.
         - `pen_speed`: [number=20] [1,99] pen speed.
         - `pen_width`: [number=15] [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
@@ -556,10 +559,12 @@ Next time you need this list just use an alias, like this:
         - `line_width`: [number=0.1] [0.02,2] for objects without width [mm].
         - `mirror_plot`: [boolean=false] plot mirrored.
         - `negative_plot`: [boolean=false] invert black and white.
+        - `output`: [string=''] output file name, the default KiCad name if empty.
         - `plot_footprint_refs`: [boolean=true] include the footprint references.
         - `plot_footprint_values`: [boolean=true] include the footprint values.
         - `plot_sheet_reference`: [boolean=false] currently without effect.
         - `tent_vias`: [boolean=true] cover the vias.
+    - `output`: [string=''] output file name, the default KiCad name if empty.
     - `plot_footprint_refs`: [boolean=true] include the footprint references.
     - `plot_footprint_values`: [boolean=true] include the footprint values.
     - `plot_sheet_reference`: [boolean=false] currently without effect.
@@ -637,6 +642,7 @@ Next time you need this list just use an alias, like this:
         - `line_width`: [number=0.15] [0.02,2] for objects without width [mm].
         - `mirror_plot`: [boolean=false] plot mirrored.
         - `negative_plot`: [boolean=false] invert black and white.
+        - `output`: [string=''] output file name, the default KiCad name if empty.
         - `plot_footprint_refs`: [boolean=true] include the footprint references.
         - `plot_footprint_values`: [boolean=true] include the footprint values.
         - `plot_sheet_reference`: [boolean=false] currently without effect.
@@ -691,6 +697,7 @@ Next time you need this list just use an alias, like this:
         - `line_width`: [number=0.25] [0.02,2] for objects without width [mm].
         - `mirror_plot`: [boolean=false] plot mirrored.
         - `negative_plot`: [boolean=false] invert black and white.
+        - `output`: [string=''] output file name, the default KiCad name if empty.
         - `plot_footprint_refs`: [boolean=true] include the footprint references.
         - `plot_footprint_values`: [boolean=true] include the footprint values.
         - `plot_sheet_reference`: [boolean=false] currently without effect.

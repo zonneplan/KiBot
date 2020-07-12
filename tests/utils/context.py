@@ -133,7 +133,7 @@ class TestContext(object):
 
     def expect_out_file(self, filename):
         file = self.get_out_path(filename)
-        assert os.path.isfile(file)
+        assert os.path.isfile(file), file
         assert os.path.getsize(file) > 0
         logging.debug(filename+' OK')
         return file

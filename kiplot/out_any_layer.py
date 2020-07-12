@@ -27,6 +27,8 @@ class AnyLayerOptions(BaseOptions):
             """ include the footprint values """
             self.force_plot_invisible_refs_vals = False
             """ include references and values even when they are marked as invisible """
+            self.output = ''
+            """ output file name, the default KiCad name if empty """
             self.tent_vias = True
             """ cover the vias """  # pragma: no cover
 
@@ -79,11 +81,19 @@ class AnyLayerOptions(BaseOptions):
                 # Shouldn't happen
                 raise PlotError("OpenPlotfile failed!")  # pragma: no cover
 
-            logger.debug("Plotting layer `{}` to `{}`".format(l, plot_ctrl.GetPlotFileName()))
+            k_filename = plot_ctrl.GetPlotFileName()
+            if self.output:
+                filename = self.expand_filename(self.output, suffix, os.path.splitext(k_filename)[1][1:])
+                filename = os.path.abspath(os.path.join(output_dir, filename))
+            else:
+                filename = k_filename
+            logger.debug("Plotting layer `{}` to `{}`".format(l, filename))
             plot_ctrl.PlotLayer()
             plot_ctrl.ClosePlot()
+            if self.output:
+                os.rename(k_filename, filename)
             if create_job:
-                jobfile_writer.AddGbrFile(id, os.path.basename(plot_ctrl.GetPlotFileName()))
+                jobfile_writer.AddGbrFile(id, os.path.basename(filename))
 
         if create_job:
             job_fn = self.expand_filename(po.gerber_job_file, ext='gbrjob')

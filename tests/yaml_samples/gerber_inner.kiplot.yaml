@@ -28,6 +28,7 @@ outputs:
       gerber_job_file: 'test-%f.%x'
       use_gerber_x2_attributes: true
       use_gerber_net_attributes: false
+      output: '%f_%i.%x'
 
     layers:
       - layer: GND.Cu
