@@ -23,7 +23,7 @@ PDF_DIR = ''
 PDF_FILE = 'Schematic.pdf'
 
 
-def test_print_sch():
+def test_print_sch_ok():
     prj = 'bom'
     ctx = context.TestContext('PrSCH', prj, 'print_sch', PDF_DIR)
     ctx.run()

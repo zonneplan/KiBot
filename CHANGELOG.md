@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `gerber.gerber_job_file` option to control the gerber job file name.
 - `output` option to control the file name to all plot output formats.
 - `drill`, `drill.map` and `position` file names can be configured.
+- Output file names supports expansion of various interesting values (base
+  name, sheet title, revision, etc.)
 
 ### Changed
 - Default file names for:
@@ -23,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - dril: uses drill instead of drl, used in gbr and drl.
   - position: no -pos in CSVs
   - step: adds -3D
+  - pdf_sch_print: adds -schematic
 
 ## [0.5.0] - 2020-07-11
 ### Changed

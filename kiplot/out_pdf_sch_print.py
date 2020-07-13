@@ -14,8 +14,8 @@ class PDF_Sch_PrintOptions(BaseOptions):
     def __init__(self):
         super().__init__()
         with document:
-            self.output = ''
-            """ filename for the output PDF (the name of the schematic if empty) """  # pragma: no cover
+            self.output = '%f-%i.%x'
+            """ filename for the output PDF (%i=schematic %x=pdf) """  # pragma: no cover
 
     def run(self, output_dir, board):
         check_eeschema_do()
@@ -29,8 +29,10 @@ class PDF_Sch_PrintOptions(BaseOptions):
             logger.error(CMD_EESCHEMA_DO+' returned %d', ret)
             exit(PDF_SCH_PRINT)
         if self.output:
-            cur = os.path.abspath(os.path.join(output_dir, os.path.splitext(os.path.basename(GS.pcb_file))[0]) + '.pdf')
-            new = os.path.abspath(os.path.join(output_dir, self.output))
+            id = 'schematic'
+            ext = 'pdf'
+            cur = self.expand_filename_sch(output_dir, '%f.%x', id, ext)
+            new = self.expand_filename_sch(output_dir, self.output, id, ext)
             logger.debug('Moving '+cur+' -> '+new)
             os.rename(cur, new)
 

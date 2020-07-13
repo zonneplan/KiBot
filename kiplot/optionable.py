@@ -150,31 +150,38 @@ class Optionable(object):
         return ((k, v) for k, v in attrs.items() if k[0] != '_')
 
     def expand_filename(self, out_dir, name, id='', ext=''):
-        """ Expands %x values in filenames """
+        """ Expands %* values in filenames.
+            Uses data from the PCB. """
         if GS.board:
-            # This is based on InterativeHtmlBom expansion
-            title_block = GS.board.GetTitleBlock()
-            file_date = title_block.GetDate()
-            if not file_date:
-                file_mtime = os.path.getmtime(GS.pcb_file)
-                file_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d_%H-%M-%S')
-            pcb_file_name = os.path.splitext(os.path.basename(GS.pcb_file))[0]
-            title = title_block.GetTitle()
-            if not title:
-                title = pcb_file_name
-            revision = title_block.GetRevision()
-            company = title_block.GetCompany()
-            n = datetime.now()
-            today = n.strftime('%Y-%m-%d')
-            time = n.strftime('%H-%M-%S')
+            GS.load_pcb_title_block()
             # Do the replacements
-            name = name.replace('%f', pcb_file_name)
-            name = name.replace('%p', title)
-            name = name.replace('%c', company)
-            name = name.replace('%r', revision)
-            name = name.replace('%d', file_date)
-            name = name.replace('%D', today)
-            name = name.replace('%T', time)
+            name = name.replace('%f', GS.pcb_basename)
+            name = name.replace('%p', GS.pcb_title)
+            name = name.replace('%c', GS.pcb_comp)
+            name = name.replace('%r', GS.pcb_rev)
+            name = name.replace('%d', GS.pcb_date)
+            name = name.replace('%D', GS.today)
+            name = name.replace('%T', GS.time)
+            name = name.replace('%i', id)
+            name = name.replace('%x', ext)
+            # sanitize the name to avoid characters illegal in file systems
+            name = name.replace('\\', '/')
+            name = re.sub(r'[?%*:|"<>]', '_', name)
+        return os.path.abspath(os.path.join(out_dir, name))
+
+    def expand_filename_sch(self, out_dir, name, id='', ext=''):
+        """ Expands %* values in filenames.
+            Uses data from the SCH. """
+        if GS.sch_file:
+            GS.load_sch_title_block()
+            # Do the replacements
+            name = name.replace('%f', GS.sch_basename)
+            name = name.replace('%p', GS.sch_title)
+            name = name.replace('%c', GS.sch_comp)
+            name = name.replace('%r', GS.sch_rev)
+            name = name.replace('%d', GS.sch_date)
+            name = name.replace('%D', GS.today)
+            name = name.replace('%T', GS.time)
             name = name.replace('%i', id)
             name = name.replace('%x', ext)
             # sanitize the name to avoid characters illegal in file systems
