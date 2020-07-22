@@ -65,6 +65,8 @@ outputs:
       # [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
       # Not generated unless a format is specified
       map:
+        # [string='%f-%i.%x'] name for the map file, KiCad defaults if empty (%i='PTH_drill_map')
+        output: '%f-%i.%x'
         # [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map
         type: 'pdf'
       # [boolean=true] use metric units instead of inches
@@ -73,11 +75,14 @@ outputs:
       minimal_header: false
       # [boolean=false] invert the Y axis
       mirror_y_axis: false
+      # [string='%f-%i.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill')
+      output: '%f-%i.%x'
       # [boolean=true] generate one file for both, plated holes and non-plated holes, instead of two separated files
       pth_and_npth_single_file: true
       # [dict|string] name of the drill report. Not generated unless a name is specified
       report:
-        # [string=''] name of the drill report. Not generated unless a name is specified
+        # [string=''] name of the drill report. Not generated unless a name is specified.
+        # (%i='drill_report' %x='txt')
         filename: ''
       # [boolean=false] use the auxiliar axis as origin for coordinates
       use_aux_axis_as_origin: false
@@ -93,11 +98,16 @@ outputs:
       # [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
       # Not generated unless a format is specified
       map:
+        # [string='%f-%i.%x'] name for the map file, KiCad defaults if empty (%i='PTH_drill_map')
+        output: '%f-%i.%x'
         # [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map
         type: 'pdf'
+      # [string='%f-%i.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill')
+      output: '%f-%i.%x'
       # [dict|string] name of the drill report. Not generated unless a name is specified
       report:
-        # [string=''] name of the drill report. Not generated unless a name is specified
+        # [string=''] name of the drill report. Not generated unless a name is specified.
+        # (%i='drill_report' %x='txt')
         filename: ''
       # [boolean=false] use the auxiliar axis as origin for coordinates
       use_aux_axis_as_origin: false
@@ -118,8 +128,8 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
-      # [string='%f-job.%x'] name for the gerber job file
-      gerber_job_file: '%f-job.%x'
+      # [string='%f-%i.%x'] name for the gerber job file (%i='job', %x='gbrjob')
+      gerber_job_file: '%f-%i.%x'
       # [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6
       gerber_precision: 4.6
       # [number=0.1] [0.02,2] line_width for objects without width [mm]
@@ -259,12 +269,102 @@ outputs:
     type: 'kibom'
     dir: 'Example/kibom_dir'
     options:
-      # [string='bom.ini'] BoM configuration file, relative to PCB
-      conf: 'bom.ini'
-      # [string='HTML'] [HTML,CSV] format for the BoM
+      # [string|dict] BoM configuration file, relative to PCB.
+      # You can also define the configuration here, will be stored in `config.kibom.ini`
+      conf:
+        # [list(dict)|list(string)] List of columns to display.
+        # Can be just the name of the field
+        columns:
+          # [string=''] Name of the field to use for this column
+          field: ''
+          # [list(string)|string] List of fields to join to this column
+          join:
+          # [string=''] Name to display in the header. The field is used when empty
+          name: ''
+        # [list(list(string))] A series of values which are considered to be equivalent for the part name.
+        # Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
+        # will ensure the equivalent capacitor symbols can be grouped together.
+        # If empty the following aliases are used:
+        # - ['r', 'r_small', 'res', 'resistor']
+        # - ['l', 'l_small', 'inductor']
+        # - ['c', 'c_small', 'cap', 'capacitor']
+        # - ['sw', 'switch']
+        # - ['zener', 'zenersmall']
+        # - ['d', 'diode', 'd_small']
+        component_aliases:
+        # [string=''] Column with links to the datasheet (HTML only)
+        datasheet_as_link: ''
+        # [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only)
+        digikey_link:
+        # [list(dict)] A series of regular expressions used to exclude parts.
+        # If a component matches ANY of these, it will be excluded.
+        # Column names are case-insensitive.
+        # If empty the following list is used:
+        # - column: References
+        # ..regex: '^TP[0-9]*'
+        # - column: References
+        # ..regex: '^FID'
+        # - column: Part
+        # ..regex: 'mount.*hole'
+        # - column: Part
+        # ..regex: 'solder.*bridge'
+        # - column: Part
+        # ..regex: 'test.*point'
+        # - column: Footprint
+        # ..regex 'test.*point'
+        # - column: Footprint
+        # ..regex: 'mount.*hole'
+        # - column: Footprint
+        # ..regex: 'fiducial'
+        exclude_any:
+          # [string=''] Name of the column to apply the regular expression
+          column: ''
+          # `field` is an alias for `column`
+          # [string=''] Regular expression to match
+          regex: ''
+          # `regexp` is an alias for `regex`
+        # [string='Config'] Field name used to determine if a particular part is to be fitted (also DNC and variants)
+        fit_field: 'Config'
+        # [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector
+        group_connectors: true
+        # [list(string)] List of fields used for sorting individual components into groups.
+        # Components which match (comparing *all* fields) will be grouped together.
+        # Field names are case-insensitive.
+        # If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used
+        group_fields:
+        # [boolean=false] Hide column headers
+        hide_headers: false
+        # [boolean=false] Hide project information
+        hide_pcb_info: false
+        # [boolean=true] Generate a separated section for DNF (Do Not Fit) components (HTML only)
+        html_generate_dnf: true
+        # [boolean=true] Exclude DNF (Do Not Fit) components
+        ignore_dnf: true
+        # [list(dict)] A series of regular expressions used to select included parts.
+        # If there are any regex defined here, only components that match against ANY of them will be included.
+        # Column names are case-insensitive.
+        # If empty all the components are included
+        include_only:
+          # [string=''] Name of the column to apply the regular expression
+          column: ''
+          # `field` is an alias for `column`
+          # [string=''] Regular expression to match
+          regex: ''
+          # `regexp` is an alias for `regex`
+        # [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible
+        merge_blank_fields: true
+        # [boolean=true] First column is the row number
+        number_rows: true
+        # [boolean=true] Each component group will be tested against a number of regular-expressions (see ``).
+        test_regex: true
+        # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
+        use_alt: false
+      # [string='HTML'] [HTML,CSV,XML,XLSX] format for the BoM
       format: 'HTML'
       # [number=1] Number of boards to build (components multiplier)
       number: 1
+      # [string='%f-%i.%x'] filename for the output (%i=bom)
+      output: '%f-%i.%x'
       # [string=','] CSV Separator
       separator: ','
       # [string=''] Board variant(s), used to determine which components
@@ -373,8 +473,8 @@ outputs:
     type: 'pdf_pcb_print'
     dir: 'Example/pdf_pcb_print_dir'
     options:
-      # [string='%f.pdf'] filename for the output PDF
-      output: '%f.pdf'
+      # [string='%f-%i.%x'] filename for the output PDF (%i=layers, %x=pdf)
+      output: '%f-%i.%x'
       # `output_name` is an alias for `output`
     layers: all
 
@@ -386,8 +486,8 @@ outputs:
     type: 'pdf_sch_print'
     dir: 'Example/pdf_sch_print_dir'
     options:
-      # [string=''] filename for the output PDF (the name of the schematic if empty)
-      output: ''
+      # [string='%f-%i.%x'] filename for the output PDF (%i=schematic %x=pdf)
+      output: '%f-%i.%x'
 
   # Pick & place:
   # This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew.
@@ -400,6 +500,8 @@ outputs:
       format: 'ASCII'
       # [boolean=true] only include the surface mount components
       only_smd: true
+      # [string='%f-%i.%x'] output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv')
+      output: '%f-%i.%x'
       # [boolean=true] generate two separated files, one for the top and another for the bottom
       separate_files_for_front_and_back: true
       # [string='millimeters'] [millimeters,inches] units used for the positions
@@ -469,8 +571,8 @@ outputs:
       # The drill option uses the auxiliar reference defined by the user.
       # You can define any other origin using the format 'X,Y', i.e. '3.2,-10'
       origin: 'grid'
-      # [string=''] name for the generated STEP file (the name of the PCB if empty)
-      output: ''
+      # [string='%f-%i.%x'] name for the generated STEP file (%i='3D' %x='step')
+      output: '%f-%i.%x'
 
   # SVG (Scalable Vector Graphics):
   # Unlike bitmaps SVG drawings can be scaled without losing resolution.
