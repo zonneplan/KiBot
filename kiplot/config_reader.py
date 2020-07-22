@@ -165,7 +165,15 @@ def print_output_options(name, cl, indent):
         print('{}{}{}'.format(preface, lines[0].strip(), '.' if clines == 1 else ''))
         ind_help = len(preface)*' '
         for ln in range(1, clines):
-            print('{}{}'.format(ind_help+lines[ln].strip(), '.' if ln+1 == clines else ''))
+            text = lines[ln].strip()
+            # Dots at the beggining are replaced by spaces.
+            # Used to keep indentation.
+            if text[0] == '.':
+                for i in range(1, len(text)):
+                    if text[i] != '.':
+                        break
+                text = ' '*i+text[i:]
+            print('{}{}'.format(ind_help+text, '.' if ln+1 == clines else ''))
         num_opts = num_opts+1
         if isinstance(v, type):
             print_output_options('', v, indent+4)
