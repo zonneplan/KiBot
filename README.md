@@ -2,15 +2,16 @@
 
 ![Python application](https://github.com/INTI-CMNB/kiplot/workflows/Python%20application/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/INTI-CMNB/kiplot/badge.svg?branch=master)](https://coveralls.io/github/INTI-CMNB/kiplot?branch=master)
 
-KiPlot is a program which helps you to plot your KiCad PCBs to output
-formats easily, repeatable, and most of all, scriptably. This means you
-can use a Makefile to export your KiCad PCBs just as needed.
+KiPlot is a program which helps you to generate the fabrication and
+documentation files for your KiCad projects easily, repeatable, and
+most of all, scriptably. This means you can use a Makefile to export
+your KiCad PCBs just as needed.
 
 For example, it's common that you might want for each board rev:
 
 * Check ERC/DRC one last time (using [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/))
 * Gerbers, drills and drill maps for a fab in their favourite format
-* Fab docs for the assembler
+* Fab docs for the assembler, including the BoM (Bill of Materials)
 * Pick and place files
 * PCB 3D model in STEP format
 
@@ -20,19 +21,19 @@ datasheet.
 
 KiPlot lets you do this.
 
-As a side effect of providing a scriptable plot driver for KiCad, KiPlot also
-allows functional testing of KiCad plot functions, which would otherwise be
-somewhat unwieldy to write.
-
 ## The configuration file
 
 Kiplot uses a configuration file where you can specify what *outputs* to
 generate. By default you'll generate all of them, but you can specify which
 ones from the command line.
 
-The configuration file should be named **.kiplot.yaml**. The format used is
-[YAML](https://yaml.org/). This is basically a text file with some structure.
+The configuration file should be named using the **.kiplot.yaml** suffix,
+i.e. *my_project.kiplot.yaml*. The format used is [YAML](https://yaml.org/).
+This is basically a text file with some structure.
 This file can be compressed using *gzip* file format.
+
+If you never used YAML read the following [explanation](docs/KiPlotYAML.md).
+Note that the explanation could be useful even if you know YAML.
 
 ### The header
 
@@ -79,9 +80,13 @@ preflight:
 
 ### Filtering DRC/ERC errors
 
-Sometimes KiCad reports DRC or ERC errors that you can't get rid off. This could be just because you are part of a team including lazzy people that doesn't want to take the extra effort to solve some errors that aren't in fact errors, just small violations made on purpose. In this case you could exclude some known errors.
+Sometimes KiCad reports DRC or ERC errors that you can't get rid off.
+This could be just because you are part of a team including lazzy people that doesn't want to take the extra effort to solve
+some errors that aren't in fact errors, just small violations made on purpose. In this case you could exclude some known errors.
 
-For this you must declare `filters` entry in the `preflight` section. Then you can add as many `filter` entries as you want. Each filter entry has an optional description and defines to which error type is applied (`number`) and a regular expression that the error must match to be ignored (`regex`). Like this:
+For this you must declare `filters` entry in the `preflight` section. Then you can add as many `filter` entries as you want.
+Each filter entry has an optional description and defines to which error type is applied (`number`) and a regular expression
+that the error must match to be ignored (`regex`). Like this:
 
 ```
   filters:
@@ -833,8 +838,9 @@ Options:
 ### Dependencies
 
 - For ERC, DRC, BoM XML update and PCB/SCH print install [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/)
-- For HTML/CSV BoM install [KiBoM](https://github.com/INTI-CMNB/KiBoM)
+- For HTML/CSV/XML/XLSX BoM install [KiBoM](https://github.com/INTI-CMNB/KiBoM)
 - For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
+- For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw)
 
 ### Installation on Ubuntu/Debian:
 
@@ -842,6 +848,9 @@ Get the Debian package from the [releases section](https://github.com/INTI-CMNB/
 ```
 sudo apt install ./kiplot.inti-cmnb_*_all.deb
 ```
+
+**Important note**: Sometimes the release needs another packages that aren't part of the stable Debian distribution.
+In this case the packages are also included in the release.
 
 ### Installation on other targets
 
