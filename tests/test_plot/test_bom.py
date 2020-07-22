@@ -32,9 +32,9 @@ def test_bom_ok():
     ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
     # Check all outputs are there
     # Default format is PRJ_bom_REVISION
-    name = os.path.join(BOM_DIR, prj+'_bom_')
-    csv = name+'.csv'
-    html = name+'_(pp).html'
+    name = os.path.join(BOM_DIR, prj)
+    csv = name+'-bom.csv'
+    html = name+'_bom__(pp).html'
     ctx.expect_out_file(csv)
     ctx.expect_out_file(html)
     ctx.search_in_file(csv, ['R,R1,100', 'R,R2,200', 'C,C1,1uF'])
@@ -45,4 +45,51 @@ def test_bom_ok():
 def test_bom_fail():
     ctx = context.TestContext('BoM_fail', 'bom_no_xml', 'bom', BOM_DIR)
     ctx.run(BOM_ERROR)
+    ctx.clean_up()
+
+
+def test_bom_cfg_1():
+    prj = 'bom'
+    ctx = context.TestContext('BoMConfig1', prj, 'bom_cfg', BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
+    name = os.path.join(BOM_DIR, prj)
+    csv = name+'-bom.csv'
+    ctx.expect_out_file(csv)
+    ctx.search_in_file(csv, ['R,R1,100 ~', 'R,R2,200 ~', 'C,C1,1uF ~'])
+    ctx.clean_up()
+
+
+def test_bom_cfg_2():
+    prj = 'bom'
+    ctx = context.TestContext('BoMConfig2', prj, 'bom_cfg2', BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
+    name = os.path.join(BOM_DIR, prj)
+    csv = name+'-bom.csv'
+    ctx.expect_out_file(csv)
+    ctx.search_in_file(csv, ['R,100,R1', 'R,200,R2'])
+    ctx.search_not_in_file(csv, ['C,1uF,C1'])
+    ctx.clean_up()
+
+
+def test_bom_cfg_3():
+    """ Without any column """
+    prj = 'bom'
+    ctx = context.TestContext('BoMConfig3', prj, 'bom_cfg3', BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
+    name = os.path.join(BOM_DIR, prj)
+    csv = name+'-bom.csv'
+    ctx.expect_out_file(csv)
+    ctx.search_in_file(csv, ['R,R1,100', 'R,R2,200', 'C,C1,1uF'])
+    ctx.clean_up()
+
+
+def test_bom_cfg_4():
+    """ Without join """
+    prj = 'bom'
+    ctx = context.TestContext('BoMConfig4', prj, 'bom_cfg4', BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
+    name = os.path.join(BOM_DIR, prj)
+    csv = name+'-bom.csv'
+    ctx.expect_out_file(csv)
+    ctx.search_in_file(csv, ['R,100,R1', 'R,200,R2', 'C,1uF,C1'])
     ctx.clean_up()

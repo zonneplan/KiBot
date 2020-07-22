@@ -1,4 +1,3 @@
-import os
 from subprocess import (call)
 from .pre_base import BasePreFlight
 from .error import (KiPlotConfigurationError)

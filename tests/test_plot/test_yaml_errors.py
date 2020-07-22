@@ -38,6 +38,9 @@ Tests various errors in the config file
 - Unknown section
 - HPGL wrong pen_number
 - KiBoM wrong format
+  - Invalid column name
+  - Failed to get columns
+  - Column without field
 - PcbDraw
   - Wrong color
 
@@ -53,7 +56,7 @@ sys.path.insert(0, os.path.dirname(prev_dir))
 # Utils import
 from utils import context
 sys.path.insert(0, os.path.dirname(prev_dir))
-from kiplot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR)
+from kiplot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR, BOM_ERROR)
 
 
 PRJ = 'fail-project'
@@ -399,8 +402,29 @@ def test_error_hpgl_pen_num():
 
 def test_error_bom_wrong_format():
     ctx = context.TestContext('BoMWrongFormat', PRJ, 'error_bom_wrong_format', '')
-    ctx.run(EXIT_BAD_CONFIG)
+    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
     assert ctx.search_err("Option .?format.? must be any of")
+    ctx.clean_up()
+
+
+def test_error_bom_column():
+    ctx = context.TestContext('BoMColumn', PRJ, 'error_bom_column', '')
+    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
+    assert ctx.search_err("Invalid column name .?Impossible.?")
+    ctx.clean_up()
+
+
+def test_error_bom_no_columns():
+    ctx = context.TestContext('BoMNoColumns', PRJ, 'error_bom_column', '')
+    ctx.run(BOM_ERROR, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom_no_xml.sch')])
+    assert ctx.search_err("Failed to get the column names")
+    ctx.clean_up()
+
+
+def test_error_bom_no_field():
+    ctx = context.TestContext('BoMNoField', PRJ, 'error_bom_no_field', '')
+    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'fail-erc.sch')])
+    assert ctx.search_err("Missing or empty .?field.?")
     ctx.clean_up()
 
 

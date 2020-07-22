@@ -10,6 +10,8 @@ outputs:
     options:
       format: HTML  # HTML or CSV
       variant: pp
+      output: ''    # Keep KiBoM name
+      conf: ''
 
   - name: 'bom_csv'
     comment: "Bill of Materials in CSV format"

@@ -67,6 +67,8 @@ def check_version(command, version):
     result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     z = re.match(command + r' (\d+\.\d+\.\d+)', result.stdout)
     if not z:
+        z = re.search(r'Version: (\d+\.\d+\.\d+)', result.stdout)
+    if not z:
         logger.error('Unable to determine ' + command + ' version:\n' +
                      result.stdout)
         exit(MISSING_TOOL)
