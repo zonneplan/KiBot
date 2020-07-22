@@ -36,8 +36,8 @@ class FiltersOptions(Optionable):
             self.filters = FilterOptions
             """ [list(dict)] DRC/ERC errors to be ignored """  # pragma: no cover
 
-    def config(self, tree):
-        super().config(tree)
+    def config(self):
+        super().config()
         parsed = None
         for f in self.filters:
             where = ' (in `{}` filter)'.format(f.filter) if f.filter else ''
@@ -62,7 +62,8 @@ class Filters(BasePreFlight):  # noqa: F821
     """ [list(dict)] A list of entries to filter out ERC/DRC messages """
     def __init__(self, name, value):
         f = FiltersOptions()
-        f.config({'filters': value})
+        f.set_tree({'filters': value})
+        f.config()
         super().__init__(name, f.filters)
 
     def get_example():

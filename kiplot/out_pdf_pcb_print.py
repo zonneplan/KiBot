@@ -62,8 +62,8 @@ class PDF_Pcb_Print(BaseOutput):  # noqa: F821
             """ [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to include in the PDF """  # pragma: no cover
 
-    def config(self, tree):
-        super().config(tree)
+    def config(self):
+        super().config()
         # We need layers
         if isinstance(self.layers, type):
             raise KiPlotConfigurationError("Missing `layers` list")

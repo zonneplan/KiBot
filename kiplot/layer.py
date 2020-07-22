@@ -70,10 +70,10 @@ class Layer(Optionable):
             """ A description for the layer, for documentation purposes """  # pragma: no cover
         self._unkown_is_error = True
 
-    def config(self, tree):
-        super().config(tree)
+    def config(self):
+        super().config()
         if not self.layer:
-            raise KiPlotConfigurationError("Missing or empty `layer` attribute for layer entry ({})".format(tree))
+            raise KiPlotConfigurationError("Missing or empty `layer` attribute for layer entry ({})".format(self._tree))
         if not self.description:
             if self.layer in Layer.DEFAULT_LAYER_DESC:
                 self.description = Layer.DEFAULT_LAYER_DESC[self.layer]

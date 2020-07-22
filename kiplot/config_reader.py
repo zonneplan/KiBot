@@ -41,14 +41,14 @@ class CfgYamlReader(object):
             config_error("Unknown KiPlot config version: "+str(version))
         return version
 
-    def _parse_output(self, o_obj):
+    def _parse_output(self, o_tree):
         try:
-            name = o_obj['name']
+            name = o_tree['name']
         except KeyError:
-            config_error("Output needs a name in: "+str(o_obj))
+            config_error("Output needs a name in: "+str(o_tree))
 
         try:
-            otype = o_obj['type']
+            otype = o_tree['type']
         except KeyError:
             config_error("Output `"+name+"` needs a type")
 
@@ -60,11 +60,10 @@ class CfgYamlReader(object):
         # Load it
         logger.debug("Parsing output options for "+name_type)
         o_out = RegOutput.get_class_for(otype)()
-        # Apply the options
-        try:
-            o_out.config(o_obj)
-        except KiPlotConfigurationError as e:
-            config_error("In section '"+name+"' ("+otype+"): "+str(e))
+        o_out.set_tree(o_tree)
+        # Set the data we already know, so we can skip the configurations that aren't requested
+        o_out.name = name
+        o_out.type = otype
 
         return o_out
 

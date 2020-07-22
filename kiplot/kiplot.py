@@ -145,6 +145,13 @@ def get_output_dir(o_dir):
     return outdir
 
 
+def config_output(out):
+    try:
+        out.config()
+    except KiPlotConfigurationError as e:
+        config_error("In section '"+out.name+"' ("+out.type+"): "+str(e))
+
+
 def generate_outputs(outputs, target, invert, skip_pre):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
     preflight_checks(skip_pre)
@@ -158,12 +165,13 @@ def generate_outputs(outputs, target, invert, skip_pre):
     board = None
     for out in outputs:
         if (n == 0) or ((out.name in target) ^ invert):
-            logger.info('- '+str(out))
             # Should we load the PCB?
             if out.is_pcb() and (board is None):
                 board = load_board()
             if out.is_sch():
                 GS.check_sch()
+            config_output(out)
+            logger.info('- '+str(out))
             try:
                 out.run(get_output_dir(out.dir), board)
             except PlotError as e:

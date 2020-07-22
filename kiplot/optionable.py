@@ -117,7 +117,8 @@ class Optionable(object):
                         # Create an object for the valid class
                         v = cur_val()
                         # Delegate the validation to the object
-                        v.config(new_val)
+                        v.set_tree(new_val)
+                        v.config()
                     elif isinstance(v, list):
                         new_val = []
                         for element in v:
@@ -127,7 +128,8 @@ class Optionable(object):
                                                                format(element, valid, e_type))
                             if isinstance(element, dict):
                                 nv = cur_val()
-                                nv.config(element)
+                                nv.set_tree(element)
+                                nv.config()
                                 new_val.append(nv)
                             else:
                                 new_val.append(element)
@@ -135,9 +137,11 @@ class Optionable(object):
             # Seems to be ok, map it
             setattr(self, alias if is_alias else k, v)
 
-    def config(self, tree):
+    def set_tree(self, tree):
         self._tree = tree
-        if tree:
+
+    def config(self):
+        if self._tree:
             self._perform_config_mapping()
 
     def get_attrs_for(self):

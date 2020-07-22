@@ -53,10 +53,10 @@ class AnyDrill(BaseOptions):
                          'svg': PLOT_FORMAT_SVG,
                          'pdf': PLOT_FORMAT_PDF
                         }
-        self._map_ext = { 'hpgl': 'plt', 'ps': 'ps', 'gerber': 'gbr', 'dxf': 'dxf', 'svg': 'svg', 'pdf': 'pdf' }
+        self._map_ext = {'hpgl': 'plt', 'ps': 'ps', 'gerber': 'gbr', 'dxf': 'dxf', 'svg': 'svg', 'pdf': 'pdf'}
 
-    def config(self, tree):
-        super().config(tree)
+    def config(self):
+        super().config()
         # Solve the map for both cases
         if isinstance(self.map, str):
             self.map_ext = self._map_ext[self.map]

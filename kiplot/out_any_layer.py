@@ -122,8 +122,8 @@ class AnyLayer(BaseOutput):
             """ [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot """  # pragma: no cover
 
-    def config(self, tree):
-        super().config(tree)
+    def config(self):
+        super().config()
         # We need layers
         if isinstance(self.layers, type):
             raise KiPlotConfigurationError("Missing `layers` list")

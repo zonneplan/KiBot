@@ -37,8 +37,8 @@ class BaseOutput(RegOutput):
         """ True for outputs that works on the PCB """
         return not self._sch_related
 
-    def config(self, tree):
-        super().config(tree)
+    def config(self):
+        super().config()
         if getattr(self, 'options', None) and isinstance(self.options, type):
             # No options, get the defaults
             self.options = self.options()

@@ -44,8 +44,8 @@ class PcbDrawStyle(Optionable):
         if not self._color_re.match(color):
             raise KiPlotConfigurationError('Invalid color for `{}` use `#rrggbb` with hex digits'.format(name))
 
-    def config(self, tree):
-        super().config(tree)
+    def config(self):
+        super().config()
         self.validate_color('board')
         self.validate_color('copper')
         self.validate_color('board')
@@ -67,8 +67,8 @@ class PcbDrawRemap(Optionable):
     def __init__(self):
         super().__init__()
 
-    def config(self, tree):
-        self._tree = tree
+    def config(self):
+        pass
 
 
 class PcbDrawOptions(BaseOptions):
@@ -105,8 +105,8 @@ class PcbDrawOptions(BaseOptions):
             self.output = '%f-%i.%x'
             """ name for the generated file """  # pragma: no cover
 
-    def config(self, tree):
-        super().config(tree)
+    def config(self):
+        super().config()
         # Libs
         if isinstance(self.libs, type):
             self.libs = None

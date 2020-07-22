@@ -54,7 +54,7 @@ from logging import DEBUG
 from . import log
 log.set_domain('kiplot')
 from .gs import (GS)
-from .kiplot import (generate_outputs, load_actions)
+from .kiplot import (generate_outputs, load_actions, config_output)
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example)
 from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS)
@@ -74,6 +74,7 @@ def list_pre_and_outs(logger, outputs):
     if len(outputs):
         logger.info('Outputs:')
         for o in outputs:
+            config_output(o)
             logger.info('- '+str(o))
 
 
