@@ -36,13 +36,13 @@ def do_3Rs(conf, dir, modern):
     report = 'report.rpt'
 
     if modern:
-       pth_drl = pth_drl.replace('PTH', 'PTH_drill')
-       npth_drl = npth_drl.replace('PTH', 'PTH_drill')
-       pth_gbr_drl = pth_gbr_drl.replace('-drl', '_drill')
-       npth_gbr_drl = npth_gbr_drl.replace('-drl', '_drill')
-       pth_pdf_drl = pth_pdf_drl.replace('-drl', '_drill')
-       npth_pdf_drl = npth_pdf_drl.replace('-drl', '_drill')
-       report = '3Rs-drill_report.txt'
+        pth_drl = pth_drl.replace('PTH', 'PTH_drill')
+        npth_drl = npth_drl.replace('PTH', 'PTH_drill')
+        pth_gbr_drl = pth_gbr_drl.replace('-drl', '_drill')
+        npth_gbr_drl = npth_gbr_drl.replace('-drl', '_drill')
+        pth_pdf_drl = pth_pdf_drl.replace('-drl', '_drill')
+        npth_pdf_drl = npth_pdf_drl.replace('-drl', '_drill')
+        report = '3Rs-drill_report.txt'
 
     ctx.expect_out_file(os.path.join(DRILL_DIR, report))
     ctx.expect_out_file(pth_drl)
@@ -63,9 +63,8 @@ def do_3Rs(conf, dir, modern):
 
 
 def test_drill_3Rs():
-    ctx = do_3Rs('drill', 'Drill_3Rs', True)
+    do_3Rs('drill', 'Drill_3Rs', True)
 
 
 def test_drill_legacy_3Rs():
-    ctx = do_3Rs('drill_legacy', 'DrillLegacy_3Rs', False)
-
+    do_3Rs('drill_legacy', 'DrillLegacy_3Rs', False)

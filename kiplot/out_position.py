@@ -1,4 +1,3 @@
-import os
 import operator
 from datetime import datetime
 from pcbnew import (IU_PER_MM, IU_PER_MILS)

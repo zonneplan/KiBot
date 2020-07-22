@@ -1,4 +1,3 @@
-import os
 import re
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from .error import KiPlotConfigurationError
