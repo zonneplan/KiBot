@@ -43,14 +43,15 @@ class GS(object):
         GS.sch_date = ''
         GS.sch_rev = ''
         GS.sch_comp = ''
-        if not GS.sch_file:
-            return
         re_val = re.compile(r"(\w+)\s+\"([^\"]+)\"")
         with open(GS.sch_file) as f:
             for line in f:
                 m = re_val.match(line)
                 if not m:
-                    continue
+                    if line.startswith("$EndDescr"):
+                        break
+                    # This line is executed, but coverage fails to detect it
+                    continue  # pragma: no cover
                 name, val = m.groups()
                 if name == "Title":
                     GS.sch_title = val
@@ -60,11 +61,9 @@ class GS(object):
                     GS.sch_rev = val
                 elif name == "Comp":
                     GS.sch_comp = val
-                elif name == "$EndDescr":
-                    break
         if not GS.sch_date:
             file_mtime = os.path.getmtime(GS.sch_file)
-            GS.sch_file = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d_%H-%M-%S')
+            GS.sch_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d_%H-%M-%S')
         GS.sch_basename = os.path.splitext(os.path.basename(GS.sch_file))[0]
         if not GS.sch_title:
             GS.sch_title = GS.sch_basename
@@ -81,8 +80,6 @@ class GS(object):
         GS.pcb_date = ''
         GS.pcb_rev = ''
         GS.pcb_comp = ''
-        if not GS.board:
-            return
         # This is based on InterativeHtmlBom expansion
         title_block = GS.board.GetTitleBlock()
         GS.pcb_date = title_block.GetDate()

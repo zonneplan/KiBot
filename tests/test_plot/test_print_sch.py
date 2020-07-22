@@ -24,7 +24,7 @@ PDF_FILE = 'Schematic.pdf'
 
 
 def test_print_sch_ok():
-    prj = 'bom'
+    prj = 'bom_no_xml'  # bom has meta data, here we test no meta-data
     ctx = context.TestContext('PrSCH', prj, 'print_sch', PDF_DIR)
     ctx.run()
     # Check all outputs are there
