@@ -240,7 +240,8 @@ outputs:
       # %d : pcb date from metadata if available, file modification date otherwise.
       # %D : bom generation date.
       # %T : bom generation time.
-      # Extension .html will be added automatically
+      # Extension .html will be added automatically.
+      # Note that this name is used only when output is ''
       name_format: 'ibom'
       # [string=''] Path to netlist or xml file
       netlist_file: ''
@@ -250,6 +251,8 @@ outputs:
       no_redraw_on_drag: false
       # [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field
       normalize_field_case: false
+      # [string='%f-%i.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html)
+      output: '%f-%i.%x'
       # [boolean=false] Show fabrication layer by default
       show_fabrication: false
       # [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once

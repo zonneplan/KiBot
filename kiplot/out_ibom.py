@@ -14,6 +14,8 @@ class IBoMOptions(BaseOptions):
     def __init__(self):
         super().__init__()
         with document:
+            self.output = '%f-%i.%x'
+            """ Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html) """
             self.dark_mode = False
             """ Default to dark mode """
             self.hide_pads = False
@@ -43,7 +45,8 @@ class IBoMOptions(BaseOptions):
                 %d : pcb date from metadata if available, file modification date otherwise.
                 %D : bom generation date.
                 %T : bom generation time.
-                Extension .html will be added automatically """
+                Extension .html will be added automatically.
+                Note that this name is used only when output is '' """
             self.include_tracks = False
             """ Include track/zone information in output. F.Cu and B.Cu layers only """
             self.include_nets = False
@@ -78,9 +81,15 @@ class IBoMOptions(BaseOptions):
         # Tell ibom we don't want to use the screen
         os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = ''
         cmd = [CMD_IBOM, GS.pcb_file, '--dest-dir', output_dir, '--no-browser', ]
+        # Solve the output name
+        output = None
+        if self.output:
+            output = self.expand_filename(output_dir, self.output, 'ibom', 'html')
+            self.name_format = 'ibom'
+            cur = os.path.join(output_dir, 'ibom.html')
         # Convert attributes into options
         for k, v in self.get_attrs_gen():
-            if not v:
+            if not v or k == 'output':
                 continue
             cmd.append(BaseOutput.attr2longopt(k))  # noqa: F821
             if not isinstance(v, bool):  # must be str/(int, float)
@@ -89,12 +98,19 @@ class IBoMOptions(BaseOptions):
         logger.debug('Running: '+str(cmd))
         try:
             cmd_output = check_output(cmd, stderr=STDOUT)
+            cmd_output_dec = cmd_output.decode()
+            # IBoM returns 0 for this error!!!
+            if 'ERROR Parsing failed' in cmd_output_dec:
+                raise CalledProcessError(1, cmd, cmd_output)
         except CalledProcessError as e:
             logger.error('Failed to create BoM, error %d', e.returncode)
             if e.output:
                 logger.debug('Output from command: '+e.output.decode())
             exit(BOM_ERROR)
-        logger.debug('Output from command:\n'+cmd_output.decode()+'\n')
+        logger.debug('Output from command:\n'+cmd_output_dec+'\n')
+        if output:
+            logger.debug('Renaming output file: {} -> {}'.format(cur, output))
+            os.rename(cur, output)
 
 
 @output_class
@@ -108,4 +124,3 @@ class IBoM(BaseOutput):  # noqa: F821
         with document:
             self.options = IBoMOptions
             """ [dict] Options for the `ibom` output """  # pragma: no cover
-        self._sch_related = True

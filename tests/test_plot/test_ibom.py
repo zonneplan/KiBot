@@ -24,7 +24,7 @@ if prev_dir not in sys.path:
 from kiplot.misc import (BOM_ERROR)
 
 BOM_DIR = 'BoM'
-IBOM_OUT = 'ibom.html'
+IBOM_OUT = 'bom-ibom.html'
 
 
 def test_ibom():
@@ -32,7 +32,7 @@ def test_ibom():
     ctx = context.TestContext('BoM_interactive', prj, 'ibom', BOM_DIR)
     ctx.run()
     # Check all outputs are there
-    # We us this format: %f_iBoM
+    # We use this format: %f_iBoM
     name = os.path.join(BOM_DIR, prj+'_iBoM')
     html = name+'.html'
     ctx.expect_out_file(html)
@@ -48,7 +48,7 @@ def test_ibom_no_ops():
 
 
 def test_ibom_fail():
-    ctx = context.TestContext('BoM_interactiveFail', 'bom_no_xml', 'ibom', BOM_DIR)
+    ctx = context.TestContext('BoM_interactiveFail', 'ibom_fail', 'ibom', BOM_DIR)
     ctx.run(BOM_ERROR)
     ctx.clean_up()
 

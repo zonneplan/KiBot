@@ -24,10 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Default file names for:
   - pdf_pcb_print: includes the used layers
   - drill maps: uses drill instead of drl
-  - dril: uses drill instead of drl, used in gbr and drl.
+  - drill: uses drill instead of drl, used in gbr and drl.
   - position: no -pos in CSVs
   - step: adds -3D
   - pdf_sch_print: adds -schematic
+  - IBoM: contains the project name.
 
 ## [0.5.0] - 2020-07-11
 ### Changed

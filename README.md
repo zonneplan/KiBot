@@ -474,10 +474,12 @@ Next time you need this list just use an alias, like this:
                          %D : bom generation date.
                          %T : bom generation time.
                          Extension .html will be added automatically.
+                         Note that this name is used only when output is ''.
         - `netlist_file`: [string=''] Path to netlist or xml file.
         - `no_blacklist_virtual`: [boolean=false] Do not blacklist virtual components.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
         - `normalize_field_case`: [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
+        - `output`: [string='%f-%i.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html).
         - `show_fabrication`: [boolean=false] Show fabrication layer by default.
         - `sort_order`: [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once.
         - `variant_field`: [string=''] Name of the extra field that stores board variant for component.

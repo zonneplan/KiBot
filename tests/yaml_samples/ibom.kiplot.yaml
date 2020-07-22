@@ -18,6 +18,7 @@ outputs:
       bom_view: 'left-right'
       layer_view: 'FB'
       name_format: '%f_iBoM'
+      output: ''
       include_tracks: false
       include_nets: false
       sort_order: 'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'
