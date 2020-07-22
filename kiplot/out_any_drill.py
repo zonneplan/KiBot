@@ -14,7 +14,7 @@ class DrillMap(Optionable):
     def __init__(self):
         super().__init__()
         with document:
-            self.output = self._out_def
+            self.output = '%f-%i.%x'  # self._out_def not supported by the macro
             """ name for the map file, KiCad defaults if empty (%i='PTH_drill_map') """
             self.type = 'pdf'
             """ [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map """  # pragma: no cover
@@ -26,7 +26,8 @@ class DrillReport(Optionable):
         super().__init__()
         with document:
             self.filename = ''
-            """ name of the drill report. Not generated unless a name is specified. (%i='drill_report' %x='txt') """  # pragma: no cover
+            """ name of the drill report. Not generated unless a name is specified.
+                (%i='drill_report' %x='txt') """  # pragma: no cover
         self._unkown_is_error = True
 
 
