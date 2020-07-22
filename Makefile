@@ -1,5 +1,6 @@
 #!/usr/bin/make
 PY_COV=python3-coverage
+PYTEST=pytest-3
 REFDIR=tests/reference/
 REFILL=tests/board_samples/zone-refill.kicad_pcb
 CWD := $(abspath $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST))))))
@@ -21,14 +22,14 @@ lint: doc
 
 test: lint
 	$(PY_COV) erase
-	pytest-3
+	$(PYTEST)
 	$(PY_COV) report
 
 test_local: lint
 	rm -rf output
 	rm -f example.kiplot.yaml
 	$(PY_COV) erase
-	pytest-3 --test_dir output
+	$(PYTEST) --test_dir output
 	$(PY_COV) report
 	$(PY_COV) html
 	x-www-browser htmlcov/index.html
@@ -43,6 +44,15 @@ test_docker_local:
 	$(PY_COV) report
 	$(PY_COV) html
 	x-www-browser htmlcov/index.html
+
+single_test:
+	rm -rf pp
+	-$(PYTEST) --log-cli-level debug -k "$(SINGLE_TEST)" --test_dir pp
+	@echo "********************" Output
+	@cat pp/*/output.txt
+	@echo "********************" Error
+	@cat pp/*/error.txt
+	@rm -f tests/input_samples/bom.ini
 
 deb_clean:
 	fakeroot debian/rules clean
