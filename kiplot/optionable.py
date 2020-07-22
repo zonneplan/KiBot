@@ -2,7 +2,6 @@ import os
 import re
 import inspect
 from re import compile
-from datetime import datetime
 from .error import KiPlotConfigurationError
 from .gs import GS
 from . import log
