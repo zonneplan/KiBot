@@ -18,6 +18,8 @@ from .pre_base import BasePreFlight
 from . import log
 
 logger = log.get_logger(__name__)
+# Cache to avoid running external many times to check their versions
+script_versions = {}
 
 
 try:
@@ -62,6 +64,9 @@ def load_actions():
 
 
 def check_version(command, version):
+    global script_versions
+    if command in script_versions:
+        return
     cmd = [command, '--version']
     logger.debug('Running: '+str(cmd))
     result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
@@ -77,6 +82,7 @@ def check_version(command, version):
         logger.error('Wrong version for `'+command+'` ('+res[0]+'), must be ' +
                      version+' or newer.')
         exit(MISSING_TOOL)
+    script_versions[command] = res[0]
 
 
 def check_script(cmd, url, version=None):
