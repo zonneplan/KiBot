@@ -2,6 +2,7 @@ import os
 from pcbnew import (PLOT_FORMAT_HPGL, PLOT_FORMAT_POST, PLOT_FORMAT_GERBER, PLOT_FORMAT_DXF, PLOT_FORMAT_SVG,
                     PLOT_FORMAT_PDF, wxPoint)
 from .optionable import (Optionable, BaseOptions)
+from .gs import GS
 from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
@@ -9,15 +10,13 @@ logger = log.get_logger(__name__)
 
 
 class DrillMap(Optionable):
-    _out_def = '%f-%i.%x'
-
     def __init__(self):
-        super().__init__()
         with document:
-            self.output = '%f-%i.%x'  # self._out_def not supported by the macro
+            self.output = GS.def_global_output
             """ name for the map file, KiCad defaults if empty (%i='PTH_drill_map') """
             self.type = 'pdf'
             """ [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map """  # pragma: no cover
+        super().__init__()
         self._unkown_is_error = True
 
 
@@ -33,7 +32,6 @@ class DrillReport(Optionable):
 
 class AnyDrill(BaseOptions):
     def __init__(self):
-        super().__init__()
         # Options
         with document:
             self.use_aux_axis_as_origin = False
@@ -41,10 +39,11 @@ class AnyDrill(BaseOptions):
             self.map = DrillMap
             """ [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
                 Not generated unless a format is specified """
-            self.output = '%f-%i.%x'
+            self.output = GS.def_global_output
             """ name for the drill file, KiCad defaults if empty (%i='PTH_drill') """
             self.report = DrillReport
             """ [dict|string] name of the drill report. Not generated unless a name is specified """  # pragma: no cover
+        super().__init__()
         # Mappings to KiCad values
         self._map_map = {
                          'hpgl': PLOT_FORMAT_HPGL,
@@ -61,7 +60,7 @@ class AnyDrill(BaseOptions):
         # Solve the map for both cases
         if isinstance(self.map, str):
             self.map_ext = self._map_ext[self.map]
-            self.map_output = DrillMap._out_def
+            self.map_output = GS.global_output if GS.global_output is not None else GS.def_global_output
             self.map = self._map_map[self.map]
         elif isinstance(self.map, DrillMap):
             self.map_ext = self._map_ext[self.map.type]

@@ -20,8 +20,10 @@ class Optionable(object):
     _num_range_re = compile(r"\[number=.*\] \[(-?\d+),(-?\d+)\]")
 
     def __init__(self):
-        super().__init__()
         self._unkown_is_error = False
+        super().__init__()
+        if GS.global_output is not None and getattr(self, 'output', None):
+            setattr(self, 'output', GS.global_output)
 
     @staticmethod
     def _check_str(key, val, doc):

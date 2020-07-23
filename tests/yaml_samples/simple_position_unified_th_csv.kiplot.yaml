@@ -2,8 +2,10 @@
 kiplot:
   version: 1
 
-outputs:
+global:
+  output: 'Test_%f-%i_OK.%x'
 
+outputs:
   - name: 'position'
     comment: "Pick and place file"
     type: position

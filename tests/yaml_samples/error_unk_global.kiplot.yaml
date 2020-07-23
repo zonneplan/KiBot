@@ -1,0 +1,7 @@
+kiplot:
+  version: 1
+
+global:
+  # Not valid global
+  outputs: 1
+

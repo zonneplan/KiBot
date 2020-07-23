@@ -12,10 +12,10 @@ logger = log.get_logger(__name__)
 
 class PDF_Sch_PrintOptions(BaseOptions):
     def __init__(self):
-        super().__init__()
         with document:
-            self.output = '%f-%i.%x'
+            self.output = GS.def_global_output
             """ filename for the output PDF (%i=schematic %x=pdf) """  # pragma: no cover
+        super().__init__()
 
     def run(self, output_dir, board):
         check_eeschema_do()

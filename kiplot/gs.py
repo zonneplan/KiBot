@@ -41,6 +41,9 @@ class GS(object):
     pcb_date = None
     pcb_rev = None
     pcb_comp = None
+    # Global defaults
+    global_output = None
+    def_global_output = '%f-%i.%x'
 
     @staticmethod
     def set_sch(name):

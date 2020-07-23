@@ -12,7 +12,6 @@ logger = log.get_logger(__name__)
 
 class STEPOptions(BaseOptions):
     def __init__(self):
-        super().__init__()
         with document:
             self.metric_units = True
             """ use metric units instead of inches """
@@ -24,8 +23,9 @@ class STEPOptions(BaseOptions):
             """ used to exclude 3D models for components with 'virtual' attribute """
             self.min_distance = -1
             """ the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm) """
-            self.output = '%f-%i.%x'
+            self.output = GS.def_global_output
             """ name for the generated STEP file (%i='3D' %x='step') """  # pragma: no cover
+        super().__init__()
 
     @property
     def origin(self):

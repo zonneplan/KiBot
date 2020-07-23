@@ -4,6 +4,7 @@ from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
 from .optionable import BaseOptions
 from .layer import Layer
+from .gs import GS
 from kiplot.macros import macros, document  # noqa: F401
 from . import log
 
@@ -13,7 +14,6 @@ logger = log.get_logger(__name__)
 class AnyLayerOptions(BaseOptions):
     """ Base class for: DXF, Gerber, HPGL, PDF, PS and SVG """
     def __init__(self):
-        super().__init__()
         with document:
             self.exclude_edge_layer = True
             """ do not include the PCB edge layer """
@@ -27,10 +27,11 @@ class AnyLayerOptions(BaseOptions):
             """ include the footprint values """
             self.force_plot_invisible_refs_vals = False
             """ include references and values even when they are marked as invisible """
-            self.output = ''
+            self.output = GS.def_global_output
             """ output file name, the default KiCad name if empty """
             self.tent_vias = True
             """ cover the vias """  # pragma: no cover
+        super().__init__()
 
     def _configure_plot_ctrl(self, po, output_dir):
         logger.debug("Configuring plot controller for output")

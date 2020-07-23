@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Support for full KiBoM configuration from the YAML
+- Added default output file name pattern. Can be applied to all outputs.
 - Unified output name:
   - `pdf_pcb_print.output` can be used instead of `pdf_pcb_print.output_name`
   - `gerber.gerber_job_file` option to control the gerber job file name.

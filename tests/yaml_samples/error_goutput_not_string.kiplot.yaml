@@ -1,0 +1,7 @@
+kiplot:
+  version: 1
+
+global:
+  # Should be a string
+  output: 1
+

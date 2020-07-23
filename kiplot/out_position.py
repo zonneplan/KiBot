@@ -2,12 +2,12 @@ import operator
 from datetime import datetime
 from pcbnew import (IU_PER_MM, IU_PER_MILS)
 from .optionable import BaseOptions
+from .gs import GS
 from kiplot.macros import macros, document, output_class  # noqa: F401
 
 
 class PositionOptions(BaseOptions):
     def __init__(self):
-        super().__init__()
         with document:
             self.format = 'ASCII'
             """ [ASCII,CSV] format for the position file """
@@ -15,10 +15,11 @@ class PositionOptions(BaseOptions):
             """ generate two separated files, one for the top and another for the bottom """
             self.only_smd = True
             """ only include the surface mount components """
-            self.output = '%f-%i.%x'
+            self.output = GS.def_global_output
             """ output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
             self.units = 'millimeters'
             """ [millimeters,inches] units used for the positions """  # pragma: no cover
+        super().__init__()
 
     def _do_position_plot_ascii(self, board, output_dir, columns, modulesStr, maxSizes):
         topf = None

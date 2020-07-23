@@ -130,7 +130,7 @@ def test_3Rs_position_unified_csv():
 def test_3Rs_position_unified_th_csv():
     ctx = context.TestContext('3Rs_position_unified_th_csv', '3Rs', 'simple_position_unified_th_csv', POS_DIR)
     ctx.run()
-    expect_position(ctx, ctx.get_pos_both_csv_filename(), ['R1', 'R2', 'R3'], csv=True)
+    expect_position(ctx, os.path.join(POS_DIR, 'Test_3Rs-both_pos_OK.csv'), ['R1', 'R2', 'R3'], csv=True)
     ctx.clean_up()
 
 

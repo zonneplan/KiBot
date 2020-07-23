@@ -1,0 +1,9 @@
+kiplot:
+  version: 1
+
+# A list, should be a dict
+global:
+  - 1
+  - 2
+  - 3
+

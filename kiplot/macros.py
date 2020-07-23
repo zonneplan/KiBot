@@ -1,3 +1,4 @@
+from .gs import GS  # noqa: F401
 from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store, UnaryOp, USub,
                  ClassDef, Call, ImportFrom, alias)
 
@@ -40,6 +41,7 @@ def document(sentences, to_source, **kw):
             doc_id = '_help_'+name
             # Create the type hint for numbers, strings and booleans
             type_hint = ''
+            post_hint = ''
             if isinstance(value, Num):
                 type_hint = '[number={}]'.format(value.n)
             elif isinstance(value, UnaryOp) and isinstance(value.operand, Num) and isinstance(value.op, USub):
@@ -49,12 +51,24 @@ def document(sentences, to_source, **kw):
                 type_hint = "[string='{}']".format(value.s)
             elif isinstance(value, NameConstant) and isinstance(value.value, bool):
                 type_hint = '[boolean={}]'.format(str(value.value).lower())
+            elif isinstance(value, Attribute):
+                # Used for the default options. I.e. GS.def_global_option
+                val = eval(to_source(value))
+                if isinstance(val, bool):
+                    # Not used yet
+                    type_hint = '[boolean={}]'.format(str(val).lower())  # pragma: no cover
+                elif isinstance(val, (int, float)):
+                    # Not used yet
+                    type_hint = '[number={}]'.format(val)  # pragma: no cover
+                elif isinstance(val, str):
+                    type_hint = "[string='{}']".format(val)
+                post_hint += '. Affected by global options'
             # Transform the string into an assign for _help_ID
             if is_attr:
                 target = Attribute(value=Name(id='self', ctx=Load()), attr=doc_id, ctx=Store())
             else:  # pragma: no cover
                 target = Name(id=doc_id, ctx=Store())
-            sentences[n] = Assign(targets=[target], value=Str(s=type_hint+s.value.s))
+            sentences[n] = Assign(targets=[target], value=Str(s=type_hint+s.value.s.rstrip()+post_hint))
         prev = s
     # Return the modified AST
     return sentences

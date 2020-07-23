@@ -73,7 +73,6 @@ class PcbDrawRemap(Optionable):
 
 class PcbDrawOptions(BaseOptions):
     def __init__(self):
-        super().__init__()
         with document:
             self.style = PcbDrawStyle
             """ [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options """
@@ -102,8 +101,9 @@ class PcbDrawOptions(BaseOptions):
             """ [10,1200] dots per inch (resolution) of the generated image """
             self.format = 'svg'
             """ [svg,png,jpg] output format. Only used if no `output` is specified """
-            self.output = '%f-%i.%x'
+            self.output = GS.def_global_output
             """ name for the generated file """  # pragma: no cover
+        super().__init__()
 
     def config(self):
         super().config()

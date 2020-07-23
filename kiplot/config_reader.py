@@ -9,7 +9,7 @@ from collections import OrderedDict
 from .error import (KiPlotConfigurationError, config_error)
 from .kiplot import (load_board)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE)
-
+from .gs import GS
 from .reg_out import RegOutput
 from .pre_base import BasePreFlight
 
@@ -82,6 +82,20 @@ class CfgYamlReader(object):
                 config_error("In preflight '"+k+"': "+str(e))
             BasePreFlight.add_preflight(o_pre)
 
+    def _parse_global(self, gb):
+        """ Get global options """
+        logger.debug("Parsing global options: {}".format(gb))
+        if not isinstance(gb, dict):
+            config_error("Incorrect `global` section")
+
+        for k, v in gb.items():
+            if k == 'output':
+                if not isinstance(v, str):
+                    config_error("Global `output` must be a string")
+                GS.global_output = v
+            else:
+                logger.warning("Unknown global option `{}`".format(k))
+
     def read(self, fstream):
         """
         Read a file object into a config object
@@ -102,6 +116,8 @@ class CfgYamlReader(object):
                 version = self._check_version(v)
             elif k == 'preflight':
                 self._parse_preflight(v)
+            elif k == 'global':
+                self._parse_global(v)
             elif k == 'outputs':
                 if isinstance(v, list):
                     for o in v:

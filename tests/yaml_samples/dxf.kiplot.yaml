@@ -15,6 +15,7 @@ outputs:
       plot_footprint_values: true
       force_plot_invisible_refs_vals: false
       tent_vias: true
+      output: ''   # Use KiCad default
 
       # DXF options
       drill_marks: full

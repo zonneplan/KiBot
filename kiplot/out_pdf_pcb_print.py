@@ -14,12 +14,12 @@ logger = log.get_logger(__name__)
 
 class PDF_Pcb_PrintOptions(BaseOptions):
     def __init__(self):
-        super().__init__()
         with document:
-            self.output = '%f-%i.%x'
+            self.output = GS.def_global_output
             """ filename for the output PDF (%i=layers, %x=pdf)"""
             self.output_name = None
             """ {output} """  # pragma: no cover
+        super().__init__()
 
     def run(self, output_dir, board, layers):
         check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.4.1')

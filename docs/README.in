@@ -1,6 +1,7 @@
 # KiPlot
 
-![Python application](https://github.com/INTI-CMNB/kiplot/workflows/Python%20application/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/INTI-CMNB/kiplot/badge.svg?branch=master)](https://coveralls.io/github/INTI-CMNB/kiplot?branch=master)
+![Python application](https://github.com/INTI-CMNB/kiplot/workflows/Python%20application/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/INTI-CMNB/kiplot/badge.svg?branch=master)](https://coveralls.io/github/INTI-CMNB/kiplot?branch=master)
 
 KiPlot is a program which helps you to generate the fabrication and
 documentation files for your KiCad projects easily, repeatable, and
@@ -63,7 +64,7 @@ preflight:
   ignore_unconnected: false
 ```
 
-### Filtering DRC/ERC errors
+#### Filtering DRC/ERC errors
 
 Sometimes KiCad reports DRC or ERC errors that you can't get rid off.
 This could be just because you are part of a team including lazzy people that doesn't want to take the extra effort to solve
@@ -113,6 +114,38 @@ If you have two or more different options for a text to match try using `(OPTION
 A complete Python regular expressions explanation is out the scope of this manual. For a complete reference consult the [Python manual](https://docs.python.org/3/library/re.html).
 
 **Important note**: this will create a file named *kiplot_errors.filter* in the output directory.
+
+
+### Default global options
+
+The section `global` contains default global options that affects all the outputs.
+Currently only one option is supported.
+
+#### Default `output` option
+
+This option controls the default file name pattern used by all the outputs. This makes all the file names coherent.
+You can always choose the file name for a particular output.
+
+The pattern uses the following expansions:
+
+- **%f** original pcb/sch file name without extension.
+- **%p** pcb/sch title from pcb metadata.
+- **%c** company from pcb/sch metadata.
+- **%r** revision from pcb/sch metadata.
+- **%d** pcb/sch date from metadata if available, file modification date otherwise.
+- **%D** date the script was started.
+- **%T** time the script was started.
+- **%i** a contextual ID, depends on the output type.
+- **%x** a suitable extension for the output type.
+
+They are compatible with the ones used by IBoM.
+The default value for `global.output` is `%f-%i.%x`.
+If you want to include the revision you could add the following definition:
+
+```
+global:
+  output: '%f_rev_%r-%i.%x'
+```
 
 ### The *outputs* section
 
@@ -200,7 +233,7 @@ outputs:
 Most options are the same you'll find in the KiCad dialogs.
 
 
-### Specifying the layers
+#### Specifying the layers
 
 You have various ways to specify the layers. If you need to specify just one layer you can just use its name:
 
@@ -275,7 +308,7 @@ Next time you need this list just use an alias, like this:
     layers: *copper_and_cmts
 ```
 
-### @outputs@
+#### @outputs@
 
 ## Using KiPlot
 

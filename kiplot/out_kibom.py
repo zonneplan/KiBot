@@ -289,7 +289,6 @@ class KiBoMConfig(Optionable):
 
 class KiBoMOptions(BaseOptions):
     def __init__(self):
-        super().__init__()
         with document:
             self.number = 1
             """ Number of boards to build (components multiplier) """
@@ -303,10 +302,11 @@ class KiBoMOptions(BaseOptions):
                 You can also define the configuration here, will be stored in `config.kibom.ini` """
             self.separator = ','
             """ CSV Separator """
-            self.output = '%f-%i.%x'
+            self.output = GS.def_global_output
             """ filename for the output (%i=bom)"""
             self.format = 'HTML'
             """ [HTML,CSV,XML,XLSX] format for the BoM """  # pragma: no cover
+        super().__init__()
 
     def config(self):
         super().config()

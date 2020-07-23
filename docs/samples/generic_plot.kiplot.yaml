@@ -36,8 +36,8 @@ outputs:
       force_plot_invisible_refs_vals: false
       # [boolean=false] use mm instead of inches
       metric_units: false
-      # [string=''] output file name, the default KiCad name if empty
-      output: ''
+      # [string='%f-%i.%x'] output file name, the default KiCad name if empty . Affected by global options
+      output: '%f-%i.%x'
       # [boolean=true] include the footprint references
       plot_footprint_refs: true
       # [boolean=true] include the footprint values
@@ -65,7 +65,7 @@ outputs:
       # [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
       # Not generated unless a format is specified
       map:
-        # [string='%f-%i.%x'] name for the map file, KiCad defaults if empty (%i='PTH_drill_map')
+        # [string='%f-%i.%x'] name for the map file, KiCad defaults if empty (%i='PTH_drill_map') . Affected by global options
         output: '%f-%i.%x'
         # [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map
         type: 'pdf'
@@ -75,7 +75,7 @@ outputs:
       minimal_header: false
       # [boolean=false] invert the Y axis
       mirror_y_axis: false
-      # [string='%f-%i.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill')
+      # [string='%f-%i.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill') . Affected by global options
       output: '%f-%i.%x'
       # [boolean=true] generate one file for both, plated holes and non-plated holes, instead of two separated files
       pth_and_npth_single_file: true
@@ -98,11 +98,11 @@ outputs:
       # [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
       # Not generated unless a format is specified
       map:
-        # [string='%f-%i.%x'] name for the map file, KiCad defaults if empty (%i='PTH_drill_map')
+        # [string='%f-%i.%x'] name for the map file, KiCad defaults if empty (%i='PTH_drill_map') . Affected by global options
         output: '%f-%i.%x'
         # [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map
         type: 'pdf'
-      # [string='%f-%i.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill')
+      # [string='%f-%i.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill') . Affected by global options
       output: '%f-%i.%x'
       # [dict|string] name of the drill report. Not generated unless a name is specified
       report:
@@ -134,8 +134,8 @@ outputs:
       gerber_precision: 4.6
       # [number=0.1] [0.02,2] line_width for objects without width [mm]
       line_width: 0.1
-      # [string=''] output file name, the default KiCad name if empty
-      output: ''
+      # [string='%f-%i.%x'] output file name, the default KiCad name if empty . Affected by global options
+      output: '%f-%i.%x'
       # [boolean=true] include the footprint references
       plot_footprint_refs: true
       # [boolean=true] include the footprint values
@@ -173,8 +173,8 @@ outputs:
       force_plot_invisible_refs_vals: false
       # [boolean=false] plot mirrored
       mirror_plot: false
-      # [string=''] output file name, the default KiCad name if empty
-      output: ''
+      # [string='%f-%i.%x'] output file name, the default KiCad name if empty . Affected by global options
+      output: '%f-%i.%x'
       # [number=1] [1,16] pen number
       pen_number: 1
       # [number=20] [1,99] pen speed
@@ -251,7 +251,7 @@ outputs:
       no_redraw_on_drag: false
       # [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field
       normalize_field_case: false
-      # [string='%f-%i.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html)
+      # [string='%f-%i.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html) . Affected by global options
       output: '%f-%i.%x'
       # [boolean=false] Show fabrication layer by default
       show_fabrication: false
@@ -366,7 +366,7 @@ outputs:
       format: 'HTML'
       # [number=1] Number of boards to build (components multiplier)
       number: 1
-      # [string='%f-%i.%x'] filename for the output (%i=bom)
+      # [string='%f-%i.%x'] filename for the output (%i=bom). Affected by global options
       output: '%f-%i.%x'
       # [string=','] CSV Separator
       separator: ','
@@ -398,7 +398,7 @@ outputs:
       mirror: false
       # [boolean=false] do not make holes transparent
       no_drillholes: false
-      # [string='%f-%i.%x'] name for the generated file
+      # [string='%f-%i.%x'] name for the generated file . Affected by global options
       output: '%f-%i.%x'
       # [boolean=false] show placeholder for missing components
       placeholder: false
@@ -456,8 +456,8 @@ outputs:
       mirror_plot: false
       # [boolean=false] invert black and white
       negative_plot: false
-      # [string=''] output file name, the default KiCad name if empty
-      output: ''
+      # [string='%f-%i.%x'] output file name, the default KiCad name if empty . Affected by global options
+      output: '%f-%i.%x'
       # [boolean=true] include the footprint references
       plot_footprint_refs: true
       # [boolean=true] include the footprint values
@@ -476,7 +476,7 @@ outputs:
     type: 'pdf_pcb_print'
     dir: 'Example/pdf_pcb_print_dir'
     options:
-      # [string='%f-%i.%x'] filename for the output PDF (%i=layers, %x=pdf)
+      # [string='%f-%i.%x'] filename for the output PDF (%i=layers, %x=pdf). Affected by global options
       output: '%f-%i.%x'
       # `output_name` is an alias for `output`
     layers: all
@@ -489,7 +489,7 @@ outputs:
     type: 'pdf_sch_print'
     dir: 'Example/pdf_sch_print_dir'
     options:
-      # [string='%f-%i.%x'] filename for the output PDF (%i=schematic %x=pdf)
+      # [string='%f-%i.%x'] filename for the output PDF (%i=schematic %x=pdf) . Affected by global options
       output: '%f-%i.%x'
 
   # Pick & place:
@@ -503,7 +503,7 @@ outputs:
       format: 'ASCII'
       # [boolean=true] only include the surface mount components
       only_smd: true
-      # [string='%f-%i.%x'] output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv')
+      # [string='%f-%i.%x'] output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') . Affected by global options
       output: '%f-%i.%x'
       # [boolean=true] generate two separated files, one for the top and another for the bottom
       separate_files_for_front_and_back: true
@@ -533,8 +533,8 @@ outputs:
       mirror_plot: false
       # [boolean=false] invert black and white
       negative_plot: false
-      # [string=''] output file name, the default KiCad name if empty
-      output: ''
+      # [string='%f-%i.%x'] output file name, the default KiCad name if empty . Affected by global options
+      output: '%f-%i.%x'
       # [boolean=true] include the footprint references
       plot_footprint_refs: true
       # [boolean=true] include the footprint values
@@ -574,7 +574,7 @@ outputs:
       # The drill option uses the auxiliar reference defined by the user.
       # You can define any other origin using the format 'X,Y', i.e. '3.2,-10'
       origin: 'grid'
-      # [string='%f-%i.%x'] name for the generated STEP file (%i='3D' %x='step')
+      # [string='%f-%i.%x'] name for the generated STEP file (%i='3D' %x='step') . Affected by global options
       output: '%f-%i.%x'
 
   # SVG (Scalable Vector Graphics):
@@ -599,8 +599,8 @@ outputs:
       mirror_plot: false
       # [boolean=false] invert black and white
       negative_plot: false
-      # [string=''] output file name, the default KiCad name if empty
-      output: ''
+      # [string='%f-%i.%x'] output file name, the default KiCad name if empty . Affected by global options
+      output: '%f-%i.%x'
       # [boolean=true] include the footprint references
       plot_footprint_refs: true
       # [boolean=true] include the footprint values

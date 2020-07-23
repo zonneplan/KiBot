@@ -462,3 +462,25 @@ def test_error_color():
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Invalid color for .?board.?")
     ctx.clean_up()
+
+
+def test_wrong_global():
+    ctx = context.TestContext('WrongGlobal', 'bom', 'error_wrong_global', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Incorrect .?global.? section")
+    ctx.clean_up()
+
+
+def test_goutput_not_string():
+    ctx = context.TestContext('GOutNotString', 'bom', 'error_goutput_not_string', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Global .?output.? must be a string")
+    ctx.clean_up()
+
+
+def test_unk_global():
+    ctx = context.TestContext('UnkGlobal', 'bom', 'error_unk_global', '')
+    ctx.run()
+    assert ctx.search_err("Unknown global option")
+    ctx.search_err("WARNING:Unknown global option")
+    ctx.clean_up()

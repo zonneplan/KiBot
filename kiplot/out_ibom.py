@@ -12,9 +12,8 @@ logger = log.get_logger(__name__)
 
 class IBoMOptions(BaseOptions):
     def __init__(self):
-        super().__init__()
         with document:
-            self.output = '%f-%i.%x'
+            self.output = GS.def_global_output
             """ Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html) """
             self.dark_mode = False
             """ Default to dark mode """
@@ -74,6 +73,7 @@ class IBoMOptions(BaseOptions):
             self.dnp_field = ''
             """ Name of the extra field that indicates do not populate status. Components with this field not empty will be
                 blacklisted """  # pragma: no cover
+        super().__init__()
 
     def run(self, output_dir, board):
         check_script(CMD_IBOM, URL_IBOM)
