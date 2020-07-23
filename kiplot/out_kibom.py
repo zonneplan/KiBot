@@ -153,7 +153,7 @@ class KiBoMConfig(Optionable):
         csv = None
         columns = None
         try:
-            xml = os.path.splitext(os.path.abspath(GS.sch_file))[0]+'.xml'
+            xml = GS.sch_no_ext+'.xml'
             config = os.path.abspath(KiBoMConfig._create_minimal_ini())
             with NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
                 csv = f.name
@@ -324,8 +324,8 @@ class KiBoMOptions(BaseOptions):
     def run(self, output_dir, board):
         check_script(CMD_KIBOM, URL_KIBOM, '1.8.0')
         format = self.format.lower()
-        prj = os.path.splitext(os.path.abspath(GS.sch_file))[0]
-        config = os.path.join(os.path.dirname(os.path.abspath(GS.sch_file)), self.conf)
+        prj = GS.sch_no_ext
+        config = os.path.join(GS.sch_dir, self.conf)
         if self.output:
             force_output = True
             output = self.expand_filename_sch(output_dir, self.output, 'bom', format)

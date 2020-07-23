@@ -205,9 +205,9 @@ def main():
         sys.exit(0)
 
     # Determine the SCH file
-    GS.sch_file = solve_schematic(args.schematic, args.board_file)
+    GS.set_sch(solve_schematic(args.schematic, args.board_file))
     # Determine the PCB file
-    GS.pcb_file = solve_board_file(GS.sch_file, args.board_file)
+    GS.set_pcb(solve_board_file(GS.sch_file, args.board_file))
 
     generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre)
 

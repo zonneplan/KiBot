@@ -13,10 +13,17 @@ class GS(object):
     Class to keep the global settings.
     Is a static class, just a placeholder for some global variables.
     """
-    pcb_file = None
-    sch_basename = None
-    sch_file = None
-    sch_basename = None
+    # PCB name and useful parts
+    pcb_file = None      # /.../dir/file.sch
+    pcb_no_ext = None    # /.../dir/file
+    pcb_dir = None       # /.../dir
+    pcb_basename = None  # file
+    # SCH name and useful parts
+    sch_file = None      # /.../dir/pcb.kicad_pcb
+    sch_basename = None  # /.../dir/pcb
+    sch_no_ext = None    # /.../dir
+    sch_dir = None       # pcb
+    # Main output dir
     out_dir = None
     filter_file = None
     board = None
@@ -34,6 +41,24 @@ class GS(object):
     pcb_date = None
     pcb_rev = None
     pcb_comp = None
+
+    @staticmethod
+    def set_sch(name):
+        if name:
+            name = os.path.abspath(name)
+            GS.sch_file = name
+            GS.sch_basename = os.path.splitext(os.path.basename(name))[0]
+            GS.sch_no_ext = os.path.splitext(name)[0]
+            GS.sch_dir = os.path.dirname(name)
+
+    @staticmethod
+    def set_pcb(name):
+        if name:
+            name = os.path.abspath(name)
+            GS.pcb_file = name
+            GS.pcb_basename = os.path.splitext(os.path.basename(name))[0]
+            GS.pcb_no_ext = os.path.splitext(name)[0]
+            GS.pcb_dir = os.path.dirname(name)
 
     @staticmethod
     def load_sch_title_block():
@@ -64,7 +89,6 @@ class GS(object):
         if not GS.sch_date:
             file_mtime = os.path.getmtime(GS.sch_file)
             GS.sch_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d_%H-%M-%S')
-        GS.sch_basename = os.path.splitext(os.path.basename(GS.sch_file))[0]
         if not GS.sch_title:
             GS.sch_title = GS.sch_basename
         logger.debug("SCH title: `{}`".format(GS.sch_title))
@@ -86,7 +110,6 @@ class GS(object):
         if not GS.pcb_date:
             file_mtime = os.path.getmtime(GS.pcb_file)
             GS.pcb_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d_%H-%M-%S')
-        GS.pcb_basename = os.path.splitext(os.path.basename(GS.pcb_file))[0]
         GS.pcb_title = title_block.GetTitle()
         if not GS.pcb_title:
             GS.pcb_title = GS.pcb_basename
