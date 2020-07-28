@@ -160,6 +160,7 @@ def main():
     global logger
     logger = log.init(args.verbose, args.quiet)
     GS.debug_enabled = logger.getEffectiveLevel() <= DEBUG
+    GS.debug_level = args.verbose
 
     # Output dir: relative to CWD (absolute path overrides)
     GS.out_dir = os.path.join(os.getcwd(), args.out_dir)

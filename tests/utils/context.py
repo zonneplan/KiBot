@@ -204,12 +204,12 @@ class TestContext(object):
         else:
             # Read stdout
             os.lseek(f_out, 0, os.SEEK_SET)
-            self.out = os.read(f_out, 10000)
+            self.out = os.read(f_out, 40000)
             os.close(f_out)
             self.out = self.out.decode()
             # Read stderr
             os.lseek(f_err, 0, os.SEEK_SET)
-            self.err = os.read(f_err, 10000)
+            self.err = os.read(f_err, 40000)
             os.close(f_err)
             self.err = self.err.decode()
 

@@ -27,7 +27,9 @@ class GS(object):
     out_dir = None
     filter_file = None
     board = None
+    sch = None
     debug_enabled = False
+    debug_level = 0
     n = datetime.now()
     today = n.strftime('%Y-%m-%d')
     time = n.strftime('%H-%M-%S')
