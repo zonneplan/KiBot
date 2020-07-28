@@ -4,6 +4,7 @@ This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Hen
 
 Here is all the logic to convert a list of components into the rows and columns used to create the BoM.
 """
+# TODO Sheetpath
 from .units import compare_values, comp_match
 from .bom_writer import write_bom
 from .columnlist import ColumnList
@@ -244,24 +245,14 @@ class ComponentGroup(object):
             dnc=" (DNC)" if self.is_fixed() else "")
 
         self.fields[ColumnList.COL_GRP_BUILD_QUANTITY_L] = str(q * self.cfg.number) if self.is_fitted() else "0"
-        self.fields[ColumnList.COL_VALUE_L] = self.components[0].value
-        self.fields[ColumnList.COL_PART_L] = self.components[0].name
-        # self.fields[ColumnList.COL_PART_LIB_L] = self.components[0].getLibName()  TODO
+        comp = self.components[0]
+        self.fields[ColumnList.COL_VALUE_L] = comp.value
+        self.fields[ColumnList.COL_PART_L] = comp.name
+        self.fields[ColumnList.COL_PART_LIB_L] = comp.lib
+        self.fields[ColumnList.COL_DATASHEET_L] = comp.datasheet
+        self.fields[ColumnList.COL_FP_L] = comp.footprint
+        self.fields[ColumnList.COL_FP_LIB_L] = comp.footprint_lib
         # self.fields[ColumnList.COL_DESCRIPTION_L] = self.components[0].getDescription()  TODO
-        self.fields[ColumnList.COL_DATASHEET_L] = self.components[0].datasheet
-
-        # Footprint field requires special attention
-        # TODO: Optimize?
-        fp = self.components[0].footprint.split(":")
-        if len(fp) >= 2:
-            self.fields[ColumnList.COL_FP_LIB_L] = fp[0]
-            self.fields[ColumnList.COL_FP_L] = fp[1]
-        elif len(fp) == 1:
-            self.fields[ColumnList.COL_FP_LIB_L] = ""
-            self.fields[ColumnList.COL_FP_L] = fp[0]
-        else:
-            self.fields[ColumnList.COL_FP_LIB_L] = ""
-            self.fields[ColumnList.COL_FP_L] = ""
 
     def get_row(self, columns):
         """ Return a dict of the KiCad data based on the supplied columns """

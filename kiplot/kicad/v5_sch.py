@@ -115,6 +115,10 @@ class SchematicComponent(object):
     def get_field_names(self):
         return [f.name for f in self.fields]
 
+    def add_field(self, field):
+        self.fields.append(field)
+        self.dfields[field.name.lower()] = field
+
     def _solve_ref(self, path):
         """ Look fo the correct reference for this path.
             Returns the default reference if no paths defined.
@@ -136,6 +140,11 @@ class SchematicComponent(object):
         """ Fills the default fields from the fields attribute """
         f = self.fields
         c = len(f)
+        self.field_ref = None
+        self.value = None
+        self.footprint = None
+        self.footprint_lib = None
+        self.datasheet = None
         if len(f) < 4:
             logger.warning('Component {} without the basic fields'.format(self.ref))
         if c > 0:
@@ -143,7 +152,15 @@ class SchematicComponent(object):
         if c > 1:
             self.value = f[1].value
         if c > 2:
-            self.footprint = f[2].value
+            res = f[2].value.split(':')
+            cres = len(res)
+            if cres == 1:
+                self.footprint = res[0]
+            elif cres == 2:
+                self.footprint_lib = res[0]
+                self.footprint = res[1]
+            else:
+                raise SchFileError('Footprint with more than one colon', f[2].value, _sch_line_number)
         if c > 3:
             self.datasheet = f[3].value
 
@@ -197,9 +214,7 @@ class SchematicComponent(object):
         comp.fields = []
         comp.dfields = {}
         while line[0] == 'F':
-            field = SchematicField.parse(line)
-            comp.fields.append(field)
-            comp.dfields[field.name.lower()] = field
+            comp.add_field(SchematicField.parse(line))
             line = _get_line(f)
         # Redundant pos
         if not line.startswith('\t'+str(comp.unit)):
