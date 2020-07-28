@@ -22,6 +22,7 @@ CORRUPTED_PCB = 17
 KICAD2STEP_ERR = 18
 WONT_OVERWRITE = 19
 PCBDRAW_ERR = 20
+CORRUPTED_SCH = 21
 
 CMD_EESCHEMA_DO = 'eeschema_do'
 URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/kicad-automation-scripts'

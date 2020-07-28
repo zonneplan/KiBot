@@ -35,5 +35,5 @@ def test_print_sch_ok():
 def test_print_sch_fail():
     prj = '3Rs'
     ctx = context.TestContext('PrSCHFail', prj, 'print_sch', PDF_DIR)
-    ctx.run(PDF_SCH_PRINT)
+    ctx.run(PDF_SCH_PRINT, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'print_err.sch')])
     ctx.clean_up()

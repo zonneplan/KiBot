@@ -168,7 +168,7 @@ def test_miss_pcb_2():
 
 
 def test_miss_yaml():
-    prj = '3Rs'
+    prj = 'bom'
     ctx = context.TestContext('MissingYaml', prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, no_yaml_file=True)
 

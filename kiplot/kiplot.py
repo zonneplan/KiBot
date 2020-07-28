@@ -12,9 +12,11 @@ from distutils.version import StrictVersion
 from importlib.util import (spec_from_file_location, module_from_spec)
 
 from .gs import (GS)
-from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB, EXIT_BAD_ARGS)
+from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
+                   EXIT_BAD_ARGS, CORRUPTED_SCH)
 from .error import (PlotError, KiPlotConfigurationError, config_error)
 from .pre_base import BasePreFlight
+from .kicad.v5_sch import Schematic, SchFileError
 from . import log
 
 logger = log.get_logger(__name__)
@@ -116,6 +118,17 @@ def load_board(pcb_file=None):
     return board
 
 
+def load_sch():
+    GS.check_sch()
+    GS.sch = Schematic()
+    try:
+        GS.sch.load(GS.sch_file)
+    except SchFileError as e:
+        logger.error('At line {} of `{}`: {}'.format(e.args[2], GS.sch_file, e.args[0]))
+        logger.error('Line content: `{}`'.format(e.args[1]))
+        exit(CORRUPTED_SCH)
+
+
 def preflight_checks(skip_pre):
     logger.debug("Preflight checks")
 
@@ -177,7 +190,7 @@ def generate_outputs(outputs, target, invert, skip_pre):
             if out.is_pcb() and (board is None):
                 board = load_board()
             if out.is_sch():
-                GS.check_sch()
+                load_sch()
             config_output(out)
             logger.info('- '+str(out))
             try:
