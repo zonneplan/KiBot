@@ -26,6 +26,8 @@ class ColumnList:
     COL_PART_LIB_L = COL_PART_LIB.lower()
     COL_DATASHEET = 'Datasheet'
     COL_DATASHEET_L = COL_DATASHEET.lower()
+    COL_SHEETPATH = 'Sheetpath'
+    COL_SHEETPATH_L = COL_SHEETPATH.lower()
 
     # Default columns for groups
     COL_GRP_QUANTITY = 'Quantity Per PCB'
@@ -52,7 +54,8 @@ class ColumnList:
         COL_FP_LIB,
         COL_GRP_QUANTITY,
         COL_GRP_BUILD_QUANTITY,
-        COL_DATASHEET
+        COL_DATASHEET,
+        COL_SHEETPATH
     ]
 
     # Default columns
@@ -65,6 +68,7 @@ class ColumnList:
         COL_PART_LIB_L: 1,
         COL_DESCRIPTION_L: 1,
         COL_DATASHEET_L: 1,
+        COL_SHEETPATH_L: 1,
         COL_FP_L: 1,
         COL_FP_LIB_L: 1
     }

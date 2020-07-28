@@ -252,6 +252,7 @@ class ComponentGroup(object):
         self.fields[ColumnList.COL_DATASHEET_L] = comp.datasheet
         self.fields[ColumnList.COL_FP_L] = comp.footprint
         self.fields[ColumnList.COL_FP_LIB_L] = comp.footprint_lib
+        self.fields[ColumnList.COL_SHEETPATH_L] = comp.sheet_path_h
         # self.fields[ColumnList.COL_DESCRIPTION_L] = self.components[0].getDescription()  TODO
 
     def get_row(self, columns):

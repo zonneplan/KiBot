@@ -201,7 +201,7 @@ class BoMOptions(BaseOptions):
         if isinstance(self.columns, type):
             self.columns = None
             # Ignore the library part and footprint
-            self.ignore = [ColumnList.COL_PART_LIB_L, ColumnList.COL_FP_LIB_L]
+            self.ignore = [ColumnList.COL_PART_LIB_L, ColumnList.COL_FP_LIB_L, ColumnList.COL_SHEETPATH_L]
         else:
             # This is tricky
             # Lower case available columns

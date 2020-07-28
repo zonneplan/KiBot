@@ -170,7 +170,7 @@ class SchematicComponent(object):
         return '{} ({} {})'.format(self.ref, self.name, self.value)
 
     @staticmethod
-    def load(f, sheet_path):
+    def load(f, sheet_path, sheet_path_h):
         # L lib:name reference
         line = _get_line(f)
         if line[0] != 'L':
@@ -249,6 +249,9 @@ class SchematicComponent(object):
         if not m:
             raise SchFileError('Malformed component reference', comp.ref, _sch_line_number)
         comp.ref_prefix, comp.ref_suffix = m.groups()
+        # Location in the project
+        comp.sheet_path = sheet_path
+        comp.sheet_path_h = sheet_path_h
         if GS.debug_level > 1:
             logger.debug("- Loaded component {}".format(comp))
         return comp
@@ -406,12 +409,13 @@ class SchematicSheet(object):
         self.sheet = None
         self.id = ''
 
-    def load_sheet(self, parent, sheet_path):
+    def load_sheet(self, parent, sheet_path, sheet_path_h):
         assert self.name
         self.sheet = Schematic()
         parent_dir = os.path.dirname(parent)
         sheet_path += '/'+self.id
-        self.sheet.load(os.path.join(parent_dir, self.file), sheet_path)
+        sheet_path_h += '/'+(self.name if self.name else 'Unknown')
+        self.sheet.load(os.path.join(parent_dir, self.file), sheet_path, sheet_path_h)
         return self.sheet
 
     @staticmethod
@@ -496,7 +500,7 @@ class Schematic(object):
                     raise SchFileError('Wrong entry in title block', line, _sch_line_number)
                 self.title_block[m.group(1)] = m.group(2)
 
-    def load(self, fname, sheet_path=''):
+    def load(self, fname, sheet_path='', sheet_path_h=''):
         """ Load a v5.x KiCad Schematic.
             The caller must be sure the file exists. """
         logger.debug("Loading sheet from "+fname)
@@ -532,7 +536,7 @@ class Schematic(object):
             self.sheets = []
             while not line.startswith('$EndSCHEMATC'):
                 if line.startswith('$Comp'):
-                    obj = SchematicComponent.load(f, sheet_path)
+                    obj = SchematicComponent.load(f, sheet_path, sheet_path_h)
                     self.components.append(obj)
                 elif line.startswith('NoConn'):
                     obj = SchematicConnection.parse(False, line[7:])
@@ -559,7 +563,7 @@ class Schematic(object):
             # Load sub-sheets
             self.sub_sheets = []
             for sch in self.sheets:
-                self.sub_sheets.append(sch.load_sheet(fname, sheet_path))
+                self.sub_sheets.append(sch.load_sheet(fname, sheet_path, sheet_path_h))
 
     def get_files(self):
         """ A list of the names for all the sheets, including this one. """
