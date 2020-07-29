@@ -8,11 +8,13 @@
 """
 import sys
 import re
+from copy import deepcopy
 
 
 __all__ = ['docopt']
 __version__ = '0.6.2'
-
+# Define to True if countable args can match to different counts in different patterns
+safe_outcomes = False
 
 class DocoptLanguageError(Exception):
 
@@ -273,7 +275,13 @@ class Either(BranchPattern):
         for pattern in self.children:
             matched, _, _ = outcome = pattern.match(left, collected)
             if matched:
-                outcomes.append(outcome)
+                # If a counter argument is used in two patterns and the limit of counts is different for
+                # each pattern you risk to match different counters.
+                # By copying the result we avoid the risk.
+                if safe_outcomes:
+                    outcomes.append(deepcopy(outcome))
+                else:
+                    outcomes.append(outcome)
         if outcomes:
             return min(outcomes, key=lambda outcome: len(outcome[1]))
         return False, left, collected
