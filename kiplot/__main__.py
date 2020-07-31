@@ -104,6 +104,11 @@ def solve_schematic(a_schematic, a_board_file):
     if schematic and not os.path.isfile(schematic):
         logger.error("Schematic file not found: "+schematic)
         sys.exit(NO_SCH_FILE)
+    if schematic:
+        schematic = os.path.abspath(schematic)
+        logger.debug('Using schematic: `{}`'.format(schematic))
+    else:
+        logger.debug('No schematic file found')
     return schematic
 
 
@@ -124,6 +129,7 @@ def solve_config(a_plot_config):
     if not os.path.isfile(plot_config):
         logger.error("Plot config file not found: "+plot_config)
         sys.exit(EXIT_BAD_ARGS)
+    logger.debug('Using configuration file: `{}`'.format(plot_config))
     return plot_config
 
 
@@ -149,6 +155,10 @@ def solve_board_file(schematic, a_board_file):
             logger.warning('More than one PCB file found in current directory.\n'
                            '  Using '+board_file+' if you want to use another use -b option.')
     check_board_file(board_file)
+    if board_file:
+        logger.debug('Using PCB: `{}`'.format(board_file))
+    else:
+        logger.debug('No PCB file found')
     return board_file
 
 
