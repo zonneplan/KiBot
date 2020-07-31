@@ -16,6 +16,7 @@ __version__ = '0.6.2'
 # Define to True if countable args can match to different counts in different patterns
 safe_outcomes = False
 
+
 class DocoptLanguageError(Exception):
 
     """Error in construction of usage-message by developer."""
