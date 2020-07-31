@@ -5,6 +5,7 @@ import logging
 import subprocess
 import re
 import pytest
+import csv
 from glob import glob
 from pty import openpty
 
@@ -338,6 +339,41 @@ class TestContext(object):
             aps.append(ap_no)
         logging.debug("Found apertures {}".format(aps))
         return aps
+
+    def load_csv(self, filename, column=3):
+        rows = []
+        with open(self.expect_out_file(os.path.join(self.sub_dir, filename))) as csvfile:
+            reader = csv.reader(csvfile)
+            header = next(reader)  # Skip header
+            for r in reader:
+                if not r:
+                    break
+                rows.append(r)
+        return rows, header
+
+    def load_html(self, filename, column=4, split=True):
+        file = self.expect_out_file(os.path.join(self.sub_dir, filename))
+        with open(file) as f:
+            html = f.read()
+        rows = [[], []]
+        headers = [[], []]
+        c = 0
+        for body in re.findall(r'<table.*?>((?:\s+.*?)+)</table>', html, re.MULTILINE):
+            if c:
+                # Header
+                m = re.search(r'<tr>\s+((?:<th.*?>(?:.*)</th>\s+)+)</tr>', body, re.MULTILINE)
+                assert m, 'Failed to get table header'
+                head = m.group(1)
+                for col_name in re.findall(r'<th.*?>(.*)</th>', head):
+                    headers[c-1].append(col_name)
+                # Rows
+                for row in re.findall(r'<tr>\s+((?:<td.*?>(?:.*)</td>\s+)+)</tr>', body, re.MULTILINE):
+                    r = []
+                    for cell in re.findall(r'<td.*?>(.*?)</td>', row, re.MULTILINE):
+                        r.append(cell)
+                    rows[c-1].append(r)
+            c += 1
+        return rows, headers
 
 
 class TestContextSCH(TestContext):

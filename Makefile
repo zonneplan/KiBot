@@ -11,6 +11,10 @@ ifneq ("$(wildcard *.yaml)","")
 	$(error Move away any config file)
 endif
 
+ifneq ("$(wildcard *.sch)","")
+	$(error Move away any schematic file)
+endif
+
 deb:
 	perl debian/make_postinst.pl > debian/postinst
 	chmod +x debian/postinst
