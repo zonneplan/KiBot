@@ -25,7 +25,7 @@ BOM_DIR = 'BoM'
 REF_COLUMN_NAME = 'References'
 QTY_COLUMN_NAME = 'Quantity Per PCB'
 KIBOM_TEST_HEAD = ['Component', 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet',
-                   'config']
+                   'Config']
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
 KIBOM_TEST_EXCLUDE = ['R6']
 KIBOM_TEST_GROUPS = 5

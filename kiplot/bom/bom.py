@@ -149,6 +149,7 @@ class ComponentGroup(object):
         self.cfg = cfg
         # Columns loaded from KiCad
         self.fields = {c.lower(): None for c in ColumnList.COLUMNS_DEFAULT}
+        self.field_names = ColumnList.COLUMNS_DEFAULT
 
     def match_component(self, c):
         """ Test if a given component fits in this group """
@@ -210,12 +211,14 @@ class ComponentGroup(object):
         """ Update a given field, concatenates existing values and informs a collision """
         if not value:
             return
+        field_ori = field
         field = field.lower()
         # Exclude the ones we handle in special ways
         if field in ColumnList.COLUMNS_PROTECTED_L:
             return
         if (field not in self.fields) or (not self.fields[field]):
             self.fields[field] = value
+            self.field_names.append(field_ori)
         elif value.lower() in self.fields[field].lower():
             return
         else:
@@ -433,7 +436,7 @@ def do_bom(file_name, ext, comps, cfg):
     # Read out all available fields
     # TODO: get cached from the list?
     for g in groups:
-        for f in g.fields:
+        for f in g.field_names:
             columns.add_column(f)
     # Don't add 'boards' column if only one board is specified
     # TODO: Shouldn't be the other way (add if needed)
