@@ -8,6 +8,7 @@ import pytest
 import csv
 from glob import glob
 from pty import openpty
+import xml.etree.ElementTree as ET
 
 COVERAGE_SCRIPT = 'python3-coverage'
 KICAD_PCB_EXT = '.kicad_pcb'
@@ -340,18 +341,18 @@ class TestContext(object):
         logging.debug("Found apertures {}".format(aps))
         return aps
 
-    def load_csv(self, filename, column=3):
+    def load_csv(self, filename):
         rows = []
         with open(self.expect_out_file(os.path.join(self.sub_dir, filename))) as csvfile:
             reader = csv.reader(csvfile)
-            header = next(reader)  # Skip header
+            header = next(reader)
             for r in reader:
                 if not r:
                     break
                 rows.append(r)
         return rows, header
 
-    def load_html(self, filename, column=4, split=True):
+    def load_html(self, filename):
         file = self.expect_out_file(os.path.join(self.sub_dir, filename))
         with open(file) as f:
             html = f.read()
@@ -373,6 +374,44 @@ class TestContext(object):
                         r.append(cell)
                     rows[c-1].append(r)
             c += 1
+        return rows, headers
+
+    def load_xml(self, filename):
+        rows = []
+        headers = None
+        for child in ET.parse(self.expect_out_file(os.path.join(self.sub_dir, filename))).getroot():
+            rows.append([v for v in child.attrib.values()])
+            if not headers:
+                headers = [k for k in child.attrib.keys()]
+        return rows, headers
+
+    def load_xlsx(self, filename):
+        """ Assumes the components are in sheet1 """
+        file = self.expect_out_file(os.path.join(self.sub_dir, filename))
+        subprocess.call(['unzip', file, '-d', self.get_out_path('desc')])
+        # Some XMLs are stored with 0600 preventing them to be read by next CI/CD stage
+        subprocess.call(['chmod', '-R', 'og+r', self.get_out_path('desc')])
+        # Read the table
+        worksheet = self.get_out_path(os.path.join('desc', 'xl', 'worksheets', 'sheet1.xml'))
+        rows = []
+        root = ET.parse(worksheet).getroot()
+        ns = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
+        rnum = 1
+        for r in root.iter(ns+'row'):
+            rcur = int(r.attrib['r'])
+            if rcur > rnum:
+                break
+            rows.append([int(cell.text) for cell in r.iter(ns+'v')])
+            rnum += 1
+        # Read the strings
+        strings = self.get_out_path(os.path.join('desc', 'xl', 'sharedStrings.xml'))
+        strs = [t.text for t in ET.parse(strings).getroot().iter(ns+'t')]
+        # Replace the indexes by the strings
+        for r in rows:
+            for i in range(len(r)):
+                r[i] = strs[r[i]]
+        # Separate the headers
+        headers = rows.pop(0)
         return rows, headers
 
 

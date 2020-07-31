@@ -22,7 +22,7 @@ if prev_dir not in sys.path:
 # from kiplot.misc import (BOM_ERROR)
 
 BOM_DIR = 'BoM'
-REF_COLUMN_NAME = 'Reference'
+REF_COLUMN_NAME = 'Reference'  # TODO make the same as KiBoM
 QTY_COLUMN_NAME = 'Quantity Per PCB'
 KIBOM_TEST_HEAD = ['Component', 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet',
                    'config']
@@ -32,7 +32,7 @@ KIBOM_TEST_GROUPS = 5
 
 
 def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps):
-    """ Checks the kibom-test.xml expected results """
+    """ Checks the kibom-test.sch expected results """
     # Groups
     assert len(rows) == groups
     logging.debug(str(groups) + " groups OK")
@@ -101,4 +101,46 @@ def test_int_bom_simple_html():
     check_dnc(rows[0], 'R7', ref_column, qty_column)
     # Check the DNF table
     check_kibom_test_netlist(rows[1], ref_column, 1, KIBOM_TEST_COMPONENTS, KIBOM_TEST_EXCLUDE)
+    ctx.clean_up()
+
+
+def adapt_xml(h):
+    h = h.replace(' ', '_')
+    h = h.replace('"', '')
+    h = h.replace("'", '')
+    h = h.replace('#', '_num')
+    return h
+
+
+def test_int_bom_simple_xml():
+    prj = 'kibom-test'
+    ext = 'xml'
+    ctx = context.TestContext('test_int_bom_simple_xml', prj, 'int_bom_simple_xml', BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_xml(out)
+    # Columns get sorted by name, so we need to take care of it
+    for c in KIBOM_TEST_HEAD:
+        if c == 'Component':
+            continue
+        assert adapt_xml(c) in header, "Missing column "+c
+    ref_column = header.index(adapt_xml(REF_COLUMN_NAME))
+    qty_column = header.index(adapt_xml(QTY_COLUMN_NAME))
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_simple_xlsx():
+    prj = 'kibom-test'
+    ext = 'xlsx'
+    ctx = context.TestContext('test_int_bom_simple_xlsx', prj, 'int_bom_simple_xlsx', BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_xlsx(out)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
