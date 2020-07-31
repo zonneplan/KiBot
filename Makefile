@@ -7,6 +7,10 @@ CWD := $(abspath $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 USER_ID=$(shell id -u)
 GROUP_ID=$(shell id -g)
 
+ifneq ("$(wildcard *.yaml)","")
+	$(error Move away any config file)
+endif
+
 deb:
 	perl debian/make_postinst.pl > debian/postinst
 	chmod +x debian/postinst
