@@ -144,3 +144,26 @@ def test_int_bom_simple_xlsx():
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
+
+
+def get_components(rows, col):
+    components = []
+    for r in rows:
+        components.extend(r[col].split())
+    return components
+
+
+def test_int_bom_sort_1():
+    prj = 'RLC_sort'
+    ext = 'csv'
+    ctx = context.TestContext('test_int_bom_sort_1', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    ref_column = header.index(REF_COLUMN_NAME)
+    exp = ['C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C1', 'C2', 'C3', 'C4', 'C11', 'C12',
+           'R5', 'R4', 'R9', 'R10', 'R3', 'R2', 'R1', 'R8', 'R7']
+    check_kibom_test_netlist(rows, ref_column, 14, None, exp)
+    # Check the sorting
+    assert get_components(rows, ref_column) == exp
+    ctx.clean_up()

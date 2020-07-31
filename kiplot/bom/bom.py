@@ -190,8 +190,9 @@ class ComponentGroup(object):
         return self.fields[field]
 
     def sort_components(self):
-        """ Sort the components in correct order (by reference) """
-        self.components = sorted(self.components, key=lambda c: [c.ref_prefix, c.ref_suffix])
+        """ Sort the components in correct order (by reference).
+            First priority is the prefix, second the number (as integer) """
+        self.components = sorted(self.components, key=lambda c: [c.ref_prefix, int(c.ref_suffix)])
 
     def get_refs(self):
         """ Return a list of the components """
