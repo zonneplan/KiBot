@@ -123,6 +123,7 @@ def load_sch():
     GS.sch = Schematic()
     try:
         GS.sch.load(GS.sch_file)
+        GS.sch.load_libs(GS.sch_file)
     except SchFileError as e:
         logger.error('At line {} of `{}`: {}'.format(e.args[2], GS.sch_file, e.args[0]))
         logger.error('Line content: `{}`'.format(e.args[1]))
