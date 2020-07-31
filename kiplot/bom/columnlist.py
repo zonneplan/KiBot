@@ -9,8 +9,7 @@ This is a class to hold the names of the fields and columns of the BoM.
 class ColumnList:
     """ A list of columns for the BoM """
     # Default columns (immutable)
-    # TODO: KiBoM uses Reference*s*, good for a column, bad for a field name.
-    COL_REFERENCE = 'Reference'
+    COL_REFERENCE = 'References'
     COL_REFERENCE_L = COL_REFERENCE.lower()
     COL_DESCRIPTION = 'Description'
     COL_DESCRIPTION_L = COL_DESCRIPTION.lower()
@@ -61,7 +60,7 @@ class ColumnList:
     # Default columns
     # These columns are 'immutable'
     COLUMNS_PROTECTED_L = {
-        COL_REFERENCE_L: 1,
+        COL_REFERENCE_L[:-1]: 1,  # The column is References and the field Reference
         COL_GRP_QUANTITY_L: 1,
         COL_VALUE_L: 1,
         COL_PART_L: 1,

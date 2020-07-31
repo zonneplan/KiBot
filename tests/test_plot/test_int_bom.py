@@ -22,7 +22,7 @@ if prev_dir not in sys.path:
 # from kiplot.misc import (BOM_ERROR)
 
 BOM_DIR = 'BoM'
-REF_COLUMN_NAME = 'Reference'  # TODO make the same as KiBoM
+REF_COLUMN_NAME = 'References'
 QTY_COLUMN_NAME = 'Quantity Per PCB'
 KIBOM_TEST_HEAD = ['Component', 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet',
                    'config']
