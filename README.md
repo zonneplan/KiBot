@@ -997,7 +997,7 @@ Usage:
          [-q | -v...] [-i] [TARGET...]
   kiplot [-c PLOT_CONFIG] --list
   kiplot [-b BOARD] [-d OUT_DIR] [-p | -P] --example
-  kiplot [-v] --help-list-outputs
+  kiplot [-v...] --help-list-outputs
   kiplot --help-output=HELP_OUTPUT
   kiplot --help-outputs
   kiplot --help-preflights
