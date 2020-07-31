@@ -1,0 +1,20 @@
+# Example KiPlot config file
+kiplot:
+  version: 1
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in HTML format"
+    type: bom
+    dir: BoM
+    options:
+      format: HTML
+      datasheet_as_link: 'Part'
+      output: '%f.%x'
+      columns:
+        - References
+        - Part
+        - Value
+        - Quantity Per PCB
+        - digikey#
+        - manf#

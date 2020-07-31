@@ -146,10 +146,13 @@ def test_int_bom_simple_xlsx():
     ctx.clean_up()
 
 
-def get_components(rows, col):
+def get_column(rows, col, split=True):
     components = []
     for r in rows:
-        components.extend(r[col].split())
+        if split:
+            components.extend(r[col].split())
+        else:
+            components.append(r[col])
     return components
 
 
@@ -165,5 +168,35 @@ def test_int_bom_sort_1():
            'R5', 'R4', 'R9', 'R10', 'R3', 'R2', 'R1', 'R8', 'R7']
     check_kibom_test_netlist(rows, ref_column, 14, None, exp)
     # Check the sorting
-    assert get_components(rows, ref_column) == exp
+    assert get_column(rows, ref_column) == exp
+    ctx.clean_up()
+
+
+def test_int_bom_datasheet_link():
+    prj = 'links'
+    ext = 'html'
+    ctx = context.TestContext('test_int_bom_datasheet_link', prj, 'int_bom_datasheet_link', BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    out = prj + '.' + ext
+    rows, headers = ctx.load_html(out)
+    # Test we got the normal and DNF tables
+    assert len(rows) == 2
+    assert len(headers) == 2
+    # Test both tables has the same headings and they are the expected
+    assert headers[0] == headers[1]
+    head_no_comp = deepcopy(KIBOM_TEST_HEAD)
+    assert headers[0] == ['', 'References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
+    # Look for reference and quantity columns
+    ref_column = headers[0].index(REF_COLUMN_NAME)
+    part_column = headers[0].index('Part')
+    # Check the normal table
+    check_kibom_test_netlist(rows[0], ref_column, 2, ['C1'], ['J1', 'J2','R1'])
+    # Check the DNF table
+    check_kibom_test_netlist(rows[1], ref_column, 1, ['J1', 'J2','R1'], ['C1'])
+    # Check the datasheet link
+    parts = get_column(rows[0]+rows[1], part_column, False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'pdf' in c
+        logging.debug(c + ' OK')
     ctx.clean_up()
