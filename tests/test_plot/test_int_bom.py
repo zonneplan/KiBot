@@ -200,3 +200,33 @@ def test_int_bom_datasheet_link():
         assert 'pdf' in c
         logging.debug(c + ' OK')
     ctx.clean_up()
+
+
+def test_int_bom_digikey_link():
+    prj = 'links'
+    ext = 'html'
+    ctx = context.TestContext('test_int_bom_digikey_link', prj, 'int_bom_digikey_link', BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    out = prj + '.' + ext
+    rows, headers = ctx.load_html(out)
+    # Test we got the normal and DNF tables
+    assert len(rows) == 2
+    assert len(headers) == 2
+    # Test both tables has the same headings and they are the expected
+    assert headers[0] == headers[1]
+    head_no_comp = deepcopy(KIBOM_TEST_HEAD)
+    assert headers[0] == ['', 'References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
+    # Look for reference and quantity columns
+    ref_column = headers[0].index(REF_COLUMN_NAME)
+    dk_column = headers[0].index('digikey#')
+    # Check the normal table
+    check_kibom_test_netlist(rows[0], ref_column, 2, ['C1'], ['J1', 'J2','R1'])
+    # Check the DNF table
+    check_kibom_test_netlist(rows[1], ref_column, 1, ['J1', 'J2','R1'], ['C1'])
+    # Check the digikey link
+    parts = get_column(rows[0]+rows[1], dk_column, False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'digikey' in c
+        logging.debug(c + ' OK')
+    ctx.clean_up()
