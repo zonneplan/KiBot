@@ -37,7 +37,7 @@ DNC = {
 }
 
 
-def compare_value(c1, c2):
+def compare_value(c1, c2, cfg):
     """ Compare the value of two components """
     # Simple string comparison
     if c1.value.lower() == c2.value.lower():
@@ -46,10 +46,11 @@ def compare_value(c1, c2):
     if compare_values(c1.value, c2.value):
         return True
     # Ignore value if both components are connectors
-    # TODO
-    # if group_connectors:
-    #     if 'connector' in self.getLibName().lower() and 'connector' in other.getLibName().lower():
-    #         return True
+    # Note: Is common practice to use the "Value" field of connectors to denote its use.
+    #       In this case the values won't match even when the connectors are equivalent.
+    if cfg.group_connectors:
+        if 'connector' in c1.lib.lower() and 'connector' in c2.lib.lower():
+            return True
     # No match, return False
     return False
 
@@ -92,7 +93,7 @@ def compare_components(c1, c2, cfg):
     for c in cfg.group_fields:
         # Perform special matches
         if c == ColumnList.COL_VALUE_L:
-            if not compare_value(c1, c2):
+            if not compare_value(c1, c2, cfg):
                 return False
         # Match part name
         elif c == ColumnList.COL_PART_L:
