@@ -234,7 +234,8 @@ class BoMOptions(BaseOptions):
                 columns.append(new_col)
                 columns_l[new_col.lower()] = new_col
             # TODO less magic, more explicit
-            del columns_l['component']
+            if 'component' in columns_l:
+                del columns_l['component']
             # Create a list of the columns we don't want
             self.ignore = [c for c in valid_columns_l.keys() if c not in columns_l]
             # And this is the ordered list with the case style defined by the user
