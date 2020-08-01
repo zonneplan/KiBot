@@ -27,8 +27,6 @@ def write_bom(filename, ext, groups, headings, cfg):
     headings = [list of fields to use as columns]
     cfg = configuration data
     """
-    # Remove any headings that appear in the ignore[] list
-    headings = [h for h in headings if not h.lower() in cfg.ignore]
     # Allow renaming the columns
     head_names = [h if h.lower() not in cfg.column_rename else cfg.column_rename[h.lower()] for h in headings]
     result = False

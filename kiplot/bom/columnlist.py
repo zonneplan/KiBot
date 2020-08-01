@@ -33,8 +33,6 @@ class ColumnList:
     # Default columns for groups
     COL_GRP_QUANTITY = 'Quantity Per PCB'
     COL_GRP_QUANTITY_L = COL_GRP_QUANTITY.lower()
-    # COL_GRP_TOTAL_COST = 'Total Cost'
-    # COL_GRP_TOTAL_COST_L = COL_GRP_TOTAL_COST.lower()
     COL_GRP_BUILD_QUANTITY = 'Build Quantity'
     COL_GRP_BUILD_QUANTITY_L = COL_GRP_BUILD_QUANTITY.lower()
 
@@ -84,44 +82,3 @@ class ColumnList:
         COL_FP_L,
         COL_FP_LIB_L,
     ]
-
-    def __init__(self, cols=None):
-        self.columns = []
-        self.columns_l = {}
-        if not cols:
-            cols = ColumnList.COLUMNS_DEFAULT
-        # Make a copy of the supplied columns
-        for col in cols:
-            self.add_column(col)
-
-    def _has_column(self, col):
-        return col.lower() in self.columns_l
-
-    def add_column(self, col):
-        """ Add a new column (if it doesn't already exist!) """
-        # Already exists?
-        if self._has_column(col):
-            return
-        # To enable fast lowercase search
-        self.columns_l[col.lower()] = col
-        # Case sensitive version
-        self.columns.append(col)
-
-    def remove_column(self, col):
-        """ Remove a column from the list. Specify either the heading or the index """
-        if type(col) is str:
-            self.remove_column_by_name(col)
-        elif type(col) is int and col >= 0 and col < len(self.columns):
-            self.remove_column_by_name(self.columns[col])
-
-    def remove_column_by_name(self, name):
-        name = name.lower()
-        # First check if this is in an immutable colum
-        if name in self.COLUMNS_PROTECTED_L:
-            return
-        # Column does not exist, return
-        if name not in self.columns_l:
-            return
-        name = self.columns_l[name]
-        index = self.columns.index(name)
-        del self.columns[index]

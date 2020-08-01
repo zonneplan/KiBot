@@ -30,6 +30,8 @@ Missing:
 - number_boards
 - hide_headers
 - hide_pcb_info
+- various boards
+- stats info
 
 For debug information use:
 pytest-3 --log-cli-level debug

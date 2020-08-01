@@ -4,6 +4,7 @@ This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Hen
 
 Here is all the logic to convert a list of components into the rows and columns used to create the BoM.
 """
+from copy import deepcopy
 from .units import compare_values, comp_match
 from .bom_writer import write_bom
 from .columnlist import ColumnList
@@ -153,7 +154,7 @@ class ComponentGroup(object):
         self.cfg = cfg
         # Columns loaded from KiCad
         self.fields = {c.lower(): None for c in ColumnList.COLUMNS_DEFAULT}
-        self.field_names = ColumnList.COLUMNS_DEFAULT
+        self.field_names = deepcopy(ColumnList.COLUMNS_DEFAULT)
 
     def match_component(self, c):
         """ Test if a given component fits in this group """
@@ -455,21 +456,9 @@ def do_bom(file_name, ext, comps, cfg):
         c.fixed = comp_is_fixed(value, config, variants)
     # Group components according to group_fields
     groups = group_components(cfg, comps)
-    # Create the columns
-    columns = ColumnList(cfg.columns)
-    # Read out all available fields
-    # TODO: get cached from the list?
-    for g in groups:
-        for f in g.field_names:
-            columns.add_column(f)
-    # Don't add 'boards' column if only one board is specified
-    # TODO: Shouldn't be the other way (add if needed)
-    if cfg.number <= 1:
-        columns.remove_column(ColumnList.COL_GRP_BUILD_QUANTITY)
-        logger.debug("Removing: "+ColumnList.COL_GRP_BUILD_QUANTITY)
     # Give a name to empty variant
     if not variants:
         cfg.variant = ['default']
     # Create the BoM
     logger.debug("Saving BOM File: "+file_name)
-    write_bom(file_name, ext, groups, columns.columns, cfg)
+    write_bom(file_name, ext, groups, cfg.columns, cfg)

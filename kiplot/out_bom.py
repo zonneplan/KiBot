@@ -195,23 +195,29 @@ class BoMOptions(BaseOptions):
         else:
             for r in self.exclude_any:
                 r.regex = compile(r.regex, flags=IGNORECASE)
-        # columns
+        # Columns
         self.column_rename = {}
         self.join = []
+        valid_columns = self._get_columns()
         if isinstance(self.columns, type):
-            self.columns = None
-            # Ignore the library part and footprint
-            self.ignore = [ColumnList.COL_PART_LIB_L, ColumnList.COL_FP_LIB_L, ColumnList.COL_SHEETPATH_L]
+            # If none specified make a list with all the possible columns.
+            # Here are some exceptions:
+            # Ignore the part and footprint library, also sheetpath and the Reference in singular
+            ignore = [ColumnList.COL_PART_LIB_L, ColumnList.COL_FP_LIB_L, ColumnList.COL_SHEETPATH_L,
+                      ColumnList.COL_REFERENCE_L[:-1]]
+            if self.number <= 1:
+                # For one board avoid COL_GRP_BUILD_QUANTITY
+                ignore.append(ColumnList.COL_GRP_BUILD_QUANTITY_L)
+            # Exclude the particular columns
+            self.columns = [h for h in valid_columns if not h.lower() in ignore]
         else:
-            # This is tricky
-            # Lower case available columns
-            valid_columns = self._get_columns()
-            valid_columns.append(ColumnList.COL_ROW_NUMBER)
+            # Ensure the column names are valid.
+            # Also create the rename and join lists.
+            # Lower case available columns (to check if valid)
             valid_columns_l = {c.lower(): c for c in valid_columns}
             logger.debug("Valid columns: "+str(valid_columns))
             # Create the different lists
             columns = []
-            columns_l = {}
             for col in self.columns:
                 if isinstance(col, str):
                     # Just a string, add to the list of used
@@ -229,10 +235,7 @@ class BoMOptions(BaseOptions):
                 if new_col.lower() not in valid_columns_l:
                     raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
                 columns.append(new_col)
-                columns_l[new_col.lower()] = new_col
-            # Create a list of the columns we don't want
-            self.ignore = [c for c in valid_columns_l.keys() if c not in columns_l]
-            # And this is the ordered list with the case style defined by the user
+            # This is the ordered list with the case style defined by the user
             self.columns = columns
 
     def run(self, output_dir, board):
