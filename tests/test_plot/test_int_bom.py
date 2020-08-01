@@ -256,3 +256,17 @@ def test_int_bom_join_1():
     assert rows[2][manf_column] == 'Bourns CR0805-JW-102ELF'
     ctx.clean_up()
 
+
+def test_int_include_dnf():
+    prj = 'kibom-test'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_include_dnf', prj, 'int_bom_include_dnf', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS+1, [], KIBOM_TEST_COMPONENTS+KIBOM_TEST_EXCLUDE)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
