@@ -1,0 +1,18 @@
+# Example KiPlot config file
+kiplot:
+  version: 1
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      format: CSV
+      number_rows: false
+      columns:
+        - references
+        - value
+        - part
+        - description
+

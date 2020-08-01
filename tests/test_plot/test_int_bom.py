@@ -2,6 +2,36 @@
 """
 Tests of Internal BoM files
 
+- Simple cases for:
+  - CSV
+  - HTML
+  - XML
+  - XLSX
+- Components units
+  - Sort and groups of RLC_sort
+- Datasheet as link
+- Digi-Key link
+- Join columns
+- ignore_dnf = 0
+- html_generate_dnf = 0
+- use_alt = 1
+- number_rows = 0
+- COLUMN_RENAME
+  - CSV
+  - HTML
+  - XML
+  - XLSX
+- group_connectors = 1/0
+- Columns are case insensitive
+
+Missing:
+- Variants
+- test_regex
+- merge_blank_fields
+- number_boards
+- hide_headers
+- hide_pcb_info
+
 For debug information use:
 pytest-3 --log-cli-level debug
 
@@ -396,11 +426,11 @@ def test_int_bom_column_rename_xlsx():
     ctx.clean_up()
 
 
-def test_int_group_connectors():
+def test_int_bom_group_connectors():
     """ Default behavior, ignore the 'Value' for connectors """
     prj = 'connectors'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_group_connectors', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx = context.TestContextSCH('test_int_bom_group_connectors', prj, 'int_bom_simple_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header = ctx.load_csv(out)
@@ -410,15 +440,29 @@ def test_int_group_connectors():
     ctx.clean_up()
 
 
-def test_int_no_group_connectors():
+def test_int_bom_no_group_connectors():
     """ group_connectors: false """
     prj = 'connectors'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_no_group_connectors', prj, 'int_bom_no_group_connectors', BOM_DIR)
+    ctx = context.TestContextSCH('test_int_bom_no_group_connectors', prj, 'int_bom_no_group_connectors', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header = ctx.load_csv(out)
     assert header == CONN_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 4, [], ['J4', 'J1', 'J3', 'J2'])
+    ctx.clean_up()
+
+
+def test_int_bom_column_sensitive():
+    """ Test if the columns list can contain columns in lowercase """
+    prj = 'links'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_column_sensitive', prj, 'int_bom_column_sensitive', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == [REF_COLUMN_NAME.lower(), 'value', 'part', 'description']
+    ref_column = header.index(REF_COLUMN_NAME.lower())
+    check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
     ctx.clean_up()
