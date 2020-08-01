@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Tests of Internal BoM files
 
@@ -23,14 +24,19 @@ if prev_dir not in sys.path:
 
 BOM_DIR = 'BoM'
 REF_COLUMN_NAME = 'References'
+REF_COLUMN_NAME_R = 'Referencias'
 QTY_COLUMN_NAME = 'Quantity Per PCB'
 COMP_COLUMN_NAME = 'Component'
 KIBOM_TEST_HEAD = [COMP_COLUMN_NAME , 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet',
                    'Config']
+KIBOM_RENAME_HEAD = ['Renglón', REF_COLUMN_NAME_R, 'Componente', 'Valor', 'Código Digi-Key', 'Cantidad por PCB']
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
 KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
 KIBOM_TEST_EXCLUDE = ['R6']
 KIBOM_TEST_GROUPS = 5
+LINKS_COMPONENTS = ['J1', 'J2','R1']
+LINKS_EXCLUDE = ['C1']
+LINKS_GROUPS = 2
 
 
 def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps):
@@ -192,9 +198,9 @@ def test_int_bom_datasheet_link():
     ref_column = headers[0].index(REF_COLUMN_NAME)
     part_column = headers[0].index('Part')
     # Check the normal table
-    check_kibom_test_netlist(rows[0], ref_column, 2, ['C1'], ['J1', 'J2','R1'])
+    check_kibom_test_netlist(rows[0], ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
     # Check the DNF table
-    check_kibom_test_netlist(rows[1], ref_column, 1, ['J1', 'J2','R1'], ['C1'])
+    check_kibom_test_netlist(rows[1], ref_column, 1, LINKS_COMPONENTS, LINKS_EXCLUDE)
     # Check the datasheet link
     parts = get_column(rows[0]+rows[1], part_column, False)
     for c in parts:
@@ -222,9 +228,9 @@ def test_int_bom_digikey_link():
     ref_column = headers[0].index(REF_COLUMN_NAME)
     dk_column = headers[0].index('digikey#')
     # Check the normal table
-    check_kibom_test_netlist(rows[0], ref_column, 2, ['C1'], ['J1', 'J2','R1'])
+    check_kibom_test_netlist(rows[0], ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
     # Check the DNF table
-    check_kibom_test_netlist(rows[1], ref_column, 1, ['J1', 'J2','R1'], ['C1'])
+    check_kibom_test_netlist(rows[1], ref_column, 1, LINKS_COMPONENTS, LINKS_EXCLUDE)
     # Check the digikey link
     parts = get_column(rows[0]+rows[1], dk_column, False)
     for c in parts:
@@ -245,7 +251,7 @@ def test_int_bom_join_1():
     ref_column = header.index(REF_COLUMN_NAME)
     manf_column = header.index('manf')
     value_column = header.index('Value')
-    check_kibom_test_netlist(rows, ref_column, 3, [], ['C1', 'J1', 'J2', 'R1'])
+    check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS+1, [], LINKS_EXCLUDE+LINKS_COMPONENTS)
     assert rows[0][ref_column] == 'C1'
     assert rows[0][value_column] == '1nF 10% 50V'
     assert rows[0][manf_column] == 'KEMET C0805C102K5RACTU'
@@ -315,6 +321,7 @@ def test_int_bom_use_alt():
 
 
 def test_int_bom_no_number_rows():
+    """ number_rows: false """
     prj = 'kibom-test'
     ext = 'csv'
     ctx = context.TestContextSCH('test_int_bom_no_number_rows', prj, 'int_bom_no_number_rows', BOM_DIR)
@@ -326,4 +333,17 @@ def test_int_bom_no_number_rows():
     qty_column = header.index(QTY_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_column_rename_csv():
+    prj = 'links'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_column_rename_csv', prj, 'int_bom_column_rename_csv', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_RENAME_HEAD
+    ref_column = header.index(REF_COLUMN_NAME_R)
+    check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
     ctx.clean_up()
