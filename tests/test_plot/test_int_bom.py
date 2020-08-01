@@ -299,6 +299,7 @@ def test_int_bom_html_generate_dnf():
 
 
 def test_int_bom_use_alt():
+    """ use_alt: true """
     prj = 'kibom-test'
     ext = 'csv'
     ctx = context.TestContextSCH('test_int_bom_use_alt', prj, 'int_bom_use_alt', BOM_DIR)
@@ -312,3 +313,17 @@ def test_int_bom_use_alt():
     check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
 
+
+def test_int_bom_no_number_rows():
+    prj = 'kibom-test'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_no_number_rows', prj, 'int_bom_no_number_rows', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD[1:]
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
