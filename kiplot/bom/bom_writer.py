@@ -32,11 +32,6 @@ def write_bom(filename, ext, groups, headings, cfg):
     # Allow renaming the columns
     head_names = [h if h.lower() not in cfg.column_rename else cfg.column_rename[h.lower()] for h in headings]
     result = False
-    # Some stats
-    cfg.n_groups = len(groups)
-    cfg.n_total = sum([g.get_count() for g in groups])
-    cfg.n_fitted = sum([g.get_count() for g in groups if g.is_fitted()])
-    cfg.n_build = cfg.n_fitted * cfg.number
     # CSV file writing
     if ext in ["csv", "tsv", "txt"]:
         result = write_csv(filename, ext, groups, headings, head_names, cfg)
