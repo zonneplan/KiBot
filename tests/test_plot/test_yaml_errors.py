@@ -451,14 +451,14 @@ def test_error_wrong_drill_marks():
 
 def test_error_print_pcb_no_layer():
     prj = 'bom'
-    ctx = context.TestContext('PrPCB', prj, 'error_print_pcb_no_layer', '')
+    ctx = context.TestContext('test_error_print_pcb_no_layer', prj, 'error_print_pcb_no_layer', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Missing .?layers.? list")
     ctx.clean_up()
 
 
 def test_error_color():
-    ctx = context.TestContext('PrPCB', 'bom', 'error_color', '')
+    ctx = context.TestContext('test_error_color', 'bom', 'error_color', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Invalid color for .?board.?")
     ctx.clean_up()
