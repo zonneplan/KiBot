@@ -140,6 +140,10 @@ class Joiner:
         return refstr
 
 
+def _suffix_to_num(suffix):
+    return 0 if suffix == '?' else int(suffix)
+
+
 class ComponentGroup(object):
     """ A row in the BoM """
     def __init__(self, cfg):
@@ -193,7 +197,7 @@ class ComponentGroup(object):
     def sort_components(self):
         """ Sort the components in correct order (by reference).
             First priority is the prefix, second the number (as integer) """
-        self.components = sorted(self.components, key=lambda c: [c.ref_prefix, int(c.ref_suffix)])
+        self.components = sorted(self.components, key=lambda c: [c.ref_prefix, _suffix_to_num(c.ref_suffix)])
 
     def get_refs(self):
         """ Return a list of the components """
@@ -203,7 +207,7 @@ class ComponentGroup(object):
         """ Alternative list of references using ranges """
         S = Joiner()
         for n in self.components:
-            P, N = (n.ref_prefix, n.ref_suffix)
+            P, N = (n.ref_prefix, _suffix_to_num(n.ref_suffix))
             S.add(P, N)
         return S.flush(' ')
 
