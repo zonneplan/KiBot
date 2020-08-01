@@ -17,11 +17,6 @@ def write_xml(filename, groups, headings, head_names, cfg):
     headings = [list of headings to display in the BoM file]
     cfg = BomPref object
     """
-    n_groups = len(groups)
-    n_total = sum([g.get_count() for g in groups])
-    n_fitted = sum([g.get_count() for g in groups if g.is_fitted()])
-    n_build = n_fitted * cfg.number
-
     attrib = {}
     attrib['Schematic_Source'] = cfg.source
     attrib['Schematic_Revision'] = cfg.revision
@@ -29,11 +24,11 @@ def write_xml(filename, groups, headings, head_names, cfg):
     attrib['PCB_Variant'] = ', '.join(cfg.variant)
     # attrib['BOM_Date'] = net.getDate() same as schematic
     # attrib['KiCad_Version'] = net.getTool()  TODO?
-    attrib['Component_Groups'] = str(n_groups)
-    attrib['Component_Count'] = str(n_total)
-    attrib['Fitted_Components'] = str(n_fitted)
+    attrib['Component_Groups'] = str(cfg.n_groups)
+    attrib['Component_Count'] = str(cfg.n_total)
+    attrib['Fitted_Components'] = str(cfg.n_fitted)
     attrib['Number_of_PCBs'] = str(cfg.number)
-    attrib['Total_Components'] = str(n_build)
+    attrib['Total_Components'] = str(cfg.n_build)
 
     xml = ElementTree.Element('KiCad_BOM', attrib=attrib, encoding='utf-8')
     for group in groups:

@@ -65,11 +65,6 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         logger.error('Python xlsxwriter module not installed (Debian: python3-xlsxwriter)')
         return False
 
-    n_groups = len(groups)
-    n_total = sum([g.get_count() for g in groups])
-    n_fitted = sum([g.get_count() for g in groups if g.is_fitted()])
-    n_build = n_fitted * cfg.number
-
     workbook = Workbook(filename)
     worksheet = workbook.add_worksheet()
 
@@ -136,11 +131,11 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         title_fmt.set_bold()
 
         formats = [title_fmt, cellformat_left]
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Component Groups:", n_groups)
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Component Count:", n_total)
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Fitted Components:", n_fitted)
+        row_count = add_info(worksheet, column_widths, row_count, formats, "Component Groups:", cfg.n_groups)
+        row_count = add_info(worksheet, column_widths, row_count, formats, "Component Count:", cfg.n_total)
+        row_count = add_info(worksheet, column_widths, row_count, formats, "Fitted Components:", cfg.n_fitted)
         row_count = add_info(worksheet, column_widths, row_count, formats, "Number of PCBs:", cfg.number)
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Total components:", n_build)
+        row_count = add_info(worksheet, column_widths, row_count, formats, "Total components:", cfg.n_build)
         row_count = add_info(worksheet, column_widths, row_count, formats, "Schematic Revision:", cfg.revision)
         row_count = add_info(worksheet, column_widths, row_count, formats, "Schematic Date:", cfg.date)
         # row_count = add_info(worksheet, column_widths, row_count, formats, "BoM Date:", cfg.date) Same as sch

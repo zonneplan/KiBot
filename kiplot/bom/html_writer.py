@@ -84,11 +84,6 @@ def write_html(filename, groups, headings, head_names, cfg):
     head_names = [list of headings to display in the BoM file]
     prefs = BomPref object
     """
-    n_groups = len(groups)
-    n_total = sum([g.get_count() for g in groups])
-    n_fitted = sum([g.get_count() for g in groups if g.is_fitted()])
-    n_build = n_fitted * cfg.number
-
     link_datasheet = cfg.datasheet_as_link
     link_digikey = None
     if cfg.digikey_link:
@@ -107,18 +102,18 @@ def write_html(filename, groups, headings, head_names, cfg):
             html.write("<h2>KiBoM PCB Bill of Materials</h2>\n")
         if not cfg.hide_pcb_info:
             html.write('<table border="1">\n')
-            html.write("<tr><td>Source File</td><td>{source}</td></tr>\n".format(source=cfg.source))
+            html.write("<tr><td>Source File</td><td>{}</td></tr>\n".format(cfg.source))
             # html.write("<tr><td>BoM Date</td><td>{date}</td></tr>\n".format(date=cfg.date)) Same as schematic
-            html.write("<tr><td>Schematic Revision</td><td>{version}</td></tr>\n".format(version=cfg.revision))
-            html.write("<tr><td>Schematic Date</td><td>{date}</td></tr>\n".format(date=cfg.date))
-            html.write("<tr><td>PCB Variant</td><td>{variant}</td></tr>\n".format(variant=', '.join(cfg.variant)))
+            html.write("<tr><td>Schematic Revision</td><td>{}</td></tr>\n".format(cfg.revision))
+            html.write("<tr><td>Schematic Date</td><td>{}</td></tr>\n".format(cfg.date))
+            html.write("<tr><td>PCB Variant</td><td>{}</td></tr>\n".format(', '.join(cfg.variant)))
             # html.write("<tr><td>KiCad Version</td><td>{version}</td></tr>\n".format(version=net.getTool()))  TODO?
-            html.write("<tr><td>Component Groups</td><td>{n}</td></tr>\n".format(n=n_groups))
-            html.write("<tr><td>Component Count (per PCB)</td><td>{n}</td></tr>\n".format(n=n_total))
-            html.write("<tr><td>Fitted Components (per PCB)</td><td>{n}</td></tr>\n".format(n=n_fitted))
-            html.write("<tr><td>Number of PCBs</td><td>{n}</td></tr>\n".format(n=cfg.number))
+            html.write("<tr><td>Component Groups</td><td>{}</td></tr>\n".format(cfg.n_groups))
+            html.write("<tr><td>Component Count (per PCB)</td><td>{}</td></tr>\n".format(cfg.n_total))
+            html.write("<tr><td>Fitted Components (per PCB)</td><td>{}</td></tr>\n".format(cfg.n_fitted))
+            html.write("<tr><td>Number of PCBs</td><td>{}</td></tr>\n".format(cfg.number))
             html.write("<tr><td>Total Component Count<br>(for {n} PCBs)</td><td>{t}</td></tr>\n".
-                       format(n=cfg.number, t=n_build))
+                       format(n=cfg.number, t=cfg.n_build))
             html.write("</table>\n")
             html.write("<br>\n")
 

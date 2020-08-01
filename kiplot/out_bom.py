@@ -262,6 +262,8 @@ class BoM(BaseOutput):  # noqa: F821
         Used to generate the BoM in CSV, HTML, TSV, TXT, XML or XLSX format using the internal BoM.
         Is compatible with KiBoM, but doesn't need to update the XML netlist because the components
         are loaded from the schematic.
+        Important differences with KiBoM output:
+        - All options are in the main `options` section, not in `conf` subsection.
         This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema. """
     def __init__(self):
         super().__init__()

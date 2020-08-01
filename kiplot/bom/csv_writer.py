@@ -27,11 +27,6 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
         elif ext == "tsv" or ext == "txt":
             delimiter = "\t"
 
-    n_groups = len(groups)
-    n_total = sum([g.get_count() for g in groups])
-    n_fitted = sum([g.get_count() for g in groups if g.is_fitted()])
-    n_build = n_fitted * cfg.number
-
     with open(filename, "wt") as f:
         writer = csv.writer(f, delimiter=delimiter, lineterminator="\n")
         # Headers
@@ -63,11 +58,11 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
             for i in range(5):
                 writer.writerow([])
 
-            writer.writerow(["Component Groups:", n_groups])
-            writer.writerow(["Component Count:", n_total])
-            writer.writerow(["Fitted Components:", n_fitted])
+            writer.writerow(["Component Groups:", cfg.n_groups])
+            writer.writerow(["Component Count:", cfg.n_total])
+            writer.writerow(["Fitted Components:", cfg.n_fitted])
             writer.writerow(["Number of PCBs:", cfg.number])
-            writer.writerow(["Total components:", n_build])
+            writer.writerow(["Total components:", cfg.n_build])
             writer.writerow(["Schematic Revision:", cfg.revision])
             writer.writerow(["Schematic Date:", cfg.date])
             writer.writerow(["PCB Variant:", ' + '.join(cfg.variant)])

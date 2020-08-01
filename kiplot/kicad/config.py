@@ -1,5 +1,9 @@
 """
 KiCad configuration classes.
+
+Notes about coverage:
+I'm excluding all the Darwin and Windows code from coverage.
+I don't know how to test it on GitHub CI/CD.
 """
 import os
 import re
@@ -14,7 +18,8 @@ from .. import log
 # Check python version to determine which version of ConfirParser to import
 if sys.version_info.major >= 3:
     import configparser as ConfigParser
-else:
+else:  # pragma: no cover
+    # For future Python 2 support
     import ConfigParser
 
 logger = log.get_logger(__name__)
@@ -71,10 +76,10 @@ class LibAlias(object):
         lib.descr = un_quote(m.group(5))
         return lib
 
-    def __str__(self):
-        if not self.name:
-            return 'empty LibAlias'
-        return self.name+' -> `'+self.uri+'`'
+#     def __str__(self):
+#         if not self.name:
+#             return 'empty LibAlias'
+#         return self.name+' -> `'+self.uri+'`'
 
 
 class KiConf(object):
@@ -125,7 +130,7 @@ class KiConf(object):
             cfg = os.path.join(home, '.config', 'kicad', KICAD_COMMON)
             if os.path.isfile(cfg):
                 return cfg
-        elif system == 'Darwin':
+        elif system == 'Darwin':  # pragma: no cover
             # MacOSX: ~/Library/Preferences/kicad/
             home = os.environ.get('HOME')
             if not home:
@@ -134,7 +139,7 @@ class KiConf(object):
             cfg = os.path.join(home, 'Library', 'Preferences', 'kicad', KICAD_COMMON)
             if os.path.isfile(cfg):
                 return cfg
-        elif system == 'Windows':
+        elif system == 'Windows':  # pragma: no cover
             # Windows: C:\Users\username\AppData\Roaming\kicad
             #      or  C:\Documents and Settings\username\Application Data\kicad
             username = os.environ.get('username')
@@ -173,7 +178,7 @@ class KiConf(object):
                 dir = os.path.join(sysconfig.get_path('data', 'posix_prefix'), share)
                 if os.path.isdir(dir):
                     return dir
-        elif system == 'Darwin':
+        elif system == 'Darwin':  # pragma: no cover
             app_data = os.path.join('Library', 'Application Support', 'kicad', 'library')
             home = os.environ.get('HOME')
             if home:
@@ -183,7 +188,7 @@ class KiConf(object):
             dir = os.path.join('/', app_data)
             if os.path.isdir(dir):
                 return dir
-        elif system == 'Windows':
+        elif system == 'Windows':  # pragma: no cover
             dir = os.path.join('C:', 'Program Files', 'KiCad', share)
             if os.path.isdir(dir):
                 return dir
