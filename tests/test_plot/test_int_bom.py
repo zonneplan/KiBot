@@ -39,7 +39,6 @@ pytest-3 --log-cli-level debug
 import os
 import sys
 import logging
-from copy import deepcopy
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
