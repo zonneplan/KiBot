@@ -67,8 +67,8 @@ def check_dnc(rows, comp, ref, qty):
 def test_int_bom_simple_csv():
     prj = 'kibom-test'
     ext = 'csv'
-    ctx = context.TestContext('test_int_bom_simple_csv', prj, 'int_bom_simple_csv', BOM_DIR)
-    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    ctx = context.TestContextSCH('test_int_bom_simple_csv', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx.run()
     out = prj + '-bom.' + ext
     rows, header = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
@@ -82,8 +82,8 @@ def test_int_bom_simple_csv():
 def test_int_bom_simple_html():
     prj = 'kibom-test'
     ext = 'html'
-    ctx = context.TestContext('test_int_bom_simple_html', prj, 'int_bom_simple_html', BOM_DIR)
-    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    ctx = context.TestContextSCH('test_int_bom_simple_html', prj, 'int_bom_simple_html', BOM_DIR)
+    ctx.run()
     out = prj + '-bom.' + ext
     rows, headers = ctx.load_html(out)
     # Test we got the normal and DNF tables
@@ -116,8 +116,8 @@ def adapt_xml(h):
 def test_int_bom_simple_xml():
     prj = 'kibom-test'
     ext = 'xml'
-    ctx = context.TestContext('test_int_bom_simple_xml', prj, 'int_bom_simple_xml', BOM_DIR)
-    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    ctx = context.TestContextSCH('test_int_bom_simple_xml', prj, 'int_bom_simple_xml', BOM_DIR)
+    ctx.run()
     out = prj + '-bom.' + ext
     rows, header = ctx.load_xml(out)
     # Columns get sorted by name, so we need to take care of it
@@ -135,8 +135,8 @@ def test_int_bom_simple_xml():
 def test_int_bom_simple_xlsx():
     prj = 'kibom-test'
     ext = 'xlsx'
-    ctx = context.TestContext('test_int_bom_simple_xlsx', prj, 'int_bom_simple_xlsx', BOM_DIR)
-    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx', prj, 'int_bom_simple_xlsx', BOM_DIR)
+    ctx.run()
     out = prj + '-bom.' + ext
     rows, header = ctx.load_xlsx(out)
     assert header == KIBOM_TEST_HEAD
@@ -160,8 +160,8 @@ def get_column(rows, col, split=True):
 def test_int_bom_sort_1():
     prj = 'RLC_sort'
     ext = 'csv'
-    ctx = context.TestContext('test_int_bom_sort_1', prj, 'int_bom_simple_csv', BOM_DIR)
-    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    ctx = context.TestContextSCH('test_int_bom_sort_1', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx.run()
     out = prj + '-bom.' + ext
     rows, header = ctx.load_csv(out)
     ref_column = header.index(REF_COLUMN_NAME)
@@ -176,8 +176,8 @@ def test_int_bom_sort_1():
 def test_int_bom_datasheet_link():
     prj = 'links'
     ext = 'html'
-    ctx = context.TestContext('test_int_bom_datasheet_link', prj, 'int_bom_datasheet_link', BOM_DIR)
-    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    ctx = context.TestContextSCH('test_int_bom_datasheet_link', prj, 'int_bom_datasheet_link', BOM_DIR)
+    ctx.run()
     out = prj + '.' + ext
     rows, headers = ctx.load_html(out)
     # Test we got the normal and DNF tables
@@ -206,8 +206,8 @@ def test_int_bom_datasheet_link():
 def test_int_bom_digikey_link():
     prj = 'links'
     ext = 'html'
-    ctx = context.TestContext('test_int_bom_digikey_link', prj, 'int_bom_digikey_link', BOM_DIR)
-    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), prj+'.sch')])
+    ctx = context.TestContextSCH('test_int_bom_digikey_link', prj, 'int_bom_digikey_link', BOM_DIR)
+    ctx.run()
     out = prj + '.' + ext
     rows, headers = ctx.load_html(out)
     # Test we got the normal and DNF tables
