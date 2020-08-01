@@ -264,7 +264,7 @@ class ComponentGroup(object):
         row = []
         for key in columns:
             val = self.get_field(key)
-            # Join fields (appending to current value) (#81)
+            # Join fields (appending to current value)
             for join_l in self.cfg.join:
                 # Each list is "target, source..." so we need at least 2 elements
                 elements = len(join_l)
