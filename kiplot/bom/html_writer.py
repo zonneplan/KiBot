@@ -44,12 +44,10 @@ def html_table(html, groups, headings, head_names, cfg, link_datasheet, link_dig
         html.write('\t<th align="center"{bg}>{h}</th>\n'.format(h=h, bg=' bgcolor="{}"'.format(bg) if bg else ''))
     html.write("</tr>\n")
 
-    row_count = 0
     for i, group in enumerate(groups):
         if (cfg.ignore_dnf and not group.is_fitted()) != dnf:
             continue
         row = group.get_row(headings)
-        row_count += 1
         html.write("<tr>\n")
         for n, r in enumerate(row):
             # A link to Digi-Key?
@@ -66,7 +64,7 @@ def html_table(html, groups, headings, head_names, cfg, link_datasheet, link_dig
             html.write('\t<td align="center"{bg}>{val}</td>\n'.format(bg=' bgcolor={}'.format(bg) if bg else '', val=link(r)))
         html.write("</tr>\n")
     html.write("</table>\n")
-    return row_count
+    return
 
 
 def write_html(filename, groups, headings, head_names, cfg):
@@ -119,11 +117,10 @@ def write_html(filename, groups, headings, head_names, cfg):
             html.write('<p style="background-color: {bg}">Empty Fields</p>\n'.format(bg=BG_EMPTY))
 
         # Fitted groups
-        row_count = html_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey)
-
+        html_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey)
         html.write("<br><br>\n")
 
-        if cfg.html_generate_dnf and row_count != len(groups):
+        if cfg.html_generate_dnf and cfg.n_total != cfg.n_fitted:
             html.write("<h2>Optional components (DNF=Do Not Fit)</h2>\n")
             # DNF component groups
             html_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, True)

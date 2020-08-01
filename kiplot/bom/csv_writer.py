@@ -33,21 +33,17 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
         if not cfg.hide_headers:
             writer.writerow(head_names)
         # Body
-        count = 0
-        row_count = 1
         for group in groups:
             if cfg.ignore_dnf and not group.is_fitted():
                 continue
             row = group.get_row(headings)
             writer.writerow(row)
-            count += group.get_count()
-            row_count += 1
         # PCB info
         if not cfg.hide_pcb_info:
             # Add some blank rows
             for i in range(5):
                 writer.writerow([])
-
+            # The info
             writer.writerow(["Component Groups:", cfg.n_groups])
             writer.writerow(["Component Count:", cfg.n_total])
             writer.writerow(["Fitted Components:", cfg.n_fitted])
