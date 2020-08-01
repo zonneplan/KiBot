@@ -258,6 +258,7 @@ def test_int_bom_join_1():
 
 
 def test_int_include_dnf():
+    """ ignore_dnf: false """
     prj = 'kibom-test'
     ext = 'csv'
     ctx = context.TestContextSCH('test_int_include_dnf', prj, 'int_bom_include_dnf', BOM_DIR)
@@ -270,3 +271,28 @@ def test_int_include_dnf():
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS+1, [], KIBOM_TEST_COMPONENTS+KIBOM_TEST_EXCLUDE)
     check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
+
+
+def test_int_bom_html_generate_dnf():
+    """ html_generate_dnf: false """
+    prj = 'kibom-test'
+    ext = 'html'
+    ctx = context.TestContextSCH('test_int_bom_html_generate_dnf', prj, 'int_bom_html_generate_dnf', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, headers = ctx.load_html(out)
+    logging.debug(rows)
+    # Test we got the normal and DNF tables
+    assert len(rows) == 1
+    assert len(headers) == 1
+    # Test both tables has the same headings and they are the expected
+    head_no_comp = deepcopy(KIBOM_TEST_HEAD)
+    head_no_comp[0] = ''  # HTML numbered column doesn't have a name
+    assert headers[0] == head_no_comp
+    # Look for reference and quantity columns
+    ref_column = headers[0].index(REF_COLUMN_NAME)
+    qty_column = headers[0].index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows[0], ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows[0], 'R7', ref_column, qty_column)
+    ctx.clean_up()
+

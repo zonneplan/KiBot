@@ -363,11 +363,13 @@ class TestContext(object):
         file = self.expect_out_file(os.path.join(self.sub_dir, filename))
         with open(file) as f:
             html = f.read()
-        rows = [[], []]
-        headers = [[], []]
+        rows = []
+        headers = []
         c = 0
         for body in re.findall(r'<table.*?>((?:\s+.*?)+)</table>', html, re.MULTILINE):
             if c:
+                rows.append([])
+                headers.append([])
                 # Header
                 m = re.search(r'<tr>\s+((?:<th.*?>(?:.*)</th>\s+)+)</tr>', body, re.MULTILINE)
                 assert m, 'Failed to get table header'
