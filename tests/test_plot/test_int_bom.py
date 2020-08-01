@@ -58,7 +58,7 @@ REF_COLUMN_NAME_R = 'Referencias'
 QTY_COLUMN_NAME = 'Quantity Per PCB'
 COMP_COLUMN_NAME = 'Component'
 COMP_COLUMN_NAME_R = 'Renglón'
-KIBOM_TEST_HEAD = [COMP_COLUMN_NAME , 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
+KIBOM_TEST_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
                    'Datasheet', 'Config']
 KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor', 'Código Digi-Key', 'Cantidad por PCB']
 CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet']
@@ -66,7 +66,7 @@ KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', '
 KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
 KIBOM_TEST_EXCLUDE = ['R6']
 KIBOM_TEST_GROUPS = 5
-LINKS_COMPONENTS = ['J1', 'J2','R1']
+LINKS_COMPONENTS = ['J1', 'J2', 'R1']
 LINKS_EXCLUDE = ['C1']
 LINKS_GROUPS = 2
 
@@ -224,7 +224,6 @@ def test_int_bom_datasheet_link():
     assert len(headers) == 2
     # Test both tables has the same headings and they are the expected
     assert headers[0] == headers[1]
-    head_no_comp = deepcopy(KIBOM_TEST_HEAD)
     assert headers[0] == ['', 'References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
@@ -254,7 +253,6 @@ def test_int_bom_digikey_link():
     assert len(headers) == 2
     # Test both tables has the same headings and they are the expected
     assert headers[0] == headers[1]
-    head_no_comp = deepcopy(KIBOM_TEST_HEAD)
     assert headers[0] == ['', 'References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
