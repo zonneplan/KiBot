@@ -93,8 +93,6 @@ class BoMOptions(BaseOptions):
             """ Generate a separated section for DNF (Do Not Fit) components (HTML only) """
             self.use_alt = False
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
-            self.number_rows = True
-            """ First column is the row number """
             self.group_connectors = True
             """ Connectors with the same footprints will be grouped together, independent of the name of the connector """
             self.test_regex = True
@@ -208,9 +206,8 @@ class BoMOptions(BaseOptions):
             # This is tricky
             # Lower case available columns
             valid_columns = self._get_columns()
+            valid_columns.append(ColumnList.COL_ROW_NUMBER)
             valid_columns_l = {c.lower(): c for c in valid_columns}
-            # Special row number column
-            valid_columns_l['component'] = 'Component'
             logger.debug("Valid columns: "+str(valid_columns))
             # Create the different lists
             columns = []
@@ -233,9 +230,6 @@ class BoMOptions(BaseOptions):
                     raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
                 columns.append(new_col)
                 columns_l[new_col.lower()] = new_col
-            # TODO less magic, more explicit
-            if 'component' in columns_l:
-                del columns_l['component']
             # Create a list of the columns we don't want
             self.ignore = [c for c in valid_columns_l.keys() if c not in columns_l]
             # And this is the ordered list with the case style defined by the user
@@ -264,6 +258,7 @@ class BoM(BaseOutput):  # noqa: F821
         are loaded from the schematic.
         Important differences with KiBoM output:
         - All options are in the main `options` section, not in `conf` subsection.
+        - The `Component` column is named `Row` and works just like any other column.
         This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema. """
     def __init__(self):
         super().__init__()

@@ -15,7 +15,6 @@ Tests of Internal BoM files
 - ignore_dnf = 0
 - html_generate_dnf = 0
 - use_alt = 1
-- number_rows = 0
 - COLUMN_RENAME
   - CSV
   - HTML
@@ -56,7 +55,7 @@ BOM_DIR = 'BoM'
 REF_COLUMN_NAME = 'References'
 REF_COLUMN_NAME_R = 'Referencias'
 QTY_COLUMN_NAME = 'Quantity Per PCB'
-COMP_COLUMN_NAME = 'Component'
+COMP_COLUMN_NAME = 'Row'
 COMP_COLUMN_NAME_R = 'Renglón'
 KIBOM_TEST_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
                    'Datasheet', 'Config']
@@ -130,9 +129,7 @@ def test_int_bom_simple_html():
     assert len(headers) == 2
     # Test both tables has the same headings and they are the expected
     assert headers[0] == headers[1]
-    head_no_comp = deepcopy(KIBOM_TEST_HEAD)
-    head_no_comp[0] = ''  # HTML numbered column doesn't have a name
-    assert headers[0] == head_no_comp
+    assert headers[0] == KIBOM_TEST_HEAD
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
     qty_column = headers[0].index(QTY_COLUMN_NAME)
@@ -161,8 +158,6 @@ def test_int_bom_simple_xml():
     rows, header = ctx.load_xml(out)
     # Columns get sorted by name, so we need to take care of it
     for c in KIBOM_TEST_HEAD:
-        if c == COMP_COLUMN_NAME:
-            continue
         assert adapt_xml(c) in header, "Missing column "+c
     ref_column = header.index(adapt_xml(REF_COLUMN_NAME))
     qty_column = header.index(adapt_xml(QTY_COLUMN_NAME))
@@ -224,7 +219,7 @@ def test_int_bom_datasheet_link():
     assert len(headers) == 2
     # Test both tables has the same headings and they are the expected
     assert headers[0] == headers[1]
-    assert headers[0] == ['', 'References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
+    assert headers[0] == ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
     part_column = headers[0].index('Part')
@@ -253,7 +248,7 @@ def test_int_bom_digikey_link():
     assert len(headers) == 2
     # Test both tables has the same headings and they are the expected
     assert headers[0] == headers[1]
-    assert headers[0] == ['', 'References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
+    assert headers[0] == ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
     dk_column = headers[0].index('digikey#')
@@ -322,10 +317,7 @@ def test_int_bom_html_generate_dnf():
     # Test we got the normal and DNF tables
     assert len(rows) == 1
     assert len(headers) == 1
-    # Test both tables has the same headings and they are the expected
-    head_no_comp = deepcopy(KIBOM_TEST_HEAD)
-    head_no_comp[0] = ''  # HTML numbered column doesn't have a name
-    assert headers[0] == head_no_comp
+    assert headers[0] == KIBOM_TEST_HEAD
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
     qty_column = headers[0].index(QTY_COLUMN_NAME)
@@ -351,7 +343,7 @@ def test_int_bom_use_alt():
 
 
 def test_int_bom_no_number_rows():
-    """ number_rows: false """
+    """ Was number_rows: false, now is different """
     prj = 'kibom-test'
     ext = 'csv'
     ctx = context.TestContextSCH('test_int_bom_no_number_rows', prj, 'int_bom_no_number_rows', BOM_DIR)
@@ -386,9 +378,7 @@ def test_int_bom_column_rename_html():
     ctx.run()
     out = prj + '-bom.' + ext
     rows, headers = ctx.load_html(out)
-    head_no_comp = deepcopy(KIBOM_RENAME_HEAD)
-    head_no_comp[0] = ''  # HTML numbered column doesn't have a name
-    assert headers[0] == head_no_comp
+    assert headers[0] == KIBOM_RENAME_HEAD
     ref_column = headers[0].index(REF_COLUMN_NAME_R)
     check_kibom_test_netlist(rows[0], ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
     ctx.clean_up()
@@ -403,8 +393,6 @@ def test_int_bom_column_rename_xml():
     rows, header = ctx.load_xml(out)
     # Columns get sorted by name, so we need to take care of it
     for c in KIBOM_RENAME_HEAD:
-        if c == COMP_COLUMN_NAME_R:
-            continue
         assert adapt_xml(c) in header, "Missing column "+c
     ref_column = header.index(REF_COLUMN_NAME_R)
     check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)

@@ -8,6 +8,14 @@ outputs:
     type: bom
     dir: BoM
     options:
-      number_rows: false
       format: CSV
+      columns:
+        - Description
+        - Part
+        - References
+        - Value
+        - Footprint
+        - Quantity Per PCB
+        - Datasheet
+        - Config
 

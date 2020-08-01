@@ -10,6 +10,7 @@ outputs:
     options:
       format: CSV
       columns:
+        - Row
         - References
         - Part
         - field: Value

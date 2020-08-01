@@ -31,14 +31,7 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
         writer = csv.writer(f, delimiter=delimiter, lineterminator="\n")
         # Headers
         if not cfg.hide_headers:
-            if cfg.number_rows:
-                comp = "Component"
-                comp_lc = comp.lower()
-                if comp_lc in cfg.column_rename:
-                    comp = cfg.column_rename[comp_lc]
-                writer.writerow([comp] + head_names)
-            else:
-                writer.writerow(head_names)
+            writer.writerow(head_names)
         # Body
         count = 0
         row_count = 1
@@ -46,9 +39,6 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
             if cfg.ignore_dnf and not group.is_fitted():
                 continue
             row = group.get_row(headings)
-            # Row number
-            if cfg.number_rows:
-                row = [str(row_count)] + row
             writer.writerow(row)
             count += group.get_count()
             row_count += 1

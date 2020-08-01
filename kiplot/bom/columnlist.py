@@ -27,6 +27,8 @@ class ColumnList:
     COL_DATASHEET_L = COL_DATASHEET.lower()
     COL_SHEETPATH = 'Sheetpath'
     COL_SHEETPATH_L = COL_SHEETPATH.lower()
+    COL_ROW_NUMBER = 'Row'
+    COL_ROW_NUMBER_L = COL_ROW_NUMBER.lower()
 
     # Default columns for groups
     COL_GRP_QUANTITY = 'Quantity Per PCB'
@@ -37,13 +39,15 @@ class ColumnList:
     COL_GRP_BUILD_QUANTITY_L = COL_GRP_BUILD_QUANTITY.lower()
 
     # Generated columns
-    COLUMNS_GEN_L = [
-        COL_GRP_QUANTITY_L,
-        COL_GRP_BUILD_QUANTITY_L,
-    ]
+    COLUMNS_GEN_L = {
+        COL_GRP_QUANTITY_L: 1,
+        COL_GRP_BUILD_QUANTITY_L: 1,
+        COL_ROW_NUMBER_L: 1,
+    }
 
     # Default columns
     COLUMNS_DEFAULT = [
+        COL_ROW_NUMBER,
         COL_DESCRIPTION,
         COL_PART,
         COL_PART_LIB,

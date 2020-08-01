@@ -38,8 +38,6 @@ def html_table(html, groups, headings, head_names, cfg, link_datasheet, link_dig
     html.write('<table border="1">\n')
     # Row titles:
     html.write("<tr>\n")
-    if cfg.number_rows:
-        html.write("\t<th></th>\n")
     for i, h in enumerate(head_names):
         # Cell background color
         bg = bg_color(headings[i])
@@ -53,10 +51,6 @@ def html_table(html, groups, headings, head_names, cfg, link_datasheet, link_dig
         row = group.get_row(headings)
         row_count += 1
         html.write("<tr>\n")
-        # Row number
-        if cfg.number_rows:
-            html.write('\t<td align="center">{n}</td>\n'.format(n=row_count))
-
         for n, r in enumerate(row):
             # A link to Digi-Key?
             if link_digikey and headings[n] in link_digikey:

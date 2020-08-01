@@ -9,7 +9,6 @@ outputs:
     dir: BoM
     options:
       format: CSV
-      number_rows: false
       columns:
         - references
         - value

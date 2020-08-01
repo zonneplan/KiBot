@@ -10,7 +10,7 @@ outputs:
     options:
       format: XLSX
       columns:
-        - field: Component
+        - field: Row
           name: Renglón
         - field: References
           name: Referencias

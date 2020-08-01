@@ -365,6 +365,16 @@ def group_components(cfg, components):
     # Sort the groups
     # First priority is the Type of component (e.g. R?, U?, L?)
     groups = sorted(groups, key=lambda g: [g.components[0].ref_prefix, get_value_sort(g.components[0])])
+    # Enumerate the groups
+    c = 1
+    dnf = 1
+    for g in groups:
+        if cfg.ignore_dnf and not g.is_fitted():
+            g.update_field('Row', str(dnf))
+            dnf += 1
+        else:
+            g.update_field('Row', str(c))
+            c += 1
     return groups
 
 

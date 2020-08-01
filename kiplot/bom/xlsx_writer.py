@@ -46,9 +46,8 @@ def add_info(worksheet, column_widths, row, formats, text, value):
         value = str(value)
     else:
         worksheet.write_string(row, 1, value, formats[1])
-    value_l = len(value)
-    if value_l > column_widths[1]:
-        column_widths[1] = value_l
+    column_widths[0] = max(len(text), column_widths[0])
+    column_widths[1] = max(len(value), column_widths[1])
     return row + 1
 
 
@@ -68,25 +67,13 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     workbook = Workbook(filename)
     worksheet = workbook.add_worksheet()
 
-    if cfg.number_rows:
-        comp = "Component"
-        if comp.lower() in cfg.column_rename:
-            comp = cfg.column_rename[comp.lower()]
-        row_headings = [comp] + head_names
-    else:
-        row_headings = head_names
-
     # Headings
+    row_headings = head_names
     cellformats = {}
     column_widths = {}
     for i in range(len(row_headings)):
         cellformats[i] = workbook.add_format(DEFAULT_FMT)
-        bg = None
-        if cfg.number_rows:
-            if i > 0:
-                bg = bg_color(col_fields[i-1])
-        else:
-            bg = bg_color(col_fields[i])
+        bg = bg_color(col_fields[i])
         if bg:
             cellformats[i].set_bg_color(bg)
         column_widths[i] = len(row_headings[i]) + 10
@@ -106,9 +93,6 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
             continue
         # Get the data row
         row = group.get_row(col_fields)
-        # Add row number
-        if cfg.number_rows:
-            row = [str(row_count)] + row
         # Fill the row
         for i in range(len(row)):
             cell = row[i]
@@ -131,6 +115,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         title_fmt.set_bold()
 
         formats = [title_fmt, cellformat_left]
+        # TODO: Language?
         row_count = add_info(worksheet, column_widths, row_count, formats, "Component Groups:", cfg.n_groups)
         row_count = add_info(worksheet, column_widths, row_count, formats, "Component Count:", cfg.n_total)
         row_count = add_info(worksheet, column_widths, row_count, formats, "Fitted Components:", cfg.n_fitted)
