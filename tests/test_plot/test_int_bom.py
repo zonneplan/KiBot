@@ -24,7 +24,8 @@ if prev_dir not in sys.path:
 BOM_DIR = 'BoM'
 REF_COLUMN_NAME = 'References'
 QTY_COLUMN_NAME = 'Quantity Per PCB'
-KIBOM_TEST_HEAD = ['Component', 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet',
+COMP_COLUMN_NAME = 'Component'
+KIBOM_TEST_HEAD = [COMP_COLUMN_NAME , 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet',
                    'Config']
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
 KIBOM_TEST_EXCLUDE = ['R6']
@@ -121,7 +122,7 @@ def test_int_bom_simple_xml():
     rows, header = ctx.load_xml(out)
     # Columns get sorted by name, so we need to take care of it
     for c in KIBOM_TEST_HEAD:
-        if c == 'Component':
+        if c == COMP_COLUMN_NAME:
             continue
         assert adapt_xml(c) in header, "Missing column "+c
     ref_column = header.index(adapt_xml(REF_COLUMN_NAME))
@@ -230,3 +231,28 @@ def test_int_bom_digikey_link():
         assert 'digikey' in c
         logging.debug(c + ' OK')
     ctx.clean_up()
+
+
+def test_int_bom_join_1():
+    prj = 'join'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_join_1', prj, 'int_bom_join_1', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == [COMP_COLUMN_NAME, REF_COLUMN_NAME, 'Part', 'Value', 'manf', 'digikey#', QTY_COLUMN_NAME]
+    ref_column = header.index(REF_COLUMN_NAME)
+    manf_column = header.index('manf')
+    value_column = header.index('Value')
+    check_kibom_test_netlist(rows, ref_column, 3, [], ['C1', 'J1', 'J2', 'R1'])
+    assert rows[0][ref_column] == 'C1'
+    assert rows[0][value_column] == '1nF 10% 50V'
+    assert rows[0][manf_column] == 'KEMET C0805C102K5RACTU'
+    assert rows[1][ref_column] == 'J1 J2'
+    assert rows[1][value_column] == 'Molex KK'
+    assert rows[1][manf_column] == 'Molex 0022232021'
+    assert rows[2][ref_column] == 'R1'
+    assert rows[2][value_column] == '1k 5%'
+    assert rows[2][manf_column] == 'Bourns CR0805-JW-102ELF'
+    ctx.clean_up()
+

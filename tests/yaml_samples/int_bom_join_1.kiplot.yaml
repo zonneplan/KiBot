@@ -1,0 +1,21 @@
+# Example KiPlot config file
+kiplot:
+  version: 1
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      format: CSV
+      columns:
+        - References
+        - Part
+        - field: Value
+          join: ['Tolerance', 'Voltage']
+        - field: manf
+          join: manf#
+        - digikey#
+        - Quantity Per PCB
+
