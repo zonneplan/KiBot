@@ -27,6 +27,7 @@ class BoMRegex(Optionable):
             """ {regex} """  # pragma: no cover
 
     def __str__(self):
+        # TODO make a list
         return self.column+'\t'+self.regex
 
 
@@ -47,10 +48,11 @@ class BoMColumns(Optionable):
         super().config()
         if not self.field:
             raise KiPlotConfigurationError("Missing or empty `field` in columns list ({})".format(str(self._tree)))
+        # Ensure this is None or a list
         if isinstance(self.join, type):
             self.join = None
-        elif isinstance(self.join, list):
-            self.join = '\t'.join(self.join)
+        elif isinstance(self.join, str):
+            self.join = [self.join]
 
 
 class BoMOptions(BaseOptions):
@@ -223,7 +225,7 @@ class BoMOptions(BaseOptions):
                         self.column_rename[col.field] = col.name
                     # Attach other columns
                     if col.join:
-                        self.join.append(col.field+'\t'+col.join)
+                        self.join.append([col.field]+col.join)
                 # Check this is a valid column
                 if new_col.lower() not in valid_columns_l:
                     raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
