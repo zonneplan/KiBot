@@ -347,3 +347,18 @@ def test_int_bom_column_rename_csv():
     ref_column = header.index(REF_COLUMN_NAME_R)
     check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
     ctx.clean_up()
+
+
+def test_int_bom_column_rename_html():
+    prj = 'links'
+    ext = 'html'
+    ctx = context.TestContextSCH('test_int_bom_column_rename_html', prj, 'int_bom_column_rename_html', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, headers = ctx.load_html(out)
+    head_no_comp = deepcopy(KIBOM_RENAME_HEAD)
+    head_no_comp[0] = ''  # HTML numbered column doesn't have a name
+    assert headers[0] == head_no_comp
+    ref_column = headers[0].index(REF_COLUMN_NAME_R)
+    check_kibom_test_netlist(rows[0], ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
+    ctx.clean_up()
