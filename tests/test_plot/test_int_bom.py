@@ -27,9 +27,10 @@ REF_COLUMN_NAME = 'References'
 REF_COLUMN_NAME_R = 'Referencias'
 QTY_COLUMN_NAME = 'Quantity Per PCB'
 COMP_COLUMN_NAME = 'Component'
-KIBOM_TEST_HEAD = [COMP_COLUMN_NAME , 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet',
-                   'Config']
-KIBOM_RENAME_HEAD = ['Renglón', REF_COLUMN_NAME_R, 'Componente', 'Valor', 'Código Digi-Key', 'Cantidad por PCB']
+COMP_COLUMN_NAME_R = 'Renglón'
+KIBOM_TEST_HEAD = [COMP_COLUMN_NAME , 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
+                   'Datasheet', 'Config']
+KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor', 'Código Digi-Key', 'Cantidad por PCB']
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
 KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
 KIBOM_TEST_EXCLUDE = ['R6']
@@ -362,3 +363,34 @@ def test_int_bom_column_rename_html():
     ref_column = headers[0].index(REF_COLUMN_NAME_R)
     check_kibom_test_netlist(rows[0], ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
     ctx.clean_up()
+
+
+def test_int_bom_column_rename_xml():
+    prj = 'links'
+    ext = 'xml'
+    ctx = context.TestContextSCH('test_int_bom_column_rename_xml', prj, 'int_bom_column_rename_xml', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_xml(out)
+    # Columns get sorted by name, so we need to take care of it
+    for c in KIBOM_RENAME_HEAD:
+        if c == COMP_COLUMN_NAME_R:
+            continue
+        assert adapt_xml(c) in header, "Missing column "+c
+    ref_column = header.index(REF_COLUMN_NAME_R)
+    check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
+    ctx.clean_up()
+
+
+def test_int_bom_column_rename_xlsx():
+    prj = 'links'
+    ext = 'xlsx'
+    ctx = context.TestContextSCH('test_int_bom_column_rename_xlsx', prj, 'int_bom_column_rename_xlsx', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_xlsx(out)
+    assert header == KIBOM_RENAME_HEAD
+    ref_column = header.index(REF_COLUMN_NAME_R)
+    check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
+    ctx.clean_up()
+
