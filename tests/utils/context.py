@@ -23,8 +23,9 @@ MODE_PCB = 0
 class TestContext(object):
 
     def __init__(self, test_name, board_name, yaml_name, sub_dir, yaml_compressed=False):
-        # We are using PCBs
-        self.mode = MODE_PCB
+        if not hasattr(self, 'mode'):
+            # We are using PCBs
+            self.mode = MODE_PCB
         # The name used for the test output dirs and other logging
         self.test_name = test_name
         # The name of the PCB board file
@@ -50,7 +51,10 @@ class TestContext(object):
         self.board_file = os.path.abspath(os.path.join(self.get_board_dir(), self.board_name + KICAD_PCB_EXT))
         self.sch_file = os.path.abspath(os.path.join(self.get_board_dir(), self.board_name + KICAD_SCH_EXT))
         logging.info('KiCad file: '+self.board_file)
-        assert os.path.isfile(self.board_file)
+        if self.mode == MODE_PCB:
+            assert os.path.isfile(self.board_file)
+        else:
+            assert os.path.isfile(self.sch_file)
 
     def _get_yaml_dir(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))
@@ -162,7 +166,10 @@ class TestContext(object):
             # One is enough, 2 can generate tons of data when loading libs
             cmd.append('-v')
         if not no_board_file:
-            cmd = cmd+['-b', filename if filename else self.board_file]
+            if self.mode == MODE_PCB:
+                cmd = cmd+['-b', filename if filename else self.board_file]
+            else:
+                cmd = cmd+['-e', filename if filename else self.sch_file]
         if not no_yaml_file:
             cmd = cmd+['-c', self.yaml_file]
         if not no_out_dir:
@@ -418,6 +425,5 @@ class TestContext(object):
 class TestContextSCH(TestContext):
 
     def __init__(self, test_name, board_name, yaml_name, sub_dir):
-        super().__init__(test_name, board_name, yaml_name, sub_dir)
         self.mode = MODE_SCH
-        self._get_board_file()
+        super().__init__(test_name, board_name, yaml_name, sub_dir)
