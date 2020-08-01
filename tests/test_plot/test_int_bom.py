@@ -31,6 +31,7 @@ COMP_COLUMN_NAME_R = 'Renglón'
 KIBOM_TEST_HEAD = [COMP_COLUMN_NAME , 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
                    'Datasheet', 'Config']
 KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor', 'Código Digi-Key', 'Cantidad por PCB']
+CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet']
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
 KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
 KIBOM_TEST_EXCLUDE = ['R6']
@@ -394,3 +395,30 @@ def test_int_bom_column_rename_xlsx():
     check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
     ctx.clean_up()
 
+
+def test_int_group_connectors():
+    """ Default behavior, ignore the 'Value' for connectors """
+    prj = 'connectors'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_group_connectors', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == CONN_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, [], ['J4', 'J1', 'J3', 'J2'])
+    ctx.clean_up()
+
+
+def test_int_no_group_connectors():
+    """ group_connectors: false """
+    prj = 'connectors'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_no_group_connectors', prj, 'int_bom_no_group_connectors', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == CONN_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 4, [], ['J4', 'J1', 'J3', 'J2'])
+    ctx.clean_up()
