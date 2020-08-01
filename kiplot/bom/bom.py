@@ -4,7 +4,6 @@ This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Hen
 
 Here is all the logic to convert a list of components into the rows and columns used to create the BoM.
 """
-# TODO Sheetpath
 from .units import compare_values, comp_match
 from .bom_writer import write_bom
 from .columnlist import ColumnList
@@ -237,10 +236,8 @@ class ComponentGroup(object):
 
     def update_fields(self, usealt=False):
         for c in self.components:
-            for f in c.get_field_names():
-                # TODO optimize the list is simple and positions fixed
-                # Value and datasheet aren't special
-                self.update_field(f, c.get_field_value(f))
+            for f, v in c.get_user_fields():
+                self.update_field(f, v)
         # Update 'global' fields
         if usealt:
             self.fields[ColumnList.COL_REFERENCE_L] = self.get_alt_refs()
