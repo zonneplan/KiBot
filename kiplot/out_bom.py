@@ -209,6 +209,8 @@ class BoMOptions(BaseOptions):
             # Lower case available columns
             valid_columns = self._get_columns()
             valid_columns_l = {c.lower(): c for c in valid_columns}
+            # Special row number column
+            valid_columns_l['component'] = 'Component'
             logger.debug("Valid columns: "+str(valid_columns))
             # Create the different lists
             columns = []
@@ -222,7 +224,7 @@ class BoMOptions(BaseOptions):
                     new_col = col.field
                     # A column rename
                     if col.name:
-                        self.column_rename[col.field] = col.name
+                        self.column_rename[col.field.lower()] = col.name
                     # Attach other columns
                     if col.join:
                         self.join.append([col.field]+col.join)
@@ -231,6 +233,8 @@ class BoMOptions(BaseOptions):
                     raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
                 columns.append(new_col)
                 columns_l[new_col.lower()] = new_col
+            # TODO less magic, more explicit
+            del columns_l['component']
             # Create a list of the columns we don't want
             self.ignore = [c for c in valid_columns_l.keys() if c not in columns_l]
             # And this is the ordered list with the case style defined by the user
