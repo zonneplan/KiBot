@@ -22,6 +22,9 @@ outputs:
   # BoM (Bill of Materials):
   # Is compatible with KiBoM, but doesn't need to update the XML netlist because the components
   # are loaded from the schematic.
+  # Important differences with KiBoM output:
+  # - All options are in the main `options` section, not in `conf` subsection.
+  # - The `Component` column is named `Row` and works just like any other column.
   # This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   - name: 'bom_example'
     comment: 'Used to generate the BoM in CSV, HTML, TSV, TXT, XML or XLSX format using the internal BoM.'
@@ -113,8 +116,6 @@ outputs:
       merge_blank_fields: true
       # [number=1] Number of boards to build (components multiplier)
       number: 1
-      # [boolean=true] First column is the row number
-      number_rows: true
       # [string='%f-%i.%x'] filename for the output (%i=bom). Affected by global options
       output: '%f-%i.%x'
       # [string=','] CSV Separator
