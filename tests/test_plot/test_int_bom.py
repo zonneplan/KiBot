@@ -28,6 +28,7 @@ COMP_COLUMN_NAME = 'Component'
 KIBOM_TEST_HEAD = [COMP_COLUMN_NAME , 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet',
                    'Config']
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
+KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
 KIBOM_TEST_EXCLUDE = ['R6']
 KIBOM_TEST_GROUPS = 5
 
@@ -294,5 +295,20 @@ def test_int_bom_html_generate_dnf():
     qty_column = headers[0].index(QTY_COLUMN_NAME)
     check_kibom_test_netlist(rows[0], ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows[0], 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_use_alt():
+    prj = 'kibom-test'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_use_alt', prj, 'int_bom_use_alt', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS_ALT)
+    check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
 
