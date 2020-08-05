@@ -29,6 +29,7 @@ def write_bom(filename, ext, groups, headings, cfg):
     """
     # Allow renaming the columns
     head_names = [h if h.lower() not in cfg.column_rename else cfg.column_rename[h.lower()] for h in headings]
+    headings = [h.lower() for h in headings]
     result = False
     # CSV file writing
     if ext in ["csv", "tsv", "txt"]:
