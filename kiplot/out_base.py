@@ -42,6 +42,8 @@ class BaseOutput(RegOutput):
         if getattr(self, 'options', None) and isinstance(self.options, type):
             # No options, get the defaults
             self.options = self.options()
+            # Configure them using an empty tree
+            self.options.config()
 
     def run(self, output_dir, board):
         self.options.run(output_dir, board)

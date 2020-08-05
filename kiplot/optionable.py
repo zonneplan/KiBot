@@ -21,6 +21,7 @@ class Optionable(object):
 
     def __init__(self):
         self._unkown_is_error = False
+        self._tree = {}
         super().__init__()
         if GS.global_output is not None and getattr(self, 'output', None):
             setattr(self, 'output', GS.global_output)
