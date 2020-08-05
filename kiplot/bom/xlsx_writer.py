@@ -6,7 +6,10 @@ This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Hen
 Generates an XLSX file.
 """
 # TODO: alternate colors, set row height, put logo, move data to beginning
+import io
+from base64 import b64decode
 from .columnlist import ColumnList
+from .kibot_logo import KIBOT_LOGO
 from .. import log
 try:
     from xlsxwriter import Workbook
@@ -23,6 +26,16 @@ BG_GEN = "#E6FFEE"
 BG_KICAD = "#FFE6B3"
 BG_USER = "#E6F9FF"
 BG_EMPTY = "#FF8080"
+BG_GEN_L = "#F0FFF4"
+BG_KICAD_L = "#FFF0BD"
+BG_USER_L = "#F0FFFF"
+BG_EMPTY_L = "#FF8A8A"
+BG_COLORS = [[BG_GEN, BG_GEN_L], [BG_KICAD, BG_KICAD_L], [BG_USER, BG_USER_L], [BG_EMPTY, BG_EMPTY_L]]
+GREY = "#dddddd"
+GREY_L = "#f3f3f3"
+HEAD_COLOR_R = "#982020"
+HEAD_COLOR_G = "#009879"
+HEAD_COLOR_B = "#0e4e8e"
 DEFAULT_FMT = {'text_wrap': True, 'align': 'center_across', 'valign': 'vjustify'}
 
 
@@ -31,24 +44,141 @@ def bg_color(col):
     col = col.lower()
     # Auto-generated columns
     if col in ColumnList.COLUMNS_GEN_L:
-        return BG_GEN
+        return 0
     # KiCad protected columns
     elif col in ColumnList.COLUMNS_PROTECTED_L:
-        return BG_KICAD
+        return 1
     # Additional user columns
-    return BG_USER
+    return 2
 
 
-def add_info(worksheet, column_widths, row, formats, text, value):
-    worksheet.write_string(row, 0, text, formats[0])
+def add_info(worksheet, column_widths, row, col_offset, formats, text, value):
+    worksheet.write_string(row, col_offset, text, formats[0])
     if isinstance(value, (int, float)):
-        worksheet.write_number(row, 1, value, formats[1])
+        worksheet.write_number(row, col_offset+1, value, formats[1])
         value = str(value)
     else:
-        worksheet.write_string(row, 1, value, formats[1])
-    column_widths[0] = max(len(text), column_widths[0])
-    column_widths[1] = max(len(value), column_widths[1])
+        worksheet.write_string(row, col_offset+1, value, formats[1])
+    column_widths[col_offset] = max(len(text), column_widths[col_offset])
+    column_widths[col_offset+1] = max(len(value), column_widths[col_offset+1])
     return row + 1
+
+
+def compute_head_size(cfg):
+    head_size = 7
+    if cfg.xlsx.logo is None:
+        if not cfg.xlsx.title:
+            head_size -= 1
+        if cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info:
+            head_size -= 5
+        if head_size == 1:
+            head_size = 0
+    return head_size
+
+
+def create_fmt_head(workbook, style_name):
+    fmt_head = workbook.add_format(DEFAULT_FMT)
+    fmt_head.set_bold()
+    if style_name.startswith('modern-'):
+        if style_name.endswith('green'):
+            head_color = HEAD_COLOR_G
+        elif style_name.endswith('blue'):
+            head_color = HEAD_COLOR_B
+        else:
+            head_color = HEAD_COLOR_R
+        fmt_head.set_bg_color(head_color)
+        fmt_head.set_font_color("#ffffff")
+    return fmt_head
+
+
+def get_logo_data(logo):
+    if logo is not None:
+        if logo:
+            with open(logo, 'rb') as f:
+                image_data = f.read()
+        else:
+            image_data = b64decode(KIBOT_LOGO)
+    else:
+        image_data = None
+    return image_data
+
+
+def create_fmt_title(workbook, title):
+    if not title:
+        return None
+    fmt_title = workbook.add_format(DEFAULT_FMT)
+    fmt_title.set_font_size(24)
+    fmt_title.set_bold()
+    fmt_title.set_font_name('Arial')
+    fmt_title.set_align('left')
+    return fmt_title
+
+
+def create_fmt_cols(workbook, col_colors):
+    """ Create the possible column formats """
+    fmt_cols = []
+    if col_colors:
+        for c in BG_COLORS:
+            fmts = [None, None]
+            fmts[0] = workbook.add_format(DEFAULT_FMT)
+            fmts[1] = workbook.add_format(DEFAULT_FMT)
+            fmts[0].set_bg_color(c[0])
+            fmts[1].set_bg_color(c[1])
+            fmt_cols.append(fmts)
+    else:
+        fmts = [None, None]
+        fmts[0] = workbook.add_format(DEFAULT_FMT)
+        fmts[1] = workbook.add_format(DEFAULT_FMT)
+        fmts[0].set_bg_color(GREY)
+        fmts[1].set_bg_color(GREY_L)
+        fmt_cols.append(fmts)
+    return fmt_cols
+
+
+def create_col_fmt(col_fields, col_colors, fmt_cols):
+    """ Assign a color to each column """
+    col_fmt = []
+    if col_colors:
+        for c in col_fields:
+            col_fmt.append(fmt_cols[bg_color(c)])
+    else:
+        for c in col_fields:
+            col_fmt.append(fmt_cols[0])
+    # Empty color
+    col_fmt.append(fmt_cols[-1])
+    return col_fmt
+
+
+def create_fmt_info(workbook, cfg):
+    """ Formats for the PCB and stats info """
+    if cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info:
+        return None
+    # Data left justified
+    fmt_data = workbook.add_format({'align': 'left'})
+    fmt_name = workbook.add_format(DEFAULT_FMT)
+    fmt_name.set_bold()
+    fmt_name.set_align('left')
+    return [fmt_name, fmt_data]
+
+
+def insert_logo(worksheet, image_data):
+    """ Inserts the logo, returns how many columns we used """
+    if image_data:
+        # Note: OpenOffice doesn't support using images in the header for XLSXs
+        # worksheet.set_header('&L&[Picture]', {'image_left': 'logo.png', 'image_data_left': image_data})
+        worksheet.insert_image('A1', 'logo.png', {'image_data': io.BytesIO(image_data), 'x_scale': 2, 'y_scale': 2})
+        return 2
+    return 0
+
+
+def create_color_ref(workbook, col_colors, fmt_cols):
+    if col_colors:
+        worksheet = workbook.add_worksheet('Colors')
+        worksheet.write_string(0, 0, 'KiCad Fields (default)', fmt_cols[0][0])
+        worksheet.write_string(1, 0, 'Generated Fields', fmt_cols[1][0])
+        worksheet.write_string(2, 0, 'User Fields', fmt_cols[2][0])
+        worksheet.write_string(3, 0, 'Empty Fields', fmt_cols[3][0])
+        worksheet.set_column(0, 0, 50)
 
 
 def write_xlsx(filename, groups, col_fields, head_names, cfg):
@@ -64,76 +194,127 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         logger.error('Python xlsxwriter module not installed (Debian: python3-xlsxwriter)')
         return False
 
+    link_datasheet = -1
+    if cfg.xlsx.datasheet_as_link and cfg.xlsx.datasheet_as_link in col_fields:
+        link_datasheet = col_fields.index(cfg.xlsx.datasheet_as_link)
+    link_digikey = cfg.xlsx.digikey_link
+
     workbook = Workbook(filename)
-    worksheet = workbook.add_worksheet()
-
-    # Headings
+    ws_names = ['BoM', 'DNF']
     row_headings = head_names
-    cellformats = {}
-    column_widths = {}
-    for i in range(len(row_headings)):
-        cellformats[i] = workbook.add_format(DEFAULT_FMT)
-        bg = bg_color(col_fields[i])
-        if bg:
-            cellformats[i].set_bg_color(bg)
-        column_widths[i] = len(row_headings[i]) + 10
-        if not cfg.hide_headers:
-            fmt = workbook.add_format(DEFAULT_FMT)
-            fmt.set_bold()
-            if bg:
-                fmt.set_bg_color(bg)
-            worksheet.write_string(0, i, row_headings[i], fmt)
-    empty_fmt = workbook.add_format(DEFAULT_FMT)
-    empty_fmt.set_bg_color(BG_EMPTY)
 
-    # Body
-    row_count = 1
-    for i, group in enumerate(groups):
-        if cfg.ignore_dnf and not group.is_fitted():
-            continue
-        # Get the data row
-        row = group.get_row(col_fields)
-        # Fill the row
-        for i in range(len(row)):
-            cell = row[i]
-            fmt = cellformats[i]
-            if len(cell) == 0 or cell.strip() == "~":
-                fmt = empty_fmt
-            worksheet.write_string(row_count, i, cell, fmt)
-            if len(cell) > column_widths[i] - 5:
-                column_widths[i] = len(cell) + 5
+    # Leave space for the logo, title and info
+    head_size = compute_head_size(cfg)
+    # First rowe for the information
+    r_info_start = 1 if cfg.xlsx.title else 0
+
+    # #######################
+    # Create all the formats
+    # #######################
+    # Headings
+    # Column names format
+    fmt_head = create_fmt_head(workbook, cfg.xlsx.style)
+    # Column formats
+    fmt_cols = create_fmt_cols(workbook, cfg.xlsx.col_colors)
+    col_fmt = create_col_fmt(col_fields, cfg.xlsx.col_colors, fmt_cols)
+    # Page head
+    # Logo
+    image_data = get_logo_data(cfg.xlsx.logo)
+    # Title
+    fmt_title = create_fmt_title(workbook, cfg.xlsx.title)
+    # Info
+    fmt_info = create_fmt_info(workbook, cfg)
+
+    # #######################
+    # Fill the cells
+    # #######################
+    # Normal BoM & DNF
+    for ws in range(2):
+        # Should we generate the DNF?
+        if not cfg.xlsx.generate_dnf or cfg.n_total == cfg.n_fitted:
+            break
+        # Second pass is DNF
+        dnf = ws == 1
+
+        worksheet = workbook.add_worksheet(ws_names[ws])
+        row_count = head_size
+
+        # Headings
+        # Create the head titles
+        column_widths = [0]*len(col_fields)
+        for i in range(len(row_headings)):
+            # Title for this column
+            column_widths[i] = len(row_headings[i]) + 10
+            worksheet.write_string(row_count, i, row_headings[i], fmt_head)
+
+        # Body
         row_count += 1
-
-    # PCB Info
-    if not cfg.hide_pcb_info:
-        # Add a few blank rows
-        for i in range(5):
+        for i, group in enumerate(groups):
+            if (cfg.ignore_dnf and not group.is_fitted()) != dnf:
+                continue
+            # Get the data row
+            row = group.get_row(col_fields)
+            if link_datasheet != -1:
+                datasheet = group.get_field(ColumnList.COL_DATASHEET_L)
+            # Fill the row
+            for i in range(len(row)):
+                cell = row[i]
+                if len(cell) == 0 or cell.strip() == "~":
+                    fmt = col_fmt[-1][row_count % 2]
+                else:
+                    fmt = col_fmt[i][row_count % 2]
+                # Link this column to the datasheet?
+                if link_datasheet == i and datasheet.startswith('http'):
+                    worksheet.write_url(row_count, i, datasheet, fmt, cell)
+                # A link to Digi-Key?
+                elif link_digikey and col_fields[i] in link_digikey:
+                    url = 'http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=' + cell
+                    worksheet.write_url(row_count, i, url, fmt, cell)
+                else:
+                    worksheet.write_string(row_count, i, cell, fmt)
+                if len(cell) > column_widths[i] - 5:
+                    column_widths[i] = len(cell) + 5
             row_count += 1
-        # Data left justified
-        cellformat_left = workbook.add_format({'align': 'left'})
-        title_fmt = workbook.add_format(DEFAULT_FMT)
-        title_fmt.set_bold()
 
-        formats = [title_fmt, cellformat_left]
-        # TODO: Language?
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Component Groups:", cfg.n_groups)
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Component Count:", cfg.n_total)
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Fitted Components:", cfg.n_fitted)
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Number of PCBs:", cfg.number)
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Total components:", cfg.n_build)
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Schematic Revision:", cfg.revision)
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Schematic Date:", cfg.date)
-        # row_count = add_info(worksheet, column_widths, row_count, formats, "BoM Date:", cfg.date) Same as sch
-        row_count = add_info(worksheet, column_widths, row_count, formats, "Schematic Date:", cfg.source)
-        # row_count = add_info(worksheet, column_widths, row_count, formats, "KiCad Version:", ) TODO?
+        # Page head
+        # Logo
+        col1 = insert_logo(worksheet, image_data)
+        # Title
+        if cfg.xlsx.title:
+            worksheet.set_row(0, 32)
+            worksheet.merge_range(0, col1, 0, len(column_widths)-1, cfg.xlsx.title, fmt_title)
+        # PCB & Stats Info
+        if not (cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info):
+            rc = r_info_start
+            # TODO: Language?
+            if not cfg.xlsx.hide_pcb_info:
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Schematic:", cfg.source)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", ' + '.join(cfg.variant))
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Revision:", cfg.revision)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Date:", cfg.date)
+                # row_count = add_info(worksheet, column_widths, row_count, fmt_info, "KiCad Version:", ) TODO?
+                col1 += 2
+            rc = r_info_start
+            if not cfg.xlsx.hide_stats_info:
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Groups:", cfg.n_groups)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", cfg.n_total)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", cfg.n_fitted)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", cfg.number)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total components:", cfg.n_build)
 
-    # Adjust the widths
-    for i in range(len(column_widths)):
-        width = column_widths[i]
-        if width > MAX_WIDTH:
-            width = MAX_WIDTH
-        worksheet.set_column(i, i, width)
+        # Adjust the widths
+        for i in range(len(column_widths)):
+            width = column_widths[i]
+            if width > MAX_WIDTH:
+                width = MAX_WIDTH
+            worksheet.set_column(i, i, width)
 
+        worksheet.freeze_panes(head_size+1, 0)
+        worksheet.repeat_rows(head_size+1)
+        worksheet.set_landscape()
+
+    # Add a sheet for the color references
+    create_color_ref(workbook, cfg.xlsx.col_colors, fmt_cols)
     workbook.close()
 
     return True

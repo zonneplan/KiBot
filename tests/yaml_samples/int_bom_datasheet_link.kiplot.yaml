@@ -8,8 +8,8 @@ outputs:
     type: bom
     dir: BoM
     options:
-      format: HTML
-      datasheet_as_link: 'Part'
+      html:
+        datasheet_as_link: 'Part'
       output: '%f.%x'
       columns:
         - References

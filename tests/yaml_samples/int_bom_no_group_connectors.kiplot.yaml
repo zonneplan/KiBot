@@ -9,5 +9,4 @@ outputs:
     dir: BoM
     options:
       group_connectors: false
-      format: CSV
 

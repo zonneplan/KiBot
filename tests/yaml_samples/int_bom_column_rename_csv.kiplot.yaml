@@ -8,7 +8,6 @@ outputs:
     type: bom
     dir: BoM
     options:
-      format: CSV
       columns:
         - field: Row
           name: Renglón

@@ -9,5 +9,4 @@ outputs:
     dir: BoM
     options:
       ignore_dnf: false
-      format: CSV
 

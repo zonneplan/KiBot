@@ -1,13 +1,15 @@
+import os
 from re import compile, IGNORECASE
 from .gs import GS
 from .optionable import Optionable, BaseOptions
 from .error import KiPlotConfigurationError
 from kiplot.macros import macros, document, output_class  # noqa: F401
-from .bom.columnlist import ColumnList
+from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
 from . import log
 
 logger = log.get_logger(__name__)
+VALID_STYLES = {'modern-blue': 1, 'modern-green': 1, 'modern-red': 1, 'classic': 1}
 
 
 # String matches for marking a component as "do not fit"
@@ -49,10 +51,128 @@ class BoMColumns(Optionable):
         if not self.field:
             raise KiPlotConfigurationError("Missing or empty `field` in columns list ({})".format(str(self._tree)))
         # Ensure this is None or a list
+        # Also arrange it as field, cols...
+        field = self.field.lower()
         if isinstance(self.join, type):
             self.join = None
         elif isinstance(self.join, str):
-            self.join = [self.join]
+            self.join = [field, self.join.lower()]
+        else:
+            self.join = [field]+[c.lower() for c in self.join]
+
+
+class BoMHTML(Optionable):
+    """ HTML options """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.col_colors = True
+            """ Use colors to show the field type """
+            self.datasheet_as_link = ''
+            """ Column with links to the datasheet """
+            self.digikey_link = Optionable
+            """ [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page """
+            self.generate_dnf = True
+            """ Generate a separated section for DNF (Do Not Fit) components """
+            self.hide_pcb_info = False
+            """ Hide project information """
+            self.hide_stats_info = False
+            """ Hide statistics information """
+            self.logo = Optionable
+            """ [string|boolean] PNG file to use as logo, use false to remove """
+            self.style = 'modern-blue'
+            """ Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
+                Or you can provide a CSS file name. Please use .css as file extension. """
+            self.title = 'KiBot Bill of Materials'
+            """ BoM title """
+
+    def config(self):
+        super().config()
+        # digikey_link
+        if isinstance(self.digikey_link, type):
+            self.digikey_link = []
+        elif isinstance(self.digikey_link, list):
+            self.digikey_link = [c.lower() for c in self.digikey_link]
+        # Logo
+        if isinstance(self.logo, type):
+            self.logo = ''
+        elif isinstance(self.logo, bool):
+            self.logo = '' if self.logo else None
+        elif self.logo:
+            self.logo = os.path.abspath(self.logo)
+            if not os.path.isfile(self.logo):
+                raise KiPlotConfigurationError('Missing logo file `{}`'.format(self.logo))
+        # Style
+        if not self.style:
+            self.style = 'modern-blue'
+        if self.style not in VALID_STYLES:
+            self.style = os.path.abspath(self.style)
+            if not os.path.isfile(self.style):
+                raise KiPlotConfigurationError('Missing style file `{}`'.format(self.style))
+        self.datasheet_as_link = self.datasheet_as_link.lower()
+
+
+class BoMCSV(Optionable):
+    """ CSV options """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.separator = ','
+            """ CSV Separator """
+            self.hide_pcb_info = False
+            """ Hide project information """
+            self.hide_stats_info = False
+            """ Hide statistics information """
+            self.quote_all = False
+            """ Enclose all values using double quotes """
+
+
+class BoMXLSX(Optionable):
+    """ XLSX options """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.col_colors = True
+            """ Use colors to show the field type """
+            self.datasheet_as_link = ''
+            """ Column with links to the datasheet """
+            self.digikey_link = Optionable
+            """ [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page """
+            self.generate_dnf = True
+            """ Generate a separated sheet for DNF (Do Not Fit) components """
+            self.hide_pcb_info = False
+            """ Hide project information """
+            self.hide_stats_info = False
+            """ Hide statistics information """
+            self.logo = Optionable
+            """ [string|boolean] PNG file to use as logo, use false to remove """
+            self.style = 'modern-blue'
+            """ Head style: modern-blue, modern-green, modern-red and classic. """
+            self.title = 'KiBot Bill of Materials'
+            """ BoM title """
+
+    def config(self):
+        super().config()
+        # digikey_link
+        if isinstance(self.digikey_link, type):
+            self.digikey_link = []
+        elif isinstance(self.digikey_link, list):
+            self.digikey_link = [c.lower() for c in self.digikey_link]
+        self.datasheet_as_link = self.datasheet_as_link.lower()
+        # Logo
+        if isinstance(self.logo, type):
+            self.logo = ''
+        elif isinstance(self.logo, bool):
+            self.logo = '' if self.logo else None
+        elif self.logo:
+            self.logo = os.path.abspath(self.logo)
+            if not os.path.isfile(self.logo):
+                raise KiPlotConfigurationError('Missing logo file `{}`'.format(self.logo))
+        # Style
+        if not self.style:
+            self.style = 'modern-blue'
+        if self.style not in VALID_STYLES:
+            raise KiPlotConfigurationError('Unknown style `{}`'.format(self.style))
 
 
 class BoMOptions(BaseOptions):
@@ -80,17 +200,14 @@ class BoMOptions(BaseOptions):
             self.variant = ''
             """ Board variant(s), used to determine which components
                 are output to the BoM. """
-            self.separator = ','
-            """ CSV Separator """
             self.output = GS.def_global_output
             """ filename for the output (%i=bom)"""
-            self.format = 'HTML'
-            """ [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM """
+            self.format = ''
+            """ [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
+                If empty defaults to CSV or a guess according to the options. """
             # Equivalent to KiBoM INI:
             self.ignore_dnf = True
             """ Exclude DNF (Do Not Fit) components """
-            self.html_generate_dnf = True
-            """ Generate a separated section for DNF (Do Not Fit) components (HTML only) """
             self.use_alt = False
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
             self.group_connectors = True
@@ -101,14 +218,6 @@ class BoMOptions(BaseOptions):
             """ Component groups with blank fields will be merged into the most compatible group, where possible """
             self.fit_field = 'Config'
             """ Field name used to determine if a particular part is to be fitted (also DNC and variants) """
-            self.datasheet_as_link = ''
-            """ Column with links to the datasheet (HTML only) """
-            self.hide_headers = False
-            """ Hide column headers """
-            self.hide_pcb_info = False
-            """ Hide project information """
-            self.digikey_link = Optionable
-            """ [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only) """
             self.group_fields = Optionable
             """ [list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
@@ -153,7 +262,13 @@ class BoMOptions(BaseOptions):
                 ..regex: 'fiducial' """
             self.columns = BoMColumns
             """ [list(dict)|list(string)] List of columns to display.
-                Can be just the name of the field """  # pragma: no cover
+                Can be just the name of the field """
+            self.html = BoMHTML
+            """ [dict] Options for the HTML format """
+            self.xlsx = BoMXLSX
+            """ [dict] Options for the XLSX format """
+            self.csv = BoMCSV
+            """ [dict] Options for the CSV, TXT and TSV formats """  # pragma: no cover
         super().__init__()
 
     @staticmethod
@@ -162,13 +277,38 @@ class BoMOptions(BaseOptions):
         if GS.sch:
             return GS.sch.get_field_names(ColumnList.COLUMNS_DEFAULT)
 
+    def _guess_format(self):
+        """ Figure out the format """
+        if not self.format:
+            # If we have HTML options generate an HTML
+            if not isinstance(self.html, type):
+                return 'html'
+            # Same for XLSX
+            if not isinstance(self.xlsx, type):
+                return 'xlsx'
+            # Default to a simple and common format: CSV
+            return 'csv'
+        # Explicit selection
+        return self.format.lower()
+
     def config(self):
         super().config()
-        # digikey_link
-        if isinstance(self.digikey_link, type):
-            self.digikey_link = None
-        elif isinstance(self.digikey_link, list):
-            self.digikey_link = '\t'.join(self.digikey_link)
+        self.format = self._guess_format()
+        # HTML options
+        if self.format == 'html' and isinstance(self.html, type):
+            # If no options get the defaults
+            self.html = BoMHTML()
+            self.html.config()
+        # CSV options
+        if self.format in ['csv', 'tsv', 'txt'] and isinstance(self.csv, type):
+            # If no options get the defaults
+            self.csv = BoMCSV()
+            self.csv.config()
+        # XLSX options
+        if self.format == 'xlsx' and isinstance(self.xlsx, type):
+            # If no options get the defaults
+            self.xlsx = BoMXLSX()
+            self.xlsx.config()
         # group_fields
         if isinstance(self.group_fields, type):
             self.group_fields = ColumnList.DEFAULT_GROUPING
@@ -230,7 +370,7 @@ class BoMOptions(BaseOptions):
                         self.column_rename[col.field.lower()] = col.name
                     # Attach other columns
                     if col.join:
-                        self.join.append([col.field]+col.join)
+                        self.join.append(col.join)
                 # Check this is a valid column
                 if new_col.lower() not in valid_columns_l:
                     raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
@@ -250,7 +390,10 @@ class BoMOptions(BaseOptions):
         self.debug_level = GS.debug_level
         # Get the components list from the schematic
         comps = GS.sch.get_components()
-        do_bom(output, format, comps, self)
+        try:
+            do_bom(output, format, comps, self)
+        except BoMError as e:
+            raise KiPlotConfigurationError(str(e))
 
 
 @output_class

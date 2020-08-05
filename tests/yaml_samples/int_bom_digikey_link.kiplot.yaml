@@ -8,8 +8,8 @@ outputs:
     type: bom
     dir: BoM
     options:
-      format: HTML
-      digikey_link: 'digikey#'
+      html:
+        digikey_link: 'digikey#'
       output: '%f.%x'
       columns:
         - References

@@ -7,6 +7,4 @@ outputs:
     comment: "Bill of Materials in CSV format"
     type: bom
     dir: BoM
-    options:
-      format: CSV
 

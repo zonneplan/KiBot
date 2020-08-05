@@ -356,8 +356,12 @@ Next time you need this list just use an alias, like this:
                                - ['sw', 'switch']
                                - ['zener', 'zenersmall']
                                - ['d', 'diode', 'd_small'].
-        - `datasheet_as_link`: [string=''] Column with links to the datasheet (HTML only).
-        - `digikey_link`: [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only).
+        - `csv`: [dict] Options for the CSV, TXT and TSV formats.
+          * Valid keys:
+            - `hide_pcb_info`: [boolean=false] Hide project information.
+            - `hide_stats_info`: [boolean=false] Hide statistics information.
+            - `quote_all`: [boolean=false] Enclose all values using double quotes.
+            - `separator`: [string=','] CSV Separator.
         - `exclude_any`: [list(dict)] A series of regular expressions used to exclude parts.
                          If a component matches ANY of these, it will be excluded.
                          Column names are case-insensitive.
@@ -384,15 +388,25 @@ Next time you need this list just use an alias, like this:
             - `regex`: [string=''] Regular expression to match.
             - *regexp*: Alias for regex.
         - `fit_field`: [string='Config'] Field name used to determine if a particular part is to be fitted (also DNC and variants).
-        - `format`: [string='HTML'] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
+        - `format`: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
+                    If empty defaults to CSV or a guess according to the options..
         - `group_connectors`: [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector.
         - `group_fields`: [list(string)] List of fields used for sorting individual components into groups.
                           Components which match (comparing *all* fields) will be grouped together.
                           Field names are case-insensitive.
                           If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used.
-        - `hide_headers`: [boolean=false] Hide column headers.
-        - `hide_pcb_info`: [boolean=false] Hide project information.
-        - `html_generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components (HTML only).
+        - `html`: [dict] Options for the HTML format.
+          * Valid keys:
+            - `col_colors`: [boolean=true] Use colors to show the field type.
+            - `datasheet_as_link`: [string=''] Column with links to the datasheet.
+            - `digikey_link`: [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page.
+            - `generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
+            - `hide_pcb_info`: [boolean=false] Hide project information.
+            - `hide_stats_info`: [boolean=false] Hide statistics information.
+            - `logo`: [string|boolean] PNG file to use as logo, use false to remove.
+            - `style`: [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
+                       Or you can provide a CSS file name. Please use .css as file extension..
+            - `title`: [string='KiBot Bill of Materials'] BoM title.
         - `ignore_dnf`: [boolean=true] Exclude DNF (Do Not Fit) components.
         - `include_only`: [list(dict)] A series of regular expressions used to select included parts.
                           If there are any regex defined here, only components that match against ANY of them will be included.
@@ -406,11 +420,21 @@ Next time you need this list just use an alias, like this:
         - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
         - `number`: [number=1] Number of boards to build (components multiplier).
         - `output`: [string='%f-%i.%x'] filename for the output (%i=bom). Affected by global options.
-        - `separator`: [string=','] CSV Separator.
         - `test_regex`: [boolean=true] Each component group will be tested against a number of regular-expressions (see ``)..
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `variant`: [string=''] Board variant(s), used to determine which components
                      are output to the BoM..
+        - `xlsx`: [dict] Options for the XLSX format.
+          * Valid keys:
+            - `col_colors`: [boolean=true] Use colors to show the field type.
+            - `datasheet_as_link`: [string=''] Column with links to the datasheet.
+            - `digikey_link`: [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page.
+            - `generate_dnf`: [boolean=true] Generate a separated sheet for DNF (Do Not Fit) components.
+            - `hide_pcb_info`: [boolean=false] Hide project information.
+            - `hide_stats_info`: [boolean=false] Hide statistics information.
+            - `logo`: [string|boolean] PNG file to use as logo, use false to remove.
+            - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic..
+            - `title`: [string='KiBot Bill of Materials'] BoM title.
 
 * DXF (Drawing Exchange Format)
   * Type: `dxf`

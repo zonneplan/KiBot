@@ -8,7 +8,6 @@ outputs:
     type: bom
     dir: BoM
     options:
-      format: CSV
       columns:
         - Description
         - Part

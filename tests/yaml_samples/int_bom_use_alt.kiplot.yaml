@@ -9,5 +9,4 @@ outputs:
     dir: BoM
     options:
       use_alt: true
-      format: CSV
 

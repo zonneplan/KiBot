@@ -8,6 +8,6 @@ outputs:
     type: bom
     dir: BoM
     options:
-      format: HTML
-      html_generate_dnf: false
+      html:
+        generate_dnf: false
 

@@ -19,19 +19,22 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
     """
     # Delimeter is assumed from file extension
     # Override delimiter if separator specified
-    if cfg.separator:
-        delimiter = cfg.separator
+    if cfg.csv.separator:
+        delimiter = cfg.csv.separator
     else:
         if ext == "csv":
             delimiter = ","
         elif ext == "tsv" or ext == "txt":
             delimiter = "\t"
 
+    if cfg.csv.quote_all:
+        quoting = csv.QUOTE_ALL
+    else:
+        quoting = csv.QUOTE_MINIMAL
     with open(filename, "wt") as f:
-        writer = csv.writer(f, delimiter=delimiter, lineterminator="\n")
+        writer = csv.writer(f, delimiter=delimiter, lineterminator="\n", quoting=quoting)
         # Headers
-        if not cfg.hide_headers:
-            writer.writerow(head_names)
+        writer.writerow(head_names)
         # Body
         for group in groups:
             if cfg.ignore_dnf and not group.is_fitted():
@@ -39,21 +42,24 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
             row = group.get_row(headings)
             writer.writerow(row)
         # PCB info
-        if not cfg.hide_pcb_info:
+        if not (cfg.csv.hide_pcb_info and cfg.csv.hide_stats_info):
             # Add some blank rows
             for i in range(5):
                 writer.writerow([])
             # The info
-            writer.writerow(["Component Groups:", cfg.n_groups])
-            writer.writerow(["Component Count:", cfg.n_total])
-            writer.writerow(["Fitted Components:", cfg.n_fitted])
-            writer.writerow(["Number of PCBs:", cfg.number])
-            writer.writerow(["Total components:", cfg.n_build])
-            writer.writerow(["Schematic Revision:", cfg.revision])
-            writer.writerow(["Schematic Date:", cfg.date])
-            writer.writerow(["PCB Variant:", ' + '.join(cfg.variant)])
-            # writer.writerow(["BoM Date:", net.getDate()]) same as Schematic
-            writer.writerow(["Schematic Source:", cfg.source])
+            if not cfg.csv.hide_pcb_info:
+                writer.writerow(["Project info:"])
+                writer.writerow(["Schematic:", cfg.source])
+                writer.writerow(["Variant:", ' + '.join(cfg.variant)])
+                writer.writerow(["Revision:", cfg.revision])
+                writer.writerow(["Date:", cfg.date])
+            if not cfg.csv.hide_stats_info:
+                writer.writerow(["Statistics:"])
+                writer.writerow(["Component Groups:", cfg.n_groups])
+                writer.writerow(["Component Count:", cfg.n_total])
+                writer.writerow(["Fitted Components:", cfg.n_fitted])
+                writer.writerow(["Number of PCBs:", cfg.number])
+                writer.writerow(["Total components:", cfg.n_build])
             # writer.writerow(["KiCad Version:", net.getTool()]) TODO?
 
     return True

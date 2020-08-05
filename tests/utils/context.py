@@ -365,24 +365,24 @@ class TestContext(object):
             html = f.read()
         rows = []
         headers = []
-        c = 0
-        for body in re.findall(r'<table.*?>((?:\s+.*?)+)</table>', html, re.MULTILINE):
-            if c:
-                rows.append([])
-                headers.append([])
+        for cl, body in re.findall(r'<table class="(.*?)">((?:\s+.*?)+)</table>', html, re.MULTILINE):
+            if cl == 'content-table':
                 # Header
                 m = re.search(r'<tr>\s+((?:<th.*?>(?:.*)</th>\s+)+)</tr>', body, re.MULTILINE)
                 assert m, 'Failed to get table header'
+                h = []
                 head = m.group(1)
                 for col_name in re.findall(r'<th.*?>(.*)</th>', head):
-                    headers[c-1].append(col_name)
+                    h.append(col_name)
+                headers.append(h)
                 # Rows
-                for row in re.findall(r'<tr>\s+((?:<td.*?>(?:.*)</td>\s+)+)</tr>', body, re.MULTILINE):
+                b = []
+                for row_txt in re.findall(r'<tr>\s+((?:<td.*?>(?:.*)</td>\s+)+)</tr>', body, re.MULTILINE):
                     r = []
-                    for cell in re.findall(r'<td.*?>(.*?)</td>', row, re.MULTILINE):
+                    for cell in re.findall(r'<td.*?>(.*?)</td>', row_txt, re.MULTILINE):
                         r.append(cell)
-                    rows[c-1].append(r)
-            c += 1
+                    b.append(r)
+                rows.append(b)
         return rows, headers
 
     def load_xml(self, filename):
@@ -409,7 +409,9 @@ class TestContext(object):
         for r in root.iter(ns+'row'):
             rcur = int(r.attrib['r'])
             if rcur > rnum:
-                break
+                # Discard the sheet header
+                rows = []
+                rnum = rcur
             rows.append([int(cell.text) for cell in r.iter(ns+'v')])
             rnum += 1
         # Read the strings

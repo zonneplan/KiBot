@@ -6,6 +6,10 @@ This is a class to hold the names of the fields and columns of the BoM.
 """
 
 
+class BoMError(Exception):
+    pass
+
+
 class ColumnList:
     """ A list of columns for the BoM """
     # Default columns (immutable)

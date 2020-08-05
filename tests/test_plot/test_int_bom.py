@@ -32,6 +32,7 @@ Missing:
 - hide_pcb_info
 - various boards
 - stats info
+- datasheet and digikey for XLSX
 
 For debug information use:
 pytest-3 --log-cli-level debug
