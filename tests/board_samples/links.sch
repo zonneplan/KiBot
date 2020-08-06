@@ -20,7 +20,7 @@ L Connector:Conn_01x02_Male J1
 U 1 1 5F10E435
 P 2850 2300
 F 0 "J1" H 2750 2200 50  0000 C CNN
-F 1 "Molex KK" H 2850 2100 50  0000 C CNN
+F 1 "Molex KK ñoño" H 2850 2100 50  0000 C CNN
 F 2 "" H 2850 2300 50  0001 C CNN
 F 3 "https://www.molex.com/webdocs/datasheets/pdf/en-us//0022232021_PCB_HEADERS.pdf" H 2850 2300 50  0001 C CNN
 F 4 "900-0022232021-ND" H 2850 2300 50  0001 C CNN "digikey#"
