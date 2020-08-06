@@ -77,6 +77,8 @@ class BoMHTML(Optionable):
             """ Hide project information """
             self.hide_stats_info = False
             """ Hide statistics information """
+            self.highlight_empty = True
+            """ Use a color for empty cells. Applies only when `col_colors` is `true` """
             self.logo = Optionable
             """ [string|boolean] PNG file to use as logo, use false to remove """
             self.style = 'modern-blue'
@@ -143,6 +145,8 @@ class BoMXLSX(Optionable):
             """ Hide project information """
             self.hide_stats_info = False
             """ Hide statistics information """
+            self.highlight_empty = True
+            """ Use a color for empty cells. Applies only when `col_colors` is `true` """
             self.logo = Optionable
             """ [string|boolean] PNG file to use as logo, use false to remove """
             self.max_col_width = 60

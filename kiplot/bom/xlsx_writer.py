@@ -170,13 +170,14 @@ def insert_logo(worksheet, image_data):
     return 0
 
 
-def create_color_ref(workbook, col_colors, fmt_cols):
+def create_color_ref(workbook, col_colors, hl_empty, fmt_cols):
     if col_colors:
         worksheet = workbook.add_worksheet('Colors')
         worksheet.write_string(0, 0, 'KiCad Fields (default)', fmt_cols[0][0])
         worksheet.write_string(1, 0, 'Generated Fields', fmt_cols[1][0])
         worksheet.write_string(2, 0, 'User Fields', fmt_cols[2][0])
-        worksheet.write_string(3, 0, 'Empty Fields', fmt_cols[3][0])
+        if hl_empty:
+            worksheet.write_string(3, 0, 'Empty Fields', fmt_cols[3][0])
         worksheet.set_column(0, 0, 50)
 
 
@@ -252,6 +253,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
 
         # Body
         row_count += 1
+        hl_empty = cfg.xlsx.highlight_empty
         for i, group in enumerate(groups):
             if (cfg.ignore_dnf and not group.is_fitted()) != dnf:
                 continue
@@ -263,7 +265,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
             # Fill the row
             for i in range(len(row)):
                 cell = row[i]
-                if len(cell) == 0 or cell.strip() == "~":
+                if hl_empty and (len(cell) == 0 or cell.strip() == "~"):
                     fmt = col_fmt[-1][row_count % 2]
                 else:
                     fmt = col_fmt[i][row_count % 2]
@@ -327,7 +329,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         worksheet.set_landscape()
 
     # Add a sheet for the color references
-    create_color_ref(workbook, cfg.xlsx.col_colors, fmt_cols)
+    create_color_ref(workbook, cfg.xlsx.col_colors, hl_empty, fmt_cols)
     workbook.close()
 
     return True

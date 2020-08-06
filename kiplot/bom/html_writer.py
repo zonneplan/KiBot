@@ -98,6 +98,7 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
 
     html.write(" <tbody>\n")
     rc = 0
+    hl_empty = cfg.html.highlight_empty
     for i, group in enumerate(groups):
         if (cfg.ignore_dnf and not group.is_fitted()) != dnf:
             continue
@@ -114,7 +115,7 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
                 r = '<a href="' + datasheet + '">' + r + '</a>'
             if col_colors:
                 # Empty cell?
-                if len(r) == 0 or r.strip() == "~":
+                if hl_empty and (len(r) == 0 or r.strip() == "~"):
                     cl = 'empty'
                 else:
                     cl = cell_class(headings[n])
@@ -241,7 +242,8 @@ def write_html(filename, groups, headings, head_names, cfg):
             html.write('<tr><td class="td-kicad0">KiCad Fields (default)</td></tr>\n')
             html.write('<tr><td class="td-gen0">Generated Fields</td></tr>\n')
             html.write('<tr><td class="td-user0">User Fields</td></tr>\n')
-            html.write('<tr><td class="td-empty0">Empty Fields</td></tr>\n')
+            if hl_empty:
+                html.write('<tr><td class="td-empty0">Empty Fields</td></tr>\n')
             html.write('</table>\n')
 
         html.write("</body></html>")
