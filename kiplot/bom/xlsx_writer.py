@@ -5,8 +5,8 @@ This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Hen
 
 Generates an XLSX file.
 """
-# TODO: alternate colors, set row height, put logo, move data to beginning
 import io
+from textwrap import wrap
 from base64 import b64decode
 from .columnlist import ColumnList
 from .kibot_logo import KIBOT_LOGO
@@ -21,7 +21,6 @@ except ModuleNotFoundError:
         pass
 
 logger = log.get_logger(__name__)
-MAX_WIDTH = 60
 BG_GEN = "#E6FFEE"
 BG_KICAD = "#FFE6B3"
 BG_USER = "#E6F9FF"
@@ -207,6 +206,9 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     head_size = compute_head_size(cfg)
     # First rowe for the information
     r_info_start = 1 if cfg.xlsx.title else 0
+    max_width = cfg.xlsx.max_col_width
+    if max_width < 20:
+        max_width = 20
 
     # #######################
     # Create all the formats
@@ -242,6 +244,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         # Headings
         # Create the head titles
         column_widths = [0]*len(col_fields)
+        rows = [row_headings]
         for i in range(len(row_headings)):
             # Title for this column
             column_widths[i] = len(row_headings[i]) + 10
@@ -254,6 +257,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
                 continue
             # Get the data row
             row = group.get_row(col_fields)
+            rows.append(row)
             if link_datasheet != -1:
                 datasheet = group.get_field(ColumnList.COL_DATASHEET_L)
             # Fill the row
@@ -286,7 +290,6 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         # PCB & Stats Info
         if not (cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info):
             rc = r_info_start
-            # TODO: Language?
             if not cfg.xlsx.hide_pcb_info:
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Schematic:", cfg.source)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", ' + '.join(cfg.variant))
@@ -305,9 +308,19 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         # Adjust the widths
         for i in range(len(column_widths)):
             width = column_widths[i]
-            if width > MAX_WIDTH:
-                width = MAX_WIDTH
+            if width > max_width:
+                width = max_width
             worksheet.set_column(i, i, width)
+
+        # Adjust the heights
+        for rn, r in enumerate(rows):
+            max_h = 1
+            for c in r:
+                if len(c) > max_width:
+                    h = len(wrap(c, max_width))
+                    max_h = max(h, max_h)
+            if max_h > 1:
+                worksheet.set_row(head_size+rn, 15.0*max_h)
 
         worksheet.freeze_panes(head_size+1, 0)
         worksheet.repeat_rows(head_size+1)

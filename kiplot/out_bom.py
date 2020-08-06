@@ -28,9 +28,8 @@ class BoMRegex(Optionable):
             self.regexp = None
             """ {regex} """  # pragma: no cover
 
-    def __str__(self):
-        # TODO make a list
-        return self.column+'\t'+self.regex
+#     def __str__(self):
+#         return self.column+'\t'+self.regex
 
 
 class BoMColumns(Optionable):
@@ -146,6 +145,8 @@ class BoMXLSX(Optionable):
             """ Hide statistics information """
             self.logo = Optionable
             """ [string|boolean] PNG file to use as logo, use false to remove """
+            self.max_col_width = 60
+            """ [20,999] Maximum column width (characters) """
             self.style = 'modern-blue'
             """ Head style: modern-blue, modern-green, modern-red and classic. """
             self.title = 'KiBot Bill of Materials'
