@@ -212,6 +212,7 @@ def write_html(filename, groups, headings, head_names, cfg):
                 html.write("   <b>Variant</b>: {}<br>\n".format(', '.join(cfg.variant)))
                 html.write("   <b>Revision</b>: {}<br>\n".format(cfg.revision))
                 html.write("   <b>Date</b>: {}<br>\n".format(cfg.date))
+                html.write("   <b>KiCad Version</b>: {}<br>\n".format(cfg.kicad_version))
             html.write(' </td>\n')
             html.write(' <td class="cell-stats">\n')
             if not cfg.html.hide_stats_info:

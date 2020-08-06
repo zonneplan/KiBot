@@ -33,6 +33,7 @@ class GS(object):
     n = datetime.now()
     today = n.strftime('%Y-%m-%d')
     time = n.strftime('%H-%M-%S')
+    kicad_version = ''
     # Data from the SCH because it doesn't have a Python API
     sch_title = None
     sch_date = None

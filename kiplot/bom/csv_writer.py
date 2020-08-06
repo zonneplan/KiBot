@@ -53,6 +53,7 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
                 writer.writerow(["Variant:", ' + '.join(cfg.variant)])
                 writer.writerow(["Revision:", cfg.revision])
                 writer.writerow(["Date:", cfg.date])
+                writer.writerow(["KiCad Version:", cfg.kicad_version])
             if not cfg.csv.hide_stats_info:
                 writer.writerow(["Statistics:"])
                 writer.writerow(["Component Groups:", cfg.n_groups])
@@ -60,6 +61,5 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
                 writer.writerow(["Fitted Components:", cfg.n_fitted])
                 writer.writerow(["Number of PCBs:", cfg.number])
                 writer.writerow(["Total components:", cfg.n_build])
-            # writer.writerow(["KiCad Version:", net.getTool()]) TODO?
 
     return True

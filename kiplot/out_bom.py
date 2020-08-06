@@ -388,6 +388,7 @@ class BoMOptions(BaseOptions):
         self.date = GS.sch_date
         self.revision = GS.sch_rev
         self.debug_level = GS.debug_level
+        self.kicad_version = GS.kicad_version
         # Get the components list from the schematic
         comps = GS.sch.get_components()
         try:

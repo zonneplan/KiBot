@@ -292,7 +292,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", ' + '.join(cfg.variant))
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Revision:", cfg.revision)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Date:", cfg.date)
-                # row_count = add_info(worksheet, column_widths, row_count, fmt_info, "KiCad Version:", ) TODO?
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "KiCad Version:", cfg.kicad_version)
                 col1 += 2
             rc = r_info_start
             if not cfg.xlsx.hide_stats_info:

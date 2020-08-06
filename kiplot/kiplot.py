@@ -119,6 +119,8 @@ def load_board(pcb_file=None):
 
 
 def load_sch():
+    GS.kicad_version = pcbnew.GetBuildVersion()
+    logger.debug('KiCad: '+GS.kicad_version)
     GS.check_sch()
     GS.sch = Schematic()
     try:

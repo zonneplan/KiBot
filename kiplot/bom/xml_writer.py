@@ -23,7 +23,7 @@ def write_xml(filename, groups, headings, head_names, cfg):
     attrib['Schematic_Date'] = cfg.date
     attrib['PCB_Variant'] = ', '.join(cfg.variant)
     # attrib['BOM_Date'] = net.getDate() same as schematic
-    # attrib['KiCad_Version'] = net.getTool()  TODO?
+    attrib['KiCad_Version'] = cfg.kicad_version
     attrib['Component_Groups'] = str(cfg.n_groups)
     attrib['Component_Count'] = str(cfg.n_total)
     attrib['Fitted_Components'] = str(cfg.n_fitted)
