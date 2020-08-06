@@ -260,7 +260,8 @@ class ComponentGroup(object):
         self.fields[ColumnList.COL_FP_L] = comp.footprint
         self.fields[ColumnList.COL_FP_LIB_L] = comp.footprint_lib
         self.fields[ColumnList.COL_SHEETPATH_L] = comp.sheet_path_h
-        self.fields[ColumnList.COL_DESCRIPTION_L] = comp.desc
+        if not self.fields[ColumnList.COL_DESCRIPTION_L]:
+            self.fields[ColumnList.COL_DESCRIPTION_L] = comp.desc
 
     def get_row(self, columns):
         """ Return a dict of the KiCad data based on the supplied columns """
