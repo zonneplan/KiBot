@@ -45,8 +45,10 @@ def write_xml(filename, groups, headings, head_names, cfg):
             attrib[h] = str(row[i])
         ElementTree.SubElement(xml, "group", attrib=attrib)
 
-    with open(filename, "wt") as output:
+    # Most of the UTF-8 enforcement here is for Windows
+    # Selecting it in the tostring  call is enough for Linux
+    with open(filename, "wt", encoding="utf-8") as output:
         out = ElementTree.tostring(xml, encoding="utf-8")
-        output.write(minidom.parseString(out).toprettyxml(indent="\t"))
+        output.write(minidom.parseString(out).toprettyxml(indent="\t", encoding="utf-8").decode("utf-8"))
 
     return True
