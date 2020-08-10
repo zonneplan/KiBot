@@ -76,10 +76,10 @@ class LibAlias(object):
         lib.descr = un_quote(m.group(5))
         return lib
 
-#     def __str__(self):
-#         if not self.name:
-#             return 'empty LibAlias'
-#         return self.name+' -> `'+self.uri+'`'
+    def __str__(self):
+        if not self.name:
+            return 'empty LibAlias'
+        return self.name+' -> `'+self.uri+'`'
 
 
 class KiConf(object):
