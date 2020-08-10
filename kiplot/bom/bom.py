@@ -458,7 +458,7 @@ def do_bom(file_name, ext, comps, cfg):
     # Group components according to group_fields
     groups = group_components(cfg, comps)
     # Give a name to empty variant
-    if not variants:
+    if not variants or (len(variants) == 1 and not variants[0]):
         cfg.variant = ['default']
     # Create the BoM
     logger.debug("Saving BOM File: "+file_name)
