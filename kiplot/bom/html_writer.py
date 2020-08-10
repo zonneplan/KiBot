@@ -242,7 +242,7 @@ def write_html(filename, groups, headings, head_names, cfg):
             html.write('<tr><td class="td-kicad0">KiCad Fields (default)</td></tr>\n')
             html.write('<tr><td class="td-gen0">Generated Fields</td></tr>\n')
             html.write('<tr><td class="td-user0">User Fields</td></tr>\n')
-            if hl_empty:
+            if cfg.html.highlight_empty:
                 html.write('<tr><td class="td-empty0">Empty Fields</td></tr>\n')
             html.write('</table>\n')
 
