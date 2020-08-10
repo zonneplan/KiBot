@@ -644,7 +644,7 @@ class SchematicComponent(object):
         return '{} ({} {})'.format(self.ref, self.name, self.value)
 
     @staticmethod
-    def load(f, sheet_path, sheet_path_h, libs):
+    def load(f, sheet_path, sheet_path_h, libs, fields, fields_lc):
         # L lib:name reference
         line = _get_line(f)
         if line[0] != 'L':
@@ -691,7 +691,12 @@ class SchematicComponent(object):
         comp.fields = []
         comp.dfields = {}
         while line[0] == 'F':
-            comp.add_field(SchematicField.parse(line))
+            field = SchematicField.parse(line)
+            name_lc = field.name.lower()
+            if name_lc not in fields_lc:
+                fields.append(field.name)
+                fields_lc[name_lc] = 1
+            comp.add_field(field)
             line = _get_line(f)
         # Redundant pos
         if not line.startswith('\t'+str(comp.unit)):
@@ -886,13 +891,13 @@ class SchematicSheet(object):
         self.sheet = None
         self.id = ''
 
-    def load_sheet(self, parent, sheet_path, sheet_path_h, libs):
+    def load_sheet(self, parent, sheet_path, sheet_path_h, libs, fields, fields_lc):
         assert self.name
         self.sheet = Schematic()
         parent_dir = os.path.dirname(parent)
         sheet_path += '/'+self.id
         sheet_path_h += '/'+(self.name if self.name else 'Unknown')
-        self.sheet.load(os.path.join(parent_dir, self.file), sheet_path, sheet_path_h, libs)
+        self.sheet.load(os.path.join(parent_dir, self.file), sheet_path, sheet_path_h, libs, fields, fields_lc)
         return self.sheet
 
     @staticmethod
@@ -979,13 +984,15 @@ class Schematic(object):
                     raise SchFileError('Wrong entry in title block', line, _sch_line_number)
                 self.title_block[m.group(1)] = m.group(2)
 
-    def load(self, fname, sheet_path='', sheet_path_h='', libs={}):
+    def load(self, fname, sheet_path='', sheet_path_h='', libs={}, fields=[], fields_lc={}):
         """ Load a v5.x KiCad Schematic.
             The caller must be sure the file exists.
             Only the schematics are loaded not the libs. """
         logger.debug("Loading sheet from "+fname)
         self.fname = fname
         self.libs = libs
+        self.fields = fields
+        self.fields_lc = fields_lc
         with open(fname, 'rt') as f:
             global _sch_line_number
             _sch_line_number = 0
@@ -1017,7 +1024,7 @@ class Schematic(object):
             self.sheets = []
             while not line.startswith('$EndSCHEMATC'):
                 if line.startswith('$Comp'):
-                    obj = SchematicComponent.load(f, sheet_path, sheet_path_h, libs)
+                    obj = SchematicComponent.load(f, sheet_path, sheet_path_h, libs, fields, fields_lc)
                     self.components.append(obj)
                 elif line.startswith('NoConn'):
                     obj = SchematicConnection.parse(False, line[7:])
@@ -1044,7 +1051,7 @@ class Schematic(object):
             # Load sub-sheets
             self.sub_sheets = []
             for sch in self.sheets:
-                self.sub_sheets.append(sch.load_sheet(fname, sheet_path, sheet_path_h, libs))
+                self.sub_sheets.append(sch.load_sheet(fname, sheet_path, sheet_path_h, libs, fields, fields_lc))
 
     def get_files(self):
         """ A list of the names for all the sheets, including this one. """
@@ -1065,16 +1072,13 @@ class Schematic(object):
         return components
 
     def get_field_names(self, fields):
-        # TODO collect while loading
+        """ Appends the collected field names to the provided names """
         fields_lc = {v.lower(): 1 for v in fields}
-        for c in self.components:
-            for f in c.fields:
-                name_lc = f.name.lower()
-                if name_lc not in fields_lc:
-                    fields.append(f.name)
-                    fields_lc[name_lc] = 1
-        for sch in self.sheets:
-            fields = sch.sheet.get_field_names(fields)
+        for f in self.fields:
+            name_lc = f.lower()
+            if name_lc not in fields_lc:
+                fields.append(f)
+                fields_lc[name_lc] = 1
         return fields
 
     def walk_components(self, function, obj):

@@ -360,7 +360,7 @@ class BoMOptions(BaseOptions):
             # Also create the rename and join lists.
             # Lower case available columns (to check if valid)
             valid_columns_l = {c.lower(): c for c in valid_columns}
-            logger.debug("Valid columns: "+str(valid_columns))
+            logger.debug("Valid columns: {} ({})".format(valid_columns, len(valid_columns)))
             # Create the different lists
             columns = []
             for col in self.columns:
