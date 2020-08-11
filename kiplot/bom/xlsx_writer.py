@@ -181,6 +181,24 @@ def create_color_ref(workbook, col_colors, hl_empty, fmt_cols):
         worksheet.set_column(0, 0, 50)
 
 
+def adjust_widths(worksheet, column_widths, max_width):
+    for i, width in enumerate(column_widths):
+        if width > max_width:
+            width = max_width
+        worksheet.set_column(i, i, width)
+
+
+def adjust_heights(worksheet, rows, max_width, head_size):
+    for rn, r in enumerate(rows):
+        max_h = 1
+        for c in r:
+            if len(c) > max_width:
+                h = len(wrap(c, max_width))
+                max_h = max(h, max_h)
+        if max_h > 1:
+            worksheet.set_row(head_size+rn, 15.0*max_h)
+
+
 def write_xlsx(filename, groups, col_fields, head_names, cfg):
     """
     Write BoM out to a XLSX file
@@ -307,22 +325,9 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", cfg.number)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total components:", cfg.n_build)
 
-        # Adjust the widths
-        for i in range(len(column_widths)):
-            width = column_widths[i]
-            if width > max_width:
-                width = max_width
-            worksheet.set_column(i, i, width)
-
-        # Adjust the heights
-        for rn, r in enumerate(rows):
-            max_h = 1
-            for c in r:
-                if len(c) > max_width:
-                    h = len(wrap(c, max_width))
-                    max_h = max(h, max_h)
-            if max_h > 1:
-                worksheet.set_row(head_size+rn, 15.0*max_h)
+        # Adjust cols and rows
+        adjust_widths(worksheet, column_widths, max_width)
+        adjust_heights(worksheet, rows, max_width, head_size)
 
         worksheet.freeze_panes(head_size+1, 0)
         worksheet.repeat_rows(head_size+1)

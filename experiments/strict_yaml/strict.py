@@ -28,15 +28,15 @@ except YAMLError as e:
     sys.exit(1)
 
 schema = Map({"kiplot":
-                 Map({"version": Int()}),
+                 Map({"version": Int()}),  # noqa: E127
               Optional("preflight"): Map({
-                 Optional("run_drc"): Bool(),
+                 Optional("run_drc"): Bool(),  # noqa: E121
                  Optional("run_erc"): Bool(),
                  Optional("update_xml"): Bool(),
                  Optional("check_zone_fills"): Bool(),
                  Optional("ignore_unconnected"): Bool(),
               }),
-              Optional("outputs"): Seq(Any())})  # noqa: E127
+              Optional("outputs"): Seq(Any())})
 
 try:
     parsed = load(s, schema, label=fname)

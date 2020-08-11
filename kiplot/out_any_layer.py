@@ -65,10 +65,10 @@ class AnyLayerOptions(BaseOptions):
 
         layers = Layer.solve(layers)
         # plot every layer in the output
-        for l in layers:
-            suffix = l.suffix
-            desc = l.description
-            id = l.id
+        for la in layers:
+            suffix = la.suffix
+            desc = la.description
+            id = la.id
             # Set current layer
             plot_ctrl.SetLayer(id)
             # Skipping NPTH is controlled by whether or not this is
@@ -77,7 +77,7 @@ class AnyLayerOptions(BaseOptions):
             po.SetSkipPlotNPTH_Pads(is_cu)
 
             # Plot single layer to file
-            logger.debug("Opening plot file for layer `{}` format `{}`".format(l, self._plot_format))
+            logger.debug("Opening plot file for layer `{}` format `{}`".format(la, self._plot_format))
             if not plot_ctrl.OpenPlotfile(suffix, self._plot_format, desc):
                 # Shouldn't happen
                 raise PlotError("OpenPlotfile failed!")  # pragma: no cover
@@ -87,7 +87,7 @@ class AnyLayerOptions(BaseOptions):
                 filename = self.expand_filename(output_dir, self.output, suffix, os.path.splitext(k_filename)[1][1:])
             else:
                 filename = k_filename
-            logger.debug("Plotting layer `{}` to `{}`".format(l, filename))
+            logger.debug("Plotting layer `{}` to `{}`".format(la, filename))
             plot_ctrl.PlotLayer()
             plot_ctrl.ClosePlot()
             if self.output:

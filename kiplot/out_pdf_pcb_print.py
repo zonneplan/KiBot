@@ -25,7 +25,7 @@ class PDF_Pcb_PrintOptions(BaseOptions):
         check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.4.1')
         layers = Layer.solve(layers)
         # Output file name
-        id = '+'.join([l.suffix for l in layers])
+        id = '+'.join([la.suffix for la in layers])
         output = self.expand_filename(output_dir, self.output, id, 'pdf')
         cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):
@@ -35,7 +35,7 @@ class PDF_Pcb_PrintOptions(BaseOptions):
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
         # Add the layers
-        cmd.extend([l.layer for l in layers])
+        cmd.extend([la.layer for la in layers])
         # Execute it
         logger.debug('Executing: '+str(cmd))
         ret = call(cmd)

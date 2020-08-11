@@ -71,7 +71,7 @@ class ColumnList:
         COL_VALUE_L: 1,
         COL_PART_L: 1,
         COL_PART_LIB_L: 1,
-        #COL_DESCRIPTION_L: 1,
+        # COL_DESCRIPTION_L: 1,
         COL_DATASHEET_L: 1,
         COL_SHEETPATH_L: 1,
         COL_FP_L: 1,

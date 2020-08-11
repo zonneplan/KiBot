@@ -640,7 +640,7 @@ class SchematicComponent(object):
 
     def __str__(self):
         if self.name == self.value:
-            return '{} ({})'.format(self.ref, self.name, self.value)
+            return '{} ({})'.format(self.ref, self.name)
         return '{} ({} {})'.format(self.ref, self.name, self.value)
 
     @staticmethod
