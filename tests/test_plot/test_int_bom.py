@@ -25,6 +25,8 @@ Tests of Internal BoM files
 - component_aliases
 - merge_blank_fields
 - Don't group components
+- Multipart component (not repeated)
+- Filed collision
 
 Missing:
 - Variants
@@ -63,6 +65,8 @@ COMP_COLUMN_NAME = 'Row'
 COMP_COLUMN_NAME_R = 'Renglón'
 KIBOM_TEST_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
                    'Datasheet', 'Config']
+KIBOM_TEST_HEAD_TOL = KIBOM_TEST_HEAD
+KIBOM_TEST_HEAD_TOL.insert(-1, 'Tolerance')
 KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor', 'Código Digi-Key', 'Cantidad por PCB']
 CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet']
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
@@ -527,7 +531,7 @@ def test_int_bom_no_group_csv():
 
 
 def test_int_bom_repeat_csv():
-    """ Multipart component """
+    """ Multipart component (not repeated) """
     prj = 'kibom-test-rep'
     ext = 'csv'
     ctx = context.TestContextSCH('test_int_bom_repeat_csv', prj, 'int_bom_simple_csv', BOM_DIR)
@@ -536,4 +540,21 @@ def test_int_bom_repeat_csv():
     rows, header = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     check_kibom_test_netlist(rows, header.index(REF_COLUMN_NAME), 1, [], ['U1'])
+    ctx.clean_up()
+
+
+def test_int_bom_collision():
+    """ Field collision """
+    prj = 'kibom-test-3'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_collision', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD_TOL
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.search_err('Field conflict')
     ctx.clean_up()
