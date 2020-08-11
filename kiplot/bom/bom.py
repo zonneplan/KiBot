@@ -270,8 +270,6 @@ class ComponentGroup(object):
                         v = self.get_field(source)
                         if v:
                             val = val + ' ' + v
-            if val is None:
-                val = ""
             row.append(val)
         return row
 
