@@ -65,7 +65,7 @@ COMP_COLUMN_NAME = 'Row'
 COMP_COLUMN_NAME_R = 'Renglón'
 KIBOM_TEST_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
                    'Datasheet', 'Config']
-KIBOM_TEST_HEAD_TOL = KIBOM_TEST_HEAD
+KIBOM_TEST_HEAD_TOL = [c for c in KIBOM_TEST_HEAD]
 KIBOM_TEST_HEAD_TOL.insert(-1, 'Tolerance')
 KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor', 'Código Digi-Key', 'Cantidad por PCB']
 CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet']
