@@ -153,8 +153,6 @@ class ComponentGroup(object):
 
     def match_component(self, c):
         """ Test if a given component fits in this group """
-        if not self.components:
-            return True
         return compare_components(c, self.components[0], self.cfg)
 
     def contains_component(self, c):
@@ -163,7 +161,8 @@ class ComponentGroup(object):
 
     def add_component(self, c):
         """ Add a component to the group.
-            Avoid repetition, checks if suitable """
+            Avoid repetition, checks if suitable.
+            Note: repeated components happend when a component contains more than one unit """
         if not self.components:
             self.components.append(c)
             self.refs[c.ref] = c
