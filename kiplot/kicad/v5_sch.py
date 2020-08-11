@@ -693,11 +693,19 @@ class SchematicComponent(object):
         while line[0] == 'F':
             field = SchematicField.parse(line)
             name_lc = field.name.lower()
+            # Add to the global collection
             if name_lc not in fields_lc:
                 fields.append(field.name)
                 fields_lc[name_lc] = 1
+            # Add to the component
             comp.add_field(field)
             line = _get_line(f)
+        # Fake 'Part' field
+        field = SchematicField()
+        field.name = 'part'
+        field.value = comp.name
+        field.number = -1
+        comp.add_field(field)
         # Redundant pos
         if not line.startswith('\t'+str(comp.unit)):
             raise SchFileError('Missing component redundant position', line, _sch_line_number)

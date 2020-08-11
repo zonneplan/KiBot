@@ -192,6 +192,7 @@ class BoMOptions(BaseOptions):
                        [ColumnList.COL_REFERENCE, '^FID'],
                        [ColumnList.COL_PART, 'mount.*hole'],
                        [ColumnList.COL_PART, 'solder.*bridge'],
+                       [ColumnList.COL_PART, 'solder.*jump'],
                        [ColumnList.COL_PART, 'test.*point'],
                        [ColumnList.COL_FP, 'test.*point'],
                        [ColumnList.COL_FP, 'mount.*hole'],
@@ -296,6 +297,14 @@ class BoMOptions(BaseOptions):
         # Explicit selection
         return self.format.lower()
 
+    @staticmethod
+    def _fix_ref_field(field):
+        """ References -> Reference """
+        col = field.lower()
+        if col == ColumnList.COL_REFERENCE_L:
+            col = col[:-1]
+        return col
+
     def config(self):
         super().config()
         self.format = self._guess_format()
@@ -334,11 +343,12 @@ class BoMOptions(BaseOptions):
             self.exclude_any = []
             for r in BoMOptions.DEFAULT_EXCLUDE:
                 o = BoMRegex()
-                o.column = r[0]
+                o.column = self._fix_ref_field(r[0])
                 o.regex = compile(r[1], flags=IGNORECASE)
                 self.exclude_any.append(o)
         else:
             for r in self.exclude_any:
+                r.column = self._fix_ref_field(r.column)
                 r.regex = compile(r.regex, flags=IGNORECASE)
         # Columns
         self.column_rename = {}
