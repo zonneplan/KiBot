@@ -31,7 +31,6 @@ Tests of Internal BoM files
 
 Missing:
 - Variants
-- test_regex
 - number_boards
 - hide_headers
 - hide_pcb_info
@@ -540,7 +539,10 @@ def test_int_bom_repeat_csv():
     out = prj + '-bom.' + ext
     rows, header = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
-    check_kibom_test_netlist(rows, header.index(REF_COLUMN_NAME), 1, [], ['U1'])
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['U1', 'R1'])
+    check_dnc(rows, 'R1', ref_column, qty_column)
     ctx.clean_up()
 
 
