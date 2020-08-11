@@ -23,6 +23,7 @@ F 0 "U1" H 2500 2325 50  0000 C CNN
 F 1 "74LS02" H 2500 2234 50  0000 C CNN
 F 2 "" H 2500 2000 50  0001 C CNN
 F 3 "http://www.ti.com/lit/gpn/sn74ls02" H 2500 2000 50  0001 C CNN
+F 4 "" H 2500 2000 50  0001 C CNN "Config"
 	1    2500 2000
 	1    0    0    -1  
 $EndComp
@@ -34,6 +35,7 @@ F 0 "U1" H 3350 2325 50  0000 C CNN
 F 1 "74LS02" H 3350 2234 50  0000 C CNN
 F 2 "" H 3350 2000 50  0001 C CNN
 F 3 "http://www.ti.com/lit/gpn/sn74ls02" H 3350 2000 50  0001 C CNN
+F 4 "" H 3350 2000 50  0001 C CNN "Config"
 	2    3350 2000
 	1    0    0    -1  
 $EndComp
@@ -45,6 +47,7 @@ F 0 "U1" H 2500 2975 50  0000 C CNN
 F 1 "74LS02" H 2500 2884 50  0000 C CNN
 F 2 "" H 2500 2650 50  0001 C CNN
 F 3 "http://www.ti.com/lit/gpn/sn74ls02" H 2500 2650 50  0001 C CNN
+F 4 "" H 2500 2650 50  0001 C CNN "Config"
 	3    2500 2650
 	1    0    0    -1  
 $EndComp
@@ -56,6 +59,7 @@ F 0 "U1" H 3350 2975 50  0000 C CNN
 F 1 "74LS02" H 3350 2884 50  0000 C CNN
 F 2 "" H 3350 2650 50  0001 C CNN
 F 3 "http://www.ti.com/lit/gpn/sn74ls02" H 3350 2650 50  0001 C CNN
+F 4 "" H 3350 2650 50  0001 C CNN "Config"
 	4    3350 2650
 	1    0    0    -1  
 $EndComp
