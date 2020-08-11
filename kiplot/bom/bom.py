@@ -206,7 +206,7 @@ class ComponentGroup(object):
             S.add(P, N)
         return S.flush(' ')
 
-    def update_field(self, field, value):
+    def update_field(self, field, value, ref=None):
         """ Update a given field, concatenates existing values and informs a collision """
         if not value:
             return
@@ -219,17 +219,17 @@ class ComponentGroup(object):
             return
         else:
             if field != self.cfg.fit_field:
-                logger.warning("Field conflict: ({refs}) [{name}] : '{flds}' <- '{fld}'".format(
+                logger.warning("Field conflict: ({refs}) [{name}] : '{flds}' <- '{fld}' (in {ref})".format(
                     refs=self.get_refs(),
                     name=field,
                     flds=self.fields[field],
-                    fld=value))
+                    fld=value, ref=ref))
             self.fields[field] += " " + value
 
     def update_fields(self, usealt=False):
         for c in self.components:
             for f, v in c.get_user_fields():
-                self.update_field(f, v)
+                self.update_field(f, v, c.ref)
         # Update 'global' fields
         if usealt:
             self.fields[ColumnList.COL_REFERENCE_L] = self.get_alt_refs()
