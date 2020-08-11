@@ -218,7 +218,9 @@ class ComponentGroup(object):
         elif value.lower() in self.fields[field].lower():
             return
         else:
-            if field != self.cfg.fit_field:
+            # Config contains variant information, which is different for each component
+            # Part can be one of the defined aliases
+            if field != self.cfg.fit_field and field != 'part':
                 logger.warning("Field conflict: ({refs}) [{name}] : '{flds}' <- '{fld}' (in {ref})".format(
                     refs=self.get_refs(),
                     name=field,
