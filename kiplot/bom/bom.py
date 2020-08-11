@@ -212,9 +212,6 @@ class ComponentGroup(object):
             return
         field_ori = field
         field = field.lower()
-        # Exclude the ones we handle in special ways
-        if field in ColumnList.COLUMNS_PROTECTED_L:
-            return
         if (field not in self.fields) or (not self.fields[field]):
             self.fields[field] = value
             self.field_names.append(field_ori)
