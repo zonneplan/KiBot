@@ -26,7 +26,7 @@ Tests of Internal BoM files
 - merge_blank_fields
 - Don't group components
 - Multipart component (not repeated)
-- Filed collision
+- Field collision
 
 Missing:
 - Variants
