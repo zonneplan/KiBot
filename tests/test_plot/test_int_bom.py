@@ -531,7 +531,8 @@ def test_int_bom_no_group_csv():
 
 
 def test_int_bom_repeat_csv():
-    """ Multipart component (not repeated) """
+    """ Multipart component (not repeated)
+        Also DNC in value + Config. """
     prj = 'kibom-test-rep'
     ext = 'csv'
     ctx = context.TestContextSCH('test_int_bom_repeat_csv', prj, 'int_bom_simple_csv', BOM_DIR)
