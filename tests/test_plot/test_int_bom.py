@@ -14,7 +14,7 @@ Tests of Internal BoM files
 - Join columns
 - ignore_dnf = 0
 - html_generate_dnf = 0
-- use_alt = 1
+- use_alt = 1 (also non contiguous)
 - COLUMN_RENAME
   - CSV
   - HTML
@@ -24,11 +24,11 @@ Tests of Internal BoM files
 - Columns are case insensitive
 - component_aliases
 - merge_blank_fields
+- Don't group components
 
 Missing:
 - Variants
 - test_regex
-- merge_blank_fields
 - number_boards
 - hide_headers
 - hide_pcb_info
@@ -67,6 +67,7 @@ KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor
 CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet']
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
 KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
+KIBOM_TEST_COMPONENTS_ALT2 = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R2', 'R4-R5', 'R3']
 KIBOM_TEST_EXCLUDE = ['R6']
 KIBOM_TEST_GROUPS = 5
 LINKS_COMPONENTS = ['J1', 'J2', 'R1']
@@ -346,6 +347,23 @@ def test_int_bom_use_alt():
     ctx.clean_up()
 
 
+def test_int_bom_use_alt_2():
+    """ use_alt: true and not merge blank fields, non contiguous """
+    prj = 'kibom-test-2'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_use_alt_2', prj, 'int_bom_use_alt_2', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    # R3 without footprint won't be merged with other 10K resistors
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS+1, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS_ALT2)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
 def test_int_bom_no_number_rows():
     """ Was number_rows: false, now is different """
     prj = 'kibom-test'
@@ -492,7 +510,7 @@ def test_int_bom_alias_nm_csv():
 
 
 def test_int_bom_no_group_csv():
-    """ Component aliases and not merge blank fields """
+    """ Don't group components """
     prj = 'kibom-test'
     ext = 'csv'
     ctx = context.TestContextSCH('test_int_bom_no_group_csv', prj, 'int_bom_no_group_csv', BOM_DIR)
