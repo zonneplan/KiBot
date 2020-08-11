@@ -22,6 +22,8 @@ Tests of Internal BoM files
   - XLSX
 - group_connectors = 1/0
 - Columns are case insensitive
+- component_aliases
+- merge_blank_fields
 
 Missing:
 - Variants
@@ -453,4 +455,37 @@ def test_int_bom_column_sensitive():
     assert header == [REF_COLUMN_NAME.lower(), 'value', 'part', 'description']
     ref_column = header.index(REF_COLUMN_NAME.lower())
     check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
+    ctx.clean_up()
+
+
+def test_int_bom_alias_csv():
+    """ Component aliases and merge blank fields """
+    prj = 'kibom-test-2'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_alias_csv', prj, 'int_bom_alias_csv', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_alias_nm_csv():
+    """ Component aliases and not merge blank fields """
+    prj = 'kibom-test-2'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_alias_csv', prj, 'int_bom_alias_nm_csv', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    # R3 without footprint won't be merged with other 10K resistors
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS+1, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
