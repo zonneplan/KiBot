@@ -154,7 +154,7 @@ class TestContext(object):
             f.write('Dummy file\n')
 
     def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None, no_out_dir=False, no_board_file=False,
-            no_yaml_file=False, chdir_out=False, no_verbose=False):
+            no_yaml_file=False, chdir_out=False, no_verbose=False, extra_debug=False):
         logging.debug('Running '+self.test_name)
         # Change the command to be local and add the board and output arguments
         cmd = [COVERAGE_SCRIPT, 'run', '-a']
@@ -165,6 +165,8 @@ class TestContext(object):
         if not no_verbose:
             # One is enough, 2 can generate tons of data when loading libs
             cmd.append('-v')
+            if extra_debug:
+                cmd.append('-v')
         if not no_board_file:
             if self.mode == MODE_PCB:
                 cmd = cmd+['-b', filename if filename else self.board_file]
