@@ -72,6 +72,8 @@ class Optionable(object):
         if isinstance(v, dict):
             return 'dict'
         if isinstance(v, list):
+            if len(v) == 0:
+                return 'list(string)'
             return 'list({})'.format(Optionable._typeof(v[0]))
         return 'None'
 
