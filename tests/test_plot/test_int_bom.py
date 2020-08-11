@@ -27,6 +27,7 @@ Tests of Internal BoM files
 - Don't group components
 - Multipart component (not repeated)
 - Field collision
+- test_regex/exclude_any/include_only
 
 Missing:
 - Variants
@@ -572,5 +573,20 @@ def test_int_bom_include_only():
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 3, KIBOM_TEST_EXCLUDE, ['R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8'])
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_no_test_regex():
+    prj = 'kibom-test'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_simple_csv', prj, 'int_bom_no_include_only', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
