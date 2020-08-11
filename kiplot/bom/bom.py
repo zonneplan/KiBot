@@ -73,8 +73,8 @@ def compare_field(c1, c2, field, cfg):
     c1_field = c1.get_field_value(field).lower()
     c2_field = c2.get_field_value(field).lower()
     # If blank comparisons are allowed
-    if (c1_field == "" or c2_field == "") and not cfg.merge_blank_fields:
-        return False
+    if (c1_field == "" or c2_field == "") and cfg.merge_blank_fields:
+        return True
     return c1_field == c2_field
 
 
