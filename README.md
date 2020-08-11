@@ -403,6 +403,7 @@ Next time you need this list just use an alias, like this:
             - `generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
+            - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
             - `logo`: [string|boolean] PNG file to use as logo, use false to remove.
             - `style`: [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
                        Or you can provide a CSS file name. Please use .css as file extension..
@@ -432,7 +433,9 @@ Next time you need this list just use an alias, like this:
             - `generate_dnf`: [boolean=true] Generate a separated sheet for DNF (Do Not Fit) components.
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
+            - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
             - `logo`: [string|boolean] PNG file to use as logo, use false to remove.
+            - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
             - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic..
             - `title`: [string='KiBot Bill of Materials'] BoM title.
 

@@ -114,6 +114,8 @@ outputs:
         hide_pcb_info: false
         # [boolean=false] Hide statistics information
         hide_stats_info: false
+        # [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`
+        highlight_empty: true
         # [string|boolean] PNG file to use as logo, use false to remove
         logo:
         # [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
@@ -161,8 +163,12 @@ outputs:
         hide_pcb_info: false
         # [boolean=false] Hide statistics information
         hide_stats_info: false
+        # [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`
+        highlight_empty: true
         # [string|boolean] PNG file to use as logo, use false to remove
         logo:
+        # [number=60] [20,999] Maximum column width (characters)
+        max_col_width: 60
         # [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
         style: 'modern-blue'
         # [string='KiBot Bill of Materials'] BoM title
