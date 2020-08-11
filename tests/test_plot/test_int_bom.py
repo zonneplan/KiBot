@@ -524,3 +524,16 @@ def test_int_bom_no_group_csv():
     check_kibom_test_netlist(rows, ref_column, len(KIBOM_TEST_COMPONENTS), KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
+
+
+def test_int_bom_repeat_csv():
+    """ Multipart component """
+    prj = 'kibom-test-rep'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_repeat_csv', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD
+    check_kibom_test_netlist(rows, header.index(REF_COLUMN_NAME), 1, [], ['U1'])
+    ctx.clean_up()
