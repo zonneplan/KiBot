@@ -478,7 +478,7 @@ def test_int_bom_alias_nm_csv():
     """ Component aliases and not merge blank fields """
     prj = 'kibom-test-2'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_alias_csv', prj, 'int_bom_alias_nm_csv', BOM_DIR)
+    ctx = context.TestContextSCH('test_int_bom_alias_nm_csv', prj, 'int_bom_alias_nm_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header = ctx.load_csv(out)
@@ -487,5 +487,22 @@ def test_int_bom_alias_nm_csv():
     qty_column = header.index(QTY_COLUMN_NAME)
     # R3 without footprint won't be merged with other 10K resistors
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS+1, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_no_group_csv():
+    """ Component aliases and not merge blank fields """
+    prj = 'kibom-test'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_no_group_csv', prj, 'int_bom_no_group_csv', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    # R3 without footprint won't be merged with other 10K resistors
+    check_kibom_test_netlist(rows, ref_column, len(KIBOM_TEST_COMPONENTS), KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
