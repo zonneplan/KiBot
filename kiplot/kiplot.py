@@ -14,7 +14,7 @@ from importlib.util import (spec_from_file_location, module_from_spec)
 from .gs import (GS)
 from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
                    EXIT_BAD_ARGS, CORRUPTED_SCH)
-from .error import (PlotError, KiPlotConfigurationError, config_error)
+from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .pre_base import BasePreFlight
 from .kicad.v5_sch import Schematic, SchFileError
 from . import log
@@ -127,6 +127,7 @@ def load_sch():
         GS.sch.load(GS.sch_file)
         GS.sch.load_libs(GS.sch_file)
     except SchFileError as e:
+        trace_dump()
         logger.error('At line {} of `{}`: {}'.format(e.args[2], GS.sch_file, e.args[0]))
         logger.error('Line content: `{}`'.format(e.args[1]))
         exit(CORRUPTED_SCH)

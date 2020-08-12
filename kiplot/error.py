@@ -23,10 +23,14 @@ class KiPlotConfigurationError(KiPlotError):
     pass
 
 
-def config_error(msg):
+def trace_dump():
     if GS.debug_enabled:
         logger.error('Trace stack:')
         (type, value, traceback) = exc_info()
         print_tb(traceback)
+
+
+def config_error(msg):
+    trace_dump()
     logger.error(msg)
     exit(EXIT_BAD_CONFIG)
