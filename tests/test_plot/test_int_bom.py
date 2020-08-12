@@ -740,6 +740,23 @@ def test_int_bom_collision():
     ctx.clean_up()
 
 
+def test_int_bom_exclude_any():
+    """ Field collision and exclude_any """
+    prj = 'kibom-test-3'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_exclude_any', prj, 'int_bom_exclude_any', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD_TOL
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS+1, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS+['X1'])
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.search_err('Field conflict')
+    ctx.clean_up()
+
+
 def test_int_bom_include_only():
     """ Include only (0805 components) """
     prj = 'kibom-test'
