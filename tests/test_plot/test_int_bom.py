@@ -37,6 +37,7 @@ Missing:
 - various boards
 - stats info
 - datasheet and digikey for XLSX
+- XLSX colors
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -209,10 +210,8 @@ def test_int_bom_simple_xml():
     ctx.clean_up()
 
 
-def test_int_bom_simple_xlsx():
-    prj = 'kibom-test'
+def simple_xlsx_verify(ctx, prj):
     ext = 'xlsx'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx', prj, 'int_bom_simple_xlsx', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
@@ -229,6 +228,12 @@ def test_int_bom_simple_xlsx():
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
+
+
+def test_int_bom_simple_xlsx():
+    prj = 'kibom-test'
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx', prj, 'int_bom_simple_xlsx', BOM_DIR)
+    simple_xlsx_verify(ctx, prj)
 
 
 def get_column(rows, col, split=True):
@@ -682,24 +687,8 @@ def test_int_bom_simple_xlsx_2():
 def test_int_bom_simple_xlsx_3():
     """ No logo """
     prj = 'kibom-test'
-    ext = 'xlsx'
     ctx = context.TestContextSCH('test_int_bom_simple_xlsx_3', prj, 'int_bom_simple_xlsx_3', BOM_DIR)
-    ctx.run()
-    out = prj + '-bom.' + ext
-    rows, header, sh_head = ctx.load_xlsx(out)
-    check_head_xlsx(sh_head,
-                    [prj, 'default', 'A', '2020-03-12', None],
-                    [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
-                     len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
-                     len(KIBOM_TEST_COMPONENTS),
-                     1,
-                     len(KIBOM_TEST_COMPONENTS)])
-    assert header == KIBOM_TEST_HEAD
-    ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
-    ctx.clean_up()
+    simple_xlsx_verify(ctx, prj)
 
 
 def test_int_bom_simple_xlsx_4():
@@ -765,3 +754,24 @@ def test_int_bom_simple_xlsx_6():
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()
+
+
+def test_int_bom_simple_xlsx_7():
+    """ Logo from file, no colors (no real test for the style) """
+    prj = 'kibom-test'
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_7', prj, 'int_bom_simple_xlsx_7', BOM_DIR)
+    simple_xlsx_verify(ctx, prj)
+
+
+def test_int_bom_simple_xlsx_8():
+    """ Style green (no real test for the style) """
+    prj = 'kibom-test'
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_8', prj, 'int_bom_simple_xlsx_8', BOM_DIR)
+    simple_xlsx_verify(ctx, prj)
+
+
+def test_int_bom_simple_xlsx_9():
+    """ Style red (no real test for the style) """
+    prj = 'kibom-test'
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_9', prj, 'int_bom_simple_xlsx_9', BOM_DIR)
+    simple_xlsx_verify(ctx, prj)
