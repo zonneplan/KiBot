@@ -58,7 +58,7 @@ def add_info(worksheet, column_widths, row, col_offset, formats, text, value):
         value = str(value)
     else:
         worksheet.write_string(row, col_offset+1, value, formats[1])
-    column_widths[col_offset] = max(len(text), column_widths[col_offset])
+    column_widths[col_offset] = max(len(text)+1, column_widths[col_offset])
     column_widths[col_offset+1] = max(len(value), column_widths[col_offset+1])
     return row + 1
 
