@@ -375,6 +375,8 @@ Next time you need this list just use an alias, like this:
                          - column: Part
                            regex: 'solder.*bridge'
                          - column: Part
+                           regex: 'solder.*jump'
+                         - column: Part
                            regex: 'test.*point'
                          - column: Footprint
                            regex 'test.*point'
@@ -421,7 +423,8 @@ Next time you need this list just use an alias, like this:
         - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
         - `number`: [number=1] Number of boards to build (components multiplier).
         - `output`: [string='%f-%i.%x'] filename for the output (%i=bom). Affected by global options.
-        - `test_regex`: [boolean=true] Each component group will be tested against a number of regular-expressions (see ``)..
+        - `test_regex`: [boolean=true] Each component group will be tested against a number of regular-expressions
+                        (see `include_only` and `exclude_any`).
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `variant`: [string=''] Board variant(s), used to determine which components
                      are output to the BoM..

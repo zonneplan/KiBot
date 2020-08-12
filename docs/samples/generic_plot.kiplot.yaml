@@ -74,6 +74,8 @@ outputs:
       # - column: Part
       # ..regex: 'solder.*bridge'
       # - column: Part
+      # ..regex: 'solder.*jump'
+      # - column: Part
       # ..regex: 'test.*point'
       # - column: Footprint
       # ..regex 'test.*point'
@@ -142,7 +144,8 @@ outputs:
       number: 1
       # [string='%f-%i.%x'] filename for the output (%i=bom). Affected by global options
       output: '%f-%i.%x'
-      # [boolean=true] Each component group will be tested against a number of regular-expressions (see ``).
+      # [boolean=true] Each component group will be tested against a number of regular-expressions
+      # (see `include_only` and `exclude_any`)
       test_regex: true
       # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
       use_alt: false
