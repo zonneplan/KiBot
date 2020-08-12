@@ -840,7 +840,7 @@ class SchematicBitmap(object):
     def load(f):
         # Position
         line = _get_line(f)
-        res = _split_space(line.split)
+        res = _split_space(line)
         if len(res) != 3:
             raise SchFileError('Malformed bitmap position', line, _sch_line_number)
         if res[0] != 'Pos':
