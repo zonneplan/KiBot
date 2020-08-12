@@ -60,8 +60,8 @@ class BoMColumns(Optionable):
             self.join = [field]+[c.lower() for c in self.join]
 
 
-class BoMHTML(Optionable):
-    """ HTML options """
+class BoMLinkable(Optionable):
+    """ Base class for HTML and XLSX formats """
     def __init__(self):
         super().__init__()
         with document:
@@ -81,9 +81,6 @@ class BoMHTML(Optionable):
             """ Use a color for empty cells. Applies only when `col_colors` is `true` """
             self.logo = Optionable
             """ [string|boolean] PNG file to use as logo, use false to remove """
-            self.style = 'modern-blue'
-            """ Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
-                Or you can provide a CSS file name. Please use .css as file extension. """
             self.title = 'KiBot Bill of Materials'
             """ BoM title """  # pragma: no cover
 
@@ -103,6 +100,21 @@ class BoMHTML(Optionable):
             self.logo = os.path.abspath(self.logo)
             if not os.path.isfile(self.logo):
                 raise KiPlotConfigurationError('Missing logo file `{}`'.format(self.logo))
+        # Datasheet as link
+        self.datasheet_as_link = self.datasheet_as_link.lower()
+
+
+class BoMHTML(BoMLinkable):
+    """ HTML options """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.style = 'modern-blue'
+            """ Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
+                Or you can provide a CSS file name. Please use .css as file extension. """  # pragma: no cover
+
+    def config(self):
+        super().config()
         # Style
         if not self.style:
             self.style = 'modern-blue'
@@ -110,7 +122,6 @@ class BoMHTML(Optionable):
             self.style = os.path.abspath(self.style)
             if not os.path.isfile(self.style):
                 raise KiPlotConfigurationError('Missing style file `{}`'.format(self.style))
-        self.datasheet_as_link = self.datasheet_as_link.lower()
 
 
 class BoMCSV(Optionable):
@@ -128,51 +139,18 @@ class BoMCSV(Optionable):
             """ Enclose all values using double quotes """  # pragma: no cover
 
 
-class BoMXLSX(Optionable):
+class BoMXLSX(BoMLinkable):
     """ XLSX options """
     def __init__(self):
         super().__init__()
         with document:
-            self.col_colors = True
-            """ Use colors to show the field type """
-            self.datasheet_as_link = ''
-            """ Column with links to the datasheet """
-            self.digikey_link = Optionable
-            """ [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page """
-            self.generate_dnf = True
-            """ Generate a separated sheet for DNF (Do Not Fit) components """
-            self.hide_pcb_info = False
-            """ Hide project information """
-            self.hide_stats_info = False
-            """ Hide statistics information """
-            self.highlight_empty = True
-            """ Use a color for empty cells. Applies only when `col_colors` is `true` """
-            self.logo = Optionable
-            """ [string|boolean] PNG file to use as logo, use false to remove """
             self.max_col_width = 60
             """ [20,999] Maximum column width (characters) """
             self.style = 'modern-blue'
-            """ Head style: modern-blue, modern-green, modern-red and classic. """
-            self.title = 'KiBot Bill of Materials'
-            """ BoM title """  # pragma: no cover
+            """ Head style: modern-blue, modern-green, modern-red and classic. """  # pragma: no cover
 
     def config(self):
         super().config()
-        # digikey_link
-        if isinstance(self.digikey_link, type):
-            self.digikey_link = []
-        elif isinstance(self.digikey_link, list):
-            self.digikey_link = [c.lower() for c in self.digikey_link]
-        self.datasheet_as_link = self.datasheet_as_link.lower()
-        # Logo
-        if isinstance(self.logo, type):
-            self.logo = ''
-        elif isinstance(self.logo, bool):
-            self.logo = '' if self.logo else None
-        elif self.logo:
-            self.logo = os.path.abspath(self.logo)
-            if not os.path.isfile(self.logo):
-                raise KiPlotConfigurationError('Missing logo file `{}`'.format(self.logo))
         # Style
         if not self.style:
             self.style = 'modern-blue'
