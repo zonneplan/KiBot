@@ -9,8 +9,8 @@ Tests of Internal BoM files
   - XLSX
 - Components units
   - Sort and groups of RLC_sort
-- Datasheet as link
-- Digi-Key link
+- Datasheet as link (HTML and XLSX)
+- Digi-Key link (HTML and XLSX)
 - Join columns
 - ignore_dnf = 0
 - html_generate_dnf = 0
@@ -36,7 +36,6 @@ Missing:
 - hide_pcb_info
 - various boards
 - stats info
-- datasheet and digikey for XLSX
 
 - XLSX colors
 
@@ -76,6 +75,7 @@ KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
 KIBOM_TEST_COMPONENTS_ALT2 = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R2', 'R4-R5', 'R3']
 KIBOM_TEST_EXCLUDE = ['R6']
 KIBOM_TEST_GROUPS = 5
+LINK_HEAD = ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
 LINKS_COMPONENTS = ['J1', 'J2', 'R1']
 LINKS_EXCLUDE = ['C1']
 LINKS_GROUPS = 2
@@ -280,7 +280,7 @@ def test_int_bom_datasheet_link():
     assert len(headers) == 2
     # Test both tables has the same headings and they are the expected
     assert headers[0] == headers[1]
-    assert headers[0] == ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
+    assert headers[0] == LINK_HEAD
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
     part_column = headers[0].index('Part')
@@ -309,7 +309,7 @@ def test_int_bom_digikey_link():
     assert len(headers) == 2
     # Test both tables has the same headings and they are the expected
     assert headers[0] == headers[1]
-    assert headers[0] == ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
+    assert headers[0] == LINK_HEAD
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
     dk_column = headers[0].index('digikey#')
@@ -788,3 +788,55 @@ def test_int_bom_simple_xlsx_a():
     prj = 'kibom-test'
     ctx = context.TestContextSCH('test_int_bom_simple_xlsx_a', prj, 'int_bom_simple_xlsx_a', BOM_DIR)
     simple_xlsx_verify(ctx, prj, False)
+
+
+def test_int_bom_datasheet_link_xlsx():
+    prj = 'links'
+    ext = 'xlsx'
+    ctx = context.TestContextSCH('test_int_bom_datasheet_link_xlsx', prj, 'int_bom_datasheet_link_xlsx', BOM_DIR)
+    ctx.run()
+    out = prj + '.' + ext
+    rows, headers, sh_head = ctx.load_xlsx(out)
+    assert headers == LINK_HEAD
+    # Look for reference and quantity columns
+    ref_column = headers.index(REF_COLUMN_NAME)
+    part_column = headers.index('Part')
+    # Check the normal table
+    check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
+    rows2, headers, sh_head = ctx.load_xlsx(out, 2)
+    assert headers == LINK_HEAD
+    # Check the DNF table
+    check_kibom_test_netlist(rows2, ref_column, 1, LINKS_COMPONENTS, LINKS_EXCLUDE)
+    # Check the datasheet link
+    parts = get_column(rows+rows2, part_column, False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'pdf' in c
+        logging.debug(c + ' OK')
+    ctx.clean_up()
+
+
+def test_int_bom_digikey_link_xlsx():
+    prj = 'links'
+    ext = 'xlsx'
+    ctx = context.TestContextSCH('test_int_bom_digikey_link_xlsx', prj, 'int_bom_digikey_link_xlsx', BOM_DIR)
+    ctx.run()
+    out = prj + '.' + ext
+    rows, headers, sh_head = ctx.load_xlsx(out)
+    assert headers == LINK_HEAD
+    # Look for reference and quantity columns
+    ref_column = headers.index(REF_COLUMN_NAME)
+    dk_column = headers.index('digikey#')
+    # Check the normal table
+    check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
+    rows2, headers, sh_head = ctx.load_xlsx(out, 2)
+    assert headers == LINK_HEAD
+    # Check the DNF table
+    check_kibom_test_netlist(rows2, ref_column, 1, LINKS_COMPONENTS, LINKS_EXCLUDE)
+    # Check the datasheet link
+    parts = get_column(rows+rows2, dk_column, False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'digikey' in c
+        logging.debug(c + ' OK')
+    ctx.clean_up()

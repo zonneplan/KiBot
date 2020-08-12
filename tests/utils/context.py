@@ -410,6 +410,7 @@ class TestContext(object):
         root = ET.parse(worksheet).getroot()
         ns = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
         rnum = 1
+        rfirst = 1
         sh_head = []
         for r in root.iter(ns+'row'):
             rcur = int(r.attrib['r'])
@@ -418,6 +419,7 @@ class TestContext(object):
                 # Discard the sheet header
                 rows = []
                 rnum = rcur
+                rfirst = rcur
             this_row = []
             for cell in r.iter(ns+'c'):
                 if 't' in cell.attrib:
@@ -434,6 +436,11 @@ class TestContext(object):
                     this_row.append(value)
             rows.append(this_row)
             rnum += 1
+        # Links are "Relationship"s
+        links = {}
+        nr = '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}'
+        for r in root.find(ns+'hyperlinks').iter(ns+'hyperlink'):
+            links[r.attrib['ref']] = r.attrib[nr+'id']
         # Read the strings
         strings = self.get_out_path(os.path.join('desc', 'xl', 'sharedStrings.xml'))
         strs = [t.text for t in ET.parse(strings).getroot().iter(ns+'t')]
@@ -446,6 +453,22 @@ class TestContext(object):
             for i, val in enumerate(r):
                 if isinstance(val, str):
                     r[i] = strs[int(val)]
+        # Translate the links
+        if links:
+            # Read the relationships
+            worksheet = self.get_out_path(os.path.join('desc', 'xl', 'worksheets', '_rels', 'sheet'+str(sheet)+'.xml.rels'))
+            root = ET.parse(worksheet).getroot()
+            rels = {}
+            for r in root:
+                rels[r.attrib['Id']] = r.attrib['Target']
+            # Convert cells to HTTP links
+            for k, v in links.items():
+                # Adapt the coordinate
+                rnum = int(k[1:])-rfirst
+                cnum = ord(k[0])-ord('A')
+                # Get the link
+                url = rels[v]
+                rows[rnum][cnum] = '<a href="{}">{}</a>'.format(url, rows[rnum][cnum])
         # Separate the headers
         headers = rows.pop(0)
         return rows, headers, sh_head
