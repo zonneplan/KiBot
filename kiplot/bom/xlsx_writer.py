@@ -321,7 +321,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", cfg.n_total)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", cfg.n_fitted)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", cfg.number)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total components:", cfg.n_build)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", cfg.n_build)
 
         # Adjust cols and rows
         adjust_widths(worksheet, column_widths, max_width)

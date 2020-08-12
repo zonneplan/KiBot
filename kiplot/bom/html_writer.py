@@ -221,7 +221,7 @@ def write_html(filename, groups, headings, head_names, cfg):
                 html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(cfg.n_total))
                 html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(cfg.n_fitted))
                 html.write("   <b>Number of PCBs</b>: {}<br>\n".format(cfg.number))
-                html.write("   <b>Total Component Count</b>: {t} (for {n} PCBs)<br>\n".format(n=cfg.number, t=cfg.n_build))
+                html.write("   <b>Total Components</b>: {t} (for {n} PCBs)<br>\n".format(n=cfg.number, t=cfg.n_build))
             html.write(' </td>\n')
             html.write('</tr>\n')
             html.write('</table>\n')
