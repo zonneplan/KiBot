@@ -220,7 +220,7 @@ class BoMOptions(BaseOptions):
             """ Connectors with the same footprints will be grouped together, independent of the name of the connector """
             self.test_regex = True
             """ Each component group will be tested against a number of regular-expressions
-                (see `include_only` and `exclude_any`). """
+                (see `include_only` and `exclude_any`) """
             self.merge_blank_fields = True
             """ Component groups with blank fields will be merged into the most compatible group, where possible """
             self.fit_field = 'Config'
