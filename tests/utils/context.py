@@ -367,8 +367,39 @@ class TestContext(object):
             html = f.read()
         rows = []
         headers = []
+        sh_head = {}
         for cl, body in re.findall(r'<table class="(.*?)">((?:\s+.*?)+)</table>', html, re.MULTILINE):
-            if cl == 'content-table':
+            if cl == 'head-table':
+                # Extract logo
+                m = re.search(r'<img src="((.*?\n?)+)" alt="Logo"', body, re.MULTILINE)
+                if m:
+                    sh_head['logo'] = True
+                # Extract title
+                m = re.search(r'<div class="title">(.*?)</div>', body)
+                if m:
+                    sh_head['title'] = m.group(1)
+                # Extract PCB info
+                m = re.search(r'<td class="cell-info">((?:\s+.*?)+)</td>', body, re.MULTILINE)
+                if m:
+                    info = m.group(1)
+                    inf_entries = []
+                    for tit, val in re.findall('<b>(.*?)</b>: (.*?)<br>', info):
+                        sh_head['info_'+tit] = val
+                        inf_entries.append(val)
+                    if inf_entries:
+                        sh_head['info'] = inf_entries
+                # Extract stats
+                m = re.search(r'<td class="cell-stats">((?:\s+.*?)+)</td>', body, re.MULTILINE)
+                if m:
+                    stats = m.group(1)
+                    stats_entries = []
+                    for tit, val in re.findall('<b>(.*?)</b>:\s+(\d+).*?<br>', stats):
+                        val = int(val)
+                        sh_head['stats_'+tit] = val
+                        stats_entries.append(val)
+                    if stats_entries:
+                        sh_head['stats'] = stats_entries
+            elif cl == 'content-table':
                 # Header
                 m = re.search(r'<tr>\s+((?:<th.*?>(?:.*)</th>\s+)+)</tr>', body, re.MULTILINE)
                 assert m, 'Failed to get table header'
@@ -385,7 +416,7 @@ class TestContext(object):
                         r.append(cell)
                     b.append(r)
                 rows.append(b)
-        return rows, headers
+        return rows, headers, sh_head
 
     def load_xml(self, filename):
         rows = []

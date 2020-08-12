@@ -80,7 +80,8 @@ LINKS_COMPONENTS = ['J1', 'J2', 'R1']
 LINKS_EXCLUDE = ['C1']
 LINKS_GROUPS = 2
 INFO_ROWS = ['Schematic:', 'Variant:', 'Revision:', 'Date:', 'KiCad Version:']
-STATS_ROWS = ['Component Groups:', 'Component Count:', 'Fitted Components:', 'Number of PCBs:', 'Total components:']
+STATS_ROWS = ['Component Groups:', 'Component Count:', 'Fitted Components:', 'Number of PCBs:', 'Total Components:']
+DEF_TITLE = 'KiBot Bill of Materials'
 
 
 def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps):
@@ -123,7 +124,7 @@ def check_path(rows, comp, ref, sp, val):
             return
 
 
-def check_head_xlsx(r, info, stats, title='KiBot Bill of Materials'):
+def check_head_xlsx(r, info, stats, title=DEF_TITLE):
     rn = 0
     if title:
         # First row is just the title
@@ -147,6 +148,46 @@ def check_head_xlsx(r, info, stats, title='KiBot Bill of Materials'):
         logging.debug('Stats block Ok')
 
 
+def check_head_html(r, info, stats, title, logo):
+    if title:
+        assert 'title' in r
+        assert r['title'] == title
+        logging.debug('Title Ok')
+    else:
+        assert 'title' not in r
+        logging.debug('No title Ok')
+    if logo:
+        assert 'logo' in r
+        logging.debug('Logo Ok')
+    else:
+        assert 'logo' not in r
+        logging.debug('No logo Ok')
+    if info:
+        assert 'info' in r
+        for i, tit in enumerate(INFO_ROWS):
+            if info[i] is None:
+                continue
+            key = 'info_'+tit[:-1]
+            assert key in r
+            assert info[i] == r[key]
+        logging.debug('Info block Ok')
+    else:
+        assert 'info' not in r
+        logging.debug('No info block Ok')
+    if stats:
+        assert 'stats' in r
+        for i, tit in enumerate(STATS_ROWS):
+            if stats[i] is None:
+                continue
+            key = 'stats_'+tit[:-1]
+            assert key in r
+            assert stats[i] == r[key]
+        logging.debug('Stats block Ok')
+    else:
+        assert 'stats' not in r
+        logging.debug('No stats block Ok')
+
+
 def test_int_bom_simple_csv():
     prj = 'kibom-test'
     ext = 'csv'
@@ -162,13 +203,17 @@ def test_int_bom_simple_csv():
     ctx.clean_up()
 
 
-def test_int_bom_simple_html():
-    prj = 'kibom-test'
-    ext = 'html'
-    ctx = context.TestContextSCH('test_int_bom_simple_html', prj, 'int_bom_simple_html', BOM_DIR)
-    ctx.run()
-    out = prj + '-bom.' + ext
-    rows, headers = ctx.load_html(out)
+def simple_html_test(ctx, rows, headers, sh_head, prj, do_title=True, do_logo=True, do_info=True, do_stats=True):
+    title = DEF_TITLE if do_title else None
+    info = [prj, 'default', 'A', '2020-03-12', None] if do_info else None
+    stats = None
+    if do_stats:
+        stats = [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
+                 len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
+                 len(KIBOM_TEST_COMPONENTS),
+                 1,
+                 len(KIBOM_TEST_COMPONENTS)]
+    check_head_html(sh_head, info, stats, title=title, logo=do_logo)
     # Test we got the normal and DNF tables
     assert len(rows) == 2
     assert len(headers) == 2
@@ -184,6 +229,50 @@ def test_int_bom_simple_html():
     # Check the DNF table
     check_kibom_test_netlist(rows[1], ref_column, 1, KIBOM_TEST_COMPONENTS, KIBOM_TEST_EXCLUDE)
     ctx.clean_up()
+
+
+def simple_html_setup(name):
+    prj = 'kibom-test'
+    ext = 'html'
+    ctx = context.TestContextSCH('test_'+name, prj, name, BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    return ctx.load_html(out), prj, ctx
+
+
+def test_int_bom_simple_html_1():
+    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_1')
+    simple_html_test(ctx, rows, headers, sh_head, prj)
+
+
+def test_int_bom_simple_html_2():
+    """ No title """
+    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_2')
+    simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False)
+
+
+def test_int_bom_simple_html_3():
+    """ No logo """
+    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_3')
+    simple_html_test(ctx, rows, headers, sh_head, prj, do_logo=False)
+
+
+def test_int_bom_simple_html_4():
+    """ No title, no logo """
+    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_4')
+    simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=False)
+
+
+def test_int_bom_simple_html_5():
+    """ No title, no logo, no info """
+    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_5')
+    simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=False, do_info=False)
+
+
+def test_int_bom_simple_html_6():
+    """ No title, no logo, no info, no stats """
+    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_6')
+    simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=False, do_info=False, do_stats=False)
 
 
 def adapt_xml(h):
@@ -274,7 +363,7 @@ def test_int_bom_datasheet_link():
     ctx = context.TestContextSCH('test_int_bom_datasheet_link', prj, 'int_bom_datasheet_link', BOM_DIR)
     ctx.run()
     out = prj + '.' + ext
-    rows, headers = ctx.load_html(out)
+    rows, headers, sh_head = ctx.load_html(out)
     # Test we got the normal and DNF tables
     assert len(rows) == 2
     assert len(headers) == 2
@@ -303,7 +392,7 @@ def test_int_bom_digikey_link():
     ctx = context.TestContextSCH('test_int_bom_digikey_link', prj, 'int_bom_digikey_link', BOM_DIR)
     ctx.run()
     out = prj + '.' + ext
-    rows, headers = ctx.load_html(out)
+    rows, headers, sh_head = ctx.load_html(out)
     # Test we got the normal and DNF tables
     assert len(rows) == 2
     assert len(headers) == 2
@@ -332,7 +421,7 @@ def test_int_bom_digikey_links():
     ctx = context.TestContextSCH('test_int_bom_digikey_links', prj, 'int_bom_digikey_links', BOM_DIR)
     ctx.run()
     out = prj + '.' + ext
-    rows, headers = ctx.load_html(out)
+    rows, headers, sh_head = ctx.load_html(out)
     # Test we got the normal and DNF tables
     assert len(rows) == 2
     assert len(headers) == 2
@@ -408,7 +497,7 @@ def test_int_bom_html_generate_dnf():
     ctx = context.TestContextSCH('test_int_bom_html_generate_dnf', prj, 'int_bom_html_generate_dnf', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, headers = ctx.load_html(out)
+    rows, headers, sh_head = ctx.load_html(out)
     logging.debug(rows)
     # Test we got the normal and DNF tables
     assert len(rows) == 1
@@ -490,7 +579,7 @@ def test_int_bom_column_rename_html():
     ctx = context.TestContextSCH('test_int_bom_column_rename_html', prj, 'int_bom_column_rename_html', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, headers = ctx.load_html(out)
+    rows, headers, sh_head = ctx.load_html(out)
     assert headers[0] == KIBOM_RENAME_HEAD
     ref_column = headers[0].index(REF_COLUMN_NAME_R)
     check_kibom_test_netlist(rows[0], ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
