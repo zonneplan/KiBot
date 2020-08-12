@@ -472,7 +472,7 @@ def test_int_bom_column_rename_xlsx():
     ctx = context.TestContextSCH('test_int_bom_column_rename_xlsx', prj, 'int_bom_column_rename_xlsx', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_xlsx(out)
+    rows, header, sh_head = ctx.load_xlsx(out)
     assert header == KIBOM_RENAME_HEAD
     ref_column = header.index(REF_COLUMN_NAME_R)
     check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
