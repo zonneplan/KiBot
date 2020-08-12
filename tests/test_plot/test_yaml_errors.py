@@ -484,3 +484,11 @@ def test_unk_global():
     assert ctx.search_err("Unknown global option")
     ctx.search_err("WARNING:Unknown global option")
     ctx.clean_up()
+
+
+def test_error_int_bom_no_field():
+    ctx = context.TestContextSCH('test_error_int_bom_no_field', 'links', 'error_int_bom_no_field', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Missing or empty `field` in columns list")
+    ctx.clean_up()
+
