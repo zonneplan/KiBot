@@ -9,5 +9,7 @@ outputs:
     dir: BoM
     options:
       html:
+        logo: 'bogus'
         title: ''
-        style: ''
+        hide_pcb_info: true
+        hide_stats_info: true

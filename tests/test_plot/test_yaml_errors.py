@@ -492,3 +492,24 @@ def test_error_int_bom_no_field():
     assert ctx.search_err("Missing or empty `field` in columns list")
     ctx.clean_up()
 
+
+def test_error_int_bom_miss_logo():
+    ctx = context.TestContextSCH('test_error_int_bom_miss_logo', 'links', 'error_int_bom_miss_logo', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Missing logo file")
+    ctx.clean_up()
+
+
+def test_error_int_bom_miss_style():
+    ctx = context.TestContextSCH('test_error_int_bom_miss_style', 'links', 'error_int_bom_miss_style', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Missing style file")
+    ctx.clean_up()
+
+
+def test_error_int_bom_unknown_style():
+    ctx = context.TestContextSCH('test_error_int_bom_unknown_style', 'links', 'error_int_bom_unknown_style', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Unknown style .?bogus.?")
+    ctx.clean_up()
+

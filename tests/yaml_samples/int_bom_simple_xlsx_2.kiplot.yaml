@@ -11,4 +11,4 @@ outputs:
       format: XLSX
       xlsx:
         title: ''
-
+        style: ''

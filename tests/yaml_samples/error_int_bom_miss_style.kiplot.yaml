@@ -4,10 +4,10 @@ kiplot:
 
 outputs:
   - name: 'bom_internal'
-    comment: "Bill of Materials in HTML format"
+    comment: "Bill of Materials in CSV format"
     type: bom
     dir: BoM
     options:
       html:
-        title: ''
-        style: ''
+        style: 'bogus'
+
