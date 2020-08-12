@@ -512,4 +512,3 @@ def test_error_int_bom_unknown_style():
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown style .?bogus.?")
     ctx.clean_up()
-

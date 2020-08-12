@@ -393,7 +393,7 @@ class TestContext(object):
                 if m:
                     stats = m.group(1)
                     stats_entries = []
-                    for tit, val in re.findall('<b>(.*?)</b>:\s+(\d+).*?<br>', stats):
+                    for tit, val in re.findall(r'<b>(.*?)</b>:\s+(\d+).*?<br>', stats):
                         val = int(val)
                         sh_head['stats_'+tit] = val
                         stats_entries.append(val)
