@@ -255,7 +255,15 @@ def print_example_options(f, cls, name, indent, po):
         if help:
             help_lines = help.split('\n')
             for hl in help_lines:
-                f.write(ind_str+'# '+hl.strip()+'\n')
+                # Dots at the beggining are replaced by spaces.
+                # Used to keep indentation.
+                hl = hl.strip()
+                if hl[0] == '.':
+                    for i in range(1, len(hl)):
+                        if hl[i] != '.':
+                            break
+                    hl = ' '*i+hl[i:]
+                f.write(ind_str+'# '+hl+'\n')
         val = getattr(obj, k)
         if isinstance(val, str):
             val = "'{}'".format(val)
