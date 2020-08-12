@@ -111,6 +111,14 @@ def check_dnc(rows, comp, ref, qty):
             return
 
 
+def check_path(rows, comp, ref, sp, val):
+    for row in rows:
+        if row[ref].find(comp) != -1:
+            assert row[sp] == val
+            logging.debug(comp + " sheetpath OK")
+            return
+
+
 def test_int_bom_simple_csv():
     prj = 'kibom-test'
     ext = 'csv'
@@ -592,4 +600,23 @@ def test_int_bom_no_test_regex():
     qty_column = header.index(QTY_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_sub_sheet_alt():
+    """ Test for 1 sub sheet used twice.
+        Also stress the v5 loader.
+        Also tests sheet path and no grouping with multi-part components """
+    prj = 'test_v5'
+    ext = 'csv'
+    ctx = context.TestContextSCH('test_int_bom_sub_sheet_alt', prj, 'int_bom_sheet_path', BOM_DIR)
+    ctx.run()  # extra_debug=True
+    out = prj + '-bom.' + ext
+    rows, header = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD[:-1] + ['Sheetpath']
+    ref_column = header.index(REF_COLUMN_NAME)
+    sp_column = header.index('Sheetpath')
+    check_kibom_test_netlist(rows, ref_column, 6, [], ['C1', 'L1', 'R1', 'R2', 'U1', 'U2'])
+    check_path(rows, 'U1', ref_column, sp_column, '/Sub Sheet')
+    check_path(rows, 'U2', ref_column, sp_column, '/Sub Sheet 2')
     ctx.clean_up()
