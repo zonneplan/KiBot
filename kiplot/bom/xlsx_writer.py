@@ -14,7 +14,7 @@ from .. import log
 try:
     from xlsxwriter import Workbook
     XLSX_SUPPORT = True
-except ModuleNotFoundError:
+except ModuleNotFoundError:  # pragma: no cover
     XLSX_SUPPORT = False
 
     class Workbook():
@@ -208,7 +208,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     head_names = [list of col_fields to display in the BoM file]
     prefs = BomPref object
     """
-    if not XLSX_SUPPORT:
+    if not XLSX_SUPPORT:  # pragma: no cover
         logger.error('Python xlsxwriter module not installed (Debian: python3-xlsxwriter)')
         return False
 
