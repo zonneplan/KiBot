@@ -85,7 +85,7 @@ class BoMHTML(Optionable):
             """ Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
                 Or you can provide a CSS file name. Please use .css as file extension. """
             self.title = 'KiBot Bill of Materials'
-            """ BoM title """
+            """ BoM title """  # pragma: no cover
 
     def config(self):
         super().config()
@@ -125,7 +125,7 @@ class BoMCSV(Optionable):
             self.hide_stats_info = False
             """ Hide statistics information """
             self.quote_all = False
-            """ Enclose all values using double quotes """
+            """ Enclose all values using double quotes """  # pragma: no cover
 
 
 class BoMXLSX(Optionable):
@@ -154,7 +154,7 @@ class BoMXLSX(Optionable):
             self.style = 'modern-blue'
             """ Head style: modern-blue, modern-green, modern-red and classic. """
             self.title = 'KiBot Bill of Materials'
-            """ BoM title """
+            """ BoM title """  # pragma: no cover
 
     def config(self):
         super().config()
