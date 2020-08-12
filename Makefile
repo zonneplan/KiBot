@@ -62,6 +62,12 @@ single_test:
 	@cat pp/*/error.txt
 	@rm -f tests/input_samples/bom.ini
 
+single_tests:
+	rm -rf pp
+	# 12 threads, for a 6 core CPU w/HT. Almost 4 times faster for BoM tests.
+	-$(PYTEST) -n 12 --log-cli-level debug -k "$(SINGLE_TEST)" --test_dir pp
+	@rm -f tests/input_samples/bom.ini
+
 deb_clean:
 	fakeroot debian/rules clean
 
