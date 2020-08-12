@@ -439,8 +439,10 @@ class TestContext(object):
         # Links are "Relationship"s
         links = {}
         nr = '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}'
-        for r in root.find(ns+'hyperlinks').iter(ns+'hyperlink'):
-            links[r.attrib['ref']] = r.attrib[nr+'id']
+        hlinks = root.find(ns+'hyperlinks')
+        if hlinks:
+            for r in hlinks.iter(ns+'hyperlink'):
+                links[r.attrib['ref']] = r.attrib[nr+'id']
         # Read the strings
         strings = self.get_out_path(os.path.join('desc', 'xl', 'sharedStrings.xml'))
         strs = [t.text for t in ET.parse(strings).getroot().iter(ns+'t')]
