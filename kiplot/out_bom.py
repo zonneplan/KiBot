@@ -242,7 +242,7 @@ class BoMOptions(BaseOptions):
                 - column: Part
                 ..regex: 'test.*point'
                 - column: Footprint
-                ..regex 'test.*point'
+                ..regex: 'test.*point'
                 - column: Footprint
                 ..regex: 'mount.*hole'
                 - column: Footprint
