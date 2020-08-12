@@ -226,8 +226,6 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     # First rowe for the information
     r_info_start = 1 if cfg.xlsx.title else 0
     max_width = cfg.xlsx.max_col_width
-    if max_width < 20:
-        max_width = 20
 
     # #######################
     # Create all the formats
