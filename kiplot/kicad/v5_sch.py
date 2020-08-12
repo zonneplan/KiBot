@@ -807,11 +807,16 @@ class SchematicWire(object):
             raise SchFileError('Malformed wire', line, _sch_line_number)
         wire = SchematicText()
         if res[0] == 'Wire':
+            # Wire Wire Line
+            # Wire Bus Line
+            # Wire Notes Line
             if res[2] != 'Line' or res[1] not in SchematicWire.WIRES:
                 raise SchFileError('Malformed wire', line, _sch_line_number)
             wire.type = SchematicWire.WIRES[res[1]]
         else:  # Entry
-            if res[2] != 'Bus' or res[1] not in SchematicWire.ENTRIES:
+            # Entry Wire Line
+            # Entry Bus Bus
+            if (res[2] != 'Bus' and res[2] != 'Line') or res[1] not in SchematicWire.ENTRIES:
                 raise SchFileError('Malformed entry', line, _sch_line_number)
             wire.type = SchematicWire.ENTRIES[res[1]]
         line = _get_line(f)
