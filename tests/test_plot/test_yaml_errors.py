@@ -519,3 +519,10 @@ def test_error_int_bom_invalid_col():
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Invalid column name")
     ctx.clean_up()
+
+
+def test_error_int_bom_logo_format():
+    ctx = context.TestContextSCH('test_error_int_bom_logo_format', 'links', 'error_int_bom_logo_format', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Only PNG images are supported for the logo")
+    ctx.clean_up()
