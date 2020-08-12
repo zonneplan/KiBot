@@ -37,6 +37,7 @@ Missing:
 - various boards
 - stats info
 - datasheet and digikey for XLSX
+
 - XLSX colors
 
 For debug information use:
