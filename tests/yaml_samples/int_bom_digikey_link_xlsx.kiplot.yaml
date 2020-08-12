@@ -9,7 +9,7 @@ outputs:
     dir: BoM
     options:
       xlsx:
-        digikey_link: ['digikey#', 'Value']
+        digikey_link: 'digikey#'
       output: '%f.%x'
       columns:
         - References
@@ -17,4 +17,5 @@ outputs:
         - Value
         - Quantity Per PCB
         - digikey#
+        - digikey_alt#
         - manf#

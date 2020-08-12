@@ -75,7 +75,7 @@ KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
 KIBOM_TEST_COMPONENTS_ALT2 = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R2', 'R4-R5', 'R3']
 KIBOM_TEST_EXCLUDE = ['R6']
 KIBOM_TEST_GROUPS = 5
-LINK_HEAD = ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'manf#']
+LINK_HEAD = ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'digikey_alt#','manf#']
 LINKS_COMPONENTS = ['J1', 'J2', 'R1']
 LINKS_EXCLUDE = ['C1']
 LINKS_GROUPS = 2
@@ -319,6 +319,41 @@ def test_int_bom_digikey_link():
     check_kibom_test_netlist(rows[1], ref_column, 1, LINKS_COMPONENTS, LINKS_EXCLUDE)
     # Check the digikey link
     parts = get_column(rows[0]+rows[1], dk_column, False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'digikey' in c
+        logging.debug(c + ' OK')
+    ctx.clean_up()
+
+
+def test_int_bom_digikey_links():
+    prj = 'links'
+    ext = 'html'
+    ctx = context.TestContextSCH('test_int_bom_digikey_links', prj, 'int_bom_digikey_links', BOM_DIR)
+    ctx.run()
+    out = prj + '.' + ext
+    rows, headers = ctx.load_html(out)
+    # Test we got the normal and DNF tables
+    assert len(rows) == 2
+    assert len(headers) == 2
+    # Test both tables has the same headings and they are the expected
+    assert headers[0] == headers[1]
+    assert headers[0] == LINK_HEAD
+    # Look for reference and quantity columns
+    ref_column = headers[0].index(REF_COLUMN_NAME)
+    dk_column = headers[0].index('digikey#')
+    dk2_column = headers[0].index('digikey_alt#')
+    # Check the normal table
+    check_kibom_test_netlist(rows[0], ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
+    # Check the DNF table
+    check_kibom_test_netlist(rows[1], ref_column, 1, LINKS_COMPONENTS, LINKS_EXCLUDE)
+    # Check the digikey link
+    parts = get_column(rows[0]+rows[1], dk_column, False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'digikey' in c
+        logging.debug(c + ' OK')
+    parts = get_column(rows[0]+rows[1], dk2_column, False)
     for c in parts:
         assert c.strip().startswith('<a href')
         assert 'digikey' in c
@@ -835,6 +870,38 @@ def test_int_bom_digikey_link_xlsx():
     check_kibom_test_netlist(rows2, ref_column, 1, LINKS_COMPONENTS, LINKS_EXCLUDE)
     # Check the datasheet link
     parts = get_column(rows+rows2, dk_column, False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'digikey' in c
+        logging.debug(c + ' OK')
+    ctx.clean_up()
+
+
+def test_int_bom_digikey_links_xlsx():
+    prj = 'links'
+    ext = 'xlsx'
+    ctx = context.TestContextSCH('test_int_bom_digikey_links_xlsx', prj, 'int_bom_digikey_links_xlsx', BOM_DIR)
+    ctx.run()
+    out = prj + '.' + ext
+    rows, headers, sh_head = ctx.load_xlsx(out)
+    assert headers == LINK_HEAD
+    # Look for reference and quantity columns
+    ref_column = headers.index(REF_COLUMN_NAME)
+    dk_column = headers.index('digikey#')
+    dk2_column = headers.index('digikey_alt#')
+    # Check the normal table
+    check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
+    rows2, headers, sh_head = ctx.load_xlsx(out, 2)
+    assert headers == LINK_HEAD
+    # Check the DNF table
+    check_kibom_test_netlist(rows2, ref_column, 1, LINKS_COMPONENTS, LINKS_EXCLUDE)
+    # Check the datasheet link
+    parts = get_column(rows+rows2, dk_column, False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'digikey' in c
+        logging.debug(c + ' OK')
+    parts = get_column(rows+rows2, dk2_column, False)
     for c in parts:
         assert c.strip().startswith('<a href')
         assert 'digikey' in c

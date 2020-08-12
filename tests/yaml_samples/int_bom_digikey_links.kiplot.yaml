@@ -9,7 +9,7 @@ outputs:
     dir: BoM
     options:
       html:
-        datasheet_as_link: 'Part'
+        digikey_link: ['digikey#', 'digikey_alt#']
       output: '%f.%x'
       columns:
         - References

@@ -17,4 +17,5 @@ outputs:
         - Value
         - Quantity Per PCB
         - digikey#
+        - digikey_alt#
         - manf#

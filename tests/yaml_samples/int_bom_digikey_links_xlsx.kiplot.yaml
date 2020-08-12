@@ -4,12 +4,12 @@ kiplot:
 
 outputs:
   - name: 'bom_internal'
-    comment: "Bill of Materials in HTML format"
+    comment: "Bill of Materials in XLSX format"
     type: bom
     dir: BoM
     options:
-      html:
-        datasheet_as_link: 'Part'
+      xlsx:
+        digikey_link: ['digikey#', 'digikey_alt#']
       output: '%f.%x'
       columns:
         - References
