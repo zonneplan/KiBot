@@ -909,7 +909,9 @@ class SchematicSheet(object):
         self.sheet = Schematic()
         parent_dir = os.path.dirname(parent)
         sheet_path += '/'+self.id
-        sheet_path_h += '/'+(self.name if self.name else 'Unknown')
+        if len(sheet_path_h) > 1:
+            sheet_path_h += '/'
+        sheet_path_h += self.name if self.name else 'Unknown'
         self.sheet.load(os.path.join(parent_dir, self.file), sheet_path, sheet_path_h, libs, fields, fields_lc)
         return self.sheet
 
@@ -997,7 +999,7 @@ class Schematic(object):
                     raise SchFileError('Wrong entry in title block', line, _sch_line_number)
                 self.title_block[m.group(1)] = m.group(2)
 
-    def load(self, fname, sheet_path='', sheet_path_h='', libs={}, fields=[], fields_lc={}):
+    def load(self, fname, sheet_path='', sheet_path_h='/', libs={}, fields=[], fields_lc={}):
         """ Load a v5.x KiCad Schematic.
             The caller must be sure the file exists.
             Only the schematics are loaded not the libs. """
