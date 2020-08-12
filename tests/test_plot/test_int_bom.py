@@ -77,6 +77,8 @@ KIBOM_TEST_GROUPS = 5
 LINKS_COMPONENTS = ['J1', 'J2', 'R1']
 LINKS_EXCLUDE = ['C1']
 LINKS_GROUPS = 2
+INFO_ROWS = ['Schematic:', 'Variant:', 'Revision:', 'Date:', 'KiCad Version:']
+STATS_ROWS = ['Component Groups:', 'Component Count:', 'Fitted Components:', 'Number of PCBs:', 'Total components:']
 
 
 def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps):
@@ -117,6 +119,30 @@ def check_path(rows, comp, ref, sp, val):
             assert row[sp] == val
             logging.debug(comp + " sheetpath OK")
             return
+
+
+def check_head_xlsx(r, info, stats, title='KiBot Bill of Materials'):
+    rn = 0
+    if title:
+        # First row is just the title
+        assert r[rn][0] == title
+        rn += 1
+        logging.debug('Title Ok')
+    if info:
+        info_col = 0
+        for i, txt in enumerate(info):
+            assert r[rn+i][info_col] == INFO_ROWS[i]
+            if txt:
+                assert r[rn+i][info_col+1] == txt
+        logging.debug('Info block Ok')
+    if stats:
+        stats_col = 0
+        if info:
+            stats_col += 2
+        for i, txt in enumerate(stats):
+            assert r[rn+i][stats_col] == STATS_ROWS[i]
+            assert r[rn+i][stats_col+1] == txt, 'index: {} title: {}'.format(i, STATS_ROWS[i])
+        logging.debug('Stats block Ok')
 
 
 def test_int_bom_simple_csv():
@@ -189,7 +215,14 @@ def test_int_bom_simple_xlsx():
     ctx = context.TestContextSCH('test_int_bom_simple_xlsx', prj, 'int_bom_simple_xlsx', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_xlsx(out)
+    rows, header, sh_head = ctx.load_xlsx(out)
+    check_head_xlsx(sh_head,
+                    [prj, 'default', 'A', '2020-03-12', None],
+                    [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
+                     len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
+                     len(KIBOM_TEST_COMPONENTS),
+                     1,
+                     len(KIBOM_TEST_COMPONENTS)])
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -619,4 +652,116 @@ def test_int_bom_sub_sheet_alt():
     check_kibom_test_netlist(rows, ref_column, 6, [], ['C1', 'L1', 'R1', 'R2', 'U1', 'U2'])
     check_path(rows, 'U1', ref_column, sp_column, '/Sub Sheet')
     check_path(rows, 'U2', ref_column, sp_column, '/Sub Sheet 2')
+    ctx.clean_up()
+
+
+def test_int_bom_simple_xlsx_2():
+    """ No title """
+    prj = 'kibom-test'
+    ext = 'xlsx'
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_2', prj, 'int_bom_simple_xlsx_2', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header, sh_head = ctx.load_xlsx(out)
+    check_head_xlsx(sh_head,
+                    [prj, 'default', 'A', '2020-03-12', None],
+                    [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
+                     len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
+                     len(KIBOM_TEST_COMPONENTS),
+                     1,
+                     len(KIBOM_TEST_COMPONENTS)],
+                    title=None)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_simple_xlsx_3():
+    """ No logo """
+    prj = 'kibom-test'
+    ext = 'xlsx'
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_3', prj, 'int_bom_simple_xlsx_3', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header, sh_head = ctx.load_xlsx(out)
+    check_head_xlsx(sh_head,
+                    [prj, 'default', 'A', '2020-03-12', None],
+                    [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
+                     len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
+                     len(KIBOM_TEST_COMPONENTS),
+                     1,
+                     len(KIBOM_TEST_COMPONENTS)])
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_simple_xlsx_4():
+    """ No title, no logo """
+    prj = 'kibom-test'
+    ext = 'xlsx'
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_4', prj, 'int_bom_simple_xlsx_4', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header, sh_head = ctx.load_xlsx(out)
+    check_head_xlsx(sh_head,
+                    [prj, 'default', 'A', '2020-03-12', None],
+                    [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
+                     len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
+                     len(KIBOM_TEST_COMPONENTS),
+                     1,
+                     len(KIBOM_TEST_COMPONENTS)],
+                    title=None)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_simple_xlsx_5():
+    """ No title, no logo, no info """
+    prj = 'kibom-test'
+    ext = 'xlsx'
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_5', prj, 'int_bom_simple_xlsx_5', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header, sh_head = ctx.load_xlsx(out)
+    check_head_xlsx(sh_head,
+                    None,
+                    [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
+                     len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
+                     len(KIBOM_TEST_COMPONENTS),
+                     1,
+                     len(KIBOM_TEST_COMPONENTS)],
+                    title=None)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
+    ctx.clean_up()
+
+
+def test_int_bom_simple_xlsx_6():
+    """ No title, no logo, no info, no stats """
+    prj = 'kibom-test'
+    ext = 'xlsx'
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_6', prj, 'int_bom_simple_xlsx_6', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header, sh_head = ctx.load_xlsx(out)
+    assert len(sh_head) == 0
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    qty_column = header.index(QTY_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_dnc(rows, 'R7', ref_column, qty_column)
     ctx.clean_up()

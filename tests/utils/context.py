@@ -408,24 +408,45 @@ class TestContext(object):
         root = ET.parse(worksheet).getroot()
         ns = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
         rnum = 1
+        sh_head = []
         for r in root.iter(ns+'row'):
             rcur = int(r.attrib['r'])
             if rcur > rnum:
+                sh_head = rows
                 # Discard the sheet header
                 rows = []
                 rnum = rcur
-            rows.append([int(cell.text) for cell in r.iter(ns+'v')])
+            this_row = []
+            for cell in r.iter(ns+'c'):
+                if 't' in cell.attrib:
+                    type = cell.attrib['t']
+                else:
+                    type = 'n'   # default: number
+                value = cell.find(ns+'v')
+                if value is not None:
+                    if type == 'n':
+                        # Numbers as integers
+                        value = int(value.text)
+                    else:
+                        value = value.text
+                    this_row.append(value)
+            rows.append(this_row)
             rnum += 1
         # Read the strings
         strings = self.get_out_path(os.path.join('desc', 'xl', 'sharedStrings.xml'))
         strs = [t.text for t in ET.parse(strings).getroot().iter(ns+'t')]
         # Replace the indexes by the strings
         for r in rows:
-            for i in range(len(r)):
-                r[i] = strs[r[i]]
+            for i, val in enumerate(r):
+                if isinstance(val, str):
+                    r[i] = strs[int(val)]
+        for r in sh_head:
+            for i, val in enumerate(r):
+                if isinstance(val, str):
+                    r[i] = strs[int(val)]
         # Separate the headers
         headers = rows.pop(0)
-        return rows, headers
+        return rows, headers, sh_head
 
 
 class TestContextSCH(TestContext):
