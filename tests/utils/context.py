@@ -396,14 +396,16 @@ class TestContext(object):
                 headers = [k for k in child.attrib.keys()]
         return rows, headers
 
-    def load_xlsx(self, filename):
+    def load_xlsx(self, filename, sheet=1):
         """ Assumes the components are in sheet1 """
         file = self.expect_out_file(os.path.join(self.sub_dir, filename))
         subprocess.call(['unzip', file, '-d', self.get_out_path('desc')])
         # Some XMLs are stored with 0600 preventing them to be read by next CI/CD stage
         subprocess.call(['chmod', '-R', 'og+r', self.get_out_path('desc')])
         # Read the table
-        worksheet = self.get_out_path(os.path.join('desc', 'xl', 'worksheets', 'sheet1.xml'))
+        worksheet = self.get_out_path(os.path.join('desc', 'xl', 'worksheets', 'sheet'+str(sheet)+'.xml'))
+        if not os.path.isfile(worksheet):
+            return None, None, None
         rows = []
         root = ET.parse(worksheet).getroot()
         ns = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'

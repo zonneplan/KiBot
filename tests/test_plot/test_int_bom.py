@@ -211,7 +211,7 @@ def test_int_bom_simple_xml():
     ctx.clean_up()
 
 
-def simple_xlsx_verify(ctx, prj):
+def simple_xlsx_verify(ctx, prj, dnf=True):
     ext = 'xlsx'
     ctx.run()
     out = prj + '-bom.' + ext
@@ -228,10 +228,15 @@ def simple_xlsx_verify(ctx, prj):
     qty_column = header.index(QTY_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows, 'R7', ref_column, qty_column)
+    rows, header, sh_head = ctx.load_xlsx(out, 2)
+    if dnf:
+        check_kibom_test_netlist(rows, ref_column, 1, [], KIBOM_TEST_EXCLUDE)
+    else:
+        assert rows is None
     ctx.clean_up()
 
 
-def test_int_bom_simple_xlsx():
+def test_int_bom_simple_xlsx_1():
     prj = 'kibom-test'
     ctx = context.TestContextSCH('test_int_bom_simple_xlsx', prj, 'int_bom_simple_xlsx', BOM_DIR)
     simple_xlsx_verify(ctx, prj)
@@ -776,3 +781,10 @@ def test_int_bom_simple_xlsx_9():
     prj = 'kibom-test'
     ctx = context.TestContextSCH('test_int_bom_simple_xlsx_9', prj, 'int_bom_simple_xlsx_9', BOM_DIR)
     simple_xlsx_verify(ctx, prj)
+
+
+def test_int_bom_simple_xlsx_a():
+    """ No DNF """
+    prj = 'kibom-test'
+    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_a', prj, 'int_bom_simple_xlsx_a', BOM_DIR)
+    simple_xlsx_verify(ctx, prj, False)
