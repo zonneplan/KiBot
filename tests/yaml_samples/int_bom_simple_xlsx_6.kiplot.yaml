@@ -11,6 +11,7 @@ outputs:
       format: XLSX
       xlsx:
         title: ''
+        max_col_width: 20
         logo: false
         hide_pcb_info: true
         hide_stats_info: true

@@ -140,7 +140,7 @@ P 6650 2550
 F 0 "C1" H 6675 2650 50  0000 L CNN
 F 1 "10nF" H 6675 2450 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 6688 2400 50  0001 C CNN
-F 3 "~" H 6650 2550 50  0001 C CNN
+F 3 "This is a long text, wrap check" H 6650 2550 50  0001 C CNN
 	1    6650 2550
 	1    0    0    -1  
 $EndComp
