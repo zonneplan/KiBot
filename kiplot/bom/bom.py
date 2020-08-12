@@ -88,8 +88,8 @@ def compare_components(c1, c2, cfg):
         return False
     # Do not group components
     if len(cfg.group_fields) == 0:
-        return False
-    # Check if the grouping fileds match
+        return c1.ref == c2.ref
+    # Check if the grouping fields match
     for c in cfg.group_fields:
         # Perform special matches
         if c == ColumnList.COL_VALUE_L:
