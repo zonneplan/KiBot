@@ -9,7 +9,7 @@ outputs:
     dir: BoM
     options:
       xlsx:
-        digikey_link: 'digikey#'
+        digikey_link: ['digikey#', 'Value']
       output: '%f.%x'
       columns:
         - References
