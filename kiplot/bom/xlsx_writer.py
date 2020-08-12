@@ -216,6 +216,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     if cfg.xlsx.datasheet_as_link and cfg.xlsx.datasheet_as_link in col_fields:
         link_datasheet = col_fields.index(cfg.xlsx.datasheet_as_link)
     link_digikey = cfg.xlsx.digikey_link
+    hl_empty = cfg.xlsx.highlight_empty
 
     workbook = Workbook(filename)
     ws_names = ['BoM', 'DNF']
@@ -249,11 +250,11 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     # #######################
     # Normal BoM & DNF
     for ws in range(2):
-        # Should we generate the DNF?
-        if not cfg.xlsx.generate_dnf or cfg.n_total == cfg.n_fitted:
-            break
         # Second pass is DNF
         dnf = ws == 1
+        # Should we generate the DNF?
+        if dnf and (not cfg.xlsx.generate_dnf or cfg.n_total == cfg.n_fitted):
+            break
 
         worksheet = workbook.add_worksheet(ws_names[ws])
         row_count = head_size
@@ -269,7 +270,6 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
 
         # Body
         row_count += 1
-        hl_empty = cfg.xlsx.highlight_empty
         for i, group in enumerate(groups):
             if (cfg.ignore_dnf and not group.is_fitted()) != dnf:
                 continue
