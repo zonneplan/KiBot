@@ -379,7 +379,7 @@ Next time you need this list just use an alias, like this:
                          - column: Part
                            regex: 'test.*point'
                          - column: Footprint
-                           regex 'test.*point'
+                           regex: 'test.*point'
                          - column: Footprint
                            regex: 'mount.*hole'
                          - column: Footprint
@@ -433,7 +433,7 @@ Next time you need this list just use an alias, like this:
             - `col_colors`: [boolean=true] Use colors to show the field type.
             - `datasheet_as_link`: [string=''] Column with links to the datasheet.
             - `digikey_link`: [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page.
-            - `generate_dnf`: [boolean=true] Generate a separated sheet for DNF (Do Not Fit) components.
+            - `generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.

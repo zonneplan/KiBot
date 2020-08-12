@@ -66,23 +66,23 @@ outputs:
       # Column names are case-insensitive.
       # If empty the following list is used:
       # - column: References
-      # ..regex: '^TP[0-9]*'
+      #   regex: '^TP[0-9]*'
       # - column: References
-      # ..regex: '^FID'
+      #   regex: '^FID'
       # - column: Part
-      # ..regex: 'mount.*hole'
+      #   regex: 'mount.*hole'
       # - column: Part
-      # ..regex: 'solder.*bridge'
+      #   regex: 'solder.*bridge'
       # - column: Part
-      # ..regex: 'solder.*jump'
+      #   regex: 'solder.*jump'
       # - column: Part
-      # ..regex: 'test.*point'
+      #   regex: 'test.*point'
       # - column: Footprint
-      # ..regex 'test.*point'
+      #   regex: 'test.*point'
       # - column: Footprint
-      # ..regex: 'mount.*hole'
+      #   regex: 'mount.*hole'
       # - column: Footprint
-      # ..regex: 'fiducial'
+      #   regex: 'fiducial'
       exclude_any:
         # [string=''] Name of the column to apply the regular expression
         column: ''
@@ -160,7 +160,7 @@ outputs:
         datasheet_as_link: ''
         # [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page
         digikey_link:
-        # [boolean=true] Generate a separated sheet for DNF (Do Not Fit) components
+        # [boolean=true] Generate a separated section for DNF (Do Not Fit) components
         generate_dnf: true
         # [boolean=false] Hide project information
         hide_pcb_info: false
@@ -462,21 +462,21 @@ outputs:
         # Column names are case-insensitive.
         # If empty the following list is used:
         # - column: References
-        # ..regex: '^TP[0-9]*'
+        #   regex: '^TP[0-9]*'
         # - column: References
-        # ..regex: '^FID'
+        #   regex: '^FID'
         # - column: Part
-        # ..regex: 'mount.*hole'
+        #   regex: 'mount.*hole'
         # - column: Part
-        # ..regex: 'solder.*bridge'
+        #   regex: 'solder.*bridge'
         # - column: Part
-        # ..regex: 'test.*point'
+        #   regex: 'test.*point'
         # - column: Footprint
-        # ..regex 'test.*point'
+        #   regex 'test.*point'
         # - column: Footprint
-        # ..regex: 'mount.*hole'
+        #   regex: 'mount.*hole'
         # - column: Footprint
-        # ..regex: 'fiducial'
+        #   regex: 'fiducial'
         exclude_any:
           # [string=''] Name of the column to apply the regular expression
           column: ''
