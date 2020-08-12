@@ -512,3 +512,10 @@ def test_error_int_bom_unknown_style():
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown style .?bogus.?")
     ctx.clean_up()
+
+
+def test_error_int_bom_invalid_col():
+    ctx = context.TestContextSCH('test_error_int_bom_invalid_col', 'links', 'error_int_bom_invalid_col', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Invalid column name")
+    ctx.clean_up()
