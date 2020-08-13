@@ -206,7 +206,6 @@ class TestContext(object):
             os.close(f_err)
             self.err = self.err.decode()
 
-
     def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None, no_out_dir=False, no_board_file=False,
             no_yaml_file=False, chdir_out=False, no_verbose=False, extra_debug=False, do_locale=False):
         logging.debug('Running '+self.test_name)
@@ -237,10 +236,10 @@ class TestContext(object):
             old_LANG = os.environ.get('LANG')
             os.environ['LOCPATH'] = os.path.abspath('tests/data')
             os.environ['LANG'] = 'es_AR.UTF-8'
-            #os.environ['LANG'] = 'en_US.UTF-8'
+            # os.environ['LANG'] = 'en_US.UTF-8'
             logging.debug('LOCPATH='+os.environ['LOCPATH'])
             logging.debug('LANG='+os.environ['LANG'])
-        self.do_run(cmd, use_a_tty, chdir_out)
+        self.do_run(cmd, ret_val, use_a_tty, chdir_out)
         # Do we need to restore the locale?
         if do_locale:
             if old_LOCPATH:
