@@ -98,7 +98,6 @@ def comp_match(component):
     """
 
     original = component
-    logger.debug(component)
     # Convert the decimal point from the current locale to a '.'
     global decimal_point
     if not decimal_point:

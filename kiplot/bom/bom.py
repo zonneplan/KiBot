@@ -35,6 +35,10 @@ DNC = {
     "no change": 1,
     "fixed": 1
 }
+# RV == Resistor Variable
+# RN == Resistor 'N'(Pack)
+# RT == Thermistor
+RLC_PREFIX = {'R': 1, 'L': 1, 'C': 1, 'RV': 1, 'RN': 1, 'RT': 1}
 
 
 def compare_value(c1, c2, cfg):
@@ -310,7 +314,7 @@ def test_reg_include(cfg, c):
 def get_value_sort(comp):
     """ Try to better sort R, L and C components """
     pref = comp.ref_prefix
-    if pref in 'RLC' or pref == 'RV':
+    if pref in RLC_PREFIX:
         res = comp_match(comp.value)
         if res:
             value, mult, unit = res
