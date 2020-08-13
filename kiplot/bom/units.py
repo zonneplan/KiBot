@@ -28,7 +28,8 @@ PREFIX_GIGA = ["giga", "g"]
 PREFIX_ALL = PREFIX_PICO + PREFIX_NANO + PREFIX_MICRO + PREFIX_MILLI + PREFIX_KILO + PREFIX_MEGA + PREFIX_GIGA
 
 # Common methods of expressing component units
-UNIT_R = ["r", "ohms", "ohm", u"Ω"]
+# Note: we match lowercase string, so both: Ω and Ω become the lowercase omega
+UNIT_R = ["r", "ohms", "ohm", u'\u03c9']
 UNIT_C = ["farad", "f"]
 UNIT_L = ["henry", "h"]
 
