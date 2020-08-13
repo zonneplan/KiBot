@@ -100,9 +100,13 @@ def comp_match(component):
     original = component
     # Convert the decimal point from the current locale to a '.'
     global decimal_point
-    if not decimal_point:
+    if decimal_point is None:
         decimal_point = locale.localeconv()['decimal_point']
-    if decimal_point and decimal_point != '.':
+        logger.debug('Decimal point `{}`'.format(decimal_point))
+        # Avoid conversions for '.'
+        if decimal_point == '.':
+            decimal_point = ''
+    if decimal_point:
         component = component.replace(decimal_point, ".")
 
     # Remove any commas

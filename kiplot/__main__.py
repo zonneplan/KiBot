@@ -47,6 +47,7 @@ __status__ = 'beta'
 import os
 import sys
 import gzip
+import locale
 from glob import glob
 from logging import DEBUG
 
@@ -163,6 +164,7 @@ def solve_board_file(schematic, a_board_file):
 
 
 def main():
+    locale.setlocale(locale.LC_ALL, '')
     ver = 'KiPlot '+__version__+' - '+__copyright__+' - License: '+__license__
     args = docopt(__doc__, version=ver, options_first=True)
 
