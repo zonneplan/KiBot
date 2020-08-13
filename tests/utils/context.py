@@ -154,7 +154,7 @@ class TestContext(object):
             f.write('Dummy file\n')
 
     def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None, no_out_dir=False, no_board_file=False,
-            no_yaml_file=False, chdir_out=False, no_verbose=False, extra_debug=False):
+            no_yaml_file=False, chdir_out=False, no_verbose=False, extra_debug=False, do_locale=False):
         logging.debug('Running '+self.test_name)
         # Change the command to be local and add the board and output arguments
         cmd = [COVERAGE_SCRIPT, 'run', '-a']
@@ -178,6 +178,18 @@ class TestContext(object):
             cmd = cmd+['-d', self.output_dir]
         if extra is not None:
             cmd = cmd+extra
+        # Do we need a custom locale?
+        old_LOCPATH = None
+        old_LANG = None
+        if do_locale:
+            # Setup an Spanish for Argentina using UTF-8 locale
+            old_LOCPATH = os.environ.get('LOCPATH')
+            old_LANG = os.environ.get('LANG')
+            os.environ['LOCPATH'] = os.path.abspath('tests/data')
+            os.environ['LANG'] = 'es_AR.UTF-8'
+            #os.environ['LANG'] = 'en_US.UTF-8'
+            logging.debug('LOCPATH='+os.environ['LOCPATH'])
+            logging.debug('LANG='+os.environ['LANG'])
         logging.debug(cmd)
         out_filename = self.get_out_path('output.txt')
         err_filename = self.get_out_path('error.txt')
@@ -224,6 +236,16 @@ class TestContext(object):
             self.err = os.read(f_err, 1000000)
             os.close(f_err)
             self.err = self.err.decode()
+        # Do we need to restore the locale?
+        if do_locale:
+            if old_LOCPATH:
+                os.environ['LOCPATH'] = old_LOCPATH
+            else:
+                del os.environ['LOCPATH']
+            if old_LANG:
+                os.environ['LANG'] = old_LANG
+            else:
+                del os.environ['LANG']
 
     def search_out(self, text):
         m = re.search(text, self.out, re.MULTILINE)

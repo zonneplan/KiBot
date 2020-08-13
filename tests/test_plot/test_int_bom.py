@@ -345,7 +345,7 @@ def test_int_bom_sort_1():
     prj = 'RLC_sort'
     ext = 'csv'
     ctx = context.TestContextSCH('test_int_bom_sort_1', prj, 'int_bom_simple_csv', BOM_DIR)
-    ctx.run()
+    ctx.run(do_locale=True)
     out = prj + '-bom.' + ext
     rows, header = ctx.load_csv(out)
     ref_column = header.index(REF_COLUMN_NAME)

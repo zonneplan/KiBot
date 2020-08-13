@@ -163,8 +163,23 @@ def solve_board_file(schematic, a_board_file):
     return board_file
 
 
+def set_locale():
+    """ Try to se the locale for all the cataegories.
+        If it fails try for LC_NUMERIC (the one we need for tests). """
+    try:
+        locale.setlocale(locale.LC_ALL, '')
+        return
+    except locale.Error:
+        pass
+    try:
+        locale.setlocale(locale.LC_NUMERIC, '')
+        return
+    except locale.Error:
+        pass
+
+
 def main():
-    locale.setlocale(locale.LC_ALL, '')
+    set_locale()
     ver = 'KiPlot '+__version__+' - '+__copyright__+' - License: '+__license__
     args = docopt(__doc__, version=ver, options_first=True)
 
