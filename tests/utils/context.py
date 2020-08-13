@@ -153,43 +153,12 @@ class TestContext(object):
         with open(file, 'w') as f:
             f.write('Dummy file\n')
 
-    def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None, no_out_dir=False, no_board_file=False,
-            no_yaml_file=False, chdir_out=False, no_verbose=False, extra_debug=False, do_locale=False):
-        logging.debug('Running '+self.test_name)
-        # Change the command to be local and add the board and output arguments
-        cmd = [COVERAGE_SCRIPT, 'run', '-a']
+    def do_run(self, cmd, ret_val=None, use_a_tty=False, chdir_out=False):
+        cmd_base = [COVERAGE_SCRIPT, 'run', '-a']
         if chdir_out:
-            cmd.append('--rcfile=../../.coveragerc')
+            cmd_base.append('--rcfile=../../.coveragerc')
             os.environ['COVERAGE_FILE'] = os.path.join(os.getcwd(), '.coverage')
-        cmd.append(os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/../../src/kiplot'))
-        if not no_verbose:
-            # One is enough, 2 can generate tons of data when loading libs
-            cmd.append('-v')
-            if extra_debug:
-                cmd.append('-v')
-        if not no_board_file:
-            if self.mode == MODE_PCB:
-                cmd = cmd+['-b', filename if filename else self.board_file]
-            else:
-                cmd = cmd+['-e', filename if filename else self.sch_file]
-        if not no_yaml_file:
-            cmd = cmd+['-c', self.yaml_file]
-        if not no_out_dir:
-            cmd = cmd+['-d', self.output_dir]
-        if extra is not None:
-            cmd = cmd+extra
-        # Do we need a custom locale?
-        old_LOCPATH = None
-        old_LANG = None
-        if do_locale:
-            # Setup an Spanish for Argentina using UTF-8 locale
-            old_LOCPATH = os.environ.get('LOCPATH')
-            old_LANG = os.environ.get('LANG')
-            os.environ['LOCPATH'] = os.path.abspath('tests/data')
-            os.environ['LANG'] = 'es_AR.UTF-8'
-            #os.environ['LANG'] = 'en_US.UTF-8'
-            logging.debug('LOCPATH='+os.environ['LOCPATH'])
-            logging.debug('LANG='+os.environ['LANG'])
+        cmd = cmd_base+cmd
         logging.debug(cmd)
         out_filename = self.get_out_path('output.txt')
         err_filename = self.get_out_path('error.txt')
@@ -236,6 +205,42 @@ class TestContext(object):
             self.err = os.read(f_err, 1000000)
             os.close(f_err)
             self.err = self.err.decode()
+
+
+    def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None, no_out_dir=False, no_board_file=False,
+            no_yaml_file=False, chdir_out=False, no_verbose=False, extra_debug=False, do_locale=False):
+        logging.debug('Running '+self.test_name)
+        # Change the command to be local and add the board and output arguments
+        cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/../../src/kiplot')]
+        if not no_verbose:
+            # One is enough, 2 can generate tons of data when loading libs
+            cmd.append('-v')
+            if extra_debug:
+                cmd.append('-v')
+        if not no_board_file:
+            if self.mode == MODE_PCB:
+                cmd = cmd+['-b', filename if filename else self.board_file]
+            else:
+                cmd = cmd+['-e', filename if filename else self.sch_file]
+        if not no_yaml_file:
+            cmd = cmd+['-c', self.yaml_file]
+        if not no_out_dir:
+            cmd = cmd+['-d', self.output_dir]
+        if extra is not None:
+            cmd = cmd+extra
+        # Do we need a custom locale?
+        old_LOCPATH = None
+        old_LANG = None
+        if do_locale:
+            # Setup an Spanish for Argentina using UTF-8 locale
+            old_LOCPATH = os.environ.get('LOCPATH')
+            old_LANG = os.environ.get('LANG')
+            os.environ['LOCPATH'] = os.path.abspath('tests/data')
+            os.environ['LANG'] = 'es_AR.UTF-8'
+            #os.environ['LANG'] = 'en_US.UTF-8'
+            logging.debug('LOCPATH='+os.environ['LOCPATH'])
+            logging.debug('LANG='+os.environ['LANG'])
+        self.do_run(cmd, use_a_tty, chdir_out)
         # Do we need to restore the locale?
         if do_locale:
             if old_LOCPATH:

@@ -47,6 +47,7 @@ pytest-3 --log-cli-level debug
 import os
 import sys
 import logging
+import subprocess
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -355,9 +356,9 @@ def test_int_bom_sort_1():
     check_kibom_test_netlist(rows, ref_column, 23, None, exp)
     # Check the sorting
     assert get_column(rows, ref_column) == exp
-    ctx.search_err('Malformed value: .?10Q.?')
-    ctx.search_err('Malformed value: .?\.G.?')
-    ctx.search_err('Malformed value: .?2\.2k2.?')
+    ctx.search_err(r'Malformed value: .?10Q.?')
+    ctx.search_err(r'Malformed value: .?\.G.?')
+    ctx.search_err(r'Malformed value: .?2\.2k2.?')
     ctx.clean_up()
 
 
@@ -1017,3 +1018,11 @@ def test_int_bom_digikey_links_xlsx():
         assert 'digikey' in c
         logging.debug(c + ' OK')
     ctx.clean_up()
+
+
+def test_int_bom_no_xlsx_support():
+    ctx = context.TestContextSCH('test_int_bom_no_xlsx_support', 'links', 'int_bom_digikey_links_xlsx', BOM_DIR)
+    cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_xlsx_error.py')]
+    ctx.do_run(cmd)
+    ctx.search_err('Python xlsxwriter module not installed')
+    ctx.search_err('writing XLSX output')
