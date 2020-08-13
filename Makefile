@@ -53,6 +53,16 @@ test_docker_local:
 	$(PY_COV) html
 	x-www-browser htmlcov/index.html
 
+docker_shell:
+	docker run  -it --rm -v $(CWD):$(CWD) --workdir="$(CWD)" \
+	-v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$(DISPLAY) \
+	--user $(USER_ID):$(GROUP_ID) \
+	--volume="/etc/group:/etc/group:ro" \
+	--volume="/etc/passwd:/etc/passwd:ro" \
+	--volume="/etc/shadow:/etc/shadow:ro" \
+	--volume="/home/$(USER):/home/$(USER):rw" \
+	setsoft/kicad_auto_test:latest /bin/bash
+
 single_test:
 	rm -rf pp
 	-$(PYTEST) --log-cli-level debug -k "$(SINGLE_TEST)" --test_dir pp
