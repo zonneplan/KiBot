@@ -216,21 +216,25 @@ class TestContext(object):
         else:
             # Read stdout
             os.lseek(f_out, 0, os.SEEK_SET)
-            self.out = os.read(f_out, 40000)
+            self.out = os.read(f_out, 1000000)
             os.close(f_out)
             self.out = self.out.decode()
             # Read stderr
             os.lseek(f_err, 0, os.SEEK_SET)
-            self.err = os.read(f_err, 40000)
+            self.err = os.read(f_err, 1000000)
             os.close(f_err)
             self.err = self.err.decode()
 
     def search_out(self, text):
         m = re.search(text, self.out, re.MULTILINE)
+        assert m is not None
+        logging.debug('output match: `{}` OK'.format(text))
         return m
 
     def search_err(self, text):
         m = re.search(text, self.err, re.MULTILINE)
+        assert m is not None
+        logging.debug('error match: `{}` (`{}`) OK'.format(text, m.group(0)))
         return m
 
     def search_in_file(self, file, texts):

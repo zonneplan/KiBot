@@ -103,8 +103,6 @@ F 3 "~" H 2500 3650 50  0001 C CNN
 	1    2500 3650
 	1    0    0    -1  
 $EndComp
-Text Notes 550  950  0    50   ~ 0
-This schematic serves as a test-file for the KiBom export script.\n\nAfter making a change to the schematic, remember to re-export the BOM to generate the intermediate .xml file\n\n(The testing framework cannot perform the netlist-export step!)
 $Comp
 L Device:C C1
 U 1 1 5E6A62CC
@@ -259,4 +257,115 @@ F 3 "~" H 2200 4150 50  0001 C CNN
 	1    2200 4150
 	1    0    0    -1  
 $EndComp
+Text Notes 550  950  0    50   ~ 0
+This schematic serves as a test-file for the KiBot export script.\n\nObjetive: test R, L and C "smart" sorting
+$Comp
+L Device:R R11
+U 1 1 5F35341D
+P 2500 4150
+F 0 "R11" V 2580 4150 50  0000 C CNN
+F 1 "3.3G" V 2500 4150 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 2430 4150 50  0001 C CNN
+F 3 "~" H 2500 4150 50  0001 C CNN
+	1    2500 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:L L1
+U 1 1 5F353DDD
+P 4000 2600
+F 0 "L1" H 4052 2646 50  0000 L CNN
+F 1 "1µH" H 4052 2555 50  0000 L CNN
+F 2 "" H 4000 2600 50  0001 C CNN
+F 3 "~" H 4000 2600 50  0001 C CNN
+	1    4000 2600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:L L2
+U 1 1 5F35484F
+P 4250 2600
+F 0 "L2" H 4303 2646 50  0000 L CNN
+F 1 "1nH" H 4303 2555 50  0000 L CNN
+F 2 "" H 4250 2600 50  0001 C CNN
+F 3 "~" H 4250 2600 50  0001 C CNN
+	1    4250 2600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:L L3
+U 1 1 5F354EB6
+P 4500 2600
+F 0 "L3" H 4553 2646 50  0000 L CNN
+F 1 "1 mH" H 4553 2555 50  0000 L CNN
+F 2 "" H 4500 2600 50  0001 C CNN
+F 3 "~" H 4500 2600 50  0001 C CNN
+	1    4500 2600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R12
+U 1 1 5F353F53
+P 2750 4150
+F 0 "R12" V 2830 4150 50  0000 C CNN
+F 1 "1.2Ω" V 2750 4150 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 2680 4150 50  0001 C CNN
+F 3 "~" H 2750 4150 50  0001 C CNN
+	1    2750 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R13
+U 1 1 5F355C8A
+P 2200 5300
+F 0 "R13" V 2280 5300 50  0000 C CNN
+F 1 "10Q" V 2200 5300 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 2130 5300 50  0001 C CNN
+F 3 "~" H 2200 5300 50  0001 C CNN
+	1    2200 5300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R14
+U 1 1 5F355C94
+P 2500 5300
+F 0 "R14" V 2580 5300 50  0000 C CNN
+F 1 ".G" V 2500 5300 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 2430 5300 50  0001 C CNN
+F 3 "~" H 2500 5300 50  0001 C CNN
+	1    2500 5300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R15
+U 1 1 5F355C9E
+P 2750 5300
+F 0 "R15" V 2830 5300 50  0000 C CNN
+F 1 "2.2k2" V 2750 5300 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 2680 5300 50  0001 C CNN
+F 3 "~" H 2750 5300 50  0001 C CNN
+	1    2750 5300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R16
+U 1 1 5F35B422
+P 2200 4650
+F 0 "R16" V 2280 4650 50  0000 C CNN
+F 1 "R100" V 2200 4650 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 2130 4650 50  0001 C CNN
+F 3 "~" H 2200 4650 50  0001 C CNN
+	1    2200 4650
+	1    0    0    -1  
+$EndComp
+Wire Notes Line
+	2000 5000 3000 5000
+Wire Notes Line
+	3000 5000 3000 5850
+Wire Notes Line
+	3000 5850 2000 5850
+Wire Notes Line
+	2000 5850 2000 5000
+Text Notes 2100 5700 0    50   ~ 0
+Malformed examples
 $EndSCHEMATC

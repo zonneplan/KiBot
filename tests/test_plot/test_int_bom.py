@@ -350,10 +350,14 @@ def test_int_bom_sort_1():
     rows, header = ctx.load_csv(out)
     ref_column = header.index(REF_COLUMN_NAME)
     exp = ['C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C1', 'C2', 'C3', 'C4', 'C11', 'C12',
-           'R5', 'R4', 'R9', 'R10', 'R3', 'R2', 'R1', 'R8', 'R7']
-    check_kibom_test_netlist(rows, ref_column, 14, None, exp)
+           'L2', 'L1', 'L3',
+           'R5', 'R16', 'R12', 'R4', 'R9', 'R10', 'R3', 'R2', 'R1', 'R8', 'R7', 'R11', 'R14', 'R13', 'R15']
+    check_kibom_test_netlist(rows, ref_column, 23, None, exp)
     # Check the sorting
     assert get_column(rows, ref_column) == exp
+    ctx.search_err('Malformed value: .?10Q.?')
+    ctx.search_err('Malformed value: .?\.G.?')
+    ctx.search_err('Malformed value: .?2\.2k2.?')
     ctx.clean_up()
 
 
