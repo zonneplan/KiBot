@@ -289,16 +289,24 @@ class TestContext(object):
         """ For images and single page PDFs """
         if reference is None:
             reference = image
-        cmd = ['compare', '-metric', 'MSE',
+        cmd = ['compare',
+               # Tolerate 5 % error in color
+               '-fuzz', '5%',
+               # Count how many pixels differ
+               '-metric', 'AE',
                self.get_out_path(image),
                os.path.join(REF_DIR, reference),
+               # Avoid the part where KiCad version is printed
+               '-crop', '100%x92%+0+0', '+repage',
                self.get_out_path(diff)]
         logging.debug('Comparing images with: '+str(cmd))
         res = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        m = re.match(r'([\d\.]+) \(([\d\.]+)\)', res.decode())
-        assert m
-        logging.debug('MSE={} ({})'.format(m.group(1), m.group(2)))
-        assert float(m.group(2)) == 0.0
+        # m = re.match(r'([\d\.e-]+) \(([\d\.e-]+)\)', res.decode())
+        # assert m
+        # logging.debug('MSE={} ({})'.format(m.group(1), m.group(2)))
+        ae = int(res.decode())
+        logging.debug('AE=%d' % ae)
+        assert ae == 0
 
     def compare_pdf(self, gen, reference=None, diff='diff-{}.png'):
         """ For multi-page PDFs """
