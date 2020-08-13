@@ -149,17 +149,17 @@ def comp_match(component):
 
 
 # def component_value(valString):
-# 
+#
 #     result = comp_match(valString)
-# 
+#
 #     if not result:
 #         return valString  # Return the same string back
-# 
+#
 #     if not len(result) == 2:  # Result length is incorrect
 #         return valString
-# 
+#
 #     val = result[0]
-# 
+#
 #     return val
 
 
