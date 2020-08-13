@@ -12,8 +12,11 @@ e.g.
 """
 import re
 import locale
+from .. import log
 
-PREFIX_MICRO = [u"μ", "u", "micro"]
+logger = log.get_logger(__name__)
+
+PREFIX_MICRO = [u"μ", u"µ", "u", "micro"]
 PREFIX_MILLI = ["milli", "m"]
 PREFIX_NANO = ["nano", "n"]
 PREFIX_PICO = ["pico", "p"]
