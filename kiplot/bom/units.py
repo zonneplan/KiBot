@@ -87,7 +87,7 @@ def group_string(group):  # Return a reg-ex string for a list of values
 
 
 def match_string():
-    return r"^([0-9\.]+)\s*(" + group_string(PREFIX_ALL) + ")*(" + group_string(UNIT_ALL) + r")*(\d*)$"
+    return r"(\d*\.?\d*)\s*(" + group_string(PREFIX_ALL) + ")*(" + group_string(UNIT_ALL) + r")*(\d*)$"
 
 
 def comp_match(component):
@@ -97,6 +97,8 @@ def comp_match(component):
     e.g. comp_match('3.3mOhm') returns (0.0033, R)
     """
 
+    original = component
+    logger.debug(component)
     # Convert the decimal point from the current locale to a '.'
     global decimal_point
     if not decimal_point:
@@ -110,54 +112,52 @@ def comp_match(component):
     # Get the compiled regex
     global match
     if not match:
+        # Ignore case
         match = re.compile(match_string(), flags=re.IGNORECASE)
 
-    # Not lower, but ignore case
-    result = match.search(component)
-
+    result = match.match(component)
     if not result:
-        return None
-
-    if not len(result.groups()) == 4:
+        logger.warning("Malformed value: `{}` (no match)".format(original))
         return None
 
     value, prefix, units, post = result.groups()
+    if value == '.':
+        logger.warning("Malformed value: `{}` (reduced to decimal point)".format(original))
+        return None
+    if value == '':
+        value = '0'
 
     # Special case where units is in the middle of the string
     # e.g. "0R05" for 0.05Ohm
     # In this case, we will NOT have a decimal
     # We will also have a trailing number
-
-    if post and "." not in value:
-        try:
-            value = float(int(value))
-            postValue = float(int(post)) / (10 ** len(post))
-            value = value * 1.0 + postValue
-        except ValueError:
+    if post:
+        if "." in value:
+            logger.warning("Malformed value: `{}` (unit split, but contains decimal point)".format(original))
             return None
-
-    try:
+        value = float(value)
+        postValue = float(post) / (10 ** len(post))
+        val = value * 1.0 + postValue
+    else:
         val = float(value)
-    except ValueError:
-        return None
 
     # Return all the data, let the caller join it
-    return (val, get_preffix(prefix), get_unit(units))
+    return (val, get_prefix(prefix), get_unit(units))
 
 
-def component_value(valString):
-
-    result = comp_match(valString)
-
-    if not result:
-        return valString  # Return the same string back
-
-    if not len(result) == 2:  # Result length is incorrect
-        return valString
-
-    val = result[0]
-
-    return val
+# def component_value(valString):
+# 
+#     result = comp_match(valString)
+# 
+#     if not result:
+#         return valString  # Return the same string back
+# 
+#     if not len(result) == 2:  # Result length is incorrect
+#         return valString
+# 
+#     val = result[0]
+# 
+#     return val
 
 
 def compare_values(c1, c2):
