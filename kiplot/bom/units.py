@@ -42,15 +42,10 @@ decimal_point = None
 
 
 def get_unit(unit):
-    """
-    Return a simplified version of a units string, for comparison purposes
-    """
-
+    """ Return a simplified version of a units string, for comparison purposes  """
     if not unit:
         return None
-
     unit = unit.lower()
-
     if unit in UNIT_R:
         return "R"
     if unit in UNIT_C:
@@ -58,21 +53,14 @@ def get_unit(unit):
     if unit in UNIT_L:
         return "H"
 
-    return None
 
-
-def get_preffix(prefix):
-    """
-    Return the (numerical) value of a given prefix
-    """
-
+def get_prefix(prefix):
+    """ Return the (numerical) value of a given prefix """
     if not prefix:
         return 1
-
     # 'M' is mega, 'm' is milli
     if prefix != 'M':
         prefix = prefix.lower()
-
     if prefix in PREFIX_PICO:
         return 1.0e-12
     if prefix in PREFIX_NANO:
@@ -87,8 +75,11 @@ def get_preffix(prefix):
         return 1.0e6
     if prefix in PREFIX_GIGA:
         return 1.0e9
-
-    return 1
+    # Unknown, we shouldn't get here because the regex matched
+    # BUT: I found that sometimes unexpected things happend, like mu matching micro and then we reaching this code
+    #      Now is fixed, but I can't be sure some bizarre case is overlooked
+    logger.error('Unknown prefix, please report')  # pragma: no cover
+    return 1  # pragma: no cover
 
 
 def group_string(group):  # Return a reg-ex string for a list of values
