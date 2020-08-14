@@ -27,10 +27,10 @@ class SchLibError(SchError):
 
 
 def _get_line(f):
+    global _sch_line_number
     res = f.readline()
     if not res:
-        raise SchFileError('Unexpected end of file')
-    global _sch_line_number
+        raise SchFileError('Unexpected end of file', '', _sch_line_number)
     _sch_line_number += 1
     return res.rstrip()
 
@@ -44,7 +44,7 @@ def _get_line_dcm(f):
         _sch_line_number += 1
         res = f.readline()
     if not res:
-        raise SchFileError('Unexpected end of file')
+        raise SchFileError('Unexpected end of file', '', _sch_line_number)
     _sch_line_number += 1
     return res.rstrip()
 
@@ -58,7 +58,7 @@ def _get_line_lib(f):
         _sch_line_number += 1
         res = f.readline()
     if not res:
-        raise SchFileError('Unexpected end of file')
+        raise SchFileError('Unexpected end of file', '', _sch_line_number)
     _sch_line_number += 1
     return res.rstrip()
 
@@ -91,7 +91,7 @@ class LibComponentField(object):
         m = LibComponentField.field_re.match(line)
         if not m:
             raise SchLibError('Malformed component field', line, _sch_line_number, lib_name)
-        field = SchematicField()
+        field = LibComponentField()
         gs = m.groups()
         field.number = int(gs[0])
         field.value = gs[1]
@@ -647,7 +647,7 @@ class SchematicComponent(object):
     def load(f, sheet_path, sheet_path_h, libs, fields, fields_lc):
         # L lib:name reference
         line = _get_line(f)
-        if line[0] != 'L':
+        if not line or line[0] != 'L':
             raise SchFileError('Missing component label', line, _sch_line_number)
         res = _split_space(line[2:])
         if len(res) != 2:
