@@ -45,5 +45,13 @@ def test_sch_errors_eof():
     setup_ctx('eof', 'error_eof', 'Unexpected end of file')
 
 
+def test_sch_errors_l1():
+    setup_ctx('l1', 'error_l1', 'Unexpected end of file')
+
+
+def test_sch_errors_l2():
+    setup_ctx('l2', 'error_l2', 'Unexpected end of file')
+
+
 
 
