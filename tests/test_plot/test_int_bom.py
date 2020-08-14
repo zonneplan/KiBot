@@ -34,7 +34,7 @@ Missing:
 - Variants
 - number_boards
 
-- XLSX colors (for real)
+- XLSX/HTML colors (for real)
 
 For debug information use:
 pytest-3 --log-cli-level debug
