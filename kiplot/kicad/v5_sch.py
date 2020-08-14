@@ -627,30 +627,35 @@ class SchematicComponent(object):
     def _solve_fields(self):
         """ Fills the default fields from the fields attribute """
         f = self.fields
-        c = len(f)
         self.field_ref = None
         self.value = None
         self.footprint = None
         self.footprint_lib = None
         self.datasheet = None
-        if len(f) < 4:
-            logger.warning('Component {} without the basic fields'.format(self.ref))
-        if c > 0:
-            self.field_ref = f[0].value
-        if c > 1:
-            self.value = f[1].value
-        if c > 2:
-            res = f[2].value.split(':')
-            cres = len(res)
-            if cres == 1:
-                self.footprint = res[0]
-            elif cres == 2:
-                self.footprint_lib = res[0]
-                self.footprint = res[1]
-            else:
-                raise SchFileError('Footprint with more than one colon', f[2].value)
-        if c > 3:
-            self.datasheet = f[3].value
+        basic = 0
+        for f in self.fields:
+            if f.number == 0:
+                self.field_ref = f.value
+                basic += 1
+            elif f.number == 1:
+                self.value = f.value
+                basic += 1
+            elif f.number == 2:
+                res = f.value.split(':')
+                cres = len(res)
+                if cres == 1:
+                    self.footprint = res[0]
+                elif cres == 2:
+                    self.footprint_lib = res[0]
+                    self.footprint = res[1]
+                else:
+                    raise SchFileError('Footprint with more than one colon', f.value)
+                basic += 1
+            elif f.number == 3:
+                self.datasheet = f.value
+                basic += 1
+        if basic < 4:
+            logger.warning('Component `{}` without the basic fields'.format(self.f_ref))
 
     def __str__(self):
         if self.name == self.value:
