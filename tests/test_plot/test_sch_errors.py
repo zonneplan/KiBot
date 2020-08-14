@@ -53,5 +53,11 @@ def test_sch_errors_l2():
     setup_ctx('l2', 'error_l2', 'Unexpected end of file')
 
 
+def test_sch_errors_l3():
+    setup_ctx('l3', 'error_l3', 'Malformed component field')
+
+
+def test_sch_errors_l4():
+    setup_ctx('l4', 'error_l4', 'Missing component field name')
 
 
