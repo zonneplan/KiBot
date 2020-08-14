@@ -169,3 +169,31 @@ def test_sch_errors_bad_wire4():
 def test_sch_errors_bad_entry():
     setup_ctx('bad_entry', 'error_bad_entry', 'Malformed entry')
 
+
+def test_sch_errors_bmp_miss_pos():
+    setup_ctx('bmp_miss_pos', 'error_bmp_miss_pos', 'Missing bitmap position')
+
+
+def test_sch_errors_bmp_bad_pos():
+    setup_ctx('bmp_bad_pos', 'error_bmp_bad_pos', 'Malformed bitmap position')
+
+
+def test_sch_errors_bmp_miss_sca():
+    setup_ctx('bmp_miss_sca', 'error_bmp_miss_sca', 'Missing bitmap scale')
+
+
+def test_sch_errors_bmp_bad_sca():
+    setup_ctx('bmp_bad_sca', 'error_bmp_bad_sca', 'Malformed bitmap scale')
+
+
+def test_sch_errors_bmp_miss_dat():
+    setup_ctx('bmp_miss_dat', 'error_bmp_miss_dat', 'Missing bitmap data')
+
+
+def test_sch_errors_bmp_bad_dat():
+    setup_ctx('bmp_bad_dat', 'error_bmp_bad_dat', 'Malformed bitmap data')
+
+
+def test_sch_errors_bmp_miss_end():
+    setup_ctx('bmp_miss_end', 'error_bmp_miss_end', 'Missing end of bitmap')
+
