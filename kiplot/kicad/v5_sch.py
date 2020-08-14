@@ -857,20 +857,20 @@ class SchematicBitmap(object):
         # Position
         line = _get_line(f)
         res = _split_space(line)
+        if res and res[0] != 'Pos':
+            raise SchFileError('Missing bitmap position', line)
         if len(res) != 3:
             raise SchFileError('Malformed bitmap position', line)
-        if res[0] != 'Pos':
-            raise SchFileError('Missing bitmap position', line)
         bmp = SchematicBitmap()
         bmp.x = int(res[1])
         bmp.y = int(res[2])
         # Scale
         line = _get_line(f)
         res = _split_space(line)
+        if res and res[0] != 'Scale':
+            raise SchFileError('Missing bitmap scale', line)
         if len(res) != 2:
             raise SchFileError('Malformed bitmap scale', line)
-        if res[0] != 'Scale':
-            raise SchFileError('Missing bitmap scale', line)
         bmp.scale = float(res[1].replace(',', '.'))
         # Data
         line = _get_line(f)
@@ -880,7 +880,10 @@ class SchematicBitmap(object):
         bmp.data = b''
         while line != 'EndData':
             res = _split_space(line)
-            bmp.data += bytes([int(b, 16) for b in res])
+            try:
+                bmp.data += bytes([int(b, 16) for b in res])
+            except ValueError:
+                raise SchFileError('Malformed bitmap data', line)
             line = _get_line(f)
         # End of bitmap
         line = _get_line(f)
