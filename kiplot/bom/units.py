@@ -166,8 +166,9 @@ def comp_match(component):
 def compare_values(c1, c2):
     """ Compare two values """
 
-    r1 = comp_match(c1)
-    r2 = comp_match(c2)
+    # These are the results from comp_match()
+    r1 = c1.value_sort
+    r2 = c2.value_sort
 
     if not r1 or not r2:
         return False

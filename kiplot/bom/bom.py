@@ -35,7 +35,7 @@ DNC = {
     "no change": 1,
     "fixed": 1
 }
-# RV == Resistor Variable
+# RV == Resistor Variable or Varistor
 # RN == Resistor 'N'(Pack)
 # RT == Thermistor
 RLC_PREFIX = {'R': 1, 'L': 1, 'C': 1, 'RV': 1, 'RN': 1, 'RT': 1}
@@ -47,7 +47,7 @@ def compare_value(c1, c2, cfg):
     if c1.value.lower() == c2.value.lower():
         return True
     # Otherwise, perform a more complicated value comparison
-    if compare_values(c1.value, c2.value):
+    if compare_values(c1, c2):
         return True
     # Ignore value if both components are connectors
     # Note: Is common practice to use the "Value" field of connectors to denote its use.
@@ -313,18 +313,16 @@ def test_reg_include(cfg, c):
 
 def get_value_sort(comp):
     """ Try to better sort R, L and C components """
-    pref = comp.ref_prefix
-    if pref in RLC_PREFIX:
-        res = comp_match(comp.value)
-        if res:
-            value, mult, unit = res
-            if pref in "CL":
-                # fempto Farads
-                value = "{0:15d}".format(int(value * 1e15 * mult + 0.1))
-            else:
-                # milli Ohms
-                value = "{0:15d}".format(int(value * 1000 * mult + 0.1))
-            return value
+    res = comp.value_sort
+    if res:
+        value, mult, unit = res
+        if comp.ref_prefix in "CL":
+            # fempto Farads
+            value = "{0:15d}".format(int(value * 1e15 * mult + 0.1))
+        else:
+            # milli Ohms
+            value = "{0:15d}".format(int(value * 1000 * mult + 0.1))
+        return value
     return comp.value
 
 
@@ -338,6 +336,11 @@ def group_components(cfg, components):
                 continue
             if test_reg_exclude(cfg, c):
                 continue
+        # Cache the value used to sort
+        if c.ref_prefix in RLC_PREFIX:
+            c.value_sort = comp_match(c.value)
+        else:
+            c.value_sort = None
         # Try to add the component to an existing group
         found = False
         for g in groups:
