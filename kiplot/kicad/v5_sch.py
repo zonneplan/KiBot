@@ -476,7 +476,7 @@ class DocLibEntry(object):
             elif line[0] == 'F':
                 self.datasheet = line[2:].lstrip()
             else:
-                logger.warning('Unknown DCM entry `{}` on line {}'.format(line, _sch_line_number))
+                logger.warning('Unknown DCM attribute `{}` on line {}'.format(line, _sch_line_number))
             line = _get_line_dcm(f)
 
     def __repr__(self):
