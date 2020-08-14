@@ -51,7 +51,7 @@ def _get_line_dcm(f):
         _sch_line_number += 1
         res = f.readline()
     if not res:
-        raise SchFileError('Unexpected end of file', '')
+        raise SchLibError('Unexpected end of file', '')
     _sch_line_number += 1
     return res.rstrip()
 
@@ -65,7 +65,7 @@ def _get_line_lib(f):
         _sch_line_number += 1
         res = f.readline()
     if not res:
-        raise SchFileError('Unexpected end of file', '')
+        raise SchLibError('Unexpected end of file', '')
     _sch_line_number += 1
     return res.rstrip()
 
@@ -384,7 +384,7 @@ class LibComponent(object):
         self.alias = None
         self.fp_list = []
         self.draw = []
-        line = _get_line_dcm(f)
+        line = _get_line_lib(f)
         while not line.startswith('ENDDEF'):
             if line[0] == 'F':
                 # A field
@@ -394,12 +394,12 @@ class LibComponent(object):
             elif line.startswith('ALIAS'):
                 self.alias = _split_space(line[6:])
             elif line.startswith('$FPLIST'):
-                line = _get_line_dcm(f)
+                line = _get_line_lib(f)
                 while not line.startswith('$ENDFPLIST'):
                     self.fp_list.append(line[1:])
-                    line = _get_line_dcm(f)
+                    line = _get_line_lib(f)
             elif line.startswith('DRAW'):
-                line = _get_line_dcm(f)
+                line = _get_line_lib(f)
                 while not line.startswith('ENDDRAW'):
                     if line[0] == 'P':
                         self.draw.append(DrawPoligon.parse(line))
@@ -415,8 +415,8 @@ class LibComponent(object):
                         self.draw.append(Pin.parse(line))
                     else:
                         logger.warning('Unknown draw element `{}`'.format(line))
-                    line = _get_line_dcm(f)
-            line = _get_line_dcm(f)
+                    line = _get_line_lib(f)
+            line = _get_line_lib(f)
 
 #     def __repr__(self):
 #         s = 'Component('+self.name
