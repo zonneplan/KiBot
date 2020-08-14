@@ -72,6 +72,12 @@ KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
 KIBOM_TEST_COMPONENTS_ALT2 = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R2', 'R4-R5', 'R3']
 KIBOM_TEST_EXCLUDE = ['R6']
 KIBOM_TEST_GROUPS = 5
+KIBOM_PRJ_INFO = ['kibom-test', 'default', 'A', '2020-03-12', None]
+KIBOM_STATS = [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
+               len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
+               len(KIBOM_TEST_COMPONENTS),
+               1,
+               len(KIBOM_TEST_COMPONENTS)]
 LINK_HEAD = ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'digikey_alt#', 'manf#']
 LINKS_COMPONENTS = ['J1', 'J2', 'R1']
 LINKS_EXCLUDE = ['C1']
@@ -185,6 +191,30 @@ def check_head_html(r, info, stats, title, logo):
         logging.debug('No stats block Ok')
 
 
+def check_csv_info(r, info, stats):
+    row = 0
+    if info:
+        assert r[row][0] == 'Project info:'
+        for i, tit in enumerate(INFO_ROWS):
+            row += 1
+            assert r[row][0] == tit
+            if info[i] is not None:
+                assert r[row][1] == info[i]
+        logging.debug('Info block Ok')
+        row += 1
+    if stats:
+        assert r[row][0] == 'Statistics:'
+        for i, tit in enumerate(STATS_ROWS):
+            row += 1
+            assert r[row][0] == tit
+            if stats[i] is not None:
+                assert r[row][1] == str(stats[i])
+        logging.debug('Stats block Ok')
+        row += 1
+    assert row == len(r)
+
+
+
 def kibom_verif(rows, header, skip_head=False, qty_name=QTY_COLUMN_NAME):
     if not skip_head:
         assert header == KIBOM_TEST_HEAD
@@ -204,7 +234,41 @@ def kibom_setup(test, ext='csv'):
 
 def test_int_bom_simple_csv():
     ctx, out = kibom_setup('int_bom_simple_csv')
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
+    check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
+    kibom_verif(rows, header)
+    # Check not quoted and comma as delimiter
+    ctx.search_in_file(os.path.join(BOM_DIR, out), [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
+    ctx.clean_up()
+
+
+def test_int_bom_csv_no_info():
+    """ No PCB info """
+    ctx, out = kibom_setup('int_bom_csv_no_info')
+    rows, header, info = ctx.load_csv(out)
+    check_csv_info(info, None, KIBOM_STATS)
+    kibom_verif(rows, header)
+    # Check not quoted and comma as delimiter
+    ctx.search_in_file(os.path.join(BOM_DIR, out), [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
+    ctx.clean_up()
+
+
+def test_int_bom_csv_no_stats():
+    """ No Stats """
+    ctx, out = kibom_setup('int_bom_csv_no_stats')
+    rows, header, info = ctx.load_csv(out)
+    check_csv_info(info, KIBOM_PRJ_INFO, None)
+    kibom_verif(rows, header)
+    # Check not quoted and comma as delimiter
+    ctx.search_in_file(os.path.join(BOM_DIR, out), [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
+    ctx.clean_up()
+
+
+def test_int_bom_csv_no_extra():
+    """ No Stats, no info """
+    ctx, out = kibom_setup('int_bom_csv_no_extra')
+    rows, header, info = ctx.load_csv(out)
+    assert len(info) == 0
     kibom_verif(rows, header)
     # Check not quoted and comma as delimiter
     ctx.search_in_file(os.path.join(BOM_DIR, out), [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
@@ -213,7 +277,7 @@ def test_int_bom_simple_csv():
 
 def test_int_bom_refuse_no_sep():
     ctx, out = kibom_setup('int_bom_refuse_no_sep')
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     kibom_verif(rows, header)
     # Check not quoted and comma as delimiter
     ctx.search_in_file(os.path.join(BOM_DIR, out), ['"'+KIBOM_TEST_HEAD[0]+'","'+KIBOM_TEST_HEAD[1]+'"'])
@@ -222,8 +286,9 @@ def test_int_bom_refuse_no_sep():
 
 def test_int_bom_simple_txt():
     ctx, out = kibom_setup('int_bom_simple_txt', 'txt')
-    rows, header = ctx.load_csv(out, delimiter='\t')
+    rows, header, info = ctx.load_csv(out, delimiter='\t')
     kibom_verif(rows, header)
+    check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
     # Check all quoted and tab as delimiter
     ctx.search_in_file(os.path.join(BOM_DIR, out), ['"'+KIBOM_TEST_HEAD[0]+'"\t"'+KIBOM_TEST_HEAD[1]+'"'])
     ctx.clean_up()
@@ -231,14 +296,10 @@ def test_int_bom_simple_txt():
 
 def simple_html_test(ctx, rows, headers, sh_head, prj, do_title=True, do_logo=True, do_info=True, do_stats=True):
     title = DEF_TITLE if do_title else None
-    info = [prj, 'default', 'A', '2020-03-12', None] if do_info else None
+    info = KIBOM_PRJ_INFO if do_info else None
     stats = None
     if do_stats:
-        stats = [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
-                 len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
-                 len(KIBOM_TEST_COMPONENTS),
-                 1,
-                 len(KIBOM_TEST_COMPONENTS)]
+        stats = KIBOM_STATS
     check_head_html(sh_head, info, stats, title=title, logo=do_logo)
     # Test we got the normal and DNF tables
     assert len(rows) == 2
@@ -324,13 +385,7 @@ def simple_xlsx_verify(ctx, prj, dnf=True):
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
-    check_head_xlsx(sh_head,
-                    [prj, 'default', 'A', '2020-03-12', None],
-                    [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
-                     len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
-                     len(KIBOM_TEST_COMPONENTS),
-                     1,
-                     len(KIBOM_TEST_COMPONENTS)])
+    check_head_xlsx(sh_head, KIBOM_PRJ_INFO, KIBOM_STATS)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -366,7 +421,7 @@ def test_int_bom_sort_1():
     ctx = context.TestContextSCH('test_int_bom_sort_1', prj, 'int_bom_sort_1', BOM_DIR)
     ctx.run(do_locale=True)
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     ref_column = header.index(REF_COLUMN_NAME)
     exp = ['C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C1', 'C2', 'C3', 'C4', 'C11', 'C12',
            'L2', 'L1', 'L3',
@@ -486,7 +541,7 @@ def test_int_bom_join_1():
     ctx = context.TestContextSCH('test_int_bom_join_1', prj, 'int_bom_join_1', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == [COMP_COLUMN_NAME, REF_COLUMN_NAME, 'Part', 'Value', 'manf', 'digikey#', QTY_COLUMN_NAME]
     ref_column = header.index(REF_COLUMN_NAME)
     manf_column = header.index('manf')
@@ -511,7 +566,7 @@ def test_int_include_dnf():
     ctx = context.TestContextSCH('test_int_include_dnf', prj, 'int_bom_include_dnf', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -548,7 +603,7 @@ def test_int_bom_use_alt():
     ctx = context.TestContextSCH('test_int_bom_use_alt', prj, 'int_bom_use_alt', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -564,7 +619,7 @@ def test_int_bom_use_alt_2():
     ctx = context.TestContextSCH('test_int_bom_use_alt_2', prj, 'int_bom_use_alt_2', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -581,7 +636,7 @@ def test_int_bom_no_number_rows():
     ctx = context.TestContextSCH('test_int_bom_no_number_rows', prj, 'int_bom_no_number_rows', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD[1:]
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -596,7 +651,7 @@ def test_int_bom_column_rename_csv():
     ctx = context.TestContextSCH('test_int_bom_column_rename_csv', prj, 'int_bom_column_rename_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_RENAME_HEAD
     ref_column = header.index(REF_COLUMN_NAME_R)
     check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
@@ -651,7 +706,7 @@ def test_int_bom_group_connectors():
     ctx = context.TestContextSCH('test_int_bom_group_connectors', prj, 'int_bom_simple_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == CONN_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 2, [], ['J4', 'J1', 'J3', 'J2'])
@@ -665,7 +720,7 @@ def test_int_bom_no_group_connectors():
     ctx = context.TestContextSCH('test_int_bom_no_group_connectors', prj, 'int_bom_no_group_connectors', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == CONN_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 4, [], ['J4', 'J1', 'J3', 'J2'])
@@ -679,7 +734,7 @@ def test_int_bom_column_sensitive():
     ctx = context.TestContextSCH('test_int_bom_column_sensitive', prj, 'int_bom_column_sensitive', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == [REF_COLUMN_NAME.lower(), 'value', 'part', 'description']
     ref_column = header.index(REF_COLUMN_NAME.lower())
     check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
@@ -693,7 +748,7 @@ def test_int_bom_alias_csv():
     ctx = context.TestContextSCH('test_int_bom_alias_csv', prj, 'int_bom_alias_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -709,7 +764,7 @@ def test_int_bom_alias_nm_csv():
     ctx = context.TestContextSCH('test_int_bom_alias_nm_csv', prj, 'int_bom_alias_nm_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -726,7 +781,7 @@ def test_int_bom_no_group_csv():
     ctx = context.TestContextSCH('test_int_bom_no_group_csv', prj, 'int_bom_no_group_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -744,7 +799,7 @@ def test_int_bom_repeat_csv():
     ctx = context.TestContextSCH('test_int_bom_repeat_csv', prj, 'int_bom_simple_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -760,7 +815,7 @@ def test_int_bom_collision():
     ctx = context.TestContextSCH('test_int_bom_collision', prj, 'int_bom_simple_csv', BOM_DIR)
     ctx.run(extra_debug=True)
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD_TOL
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -777,7 +832,7 @@ def test_int_bom_exclude_any():
     ctx = context.TestContextSCH('test_int_bom_exclude_any', prj, 'int_bom_exclude_any', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD_TOL
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -794,7 +849,7 @@ def test_int_bom_include_only():
     ctx = context.TestContextSCH('test_int_bom_include_only', prj, 'int_bom_include_only', BOM_DIR)
     ctx.run(extra_debug=True)
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -809,7 +864,7 @@ def test_int_bom_no_test_regex():
     ctx = context.TestContextSCH('test_int_bom_simple_csv', prj, 'int_bom_no_include_only', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -827,7 +882,7 @@ def test_int_bom_sub_sheet_alt():
     ctx = context.TestContextSCH('test_int_bom_sub_sheet_alt', prj, 'int_bom_sheet_path', BOM_DIR)
     ctx.run()  # extra_debug=True
     out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
+    rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD[:-1] + ['Sheetpath']
     ref_column = header.index(REF_COLUMN_NAME)
     sp_column = header.index('Sheetpath')
@@ -845,14 +900,7 @@ def test_int_bom_simple_xlsx_2():
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
-    check_head_xlsx(sh_head,
-                    [prj, 'default', 'A', '2020-03-12', None],
-                    [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
-                     len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
-                     len(KIBOM_TEST_COMPONENTS),
-                     1,
-                     len(KIBOM_TEST_COMPONENTS)],
-                    title=None)
+    check_head_xlsx(sh_head, KIBOM_PRJ_INFO, KIBOM_STATS, title=None)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -876,14 +924,7 @@ def test_int_bom_simple_xlsx_4():
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
-    check_head_xlsx(sh_head,
-                    [prj, 'default', 'A', '2020-03-12', None],
-                    [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
-                     len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
-                     len(KIBOM_TEST_COMPONENTS),
-                     1,
-                     len(KIBOM_TEST_COMPONENTS)],
-                    title=None)
+    check_head_xlsx(sh_head, KIBOM_PRJ_INFO, KIBOM_STATS, title=None)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)
@@ -900,14 +941,7 @@ def test_int_bom_simple_xlsx_5():
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
-    check_head_xlsx(sh_head,
-                    None,
-                    [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
-                     len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
-                     len(KIBOM_TEST_COMPONENTS),
-                     1,
-                     len(KIBOM_TEST_COMPONENTS)],
-                    title=None)
+    check_head_xlsx(sh_head, None, KIBOM_STATS, title=None)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(QTY_COLUMN_NAME)

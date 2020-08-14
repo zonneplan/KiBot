@@ -60,6 +60,6 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
                 writer.writerow(["Component Count:", cfg.n_total])
                 writer.writerow(["Fitted Components:", cfg.n_fitted])
                 writer.writerow(["Number of PCBs:", cfg.number])
-                writer.writerow(["Total components:", cfg.n_build])
+                writer.writerow(["Total Components:", cfg.n_build])
 
     return True

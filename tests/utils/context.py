@@ -399,7 +399,12 @@ class TestContext(object):
                 if not r:
                     break
                 rows.append(r)
-        return rows, header
+            # Collect info
+            info = []
+            for r in reader:
+                if r:
+                    info.append(r)
+        return rows, header, info
 
     def load_html(self, filename):
         file = self.expect_out_file(os.path.join(self.sub_dir, filename))
