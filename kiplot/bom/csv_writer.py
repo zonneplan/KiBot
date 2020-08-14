@@ -19,7 +19,7 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
     """
     # Delimeter is assumed from file extension
     # Override delimiter if separator specified
-    if cfg.csv.separator:
+    if ext == "csv" and cfg.csv.separator:
         delimiter = cfg.csv.separator
     else:
         if ext == "csv":
