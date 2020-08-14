@@ -197,3 +197,35 @@ def test_sch_errors_bmp_bad_dat():
 def test_sch_errors_bmp_miss_end():
     setup_ctx('bmp_miss_end', 'error_bmp_miss_end', 'Missing end of bitmap')
 
+
+def test_sch_errors_bad_plabel():
+    setup_ctx('bad_plabel', 'error_bad_plabel', 'Malformed sheet port label')
+
+
+def test_sch_errors_miss_spos():
+    setup_ctx('miss_spos', 'error_miss_spos', 'Missing sheet size and position')
+
+
+def test_sch_errors_bad_spos():
+    setup_ctx('bad_spos', 'error_bad_spos', 'Malformed sheet size and position')
+
+
+def test_sch_errors_bad_slabel():
+    setup_ctx('bad_slabel', 'error_bad_slabel', 'Malformed sheet label')
+
+
+def test_sch_errors_bad_sname():
+    setup_ctx('bad_sname', 'error_bad_sname', 'Malformed sheet name')
+
+
+def test_sch_errors_miss_sname():
+    setup_ctx('miss_sname', 'error_miss_sname', 'Missing sub-sheet name')
+
+
+def test_sch_errors_bad_sfname():
+    setup_ctx('bad_sfname', 'error_bad_sfname', 'Malformed sheet file name')
+
+
+def test_sch_errors_miss_sfname():
+    setup_ctx('miss_sfname', 'error_miss_sfname', 'Missing sub-sheet file name')
+
