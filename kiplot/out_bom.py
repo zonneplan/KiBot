@@ -250,6 +250,10 @@ class BoMOptions(BaseOptions):
             self.columns = BoMColumns
             """ [list(dict)|list(string)] List of columns to display.
                 Can be just the name of the field """
+            self.normalize_values = False
+            """ Try to normalize the R, L and C values, producing uniform units and prefixes """
+            self.normalize_locale = False
+            """ When normalizing values use the locale decimal point """
             self.html = BoMHTML
             """ [dict] Options for the HTML format """
             self.xlsx = BoMXLSX

@@ -4,6 +4,7 @@ This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Hen
 
 Here is all the logic to convert a list of components into the rows and columns used to create the BoM.
 """
+import locale
 from copy import deepcopy
 from .units import compare_values, comp_match
 from .bom_writer import write_bom
@@ -315,7 +316,7 @@ def get_value_sort(comp):
     """ Try to better sort R, L and C components """
     res = comp.value_sort
     if res:
-        value, mult, unit = res
+        value, (mult, mult_s), unit = res
         if comp.ref_prefix in "CL":
             # fempto Farads
             value = "{0:15d}".format(int(value * 1e15 * mult + 0.1))
@@ -324,6 +325,18 @@ def get_value_sort(comp):
             value = "{0:15d}".format(int(value * 1000 * mult + 0.1))
         return value
     return comp.value
+
+
+def normalize_value(c, decimal_point):
+    if c.value_sort is None:
+        return c.value
+    value, (mult, mult_s), unit = c.value_sort
+    ivalue = int(value)
+    if value == ivalue:
+        value = ivalue
+    elif decimal_point:
+        value = str(value).replace('.', decimal_point)
+    return '{} {}{}'.format(value, mult_s, unit)
 
 
 def group_components(cfg, components):
@@ -338,7 +351,7 @@ def group_components(cfg, components):
                 continue
         # Cache the value used to sort
         if c.ref_prefix in RLC_PREFIX:
-            c.value_sort = comp_match(c.value)
+            c.value_sort = comp_match(c.value, c.ref_prefix)
         else:
             c.value_sort = None
         # Try to add the component to an existing group
@@ -354,11 +367,18 @@ def group_components(cfg, components):
             g.add_component(c)
             groups.append(g)
     # Now unify the data from the components of each group
+    decimal_point = None
+    if cfg.normalize_locale:
+        decimal_point = locale.localeconv()['decimal_point']
+        if decimal_point == '.':
+            decimal_point = None
     for g in groups:
         # Sort the references within each group
         g.sort_components()
         # Fill the columns
         g.update_fields(cfg.use_alt)
+        if cfg.normalize_values:
+            g.fields[ColumnList.COL_VALUE_L] = normalize_value(g.components[0], decimal_point)
     # Sort the groups
     # First priority is the Type of component (e.g. R?, U?, L?)
     groups = sorted(groups, key=lambda g: [g.components[0].ref_prefix, get_value_sort(g.components[0])])

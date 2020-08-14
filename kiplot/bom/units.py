@@ -41,13 +41,17 @@ match = None
 decimal_point = None
 
 
-def get_unit(unit):
+def get_unit(unit, ref_prefix):
     """ Return a simplified version of a units string, for comparison purposes  """
     if not unit:
-        return None
+        if ref_prefix == 'L':
+            return "H"
+        if ref_prefix == 'C':
+            return "F"
+        return u"Ω"
     unit = unit.lower()
     if unit in UNIT_R:
-        return "R"
+        return u"Ω"
     if unit in UNIT_C:
         return "F"
     if unit in UNIT_L:
@@ -57,29 +61,29 @@ def get_unit(unit):
 def get_prefix(prefix):
     """ Return the (numerical) value of a given prefix """
     if not prefix:
-        return 1
+        return 1, ''
     # 'M' is mega, 'm' is milli
     if prefix != 'M':
         prefix = prefix.lower()
     if prefix in PREFIX_PICO:
-        return 1.0e-12
+        return 1.0e-12, 'p'
     if prefix in PREFIX_NANO:
-        return 1.0e-9
+        return 1.0e-9, 'n'
     if prefix in PREFIX_MICRO:
-        return 1.0e-6
+        return 1.0e-6, u"µ"
     if prefix in PREFIX_MILLI:
-        return 1.0e-3
+        return 1.0e-3, 'm'
     if prefix in PREFIX_KILO:
-        return 1.0e3
+        return 1.0e3, 'k'
     if prefix in PREFIX_MEGA:
-        return 1.0e6
+        return 1.0e6, 'M'
     if prefix in PREFIX_GIGA:
-        return 1.0e9
+        return 1.0e9, 'G'
     # Unknown, we shouldn't get here because the regex matched
     # BUT: I found that sometimes unexpected things happend, like mu matching micro and then we reaching this code
     #      Now is fixed, but I can't be sure some bizarre case is overlooked
     logger.error('Unknown prefix, please report')  # pragma: no cover
-    return 1  # pragma: no cover
+    return 1, ''  # pragma: no cover
 
 
 def group_string(group):  # Return a reg-ex string for a list of values
@@ -90,7 +94,7 @@ def match_string():
     return r"(\d*\.?\d*)\s*(" + group_string(PREFIX_ALL) + ")*(" + group_string(UNIT_ALL) + r")*(\d*)$"
 
 
-def comp_match(component):
+def comp_match(component, ref_prefix):
     """
     Return a normalized value and units for a given component value string
     e.g. comp_match('10R2') returns (10, R)
@@ -145,22 +149,7 @@ def comp_match(component):
         val = float(value)
 
     # Return all the data, let the caller join it
-    return (val, get_prefix(prefix), get_unit(units))
-
-
-# def component_value(valString):
-#
-#     result = comp_match(valString)
-#
-#     if not result:
-#         return valString  # Return the same string back
-#
-#     if not len(result) == 2:  # Result length is incorrect
-#         return valString
-#
-#     val = result[0]
-#
-#     return val
+    return (val, get_prefix(prefix), get_unit(units, ref_prefix))
 
 
 def compare_values(c1, c2):
@@ -174,8 +163,8 @@ def compare_values(c1, c2):
         return False
 
     # Join the data to compare
-    (v1, p1, u1) = r1
-    (v2, p2, u2) = r2
+    (v1, (p1, ps1), u1) = r1
+    (v2, (p2, ps2), u2) = r2
 
     v1 = "{0:.15f}".format(v1 * 1.0 * p1)
     v2 = "{0:.15f}".format(v2 * 1.0 * p2)
