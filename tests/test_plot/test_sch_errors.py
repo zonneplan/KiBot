@@ -230,3 +230,23 @@ def test_sch_errors_bad_sfname():
 def test_sch_errors_miss_sfname():
     setup_ctx('miss_sfname', 'Missing sub-sheet file name')
 
+
+def test_sch_errors_miss_descr():
+    setup_ctx('miss_descr', r'Missing \$Descr')
+
+
+def test_sch_errors_bad_encoding():
+    setup_ctx('bad_encoding', 'Unsupported encoding')
+
+
+def test_sch_errors_bad_snum():
+    setup_ctx('bad_snum', 'Wrong sheet number')
+
+
+def test_sch_errors_bad_tbentry():
+    setup_ctx('bad_tbentry', 'Wrong entry in title block')
+
+
+
+
+
