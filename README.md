@@ -421,6 +421,8 @@ Next time you need this list just use an alias, like this:
             - `regex`: [string=''] Regular expression to match.
             - *regexp*: Alias for regex.
         - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
+        - `normalize_locale`: [boolean=false] When normalizing values use the locale decimal point.
+        - `normalize_values`: [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.
         - `number`: [number=1] Number of boards to build (components multiplier).
         - `output`: [string='%f-%i.%x'] filename for the output (%i=bom). Affected by global options.
         - `test_regex`: [boolean=true] Each component group will be tested against a number of regular-expressions

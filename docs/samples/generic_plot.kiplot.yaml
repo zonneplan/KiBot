@@ -140,6 +140,10 @@ outputs:
         # `regexp` is an alias for `regex`
       # [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible
       merge_blank_fields: true
+      # [boolean=false] When normalizing values use the locale decimal point
+      normalize_locale: false
+      # [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes
+      normalize_values: false
       # [number=1] Number of boards to build (components multiplier)
       number: 1
       # [string='%f-%i.%x'] filename for the output (%i=bom). Affected by global options
