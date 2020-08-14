@@ -97,7 +97,7 @@ class LibComponentField(object):
     def parse(line, lib_name):
         m = LibComponentField.field_re.match(line)
         if not m:
-            raise SchLibError('Malformed component field', line, _sch_line_number, lib_name)
+            raise SchLibError('Malformed component field', line)
         field = LibComponentField()
         gs = m.groups()
         field.number = int(gs[0])
@@ -115,7 +115,7 @@ class LibComponentField(object):
             field.name = gs[9][1:-1]
         else:
             if field.number > 4:
-                raise SchLibError('Missing component field name', line, _sch_line_number, lib_name)
+                raise SchLibError('Missing component field name', line)
             field.name = ['Reference', 'Value', 'Footprint', 'Datasheet'][field.number]
         return field
 
