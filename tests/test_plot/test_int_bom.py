@@ -415,17 +415,23 @@ def get_column(rows, col, split=True):
     return components
 
 
-def test_int_bom_sort_1():
+def int_bom_sort(locale, dp):
     prj = 'RLC_sort'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_sort_1', prj, 'int_bom_sort_1', BOM_DIR)
-    ctx.run(do_locale=True)
+    ctx = context.TestContextSCH('test_int_bom_sort_'+locale, prj, 'int_bom_sort_1', BOM_DIR)
+    ctx.run(do_locale=locale)
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
     ref_column = header.index(REF_COLUMN_NAME)
     exp = ['C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C1', 'C2', 'C3', 'C4', 'C11', 'C12',
            'L2', 'L1', 'L3',
-           'R5', 'R16', 'R12', 'R4', 'R9', 'R10', 'R3', 'R2', 'R1', 'R8', 'R7', 'R11', 'R14', 'R13', 'R15']
+           'R5', 'R16', 'R12', 'R4', 'R9', 'R10', 'R3']
+    if dp == ',':
+        exp += ['R2', 'R1', 'R8']
+    else:
+        # 8,2 k is interpreted as 82 k
+        exp += ['R1', 'R2', 'R8']
+    exp += ['R7', 'R11', 'R14', 'R13', 'R15']
     check_kibom_test_netlist(rows, ref_column, 23, None, exp)
     # Check the sorting
     assert get_column(rows, ref_column) == exp
@@ -433,13 +439,25 @@ def test_int_bom_sort_1():
     vals_column = header.index('Value')
     for r in rows:
         if 'C7' in r[ref_column]:
-            assert r[vals_column] == '3,3 pF'
-            logging.debug('C7 == 3,3 pF OK')
+            assert r[vals_column] == '3'+dp+'3 pF'
+            logging.debug('C7 == 3'+dp+'3 pF OK')
             break
     ctx.search_err(r'Malformed value: .?10Q.?')
     ctx.search_err(r'Malformed value: .?\.G.?')
     ctx.search_err(r'Malformed value: .?2\.2k2.?')
     ctx.clean_up()
+
+
+def test_int_bom_sort_1():
+    int_bom_sort('es_AR.UTF-8', ',')
+
+
+def test_int_bom_sort_2():
+    int_bom_sort('en_US.UTF-8', '.')
+
+
+def test_int_bom_sort_3():
+    int_bom_sort('xx_XX.UTF-8', '.')
 
 
 def test_int_bom_datasheet_link():

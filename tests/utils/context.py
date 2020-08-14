@@ -235,7 +235,7 @@ class TestContext(object):
             old_LOCPATH = os.environ.get('LOCPATH')
             old_LANG = os.environ.get('LANG')
             os.environ['LOCPATH'] = os.path.abspath('tests/data')
-            os.environ['LANG'] = 'es_AR.UTF-8'
+            os.environ['LANG'] = do_locale
             # os.environ['LANG'] = 'en_US.UTF-8'
             logging.debug('LOCPATH='+os.environ['LOCPATH'])
             logging.debug('LANG='+os.environ['LANG'])
