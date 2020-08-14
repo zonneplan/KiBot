@@ -298,6 +298,7 @@ class TestContext(object):
                os.path.join(REF_DIR, reference),
                # Avoid the part where KiCad version is printed
                '-crop', '100%x92%+0+0', '+repage',
+               '-colorspace', 'RGB',
                self.get_out_path(diff)]
         logging.debug('Comparing images with: '+str(cmd))
         res = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
