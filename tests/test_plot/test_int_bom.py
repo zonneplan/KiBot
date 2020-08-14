@@ -28,16 +28,14 @@ Tests of Internal BoM files
 - Multipart component (not repeated)
 - Field collision
 - test_regex/exclude_any/include_only
+- No XLSX support
 
 Missing:
 - Variants
 - number_boards
-- hide_headers
-- hide_pcb_info
 - various boards
-- stats info
 
-- XLSX colors
+- XLSX colors (for real)
 
 For debug information use:
 pytest-3 --log-cli-level debug
@@ -47,7 +45,6 @@ pytest-3 --log-cli-level debug
 import os
 import sys
 import logging
-import subprocess
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -345,7 +342,7 @@ def get_column(rows, col, split=True):
 def test_int_bom_sort_1():
     prj = 'RLC_sort'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_sort_1', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx = context.TestContextSCH('test_int_bom_sort_1', prj, 'int_bom_sort_1', BOM_DIR)
     ctx.run(do_locale=True)
     out = prj + '-bom.' + ext
     rows, header = ctx.load_csv(out)
@@ -356,6 +353,13 @@ def test_int_bom_sort_1():
     check_kibom_test_netlist(rows, ref_column, 23, None, exp)
     # Check the sorting
     assert get_column(rows, ref_column) == exp
+    # Check normalization
+    vals_column = header.index('Value')
+    for r in rows:
+        if 'C7' in r[ref_column]:
+            assert r[vals_column] == '3,3 pF'
+            logging.debug('C7 == 3,3 pF OK')
+            break
     ctx.search_err(r'Malformed value: .?10Q.?')
     ctx.search_err(r'Malformed value: .?\.G.?')
     ctx.search_err(r'Malformed value: .?2\.2k2.?')
