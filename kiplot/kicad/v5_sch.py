@@ -114,7 +114,7 @@ class LibComponentField(object):
         if gs[9]:
             field.name = gs[9][1:-1]
         else:
-            if field.number > 4:
+            if field.number > 3:
                 raise SchLibError('Missing component field name', line)
             field.name = ['Reference', 'Value', 'Footprint', 'Datasheet'][field.number]
         return field
@@ -544,7 +544,7 @@ class SchematicField(object):
         if gs[9]:
             field.name = gs[9][1:-1]
         else:
-            if field.number > 4:
+            if field.number > 3:
                 raise SchFileError('Missing component field name', line)
             field.name = ['Reference', 'Value', 'Footprint', 'Datasheet'][field.number]
         return field
