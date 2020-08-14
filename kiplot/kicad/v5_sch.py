@@ -336,10 +336,7 @@ class Pin(object):
         pin.sub_part = int(g[8])
         pin.convert = int(g[9])
         pin.type = g[10]
-        if len(g) == 12:
-            pin.gtype = g[11]
-        else:
-            pin.gtype = None
+        pin.gtype = g[11]
         return pin
 
 
