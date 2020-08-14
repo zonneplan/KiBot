@@ -215,7 +215,7 @@ class TestContext(object):
             # One is enough, 2 can generate tons of data when loading libs
             cmd.append('-v')
             if extra_debug:
-                cmd.append('-v')
+                cmd.append('-vv')
         if not no_board_file:
             if self.mode == MODE_PCB:
                 cmd = cmd+['-b', filename if filename else self.board_file]
