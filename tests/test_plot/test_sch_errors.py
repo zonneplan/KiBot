@@ -81,7 +81,7 @@ def test_sch_errors_l8():
 
 
 def test_sch_errors_l9():
-    setup_ctx('l9', 'error_l9', 'Missing DCM signature')
+    setup_ctx('l9', 'error_l9', ['Missing DCM signature', 'Component (.*?) is not annotated'])
 
 
 def test_sch_errors_field():
@@ -96,3 +96,47 @@ def test_sch_errors_ar():
     setup_ctx('field_ar', 'error_ar', ['Unknown AR field .?Bogus.?', 'Alternative Reference without path',
               'Alternative Reference without reference', 'Component `U1` without the basic fields',
               'Footprint with more than one colon'])
+
+
+def test_sch_errors_miss_label():
+    setup_ctx('miss_label', 'error_miss_label', 'Missing component label')
+
+
+def test_sch_errors_bad_label():
+    setup_ctx('bad_label', 'error_bad_label', 'Malformed component label')
+
+
+def test_sch_errors_miss_unit():
+    setup_ctx('miss_unit', 'error_miss_unit', 'Missing component unit')
+
+
+def test_sch_errors_bad_unit():
+    setup_ctx('bad_unit', 'error_bad_unit', 'Malformed component unit')
+
+
+def test_sch_errors_miss_pos():
+    setup_ctx('miss_pos', 'error_miss_pos', 'Missing component position')
+
+
+def test_sch_errors_bad_pos():
+    setup_ctx('bad_pos', 'error_bad_pos', ['Malformed component position', 'Inconsistent position for component'])
+
+
+def test_sch_errors_miss_red_pos():
+    setup_ctx('miss_red_pos', 'error_miss_red_pos', 'Missing component redundant position')
+
+
+def test_sch_errors_bad_red_pos():
+    setup_ctx('bad_red_pos', 'error_bad_red_pos', 'Malformed component redundant position')
+
+
+def test_sch_errors_miss_matrix():
+    setup_ctx('miss_matrix', 'error_miss_matrix', 'Missing component orientation matrix')
+
+
+def test_sch_errors_bad_matrix():
+    setup_ctx('bad_matrix', 'error_bad_matrix', 'Malformed component orientation matrix')
+
+
+def test_sch_errors_wrong_ref():
+    setup_ctx('wrong_ref', 'error_wrong_ref', 'Malformed component reference')
