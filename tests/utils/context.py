@@ -269,9 +269,10 @@ class TestContext(object):
             txt = f.read()
         res = []
         for t in texts:
-            logging.debug('- r"'+t+'"')
+            msg = '- r"'+t+'"'
             m = re.search(t, txt, re.MULTILINE)
-            assert m
+            assert m, msg
+            logging.debug(msg+' OK')
             # logging.debug(' '+m.group(0))
             res.append(m.groups())
         return res
@@ -389,10 +390,10 @@ class TestContext(object):
         logging.debug("Found apertures {}".format(aps))
         return aps
 
-    def load_csv(self, filename):
+    def load_csv(self, filename, delimiter=','):
         rows = []
         with open(self.expect_out_file(os.path.join(self.sub_dir, filename))) as csvfile:
-            reader = csv.reader(csvfile)
+            reader = csv.reader(csvfile, delimiter=delimiter)
             header = next(reader)
             for r in reader:
                 if not r:

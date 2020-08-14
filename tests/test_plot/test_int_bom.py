@@ -33,7 +33,6 @@ Tests of Internal BoM files
 Missing:
 - Variants
 - number_boards
-- various boards
 
 - XLSX colors (for real)
 
@@ -186,18 +185,47 @@ def check_head_html(r, info, stats, title, logo):
         logging.debug('No stats block Ok')
 
 
-def test_int_bom_simple_csv():
-    prj = 'kibom-test'
-    ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_simple_csv', prj, 'int_bom_simple_csv', BOM_DIR)
-    ctx.run()
-    out = prj + '-bom.' + ext
-    rows, header = ctx.load_csv(out)
-    assert header == KIBOM_TEST_HEAD
+def kibom_verif(rows, header, skip_head=False, qty_name=QTY_COLUMN_NAME):
+    if not skip_head:
+        assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    qty_column = header.index(qty_name)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
     check_dnc(rows, 'R7', ref_column, qty_column)
+
+
+def kibom_setup(test, ext='csv'):
+    prj = 'kibom-test'
+    ctx = context.TestContextSCH('test_'+test, prj, test, BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    return ctx, out
+
+
+def test_int_bom_simple_csv():
+    ctx, out = kibom_setup('int_bom_simple_csv')
+    rows, header = ctx.load_csv(out)
+    kibom_verif(rows, header)
+    # Check not quoted and comma as delimiter
+    ctx.search_in_file(os.path.join(BOM_DIR, out), [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
+    ctx.clean_up()
+
+
+def test_int_bom_refuse_no_sep():
+    ctx, out = kibom_setup('int_bom_refuse_no_sep')
+    rows, header = ctx.load_csv(out)
+    kibom_verif(rows, header)
+    # Check not quoted and comma as delimiter
+    ctx.search_in_file(os.path.join(BOM_DIR, out), ['"'+KIBOM_TEST_HEAD[0]+'","'+KIBOM_TEST_HEAD[1]+'"'])
+    ctx.clean_up()
+
+
+def test_int_bom_simple_txt():
+    ctx, out = kibom_setup('int_bom_simple_txt', 'txt')
+    rows, header = ctx.load_csv(out, delimiter='\t')
+    kibom_verif(rows, header)
+    # Check all quoted and tab as delimiter
+    ctx.search_in_file(os.path.join(BOM_DIR, out), ['"'+KIBOM_TEST_HEAD[0]+'"\t"'+KIBOM_TEST_HEAD[1]+'"'])
     ctx.clean_up()
 
 
@@ -282,19 +310,12 @@ def adapt_xml(h):
 
 
 def test_int_bom_simple_xml():
-    prj = 'kibom-test'
-    ext = 'xml'
-    ctx = context.TestContextSCH('test_int_bom_simple_xml', prj, 'int_bom_simple_xml', BOM_DIR)
-    ctx.run()
-    out = prj + '-bom.' + ext
+    ctx, out = kibom_setup('int_bom_simple_xml', 'xml')
     rows, header = ctx.load_xml(out)
     # Columns get sorted by name, so we need to take care of it
     for c in KIBOM_TEST_HEAD:
         assert adapt_xml(c) in header, "Missing column "+c
-    ref_column = header.index(adapt_xml(REF_COLUMN_NAME))
-    qty_column = header.index(adapt_xml(QTY_COLUMN_NAME))
-    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    kibom_verif(rows, header, skip_head=True, qty_name=adapt_xml(QTY_COLUMN_NAME))
     ctx.clean_up()
 
 

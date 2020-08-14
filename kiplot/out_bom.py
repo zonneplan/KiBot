@@ -130,7 +130,7 @@ class BoMCSV(Optionable):
         super().__init__()
         with document:
             self.separator = ','
-            """ CSV Separator """
+            """ CSV Separator. TXT and TSV always use tab as delimiter """
             self.hide_pcb_info = False
             """ Hide project information """
             self.hide_stats_info = False
