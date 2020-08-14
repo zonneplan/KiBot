@@ -261,7 +261,7 @@ class TestContext(object):
             res = []
             for t in text:
                 m = re.search(t, self.err, re.MULTILINE)
-                assert m is not None
+                assert m is not None, t
                 logging.debug('error match: `{}` (`{}`) OK'.format(t, m.group(0)))
                 res.append(m)
             return res

@@ -91,3 +91,8 @@ def test_sch_errors_field():
 def test_sch_errors_field_name():
     setup_ctx('field_name', 'error_field_name', 'Missing component field name')
 
+
+def test_sch_errors_ar():
+    setup_ctx('field_ar', 'error_ar', ['Unknown AR field .?Bogus.?', 'Alternative Reference without path',
+              'Alternative Reference without reference', 'Component `U1` without the basic fields',
+              'Footprint with more than one colon'])
