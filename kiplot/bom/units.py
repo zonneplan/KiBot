@@ -173,9 +173,10 @@ def compare_values(c1, c2):
         # Values match
         if u1 == u2:
             return True  # Units match
-        if not u1:
-            return True  # No units for component 1
-        if not u2:
-            return True  # No units for component 2
+        # No longer posible because now we use the prefix to determine absent units
+        # if not u1:
+        #     return True  # No units for component 1
+        # if not u2:
+        #     return True  # No units for component 2
 
     return False
