@@ -12,3 +12,4 @@ outputs:
         logo: false
         title: ''
         hide_pcb_info: true
+        style: 'classic'

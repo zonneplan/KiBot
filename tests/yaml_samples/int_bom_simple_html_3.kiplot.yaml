@@ -10,3 +10,4 @@ outputs:
     options:
       html:
         logo: false
+        style: 'modern-green'

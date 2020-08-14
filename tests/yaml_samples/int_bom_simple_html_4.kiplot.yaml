@@ -11,3 +11,4 @@ outputs:
       html:
         logo: false
         title: ''
+        style: 'modern-red'
