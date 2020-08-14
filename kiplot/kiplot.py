@@ -126,6 +126,8 @@ def load_sch():
     try:
         GS.sch.load(GS.sch_file)
         GS.sch.load_libs(GS.sch_file)
+        if GS.debug_level > 1:
+            logger.debug('Schematic dependencies: '+str(GS.sch.get_files()))
     except SchFileError as e:
         trace_dump()
         logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
