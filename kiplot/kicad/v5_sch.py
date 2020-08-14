@@ -821,7 +821,7 @@ class SchematicWire(object):
         res = _split_space(line)
         if len(res) != 3:
             raise SchFileError('Malformed wire', line)
-        wire = SchematicText()
+        wire = SchematicWire()
         if res[0] == 'Wire':
             # Wire Wire Line
             # Wire Bus Line
