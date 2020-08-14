@@ -61,3 +61,17 @@ def test_sch_errors_l4():
     setup_ctx('l4', 'error_l4', 'Missing component field name')
 
 
+def test_sch_errors_l5():
+    setup_ctx('l5', 'error_l5', ['Unknown poligon definition', 'Expected 6 coordinates and got 8 in poligon',
+              'Unknown square definition', 'Unknown circle definition', 'Unknown arc definition',
+              'Unknown text definition', 'Unknown pin definition', 'Failed to load component definition',
+              'Unknown draw element'])
+
+
+def test_sch_errors_l6():
+    setup_ctx('l6', 'error_l6', 'Missing library signature')
+
+
+def test_sch_errors_l7():
+    setup_ctx('l7', 'error_l7', 'Unknown library entry')
+

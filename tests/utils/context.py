@@ -257,6 +257,14 @@ class TestContext(object):
         return m
 
     def search_err(self, text):
+        if isinstance(text, list):
+            res = []
+            for t in text:
+                m = re.search(t, self.err, re.MULTILINE)
+                assert m is not None
+                logging.debug('error match: `{}` (`{}`) OK'.format(t, m.group(0)))
+                res.append(m)
+            return res
         m = re.search(text, self.err, re.MULTILINE)
         assert m is not None
         logging.debug('error match: `{}` (`{}`) OK'.format(text, m.group(0)))
