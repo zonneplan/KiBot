@@ -379,6 +379,8 @@ class LibComponent(object):
                 logger.debug('- Loading component {} from {}'.format(self.name, lib_name))
         else:
             logger.warning('Failed to load component definition: `{}`'.format(line))
+            # Mark it as broken
+            self.name = None
         self.fields = []
         self.dfields = {}
         self.alias = None
@@ -448,10 +450,11 @@ class SymLib(object):
             while not line.startswith('#End Library'):
                 if line.startswith('DEF'):
                     o = LibComponent(line, f, file)
-                    self.comps[o.name] = o
-                    if o.alias:
-                        for a in o.alias:
-                            self.alias[a] = o
+                    if o.name:
+                        self.comps[o.name] = o
+                        if o.alias:
+                            for a in o.alias:
+                                self.alias[a] = o
                 else:
                     raise SchLibError('Unknown library entry', line)
                 line = _get_line_lib(f)
