@@ -128,8 +128,8 @@ def load_sch():
         GS.sch.load_libs(GS.sch_file)
     except SchFileError as e:
         trace_dump()
-        logger.error('At line {} of `{}`: {}'.format(e.args[2], GS.sch_file, e.args[0]))
-        logger.error('Line content: `{}`'.format(e.args[1]))
+        logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
+        logger.error('Line content: `{}`'.format(e.code))
         exit(CORRUPTED_SCH)
 
 

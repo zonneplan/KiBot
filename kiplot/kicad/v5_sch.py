@@ -12,6 +12,7 @@ from .. import log
 
 logger = log.get_logger(__name__)
 _sch_line_number = 0
+_sch_file_name = None
 
 
 class SchError(Exception):
@@ -19,18 +20,24 @@ class SchError(Exception):
 
 
 class SchFileError(SchError):
-    pass
+    def __init__(self, msg, code):
+        super().__init__()
+        self.line = _sch_line_number
+        self.file = _sch_file_name
+        self.msg = msg
+        self.code = code
 
 
-class SchLibError(SchError):
-    pass
+class SchLibError(SchFileError):
+    def __init__(self, msg, code):
+        super().__init__(msg, code)
 
 
 def _get_line(f):
     global _sch_line_number
     res = f.readline()
     if not res:
-        raise SchFileError('Unexpected end of file', '', _sch_line_number)
+        raise SchFileError('Unexpected end of file', '')
     _sch_line_number += 1
     return res.rstrip()
 
@@ -44,7 +51,7 @@ def _get_line_dcm(f):
         _sch_line_number += 1
         res = f.readline()
     if not res:
-        raise SchFileError('Unexpected end of file', '', _sch_line_number)
+        raise SchFileError('Unexpected end of file', '')
     _sch_line_number += 1
     return res.rstrip()
 
@@ -58,7 +65,7 @@ def _get_line_lib(f):
         _sch_line_number += 1
         res = f.readline()
     if not res:
-        raise SchFileError('Unexpected end of file', '', _sch_line_number)
+        raise SchFileError('Unexpected end of file', '')
     _sch_line_number += 1
     return res.rstrip()
 
@@ -429,12 +436,14 @@ class SymLib(object):
     def load(self, file):
         """ Populates the class, file must exist """
         logger.debug('Loading library `{}`'.format(file))
+        global _sch_file_name
+        _sch_file_name = file
         with open(file, 'rt') as f:
             global _sch_line_number
             _sch_line_number = 0
             line = _get_line_lib(f)
             if not line.startswith('EESchema-LIBRARY'):
-                raise SchLibError('Missing library signature', line, _sch_line_number)
+                raise SchLibError('Missing library signature', line)
             line = _get_line_lib(f)
             while not line.startswith('#End Library'):
                 if line.startswith('DEF'):
@@ -444,7 +453,7 @@ class SymLib(object):
                         for a in o.alias:
                             self.alias[a] = o
                 else:
-                    raise SchLibError('Unknown library entry', line, _sch_line_number)
+                    raise SchLibError('Unknown library entry', line)
                 line = _get_line_lib(f)
 
 
@@ -484,11 +493,13 @@ class DocLib(object):
     def load(self, file):
         """ Populates the class, file must exist """
         logger.debug('Loading doc-lib `{}`'.format(file))
+        global _sch_file_name
+        _sch_file_name = file
         with open(file, 'rt') as f:
             _sch_line_number = 0
             line = _get_line_dcm(f)
             if not line.startswith('EESchema-DOCLIB'):
-                raise SchLibError('Missing DCM signature', line, _sch_line_number)
+                raise SchLibError('Missing DCM signature', line)
             line = _get_line_dcm(f)
             while not line.startswith('#End Doc Library'):
                 if line.startswith('$CMP'):
@@ -497,7 +508,7 @@ class DocLib(object):
                     if GS.debug_level > 1:
                         logger.debug('- '+repr(o))
                 else:
-                    raise SchLibError('Unknown DCM entry', line, _sch_line_number)
+                    raise SchLibError('Unknown DCM entry', line)
                 line = _get_line_dcm(f)
 
 
@@ -513,7 +524,7 @@ class SchematicField(object):
     def parse(line):
         m = SchematicField.field_re.match(line)
         if not m:
-            raise SchFileError('Malformed component field', line, _sch_line_number)
+            raise SchFileError('Malformed component field', line)
         field = SchematicField()
         gs = m.groups()
         field.number = int(gs[0])
@@ -531,7 +542,7 @@ class SchematicField(object):
             field.name = gs[9][1:-1]
         else:
             if field.number > 4:
-                raise SchFileError('Missing component field name', line, _sch_line_number)
+                raise SchFileError('Missing component field name', line)
             field.name = ['Reference', 'Value', 'Footprint', 'Datasheet'][field.number]
         return field
 
@@ -634,7 +645,7 @@ class SchematicComponent(object):
                 self.footprint_lib = res[0]
                 self.footprint = res[1]
             else:
-                raise SchFileError('Footprint with more than one colon', f[2].value, _sch_line_number)
+                raise SchFileError('Footprint with more than one colon', f[2].value)
         if c > 3:
             self.datasheet = f[3].value
 
@@ -648,10 +659,10 @@ class SchematicComponent(object):
         # L lib:name reference
         line = _get_line(f)
         if not line or line[0] != 'L':
-            raise SchFileError('Missing component label', line, _sch_line_number)
+            raise SchFileError('Missing component label', line)
         res = _split_space(line[2:])
         if len(res) != 2:
-            raise SchFileError('Malformed component label', line, _sch_line_number)
+            raise SchFileError('Malformed component label', line)
         comp = SchematicComponent()
         comp.name, comp.f_ref = res
         res = comp.name.split(':')
@@ -665,20 +676,20 @@ class SchematicComponent(object):
         # U N mm time_stamp
         line = _get_line(f)
         if line[0] != 'U':
-            raise SchFileError('Missing component unit', line, _sch_line_number)
+            raise SchFileError('Missing component unit', line)
         res = _split_space(line[2:])
         if len(res) != 3:
-            raise SchFileError('Malformed component unit', line, _sch_line_number)
+            raise SchFileError('Malformed component unit', line)
         comp.unit = int(res[0])
         comp.unit2 = int(res[1])
         comp.id = res[2]
         # P x y
         line = _get_line(f)
         if line[0] != 'P':
-            raise SchFileError('Missing component position', line, _sch_line_number)
+            raise SchFileError('Missing component position', line)
         res = _split_space(line[2:])
         if len(res) != 2:
-            raise SchFileError('Malformed component position', line, _sch_line_number)
+            raise SchFileError('Malformed component position', line)
         comp.x = int(res[0])
         comp.y = int(res[1])
         # Optional "Alternative References"
@@ -708,10 +719,10 @@ class SchematicComponent(object):
         comp.add_field(field)
         # Redundant pos
         if not line.startswith('\t'+str(comp.unit)):
-            raise SchFileError('Missing component redundant position', line, _sch_line_number)
+            raise SchFileError('Missing component redundant position', line)
         res = _split_space(line[2:])
         if len(res) != 2:
-            raise SchFileError('Malformed component redundant position', line, _sch_line_number)
+            raise SchFileError('Malformed component redundant position', line)
         xr = int(res[0])
         yr = int(res[1])
         if comp.x != xr or comp.y != yr:
@@ -720,10 +731,10 @@ class SchematicComponent(object):
         # Orientation matrix
         line = _get_line(f)
         if line[0] != '\t':
-            raise SchFileError('Missing component orientation matrix', line, _sch_line_number)
+            raise SchFileError('Missing component orientation matrix', line)
         res = _split_space(line[1:])
         if len(res) != 4:
-            raise SchFileError('Malformed component orientation matrix', line, _sch_line_number)
+            raise SchFileError('Malformed component orientation matrix', line)
         comp.matrix = [int(v) for v in res]
         line = _get_line(f)
         while not line.startswith('$EndComp'):
@@ -737,7 +748,7 @@ class SchematicComponent(object):
         # Separate the reference in its components
         m = SchematicComponent.ref_re.match(comp.ref)
         if not m:
-            raise SchFileError('Malformed component reference', comp.ref, _sch_line_number)
+            raise SchFileError('Malformed component reference', comp.ref)
         comp.ref_prefix, comp.ref_suffix = m.groups()
         # Location in the project
         comp.sheet_path = sheet_path
@@ -757,7 +768,7 @@ class SchematicConnection(object):
     def parse(connect, line):
         m = SchematicConnection.conn_re.match(line)
         if not m:
-            raise SchFileError('Malformed no/connection', line, _sch_line_number)
+            raise SchFileError('Malformed no/connection', line)
         c = SchematicConnection()
         c.connect = connect
         c.x = int(m.group(1))
@@ -775,7 +786,7 @@ class SchematicText(object):
     def load(f, line):
         m = SchematicText.label_re.match(line)
         if not m:
-            raise SchFileError('Malformed text', line, _sch_line_number)
+            raise SchFileError('Malformed text', line)
         text = SchematicText()
         gs = m.groups()
         text.type = gs[0]
@@ -804,27 +815,27 @@ class SchematicWire(object):
     def load(f, line):
         res = _split_space(line)
         if len(res) != 3:
-            raise SchFileError('Malformed wire', line, _sch_line_number)
+            raise SchFileError('Malformed wire', line)
         wire = SchematicText()
         if res[0] == 'Wire':
             # Wire Wire Line
             # Wire Bus Line
             # Wire Notes Line
             if res[2] != 'Line' or res[1] not in SchematicWire.WIRES:
-                raise SchFileError('Malformed wire', line, _sch_line_number)
+                raise SchFileError('Malformed wire', line)
             wire.type = SchematicWire.WIRES[res[1]]
         else:  # Entry
             # Entry Wire Line
             # Entry Bus Bus
             if (res[2] != 'Bus' and res[2] != 'Line') or res[1] not in SchematicWire.ENTRIES:
-                raise SchFileError('Malformed entry', line, _sch_line_number)
+                raise SchFileError('Malformed entry', line)
             wire.type = SchematicWire.ENTRIES[res[1]]
         line = _get_line(f)
         if line[0] != '\t':
-            raise SchFileError('Malformed wire', line, _sch_line_number)
+            raise SchFileError('Malformed wire', line)
         res = _split_space(line[1:])
         if len(res) != 4:
-            raise SchFileError('Malformed wire', line, _sch_line_number)
+            raise SchFileError('Malformed wire', line)
         wire.x = int(res[0])
         wire.y = int(res[1])
         wire.ex = int(res[2])
@@ -842,9 +853,9 @@ class SchematicBitmap(object):
         line = _get_line(f)
         res = _split_space(line)
         if len(res) != 3:
-            raise SchFileError('Malformed bitmap position', line, _sch_line_number)
+            raise SchFileError('Malformed bitmap position', line)
         if res[0] != 'Pos':
-            raise SchFileError('Missing bitmap position', line, _sch_line_number)
+            raise SchFileError('Missing bitmap position', line)
         bmp = SchematicBitmap()
         bmp.x = int(res[1])
         bmp.y = int(res[2])
@@ -852,14 +863,14 @@ class SchematicBitmap(object):
         line = _get_line(f)
         res = _split_space(line)
         if len(res) != 2:
-            raise SchFileError('Malformed bitmap scale', line, _sch_line_number)
+            raise SchFileError('Malformed bitmap scale', line)
         if res[0] != 'Scale':
-            raise SchFileError('Missing bitmap scale', line, _sch_line_number)
+            raise SchFileError('Missing bitmap scale', line)
         bmp.scale = float(res[1].replace(',', '.'))
         # Data
         line = _get_line(f)
         if line != 'Data':
-            raise SchFileError('Missing bitmap data', line, _sch_line_number)
+            raise SchFileError('Missing bitmap data', line)
         line = _get_line(f)
         bmp.data = b''
         while line != 'EndData':
@@ -869,7 +880,7 @@ class SchematicBitmap(object):
         # End of bitmap
         line = _get_line(f)
         if line != '$EndBitmap':
-            raise SchFileError('Missing end of bitmap', line, _sch_line_number)
+            raise SchFileError('Missing end of bitmap', line)
         return bmp
 
 
@@ -883,7 +894,7 @@ class SchematicPort(object):
     def parse(line):
         m = SchematicPort.port_re.match(line)
         if not m:
-            raise SchFileError('Malformed sheet port label', line, _sch_line_number)
+            raise SchFileError('Malformed sheet port label', line)
         port = SchematicPort()
         res = m.groups()
         port.number = int(res[0])
@@ -920,10 +931,10 @@ class SchematicSheet(object):
         # Position & Size
         line = _get_line(f)
         if line[0] != 'S':
-            raise SchFileError('Missing sheet size and position', line, _sch_line_number)
+            raise SchFileError('Missing sheet size and position', line)
         res = _split_space(line[2:])
         if len(res) != 4:
-            raise SchFileError('Malformed sheet size and position', line, _sch_line_number)
+            raise SchFileError('Malformed sheet size and position', line)
         sch = SchematicSheet()
         sch.x = int(res[0])
         sch.y = int(res[1])
@@ -940,17 +951,17 @@ class SchematicSheet(object):
         sch.file = None
         while not line.startswith('$EndSheet'):
             if line[0] != 'F':
-                raise SchFileError('Malformed sheet label', line, _sch_line_number)
+                raise SchFileError('Malformed sheet label', line)
             if line[1] == '0':
                 m = SchematicSheet.name_re.match(line[2:].lstrip())
                 if not m:
-                    raise SchFileError('Malformed sheet name', line, _sch_line_number)
+                    raise SchFileError('Malformed sheet name', line)
                 sch.name = m.group(1)
                 sch.name_size = int(m.group(2))
             elif line[1] == '1' and line[2] == ' ':
                 m = SchematicSheet.name_re.match(line[2:].lstrip())
                 if not m:
-                    raise SchFileError('Malformed sheet file name', line, _sch_line_number)
+                    raise SchFileError('Malformed sheet file name', line)
                 sch.file = m.group(1)
                 sch.file_size = int(m.group(2))
             else:
@@ -973,7 +984,7 @@ class Schematic(object):
         line = _get_line(f)
         m = re.match(r'\$Descr (\S+) (\d+) (\d+)', line)
         if not m:
-            raise SchFileError('Missing $Descr', line, _sch_line_number)
+            raise SchFileError('Missing $Descr', line)
         self.page_type = m.group(1)
         self.page_width = m.group(2)
         self.page_height = m.group(3)
@@ -986,17 +997,17 @@ class Schematic(object):
                 return
             elif line.startswith('encoding'):
                 if line[9:14] != 'utf-8':
-                    raise SchFileError('Unsupported encoding', line, _sch_line_number)
+                    raise SchFileError('Unsupported encoding', line)
             elif line.startswith('Sheet'):
                 res = _split_space(line[6:])
                 if len(res) != 2:
-                    raise SchFileError('Wrong sheet number', line, _sch_line_number)
+                    raise SchFileError('Wrong sheet number', line)
                 self.sheet = int(res[0])
                 self.sheets = int(res[1])
             else:
                 m = re.match(r'(\S+)\s+"(.*)"', line)
                 if not m:
-                    raise SchFileError('Wrong entry in title block', line, _sch_line_number)
+                    raise SchFileError('Wrong entry in title block', line)
                 self.title_block[m.group(1)] = m.group(2)
 
     def load(self, fname, sheet_path='', sheet_path_h='/', libs={}, fields=[], fields_lc={}):
@@ -1008,26 +1019,28 @@ class Schematic(object):
         self.libs = libs
         self.fields = fields
         self.fields_lc = fields_lc
+        global _sch_file_name
+        _sch_file_name = fname
         with open(fname, 'rt') as f:
             global _sch_line_number
             _sch_line_number = 0
             line = _get_line(f)
             m = re.match(r'EESchema Schematic File Version (\d+)', line)
             if not m:
-                raise SchFileError('No eeschema signature', line, _sch_line_number)
+                raise SchFileError('No eeschema signature', line)
             self.version = int(m.group(1))
             line = _get_line(f)
             if line.startswith('LIBS'):
                 # LIBS is optional and can be skipped
                 line = _get_line(f)
-            m = re.match(r'EELAYER (\d+) (\d+)', line, _sch_line_number)
+            m = re.match(r'EELAYER (\d+) (\d+)', line)
             if not m:
-                raise SchFileError('Missing EELAYER', line, _sch_line_number)
+                raise SchFileError('Missing EELAYER', line)
             self.eelayer_n = int(m.group(1))
             self.eelayer_m = int(m.group(2))
             line = _get_line(f)
             if not line.startswith('EELAYER END'):
-                raise SchFileError('Missing EELAYER END', line, _sch_line_number)
+                raise SchFileError('Missing EELAYER END', line)
             self._get_title_block(f)
             line = _get_line(f)
             self.all = []
@@ -1060,7 +1073,7 @@ class Schematic(object):
                     obj = SchematicSheet.load(f)
                     self.sheets.append(obj)
                 else:
-                    raise SchFileError('Unknown definition', line, _sch_line_number)
+                    raise SchFileError('Unknown definition', line)
                 self.all.append(obj)
                 line = _get_line(f)
             # Load sub-sheets
