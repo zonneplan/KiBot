@@ -732,7 +732,7 @@ class SchematicComponent(object):
         yr = int(res[1])
         if comp.x != xr or comp.y != yr:
             logger.warning('Inconsistent position for component {} ({},{} vs {},{})'.
-                           format(comp.f_ref, comp.x, comp.y, xr, yr), line, _sch_line_number)
+                           format(comp.f_ref, comp.x, comp.y, xr, yr))
         # Orientation matrix
         line = _get_line(f)
         if line[0] != '\t':
