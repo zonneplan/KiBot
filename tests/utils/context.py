@@ -236,7 +236,6 @@ class TestContext(object):
             old_LANG = os.environ.get('LANG')
             os.environ['LOCPATH'] = os.path.abspath('tests/data')
             os.environ['LANG'] = do_locale
-            # os.environ['LANG'] = 'en_US.UTF-8'
             logging.debug('LOCPATH='+os.environ['LOCPATH'])
             logging.debug('LANG='+os.environ['LANG'])
         self.do_run(cmd, ret_val, use_a_tty, chdir_out)
@@ -418,7 +417,7 @@ class TestContext(object):
                 # Extract logo
                 m = re.search(r'<img src="((.*?\n?)+)" alt="Logo"', body, re.MULTILINE)
                 if m:
-                    sh_head['logo'] = True
+                    sh_head['logo'] = m.group(1)
                 # Extract title
                 m = re.search(r'<div class="title">(.*?)</div>', body)
                 if m:

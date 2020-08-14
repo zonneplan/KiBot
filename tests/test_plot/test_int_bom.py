@@ -44,6 +44,7 @@ pytest-3 --log-cli-level debug
 import os
 import sys
 import logging
+from base64 import b64decode
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -53,7 +54,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-# from kiplot.misc import (BOM_ERROR)
+from kiplot.misc import EXIT_BAD_CONFIG
 
 BOM_DIR = 'BoM'
 REF_COLUMN_NAME = 'References'
@@ -324,13 +325,16 @@ def simple_html_test(ctx, rows, headers, sh_head, prj, do_title=True, do_logo=Tr
     ctx.clean_up()
 
 
-def simple_html_setup(name):
+def simple_html_setup(name, ret_val=0):
     prj = 'kibom-test'
     ext = 'html'
     ctx = context.TestContextSCH('test_'+name, prj, name, BOM_DIR)
-    ctx.run()
+    ctx.run(ret_val)
     out = prj + '-bom.' + ext
-    return ctx.load_html(out), prj, ctx
+    if ret_val == 0:
+        return ctx.load_html(out), prj, ctx
+    else:
+        return (None, None, None), prj, ctx
 
 
 def test_int_bom_simple_html_1():
@@ -366,6 +370,25 @@ def test_int_bom_simple_html_6():
     """ No title, no logo, no info, no stats """
     (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_6')
     simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=False, do_info=False, do_stats=False)
+
+
+def test_int_bom_simple_html_7():
+    """ No title, bogus logo, no info, no stats """
+    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_7', EXIT_BAD_CONFIG)
+    ctx.search_err(r'Missing logo file')
+
+
+def test_int_bom_simple_html_8():
+    """ No title, custom logo, no info, no stats """
+    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_8')
+    simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=True, do_info=False, do_stats=False)
+    logo = sh_head['logo']
+    assert logo.startswith('data:image/png;base64,')
+    image = b64decode(logo[22:])
+    with open('docs/images/Ki.png', 'rb') as f:
+        ref = f.read()
+    assert image == ref
+    logging.debug('Image content OK')
 
 
 def adapt_xml(h):
