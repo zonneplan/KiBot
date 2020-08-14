@@ -8,5 +8,5 @@ outputs:
     type: bom
     dir: BoM
     options:
-      normalize_values: True
-      normalize_locale: True
+      normalize_values: true
+      normalize_locale: true
