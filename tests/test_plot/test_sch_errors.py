@@ -140,3 +140,32 @@ def test_sch_errors_bad_matrix():
 
 def test_sch_errors_wrong_ref():
     setup_ctx('wrong_ref', 'error_wrong_ref', 'Malformed component reference')
+
+
+def test_sch_errors_bad_conn():
+    setup_ctx('bad_conn', 'error_bad_conn', 'Malformed no/connection')
+
+
+def test_sch_errors_bad_text():
+    setup_ctx('bad_text', 'error_bad_text', 'Malformed text')
+
+
+def test_sch_errors_bad_wire():
+    setup_ctx('bad_wire', 'error_bad_wire', 'Malformed wire')
+
+
+def test_sch_errors_bad_wire2():
+    setup_ctx('bad_wire2', 'error_bad_wire2', 'Malformed wire')
+
+
+def test_sch_errors_bad_wire3():
+    setup_ctx('bad_wire3', 'error_bad_wire3', 'Malformed wire')
+
+
+def test_sch_errors_bad_wire4():
+    setup_ctx('bad_wire4', 'error_bad_wire4', 'Malformed wire')
+
+
+def test_sch_errors_bad_entry():
+    setup_ctx('bad_entry', 'error_bad_entry', 'Malformed entry')
+
