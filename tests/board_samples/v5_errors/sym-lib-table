@@ -8,4 +8,6 @@
   (lib (name l7)(type Legacy)(uri ${KIPRJMOD}/l7.lib)(options "")(descr ""))
   (lib (name l8)(type Legacy)(uri ${KIPRJMOD}/l8.lib)(options "")(descr ""))
   (lib (name l9)(type Legacy)(uri ${KIPRJMOD}/l9.lib)(options "")(descr ""))
+  (lib (name t1)(type Legacy)(uri ${KIPRJMOD}/t1.lib)(options "")(descr ""))
+  (lib (name t2)(type Legacy)(uri ${KIPRJMOD}/t2.lib)(options "")(descr ""))
 )

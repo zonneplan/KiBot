@@ -1142,3 +1142,16 @@ def test_int_bom_no_xlsx_support():
     ctx.do_run(cmd)
     ctx.search_err('Python xlsxwriter module not installed')
     ctx.search_err('writing XLSX output')
+
+
+def test_int_bom_missing_lib():
+    prj = 'v5_errors/kibom-test'
+    ctx = context.TestContextSCH('test_int_bom_missing_lib', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx.run()
+    out = 'kibom-test-bom.csv'
+    rows, header, info = ctx.load_csv(out)
+    check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
+    kibom_verif(rows, header)
+    ctx.search_err(r'Missing library (.*) \(t1')
+    ctx.search_err(r'Missing doc-lib entry for t2:R')
+    ctx.clean_up()
