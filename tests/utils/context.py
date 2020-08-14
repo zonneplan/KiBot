@@ -462,6 +462,14 @@ class TestContext(object):
                 rows.append(b)
         return rows, headers, sh_head
 
+    def load_html_style(self, filename):
+        file = self.expect_out_file(os.path.join(self.sub_dir, filename))
+        with open(file) as f:
+            html = f.read()
+        m = re.search(r'<style>((?:\s+.*?)+)</style>', html, re.MULTILINE)
+        assert m
+        return m.group(1)
+
     def load_xml(self, filename):
         rows = []
         headers = None

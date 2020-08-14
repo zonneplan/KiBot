@@ -391,6 +391,16 @@ def test_int_bom_simple_html_8():
     logging.debug('Image content OK')
 
 
+def test_int_bom_simple_html_9():
+    """ No title, no logo, no info, no stats, custom style """
+    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_9')
+    style = ctx.load_html_style('kibom-test-bom.html')
+    with open('tests/data/html_style.css', 'rt') as f:
+        ref = f.read()
+    assert style[1:] == ref
+    simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=False, do_info=False, do_stats=False)
+
+
 def adapt_xml(h):
     h = h.replace(' ', '_')
     h = h.replace('"', '')
