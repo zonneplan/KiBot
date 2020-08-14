@@ -1,0 +1,34 @@
+.cell-title { vertical-align: bottom; }
+.cell-info { vertical-align: top; padding: 1em;}
+.cell-stats { vertical-align: top; padding: 1em;}
+.title { font-size:2.5em; font-weight: bold; }
+.h2 { font-size:1.5em; font-weight: bold; }
+.td-empty0 { text-align: center; background-color: #FF8080;}
+.td-gen0 { text-align: center; background-color: #E6FFEE;}
+.td-kicad0 { text-align: center; background-color: #FFE6B3;}
+.td-user0 { text-align: center; background-color: #E6F9FF;}
+.td-empty1 { text-align: center; background-color: #FF8A8A;}
+.td-gen1 { text-align: center; background-color: #F0FFF4;}
+.td-kicad1 { text-align: center; background-color: #FFF0BD;}
+.td-user1 { text-align: center; background-color: #F0FFFF;}
+.color-ref { margin: 25px 0; }
+.color-ref th { text-align: left }
+.color-ref td { padding: 5px 20px; }
+.head-table { margin-bottom: 2em; }
+
+.content-table {
+  border-collapse: collapse;
+  margin-top: 5px;
+  margin-bottom: 4em;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.55);
+}
+.content-table thead tr { background-color: #0e4e8e; color: #ffffff; text-align: left; }
+.content-table th, .content-table td { padding: 12px 15px; }
+.content-table tbody tr { border-bottom: 1px solid #dddddd; }
+.content-table tbody tr:nth-of-type(even) { background-color: #f3f3f3; }
+.content-table tbody tr:last-of-type { border-bottom: 4px solid #0e4e8e; }
