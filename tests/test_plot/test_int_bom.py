@@ -61,12 +61,14 @@ REF_COLUMN_NAME_R = 'Referencias'
 QTY_COLUMN_NAME = 'Quantity Per PCB'
 COMP_COLUMN_NAME = 'Row'
 COMP_COLUMN_NAME_R = 'Renglón'
+DATASHEET_COLUMN_NAME = 'Datasheet'
 KIBOM_TEST_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
-                   'Datasheet', 'Config']
+                   DATASHEET_COLUMN_NAME, 'Config']
 KIBOM_TEST_HEAD_TOL = [c for c in KIBOM_TEST_HEAD]
 KIBOM_TEST_HEAD_TOL.insert(-1, 'Tolerance')
 KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor', 'Código Digi-Key', 'Cantidad por PCB']
-CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Datasheet']
+CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
+             DATASHEET_COLUMN_NAME]
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
 KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
 KIBOM_TEST_COMPONENTS_ALT2 = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R2', 'R4-R5', 'R3']
@@ -111,11 +113,14 @@ def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps):
         logging.debug("list of components OK")
 
 
-def check_dnc(rows, comp, ref, qty):
+def check_dnc(rows, comp, ref, qty, datasheet=None):
     for row in rows:
         if row[ref].find(comp) != -1:
             assert row[qty] == '1 (DNC)'
             logging.debug(comp + " is DNC OK")
+            if datasheet is not None:
+                assert row[datasheet].startswith('<a href="')
+                logging.debug(comp + " datasheet link OK")
             return
 
 
@@ -310,9 +315,10 @@ def simple_html_test(ctx, rows, headers, sh_head, prj, do_title=True, do_logo=Tr
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
     qty_column = headers[0].index(QTY_COLUMN_NAME)
+    ds_column = headers[0].index(DATASHEET_COLUMN_NAME)
     # Check the normal table
     check_kibom_test_netlist(rows[0], ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows[0], 'R7', ref_column, qty_column)
+    check_dnc(rows[0], 'R7', ref_column, qty_column, ds_column)
     # Check the DNF table
     check_kibom_test_netlist(rows[1], ref_column, 1, KIBOM_TEST_COMPONENTS, KIBOM_TEST_EXCLUDE)
     ctx.clean_up()
