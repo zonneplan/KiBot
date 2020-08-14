@@ -83,3 +83,11 @@ def test_sch_errors_l8():
 def test_sch_errors_l9():
     setup_ctx('l9', 'error_l9', 'Missing DCM signature')
 
+
+def test_sch_errors_field():
+    setup_ctx('field', 'error_field', 'Malformed component field')
+
+
+def test_sch_errors_field_name():
+    setup_ctx('field_name', 'error_field_name', 'Missing component field name')
+
