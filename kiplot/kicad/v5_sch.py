@@ -3,6 +3,7 @@ KiCad v5 (and older) Schematic format.
 
 A basic implementation of the .sch file format.
 """
+# Encapsulate file/line
 import re
 import os
 from collections import OrderedDict
@@ -976,7 +977,7 @@ class SchematicSheet(object):
                 sch.labels.append(SchematicPort.parse(line[1:]))
             line = _get_line(f)
         if not sch.name:
-            raise SchFileError('Missing sub-sheet name')
+            raise SchFileError('Missing sub-sheet name', 'pos: {},{}'.format(sch.x, sch.y))
         if not sch.file:
             raise SchFileError('Missing sub-sheet file name', sch.name)
         return sch
