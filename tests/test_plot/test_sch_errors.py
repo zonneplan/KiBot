@@ -75,3 +75,11 @@ def test_sch_errors_l6():
 def test_sch_errors_l7():
     setup_ctx('l7', 'error_l7', 'Unknown library entry')
 
+
+def test_sch_errors_l8():
+    setup_ctx('l8', 'error_l8', ['Unknown DCM entry', 'Unknown DCM attribute'])
+
+
+def test_sch_errors_l9():
+    setup_ctx('l9', 'error_l9', 'Missing DCM signature')
+
