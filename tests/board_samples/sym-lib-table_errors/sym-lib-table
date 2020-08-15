@@ -1,0 +1,6 @@
+(sym_lib_table
+  (lib (name t1)(type Legacy)(uri ${KIPRJMOD}/t1.lib)(options "")(descr ""))
+  (lib (name "")(type Legacy)(uri ${KIPRJMOD}/t2.lib)(options "")(descr ""))
+  (lib (name t3)(type Legacy)(uri ${BOGUS}/t3.lib)(options "")(descr ""))
+  (lib (name t4)(type Legacy)(uri ${BOGUS}/t3.lib)(options ""))
+)
