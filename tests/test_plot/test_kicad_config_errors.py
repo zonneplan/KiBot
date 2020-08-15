@@ -22,7 +22,8 @@ prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kiplot.misc import EXIT_BAD_CONFIG
-from kiplot.kicad.config import KiConf
+from kiplot.kicad.config import KiConf, KiConfError
+from kiplot.gs import GS
 
 
 cov = coverage.Coverage()
@@ -61,25 +62,29 @@ def kiconf_de_init():
     KiConf.lib_aliases = {}
 
 
-def check_load_conf(caplog, fail=False):
+def check_load_conf(caplog, dir='kicad', fail=False):
     caplog.set_level(logging.DEBUG)
     kiconf_de_init()
     cov.load()
     cov.start()
-    KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
+    with pytest.raises(KiConfError) as pytest_wrapped_e:
+        KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
     cov.stop()
     cov.save()
-    ref = 'Reading KiCad config from `tests/data/kicad/kicad_common`'
+    ref = 'Reading KiCad config from `tests/data/'+dir+'/kicad_common`'
     if fail:
         ref = 'Unable to find KiCad configuration file'
     assert ref in caplog.text, caplog.text
+    return pytest_wrapped_e
 
 
 def test_kicad_conf_user(caplog):
     """ Check we can load the KiCad configuration from $KICAD_CONFIG_HOME """
     old = os.environ.get('KICAD_CONFIG_HOME')
-    os.environ['KICAD_CONFIG_HOME'] = 'tests/data/kicad'
-    check_load_conf(caplog)
+    os.environ['KICAD_CONFIG_HOME'] = 'tests/data/kicad_ok'
+    GS.debug_level = 2
+    check_load_conf(caplog, dir='kicad_ok')
+    assert 'KICAD_TEMPLATE_DIR="/usr/share/kicad/template"' in caplog.text, caplog.text
     if old:
         os.environ['KICAD_CONFIG_HOME'] = old
     else:
@@ -103,7 +108,7 @@ def test_kicad_conf_miss_home(caplog):
         Also check we correctly guess the libs dir. """
     old = os.environ['HOME']
     del os.environ['HOME']
-    check_load_conf(caplog, True)
+    check_load_conf(caplog, fail=True)
     os.environ['HOME'] = old
     assert '`HOME` not defined' in caplog.text, caplog.text
     assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/library"' in caplog.text, caplog.text
@@ -114,8 +119,38 @@ def test_kicad_conf_lib_env(caplog):
     old = os.environ['HOME']
     del os.environ['HOME']
     os.environ['KICAD_SYMBOL_DIR'] = 'tests'
-    check_load_conf(caplog, True)
+    check_load_conf(caplog, fail=True)
     os.environ['HOME'] = old
     del os.environ['KICAD_SYMBOL_DIR']
     assert '`HOME` not defined' in caplog.text, caplog.text
     assert 'Detected KICAD_SYMBOL_DIR="tests"' in caplog.text, caplog.text
+
+
+def test_kicad_conf_sym_err_1(caplog):
+    """ Test broken sym-lib-table, no signature """
+    old = os.environ.get('KICAD_CONFIG_HOME')
+    os.environ['KICAD_CONFIG_HOME'] = 'tests/data/kicad_err_1'
+    GS.debug_level = 2
+    err = check_load_conf(caplog, dir='kicad_err_1')
+    assert err.type == KiConfError
+    assert err.value.msg == 'Symbol libs table missing signature'
+    assert err.value.line == 1
+    if old:
+        os.environ['KICAD_CONFIG_HOME'] = old
+    else:
+        del os.environ['KICAD_CONFIG_HOME']
+
+
+def test_kicad_conf_sym_err_2(caplog):
+    """ Test broken sym-lib-table, wrong entry """
+    old = os.environ.get('KICAD_CONFIG_HOME')
+    os.environ['KICAD_CONFIG_HOME'] = 'tests/data/kicad_err_2'
+    GS.debug_level = 2
+    err = check_load_conf(caplog, dir='kicad_err_2')
+    assert err.type == KiConfError
+    assert err.value.msg == 'Unknown symbol table entry'
+    assert err.value.line == 2
+    if old:
+        os.environ['KICAD_CONFIG_HOME'] = old
+    else:
+        del os.environ['KICAD_CONFIG_HOME']
