@@ -1156,3 +1156,48 @@ def test_int_bom_missing_lib():
     ctx.search_err(r'Missing library (.*) \(t1')
     ctx.search_err(r'Missing doc-lib entry for t2:R')
     ctx.clean_up()
+
+
+def test_int_bom_variant_t1_1():
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH('test_int_bom_variant_t1_1', prj, 'int_bom_var_v1_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, ['R3', 'R4'], ['R1', 'R2'])
+
+
+def test_int_bom_variant_t1_2():
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH('test_int_bom_variant_t1_2', prj, 'int_bom_var_v2_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R4'], ['R1', 'R3'])
+
+
+def test_int_bom_variant_t1_3():
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH('test_int_bom_variant_t1_3', prj, 'int_bom_var_v3_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R3'], ['R1', 'R4'])
+
+
+def test_int_bom_variant_t1_4():
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH('test_int_bom_variant_t1_4', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, ['R4'], ['R1', 'R2', 'R3'])
+
+
+def test_int_bom_variant_t1_5():
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH('test_int_bom_variant_t1_5', prj, 'int_bom_var_v1v3_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R3'], ['R1', 'R4'])
