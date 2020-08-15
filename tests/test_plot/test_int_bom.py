@@ -931,21 +931,23 @@ def test_int_bom_no_test_regex():
 
 
 def test_int_bom_sub_sheet_alt():
-    """ Test for 1 sub sheet used twice.
+    """ Test for 2 sub sheets used twice.
         Also stress the v5 loader.
         Also tests sheet path and no grouping with multi-part components """
     prj = 'test_v5'
     ext = 'csv'
     ctx = context.TestContextSCH('test_int_bom_sub_sheet_alt', prj, 'int_bom_sheet_path', BOM_DIR)
-    ctx.run()  # extra_debug=True
+    ctx.run(extra_debug=True)
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD[:-1] + ['Sheetpath']
     ref_column = header.index(REF_COLUMN_NAME)
     sp_column = header.index('Sheetpath')
-    check_kibom_test_netlist(rows, ref_column, 6, [], ['C1', 'L1', 'R1', 'R2', 'U1', 'U2'])
+    check_kibom_test_netlist(rows, ref_column, 8, [], ['R3', 'R4', 'C1', 'L1', 'R1', 'R2', 'U1', 'U2'])
     check_path(rows, 'U1', ref_column, sp_column, '/Sub Sheet')
     check_path(rows, 'U2', ref_column, sp_column, '/Sub Sheet 2')
+    check_path(rows, 'R3', ref_column, sp_column, '/Sub Sheet/Deeper test')
+    check_path(rows, 'R4', ref_column, sp_column, '/Sub Sheet 2/Deeper test')
     ctx.clean_up()
 
 

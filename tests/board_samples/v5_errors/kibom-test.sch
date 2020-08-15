@@ -1,4 +1,6 @@
 EESchema Schematic File Version 4
+LIBS:t1
+LIBS:t2
 EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
@@ -20,7 +22,7 @@ P 2200 2550
 F 0 "R1" V 2280 2550 50  0000 C CNN
 F 1 "10K" V 2200 2550 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 2130 2550 50  0001 C CNN
-F 3 "~" H 2200 2550 50  0001 C CNN
+F 3 "Missing lib" H 2200 2550 50  0001 C CNN
 	1    2200 2550
 	1    0    0    -1  
 $EndComp
@@ -31,40 +33,41 @@ P 2500 2550
 F 0 "R2" V 2580 2550 50  0000 C CNN
 F 1 "10K" V 2500 2550 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 2430 2550 50  0001 C CNN
-F 3 "~" H 2500 2550 50  0001 C CNN
+F 3 "A lib with DCM but no R in the DCM" H 2500 2550 50  0001 C CNN
 	1    2500 2550
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R3
+L Device:R R?
 U 1 1 5E6A35E1
 P 2750 2550
 F 0 "R3" V 2830 2550 50  0000 C CNN
 F 1 "10K" V 2750 2550 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 2680 2550 50  0001 C CNN
-F 3 "~" H 2750 2550 50  0001 C CNN
+F 3 "Not annotated, but F0 says R3" H 2750 2550 50  0001 C CNN
 	1    2750 2550
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R4
+L Device:R R?
 U 1 1 5E6A37B2
 P 3000 2550
-F 0 "R4" V 3080 2550 50  0000 C CNN
+AR Path="/5F342DEB/5F34307A" Ref="R4"  Part="1"
+F 0 "R?" V 3080 2550 50  0000 C CNN
 F 1 "10K" V 3000 2550 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 2930 2550 50  0001 C CNN
-F 3 "~" H 3000 2550 50  0001 C CNN
+F 3 "Not annotated, but a path says R4" H 3000 2550 50  0001 C CNN
 	1    3000 2550
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R5
+L R R5
 U 1 1 5E6A39EB
 P 3250 2550
 F 0 "R5" V 3330 2550 50  0000 C CNN
 F 1 "10K" V 3250 2550 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 3180 2550 50  0001 C CNN
-F 3 "~" H 3250 2550 50  0001 C CNN
+F 3 "No lib!" H 3250 2550 50  0001 C CNN
 	1    3250 2550
 	1    0    0    -1  
 $EndComp
@@ -101,9 +104,11 @@ P 2750 3100
 F 0 "R8" V 2830 3100 50  0000 C CNN
 F 1 "4.7K" V 2750 3100 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 2680 3100 50  0001 C CNN
-F 3 "~" H 2750 3100 50  0001 C CNN
+F 3 "Extra lines before $EndComp" H 2750 3100 50  0001 C CNN
 	1    2750 3100
 	1    0    0    -1  
+bla
+bla
 $EndComp
 Text Notes 3500 3150 0    50   ~ 0
 3 x 4K7 resistors in 0805 package\nNote: Values are identical even if specified differently
