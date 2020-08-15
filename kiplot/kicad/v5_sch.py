@@ -593,14 +593,12 @@ class SchematicComponent(object):
             return self.dfields[field].value
         return ''
 
-    def get_field_names(self):
-        return [f.name for f in self.fields]
+    # def get_field_names(self):
+    #     return [f.name for f in self.fields]
 
     def get_user_fields(self):
         """ Returns a list of tuples with the user defined fields (name, value) """
-        if len(self.fields) < 4:
-            return []
-        return [(f.name, f.value) for f in self.fields[4:]]
+        return [(f.name, f.value) for f in self.fields if f.number > 3]
 
     def add_field(self, field):
         self.fields.append(field)
