@@ -465,18 +465,23 @@ def comp_is_fitted(value, config, variants):
 
 
 def do_bom(file_name, ext, comps, cfg):
-    # Solve `fixed` and `fitted` attributes for all components
-    variants = cfg.variant
+    # Make the config field name lowercase
+    cfg.fit_field = cfg.fit_field.lower()
     f_config = cfg.fit_field
+    # Make the variants lowercase
+    variants = [v.lower() for v in cfg.variant]
+    # Solve `fixed` and `fitted` attributes for all components
     for c in comps:
         value = c.value.lower()
         config = c.get_field_value(f_config).lower()
         c.fitted = comp_is_fitted(value, config, variants)
+        if cfg.debug_level > 2:
+            logger.debug('ref: {} value: {} config: {} variants: {} -> fitted {}'.format(c.ref, value, config, variants, c.fitted))
         c.fixed = comp_is_fixed(value, config, variants)
     # Group components according to group_fields
     groups = group_components(cfg, comps)
     # Give a name to empty variant
-    if not variants or (len(variants) == 1 and not variants[0]):
+    if not variants:
         cfg.variant = ['default']
     # Create the BoM
     logger.debug("Saving BOM File: "+file_name)
