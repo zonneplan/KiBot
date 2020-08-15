@@ -181,8 +181,8 @@ class BoMOptions(BaseOptions):
         with document:
             self.number = 1
             """ Number of boards to build (components multiplier) """
-            self.variant = ''
-            """ Board variant(s), used to determine which components
+            self.variant = Optionable
+            """ [string|list(string)] Board variant(s), used to determine which components
                 are output to the BoM. """
             self.output = GS.def_global_output
             """ filename for the output (%i=bom)"""
@@ -335,6 +335,11 @@ class BoMOptions(BaseOptions):
             for r in self.exclude_any:
                 r.column = self._fix_ref_field(r.column)
                 r.regex = compile(r.regex, flags=IGNORECASE)
+        # Variants
+        if isinstance(self.variant, type):
+            self.variant = []
+        elif isinstance(self.variant, str):
+            self.variant = [self.variant]
         # Columns
         self.column_rename = {}
         self.join = []
@@ -381,7 +386,6 @@ class BoMOptions(BaseOptions):
     def run(self, output_dir, board):
         format = self.format.lower()
         output = self.expand_filename_sch(output_dir, self.output, 'bom', format)
-        self.variant = self.variant.split(',')
         # Add some info needed for the output to the config object.
         # So all the configuration is contained in one object.
         self.source = GS.sch_basename
