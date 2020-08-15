@@ -13,10 +13,11 @@ from importlib.util import (spec_from_file_location, module_from_spec)
 
 from .gs import (GS)
 from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
-                   EXIT_BAD_ARGS, CORRUPTED_SCH)
+                   EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .pre_base import BasePreFlight
 from .kicad.v5_sch import Schematic, SchFileError
+from .kicad.config import KiConfError
 from . import log
 
 logger = log.get_logger(__name__)
@@ -133,6 +134,11 @@ def load_sch():
         logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
         logger.error('Line content: `{}`'.format(e.code))
         exit(CORRUPTED_SCH)
+    except KiConfError as e:
+        trace_dump()
+        logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
+        logger.error('Line content: `{}`'.format(e.code))
+        exit(EXIT_BAD_CONFIG)
 
 
 def preflight_checks(skip_pre):
