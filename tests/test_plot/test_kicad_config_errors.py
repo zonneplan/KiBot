@@ -9,6 +9,7 @@ pytest-3 --log-cli-level debug
 import os
 import sys
 import pytest
+from unittest import mock
 import coverage
 import logging
 # Look for the 'utils' module from where the script is running
@@ -78,79 +79,53 @@ def check_load_conf(caplog, dir='kicad', fail=False):
 
 def test_kicad_conf_user(caplog):
     """ Check we can load the KiCad configuration from $KICAD_CONFIG_HOME """
-    old = os.environ.get('KICAD_CONFIG_HOME')
-    os.environ['KICAD_CONFIG_HOME'] = 'tests/data/kicad_ok'
     GS.debug_level = 2
-    check_load_conf(caplog, dir='kicad_ok')
+    with mock.patch.dict(os.environ, {"KICAD_CONFIG_HOME": "tests/data/kicad_ok"}):
+        check_load_conf(caplog, dir='kicad_ok')
     assert 'KICAD_TEMPLATE_DIR="/usr/share/kicad/template"' in caplog.text, caplog.text
-    if old:
-        os.environ['KICAD_CONFIG_HOME'] = old
-    else:
-        del os.environ['KICAD_CONFIG_HOME']
 
 
 def test_kicad_conf_xdg(caplog):
     """ Check we can load the KiCad configuration from $XDG_CONFIG_HOME/kicad """
-    old = os.environ.get('XDG_CONFIG_HOME')
-    os.environ['XDG_CONFIG_HOME'] = 'tests/data'
-    check_load_conf(caplog)
+    with mock.patch.dict(os.environ, {"XDG_CONFIG_HOME": "tests/data"}):
+        check_load_conf(caplog)
     assert 'KiCad config without EnvironmentVariables section' in caplog.text, caplog.text
-    if old:
-        os.environ['XDG_CONFIG_HOME'] = old
-    else:
-        del os.environ['XDG_CONFIG_HOME']
 
 
 def test_kicad_conf_miss_home(caplog):
     """ Check no HOME and fail to load kicad_common.
         Also check we correctly guess the libs dir. """
-    old = os.environ['HOME']
-    del os.environ['HOME']
-    check_load_conf(caplog, fail=True)
-    os.environ['HOME'] = old
+    with mock.patch.dict(os.environ, {"HOME": ''}):
+        check_load_conf(caplog, fail=True)
     assert '`HOME` not defined' in caplog.text, caplog.text
     assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/library"' in caplog.text, caplog.text
 
 
 def test_kicad_conf_lib_env(caplog):
     """ Check we can use KICAD_SYMBOL_DIR as fallback """
-    old = os.environ['HOME']
-    del os.environ['HOME']
-    os.environ['KICAD_SYMBOL_DIR'] = 'tests'
-    check_load_conf(caplog, fail=True)
-    os.environ['HOME'] = old
-    del os.environ['KICAD_SYMBOL_DIR']
+    with mock.patch.dict(os.environ, {"HOME": '', "KICAD_SYMBOL_DIR": 'tests'}):
+        check_load_conf(caplog, fail=True)
     assert '`HOME` not defined' in caplog.text, caplog.text
     assert 'Detected KICAD_SYMBOL_DIR="tests"' in caplog.text, caplog.text
 
 
 def test_kicad_conf_sym_err_1(caplog):
     """ Test broken sym-lib-table, no signature """
-    old = os.environ.get('KICAD_CONFIG_HOME')
-    os.environ['KICAD_CONFIG_HOME'] = 'tests/data/kicad_err_1'
     GS.debug_level = 2
-    with pytest.raises(KiConfError) as err:
-        err = check_load_conf(caplog, dir='kicad_err_1')
+    with mock.patch.dict(os.environ, {"KICAD_CONFIG_HOME": 'tests/data/kicad_err_1'}):
+        with pytest.raises(KiConfError) as err:
+            err = check_load_conf(caplog, dir='kicad_err_1')
     assert err.type == KiConfError
     assert err.value.msg == 'Symbol libs table missing signature'
     assert err.value.line == 1
-    if old:
-        os.environ['KICAD_CONFIG_HOME'] = old
-    else:
-        del os.environ['KICAD_CONFIG_HOME']
 
 
 def test_kicad_conf_sym_err_2(caplog):
     """ Test broken sym-lib-table, wrong entry """
-    old = os.environ.get('KICAD_CONFIG_HOME')
-    os.environ['KICAD_CONFIG_HOME'] = 'tests/data/kicad_err_2'
     GS.debug_level = 2
-    with pytest.raises(KiConfError) as err:
-        check_load_conf(caplog, dir='kicad_err_2')
+    with mock.patch.dict(os.environ, {"KICAD_CONFIG_HOME": 'tests/data/kicad_err_2'}):
+        with pytest.raises(KiConfError) as err:
+            check_load_conf(caplog, dir='kicad_err_2')
     assert err.type == KiConfError
     assert err.value.msg == 'Unknown symbol table entry'
     assert err.value.line == 2
-    if old:
-        os.environ['KICAD_CONFIG_HOME'] = old
-    else:
-        del os.environ['KICAD_CONFIG_HOME']
