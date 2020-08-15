@@ -495,6 +495,7 @@ class DocLib(object):
         """ Populates the class, file must exist """
         logger.debug('Loading doc-lib `{}`'.format(file))
         global _sch_file_name
+        global _sch_line_number
         _sch_file_name = file
         with open(file, 'rt') as f:
             _sch_line_number = 0
