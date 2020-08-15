@@ -67,15 +67,13 @@ def check_load_conf(caplog, dir='kicad', fail=False):
     kiconf_de_init()
     cov.load()
     cov.start()
-    with pytest.raises(KiConfError) as pytest_wrapped_e:
-        KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
+    KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
     cov.stop()
     cov.save()
     ref = 'Reading KiCad config from `tests/data/'+dir+'/kicad_common`'
     if fail:
         ref = 'Unable to find KiCad configuration file'
     assert ref in caplog.text, caplog.text
-    return pytest_wrapped_e
 
 
 def test_kicad_conf_user(caplog):
@@ -131,7 +129,8 @@ def test_kicad_conf_sym_err_1(caplog):
     old = os.environ.get('KICAD_CONFIG_HOME')
     os.environ['KICAD_CONFIG_HOME'] = 'tests/data/kicad_err_1'
     GS.debug_level = 2
-    err = check_load_conf(caplog, dir='kicad_err_1')
+    with pytest.raises(KiConfError) as err:
+        err = check_load_conf(caplog, dir='kicad_err_1')
     assert err.type == KiConfError
     assert err.value.msg == 'Symbol libs table missing signature'
     assert err.value.line == 1
@@ -146,7 +145,8 @@ def test_kicad_conf_sym_err_2(caplog):
     old = os.environ.get('KICAD_CONFIG_HOME')
     os.environ['KICAD_CONFIG_HOME'] = 'tests/data/kicad_err_2'
     GS.debug_level = 2
-    err = check_load_conf(caplog, dir='kicad_err_2')
+    with pytest.raises(KiConfError) as err:
+        check_load_conf(caplog, dir='kicad_err_2')
     assert err.type == KiConfError
     assert err.value.msg == 'Unknown symbol table entry'
     assert err.value.line == 2
