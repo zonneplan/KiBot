@@ -108,6 +108,7 @@ class KiConf(object):
         KiConf.kicad_env['KIPRJMOD'] = KiConf.dirname
         KiConf.load_kicad_common()
         KiConf.load_all_lib_aliases()
+        KiConf.loaded = True
 
     def find_kicad_common():
         """ Looks for kicad_common config file.
@@ -157,7 +158,7 @@ class KiConf(object):
             cfg = os.path.join('C:', 'Documents and Settings', username, 'Application Data', 'kicad', KICAD_COMMON)
             if os.path.isfile(cfg):
                 return cfg
-        else:
+        else:  # pragma: no cover
             logger.warning('Unsupported system `{}`'.format(system))
             return None
         logger.warning('Unable to find KiCad configuration file ({})'.format(cfg))

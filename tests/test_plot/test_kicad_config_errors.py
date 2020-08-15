@@ -52,26 +52,70 @@ def test_kicad_conf_no_instance():
     assert str(pytest_wrapped_e.value) == 'KiConf is fully static, no instances allowed'
 
 
-def check_load_conf(caplog):
+def kiconf_de_init():
+    KiConf.loaded = False
+    KiConf.config_dir = None
+    KiConf.dirname = None
+    KiConf.sym_lib_dir = None
+    KiConf.kicad_env = {}
+    KiConf.lib_aliases = {}
+
+
+def check_load_conf(caplog, fail=False):
     caplog.set_level(logging.DEBUG)
+    kiconf_de_init()
     cov.load()
     cov.start()
     KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
     cov.stop()
     cov.save()
-    assert len(caplog.text)
-    assert 'Reading KiCad config from `tests/data/kicad/kicad_common`' in caplog.text
+    ref = 'Reading KiCad config from `tests/data/kicad/kicad_common`'
+    if fail:
+        ref = 'Unable to find KiCad configuration file'
+    assert ref in caplog.text, caplog.text
 
 
 def test_kicad_conf_user(caplog):
     """ Check we can load the KiCad configuration from $KICAD_CONFIG_HOME """
+    old = os.environ.get('KICAD_CONFIG_HOME')
     os.environ['KICAD_CONFIG_HOME'] = 'tests/data/kicad'
     check_load_conf(caplog)
-    del os.environ['KICAD_CONFIG_HOME']
+    if old:
+        os.environ['KICAD_CONFIG_HOME'] = old
+    else:
+        del os.environ['KICAD_CONFIG_HOME']
 
 
 def test_kicad_conf_xdg(caplog):
-    """ Check we can load the KiCad configuration from $KICAD_CONFIG_HOME """
+    """ Check we can load the KiCad configuration from $XDG_CONFIG_HOME/kicad """
+    old = os.environ.get('XDG_CONFIG_HOME')
     os.environ['XDG_CONFIG_HOME'] = 'tests/data'
     check_load_conf(caplog)
-    del os.environ['XDG_CONFIG_HOME']
+    assert 'KiCad config without EnvironmentVariables section' in caplog.text, caplog.text
+    if old:
+        os.environ['XDG_CONFIG_HOME'] = old
+    else:
+        del os.environ['XDG_CONFIG_HOME']
+
+
+def test_kicad_conf_miss_home(caplog):
+    """ Check no HOME and fail to load kicad_common.
+        Also check we correctly guess the libs dir. """
+    old = os.environ['HOME']
+    del os.environ['HOME']
+    check_load_conf(caplog, True)
+    os.environ['HOME'] = old
+    assert '`HOME` not defined' in caplog.text, caplog.text
+    assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/library"' in caplog.text, caplog.text
+
+
+def test_kicad_conf_lib_env(caplog):
+    """ Check we can use KICAD_SYMBOL_DIR as fallback """
+    old = os.environ['HOME']
+    del os.environ['HOME']
+    os.environ['KICAD_SYMBOL_DIR'] = 'tests'
+    check_load_conf(caplog, True)
+    os.environ['HOME'] = old
+    del os.environ['KICAD_SYMBOL_DIR']
+    assert '`HOME` not defined' in caplog.text, caplog.text
+    assert 'Detected KICAD_SYMBOL_DIR="tests"' in caplog.text, caplog.text
