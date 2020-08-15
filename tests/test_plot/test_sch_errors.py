@@ -64,9 +64,9 @@ def test_sch_errors_l4():
 
 def test_sch_errors_l5():
     setup_ctx('l5', ['Unknown poligon definition', 'Expected 6 coordinates and got 8 in poligon',
-              'Unknown square definition', 'Unknown circle definition', 'Unknown arc definition',
-              'Unknown text definition', 'Unknown pin definition', 'Failed to load component definition',
-              'Unknown draw element'])
+                     'Unknown square definition', 'Unknown circle definition', 'Unknown arc definition',
+                     'Unknown text definition', 'Unknown pin definition', 'Failed to load component definition',
+                     'Unknown draw element'])
 
 
 def test_sch_errors_l6():
@@ -95,8 +95,8 @@ def test_sch_errors_field_name():
 
 def test_sch_errors_ar():
     setup_ctx('ar', ['Unknown AR field .?Bogus.?', 'Alternative Reference without path',
-              'Alternative Reference without reference', 'Component `U1` without the basic fields',
-              'Footprint with more than one colon'])
+                     'Alternative Reference without reference', 'Component `U1` without the basic fields',
+                     'Footprint with more than one colon'])
 
 
 def test_sch_errors_miss_label():
@@ -245,8 +245,3 @@ def test_sch_errors_bad_snum():
 
 def test_sch_errors_bad_tbentry():
     setup_ctx('bad_tbentry', 'Wrong entry in title block')
-
-
-
-
-

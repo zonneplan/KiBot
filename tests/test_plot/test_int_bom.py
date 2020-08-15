@@ -220,7 +220,6 @@ def check_csv_info(r, info, stats):
     assert row == len(r)
 
 
-
 def kibom_verif(rows, header, skip_head=False, qty_name=QTY_COLUMN_NAME):
     if not skip_head:
         assert header == KIBOM_TEST_HEAD
