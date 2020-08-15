@@ -14,7 +14,7 @@ COVERAGE_SCRIPT = 'python3-coverage'
 KICAD_PCB_EXT = '.kicad_pcb'
 KICAD_SCH_EXT = '.sch'
 REF_DIR = 'tests/reference'
-
+BOARDS_DIR = 'tests/board_samples'
 
 MODE_SCH = 1
 MODE_PCB = 0
