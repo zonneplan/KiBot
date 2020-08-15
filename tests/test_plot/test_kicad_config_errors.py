@@ -1,6 +1,12 @@
 """
 Tests for KiCad configuration load
 
+Is quite hard to test this without messing with the system.
+For this reason this test is more 'traditional' and uses pytest tools to
+pretend we are under certain situations.
+I like the other strategy: test the whole script doing something real.
+But here the monkeypatch and raises tools make a huge difference.
+
 For debug information use:
 pytest-3 --log-cli-level debug
 """
