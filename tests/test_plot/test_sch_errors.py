@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(prev_dir))
 # Utils import
 from utils import context
 sys.path.insert(0, os.path.dirname(prev_dir))
-from kiplot.misc import CORRUPTED_SCH, EXIT_BAD_CONFIG
+from kiplot.misc import CORRUPTED_SCH
 
 
 def setup_ctx(test, error):
@@ -245,14 +245,3 @@ def test_sch_errors_bad_snum():
 
 def test_sch_errors_bad_tbentry():
     setup_ctx('bad_tbentry', 'Wrong entry in title block')
-
-
-def test_sch_errors_bad_sym_lib_table():
-    sch = 'sym-lib-table_errors/kibom-test'
-    test = 'test_sch_errors_bad_sym_lib_table'
-    ctx = context.TestContextSCH(test, sch, 'int_bom_simple_csv', None)
-    ctx.run(EXIT_BAD_CONFIG, extra_debug=True)
-    ctx.search_err('Malformed lib entry')
-    ctx.search_err(r'Unable to expand .?BOGUS.? in')
-    ctx.search_err(r'unnamed LibAlias')
-    ctx.clean_up()
