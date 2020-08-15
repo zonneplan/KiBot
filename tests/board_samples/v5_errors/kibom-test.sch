@@ -1,6 +1,5 @@
 EESchema Schematic File Version 4
-LIBS:t1
-LIBS:t2
+LIBS:t1, t2
 EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
