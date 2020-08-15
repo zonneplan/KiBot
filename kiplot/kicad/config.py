@@ -28,7 +28,12 @@ KICAD_COMMON = 'kicad_common'
 
 
 class KiConfError(Exception):
-    pass
+    def __init__(self, msg, file, lnum, line):
+        super().__init__()
+        self.line = lnum
+        self.file = file
+        self.msg = msg
+        self.code = line
 
 
 def un_quote(val):
@@ -78,8 +83,8 @@ class LibAlias(object):
 
     def __str__(self):
         if not self.name:
-            return 'empty LibAlias'
-        return self.name+' -> `'+self.uri+'`'
+            return 'unnamed LibAlias'
+        return '`'+self.name+'` -> `'+self.uri+'`'
 
 
 class KiConf(object):
