@@ -59,7 +59,7 @@ outputs:
         hide_stats_info: false
         # [boolean=false] Enclose all values using double quotes
         quote_all: false
-        # [string=','] CSV Separator
+        # [string=','] CSV Separator. TXT and TSV always use tab as delimiter
         separator: ','
       # [list(dict)] A series of regular expressions used to exclude parts.
       # If a component matches ANY of these, it will be excluded.

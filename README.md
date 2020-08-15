@@ -361,7 +361,7 @@ Next time you need this list just use an alias, like this:
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `quote_all`: [boolean=false] Enclose all values using double quotes.
-            - `separator`: [string=','] CSV Separator.
+            - `separator`: [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
         - `exclude_any`: [list(dict)] A series of regular expressions used to exclude parts.
                          If a component matches ANY of these, it will be excluded.
                          Column names are case-insensitive.
