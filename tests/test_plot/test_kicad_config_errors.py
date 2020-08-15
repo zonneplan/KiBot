@@ -63,18 +63,24 @@ def kiconf_de_init():
     KiConf.lib_aliases = {}
 
 
-def check_load_conf(caplog, dir='kicad', fail=False):
+def check_load_conf(caplog, dir='kicad', fail=False, catch_conf_error=False):
     caplog.set_level(logging.DEBUG)
     kiconf_de_init()
     cov.load()
     cov.start()
-    KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
+    if catch_conf_error:
+        with pytest.raises(KiConfError) as err:
+            KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
+    else:
+        KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
+        err = None
     cov.stop()
     cov.save()
     ref = 'Reading KiCad config from `tests/data/'+dir+'/kicad_common`'
     if fail:
         ref = 'Unable to find KiCad configuration file'
     assert ref in caplog.text, caplog.text
+    return err
 
 
 def test_kicad_conf_user(caplog):
@@ -113,8 +119,7 @@ def test_kicad_conf_sym_err_1(caplog):
     """ Test broken sym-lib-table, no signature """
     GS.debug_level = 2
     with mock.patch.dict(os.environ, {"KICAD_CONFIG_HOME": 'tests/data/kicad_err_1'}):
-        with pytest.raises(KiConfError) as err:
-            err = check_load_conf(caplog, dir='kicad_err_1')
+        err = check_load_conf(caplog, dir='kicad_err_1', catch_conf_error=True)
     assert err.type == KiConfError
     assert err.value.msg == 'Symbol libs table missing signature'
     assert err.value.line == 1
@@ -124,8 +129,7 @@ def test_kicad_conf_sym_err_2(caplog):
     """ Test broken sym-lib-table, wrong entry """
     GS.debug_level = 2
     with mock.patch.dict(os.environ, {"KICAD_CONFIG_HOME": 'tests/data/kicad_err_2'}):
-        with pytest.raises(KiConfError) as err:
-            check_load_conf(caplog, dir='kicad_err_2')
+        err = check_load_conf(caplog, dir='kicad_err_2', catch_conf_error=True)
     assert err.type == KiConfError
     assert err.value.msg == 'Unknown symbol table entry'
     assert err.value.line == 2
