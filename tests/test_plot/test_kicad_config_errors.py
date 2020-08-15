@@ -1,7 +1,6 @@
 """
 Tests for KiCad configuration load
 
-
 For debug information use:
 pytest-3 --log-cli-level debug
 """
@@ -9,9 +8,9 @@ pytest-3 --log-cli-level debug
 import os
 import sys
 import pytest
-from unittest import mock
 import coverage
 import logging
+import sysconfig
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -28,6 +27,7 @@ from kiplot.gs import GS
 
 
 cov = coverage.Coverage()
+_real_posix_prefix = None
 
 
 def test_kicad_conf_bad_sym_lib_table():
@@ -83,53 +83,93 @@ def check_load_conf(caplog, dir='kicad', fail=False, catch_conf_error=False):
     return err
 
 
-def test_kicad_conf_user(caplog):
+def test_kicad_conf_user(caplog, monkeypatch):
     """ Check we can load the KiCad configuration from $KICAD_CONFIG_HOME """
     GS.debug_level = 2
-    with mock.patch.dict(os.environ, {"KICAD_CONFIG_HOME": "tests/data/kicad_ok"}):
+    with monkeypatch.context() as m:
+        m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_ok')
         check_load_conf(caplog, dir='kicad_ok')
     assert 'KICAD_TEMPLATE_DIR="/usr/share/kicad/template"' in caplog.text, caplog.text
 
 
-def test_kicad_conf_xdg(caplog):
+def test_kicad_conf_xdg(caplog, monkeypatch):
     """ Check we can load the KiCad configuration from $XDG_CONFIG_HOME/kicad """
-    with mock.patch.dict(os.environ, {"XDG_CONFIG_HOME": "tests/data"}):
+    with monkeypatch.context() as m:
+        m.setenv("XDG_CONFIG_HOME", 'tests/data')
         check_load_conf(caplog)
     assert 'KiCad config without EnvironmentVariables section' in caplog.text, caplog.text
 
 
-def test_kicad_conf_miss_home(caplog):
+def test_kicad_conf_miss_home(caplog, monkeypatch):
     """ Check no HOME and fail to load kicad_common.
         Also check we correctly guess the libs dir. """
-    with mock.patch.dict(os.environ, {"HOME": ''}):
+    with monkeypatch.context() as m:
+        m.setenv("HOME", '')
         check_load_conf(caplog, fail=True)
     assert '`HOME` not defined' in caplog.text, caplog.text
     assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/library"' in caplog.text, caplog.text
 
 
-def test_kicad_conf_lib_env(caplog):
+def test_kicad_conf_lib_env(caplog, monkeypatch):
     """ Check we can use KICAD_SYMBOL_DIR as fallback """
-    with mock.patch.dict(os.environ, {"HOME": '', "KICAD_SYMBOL_DIR": 'tests'}):
+    with monkeypatch.context() as m:
+        m.setenv("HOME", '')
+        m.setenv("KICAD_SYMBOL_DIR", 'tests')
         check_load_conf(caplog, fail=True)
     assert '`HOME` not defined' in caplog.text, caplog.text
     assert 'Detected KICAD_SYMBOL_DIR="tests"' in caplog.text, caplog.text
 
 
-def test_kicad_conf_sym_err_1(caplog):
+def test_kicad_conf_sym_err_1(caplog, monkeypatch):
     """ Test broken sym-lib-table, no signature """
     GS.debug_level = 2
-    with mock.patch.dict(os.environ, {"KICAD_CONFIG_HOME": 'tests/data/kicad_err_1'}):
+    with monkeypatch.context() as m:
+        m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_err_1')
         err = check_load_conf(caplog, dir='kicad_err_1', catch_conf_error=True)
     assert err.type == KiConfError
     assert err.value.msg == 'Symbol libs table missing signature'
     assert err.value.line == 1
 
 
-def test_kicad_conf_sym_err_2(caplog):
+def test_kicad_conf_sym_err_2(caplog, monkeypatch):
     """ Test broken sym-lib-table, wrong entry """
     GS.debug_level = 2
-    with mock.patch.dict(os.environ, {"KICAD_CONFIG_HOME": 'tests/data/kicad_err_2'}):
+    with monkeypatch.context() as m:
+        m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_err_2')
         err = check_load_conf(caplog, dir='kicad_err_2', catch_conf_error=True)
     assert err.type == KiConfError
     assert err.value.msg == 'Unknown symbol table entry'
     assert err.value.line == 2
+
+
+def mocked_get_path_1(name, scheme):
+    """ Pretend the system libs are the user ones.
+        Disable the system libs. """
+    if name == 'data':
+        if scheme == 'posix_user':
+            return _real_posix_prefix
+        elif scheme == 'posix_prefix':
+            return ''
+    return sysconfig.get_path(name, scheme)
+
+
+def test_kicad_conf_local_conf(caplog, monkeypatch):
+    """ Test if we can use the 'posix_user' """
+    global _real_posix_prefix
+    _real_posix_prefix = sysconfig.get_path('data', 'posix_prefix')
+    with monkeypatch.context() as m:
+        m.setattr("sysconfig.get_path", mocked_get_path_1)
+        cov.load()
+        cov.start()
+        assert KiConf.guess_symbol_dir() == '/usr/share/kicad/library'
+        cov.stop()
+        cov.save()
+
+
+def test_kicad_conf_no_conf(caplog, monkeypatch):
+    """ Test a complete fail to find libs """
+    with monkeypatch.context() as m:
+        m.setattr("sysconfig.get_path", lambda a, b: '')
+        m.setenv('HOME', '')
+        check_load_conf(caplog, fail=True)
+    assert 'Unable to find KiCad libraries' in caplog.text, caplog.text

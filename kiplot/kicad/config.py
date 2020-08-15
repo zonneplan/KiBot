@@ -3,7 +3,7 @@ KiCad configuration classes.
 
 Notes about coverage:
 I'm excluding all the Darwin and Windows code from coverage.
-I don't know how to test it on GitHub CI/CD.
+I'm not even sure the values are correct.
 """
 import os
 import re
