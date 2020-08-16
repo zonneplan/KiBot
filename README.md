@@ -1,4 +1,6 @@
-# KiPlot
+# KiBot (formerly KiPlot)
+
+![KiBot Logo](docs/images/kibot_740x400_logo.png)
 
 ![Python application](https://github.com/INTI-CMNB/kiplot/workflows/Python%20application/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/INTI-CMNB/kiplot/badge.svg?branch=master)](https://coveralls.io/github/INTI-CMNB/kiplot?branch=master)
