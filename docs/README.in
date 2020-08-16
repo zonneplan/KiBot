@@ -5,7 +5,7 @@
 ![Python application](https://github.com/INTI-CMNB/kiplot/workflows/Python%20application/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/INTI-CMNB/kiplot/badge.svg?branch=master)](https://coveralls.io/github/INTI-CMNB/kiplot?branch=master)
 
-KiPlot is a program which helps you to generate the fabrication and
+KiBot is a program which helps you to generate the fabrication and
 documentation files for your KiCad projects easily, repeatable, and
 most of all, scriptably. This means you can use a Makefile to export
 your KiCad PCBs just as needed.
@@ -22,11 +22,11 @@ You want to do this in a one-touch way, and make sure everything you need to
 do so it securely saved in version control, not on the back of an old
 datasheet.
 
-KiPlot lets you do this.
+KiBot lets you do this.
 
 ## The configuration file
 
-Kiplot uses a configuration file where you can specify what *outputs* to
+KiBot uses a configuration file where you can specify what *outputs* to
 generate. By default you'll generate all of them, but you can specify which
 ones from the command line.
 
@@ -47,7 +47,7 @@ kiplot:
   version: 1
 ```
 
-This tells to Kiplot that this file is using version 1 of the format.
+This tells to KiBot that this file is using version 1 of the format.
 
 ### The *preflight* section
 
@@ -312,7 +312,7 @@ Next time you need this list just use an alias, like this:
 
 #### @outputs@
 
-## Using KiPlot
+## Using KiBot
 
 If you need a template for the configuration file try:
 
@@ -411,7 +411,7 @@ kiplot --list
 
 ### Installation on Ubuntu/Debian:
 
-Get the Debian package from the [releases section](https://github.com/INTI-CMNB/kiplot/releases) and run:
+Get the Debian package from the [releases section](https://github.com/INTI-CMNB/KiBot/releases) and run:
 ```
 sudo apt install ./kiplot.inti-cmnb_*_all.deb
 ```
@@ -429,11 +429,25 @@ In this case the packages are also included in the release.
 
 ## Using for CI/CD
 
-When using a GitHub or GitLab repo you can use KiPlot to generate all the needed stuff each time you commit a change to the schematic and/or PCB file.
+When using a GitHub or GitLab repo you can use KiBot to generate all the needed stuff each time you commit a change to the schematic and/or PCB file.
 
 Examples of how to do it can be found [here for GitHub](https://github.com/INTI-CMNB/kicad_ci_test) and [here for GitLab](https://gitlab.com/set-soft/kicad-ci-test).
 
-In order to run KiPlot on these environments you need a lot of software installed. The usual mechanism to achieve this is using [docker](https://www.docker.com/). Docker images containing KiPlot, all the supporting scripts and a corresponding KiCad can be found at [Docker Hub](https://hub.docker.com/) as [setsoft/kicad_auto:latest](https://hub.docker.com/repository/docker/setsoft/kicad_auto). This image is based on [setsoft/kicad_debian:latest](https://hub.docker.com/repository/docker/setsoft/kicad_debian), containing KiCad on Debian GNU/Linux.
+In order to run KiBot on these environments you need a lot of software installed. The usual mechanism to achieve this is using [docker](https://www.docker.com/). Docker images containing KiBot, all the supporting scripts and a corresponding KiCad can be found at [Docker Hub](https://hub.docker.com/) as [setsoft/kicad_auto:latest](https://hub.docker.com/repository/docker/setsoft/kicad_auto). This image is based on [setsoft/kicad_debian:latest](https://hub.docker.com/repository/docker/setsoft/kicad_debian), containing KiCad on Debian GNU/Linux.
 
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
+
+## Credits
+
+- **KiBot project**: Salvador E. Tropea (@set-soft)
+- **Original KiPlot project**: John Beard (@johnbeard)
+- **Original KiCad Automation Scripts**: Scott Bezek, Productize SPRL
+- **KiBoM**: Oliver Henry Walters (@SchrodingersGat)
+- **Interactive HTML BoM**: @qu1ck
+- **PcbDraw**: Jan Mrázek (@yaqwsx)
+- **Contributors**:
+  - **Error filters ideas**: Leandro Heck (@leoheck)
+  - **SVG output**: @nedyscout
+- **Others**:
+  - **Robot in the logo**: Christian Plaza (from pixabay)
