@@ -476,7 +476,8 @@ def do_bom(file_name, ext, comps, cfg):
         config = c.get_field_value(f_config).lower()
         c.fitted = comp_is_fitted(value, config, variants)
         if cfg.debug_level > 2:
-            logger.debug('ref: {} value: {} config: {} variants: {} -> fitted {}'.format(c.ref, value, config, variants, c.fitted))
+            logger.debug('ref: {} value: {} config: {} variants: {} -> fitted {}'.
+                         format(c.ref, value, config, variants, c.fitted))
         c.fixed = comp_is_fixed(value, config, variants)
     # Group components according to group_fields
     groups = group_components(cfg, comps)
