@@ -156,8 +156,9 @@ class TestContext(object):
     def do_run(self, cmd, ret_val=None, use_a_tty=False, chdir_out=False):
         cmd_base = [COVERAGE_SCRIPT, 'run', '-a']
         if chdir_out:
-            cmd_base.append('--rcfile=../../.coveragerc')
-            os.environ['COVERAGE_FILE'] = os.path.join(os.getcwd(), '.coverage')
+            cwd = os.getcwd()
+            cmd_base.append('--rcfile='+os.path.join(cwd, '.coveragerc'))
+            os.environ['COVERAGE_FILE'] = os.path.join(cwd, '.coverage')
         cmd = cmd_base+cmd
         logging.debug(cmd)
         out_filename = self.get_out_path('output.txt')
