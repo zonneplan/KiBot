@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2018 John Beard
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/johnbeard/kiplot
 from pcbnew import (PLOT_FORMAT_GERBER, FromMM, ToMM)
 from .out_any_layer import (AnyLayer, AnyLayerOptions)
 from .error import KiPlotConfigurationError

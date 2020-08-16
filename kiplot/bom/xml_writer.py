@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
+# License: MIT
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/SchrodingersGat/KiBoM
+# Contributors: Geoffrey Hunter (@gbmhunter)
 """
-XML Writer:
-This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Henry Walters.
-
-Generates an XML file.
+XML Writer: Generates an XML BoM file.
 """
 from xml.etree import ElementTree
 from xml.dom import minidom
@@ -12,10 +16,11 @@ from xml.dom import minidom
 def write_xml(filename, groups, headings, head_names, cfg):
     """
     Write BoM out to an XML file
-    filename = path to output file (must be a .xml)
+    filename = path to output file (must be a .csv, .txt or .tsv file)
     groups = [list of ComponentGroup groups]
-    headings = [list of headings to display in the BoM file]
-    cfg = BomPref object
+    headings = [list of headings to search for data in the BoM file]
+    head_names = [list of headings to display in the BoM file]
+    cfg = BoMOptions object with all the configuration
     """
     attrib = {}
     attrib['Schematic_Source'] = cfg.source

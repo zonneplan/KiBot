@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
 from subprocess import (call)
 from .pre_base import BasePreFlight
 from .error import (KiPlotConfigurationError)

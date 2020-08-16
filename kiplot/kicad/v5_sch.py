@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
 """
 KiCad v5 (and older) Schematic format.
-
 A basic implementation of the .sch file format.
+Currently oriented to collect the components for the BoM.
 """
 # Encapsulate file/line
 import re

@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: MIT
+# Project: KiBot (formerly KiPlot)
+"""
+A funny logo, composition of 'Ki' KiCad logo and a robot from internet,
+is a free robot that is claimed by various authors with minimal
+variations and available as public domain.
+If you really know the original author let me know. """
+
 KIBOT_LOGO_W = 370
 KIBOT_LOGO_H = 200
 KIBOT_LOGO = """iVBORw0KGgoAAAANSUhEUgAAAXIAAADICAYAAAD1AmquAAAdIHpUWHRSYXcgcHJvZmlsZSB0eXBl

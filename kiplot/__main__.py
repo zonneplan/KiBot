@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2018 John Beard
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/johnbeard/kiplot
 """KiPlot: Command-line Plotting for KiCad
 
 Usage:
@@ -164,8 +170,8 @@ def solve_board_file(schematic, a_board_file):
 
 
 def set_locale():
-    """ Try to se the locale for all the cataegories.
-        If it fails try for LC_NUMERIC (the one we need for tests). """
+    """ Try to set the locale for all the cataegories.
+        If it fails try with LC_NUMERIC (the one we need for tests). """
     try:
         locale.setlocale(locale.LC_ALL, '')
         return

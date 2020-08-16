@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2019 Romain Deterre (@rdeterre)
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/johnbeard/kiplot/pull/10
 import operator
 from datetime import datetime
 from pcbnew import (IU_PER_MM, IU_PER_MILS)

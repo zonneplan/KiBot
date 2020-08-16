@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
+# License: MIT
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/SchrodingersGat/KiBoM
 """
-CSV Writer:
-This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Henry Walters.
-
-Generates a CSV, TSV or TXT file.
+CSV Writer: Generates a CSV, TSV or TXT BoM file.
 """
 import csv
 
@@ -15,7 +18,7 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
     groups = [list of ComponentGroup groups]
     headings = [list of headings to search for data in the BoM file]
     head_names = [list of headings to display in the BoM file]
-    prefs = BomPref object
+    cfg = BoMOptions object with all the configuration
     """
     # Delimeter is assumed from file extension
     # Override delimiter if separator specified

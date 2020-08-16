@@ -1,5 +1,14 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
 """
 KiCad configuration classes.
+Reads the KiCad's configuration files.
+In particular:
+- kicad_common to know about the 'environment' variables
+- The `sym-lib-table` files to map library aliases
 
 Notes about coverage:
 I'm excluding all the Darwin and Windows code from coverage.

@@ -1,8 +1,16 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
+# License: MIT
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/SchrodingersGat/KiBoM
 """
 ColumnList
-This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Henry Walters.
 
 This is a class to hold the names of the fields and columns of the BoM.
+In KiBoM it has some logic, here is just a collection of constants.
+We also declare the BoMError here.
 """
 
 

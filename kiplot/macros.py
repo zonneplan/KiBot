@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
+"""
+Macros to make the output plug-ins cleaner.
+"""
 from .gs import GS  # noqa: F401
 from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store, UnaryOp, USub,
                  ClassDef, Call, ImportFrom, alias)

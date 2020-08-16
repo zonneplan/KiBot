@@ -1,8 +1,13 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
+# License: MIT
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/SchrodingersGat/KiBoM
+# Contributors: Kenny Huynh (@hkennyv)
 """
-BoM
-This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Henry Walters.
-
-Here is all the logic to convert a list of components into the rows and columns used to create the BoM.
+All the logic to convert a list of components into the rows and columns used to create the BoM.
 """
 import locale
 from copy import deepcopy

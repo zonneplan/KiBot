@@ -1,5 +1,9 @@
-"""Miscellaneous definitions
-"""
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
+""" Miscellaneous definitions """
 
 # Error levels
 INTERNAL_ERROR = 1    # Unhandled exceptions

@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
 from pcbnew import GERBER_WRITER
 from .out_any_drill import AnyDrill
 from kiplot.macros import macros, document, output_class  # noqa: F401

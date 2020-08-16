@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
+# License: MIT
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/SchrodingersGat/KiBoM
 """
 Units:
-This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Henry Walters.
-
 This file contains a set of functions for matching values which may be written in different formats
 e.g.
 0.1uF = 100n (different suffix specified, one has missing unit)
 0R1 = 0.1Ohm (Unit replaces decimal, different units)
-
+Oriented to normalize and sort R, L and C values.
 """
 import re
 import locale

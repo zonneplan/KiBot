@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
+# License: MIT
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/SchrodingersGat/KiBoM
 """
-HTML Writer:
-This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Henry Walters.
-
-Generates a HTML file.
+HTML Writer: Generates a HTML BoM file.
 """
 import os
 from base64 import b64encode
@@ -140,11 +143,11 @@ def embed_image(file):
 def write_html(filename, groups, headings, head_names, cfg):
     """
     Write BoM out to a HTML file
-    filename = path to output file (must be a .htm or .html file)
+    filename = path to output file (must be a .csv, .txt or .tsv file)
     groups = [list of ComponentGroup groups]
     headings = [list of headings to search for data in the BoM file]
     head_names = [list of headings to display in the BoM file]
-    prefs = BomPref object
+    cfg = BoMOptions object with all the configuration
     """
     link_datasheet = -1
     if cfg.html.datasheet_as_link and cfg.html.datasheet_as_link in headings:

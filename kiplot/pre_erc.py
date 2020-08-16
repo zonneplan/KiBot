@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
 from sys import (exit)
 from subprocess import (call)
 from kiplot.macros import macros, pre_class  # noqa: F401

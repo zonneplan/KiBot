@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: MIT
+# Project: KiBot (formerly KiPlot)
+"""
+Internal BoM (Bill of Materials) output for KiBot.
+This is somehow compatible with KiBoM.
+"""
 import os
 from re import compile, IGNORECASE
 from .gs import GS

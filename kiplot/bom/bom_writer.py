@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
+# License: MIT
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/SchrodingersGat/KiBoM
 """
 BoM Writer.
-This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Henry Walters.
 
 This is just a hub that calls the real BoM writer:
 - csv_writer.py
@@ -13,7 +18,6 @@ from .csv_writer import write_csv
 from .html_writer import write_html
 from .xml_writer import write_xml
 from .xlsx_writer import write_xlsx
-# from . import utils
 from .. import log
 
 logger = log.get_logger(__name__)

@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
+# License: MIT
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://github.com/SchrodingersGat/KiBoM
 """
-XLSX Writer:
-This code is adapted from https://github.com/SchrodingersGat/KiBoM by Oliver Henry Walters.
-
-Generates an XLSX file.
+XLSX Writer: Generates an XLSX BoM file.
 """
 import io
 from textwrap import wrap
@@ -14,7 +17,7 @@ from .. import log
 try:
     from xlsxwriter import Workbook
     XLSX_SUPPORT = True
-except ModuleNotFoundError:  # pragma: no cover
+except ModuleNotFoundError:
     XLSX_SUPPORT = False
 
     class Workbook():
@@ -202,13 +205,13 @@ def adjust_heights(worksheet, rows, max_width, head_size):
 def write_xlsx(filename, groups, col_fields, head_names, cfg):
     """
     Write BoM out to a XLSX file
-    filename = path to output file (must be a .xlsx file)
+    filename = path to output file (must be a .csv, .txt or .tsv file)
     groups = [list of ComponentGroup groups]
-    col_fields = [list of col_fields to search for data in the BoM file]
-    head_names = [list of col_fields to display in the BoM file]
-    prefs = BomPref object
+    col_fields = [list of headings to search for data in the BoM file]
+    head_names = [list of headings to display in the BoM file]
+    cfg = BoMOptions object with all the configuration
     """
-    if not XLSX_SUPPORT:  # pragma: no cover
+    if not XLSX_SUPPORT:
         logger.error('Python xlsxwriter module not installed (Debian: python3-xlsxwriter)')
         return False
 

@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
 from pcbnew import (PLOT_FORMAT_DXF, SKETCH, FILLED)
 from kiplot.out_any_layer import AnyLayer
 from kiplot.drill_marks import DrillMarks

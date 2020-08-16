@@ -1,4 +1,11 @@
-"""Log module
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
+# Adapted from: https://stackoverflow.com/questions/384076/how-can-i-color-python-logging-output
+"""
+Log module
 
 Handles logging initialization and formating.
 """
