@@ -307,6 +307,17 @@ class BoMOptions(BaseOptions):
             col = col[:-1]
         return col
 
+    @staticmethod
+    def _normalize_variant(variant):
+        if isinstance(variant, type):
+            variant = []
+        elif isinstance(variant, str):
+            if variant:
+                variant = [variant]
+            else:
+                variant = []
+        return variant
+
     def config(self):
         super().config()
         self.format = self._guess_format()
@@ -352,14 +363,8 @@ class BoMOptions(BaseOptions):
             for r in self.exclude_any:
                 r.column = self._fix_ref_field(r.column)
                 r.regex = compile(r.regex, flags=IGNORECASE)
-        # Variants
-        if isinstance(self.variant, type):
-            self.variant = []
-        elif isinstance(self.variant, str):
-            if self.variant:
-                self.variant = [self.variant]
-            else:
-                self.variant = []
+        # Variants, ensure a list
+        self.variant = self._normalize_variant(self.variant)
         # Columns
         self.column_rename = {}
         self.join = []
