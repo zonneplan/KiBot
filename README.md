@@ -344,7 +344,7 @@ Next time you need this list just use an alias, like this:
                      Can be just the name of the field.
           * Valid keys:
             - `field`: [string=''] Name of the field to use for this column.
-            - `join`: [list(string)|string] List of fields to join to this column.
+            - `join`: [list(string)|string=''] List of fields to join to this column.
             - `name`: [string=''] Name to display in the header. The field is used when empty.
         - `component_aliases`: [list(list(string))] A series of values which are considered to be equivalent for the part name.
                                Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
@@ -401,12 +401,12 @@ Next time you need this list just use an alias, like this:
           * Valid keys:
             - `col_colors`: [boolean=true] Use colors to show the field type.
             - `datasheet_as_link`: [string=''] Column with links to the datasheet.
-            - `digikey_link`: [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page.
+            - `digikey_link`: [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page.
             - `generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
-            - `logo`: [string|boolean] PNG file to use as logo, use false to remove.
+            - `logo`: [string|boolean=''] PNG file to use as logo, use false to remove.
             - `style`: [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
                        Or you can provide a CSS file name. Please use .css as file extension..
             - `title`: [string='KiBot Bill of Materials'] BoM title.
@@ -428,18 +428,18 @@ Next time you need this list just use an alias, like this:
         - `test_regex`: [boolean=true] Each component group will be tested against a number of regular-expressions
                         (see `include_only` and `exclude_any`).
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
-        - `variant`: [string=''] Board variant(s), used to determine which components
+        - `variant`: [string|list(string)=''] Board variant(s), used to determine which components
                      are output to the BoM..
         - `xlsx`: [dict] Options for the XLSX format.
           * Valid keys:
             - `col_colors`: [boolean=true] Use colors to show the field type.
             - `datasheet_as_link`: [string=''] Column with links to the datasheet.
-            - `digikey_link`: [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page.
+            - `digikey_link`: [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page.
             - `generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
-            - `logo`: [string|boolean] PNG file to use as logo, use false to remove.
+            - `logo`: [string|boolean=''] PNG file to use as logo, use false to remove.
             - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
             - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic..
             - `title`: [string='KiBot Bill of Materials'] BoM title.
@@ -656,7 +656,7 @@ Next time you need this list just use an alias, like this:
                          Can be just the name of the field.
               * Valid keys:
                 - `field`: [string=''] Name of the field to use for this column.
-                - `join`: [list(string)|string] List of fields to join to this column.
+                - `join`: [list(string)|string=''] List of fields to join to this column.
                 - `name`: [string=''] Name to display in the header. The field is used when empty.
             - `component_aliases`: [list(list(string))] A series of values which are considered to be equivalent for the part name.
                                    Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
@@ -669,7 +669,7 @@ Next time you need this list just use an alias, like this:
                                    - ['zener', 'zenersmall']
                                    - ['d', 'diode', 'd_small'].
             - `datasheet_as_link`: [string=''] Column with links to the datasheet (HTML only).
-            - `digikey_link`: [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only).
+            - `digikey_link`: [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only).
             - `exclude_any`: [list(dict)] A series of regular expressions used to exclude parts.
                              If a component matches ANY of these, it will be excluded.
                              Column names are case-insensitive.
@@ -741,14 +741,14 @@ Next time you need this list just use an alias, like this:
         - `bottom`: [boolean=false] render the bottom side of the board (default is top side).
         - `dpi`: [number=300] [10,1200] dots per inch (resolution) of the generated image.
         - `format`: [string='svg'] [svg,png,jpg] output format. Only used if no `output` is specified.
-        - `highlight`: [list(string)] list of components to highlight.
-        - `libs`: [list(string)] list of libraries.
+        - `highlight`: [list(string)=[]] list of components to highlight.
+        - `libs`: [list(string)=[]] list of libraries.
         - `mirror`: [boolean=false] mirror the board.
         - `no_drillholes`: [boolean=false] do not make holes transparent.
         - `output`: [string='%f-%i.%x'] name for the generated file. Affected by global options.
         - `placeholder`: [boolean=false] show placeholder for missing components.
         - `remap`: [dict|None] replacements for PCB references using components (lib:component).
-        - `show_components`: [string|list(string)] [none,all] list of components to draw, can be also a string for none or all.
+        - `show_components`: [string|list(string)=none] [none,all] list of components to draw, can be also a string for none or all.
                              The default is none.
         - `style`: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
           * Valid keys:

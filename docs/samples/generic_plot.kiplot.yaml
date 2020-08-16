@@ -36,8 +36,8 @@ outputs:
       columns:
         # [string=''] Name of the field to use for this column
         field: ''
-        # [list(string)|string] List of fields to join to this column
-        join:
+        # [list(string)|string=''] List of fields to join to this column
+        join: ''
         # [string=''] Name to display in the header. The field is used when empty
         name: ''
       # [list(list(string))] A series of values which are considered to be equivalent for the part name.
@@ -50,7 +50,7 @@ outputs:
       # - ['sw', 'switch']
       # - ['zener', 'zenersmall']
       # - ['d', 'diode', 'd_small']
-      component_aliases:
+      component_aliases: [['r', 'r_small', 'res', 'resistor'], ['l', 'l_small', 'inductor'], ['c', 'c_small', 'cap', 'capacitor'], ['sw', 'switch'], ['zener', 'zenersmall'], ['d', 'diode', 'd_small']]
       # [dict] Options for the CSV, TXT and TSV formats
       csv:
         # [boolean=false] Hide project information
@@ -101,15 +101,15 @@ outputs:
       # Components which match (comparing *all* fields) will be grouped together.
       # Field names are case-insensitive.
       # If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used
-      group_fields:
+      group_fields: ['part', 'part lib', 'value', 'footprint', 'footprint lib']
       # [dict] Options for the HTML format
       html:
         # [boolean=true] Use colors to show the field type
         col_colors: true
         # [string=''] Column with links to the datasheet
         datasheet_as_link: ''
-        # [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page
-        digikey_link:
+        # [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page
+        digikey_link: ''
         # [boolean=true] Generate a separated section for DNF (Do Not Fit) components
         generate_dnf: true
         # [boolean=false] Hide project information
@@ -118,8 +118,8 @@ outputs:
         hide_stats_info: false
         # [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`
         highlight_empty: true
-        # [string|boolean] PNG file to use as logo, use false to remove
-        logo:
+        # [string|boolean=''] PNG file to use as logo, use false to remove
+        logo: ''
         # [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
         # Or you can provide a CSS file name. Please use .css as file extension.
         style: 'modern-blue'
@@ -153,7 +153,7 @@ outputs:
       test_regex: true
       # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
       use_alt: false
-      # [string=''] Board variant(s), used to determine which components
+      # [string|list(string)=''] Board variant(s), used to determine which components
       # are output to the BoM.
       variant: ''
       # [dict] Options for the XLSX format
@@ -162,8 +162,8 @@ outputs:
         col_colors: true
         # [string=''] Column with links to the datasheet
         datasheet_as_link: ''
-        # [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page
-        digikey_link:
+        # [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page
+        digikey_link: ''
         # [boolean=true] Generate a separated section for DNF (Do Not Fit) components
         generate_dnf: true
         # [boolean=false] Hide project information
@@ -172,8 +172,8 @@ outputs:
         hide_stats_info: false
         # [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`
         highlight_empty: true
-        # [string|boolean] PNG file to use as logo, use false to remove
-        logo:
+        # [string|boolean=''] PNG file to use as logo, use false to remove
+        logo: ''
         # [number=60] [20,999] Maximum column width (characters)
         max_col_width: 60
         # [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
@@ -442,8 +442,8 @@ outputs:
         columns:
           # [string=''] Name of the field to use for this column
           field: ''
-          # [list(string)|string] List of fields to join to this column
-          join:
+          # [list(string)|string=''] List of fields to join to this column
+          join: ''
           # [string=''] Name to display in the header. The field is used when empty
           name: ''
         # [list(list(string))] A series of values which are considered to be equivalent for the part name.
@@ -456,11 +456,11 @@ outputs:
         # - ['sw', 'switch']
         # - ['zener', 'zenersmall']
         # - ['d', 'diode', 'd_small']
-        component_aliases:
+        component_aliases: [['r', 'r_small', 'res', 'resistor'], ['l', 'l_small', 'inductor'], ['c', 'c_small', 'cap', 'capacitor'], ['sw', 'switch'], ['zener', 'zenersmall'], ['d', 'diode', 'd_small']]
         # [string=''] Column with links to the datasheet (HTML only)
         datasheet_as_link: ''
-        # [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only)
-        digikey_link:
+        # [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only)
+        digikey_link: ''
         # [list(dict)] A series of regular expressions used to exclude parts.
         # If a component matches ANY of these, it will be excluded.
         # Column names are case-insensitive.
@@ -496,7 +496,7 @@ outputs:
         # Components which match (comparing *all* fields) will be grouped together.
         # Field names are case-insensitive.
         # If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used
-        group_fields:
+        group_fields: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib']
         # [boolean=false] Hide column headers
         hide_headers: false
         # [boolean=false] Hide project information
@@ -552,10 +552,10 @@ outputs:
       dpi: 300
       # [string='svg'] [svg,png,jpg] output format. Only used if no `output` is specified
       format: 'svg'
-      # [list(string)] list of components to highlight
-      highlight:
-      # [list(string)] list of libraries
-      libs:
+      # [list(string)=[]] list of components to highlight
+      highlight: []
+      # [list(string)=[]] list of libraries
+      libs: []
       # [boolean=false] mirror the board
       mirror: false
       # [boolean=false] do not make holes transparent
@@ -566,9 +566,9 @@ outputs:
       placeholder: false
       # [dict|None] replacements for PCB references using components (lib:component)
       remap:
-      # [string|list(string)] [none,all] list of components to draw, can be also a string for none or all.
+      # [string|list(string)=none] [none,all] list of components to draw, can be also a string for none or all.
       # The default is none
-      show_components:
+      show_components: none
       # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
       style:
         # [string='#4ca06c'] color for the board without copper (covered by solder mask)
