@@ -28,12 +28,12 @@ lint: doc
 	flake8 . --count --statistics
 	rm kiplot.py
 
-test: lint
+test_tmp: lint
 	$(PY_COV) erase
 	$(PYTEST)
 	$(PY_COV) report
 
-test_local: lint
+test: lint
 	rm -rf output
 	rm -f example.kiplot.yaml
 	$(PY_COV) erase
