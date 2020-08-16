@@ -9,3 +9,4 @@ outputs:
     dir: BoM
     options:
       format: HTML
+      variant: ''
