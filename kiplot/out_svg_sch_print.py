@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020 @nerdyscout
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
 import os
 from subprocess import (call)
 from .gs import (GS)
@@ -41,7 +47,7 @@ class SVG_Sch_PrintOptions(BaseOptions):
 class SVG_Sch_Print(BaseOutput):  # noqa: F821
     """ SVG Schematic Print
         Exports the PCB. Suitable for printing.
-        This a format to document your schematic. """
+        This is a format to document your schematic. """
     def __init__(self):
         super().__init__()
         with document:
