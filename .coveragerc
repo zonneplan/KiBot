@@ -7,5 +7,7 @@ omit = */kiplot/docopt.py
 [report]
 exclude_lines =
     pragma: no cover
+    @pre_class
+    @output_class
 #    raise RuntimeError
 
