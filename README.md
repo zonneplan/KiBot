@@ -938,6 +938,18 @@ Next time you need this list just use an alias, like this:
         - `plot_sheet_reference`: [boolean=false] currently without effect.
         - `tent_vias`: [boolean=true] cover the vias.
 
+* SVG Schematic Print
+  * Type: `svg_sch_print`
+  * Description: Exports the PCB. Suitable for printing.
+                 This is a format to document your schematic.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `svg_sch_print` output.
+      * Valid keys:
+        - `output`: [string='%f-%i.%x'] filename for the output SVG (%i=schematic %x=svg). Affected by global options.
+
 
 ## Using KiPlot
 

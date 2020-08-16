@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Internal BoM generator, based on KiBoM code.
+  This generator doesn't need the netlist, works directly from the SCH.
+  It features enhanced HTML and XLSX outputs, in addition to the CSV, TSV, TXT
+  and XML traditional outputs.
 - Support for full KiBoM configuration from the YAML
+- Added output to print to an SVG file.
 - Added default output file name pattern. Can be applied to all outputs.
 - Unified output name:
   - `pdf_pcb_print.output` can be used instead of `pdf_pcb_print.output_name`

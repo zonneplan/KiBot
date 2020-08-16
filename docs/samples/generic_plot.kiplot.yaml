@@ -773,3 +773,13 @@ outputs:
       tent_vias: true
     layers: all
 
+  # SVG Schematic Print:
+  # This is a format to document your schematic.
+  - name: 'svg_sch_print_example'
+    comment: 'Exports the PCB. Suitable for printing.'
+    type: 'svg_sch_print'
+    dir: 'Example/svg_sch_print_dir'
+    options:
+      # [string='%f-%i.%x'] filename for the output SVG (%i=schematic %x=svg). Affected by global options
+      output: '%f-%i.%x'
+
