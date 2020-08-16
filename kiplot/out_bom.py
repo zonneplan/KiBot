@@ -10,6 +10,13 @@ from . import log
 
 logger = log.get_logger(__name__)
 VALID_STYLES = {'modern-blue': 1, 'modern-green': 1, 'modern-red': 1, 'classic': 1}
+DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
+                   ['l', 'l_small', 'inductor'],
+                   ['c', 'c_small', 'cap', 'capacitor'],
+                   ['sw', 'switch'],
+                   ['zener', 'zenersmall'],
+                   ['d', 'diode', 'd_small'],
+                   ]
 
 
 # String matches for marking a component as "do not fit"
@@ -43,7 +50,7 @@ class BoMColumns(Optionable):
             self.name = ''
             """ Name to display in the header. The field is used when empty """
             self.join = Optionable
-            """ [list(string)|string] List of fields to join to this column """  # pragma: no cover
+            """ [list(string)|string=''] List of fields to join to this column """  # pragma: no cover
 
     def config(self):
         super().config()
@@ -55,7 +62,10 @@ class BoMColumns(Optionable):
         if isinstance(self.join, type):
             self.join = None
         elif isinstance(self.join, str):
-            self.join = [field, self.join.lower()]
+            if self.join:
+                self.join = [field, self.join.lower()]
+            else:
+                self.join = None
         else:
             self.join = [field]+[c.lower() for c in self.join]
 
@@ -70,7 +80,7 @@ class BoMLinkable(Optionable):
             self.datasheet_as_link = ''
             """ Column with links to the datasheet """
             self.digikey_link = Optionable
-            """ [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page """
+            """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page """
             self.generate_dnf = True
             """ Generate a separated section for DNF (Do Not Fit) components """
             self.hide_pcb_info = False
@@ -80,7 +90,7 @@ class BoMLinkable(Optionable):
             self.highlight_empty = True
             """ Use a color for empty cells. Applies only when `col_colors` is `true` """
             self.logo = Optionable
-            """ [string|boolean] PNG file to use as logo, use false to remove """
+            """ [string|boolean=''] PNG file to use as logo, use false to remove """
             self.title = 'KiBot Bill of Materials'
             """ BoM title """  # pragma: no cover
 
@@ -158,14 +168,21 @@ class BoMXLSX(BoMLinkable):
             raise KiPlotConfigurationError('Unknown style `{}`'.format(self.style))
 
 
+class ComponentAliases(Optionable):
+    _default = DEFAULT_ALIASES
+
+    def __init__(self):
+        super().__init__()
+
+
+class GroupFields(Optionable):
+    _default = ColumnList.DEFAULT_GROUPING
+
+    def __init__(self):
+        super().__init__()
+
+
 class BoMOptions(BaseOptions):
-    DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
-                       ['l', 'l_small', 'inductor'],
-                       ['c', 'c_small', 'cap', 'capacitor'],
-                       ['sw', 'switch'],
-                       ['zener', 'zenersmall'],
-                       ['d', 'diode', 'd_small'],
-                       ]
     DEFAULT_EXCLUDE = [[ColumnList.COL_REFERENCE, '^TP[0-9]*'],
                        [ColumnList.COL_REFERENCE, '^FID'],
                        [ColumnList.COL_PART, 'mount.*hole'],
@@ -182,7 +199,7 @@ class BoMOptions(BaseOptions):
             self.number = 1
             """ Number of boards to build (components multiplier) """
             self.variant = Optionable
-            """ [string|list(string)] Board variant(s), used to determine which components
+            """ [string|list(string)=''] Board variant(s), used to determine which components
                 are output to the BoM. """
             self.output = GS.def_global_output
             """ filename for the output (%i=bom)"""
@@ -203,12 +220,12 @@ class BoMOptions(BaseOptions):
             """ Component groups with blank fields will be merged into the most compatible group, where possible """
             self.fit_field = 'Config'
             """ Field name used to determine if a particular part is to be fitted (also DNC and variants) """
-            self.group_fields = Optionable
+            self.group_fields = GroupFields
             """ [list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
                 Field names are case-insensitive.
                 If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used """
-            self.component_aliases = Optionable
+            self.component_aliases = ComponentAliases
             """ [list(list(string))] A series of values which are considered to be equivalent for the part name.
                 Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
                 will ensure the equivalent capacitor symbols can be grouped together.
@@ -316,7 +333,7 @@ class BoMOptions(BaseOptions):
             self.group_fields = [f.lower() for f in self.group_fields]
         # component_aliases
         if isinstance(self.component_aliases, type):
-            self.component_aliases = BoMOptions.DEFAULT_ALIASES
+            self.component_aliases = DEFAULT_ALIASES
         # include_only
         if isinstance(self.include_only, type):
             self.include_only = None
@@ -339,7 +356,10 @@ class BoMOptions(BaseOptions):
         if isinstance(self.variant, type):
             self.variant = []
         elif isinstance(self.variant, str):
-            self.variant = [self.variant]
+            if self.variant:
+                self.variant = [self.variant]
+            else:
+                self.variant = []
         # Columns
         self.column_rename = {}
         self.join = []

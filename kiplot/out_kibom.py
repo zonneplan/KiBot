@@ -45,7 +45,7 @@ class KiBoMColumns(Optionable):
             self.name = ''
             """ Name to display in the header. The field is used when empty """
             self.join = Optionable
-            """ [list(string)|string] List of fields to join to this column """  # pragma: no cover
+            """ [list(string)|string=''] List of fields to join to this column """  # pragma: no cover
 
     def config(self):
         super().config()
@@ -55,6 +55,26 @@ class KiBoMColumns(Optionable):
             self.join = None
         elif isinstance(self.join, list):
             self.join = '\t'.join(self.join)
+
+
+class ComponentAliases(Optionable):
+    _default = [['r', 'r_small', 'res', 'resistor'],
+                ['l', 'l_small', 'inductor'],
+                ['c', 'c_small', 'cap', 'capacitor'],
+                ['sw', 'switch'],
+                ['zener', 'zenersmall'],
+                ['d', 'diode', 'd_small'],
+                ]
+
+    def __init__(self):
+        super().__init__()
+
+
+class GroupFields(Optionable):
+    _default = ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib']
+
+    def __init__(self):
+        super().__init__()
 
 
 class KiBoMConfig(Optionable):
@@ -85,13 +105,13 @@ class KiBoMConfig(Optionable):
             self.hide_pcb_info = False
             """ Hide project information """
             self.digikey_link = Optionable
-            """ [string|list(string)] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only) """
-            self.group_fields = Optionable
+            """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only) """
+            self.group_fields = GroupFields
             """ [list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
                 Field names are case-insensitive.
                 If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used """
-            self.component_aliases = Optionable
+            self.component_aliases = ComponentAliases
             """ [list(list(string))] A series of values which are considered to be equivalent for the part name.
                 Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
                 will ensure the equivalent capacitor symbols can be grouped together.

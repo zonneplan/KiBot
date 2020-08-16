@@ -16,6 +16,7 @@ outputs:
           join: ['Tolerance', 'Voltage']
         - field: manf
           join: manf#
-        - digikey#
+        - field: digikey#
+          join: ''
         - Quantity Per PCB
 

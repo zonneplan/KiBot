@@ -68,6 +68,9 @@ people:
   - Luca
   - Laura
 """)  # 10
+document.append("""
+people: [['a','b'],['c','d']]
+""")  # 11
 
 
 print(yaml.load(document[-1]))

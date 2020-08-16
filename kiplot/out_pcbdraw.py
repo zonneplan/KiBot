@@ -77,7 +77,7 @@ class PcbDrawOptions(BaseOptions):
             self.style = PcbDrawStyle
             """ [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options """
             self.libs = Optionable
-            """ [list(string)] list of libraries """
+            """ [list(string)=[]] list of libraries """
             self.placeholder = False
             """ show placeholder for missing components """
             self.remap = PcbDrawRemap
@@ -89,9 +89,9 @@ class PcbDrawOptions(BaseOptions):
             self.mirror = False
             """ mirror the board """
             self.highlight = Optionable
-            """ [list(string)] list of components to highlight """
+            """ [list(string)=[]] list of components to highlight """
             self.show_components = Optionable
-            """ [string|list(string)] [none,all] list of components to draw, can be also a string for none or all.
+            """ [string|list(string)=none] [none,all] list of components to draw, can be also a string for none or all.
                 The default is none """
             self.vcuts = False
             """ render V-CUTS on the Cmts.User layer """

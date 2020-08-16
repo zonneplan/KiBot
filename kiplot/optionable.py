@@ -101,6 +101,9 @@ class Optionable(object):
                 if cur_doc[0] == '[':
                     # Separate the valid types for this key
                     valid = cur_doc[1:].split(']')[0].split('|')
+                    # Remove the XXXX=Value
+                    if '=' in valid[-1]:
+                        valid[-1] = valid[-1].split('=')[0]
                     # Get the type used by the user as a string
                     v_type = Optionable._typeof(v)
                     if v_type not in valid:

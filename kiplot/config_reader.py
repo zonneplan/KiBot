@@ -270,8 +270,17 @@ def print_example_options(f, cls, name, indent, po):
         elif isinstance(val, bool):
             val = str(val).lower()
         if isinstance(val, type):
-            f.write(ind_str+'{}:\n'.format(k))
-            print_example_options(f, val, '', indent+2, None)
+            if val.__name__ == 'Optionable' and help and '=' in help_lines[0]:
+                # Get the text after =
+                txt = help_lines[0].split('=')[1]
+                # Get the text before the space, without the ]
+                txt = txt.split()[0][:-1]
+                f.write(ind_str+'{}: {}\n'.format(k, txt))
+            elif hasattr(val, '_default'):
+                f.write(ind_str+'{}: {}\n'.format(k, val._default))
+            else:
+                f.write(ind_str+'{}:\n'.format(k))
+                print_example_options(f, val, '', indent+2, None)
         else:
             f.write(ind_str+'{}: {}\n'.format(k, val))
     return obj
