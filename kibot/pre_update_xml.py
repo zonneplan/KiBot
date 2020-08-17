@@ -17,7 +17,9 @@ logger = get_logger(__name__)
 
 @pre_class
 class Update_XML(BasePreFlight):  # noqa: F821
-    """ [boolean=false] Update the XML version of the BoM (Bill of Materials). To ensure our generated BoM is up to date """
+    """ [boolean=false] Update the XML version of the BoM (Bill of Materials).
+        To ensure our generated BoM is up to date.
+        Note that this isn't needed when using the internal BoM generator (`bom`) """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):

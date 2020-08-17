@@ -70,7 +70,9 @@ This section is used to specify tasks that will be executed before generating an
 - ignore_unconnected: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
 - run_drc: [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
 - run_erc: [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
-- update_xml: [boolean=false] Update the XML version of the BoM (Bill of Materials). To ensure our generated BoM is up to date.
+- update_xml: [boolean=false] Update the XML version of the BoM (Bill of Materials).
+        To ensure our generated BoM is up to date.
+        Note that this isn't needed when using the internal BoM generator (`bom`).
 
 
 Here is an example of a *preflight* section:
