@@ -22,7 +22,10 @@ You want to do this in a one-touch way, and make sure everything you need to
 do so it securely saved in version control, not on the back of an old
 datasheet.
 
-KiBot lets you do this.
+KiBot lets you do this. The following picture depicts the data flow:
+
+![KiBot Logo](docs/images/Esquema.png)
+
 
 ## The configuration file
 
