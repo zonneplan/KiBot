@@ -1,0 +1,238 @@
+\documentclass[conference, a4paper]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+%############# LENGUAJE #############
+% Para lenguaje español
+\usepackage[spanish]{babel}
+\selectlanguage{spanish}
+% Para los acentos.
+% Seleccionar ISO-8859-1 como codificación
+\usepackage[latin1]{inputenc}
+% Para la separación silábica en castellano
+\usepackage[T1]{fontenc}
+\hyphenation{on-line im-age fabrication}
+
+% Para que las referencias queden en 2 columnas iguales.
+\usepackage{flushend}
+
+% Esto permite cortar mejor los URLs largos y soluciona
+% problemas con caracteres no permitidos en los URLs
+% como por ejemplo & y _
+\usepackage{url}
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\makeatother
+
+\begin{document}
+
+\title{Generación automática de archivos de fabricación en KiCad}
+
+\author{\IEEEauthorblockN{Salvador E. Tropea}
+\IEEEauthorblockA{\textit{Centro de Micro y Nano Tecnologías} \\
+\textit{Instituto Nacional de Tecnología Industrial}\\
+Buenos Aires, Argentina \\
+stropea@inti.gob.ar}
+}
+
+\maketitle
+
+\begin{abstract}
+KiCad es probablemente la herramienta de desarrollo de circuitos impresos
+más avanzada en el mundo del software libre.
+
+En este trabajo presentamos un conjunto de herramientas capaces de
+automatizar la verificación de reglas de diseño y la generación de
+los archivos de fabricación cuándo usamos KiCad.
+
+Estas herramientas son adecuadas para ser usadas localmente o en entornos
+de integración continua.
+\end{abstract}
+
+\begin{IEEEkeywords}
+KiCad, automatización, fabricación, integración continua
+\end{IEEEkeywords}
+
+
+\section{Introducción}
+
+A la hora de elegir una herramienta de desarrollo de circuitos impresos
+que sea de software libre KiCad\cite{kicad_2019} es probablemente la mejor elección.
+Esta herramienta ha avanzado mucho en los últimos años, con el apoyo de
+prestigiosas instituciones como el CERN\cite{kicad_about}.
+
+Una vez desarrollado el circuito se debe generar toda la documentación
+necesaria para su fabricación. Esta documentación incluye una amplia
+variedad de documentos, tales como el listado de materiales, los gerbers\cite{gerber_format},
+archivos de taladrado, archivos de posicionamiento de componentes, etc.
+Todos acompañados por archivos PDF con el esquemático y PCB.
+Siendo los gerbers el formato estándar de fabricación de PCBs.
+La generación de estos archivos es una tarea bastante tediosa ya que es
+necesario generar cada uno de estos documentos usando opciones diferentes
+de herramientas diferentes. Esto es peligroso ya que se podrían cometer errores
+en alguno de los pasos.
+
+Lamentablemente no hay una receta estandarizada que le permita a la herramienta
+generar esta documentación en una única operación. Esto es así porque cada
+fabricante, y cada desarrollador, tiene sus propias preferencias. Pero lo
+que si sería posible es volcar dichas preferencias en un único
+archivo y que luego la herramienta se encargara de generar la documentación
+de acuerdo con esta especificación.
+
+En este trabajo se presenta un conjunto de herramientas capaces de realizar
+la tarea antes mencionada. Estas herramientas fueron desarrolladas tomando
+ideas y componentes presentados en la KiCon 2019\cite{kicon_2019}, junto con heramientas
+ya usadas por nuestro equipo de trabajo.
+
+
+\section{Herramientas}
+
+\subsection{Núcleo central}
+
+El núcleo de este conjunto de herramientas es un derivado de KiPlot\cite{kiplot_ori}\cite{kiplot}. Esta
+herramienta permite tomar un archivo de configuración en formato YAML\cite{YAML} y
+generar en forma automática la documentación especificada. Todas las opciones
+quedan así concentradas en un único archivo de fácil interpretación.
+
+Originalmente KiPlot se limita a generar los archivos que pueden generarse
+a través de la interfaz Python de KiCad. Esto incluye los gerbers y todos
+los formatos disponibles en la opción \verb|plot| del menú y
+los archivos de taladrado. Pero esto es sólo una
+parte de los archivos necesarios.
+
+Por esta razón se extendió la aplicación para soportar otros formatos.
+Por un lado se agregaron los archivos de posicionamiento de componentes y
+el archivo de integración de los gerbers a la misma herramienta.
+Por otro lado se agregó la posibilidad de integrar otras tres aplicaciones
+para complementarla.
+
+La Fig.~\ref{fig} muestra el flujo de trabajo. En la misma se aprecia como KiPlot
+tiene un rol central.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics{Esquema.eps}}
+\caption{Flujo de datos.}
+\label{fig}
+\end{figure}
+
+
+\subsection{Listado de materiales}
+
+Esta compuesto por todos los componentes pasivos, integrados, conectores, etc.
+presentes en el esquemático. 
+KiCad utiliza un mecanismo de plug-ins para esta tarea, por lo que es
+relativamente simple utilizar herramientas externas. Para ello se seleccionaron
+dos aplicaciones muy útiles.
+
+KiBoM\cite{kibom_ori}\cite{kibom} es un script que permite generar un listado de materiales ordenado
+y completo. Se contribuyó a este proyecto varios detalles interesantes,
+tales como poder reconocer campos con el código de parte en Digi-Key\cite{digikey} y
+convertirlos en links al sitio, o generar un listado separado de componentes
+que son opcionales. Luego se integró con KiPlot.
+
+InteractiveHtmlBom\cite{ibom_ori}\cite{ibom} es otro script interesante. El mismo permite generar
+una página web interactiva donde se puede ver la posición de cada componente
+en el PCB e ir marcando cuáles ya han sido soldados. También fue integrada a
+KiPlot.
+
+\subsection{Automatización de la interacción con el usuario}
+
+KiCad no ofrece mecanismos automáticos para generar las versiones PDF
+de documentación del esquemático ni del PCB. Si bien es posible generar
+desde Python archivos PDF, estos son más bien unos gerbers en formato
+PDF, y no los archivos de documentación.
+
+Adicionalmente es imposible automatizar las tareas de verificar las
+reglas de diseño o actualizar el netlist necesario para KiBoM e
+InteractiveHtmlBom.
+
+Para automatizar estas tareas es necesario simular las acciones que
+haría una persona con las herramientas. Es decir que es necesario sintetizar
+la interacción con la interfaz de usuario. En la KiCon 2019\cite{kicon_kiauto} se presentó un esfuerzo
+por realizar estas tareas con una herramienta denominada
+kicad-automation-scripts\cite{kiauto_ori}\cite{kiauto}. La misma estaba incompleta y sólo orientada
+a entornos de integración continua, siendo complicado usarla de
+manera local.
+
+Se mejoró y complementó esta herramienta, para luego integrarla a KiPlot.
+En la actualidad es posible realizar todas las tareas antes mencionadas
+especificándolas en el archivo de configuración de KiPlot.
+
+\subsection{Integración continua}
+
+Los entornos de integración continua incluidos en los repositorios
+populares como GitHub y GitLab permiten realizar tareas automáticas
+cada vez que un cambio es subido al repositorio. Este tema también
+fue cubierto por otra charla de la KiCon 2019\cite{kicon_cicd}
+y es impulsado por herramientas comerciales\cite{altium_cicd}.
+
+Si bien el objetivo de estas herramientas es generar la documentación
+final para la fabricación, existen varias razones que hacen su uso
+atractivo en estos entornos, entre ellas:
+
+\begin{itemize}
+\item La posibilidad de correr los chequeos de las reglas de diseño.
+\item La generación de documentación parcial durante el desarrollo. De manera tal que otros equipos involucrados o el mismo cliente puedan acceder a documentación temprana.
+\item La documentación y verificación de las revisiones posteriores a la fabricación del primer prototipo.
+\end{itemize}
+
+Por estas razones se decidió generar imágenes docker conteniendo KiCad\cite{docker_ki_dh}\cite{docker_ki_gh} y
+las herramientas producto de este trabajo\cite{docker_kia_dh}\cite{docker_kia_gh}. Las mismas se encuentran
+disponibles en Docker Hub.
+
+Al mismo tiempo, esto permite disponer de entornos completos y
+controlados en los cuales correr las aplicaciones.
+
+
+\section{Ejemplos de aplicación}
+
+Se crearon tres ejemplos de aplicación. Dos muy básicos, cada uno como
+ejemplo de uso del entorno GitHub\cite{kia_ej_gh} y GiLab\cite{kia_ej_gl}. El tercero es un poco más
+elaborado ya que se trata de un proyecto real compuesto por tres PCBs\cite{kia_ej_spora}
+(Spora\cite{spora_pre}). Adicionalmente en este último ejemplo se implementó un
+sistema de releases automáticas, al realizar un tag en el repositorio
+se corren las verificaciones de las reglas de diseño, se genera la
+documentación y se empaqueta todo en una release.
+
+En el ejemplo que usó como base el proyecto Spora se puede observar
+como las herramientas reportaron errores en las reglas de diseño que
+luego fueron subsanados, ver la Fig.~\ref{fig2}.
+
+
+\begin{figure}[htbp]
+\centerline{\includegraphics{GitLab_Pipelines.eps}}
+\caption{CI/CD pipelines. Arriba ejemplo de release automática, en medio verificación exitosa y abajo falla en las verificaciones}
+\label{fig2}
+\end{figure}
+
+
+\section{Conclusiones}
+
+La integración con los sistemas de CI/CD de GitHub y GitLab mostró ser
+simple. Permitiendo resultados consistentes y automáticos, aplicados a
+proyectos reales. Cualquier cambio que viole las reglas de diseño es
+informado por correo electrónico y es posible ver el estado de
+cumplimiento en la página del proyecto.
+
+Se logró la disponibilidad de varios documentos prelimirares generaros
+en forma automática con cada cambio introducido. Esto permite que
+otros grupos del equipo de desarrollo accedan a información actualizada
+sin intereferir con las tareas de desarrollo de hardware.
+
+A futuro se piensa agregar la generación de modelos 3D del proyecto y
+completar la testeabilidad de los programas usados. Así como también
+simplificar la configuración.
+
+\bibliographystyle{IEEEtran}
+
+\bibliography{IEEEabrv,utic}
+
+\end{document}
