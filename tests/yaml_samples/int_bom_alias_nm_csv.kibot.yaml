@@ -1,0 +1,17 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      merge_blank_fields: false
+      component_aliases:
+        - ['r', 'r_small', 'res', 'resistor']
+        - - 'c'
+          - 'c_small'
+          - 'cap'
+          - 'capacitor'

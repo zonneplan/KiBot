@@ -17,7 +17,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import CORRUPTED_SCH
+from kibot.misc import CORRUPTED_SCH
 
 
 def setup_ctx(test, error):

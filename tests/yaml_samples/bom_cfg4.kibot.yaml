@@ -1,0 +1,18 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_csv'
+    comment: "Bill of Materials in CSV format"
+    type: kibom
+    dir: BoM
+    options:
+      format: CSV  # HTML or CSV
+      conf:
+        ignore_dnf: true
+        columns:
+          - Part
+          - field: Value
+            name: Valor
+          - References

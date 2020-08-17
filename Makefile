@@ -23,10 +23,12 @@ deb:
 lint: doc
 	# flake8 --filename is broken
 	ln -sf src/kiplot kiplot.py
+	ln -sf src/kibot kibot.py
 	# stop the build if there are Python syntax errors or undefined names
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 	flake8 . --count --statistics
 	rm kiplot.py
+	rm kibot.py
 
 test_tmp: lint
 	$(PY_COV) erase
@@ -36,6 +38,7 @@ test_tmp: lint
 test: lint
 	rm -rf output
 	rm -f example.kiplot.yaml
+	rm -f example.kibot.yaml
 	$(PY_COV) erase
 	$(PYTEST) --test_dir output
 	$(PY_COV) report
@@ -84,8 +87,8 @@ deb_clean:
 gen_ref:
 	# Reference outputs, must be manually inspected if regenerated
 	cp -a $(REFILL).refill $(REFILL)
-	src/kiplot -c tests/yaml_samples/pdf_zone-refill.kiplot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)
-	src/kiplot -c tests/yaml_samples/print_pcb_zone-refill.kiplot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)
+	src/kibot -c tests/yaml_samples/pdf_zone-refill.kibot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)
+	src/kibot -c tests/yaml_samples/print_pcb_zone-refill.kibot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)
 	cp -a $(REFILL).ok $(REFILL)
 
 doc:

@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
-$outputs =`../src/kiplot --help-outputs`;
-$cmd_help=`../src/kiplot --help`;
-$preflight=`../src/kiplot --help-preflights`;
+$outputs =`../src/kibot --help-outputs`;
+$cmd_help=`../src/kibot --help`;
+$preflight=`../src/kibot --help-preflights`;
 
 while (<>)
   {

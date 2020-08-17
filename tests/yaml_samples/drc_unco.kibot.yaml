@@ -1,0 +1,9 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  run_drc: true
+  ignore_unconnected: true
+
+

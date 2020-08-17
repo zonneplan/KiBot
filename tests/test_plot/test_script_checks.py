@@ -13,8 +13,8 @@ import coverage
 prev_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import (MISSING_TOOL, CMD_EESCHEMA_DO)
-from kiplot.kiplot import (check_script, check_version)
+from kibot.misc import (MISSING_TOOL, CMD_EESCHEMA_DO)
+from kibot.kiplot import (check_script, check_version)
 
 
 cov = coverage.Coverage()

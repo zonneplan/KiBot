@@ -1,0 +1,19 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_html'
+    comment: "Bill of Materials in HTML format"
+    type: kibom
+    dir: BoM
+    options:
+      format: HTM  # HTML or CSV
+
+  - name: 'bom_csv'
+    comment: "Bill of Materials in CSV format"
+    type: kibom
+    dir: BoM
+    options:
+      format: CSV  # HTML or CSV
+

@@ -1,0 +1,16 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in HTML format"
+    type: bom
+    dir: BoM
+    options:
+      html:
+        logo: false
+        title: ''
+        hide_pcb_info: true
+        hide_stats_info: true
+        style: tests/data/html_style.css

@@ -22,6 +22,6 @@ import os
 here = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, os.path.dirname(here))
 
-from kiplot.__main__ import main
+from kibot.__main__ import main
 
 main()

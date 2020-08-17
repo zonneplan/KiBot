@@ -1,0 +1,32 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_csv'
+    comment: "Bill of Materials in CSV format"
+    type: kibom
+    dir: BoM
+    options:
+      format: CSV  # HTML or CSV
+      conf:
+        ignore_dnf: true
+        digikey_link:
+          - digikey#
+          - digikey_alt#
+        component_aliases:
+          - ['r', 'r_small', 'res', 'resistor']
+          - - 'l'
+            - 'l_small'
+            - 'inductor'
+        include_only:
+          - field: References
+            regex: R\d
+        exclude_any:
+          - field: References
+            regex: C\d
+        columns:
+          - Part
+          - name: Valor
+            join: Footprint
+          - References

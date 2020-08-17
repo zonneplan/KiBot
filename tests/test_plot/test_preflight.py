@@ -23,7 +23,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
-from kiplot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR)
+from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR)
 
 
 def test_erc():
@@ -68,7 +68,7 @@ def test_drc_filter():
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file('drc_result.rpt')
-    ctx.expect_out_file('kiplot_errors.filter')
+    ctx.expect_out_file('kibot_errors.filter')
     ctx.clean_up()
 
 

@@ -1,0 +1,22 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      columns:
+        - field: Rowenta
+          name: Renglón
+        - field: Part
+          name: Componente
+        - field: Value
+          name: Valor
+        - field: digikey#
+          name: Código Digi-Key
+        - field: Quantity Per PCB
+          name: Cantidad por PCB
+

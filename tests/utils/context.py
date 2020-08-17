@@ -61,9 +61,11 @@ class TestContext(object):
         return os.path.join(this_dir, '../yaml_samples')
 
     def _get_yaml_name(self, name, yaml_compressed):
-        self.yaml_file = os.path.abspath(os.path.join(self._get_yaml_dir(), name+'.kiplot.yaml'))
+        self.yaml_file = os.path.abspath(os.path.join(self._get_yaml_dir(), name+'.kibot.yaml'))
         if yaml_compressed:
             self.yaml_file += '.gz'
+        if not os.path.isfile(self.yaml_file):
+            self.yaml_file = self.yaml_file.replace('.kibot.', '.kiplot.')
         logging.info('YAML file: '+self.yaml_file)
         assert os.path.isfile(self.yaml_file)
 
@@ -74,7 +76,7 @@ class TestContext(object):
             self._del_dir_after = False
         else:
             # create a tmp dir
-            self.output_dir = tempfile.mkdtemp(prefix='tmp-kiplot-'+self.test_name+'-')
+            self.output_dir = tempfile.mkdtemp(prefix='tmp-kibot-'+self.test_name+'-')
             self._del_dir_after = True
         logging.info('Output dir: '+self.output_dir)
 
@@ -211,7 +213,7 @@ class TestContext(object):
             no_yaml_file=False, chdir_out=False, no_verbose=False, extra_debug=False, do_locale=False):
         logging.debug('Running '+self.test_name)
         # Change the command to be local and add the board and output arguments
-        cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/../../src/kiplot')]
+        cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/../../src/kibot')]
         if not no_verbose:
             # One is enough, 2 can generate tons of data when loading libs
             cmd.append('-v')

@@ -1,10 +1,10 @@
 """
 Tests various errors in the config file
 
-- Wrong kiplot
-- No kiplot.version
-- Typo in kiplot.version
-- Wrong kiplot.version
+- Wrong kibot
+- No kibot.version
+- Typo in kibot.version
+- Wrong kibot.version
 - Missing drill map type
 - Wrong drill map type
 - Wrong step origin
@@ -59,7 +59,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR, BOM_ERROR)
+from kibot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR, BOM_ERROR)
 
 
 PRJ = 'fail-project'
@@ -68,28 +68,28 @@ PRJ = 'fail-project'
 def test_no_version():
     ctx = context.TestContext('ErrorNoVersion', '3Rs', 'error_no_version', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err('YAML config needs `kiplot.version`.')
+    assert ctx.search_err('YAML config needs `kibot.version`.')
     ctx.clean_up()
 
 
 def test_wrong_version():
     ctx = context.TestContext('ErrorWrongVersion', '3Rs', 'error_wrong_version', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err('Unknown KiPlot config version: 20')
+    assert ctx.search_err('Unknown KiBot config version: 20')
     ctx.clean_up()
 
 
 def test_wrong_version_2():
     ctx = context.TestContext('ErrorWrongVersion2', '3Rs', 'error_wrong_version_2', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err('Incorrect .?kiplot.? section')
+    assert ctx.search_err('Incorrect .?kibot.? section')
     ctx.clean_up()
 
 
 def test_wrong_version_3():
     ctx = context.TestContext('ErrorWrongVersion3', '3Rs', 'error_wrong_version_3', None)
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err('YAML config needs .?kiplot.version.?')
+    assert ctx.search_err('YAML config needs .?kibot.version.?')
     ctx.clean_up()
 
 

@@ -27,9 +27,9 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import EXIT_BAD_CONFIG
-from kiplot.kicad.config import KiConf, KiConfError
-from kiplot.gs import GS
+from kibot.misc import EXIT_BAD_CONFIG
+from kibot.kicad.config import KiConf, KiConfError
+from kibot.gs import GS
 
 
 cov = coverage.Coverage()

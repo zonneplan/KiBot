@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-@l=glob('kiplot/*.py');
+@l=glob('kibot/*.py');
 print("#!/bin/sh\n");
 print("set -e\n");
 foreach $v (@l)

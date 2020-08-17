@@ -1,0 +1,15 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  run_drc: true
+  filters:
+    - filter: 'Ignore C3 pad 2 too close to anything'
+      number:
+      regex:  'Pad 2 of C3'
+    - filter: 'Ignore unconnected pad 2 of C4'
+      number: 2
+      regex:  'Pad 2 of C4'
+
+

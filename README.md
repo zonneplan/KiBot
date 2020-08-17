@@ -2,7 +2,7 @@
 
 ![KiBot Logo](docs/images/kibot_740x400_logo.png)
 
-![Python application](https://github.com/INTI-CMNB/kiplot/workflows/Python%20application/badge.svg)
+![Python application](https://github.com/INTI-CMNB/KiBot/workflows/Python%20application/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/INTI-CMNB/kiplot/badge.svg?branch=master)](https://coveralls.io/github/INTI-CMNB/kiplot?branch=master)
 
 KiBot is a program which helps you to generate the fabrication and
@@ -30,8 +30,8 @@ KiBot uses a configuration file where you can specify what *outputs* to
 generate. By default you'll generate all of them, but you can specify which
 ones from the command line.
 
-The configuration file should be named using the **.kiplot.yaml** suffix,
-i.e. *my_project.kiplot.yaml*. The format used is [YAML](https://yaml.org/).
+The configuration file should be named using the **.kibot.yaml** suffix,
+i.e. *my_project.kibot.yaml*. The format used is [YAML](https://yaml.org/).
 This is basically a text file with some structure.
 This file can be compressed using *gzip* file format.
 
@@ -43,7 +43,7 @@ Note that the explanation could be useful even if you know YAML.
 All configuration files must start with:
 
 ```
-kiplot:
+kibot:
   version: 1
 ```
 
@@ -130,7 +130,7 @@ If you have two or more different options for a text to match try using `(OPTION
 
 A complete Python regular expressions explanation is out the scope of this manual. For a complete reference consult the [Python manual](https://docs.python.org/3/library/re.html).
 
-**Important note**: this will create a file named *kiplot_errors.filter* in the output directory.
+**Important note**: this will create a file named *kibot_errors.filter* in the output directory.
 
 
 ### Default global options
@@ -210,7 +210,7 @@ The available values for *type* are:
 Here is an example of a configuration file to generate the gerbers for the top and bottom layers:
 
 ```
-kiplot:
+kibot:
   version: 1
 
 preflight:
@@ -958,32 +958,32 @@ Next time you need this list just use an alias, like this:
 If you need a template for the configuration file try:
 
 ```
-kiplot --example
+kibot --example
 ```
 
-This will generate a file named `example.kiplot.yaml` containing all the available options and comments about them.
+This will generate a file named `example.kibot.yaml` containing all the available options and comments about them.
 You can use it to create your own configuration file.
 
 If you want to use the layers of a particular PCB in the example use:
 
 ```
-kiplot -b PCB_FILE --example
+kibot -b PCB_FILE --example
 ```
 
 And if you want to use the same options selected in the plot dialog use:
 
 ```
-kiplot -b PCB_FILE -p --example
+kibot -b PCB_FILE -p --example
 ```
 
-If the current directory contains only one PCB file and only one configuration file (named *.kiplot.yaml)
-you can just call `kiplot`. No arguments needed. The tool will figure out which files to use.
+If the current directory contains only one PCB file and only one configuration file (named *.kibot.yaml)
+you can just call `kibot`. No arguments needed. The tool will figure out which files to use.
 
-If more than one file is found in the current directory `kiplot` will use the first found and issue a
+If more than one file is found in the current directory `kibot` will use the first found and issue a
 warning. If you need to use other file just tell it explicitly:
 
 ```
-kiplot -b PCB_FILE.kicad_pcb -c CONFIG.kiplot.yaml
+kibot -b PCB_FILE.kicad_pcb -c CONFIG.kibot.yaml
 ```
 
 A simple target can be added to your `makefile`, so you can just run
@@ -991,7 +991,7 @@ A simple target can be added to your `makefile`, so you can just run
 
 ```
 pcb_files:
-    kiplot -b $(PCB) -c $(KIPLOT_CFG)
+    kibot -b $(PCB) -c $(KIBOT_CFG)
 ```
 
 If you need to supress messages use `--quiet` or `-q` and if you need to get more informatio about
@@ -1000,57 +1000,57 @@ what's going on use `--verbose` or `-v`.
 If you want to generate only some of the outputs use:
 
 ```
-kiplot OUTPUT_1 OUTPUT_2
+kibot OUTPUT_1 OUTPUT_2
 ```
 
 If you want to generate all outputs with some exceptions use:
 
 
 ```
-kiplot --invert-sel OUTPUT_1 OUTPUT_2
+kibot --invert-sel OUTPUT_1 OUTPUT_2
 ```
 
 If you want to skip the DRC and ERC use:
 
 ```
-kiplot --skip-pre run_erc,run_drc
+kibot --skip-pre run_erc,run_drc
 ```
 
 If you want to skip all the `preflight` tasks use:
 
 ```
-kiplot --skip-pre all
+kibot --skip-pre all
 ```
 
 All outputs are generated using the current directory as base. If you want to use another
 directory as base use:
 
 ```
-kiplot --out-dir OTHER_PLACE
+kibot --out-dir OTHER_PLACE
 ```
 
 If you want to list the available outputs defined in the configuration file use:
 
 ```
-kiplot --list
+kibot --list
 ```
 
 ### Command line help
 
 ```
-KiPlot: Command-line Plotting for KiCad
+KiBot: Command-line Plotting for KiCad
 
 Usage:
-  kiplot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
+  kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-i] [TARGET...]
-  kiplot [-c PLOT_CONFIG] --list
-  kiplot [-b BOARD] [-d OUT_DIR] [-p | -P] --example
-  kiplot [-v...] --help-list-outputs
-  kiplot --help-output=HELP_OUTPUT
-  kiplot --help-outputs
-  kiplot --help-preflights
-  kiplot -h | --help
-  kiplot --version
+  kibot [-c PLOT_CONFIG] --list
+  kibot [-b BOARD] [-d OUT_DIR] [-p | -P] --example
+  kibot [-v...] --help-list-outputs
+  kibot --help-output=HELP_OUTPUT
+  kibot --help-outputs
+  kibot --help-preflights
+  kibot -h | --help
+  kibot --version
 
 Arguments:
   TARGET    Outputs to generate, default is all
@@ -1090,7 +1090,7 @@ Options:
 
 Get the Debian package from the [releases section](https://github.com/INTI-CMNB/KiBot/releases) and run:
 ```
-sudo apt install ./kiplot.inti-cmnb_*_all.deb
+sudo apt install ./kibot*_all.deb
 ```
 
 **Important note**: Sometimes the release needs another packages that aren't part of the stable Debian distribution.
@@ -1101,7 +1101,7 @@ In this case the packages are also included in the release.
 - Install KiCad 5.x
 - Install Python 3.5 or newer
 - Install the Python Yaml module
-- Run the script *src/kiplot*
+- Run the script *src/kibot*
 
 
 ## Using for CI/CD

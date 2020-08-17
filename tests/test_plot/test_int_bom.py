@@ -54,7 +54,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import EXIT_BAD_CONFIG
+from kibot.misc import EXIT_BAD_CONFIG
 
 BOM_DIR = 'BoM'
 REF_COLUMN_NAME = 'References'

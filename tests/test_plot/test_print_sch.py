@@ -15,7 +15,7 @@ import sys
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import (PDF_SCH_PRINT, SVG_SCH_PRINT)
+from kibot.misc import (PDF_SCH_PRINT, SVG_SCH_PRINT)
 # Utils import
 from utils import context
 

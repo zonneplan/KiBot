@@ -1,0 +1,13 @@
+kibot:
+  version: 1
+
+outputs:
+  - name: PDF
+    comment: "PDF files"
+    type: pdf
+    dir: PDF
+    layers:
+      - layer: F.Cu
+        suffix: F_Cu
+      - layer: F.Bogus
+        suffix: B_Silks

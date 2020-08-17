@@ -1,0 +1,13 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in HTML format"
+    type: bom
+    dir: BoM
+    options:
+      format: XLSX
+      xlsx:
+        style: modern-green

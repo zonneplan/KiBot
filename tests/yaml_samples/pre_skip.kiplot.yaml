@@ -1,7 +1,0 @@
-# Example KiPlot config file
-kiplot:
-  version: 1
-
-preflight:
-  run_erc: true
-

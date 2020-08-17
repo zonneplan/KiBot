@@ -4,11 +4,11 @@ import os
 from distutils.core import setup
 
 # Package meta-data.
-NAME = 'kiplot'
-DESCRIPTION = 'Plotting driver for KiCad'
-URL = 'https://github.com/INTI-CMNB/kiplot/'
-EMAIL = 'john.j.beard@gmail.com'
-AUTHOR = 'John Beard'
+NAME = 'kibot'
+DESCRIPTION = 'KiCad automation tool for documents generation'
+URL = 'https://github.com/INTI-CMNB/KiBot/'
+EMAIL = 'set@ieee.org'
+AUTHOR = 'Salvador E. Tropea'
 
 here = os.path.abspath(os.path.dirname(__file__))
 # Import the README and use it as the long-description.
@@ -27,11 +27,11 @@ setup(name=NAME,
       author=AUTHOR,
       author_email=EMAIL,
       url=URL,
-      packages=[NAME],
+      packages=[NAME, NAME+'/kicad', NAME+'/bom'],
       package_dir={NAME: NAME},
-      scripts=['src/kiplot'],
-      install_requires=['pyyaml', 'mcpy'],
-      classifiers=['Development Status :: 3 - Alpha',
+      scripts=['src/kibot', 'src/kiplot'],
+      install_requires=['pyyaml', 'mcpy', 'xlsxwriter'],
+      classifiers=['Development Status :: 5 - Production/Stable',
                    'Environment :: Console',
                    'Intended Audience :: Developers',
                    'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',

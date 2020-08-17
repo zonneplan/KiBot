@@ -1,9 +1,0 @@
-# Example KiPlot config file
-kiplot:
-  version: 1
-
-preflight:
-  - update_xml: true
-  - run_drc: false
-
-

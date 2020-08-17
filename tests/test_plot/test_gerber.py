@@ -15,7 +15,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
-from kiplot.misc import (PLOT_ERROR)
+from kibot.misc import (PLOT_ERROR)
 
 
 GERBER_DIR = 'gerberdir'

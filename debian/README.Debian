@@ -1,6 +1,6 @@
-kiplot.inti-cmnb for Debian
+KiBot for Debian
 
-This is a KiCad plotter that uses the Python interface to plot gerbers and
-other files.
+This is a KiCad automator for documents generation that uses the Python
+interface and various scripts.
 
  -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Tue, 10 Mar 2020 13:27:48 -0300

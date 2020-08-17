@@ -1,8 +1,8 @@
 [run]
 source = 
-    kiplot
+    kibot
     src
-omit = */kiplot/docopt.py
+omit = */kibot/docopt.py
 
 [report]
 exclude_lines =

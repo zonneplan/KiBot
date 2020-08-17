@@ -1,0 +1,10 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  update_xml: true
+  run_drc: true
+  ignore_unconnected: trululu
+
+

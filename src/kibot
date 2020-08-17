@@ -1,0 +1,16 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: GPL-3.0
+# Project: KiBot (formerly KiPlot)
+"""
+ KiBot
+
+ A tool to automate the generattio of KiCad output documents,
+"""
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from kibot.__main__ import main
+main()

@@ -21,7 +21,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kiplot.misc import (BOM_ERROR)
+from kibot.misc import (BOM_ERROR)
 
 BOM_DIR = 'BoM'
 IBOM_OUT = 'bom-ibom.html'
