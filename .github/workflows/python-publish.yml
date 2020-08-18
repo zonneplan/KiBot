@@ -12,6 +12,7 @@ jobs:
   deploy:
 
     runs-on: ubuntu-latest
+    container: setsoft/kicad_pybuild:latest
 
     steps:
     - uses: actions/checkout@v2
@@ -19,14 +20,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install setuptools wheel twine
-        mkdir /usr/lib/python3/dist-packages/pcbnew
-        touch /usr/lib/python3/dist-packages/pcbnew/__init__.py
-        mkdir /usr/lib/python3/dist-packages/yaml
-        touch /usr/lib/python3/dist-packages/yaml/__init__.py
 
     - name: Build and publish
       env:
