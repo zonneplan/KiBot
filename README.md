@@ -1089,7 +1089,7 @@ Options:
 ### Dependencies
 
 - For ERC, DRC, BoM XML update and PCB/SCH print install [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/)
-- For HTML/CSV/XML/XLSX BoM install [KiBoM](https://github.com/INTI-CMNB/KiBoM)
+- BoM files (HTML/CSV/TSV/TXT/XML/XLSX) can be generated using the internal BoM generator or using [KiBoM](https://github.com/INTI-CMNB/KiBoM).
 - For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
 - For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw)
 
@@ -1101,7 +1101,16 @@ sudo apt install ./kibot*_all.deb
 ```
 
 **Important note**: Sometimes the release needs another packages that aren't part of the stable Debian distribution.
-In this case the packages are also included in the release.
+In this case the packages are also included in the release page.
+
+### Installation using pip:
+
+```
+pip install --no-compile kibot
+```
+
+Note that `pip` has the dubious idea of compiling everything it downloads.
+There is no advantage in doing it and it interferes with the `mcpy` macros.
 
 ### Installation on other targets
 
