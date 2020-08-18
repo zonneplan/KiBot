@@ -5,7 +5,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
-"""KiBot: Command-line Plotting for KiCad
+"""KiBot: KiCad automation tool for documents generation
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
@@ -43,12 +43,15 @@ Options:
   -x, --example                    Create an example configuration file.
 
 """
-__author__ = 'John Beard, Salvador E. Tropea'
-__copyright__ = 'Copyright 2018-2020, INTI/John Beard/Salvador E. Tropea'
+__author__ = 'Salvador E. Tropea, John Beard'
+__copyright__ = 'Copyright 2018-2020, Salvador E. Tropea/INTI/John Beard'
 __credits__ = ['Salvador E. Tropea', 'John Beard']
 __license__ = 'GPL v3+'
-__email__ = 'salvador@inti.gob.ar'
-__status__ = 'beta'
+__email__ = 'set@ieee.org'
+__url__ = 'https://github.com/INTI-CMNB/KiBot/'
+__status__ = 'stable'
+__version__ = '0.6.0'
+
 
 import os
 import sys
@@ -66,7 +69,6 @@ from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example)
 from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS)
 from .docopt import docopt
-from .__version__ import __version__
 
 logger = None
 
