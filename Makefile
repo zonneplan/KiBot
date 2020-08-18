@@ -94,4 +94,13 @@ gen_ref:
 doc:
 	make -C docs
 
-.PHONY: deb deb_clean lint test test_local gen_ref doc
+py_build:
+	python3 setup.py sdist bdist_wheel
+
+pypi_upload: py_clean py_build
+	python3 -m twine upload dist/*
+
+py_clean:
+	@rm -rf .pybuild build dist kibot.egg-info
+
+.PHONY: deb deb_clean lint test test_local gen_ref doc py_build pypi_upload py_clean
