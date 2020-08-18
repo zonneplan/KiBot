@@ -422,7 +422,11 @@ sudo apt install ./kibot*_all.deb
 ```
 
 **Important note**: Sometimes the release needs another packages that aren't part of the stable Debian distribution.
-In this case the packages are also included in the release page.
+In this case the packages are also included in the release page. As an example version 0.6.0 needs:
+
+```
+sudo apt install ./python3-mcpy_2.0.2-1_all.deb ./kibot_0.6.0-1_all.deb
+```
 
 ### Installation using pip:
 
