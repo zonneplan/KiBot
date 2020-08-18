@@ -1,34 +1,24 @@
 #!/usr/bin/python3
-import io
-import os
-from distutils.core import setup
+from setuptools import setup, find_packages
+# Package meta-data, mostly from the package
+from kibot.__main__ import __author__, __email__, __url__, __doc__, __version__
 
-# Package meta-data.
-NAME = 'kibot'
-DESCRIPTION = 'KiCad automation tool for documents generation'
-URL = 'https://github.com/INTI-CMNB/KiBot/'
-EMAIL = 'set@ieee.org'
-AUTHOR = 'Salvador E. Tropea'
-
-here = os.path.abspath(os.path.dirname(__file__))
-# Import the README and use it as the long-description.
-# Note: this will only work if 'README.md' is present in your MANIFEST.in file!
-with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
+# Use the README.md as a long description.
+# Note this is also included in the MANIFEST.in
+with open('README.md', encoding='utf-8') as f:
     long_description = '\n' + f.read()
-about = {}
-with open(os.path.join(here, NAME, '__version__.py')) as f:
-    exec(f.read(), about)
 
-setup(name=NAME,
-      version=about['__version__'],
-      description=DESCRIPTION,
+setup(name='kibot',
+      version=__version__,
+      # docopt style: the text after ": " from the first line of the docstring
+      description=__doc__.split('\n')[0].split(': ')[1],
       long_description=long_description,
-      # long_description_content_type='text/markdown',
-      author=AUTHOR,
-      author_email=EMAIL,
-      url=URL,
-      packages=[NAME, NAME+'/kicad', NAME+'/bom'],
-      package_dir={NAME: NAME},
+      long_description_content_type='text/markdown',
+      author=__author__,
+      author_email=__email__,
+      url=__url__,
+      # Packages are marked using __init__.py
+      packages=find_packages(),
       scripts=['src/kibot', 'src/kiplot'],
       install_requires=['pyyaml', 'mcpy', 'xlsxwriter'],
       classifiers=['Development Status :: 5 - Production/Stable',
@@ -42,4 +32,5 @@ setup(name=NAME,
                    ],
       platforms='POSIX',
       license='GPL-3.0',
+      python_requires='>=3.2',
       )
