@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [0.6.0] - 2020-08-18
 ### Added
 - Internal BoM generator, based on KiBoM code.
   This generator doesn't need the netlist, works directly from the SCH.
