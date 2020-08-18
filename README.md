@@ -3,7 +3,7 @@
 ![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png)
 
 [![Python application](https://img.shields.io/github/workflow/status/INTI-CMNB/KiBot/Python%20application?style=plastic)](https://github.com/INTI-CMNB/KiBot/actions)
-[![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/kiplot?style=plastic)](https://coveralls.io/github/INTI-CMNB/kiplot?branch=master)
+[![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 
 
