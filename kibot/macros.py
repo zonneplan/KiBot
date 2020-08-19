@@ -77,7 +77,7 @@ def document(sentences, to_source, **kw):
             else:  # pragma: no cover
                 target = Name(id=doc_id, ctx=Store())
             sentences[n] = Assign(targets=[target], value=Str(s=type_hint+s.value.s.rstrip()+post_hint))
-            # copy_location(sentences[n], s)
+            copy_location(sentences[n], s)
         # else:
         #    if isinstance(s, Expr):
         #        print(s.__dict__)
