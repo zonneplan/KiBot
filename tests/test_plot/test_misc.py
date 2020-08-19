@@ -466,7 +466,7 @@ def test_pcbdraw_fail():
 
 
 def test_import_fail():
-    ctx = context.TestContext('test_help_output_plugin_1', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext('test_import_fail', '3Rs', 'pre_and_position', POS_DIR)
     # Create a read only cache entry that we should delete
     call(['py3compile', 'kibot/out_any_layer.py'])
     cache_dir = os.path.join('kibot', '__pycache__')
@@ -481,4 +481,20 @@ def test_import_fail():
         os.remove(cache_file)
     assert ctx.search_err('Wrong installation')
     assert ctx.search_err('Unable to import plug-ins')
+    ctx.clean_up()
+
+
+def test_import_no_fail():
+    ctx = context.TestContext('test_import_no_fail', '3Rs', 'pre_and_position', POS_DIR)
+    # Create a cache entry that we should delete
+    call(['py3compile', 'kibot/out_any_layer.py'])
+    cache_dir = os.path.join('kibot', '__pycache__')
+    cache_file = glob(os.path.join(cache_dir, 'out_any_layer.*'))[0]
+    try:
+        # Run the command
+        ctx.run(extra=['--help-list-outputs'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
+        assert not os.path.isfile(cache_file)
+    finally:
+        if os.path.isfile(cache_file):
+            os.remove(cache_file)
     ctx.clean_up()
