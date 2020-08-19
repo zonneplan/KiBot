@@ -226,8 +226,12 @@ def clean_cache():
                 fnames = glob(os.path.join(cache, f+'.*'))
                 for fname in fnames:
                     if os.path.isfile(fname):
-                        logger.debug('Removing '+fname)
-                        os.remove(fname)
+                        if os.access(fname, os.W_OK):
+                            logger.debug('Removing '+fname)
+                            os.remove(fname)
+                        else:
+                            # Respect the permission, even for root
+                            raise PermissionError()
     except PermissionError:
         logger.warning('Wrong installation, avoid creating Python cache files\n'
                        'If you are using `pip` to install use the `--no-compile` option:\n'
