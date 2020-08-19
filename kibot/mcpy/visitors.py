@@ -49,10 +49,10 @@ class BaseMacroExpander(NodeTransformer):
                          lineno=target.lineno)
             copy_location(dummy, target)
             expansion.insert(1, dummy)
-        expansion = self._visit_expansion(expansion, target, syntax)
+        expansion = self._visit_expansion(expansion, target)
         return expansion
 
-    def _visit_expansion(self, expansion, target, syntax):
+    def _visit_expansion(self, expansion, target):
         """
         Ensures the macro expansions into None (deletions), other nodes or
         list of nodes are expanded too.
