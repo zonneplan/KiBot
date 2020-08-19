@@ -60,7 +60,7 @@ def _load_actions(path):
 
 def load_actions():
     """ Load all the available ouputs and preflights """
-    from mcpy import activate
+    from kibot.mcpy import activate
     # activate.activate()
     _load_actions(os.path.abspath(os.path.dirname(__file__)))
     home = os.environ.get('HOME')

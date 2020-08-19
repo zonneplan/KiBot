@@ -3,6 +3,7 @@ source =
     kibot
     src
 omit = */kibot/docopt.py
+       */kibot/mcpy/*
 
 [report]
 exclude_lines =
