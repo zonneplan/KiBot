@@ -8,11 +8,15 @@ USER_ID=$(shell id -u)
 GROUP_ID=$(shell id -g)
 
 ifneq ("$(wildcard *.yaml)","")
-	$(error Move away any config file)
+$(error Move away any config file)
 endif
 
 ifneq ("$(wildcard *.sch)","")
-	$(error Move away any schematic file)
+$(error Move away any schematic file)
+endif
+
+ifneq ("$(wildcard tests/board_samples/bom.xml-bak*)","")
+$(error Revert tests/board_samples/bom.xml-bak)
 endif
 
 deb:
