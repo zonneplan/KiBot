@@ -1,5 +1,5 @@
 from .optionable import BaseOptions
-from kiplot.macros import macros, document, output_class  # noqa: F401
+from kibot.macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
