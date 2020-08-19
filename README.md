@@ -1050,12 +1050,12 @@ KiBot: KiCad automation tool for documents generation
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-i] [TARGET...]
-  kibot [-c PLOT_CONFIG] --list
-  kibot [-b BOARD] [-d OUT_DIR] [-p | -P] --example
+  kibot [-v...] [-c PLOT_CONFIG] --list
+  kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] --help-list-outputs
-  kibot --help-output=HELP_OUTPUT
-  kibot --help-outputs
-  kibot --help-preflights
+  kibot [-v...] --help-output=HELP_OUTPUT
+  kibot [-v...] --help-outputs
+  kibot [-v...] --help-preflights
   kibot -h | --help
   kibot --version
 
