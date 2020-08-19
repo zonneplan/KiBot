@@ -3,11 +3,10 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from subprocess import (call)
 from .pre_base import BasePreFlight
 from .error import (KiPlotConfigurationError)
 from .gs import (GS)
-from .kiplot import (check_script)
+from .kiplot import check_script, exec_with_retry
 from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT)
 from .optionable import BaseOptions
 from kibot.macros import macros, document, output_class  # noqa: F401
@@ -42,8 +41,7 @@ class PDF_Pcb_PrintOptions(BaseOptions):
         # Add the layers
         cmd.extend([la.layer for la in layers])
         # Execute it
-        logger.debug('Executing: '+str(cmd))
-        ret = call(cmd)
+        ret = exec_with_retry(cmd)
         if ret:  # pragma: no cover
             # We check all the arguments, we even load the PCB
             # A fail here isn't easy to reproduce

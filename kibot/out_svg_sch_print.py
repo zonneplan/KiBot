@@ -5,9 +5,8 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-from subprocess import (call)
 from .gs import (GS)
-from .kiplot import (check_eeschema_do)
+from .kiplot import check_eeschema_do, exec_with_retry
 from .misc import (CMD_EESCHEMA_DO, SVG_SCH_PRINT)
 from .optionable import BaseOptions
 from kibot.macros import macros, document, output_class  # noqa: F401
@@ -29,8 +28,7 @@ class SVG_Sch_PrintOptions(BaseOptions):
         if GS.debug_enabled:
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
-        logger.debug('Executing: '+str(cmd))
-        ret = call(cmd)
+        ret = exec_with_retry(cmd)
         if ret:
             logger.error(CMD_EESCHEMA_DO+' returned %d', ret)
             exit(SVG_SCH_PRINT)

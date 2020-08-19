@@ -4,11 +4,10 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from sys import (exit)
-from subprocess import (call)
 from kibot.macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
 from .gs import (GS)
-from .kiplot import (check_script)
+from .kiplot import check_script, exec_with_retry
 from .misc import (CMD_PCBNEW_RUN_DRC, URL_PCBNEW_RUN_DRC, DRC_ERROR)
 from .log import (get_logger)
 
@@ -38,8 +37,7 @@ class Run_DRC(BasePreFlight):  # noqa: F821
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
         logger.info('- Running the DRC')
-        logger.debug('Executing: '+str(cmd))
-        ret = call(cmd)
+        ret = exec_with_retry(cmd)
         if ret:
             if ret > 127:
                 ret = -(256-ret)

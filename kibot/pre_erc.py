@@ -4,10 +4,9 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from sys import (exit)
-from subprocess import (call)
 from kibot.macros import macros, pre_class  # noqa: F401
 from .gs import (GS)
-from .kiplot import (check_eeschema_do)
+from .kiplot import check_eeschema_do, exec_with_retry
 from .error import (KiPlotConfigurationError)
 from .misc import (CMD_EESCHEMA_DO, ERC_ERROR)
 from .log import (get_logger)
@@ -36,8 +35,7 @@ class Run_ERC(BasePreFlight):  # noqa: F821
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
         logger.info('- Running the ERC')
-        logger.debug('Executing: '+str(cmd))
-        ret = call(cmd)
+        ret = exec_with_retry(cmd)
         if ret:
             if ret > 127:
                 ret = -(256-ret)

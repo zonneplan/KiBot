@@ -13,7 +13,7 @@ import os
 import re
 from sys import exit
 from shutil import which
-from subprocess import (run, PIPE)
+from subprocess import run, PIPE, call
 from glob import glob
 from distutils.version import StrictVersion
 from importlib.util import (spec_from_file_location, module_from_spec)
@@ -114,6 +114,18 @@ def check_script(cmd, url, version=None):
 
 def check_eeschema_do():
     check_script(CMD_EESCHEMA_DO, URL_EESCHEMA_DO, '1.4.0')
+
+
+def exec_with_retry(cmd):
+    logger.debug('Executing: '+str(cmd))
+    retry = 2
+    while retry:
+        ret = call(cmd)
+        retry -= 1
+        if ret > 0 and ret < 128 and retry:
+            logger.debug('Failed with error {}, retrying ...'.format(ret))
+        else:
+            return ret
 
 
 def load_board(pcb_file=None):
