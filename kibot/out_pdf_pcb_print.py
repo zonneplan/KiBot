@@ -22,7 +22,7 @@ class PDF_Pcb_PrintOptions(BaseOptions):
             self.output = GS.def_global_output
             """ filename for the output PDF (%i=layers, %x=pdf)"""
             self.output_name = None
-            """ {output} """  # pragma: no cover
+            """ {output} """
         super().__init__()
 
     def run(self, output_dir, board, layers):
@@ -62,7 +62,7 @@ class PDF_Pcb_Print(BaseOutput):  # noqa: F821
             """ [dict] Options for the `pdf_pcb_print` output """
             self.layers = Layer
             """ [list(dict)|list(string)|string] [all,selected,copper,technical,user]
-                List of PCB layers to include in the PDF """  # pragma: no cover
+                List of PCB layers to include in the PDF """
 
     def config(self):
         super().config()

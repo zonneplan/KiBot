@@ -20,7 +20,7 @@ class SVGOptions(DrillMarks):
             self.mirror_plot = False
             """ plot mirrored """
             self.negative_plot = False
-            """ invert black and white """  # pragma: no cover
+            """ invert black and white """
         self._plot_format = PLOT_FORMAT_SVG
 
     def _configure_plot_ctrl(self, po, output_dir):
@@ -46,4 +46,4 @@ class SVG(AnyLayer):
         super().__init__()
         with document:
             self.options = SVGOptions
-            """ [dict] Options for the `svg` output """  # pragma: no cover
+            """ [dict] Options for the `svg` output """

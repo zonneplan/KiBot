@@ -25,7 +25,7 @@ class HPGLOptions(DrillMarks):
             self.pen_speed = 20
             """ [1,99] pen speed """
             self.pen_width = 15
-            """ [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files """  # pragma: no cover
+            """ [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files """
         self._plot_format = PLOT_FORMAT_HPGL
 
     def _configure_plot_ctrl(self, po, output_dir):
@@ -65,4 +65,4 @@ class HPGL(AnyLayer):
         super().__init__()
         with document:
             self.options = HPGLOptions
-            """ [dict] Options for the `hpgl` output """  # pragma: no cover
+            """ [dict] Options for the `hpgl` output """

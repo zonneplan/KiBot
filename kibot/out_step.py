@@ -29,7 +29,7 @@ class STEPOptions(BaseOptions):
             self.min_distance = -1
             """ the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm) """
             self.output = GS.def_global_output
-            """ name for the generated STEP file (%i='3D' %x='step') """  # pragma: no cover
+            """ name for the generated STEP file (%i='3D' %x='step') """
         super().__init__()
 
     @property
@@ -89,4 +89,4 @@ class STEP(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = STEPOptions
-            """ [dict] Options for the `step` output """  # pragma: no cover
+            """ [dict] Options for the `step` output """

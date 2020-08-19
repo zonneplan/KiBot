@@ -8,7 +8,7 @@ omit = */kibot/docopt.py
 [report]
 exclude_lines =
     pragma: no cover
-    @pre_class
-    @output_class
+#    @pre_class
+#    @output_class
 #    raise RuntimeError
 

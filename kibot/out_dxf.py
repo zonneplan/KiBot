@@ -20,7 +20,7 @@ class DXFOptions(DrillMarks):
             self.metric_units = False
             """ use mm instead of inches """
             self.sketch_plot = False
-            """ don't fill objects, just draw the outline """  # pragma: no cover
+            """ don't fill objects, just draw the outline """
         self._plot_format = PLOT_FORMAT_DXF
 
     def _configure_plot_ctrl(self, po, output_dir):
@@ -50,4 +50,4 @@ class DXF(AnyLayer):
         super().__init__()
         with document:
             self.options = DXFOptions
-            """ [dict] Options for the `dxf` output """  # pragma: no cover
+            """ [dict] Options for the `dxf` output """

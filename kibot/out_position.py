@@ -25,7 +25,7 @@ class PositionOptions(BaseOptions):
             self.output = GS.def_global_output
             """ output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
             self.units = 'millimeters'
-            """ [millimeters,inches] units used for the positions """  # pragma: no cover
+            """ [millimeters,inches] units used for the positions """
         super().__init__()
 
     def _do_position_plot_ascii(self, board, output_dir, columns, modulesStr, maxSizes):
@@ -167,4 +167,4 @@ class Position(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PositionOptions
-            """ [dict] Options for the `position` output """  # pragma: no cover
+            """ [dict] Options for the `position` output """

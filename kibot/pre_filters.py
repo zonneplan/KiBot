@@ -31,7 +31,7 @@ class FilterOptions(Optionable):
             self.regex = 'None'
             """ Regular expression to match the text for the error we want to exclude """
             self.regexp = None
-            """ {regex} """  # pragma: no cover
+            """ {regex} """
 
 
 class FiltersOptions(Optionable):
@@ -40,7 +40,7 @@ class FiltersOptions(Optionable):
         super().__init__()
         with document:
             self.filters = FilterOptions
-            """ [list(dict)] DRC/ERC errors to be ignored """  # pragma: no cover
+            """ [list(dict)] DRC/ERC errors to be ignored """
 
     def config(self):
         super().config()

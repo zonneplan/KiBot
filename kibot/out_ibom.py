@@ -72,7 +72,7 @@ class IBoMOptions(BaseOptions):
             """ List of board variants to exclude from the BOM """
             self.dnp_field = ''
             """ Name of the extra field that indicates do not populate status. Components with this field not empty will be
-                blacklisted """  # pragma: no cover
+                blacklisted """
         super().__init__()
 
     def run(self, output_dir, board):
@@ -123,4 +123,4 @@ class IBoM(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = IBoMOptions
-            """ [dict] Options for the `ibom` output """  # pragma: no cover
+            """ [dict] Options for the `ibom` output """

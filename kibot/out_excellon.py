@@ -19,7 +19,7 @@ class ExcellonOptions(AnyDrill):
             self.minimal_header = False
             """ use a minimal header in the file """
             self.mirror_y_axis = False
-            """ invert the Y axis """  # pragma: no cover
+            """ invert the Y axis """
 
     def _configure_writer(self, board, offset):
         drill_writer = EXCELLON_WRITER(board)
@@ -38,4 +38,4 @@ class Excellon(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = ExcellonOptions
-            """ [dict] Options for the `excellon` output """  # pragma: no cover
+            """ [dict] Options for the `excellon` output """

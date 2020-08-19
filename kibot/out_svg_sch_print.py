@@ -19,7 +19,7 @@ class SVG_Sch_PrintOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ filename for the output SVG (%i=schematic %x=svg) """  # pragma: no cover
+            """ filename for the output SVG (%i=schematic %x=svg) """
         super().__init__()
 
     def run(self, output_dir, board):
@@ -50,5 +50,5 @@ class SVG_Sch_Print(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = SVG_Sch_PrintOptions
-            """ [dict] Options for the `svg_sch_print` output """  # pragma: no cover
+            """ [dict] Options for the `svg_sch_print` output """
         self._sch_related = True

@@ -30,4 +30,4 @@ class Gerb_Drill(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = Gerb_DrillOptions
-            """ [dict] Options for the `gerb_drill` output """  # pragma: no cover
+            """ [dict] Options for the `gerb_drill` output """

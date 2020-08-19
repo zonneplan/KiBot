@@ -34,7 +34,7 @@ class PSOptions(DrillMarks):
             """ this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                 Only used to plot pads and tracks """
             self.a4_output = True
-            """ force A4 paper size """  # pragma: no cover
+            """ force A4 paper size """
         self._plot_format = PLOT_FORMAT_POST
 
     def _configure_plot_ctrl(self, po, output_dir):
@@ -80,4 +80,4 @@ class PS(AnyLayer):
         super().__init__()
         with document:
             self.options = PSOptions
-            """ [dict] Options for the `ps` output """  # pragma: no cover
+            """ [dict] Options for the `ps` output """

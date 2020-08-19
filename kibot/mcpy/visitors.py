@@ -1,5 +1,5 @@
 # from functools import wraps
-from ast import NodeTransformer, AST, copy_location, fix_missing_locations
+from ast import NodeTransformer, AST, copy_location, fix_missing_locations, Call, Constant, Name, Expr, Load
 from .unparse import unparse
 
 
@@ -32,9 +32,24 @@ class BaseMacroExpander(NodeTransformer):
         })
         expansion = _apply_macro(macro, tree, kw)
 
-        return self._visit_expansion(expansion, target)
+        if syntax == 'block':
+            # pass
+            # The best I can do
+            # If I keep the real line numbers the "with ..." isn't "covered"
+            # copy_location(expansion[-1], target) # Esto cubre la 1ra pero nunca la última
+            # copy_location(expansion[1], target) # Lo mejor para largo > 2
+            # Esto parece funcionar, pero puede tener efectos secundarios
+            #             dummy = deepcopy(expansion[1])
+            #             copy_location(dummy, target)
+            #             expansion.insert(1, dummy)
+            dummy = Expr(value=Call(func=Name(id="id", ctx=Load()), args=[Constant(value="bogus", kind=None)], keywords=[]),
+                         lineno=target.lineno)
+            copy_location(dummy, target)
+            expansion.insert(1, dummy)
+        expansion = self._visit_expansion(expansion, target, syntax)
+        return expansion
 
-    def _visit_expansion(self, expansion, target):
+    def _visit_expansion(self, expansion, target, syntax):
         """
         Ensures the macro expansions into None (deletions), other nodes or
         list of nodes are expanded too.
@@ -42,7 +57,10 @@ class BaseMacroExpander(NodeTransformer):
         if expansion is not None:
             is_node = isinstance(expansion, AST)
             expansion = [expansion] if is_node else expansion
-            expansion = map(lambda n: copy_location(n, target), expansion)
+            # The following is nice when we don't put any effort in filling lineno, but then is impossible to get a
+            # rasonable coverage. So now I'm disabling it and doing some extra effort to indicate where is the code.
+            # expansion = map(lambda n: copy_location(n, target), expansion)
+            # The following fills the gaps
             expansion = map(fix_missing_locations, expansion)
             expansion = map(self.visit, expansion)
             expansion = list(expansion).pop() if is_node else list(expansion)
