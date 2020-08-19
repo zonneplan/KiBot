@@ -55,6 +55,7 @@ __version__ = '0.6.0'
 
 import os
 import sys
+import stat
 import gzip
 import locale
 from glob import glob
@@ -226,11 +227,12 @@ def clean_cache():
                 fnames = glob(os.path.join(cache, f+'.*'))
                 for fname in fnames:
                     if os.path.isfile(fname):
-                        if os.access(fname, os.W_OK):
+                        # Don't remove read-only files
+                        r = os.stat(fname)
+                        if stat.S_IMODE(r.st_mode) & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH):
                             logger.debug('Removing '+fname)
                             os.remove(fname)
                         else:
-                            # Respect the permission, even for root
                             raise PermissionError()
     except PermissionError:
         logger.warning('Wrong installation, avoid creating Python cache files\n'
