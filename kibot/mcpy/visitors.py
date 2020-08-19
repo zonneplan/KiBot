@@ -33,15 +33,18 @@ class BaseMacroExpander(NodeTransformer):
         expansion = _apply_macro(macro, tree, kw)
 
         if syntax == 'block':
-            # pass
-            # The best I can do
-            # If I keep the real line numbers the "with ..." isn't "covered"
-            # copy_location(expansion[-1], target) # Esto cubre la 1ra pero nunca la última
+            # I'm not sure why is all this mess
+            #
+            # Strategy 1: Make the last line cover the whole block.
+            # Result: Covers the "with document" line, but not the last one.
+            # copy_location(expansion[-1], target)
+            #
+            # Strategy 2: Make the second line cover the whole block.
+            # Result: Covers all, unless the block is just 2 lines.
             # copy_location(expansion[1], target) # Lo mejor para largo > 2
-            # Esto parece funcionar, pero puede tener efectos secundarios
-            #             dummy = deepcopy(expansion[1])
-            #             copy_location(dummy, target)
-            #             expansion.insert(1, dummy)
+            #
+            # Strategy 3: Insert a second dummy line covering the whole block.
+            # Result: Works
             dummy = Expr(value=Call(func=Name(id="id", ctx=Load()), args=[Constant(value="bogus", kind=None)], keywords=[]),
                          lineno=target.lineno)
             copy_location(dummy, target)

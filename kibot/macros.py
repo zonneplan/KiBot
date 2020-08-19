@@ -77,13 +77,8 @@ def document(sentences, to_source, **kw):
             else:  # pragma: no cover
                 target = Name(id=doc_id, ctx=Store())
             sentences[n] = Assign(targets=[target], value=Str(s=type_hint+s.value.s.rstrip()+post_hint))
+            # Copy the line number from the original docstring
             copy_location(sentences[n], s)
-        # else:
-        #    if isinstance(s, Expr):
-        #        print(s.__dict__)
-        #        print(s.value.__dict__)
-        #        print(s.value.func.__dict__)
-        #        print(s.value.args[0].__dict__)
         prev = s
     # Return the modified AST
     return sentences
@@ -94,10 +89,10 @@ def _do_wrap_class_register(tree, mod, base_class):
         # Create the register call
         name = tree.name
         l_start = tree.lineno
-        if hasattr(tree, 'end_lineno'):
-            l_end = tree.end_lineno
-        else:
-            l_end = l_start + 1
+        # Python 3.8:
+        # l_end = tree.end_lineno
+        # Python 3.7, this is good enough for our needs:
+        l_end = l_start + 1
         reg_name = name.lower()
         # BaseOutput.register member:
         attr = Attribute(value=Name(id=base_class, ctx=Load()), attr='register', ctx=Load())
