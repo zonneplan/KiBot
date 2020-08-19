@@ -20,7 +20,7 @@ from importlib.util import (spec_from_file_location, module_from_spec)
 
 from .gs import (GS)
 from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
-                   EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG)
+                   EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .pre_base import BasePreFlight
 from .kicad.v5_sch import Schematic, SchFileError
@@ -46,7 +46,12 @@ def _import(name, path):
     # Python 3.4+ import mechanism
     spec = spec_from_file_location("kibot."+name, path)
     mod = module_from_spec(spec)
-    spec.loader.exec_module(mod)
+    try:
+        spec.loader.exec_module(mod)
+    except ImportError:
+        trace_dump()
+        logger.error('Unable to import plug-ins')
+        exit(WRONG_INSTALL)
 
 
 def _load_actions(path):

@@ -28,6 +28,7 @@ WONT_OVERWRITE = 19
 PCBDRAW_ERR = 20
 SVG_SCH_PRINT = 21
 CORRUPTED_SCH = 22
+WRONG_INSTALL = 23
 
 CMD_EESCHEMA_DO = 'eeschema_do'
 URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/kicad-automation-scripts'

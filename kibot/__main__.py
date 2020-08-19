@@ -71,6 +71,35 @@ from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS)
 from .docopt import docopt
 
 logger = None
+has_macro = ['pre_filters',
+             'out_any_layer',
+             'out_svg_sch_print',
+             'pre_erc',
+             'out_gerb_drill',
+             'drill_marks',
+             'pre_update_xml',
+             'out_pdf_sch_print',
+             'out_hpgl',
+             'out_dxf',
+             'out_pdf_pcb_print',
+             'out_pdf',
+             'out_svg',
+             'out_pcbdraw',
+             'pre_ignore_unconnected',
+             'pre_check_zone_fills',
+             'out_gerber',
+             'out_any_drill',
+             'out_step',
+             'out_ps',
+             'pre_drc',
+             'out_excellon',
+             'out_bom',
+             'out_base',
+             'out_ibom',
+             'out_kibom',
+             'out_position',
+             'layer',
+             ]
 
 
 def list_pre_and_outs(logger, outputs):
@@ -186,6 +215,25 @@ def set_locale():
         pass
 
 
+def clean_cache():
+    """ Files that expands macros can't be pre-compiled """
+    here = os.path.abspath(os.path.dirname(__file__))
+    cache = os.path.join(here, '__pycache__')
+    logger.debug('Python cache dir: '+cache)
+    try:
+        if os.path.isdir(cache):
+            for f in has_macro:
+                fnames = glob(os.path.join(cache, f+'.*'))
+                for fname in fnames:
+                    if os.path.isfile(fname):
+                        logger.debug('Removing '+fname)
+                        os.remove(fname)
+    except PermissionError:
+        logger.warning('Wrong installation, avoid creating Python cache files\n'
+                       'If you are using `pip` to install use the `--no-compile` option:\n'
+                       '$ pip install --no-compile kibot\n')
+
+
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -196,6 +244,8 @@ def main():
     logger = log.init(args.verbose, args.quiet)
     GS.debug_enabled = logger.getEffectiveLevel() <= DEBUG
     GS.debug_level = args.verbose
+
+    clean_cache()
 
     # Output dir: relative to CWD (absolute path overrides)
     GS.out_dir = os.path.join(os.getcwd(), args.out_dir)

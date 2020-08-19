@@ -29,9 +29,12 @@ pytest-3 --log-cli-level debug
 """
 
 import os
+import stat
 import sys
 import shutil
 import logging
+from subprocess import call
+from glob import glob
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -42,7 +45,7 @@ prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE, CORRUPTED_PCB,
-                        PCBDRAW_ERR)
+                        PCBDRAW_ERR, WRONG_INSTALL)
 
 
 POS_DIR = 'positiondir'
@@ -349,8 +352,10 @@ def test_help_output_plugin_1():
     home = os.environ['HOME']
     os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '..')
     logging.debug('HOME='+os.environ['HOME'])
-    ctx.run(extra=['--help-output', 'test'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    os.environ['HOME'] = home
+    try:
+        ctx.run(extra=['--help-output', 'test'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    finally:
+        os.environ['HOME'] = home
     assert ctx.search_out('Test for plugin')
     assert ctx.search_out('Type: .?test.?')
     assert ctx.search_out('nothing')
@@ -363,8 +368,10 @@ def test_help_output_plugin_2():
     home = os.environ['HOME']
     os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '..')
     logging.debug('HOME='+os.environ['HOME'])
-    ctx.run(extra=['--help-output', 'test2'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    os.environ['HOME'] = home
+    try:
+        ctx.run(extra=['--help-output', 'test2'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    finally:
+        os.environ['HOME'] = home
     assert ctx.search_out('Test for plugin')
     assert ctx.search_out('Type: .?test2.?')
     assert ctx.search_out('todo')
@@ -455,4 +462,23 @@ def test_pcbdraw_fail():
     ctx = context.TestContext('PcbDrawFail', prj, 'pcbdraw_fail', '')
     ctx.run(PCBDRAW_ERR)
     assert ctx.search_err('Failed to run')
+    ctx.clean_up()
+
+
+def test_import_fail():
+    ctx = context.TestContext('test_help_output_plugin_1', '3Rs', 'pre_and_position', POS_DIR)
+    # Create a read only cache entry that we should delete
+    call(['py3compile', 'kibot/out_any_layer.py'])
+    cache_dir = os.path.join('kibot', '__pycache__')
+    cache_file = glob(os.path.join(cache_dir, 'out_any_layer.*'))[0]
+    os.chmod(cache_file, stat.S_IREAD)
+    os.chmod(cache_dir, stat.S_IREAD | stat.S_IEXEC)
+    try:
+        # Run the command
+        ctx.run(WRONG_INSTALL, extra=['--help-list-outputs'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    finally:
+        os.chmod(cache_dir, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC)
+        os.remove(cache_file)
+    assert ctx.search_err('Wrong installation')
+    assert ctx.search_err('Unable to import plug-ins')
     ctx.clean_up()
