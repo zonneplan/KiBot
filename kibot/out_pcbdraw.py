@@ -11,7 +11,7 @@ from .misc import (PCBDRAW, PCBDRAW_ERR)
 from .error import KiPlotConfigurationError
 from .gs import (GS)
 from .optionable import (BaseOptions, Optionable)
-from kibot.macros import macros, document, output_class  # noqa: F401
+from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)

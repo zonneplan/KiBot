@@ -12,7 +12,7 @@ from .kiplot import (check_script)
 from .gs import (GS)
 from .optionable import Optionable, BaseOptions
 from .error import KiPlotConfigurationError
-from kibot.macros import macros, document, output_class  # noqa: F401
+from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)

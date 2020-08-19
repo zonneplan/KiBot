@@ -6,7 +6,7 @@
 from pcbnew import (PCB_PLOT_PARAMS)
 from .error import KiPlotConfigurationError
 from .out_any_layer import AnyLayerOptions
-from kibot.macros import macros, document  # noqa: F401
+from .macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)

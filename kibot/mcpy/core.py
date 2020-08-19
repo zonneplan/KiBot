@@ -100,7 +100,7 @@ def expand_macros(tree, bindings):
     return expansion
 
 
-def find_macros(tree):
+def find_macros(tree, name):
     """
     Looks for `from ... import macros, ...` statements in the module body and
     returns a dict with names and implementations for found macros or an empty
@@ -109,7 +109,7 @@ def find_macros(tree):
     bindings = {}
     for index, statement in enumerate(tree.body):
         if _is_macro_import(statement):
-            bindings.update(_get_macros(statement))
+            bindings.update(_get_macros(statement, name))
             # Remove all names to prevent macro names to be used
             module = statement.module
             tree.body[index] = copy_location(
@@ -122,7 +122,7 @@ def find_macros(tree):
 
 def _is_macro_import(statement):
     """
-    A "macro import" is a statement with the form of
+    A 'macro import' is a statement with the form of
 
         from ... import macros, ...
 
@@ -136,10 +136,24 @@ def _is_macro_import(statement):
     return is_macro_import
 
 
-def _get_macros(macroimport):
+def _fix_level(modulename, name, level):
+    """ Translates the relative import to an absolute one """
+    path = name.split('.')
+    index = -2
+    while level:
+        modulename = path[index]+'.'+modulename
+        level -= 1
+        index -= 1
+    return modulename
+
+
+def _get_macros(macroimport, name):
     """
     Returns a map with names and macros from the macro import statement.
     """
+    if macroimport.level:
+        macroimport.module = _fix_level(macroimport.module, name, macroimport.level)
+        macroimport.level = 0
     modulename = macroimport.module
     __import__(modulename)
     module = sys.modules[modulename]

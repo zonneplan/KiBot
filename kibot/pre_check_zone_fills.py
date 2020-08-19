@@ -4,7 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .error import (KiPlotConfigurationError)
-from kibot.macros import macros, pre_class  # noqa: F401
+from .macros import macros, pre_class  # noqa: F401
 
 
 @pre_class

@@ -8,7 +8,7 @@ import os
 from .gs import GS
 from .error import KiPlotConfigurationError
 from .optionable import Optionable
-from kibot.macros import macros, document, pre_class  # noqa: F401
+from .macros import macros, document, pre_class  # noqa: F401
 from .log import get_logger
 
 logger = get_logger(__name__)

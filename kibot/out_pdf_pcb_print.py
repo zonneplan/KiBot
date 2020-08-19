@@ -9,7 +9,7 @@ from .gs import (GS)
 from .kiplot import check_script, exec_with_retry
 from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT)
 from .optionable import BaseOptions
-from kibot.macros import macros, document, output_class  # noqa: F401
+from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
 from . import log
 

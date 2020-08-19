@@ -12,7 +12,7 @@ from re import compile, IGNORECASE
 from .gs import GS
 from .optionable import Optionable, BaseOptions
 from .error import KiPlotConfigurationError
-from kibot.macros import macros, document, output_class  # noqa: F401
+from .macros import macros, document, output_class  # noqa: F401
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
 from . import log

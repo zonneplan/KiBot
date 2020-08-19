@@ -4,7 +4,7 @@ from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR)
 from .gs import (GS)
 from .kiplot import (check_script)
 from .optionable import BaseOptions
-from kibot.macros import macros, document, output_class  # noqa: F401
+from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)

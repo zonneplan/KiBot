@@ -5,7 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 from pcbnew import GERBER_WRITER
 from .out_any_drill import AnyDrill
-from kibot.macros import macros, document, output_class  # noqa: F401
+from .macros import macros, document, output_class  # noqa: F401
 
 
 class Gerb_DrillOptions(AnyDrill):

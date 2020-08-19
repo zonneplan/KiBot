@@ -8,7 +8,7 @@
 from pcbnew import (PLOT_FORMAT_SVG, FromMM, ToMM)
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
-from kibot.macros import macros, document, output_class  # noqa: F401
+from .macros import macros, document, output_class  # noqa: F401
 
 
 class SVGOptions(DrillMarks):

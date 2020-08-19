@@ -9,7 +9,7 @@ from .gs import GS
 from re import match
 
 from .error import (PlotError, KiPlotConfigurationError)
-from kibot.macros import macros, document, output_class  # noqa: F401
+from .macros import macros, document, output_class  # noqa: F401
 
 
 class Layer(Optionable):

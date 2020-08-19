@@ -4,7 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .reg_out import RegOutput
-from kibot.macros import macros, document  # noqa: F401
+from .macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)

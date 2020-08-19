@@ -8,7 +8,7 @@ from pcbnew import (PLOT_FORMAT_HPGL, PLOT_FORMAT_POST, PLOT_FORMAT_GERBER, PLOT
                     PLOT_FORMAT_PDF, wxPoint)
 from .optionable import (Optionable, BaseOptions)
 from .gs import GS
-from kibot.macros import macros, document  # noqa: F401
+from .macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)

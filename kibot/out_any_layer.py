@@ -12,7 +12,7 @@ from .error import (PlotError, KiPlotConfigurationError)
 from .optionable import BaseOptions
 from .layer import Layer
 from .gs import GS
-from kibot.macros import macros, document  # noqa: F401
+from .macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)

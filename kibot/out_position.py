@@ -10,7 +10,7 @@ from datetime import datetime
 from pcbnew import (IU_PER_MM, IU_PER_MILS)
 from .optionable import BaseOptions
 from .gs import GS
-from kibot.macros import macros, document, output_class  # noqa: F401
+from .macros import macros, document, output_class  # noqa: F401
 
 
 class PositionOptions(BaseOptions):
