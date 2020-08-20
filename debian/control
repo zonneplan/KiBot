@@ -5,13 +5,13 @@ Maintainer: Salvador Eduardo Tropea <salvador@inti.gob.ar>
 Build-Depends: debhelper (>=11~), dh-python, python3-all
 Standards-Version: 4.1.4
 Homepage: https://github.com/INTI-CMNB/KiBot
-X-Python3-Version: >= 3.2
+X-Python3-Version: >= 3.4
 
 Package: kibot
 Architecture: all
 Multi-Arch: foreign
 Depends: ${misc:Depends}, ${python3:Depends}, python3-yaml, kicad (>= 5.1.0), python3-wxgtk4.0
-Recommends: kibom.inti-cmnb, kicad-automation-scripts.inti-cmnb (>= 1.1.2), interactivehtmlbom.inti-cmnb, pcbdraw, python3-xlsxwriter
+Recommends: kibom.inti-cmnb (>= 1.8.0), kicad-automation-scripts.inti-cmnb (>= 1.1.2), interactivehtmlbom.inti-cmnb, pcbdraw, python3-xlsxwriter
 Description: KiCad Bot
  KiBot is a program which helps you to automate the generation of KiCad
  output documents easily, repeatable, and most of all, scriptably.

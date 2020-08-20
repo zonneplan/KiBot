@@ -1,3 +1,10 @@
+kibot (0.6.1-1) stable; urgency=medium
+
+  * Added more robust behavior on GUI dependent commands.
+  * Incorporated mcpy, no longer a dependency.
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Thu, 20 Aug 2020 10:11:16 -0300
+
 kibot (0.6.0-1) stable; urgency=medium
 
   * New internal BoM generator.

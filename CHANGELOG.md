@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2020-08-20
+### Added
+- More robust behavior on GUI dependent commands.
+
+### Changed
+- Incorporated mcpy, no longer a dependency.
+
+### Fixed
+- Problems when using `pip install` without --no-compile.
+  At least for user level install.
+
 ## [0.6.0] - 2020-08-18
 ### Added
 - Internal BoM generator, based on KiBoM code.
