@@ -49,15 +49,28 @@ test: lint
 	$(PY_COV) html
 	x-www-browser htmlcov/index.html
 
+test1:
+	rm -rf output
+	rm -f example.kiplot.yaml
+	rm -f example.kibot.yaml
+	$(PY_COV) erase
+	$(PYTEST) --log-cli-level debug -k "test_bom_ok" --test_dir output
+	$(PY_COV) report
+	$(PY_COV) html
+	#x-www-browser htmlcov/index.html
+	@echo "********************" Output
+	@cat output/*/output.txt
+	#@echo "********************" Error
+	#@cat output/*/error.txt
+
 test_docker_local:
 	rm -rf output
 	$(PY_COV) erase
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:latest \
-		/bin/bash -c "flake8 . --count --statistics ; pytest-3 --test_dir output ; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/"
+		/bin/bash -c "flake8 . --count --statistics ; pytest-3 --test_dir output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/"
 	$(PY_COV) report
-	$(PY_COV) html
 	x-www-browser htmlcov/index.html
 
 docker_shell:

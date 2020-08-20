@@ -34,7 +34,7 @@ class GerberOptions(AnyLayerOptions):
             self.use_gerber_x2_attributes = True
             """ use the extended X2 format """
             self.use_gerber_net_attributes = True
-            """ include netlist metadata """  # pragma: no cover
+            """ include netlist metadata """
 
     @property
     def gerber_precision(self):
@@ -87,4 +87,4 @@ class Gerber(AnyLayer):
         super().__init__()
         with document:
             self.options = GerberOptions
-            """ [dict] Options for the `gerber` output """  # pragma: no cover
+            """ [dict] Options for the `gerber` output """

@@ -330,7 +330,7 @@ class KiBoMOptions(BaseOptions):
             self.output = GS.def_global_output
             """ filename for the output (%i=bom)"""
             self.format = 'HTML'
-            """ [HTML,CSV,XML,XLSX] format for the BoM """  # pragma: no cover
+            """ [HTML,CSV,XML,XLSX] format for the BoM """
         super().__init__()
 
     def config(self):
@@ -397,5 +397,5 @@ class KiBoM(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = KiBoMOptions
-            """ [dict] Options for the `kibom` output """  # pragma: no cover
+            """ [dict] Options for the `kibom` output """
         self._sch_related = True

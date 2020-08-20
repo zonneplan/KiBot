@@ -42,7 +42,7 @@ class PcbDrawStyle(Optionable):
             self.highlight_style = "stroke:none;fill:#ff0000;opacity:0.5;"
             """ SVG code for the highlight style """
             self.highlight_padding = 1.5
-            """ [0,1000] how much the highlight extends around the component [mm] """  # pragma: no cover
+            """ [0,1000] how much the highlight extends around the component [mm] """
 
     def validate_color(self, name):
         color = getattr(self, name)
@@ -107,7 +107,7 @@ class PcbDrawOptions(BaseOptions):
             self.format = 'svg'
             """ [svg,png,jpg] output format. Only used if no `output` is specified """
             self.output = GS.def_global_output
-            """ name for the generated file """  # pragma: no cover
+            """ name for the generated file """
         super().__init__()
 
     def config(self):
@@ -246,4 +246,4 @@ class PcbDraw(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PcbDrawOptions
-            """ [dict] Options for the `pcbdraw` output """  # pragma: no cover
+            """ [dict] Options for the `pcbdraw` output """

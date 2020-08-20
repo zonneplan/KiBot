@@ -8,7 +8,7 @@ Macros to make the output plug-ins cleaner.
 """
 from .gs import GS  # noqa: F401
 from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store, UnaryOp, USub,
-                 ClassDef, Call, ImportFrom, alias)
+                 ClassDef, Call, ImportFrom, alias, copy_location)
 
 
 def document(sentences, to_source, **kw):
@@ -77,6 +77,8 @@ def document(sentences, to_source, **kw):
             else:  # pragma: no cover
                 target = Name(id=doc_id, ctx=Store())
             sentences[n] = Assign(targets=[target], value=Str(s=type_hint+s.value.s.rstrip()+post_hint))
+            # Copy the line number from the original docstring
+            copy_location(sentences[n], s)
         prev = s
     # Return the modified AST
     return sentences
@@ -86,14 +88,23 @@ def _do_wrap_class_register(tree, mod, base_class):
     if isinstance(tree, ClassDef):
         # Create the register call
         name = tree.name
+        l_start = tree.lineno
+        # Python 3.8:
+        # l_end = tree.end_lineno
+        # Python 3.7, this is good enough for our needs:
+        l_end = l_start + 1
         reg_name = name.lower()
         # BaseOutput.register member:
         attr = Attribute(value=Name(id=base_class, ctx=Load()), attr='register', ctx=Load())
         # Function call to it passing reg_name and name
-        do_register = Expr(value=Call(func=attr, args=[Str(s=reg_name), Name(id=name, ctx=Load())], keywords=[]))
+        # Put it in the last line.
+        do_register = Expr(value=Call(func=attr, args=[Str(s=reg_name), Name(id=name, ctx=Load())], keywords=[]),
+                           lineno=l_end, col_offset=0, end_lineno=l_end, end_col_offset=50)
 
         # Create the import
-        do_import = ImportFrom(module=mod, names=[alias(name=base_class, asname=None)], level=1)
+        # Put it in the decorator line.
+        do_import = ImportFrom(module=mod, names=[alias(name=base_class, asname=None)], level=1,
+                               lineno=l_start-1, col_offset=0, end_lineno=l_start-1, end_col_offset=50)
 
         return [do_import, tree, do_register]
     # Just in case somebody applies it to anything other than a class

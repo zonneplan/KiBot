@@ -42,7 +42,7 @@ class BoMRegex(Optionable):
             self.field = None
             """ {column} """
             self.regexp = None
-            """ {regex} """  # pragma: no cover
+            """ {regex} """
 
 #     def __str__(self):
 #         return self.column+'\t'+self.regex
@@ -59,7 +59,7 @@ class BoMColumns(Optionable):
             self.name = ''
             """ Name to display in the header. The field is used when empty """
             self.join = Optionable
-            """ [list(string)|string=''] List of fields to join to this column """  # pragma: no cover
+            """ [list(string)|string=''] List of fields to join to this column """
 
     def config(self):
         super().config()
@@ -101,7 +101,7 @@ class BoMLinkable(Optionable):
             self.logo = Optionable
             """ [string|boolean=''] PNG file to use as logo, use false to remove """
             self.title = 'KiBot Bill of Materials'
-            """ BoM title """  # pragma: no cover
+            """ BoM title """
 
     def config(self):
         super().config()
@@ -130,7 +130,7 @@ class BoMHTML(BoMLinkable):
         with document:
             self.style = 'modern-blue'
             """ Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
-                Or you can provide a CSS file name. Please use .css as file extension. """  # pragma: no cover
+                Or you can provide a CSS file name. Please use .css as file extension. """
 
     def config(self):
         super().config()
@@ -155,7 +155,7 @@ class BoMCSV(Optionable):
             self.hide_stats_info = False
             """ Hide statistics information """
             self.quote_all = False
-            """ Enclose all values using double quotes """  # pragma: no cover
+            """ Enclose all values using double quotes """
 
 
 class BoMXLSX(BoMLinkable):
@@ -166,7 +166,7 @@ class BoMXLSX(BoMLinkable):
             self.max_col_width = 60
             """ [20,999] Maximum column width (characters) """
             self.style = 'modern-blue'
-            """ Head style: modern-blue, modern-green, modern-red and classic. """  # pragma: no cover
+            """ Head style: modern-blue, modern-green, modern-red and classic. """
 
     def config(self):
         super().config()
@@ -285,7 +285,7 @@ class BoMOptions(BaseOptions):
             self.xlsx = BoMXLSX
             """ [dict] Options for the XLSX format """
             self.csv = BoMCSV
-            """ [dict] Options for the CSV, TXT and TSV formats """  # pragma: no cover
+            """ [dict] Options for the CSV, TXT and TSV formats """
         super().__init__()
 
     @staticmethod
@@ -449,5 +449,5 @@ class BoM(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = BoMOptions
-            """ [dict] Options for the `bom` output """  # pragma: no cover
+            """ [dict] Options for the `bom` output """
         self._sch_related = True

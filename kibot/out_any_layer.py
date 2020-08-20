@@ -37,7 +37,7 @@ class AnyLayerOptions(BaseOptions):
             self.output = GS.def_global_output
             """ output file name, the default KiCad name if empty """
             self.tent_vias = True
-            """ cover the vias """  # pragma: no cover
+            """ cover the vias """
         super().__init__()
 
     def _configure_plot_ctrl(self, po, output_dir):
@@ -128,7 +128,7 @@ class AnyLayer(BaseOutput):
         with document:
             self.layers = Layer
             """ [list(dict)|list(string)|string] [all,selected,copper,technical,user]
-                List of PCB layers to plot """  # pragma: no cover
+                List of PCB layers to plot """
 
     def config(self):
         super().config()
