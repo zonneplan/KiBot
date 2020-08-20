@@ -1,4 +1,9 @@
-# from functools import wraps
+# -*- coding: utf-8 -*-
+# Copyright (c) 2015 Salvador de la Puente González
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: MIT
+# Project: MCPY https://github.com/delapuente/mcpy
 from ast import NodeTransformer, AST, copy_location, fix_missing_locations, Call, Constant, Name, Expr, Load
 from .unparse import unparse
 

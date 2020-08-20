@@ -1,4 +1,8 @@
-"""Usage: unparse.py <path to source file>"""
+# -*- coding: utf-8 -*-
+# Copyright (c) 2015 Salvador de la Puente González
+# License: MIT
+# Project: MCPY https://github.com/delapuente/mcpy
+""" Usage: unparse.py <path to source file> """
 import sys
 import ast
 # import tokenize

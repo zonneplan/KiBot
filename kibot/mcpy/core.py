@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2015 Salvador de la Puente González
+# Copyright (c) 2020 Salvador E. Tropea
+# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# License: MIT
+# Project: MCPY https://github.com/delapuente/mcpy
 """ Provide the functionality to find and expand macros. """
 import sys
 from ast import Name, copy_location, Import, alias, ImportFrom
