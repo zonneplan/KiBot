@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Fixed
+- The variants logic for BoMs when a component resquested to be only added to
+  more than one variant.
 
 ## [0.6.1] - 2020-08-20
 ### Added

@@ -455,6 +455,8 @@ def comp_is_fitted(value, config, variants):
             return False
     # Variants logic
     opts = config.split(",")
+    # Only fit for ...
+    exclusive = False
     for opt in opts:
         opt = opt.strip()
         # Any option containing a DNF is not fitted
@@ -464,9 +466,12 @@ def comp_is_fitted(value, config, variants):
         if opt.startswith("-") and opt[1:] in variants:
             return False
         # Options that start with '+' are fitted only for certain configurations
-        if opt.startswith("+") and opt[1:] not in variants:
-            return False
-    return True
+        if opt.startswith("+"):
+            exclusive = True
+            if opt[1:] in variants:
+                return True
+    # No match
+    return not exclusive
 
 
 def do_bom(file_name, ext, comps, cfg):

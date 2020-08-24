@@ -1201,3 +1201,30 @@ def test_int_bom_variant_t1_5():
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R3'], ['R1', 'R4'])
+
+
+def test_int_bom_variant_t2_1():
+    prj = 'kibom-variant_2'
+    ctx = context.TestContextSCH('test_int_bom_variant_t2_1', prj, 'int_bom_var_production_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
+
+
+def test_int_bom_variant_t2_2():
+    prj = 'kibom-variant_2'
+    ctx = context.TestContextSCH('test_int_bom_variant_t2_2', prj, 'int_bom_var_test_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+
+
+def test_int_bom_variant_t2_3():
+    prj = 'kibom-variant_2'
+    ctx = context.TestContextSCH('test_int_bom_variant_t2_3', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
