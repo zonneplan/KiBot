@@ -774,6 +774,14 @@ class SchematicComponent(object):
         comp.sheet_path_h = sheet_path_h
         if GS.debug_level > 1:
             logger.debug("- Loaded component {}".format(comp))
+        # Report abnormal situations
+        for field in comp.fields:
+            cur_val = field.value
+            stripped_val = cur_val.strip()
+            if len(cur_val) != len(stripped_val):
+                logger.warning("Field {} of component {} ({}) contains extra spaces: `{}` removing them.".
+                               format(field.name, comp.ref, comp.name, field.value))
+                field.value = stripped_val
         return comp
 
 
