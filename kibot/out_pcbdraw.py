@@ -8,7 +8,8 @@ import re
 from shutil import which
 from tempfile import (NamedTemporaryFile)
 from subprocess import (check_output, STDOUT, CalledProcessError)
-from .misc import (PCBDRAW, PCBDRAW_ERR)
+from .misc import PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW
+from .kiplot import check_script
 from .error import KiPlotConfigurationError
 from .gs import (GS)
 from .optionable import (BaseOptions, Optionable)
@@ -203,6 +204,7 @@ class PcbDrawOptions(BaseOptions):
             return f.name
 
     def run(self, output_dir, board):
+        check_script(PCBDRAW, URL_PCBDRAW, '0.6.0')
         # Output file name
         output = self.expand_filename(output_dir, self.output, 'bottom' if self.bottom else 'top', self.format)
         # Base command with overwrite
@@ -231,8 +233,8 @@ class PcbDrawOptions(BaseOptions):
             cmd.extend(['-f', self.show_components])
         if self.vcuts:
             cmd.append('-v')
-        if self.warnings == 'all':
-            cmd.append('--warn-back')
+        if self.warnings == 'visible':
+            cmd.append('--no-warn-back')
         elif self.warnings == 'none':
             cmd.append('--silent')
         if self.dpi:

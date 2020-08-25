@@ -42,5 +42,6 @@ CMD_IBOM = 'generate_interactive_bom.py'
 URL_IBOM = 'https://github.com/INTI-CMNB/InteractiveHtmlBom'
 KICAD2STEP = 'kicad2step'
 PCBDRAW = 'pcbdraw'
+URL_PCBDRAW = 'https://github.com/INTI-CMNB/pcbdraw'
 EXAMPLE_CFG = 'example.kibot.yaml'
 AUTO_SCALE = 0
