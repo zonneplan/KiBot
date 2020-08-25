@@ -5,6 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 import os
 import re
+from shutil import which
 from tempfile import (NamedTemporaryFile)
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import (PCBDRAW, PCBDRAW_ERR)
@@ -15,6 +16,8 @@ from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
+SVG2PNG = 'rsvg-convert'
+CONVERT = 'convert'
 
 
 class PcbDrawStyle(Optionable):
@@ -74,6 +77,29 @@ class PcbDrawRemap(Optionable):
 
     def config(self):
         pass
+
+
+def _get_tmp_name(ext):
+    with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
+        f.close()
+    return f.name
+
+
+def _run_command(cmd, tmp_remap=False, tmp_style=False):
+    logger.debug('Executing: '+str(cmd))
+    try:
+        cmd_output = check_output(cmd, stderr=STDOUT)
+    except CalledProcessError as e:
+        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
+        if e.output:
+            logger.debug('Output from command: '+e.output.decode())
+        exit(PCBDRAW_ERR)
+    finally:
+        if tmp_remap:
+            os.remove(tmp_remap)
+        if tmp_style:
+            os.remove(tmp_style)
+    logger.debug('Output from command:\n'+cmd_output.decode())
 
 
 class PcbDrawOptions(BaseOptions):
@@ -218,22 +244,33 @@ class PcbDrawOptions(BaseOptions):
             tmp_remap = None
         # The board & output
         cmd.append(GS.pcb_file)
-        cmd.append(output)
+        svg = None
+        if self.format == 'svg':
+            cmd.append(output)
+        else:
+            # PNG and JPG outputs are unreliable
+            if which(SVG2PNG) is None:
+                logger.warning('`{}` not installed, using unreliable PNG/JPG conversion'.format(SVG2PNG))
+                logger.warning('If you experiment problems install `librsvg2-bin` or equivalent')
+                cmd.append(output)
+            elif which(CONVERT) is None:
+                logger.warning('`{}` not installed, using unreliable PNG/JPG conversion'.format(CONVERT))
+                logger.warning('If you experiment problems install `imagemagick` or equivalent')
+                cmd.append(output)
+            else:
+                svg = _get_tmp_name('.svg')
+                cmd.append(svg)
         # Execute and inform is successful
-        logger.debug('Executing: '+str(cmd))
-        try:
-            cmd_output = check_output(cmd, stderr=STDOUT)
-        except CalledProcessError as e:
-            logger.error('Failed to run %s, error %d', PCBDRAW, e.returncode)
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-            exit(PCBDRAW_ERR)
-        finally:
-            if tmp_remap:
-                os.remove(tmp_remap)
-            if tmp_style:
-                os.remove(tmp_style)
-        logger.debug('Output from command:\n'+cmd_output.decode())
+        _run_command(cmd, tmp_remap, tmp_style)
+        if svg is not None:
+            # Manually convert the SVG to PNG
+            png = _get_tmp_name('.png')
+            _run_command([SVG2PNG, '-d', str(self.dpi), '-p', str(self.dpi), svg, '-o', png], svg)
+            cmd = [CONVERT, '-trim', png]
+            if self.format == 'jpg':
+                cmd += ['-quality', '85%']
+            cmd.append(output)
+            _run_command(cmd, png)
 
 
 @output_class

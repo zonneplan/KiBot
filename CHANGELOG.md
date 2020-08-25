@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   more than one variant.
 - Removed warnings about malformed values for DNF components indicating it in
   its value.
+- Problems with PcbDraw when generating PNG and JPG outputs. Now we use a more
+  reliable conversion methode when available.
 
 ## [0.6.1] - 2020-08-20
 ### Added
