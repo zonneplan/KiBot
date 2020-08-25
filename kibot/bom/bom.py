@@ -355,7 +355,7 @@ def group_components(cfg, components):
             if test_reg_exclude(cfg, c):
                 continue
         # Cache the value used to sort
-        if c.ref_prefix in RLC_PREFIX:
+        if c.ref_prefix in RLC_PREFIX and c.value.lower() not in DNF:
             c.value_sort = comp_match(c.value, c.ref_prefix)
         else:
             c.value_sort = None

@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - The variants logic for BoMs when a component resquested to be only added to
   more than one variant.
+- Removed warnings about malformed values for DNF components indicating it in
+  its value.
 
 ## [0.6.1] - 2020-08-20
 ### Added
