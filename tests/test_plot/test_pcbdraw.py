@@ -31,6 +31,6 @@ def test_pcbdraw_simple():
     prj = 'bom'
     ctx = context.TestContext(OUT_DIR+'_simple', prj, 'pcbdraw_simple', OUT_DIR)
     ctx.run()
-    ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-top.svg'))
-    ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-bottom.svg'))
+    ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-top.png'))
+    ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-bottom.jpg'))
     ctx.clean_up()

@@ -7,7 +7,7 @@ outputs:
     type: pcbdraw
     dir: PcbDraw
     options: &pcb_draw_ops
-      format: svg
+      format: png
       no_drillholes: True
       placeholder: True
       mirror: True
@@ -22,6 +22,7 @@ outputs:
       <<: *pcb_draw_ops
       style: set-red-enig
       bottom: True
+      format: jpg
       show_components: none
       warnings: none
 
