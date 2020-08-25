@@ -1,3 +1,15 @@
+kibot (0.6.2-1) stable; urgency=medium
+
+  * Spaces at the beggining and end of user fields when creating the
+    internal BoM are now discarded.
+  * Fix: the variants logic for BoMs when a component resquested to be only
+    added to more than one variant.
+  * Removed warnings about malformed values for DNF components indicating it
+    in its value.
+  * Fix problems with PcbDraw when generating PNG and JPG outputs.
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Tue, 25 Aug 2020 13:29:14 -0300
+
 kibot (0.6.1-1) stable; urgency=medium
 
   * Added more robust behavior on GUI dependent commands.
