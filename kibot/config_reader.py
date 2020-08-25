@@ -59,18 +59,24 @@ class CfgYamlReader(object):
         except KeyError:
             config_error("Output `"+name+"` needs a type")
 
+        try:
+            comment = o_tree['comment']
+        except KeyError:
+            comment = ''
+
         name_type = "`"+name+"` ("+otype+")"
 
         # Is a valid type?
         if not RegOutput.is_registered(otype):
             config_error("Unknown output type: `{}`".format(otype))
         # Load it
-        logger.debug("Parsing output options for "+name_type)
+        logger.debug("Pre-parsing output options for "+name_type)
         o_out = RegOutput.get_class_for(otype)()
         o_out.set_tree(o_tree)
         # Set the data we already know, so we can skip the configurations that aren't requested
         o_out.name = name
         o_out.type = otype
+        o_out.comment = comment
 
         return o_out
 
