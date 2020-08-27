@@ -668,6 +668,15 @@ class SchematicComponent(object):
         if basic < 4:
             logger.warning('Component `{}` without the basic fields'.format(self.f_ref))
 
+    def _validate(self):
+        for field in self.fields:
+            cur_val = field.value
+            stripped_val = cur_val.strip()
+            if len(cur_val) != len(stripped_val):
+                logger.warning("Field {} of component {} contains extra spaces: `{}` removing them.".
+                               format(field.name, self, field.value))
+                field.value = stripped_val
+
     def __str__(self):
         if self.name == self.value:
             return '{} ({})'.format(self.ref, self.name)
@@ -775,13 +784,7 @@ class SchematicComponent(object):
         if GS.debug_level > 1:
             logger.debug("- Loaded component {}".format(comp))
         # Report abnormal situations
-        for field in comp.fields:
-            cur_val = field.value
-            stripped_val = cur_val.strip()
-            if len(cur_val) != len(stripped_val):
-                logger.warning("Field {} of component {} ({}) contains extra spaces: `{}` removing them.".
-                               format(field.name, comp.ref, comp.name, field.value))
-                field.value = stripped_val
+        comp._validate()
         return comp
 
 
