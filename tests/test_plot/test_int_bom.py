@@ -1165,6 +1165,8 @@ def test_int_bom_variant_t1_1():
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 2, ['R3', 'R4'], ['R1', 'R2'])
+    ctx.search_err(r'Field Config of component (.*) contains extra spaces')
+    ctx.clean_up()
 
 
 def test_int_bom_variant_t1_2():
@@ -1174,6 +1176,7 @@ def test_int_bom_variant_t1_2():
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R4'], ['R1', 'R3'])
+    ctx.clean_up()
 
 
 def test_int_bom_variant_t1_3():
@@ -1183,6 +1186,7 @@ def test_int_bom_variant_t1_3():
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R3'], ['R1', 'R4'])
+    ctx.clean_up()
 
 
 def test_int_bom_variant_t1_4():
@@ -1192,6 +1196,7 @@ def test_int_bom_variant_t1_4():
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 2, ['R4'], ['R1', 'R2', 'R3'])
+    ctx.clean_up()
 
 
 def test_int_bom_variant_t1_5():
@@ -1201,6 +1206,7 @@ def test_int_bom_variant_t1_5():
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R3'], ['R1', 'R4'])
+    ctx.clean_up()
 
 
 def test_int_bom_variant_t2_1():
@@ -1210,6 +1216,7 @@ def test_int_bom_variant_t2_1():
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
+    ctx.clean_up()
 
 
 def test_int_bom_variant_t2_2():
@@ -1219,6 +1226,7 @@ def test_int_bom_variant_t2_2():
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+    ctx.clean_up()
 
 
 def test_int_bom_variant_t2_3():
@@ -1228,3 +1236,4 @@ def test_int_bom_variant_t2_3():
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    ctx.clean_up()
