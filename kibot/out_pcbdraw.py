@@ -5,9 +5,10 @@
 # Project: KiBot (formerly KiPlot)
 import os
 import re
-from shutil import which
 from tempfile import (NamedTemporaryFile)
-from subprocess import (check_output, STDOUT, CalledProcessError)
+# Here we import the whole module to make monkeypatch work
+import subprocess
+import shutil
 from .misc import PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW
 from .kiplot import check_script
 from .error import KiPlotConfigurationError
@@ -89,8 +90,8 @@ def _get_tmp_name(ext):
 def _run_command(cmd, tmp_remap=False, tmp_style=False):
     logger.debug('Executing: '+str(cmd))
     try:
-        cmd_output = check_output(cmd, stderr=STDOUT)
-    except CalledProcessError as e:
+        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
         logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
         if e.output:
             logger.debug('Output from command: '+e.output.decode())
@@ -251,11 +252,11 @@ class PcbDrawOptions(BaseOptions):
             cmd.append(output)
         else:
             # PNG and JPG outputs are unreliable
-            if which(SVG2PNG) is None:
+            if shutil.which(SVG2PNG) is None:
                 logger.warning('`{}` not installed, using unreliable PNG/JPG conversion'.format(SVG2PNG))
                 logger.warning('If you experiment problems install `librsvg2-bin` or equivalent')
                 cmd.append(output)
-            elif which(CONVERT) is None:
+            elif shutil.which(CONVERT) is None:
                 logger.warning('`{}` not installed, using unreliable PNG/JPG conversion'.format(CONVERT))
                 logger.warning('If you experiment problems install `imagemagick` or equivalent')
                 cmd.append(output)
