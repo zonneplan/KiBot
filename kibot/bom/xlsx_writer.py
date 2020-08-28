@@ -313,7 +313,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
             rc = r_info_start
             if not cfg.xlsx.hide_pcb_info:
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Schematic:", cfg.source)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", ' + '.join(cfg.variant))
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", cfg.variant.name)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Revision:", cfg.revision)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Date:", cfg.date)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "KiCad Version:", cfg.kicad_version)

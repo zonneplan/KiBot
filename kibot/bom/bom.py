@@ -14,33 +14,10 @@ from copy import deepcopy
 from .units import compare_values, comp_match
 from .bom_writer import write_bom
 from .columnlist import ColumnList
+from ..misc import DNF
 from .. import log
 
 logger = log.get_logger(__name__)
-# Supported values for "do not fit"
-DNF = {
-    "dnf": 1,
-    "dnl": 1,
-    "dnp": 1,
-    "do not fit": 1,
-    "do not place": 1,
-    "do not load": 1,
-    "nofit": 1,
-    "nostuff": 1,
-    "noplace": 1,
-    "noload": 1,
-    "not fitted": 1,
-    "not loaded": 1,
-    "not placed": 1,
-    "no stuff": 1,
-}
-# String matches for marking a component as "do not change" or "fixed"
-DNC = {
-    "dnc": 1,
-    "do not change": 1,
-    "no change": 1,
-    "fixed": 1
-}
 # RV == Resistor Variable or Varistor
 # RN == Resistor 'N'(Pack)
 # RT == Thermistor
@@ -412,88 +389,11 @@ def group_components(cfg, components):
     return groups
 
 
-def comp_is_fixed(value, config, variants):
-    """ Determine if a component is FIXED or not.
-        Fixed components shouldn't be replaced without express authorization.
-        value: component value (lowercase).
-        config: content of the 'Config' field (lowercase).
-        variants: list of variants to match. """
-    # Check the value field first
-    if value in DNC:
-        return True
-    # Empty is not fixed
-    if not config:
-        return False
-    # Also support space separated list (simple cases)
-    opts = config.split(" ")
-    for opt in opts:
-        if opt in DNC:
-            return True
-    # Normal separator is ","
-    opts = config.split(",")
-    for opt in opts:
-        if opt in DNC:
-            return True
-    return False
-
-
-def comp_is_fitted(value, config, variants):
-    """ Determine if a component will be or not.
-        value: component value (lowercase).
-        config: content of the 'Config' field (lowercase).
-        variants: list of variants to match. """
-    # Check the value field first
-    if value in DNF:
-        return False
-    # Empty value means part is fitted
-    if not config:
-        return True
-    # Also support space separated list (simple cases)
-    opts = config.split(" ")
-    for opt in opts:
-        if opt in DNF:
-            return False
-    # Variants logic
-    opts = config.split(",")
-    # Only fit for ...
-    exclusive = False
-    for opt in opts:
-        opt = opt.strip()
-        # Any option containing a DNF is not fitted
-        if opt in DNF:
-            return False
-        # Options that start with '-' are explicitly removed from certain configurations
-        if opt.startswith("-") and opt[1:] in variants:
-            return False
-        # Options that start with '+' are fitted only for certain configurations
-        if opt.startswith("+"):
-            exclusive = True
-            if opt[1:] in variants:
-                return True
-    # No match
-    return not exclusive
-
-
 def do_bom(file_name, ext, comps, cfg):
-    # Make the config field name lowercase
-    cfg.fit_field = cfg.fit_field.lower()
-    f_config = cfg.fit_field
-    # Make the variants lowercase
-    variants = [v.lower() for v in cfg.variant]
     # Solve `fixed` and `fitted` attributes for all components
-    for c in comps:
-        value = c.value.lower()
-        config = c.get_field_value(f_config).lower()
-        c.fitted = comp_is_fitted(value, config, variants)
-        if cfg.debug_level > 2:
-            logger.debug('ref: {} value: {} config: {} variants: {} -> fitted {}'.
-                         format(c.ref, value, config, variants, c.fitted))
-        c.fixed = comp_is_fixed(value, config, variants)
+    cfg.variant.filter(comps)
     # Group components according to group_fields
     groups = group_components(cfg, comps)
-    # Give a name to empty variant
-    if not variants:
-        cfg.variant = ['default']
     # Create the BoM
     logger.debug("Saving BOM File: "+file_name)
     write_bom(file_name, ext, groups, cfg.columns, cfg)

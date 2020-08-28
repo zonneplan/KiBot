@@ -11,10 +11,12 @@ import os
 from re import compile, IGNORECASE
 from .gs import GS
 from .optionable import Optionable, BaseOptions
+from .registrable import RegOutput
 from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
+from .var_kibom import KiBoM
 from . import log
 
 logger = log.get_logger(__name__)
@@ -207,8 +209,8 @@ class BoMOptions(BaseOptions):
         with document:
             self.number = 1
             """ Number of boards to build (components multiplier) """
-            self.variant = Optionable
-            """ [string|list(string)=''] Board variant(s), used to determine which components
+            self.variant = ''
+            """ Board variant(s), used to determine which components
                 are output to the BoM. """
             self.output = GS.def_global_output
             """ filename for the output (%i=bom)"""
@@ -228,7 +230,8 @@ class BoMOptions(BaseOptions):
             self.merge_blank_fields = True
             """ Component groups with blank fields will be merged into the most compatible group, where possible """
             self.fit_field = 'Config'
-            """ Field name used to determine if a particular part is to be fitted (also DNC and variants) """
+            """ Field name used to determine if a particular part is to be fitted (also DNC, not for variants).
+                This value is used only when no variants are specified """
             self.group_fields = GroupFields
             """ [list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
@@ -316,16 +319,18 @@ class BoMOptions(BaseOptions):
             col = col[:-1]
         return col
 
-    @staticmethod
-    def _normalize_variant(variant):
-        if isinstance(variant, type):
-            variant = []
-        elif isinstance(variant, str):
-            if variant:
-                variant = [variant]
-            else:
-                variant = []
-        return variant
+    def _normalize_variant(self):
+        """ Replaces the name of the variant by an object handling it. """
+        if self.variant:
+            if self.variant not in RegOutput._def_variants:
+                raise KiPlotConfigurationError("Unknown variant name `{}`".format(self.variant))
+            self.variant = RegOutput._def_variants[self.variant]
+        else:
+            # If no variant is specified use the KiBoM variant class with basic functionality
+            self.variant = KiBoM()
+            self.variant.config_field = self.fit_field
+            self.variant.variant = []
+            self.variant.name = 'default'
 
     def config(self):
         super().config()
@@ -372,8 +377,10 @@ class BoMOptions(BaseOptions):
             for r in self.exclude_any:
                 r.column = self._fix_ref_field(r.column)
                 r.regex = compile(r.regex, flags=IGNORECASE)
-        # Variants, ensure a list
-        self.variant = self._normalize_variant(self.variant)
+        # Make the config field name lowercase
+        self.fit_field = self.fit_field.lower()
+        # Variants, make it an object
+        self._normalize_variant()
         # Columns
         self.column_rename = {}
         self.join = []

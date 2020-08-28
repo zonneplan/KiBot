@@ -26,7 +26,7 @@ def write_xml(filename, groups, headings, head_names, cfg):
     attrib['Schematic_Source'] = cfg.source
     attrib['Schematic_Revision'] = cfg.revision
     attrib['Schematic_Date'] = cfg.date
-    attrib['PCB_Variant'] = ', '.join(cfg.variant)
+    attrib['PCB_Variant'] = cfg.variant.name
     attrib['KiCad_Version'] = cfg.kicad_version
     attrib['Component_Groups'] = str(cfg.n_groups)
     attrib['Component_Count'] = str(cfg.n_total)
