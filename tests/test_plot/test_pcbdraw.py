@@ -19,7 +19,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kibot.mcpy import activate
+from kibot.mcpy import activate  # noqa: F401
 from kibot.out_pcbdraw import PcbDrawOptions
 
 OUT_DIR = 'PcbDraw'
@@ -66,9 +66,9 @@ def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
         m.setattr("shutil.which", no_rsvg_convert)
         m.setattr("subprocess.check_output", no_run)
         o = PcbDrawOptions()
-        o.style=''
-        o.remap=None
-        o.format='jpg'
+        o.style = ''
+        o.remap = None
+        o.format = 'jpg'
         cov.load()
         cov.start()
         o.run('', None)
@@ -84,9 +84,9 @@ def test_pcbdraw_miss_convert(caplog, monkeypatch):
         m.setattr("shutil.which", no_convert)
         m.setattr("subprocess.check_output", no_run)
         o = PcbDrawOptions()
-        o.style=''
-        o.remap=None
-        o.format='jpg'
+        o.style = ''
+        o.remap = None
+        o.format = 'jpg'
         cov.load()
         cov.start()
         o.run('', None)
