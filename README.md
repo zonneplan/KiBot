@@ -555,7 +555,7 @@ Next time you need this list just use an alias, like this:
         - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
         - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-        - `gerber_job_file`: [string='%f-%i%v.%x'] name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options.
+        - `gerber_job_file`: [string='%f-%i.%x'] name for the gerber job file (%i='job', %x='gbrjob').
         - `gerber_precision`: [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6.
         - `line_width`: [number=0.1] [0.02,2] line_width for objects without width [mm].
         - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
@@ -612,15 +612,12 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `ibom` output.
       * Valid keys:
-        - `blacklist`: [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
-        - `blacklist_empty_val`: [boolean=false] Blacklist components with empty value.
         - `board_rotation`: [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
         - `bom_view`: [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view.
         - `checkboxes`: [string='Sourced,Placed'] Comma separated list of checkbox columns.
         - `dark_mode`: [boolean=false] Default to dark mode.
-        - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status. Components with this field not empty will be
-                       blacklisted.
         - `extra_fields`: [string=''] Comma separated list of extra fields to pull from netlist or xml file.
+                          These are extra columns in the BoM.
         - `hide_pads`: [boolean=false] Hide footprint pads by default.
         - `hide_silkscreen`: [boolean=false] Hide silkscreen by default.
         - `highlight_pin1`: [boolean=false] Highlight pin1 by default.
@@ -644,9 +641,6 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%v.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
         - `show_fabrication`: [boolean=false] Show fabrication layer by default.
         - `sort_order`: [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once.
-        - `variant_field`: [string=''] Name of the extra field that stores board variant for component.
-        - `variants_blacklist`: [string=''] List of board variants to exclude from the BOM.
-        - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
 
 * KiBoM (KiCad Bill of Materials)
   * Type: `kibom`

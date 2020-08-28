@@ -293,8 +293,8 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
-      # [string='%f-%i%v.%x'] name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options
-      gerber_job_file: '%f-%i%v.%x'
+      # [string='%f-%i.%x'] name for the gerber job file (%i='job', %x='gbrjob')
+      gerber_job_file: '%f-%i.%x'
       # [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6
       gerber_precision: 4.6
       # [number=0.1] [0.02,2] line_width for objects without width [mm]
@@ -368,10 +368,6 @@ outputs:
     type: 'ibom'
     dir: 'Example/ibom_dir'
     options:
-      # [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'
-      blacklist: ''
-      # [boolean=false] Blacklist components with empty value
-      blacklist_empty_val: false
       # [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5
       board_rotation: 0
       # [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view
@@ -380,10 +376,8 @@ outputs:
       checkboxes: 'Sourced,Placed'
       # [boolean=false] Default to dark mode
       dark_mode: false
-      # [string=''] Name of the extra field that indicates do not populate status. Components with this field not empty will be
-      # blacklisted
-      dnp_field: ''
-      # [string=''] Comma separated list of extra fields to pull from netlist or xml file
+      # [string=''] Comma separated list of extra fields to pull from netlist or xml file.
+      # These are extra columns in the BoM
       extra_fields: ''
       # [boolean=false] Hide footprint pads by default
       hide_pads: false
@@ -422,12 +416,6 @@ outputs:
       show_fabrication: false
       # [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once
       sort_order: 'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'
-      # [string=''] Name of the extra field that stores board variant for component
-      variant_field: ''
-      # [string=''] List of board variants to exclude from the BOM
-      variants_blacklist: ''
-      # [string=''] List of board variants to include in the BOM
-      variants_whitelist: ''
 
   # KiBoM (KiCad Bill of Materials):
   # For more information: https://github.com/INTI-CMNB/KiBoM
