@@ -166,20 +166,28 @@ class Optionable(object):
         attrs = self.get_attrs_for()
         return ((k, v) for k, v in attrs.items() if k[0] != '_')
 
+    def _find_variant(self):
+        """ Returns the text to add for the current variant.
+            If no variant is defined an empty string is returned. """
+        if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'file_id'):
+            return self.variant.file_id
+        return ''
+
     def expand_filename(self, out_dir, name, id='', ext=''):
         """ Expands %* values in filenames.
             Uses data from the PCB. """
         if GS.board:
             GS.load_pcb_title_block()
             # Do the replacements
-            name = name.replace('%f', GS.pcb_basename)
-            name = name.replace('%p', GS.pcb_title)
             name = name.replace('%c', GS.pcb_comp)
-            name = name.replace('%r', GS.pcb_rev)
             name = name.replace('%d', GS.pcb_date)
             name = name.replace('%D', GS.today)
-            name = name.replace('%T', GS.time)
+            name = name.replace('%f', GS.pcb_basename)
             name = name.replace('%i', id)
+            name = name.replace('%p', GS.pcb_title)
+            name = name.replace('%r', GS.pcb_rev)
+            name = name.replace('%T', GS.time)
+            name = name.replace('%v', self._find_variant())
             name = name.replace('%x', ext)
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')
@@ -192,14 +200,15 @@ class Optionable(object):
         if GS.sch_file:
             GS.load_sch_title_block()
             # Do the replacements
-            name = name.replace('%f', GS.sch_basename)
-            name = name.replace('%p', GS.sch_title)
             name = name.replace('%c', GS.sch_comp)
-            name = name.replace('%r', GS.sch_rev)
             name = name.replace('%d', GS.sch_date)
             name = name.replace('%D', GS.today)
-            name = name.replace('%T', GS.time)
+            name = name.replace('%f', GS.sch_basename)
             name = name.replace('%i', id)
+            name = name.replace('%p', GS.sch_title)
+            name = name.replace('%r', GS.sch_rev)
+            name = name.replace('%T', GS.time)
+            name = name.replace('%v', self._find_variant())
             name = name.replace('%x', ext)
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')

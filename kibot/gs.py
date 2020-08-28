@@ -50,8 +50,12 @@ class GS(object):
     pcb_rev = None
     pcb_comp = None
     # Global defaults
+    #  This is used as default value for classes supporting "output" option
+    def_global_output = '%f-%i%v.%x'
+    #  This value will overwrite GS.def_global_output if defined
+    #  Classes supporting global "output" option must call super().__init__()
+    #  after defining its own options to allow Optionable do the overwrite.
     global_output = None
-    def_global_output = '%f-%i.%x'
 
     @staticmethod
     def set_sch(name):
