@@ -56,7 +56,7 @@ def _import(name, path):
 
 def _load_actions(path):
     logger.debug("Importing from "+path)
-    lst = glob(os.path.join(path, 'out_*.py')) + glob(os.path.join(path, 'pre_*.py'))
+    lst = glob(os.path.join(path, 'out_*.py')) + glob(os.path.join(path, 'pre_*.py')) + glob(os.path.join(path, 'var_*.py'))
     for p in lst:
         name = os.path.splitext(os.path.basename(p))[0]
         logger.debug("- Importing "+name)

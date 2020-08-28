@@ -3,7 +3,7 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from .reg_out import RegOutput
+from .registrable import RegOutput
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -11,8 +11,6 @@ logger = log.get_logger(__name__)
 
 
 class BaseOutput(RegOutput):
-    _registered = {}
-
     def __init__(self):
         super().__init__()
         with document:

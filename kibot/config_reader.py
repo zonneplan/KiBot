@@ -17,7 +17,7 @@ from .error import (KiPlotConfigurationError, config_error)
 from .kiplot import (load_board)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE)
 from .gs import GS
-from .reg_out import RegOutput
+from .registrable import RegOutput, RegVariant
 from .pre_base import BasePreFlight
 
 # Logger
@@ -80,6 +80,50 @@ class CfgYamlReader(object):
 
         return o_out
 
+    def _parse_outputs(self, v):
+        outputs = []
+        if isinstance(v, list):
+            for o in v:
+                outputs.append(self._parse_output(o))
+        else:
+            config_error("`outputs` must be a list")
+        return outputs
+
+    def _parse_variant(self, o_tree):
+        try:
+            name = o_tree['name']
+            if not name:
+                raise KeyError
+        except KeyError:
+            config_error("Variant needs a name in: "+str(o_tree))
+        try:
+            otype = o_tree['type']
+        except KeyError:
+            config_error("Variant `"+name+"` needs a type")
+        # Is a valid type?
+        if not RegVariant.is_registered(otype):
+            config_error("Unknown variant type: `{}`".format(otype))
+        # Load it
+        name_type = "`"+name+"` ("+otype+")"
+        logger.debug("Parsing variant "+name_type)
+        o_var = RegVariant.get_class_for(otype)()
+        o_var.set_tree(o_tree)
+        try:
+            o_var.config()
+        except KiPlotConfigurationError as e:
+            config_error("In section `"+name_type+"`: "+str(e))
+        return o_var
+
+    def _parse_variants(self, v):
+        variants = {}
+        if isinstance(v, list):
+            for o in v:
+                o_var = self._parse_variant(o)
+                variants[o_var.name] = o_var
+        else:
+            config_error("`variants` must be a list")
+        return variants
+
     def _parse_preflight(self, pf):
         logger.debug("Parsing preflight options: {}".format(pf))
         if not isinstance(pf, dict):
@@ -131,12 +175,10 @@ class CfgYamlReader(object):
                 self._parse_preflight(v)
             elif k == 'global':
                 self._parse_global(v)
+            elif k == 'variants':
+                RegOutput.set_variants(self._parse_variants(v))
             elif k == 'outputs':
-                if isinstance(v, list):
-                    for o in v:
-                        outputs.append(self._parse_output(o))
-                else:
-                    config_error("`outputs` must be a list")
+                outputs = self._parse_outputs(v)
             else:
                 config_error('Unknown section `{}` in config.'.format(k))
         if version is None:

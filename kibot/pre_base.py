@@ -3,39 +3,25 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from .gs import (GS)
-from .log import (get_logger)
+from .gs import GS
+from .registrable import Registrable
+from .log import get_logger
 
 logger = get_logger(__name__)
 
 
-class BasePreFlight(object):
+class BasePreFlight(Registrable):
     _registered = {}
     _in_use = {}
     _options = {}
 
     def __init__(self, name, value):
+        super().__init__()
         self._value = value
         self._name = name
         self._sch_related = False
         self._pcb_related = False
         self._enabled = True
-
-    @staticmethod
-    def register(name, aclass):
-        BasePreFlight._registered[name] = aclass
-
-    @staticmethod
-    def is_registered(name):
-        return name in BasePreFlight._registered
-
-    @staticmethod
-    def get_registered():
-        return BasePreFlight._registered
-
-    @staticmethod
-    def get_class_for(name):
-        return BasePreFlight._registered[name]
 
     @staticmethod
     def add_preflight(o_pre):
