@@ -52,27 +52,28 @@ class IBoMOptions(BaseOptions):
             """ Include netlist information in output. """
             self.sort_order = 'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'
             """ Default sort order for components. Must contain '~' once """
-            self.blacklist = ''
-            """ List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*' """
+            # self.blacklist = ''
+            # """ List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*' """
             self.no_blacklist_virtual = False
             """ Do not blacklist virtual components """
-            self.blacklist_empty_val = False
-            """ Blacklist components with empty value """
+            # self.blacklist_empty_val = False
+            # """ Blacklist components with empty value """
             self.netlist_file = ''
             """ Path to netlist or xml file """
             self.extra_fields = ''
-            """ Comma separated list of extra fields to pull from netlist or xml file """
+            """ Comma separated list of extra fields to pull from netlist or xml file.
+                These are extra columns in the BoM """
             self.normalize_field_case = False
             """ Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field """
-            self.variant_field = ''
-            """ Name of the extra field that stores board variant for component """
-            self.variants_whitelist = ''
-            """ List of board variants to include in the BOM """
-            self.variants_blacklist = ''
-            """ List of board variants to exclude from the BOM """
-            self.dnp_field = ''
-            """ Name of the extra field that indicates do not populate status. Components with this field not empty will be
-                blacklisted """
+            # self.variant_field = ''
+            # """ Name of the extra field that stores board variant for component """
+            # self.variants_whitelist = ''
+            # """ List of board variants to include in the BOM """
+            # self.variants_blacklist = ''
+            # """ List of board variants to exclude from the BOM """
+            # self.dnp_field = ''
+            # """ Name of the extra field that indicates do not populate status. Components with this field not empty will be
+            #     blacklisted """
         super().__init__()
 
     def run(self, output_dir, board):

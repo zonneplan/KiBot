@@ -1210,3 +1210,19 @@ def test_int_bom_variant_t2():
     rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
     check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
     ctx.clean_up()
+
+
+def test_int_bom_variant_t2i():
+    prj = 'kibom-variant_3'
+    ctx = context.TestContextSCH('test_int_bom_variant_t2i', prj, 'int_bom_var_t2i_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    rows, header, info = ctx.load_csv(prj+'-bom_[2].csv')
+    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    rows, header, info = ctx.load_csv(prj+'-bom_(production).csv')
+    check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
+    rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
+    check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+    ctx.clean_up()
