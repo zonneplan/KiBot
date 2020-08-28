@@ -6,6 +6,7 @@
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 from pcbnew import (PLOT_FORMAT_GERBER, FromMM, ToMM)
+from .gs import GS
 from .out_any_layer import (AnyLayer, AnyLayerOptions)
 from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
@@ -13,8 +14,6 @@ from .macros import macros, document, output_class  # noqa: F401
 
 class GerberOptions(AnyLayerOptions):
     def __init__(self):
-        super().__init__()
-        self._plot_format = PLOT_FORMAT_GERBER
         with document:
             self.use_aux_axis_as_origin = False
             """ use the auxiliar axis as origin for coordinates """
@@ -29,12 +28,14 @@ class GerberOptions(AnyLayerOptions):
             self.create_gerber_job_file = True
             """ creates a file with information about all the generated gerbers.
                 You can use it in gerbview to load all gerbers at once """
-            self.gerber_job_file = '%f-%i.%x'
+            self.gerber_job_file = GS.def_global_output
             """ name for the gerber job file (%i='job', %x='gbrjob') """
             self.use_gerber_x2_attributes = True
             """ use the extended X2 format """
             self.use_gerber_net_attributes = True
             """ include netlist metadata """
+        super().__init__()
+        self._plot_format = PLOT_FORMAT_GERBER
 
     @property
     def gerber_precision(self):
