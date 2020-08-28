@@ -7,5 +7,5 @@ all: ../README.md  samples/generic_plot.kibot.yaml
 
 samples/generic_plot.kibot.yaml: ../kibot/out_*.py ../kibot/pre_*.py ../kibot/config_reader.py
 	rm -f example.kibot.yaml
-	../src/kibot --example
+	../src/kibot -v --example
 	mv example.kibot.yaml $@
