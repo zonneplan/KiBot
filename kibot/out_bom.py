@@ -8,7 +8,6 @@ Internal BoM (Bill of Materials) output for KiBot.
 This is somehow compatible with KiBoM.
 """
 import os
-from re import compile, IGNORECASE
 from .gs import GS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
@@ -17,6 +16,7 @@ from .macros import macros, document, output_class  # noqa: F401
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
 from .var_kibom import KiBoM
+from .fil_generic import Generic
 from . import log
 
 logger = log.get_logger(__name__)
@@ -28,26 +28,6 @@ DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
                    ['zener', 'zenersmall'],
                    ['d', 'diode', 'd_small'],
                    ]
-
-
-# String matches for marking a component as "do not fit"
-class BoMRegex(Optionable):
-    """ Implements the pair column/regex """
-    def __init__(self):
-        super().__init__()
-        self._unkown_is_error = True
-        with document:
-            self.column = ''
-            """ Name of the column to apply the regular expression """
-            self.regex = ''
-            """ Regular expression to match """
-            self.field = None
-            """ {column} """
-            self.regexp = None
-            """ {regex} """
-
-#     def __str__(self):
-#         return self.column+'\t'+self.regex
 
 
 class BoMColumns(Optionable):
@@ -194,15 +174,15 @@ class GroupFields(Optionable):
 
 
 class BoMOptions(BaseOptions):
-    DEFAULT_EXCLUDE = [[ColumnList.COL_REFERENCE, '^TP[0-9]*'],
-                       [ColumnList.COL_REFERENCE, '^FID'],
-                       [ColumnList.COL_PART, 'mount.*hole'],
-                       [ColumnList.COL_PART, 'solder.*bridge'],
-                       [ColumnList.COL_PART, 'solder.*jump'],
-                       [ColumnList.COL_PART, 'test.*point'],
-                       [ColumnList.COL_FP, 'test.*point'],
-                       [ColumnList.COL_FP, 'mount.*hole'],
-                       [ColumnList.COL_FP, 'fiducial'],
+    DEFAULT_EXCLUDE = [{'column': ColumnList.COL_REFERENCE, 'regex': '^TP[0-9]*'},
+                       {'column': ColumnList.COL_REFERENCE, 'regex': '^FID'},
+                       {'column': ColumnList.COL_PART, 'regex': 'mount.*hole'},
+                       {'column': ColumnList.COL_PART, 'regex': 'solder.*bridge'},
+                       {'column': ColumnList.COL_PART, 'regex': 'solder.*jump'},
+                       {'column': ColumnList.COL_PART, 'regex': 'test.*point'},
+                       {'column': ColumnList.COL_FP, 'regex': 'test.*point'},
+                       {'column': ColumnList.COL_FP, 'regex': 'mount.*hole'},
+                       {'column': ColumnList.COL_FP, 'regex': 'fiducial'},
                        ]
 
     def __init__(self):
@@ -220,18 +200,38 @@ class BoMOptions(BaseOptions):
             # Equivalent to KiBoM INI:
             self.ignore_dnf = True
             """ Exclude DNF (Do Not Fit) components """
+            self.fit_field = 'Config'
+            """ Field name used for internal filters """
             self.use_alt = False
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
+            self.columns = BoMColumns
+            """ [list(dict)|list(string)] List of columns to display.
+                Can be just the name of the field """
+            self.normalize_values = False
+            """ Try to normalize the R, L and C values, producing uniform units and prefixes """
+            self.normalize_locale = False
+            """ When normalizing values use the locale decimal point """
+            self.html = BoMHTML
+            """ [dict] Options for the HTML format """
+            self.xlsx = BoMXLSX
+            """ [dict] Options for the XLSX format """
+            self.csv = BoMCSV
+            """ [dict] Options for the CSV, TXT and TSV formats """
+            # * Filters
+            self.exclude_filter = '_mechanical'
+            """ Name of the filter to exclude components from BoM processing.
+                The default filter excludes test points, fiducial marks, mounting holes, etc """
+            self.dnf_filter = '_kibom_dnf'
+            """ Name of the filter to mark components as 'Do Not Fit'.
+                The default filter marks components with a DNF value or DNF in the Config field """
+            self.dnc_filter = '_kibom_dnc'
+            """ Name of the filter to mark components as 'Do Not Change'.
+                The default filter marks components with a DNC value or DNC in the Config field """
+            # * Grouping criteria
             self.group_connectors = True
             """ Connectors with the same footprints will be grouped together, independent of the name of the connector """
-            self.test_regex = True
-            """ Each component group will be tested against a number of regular-expressions
-                (see `include_only` and `exclude_any`) """
             self.merge_blank_fields = True
             """ Component groups with blank fields will be merged into the most compatible group, where possible """
-            self.fit_field = 'Config'
-            """ Field name used to determine if a particular part is to be fitted (also DNC, not for variants).
-                This value is used only when no variants are specified """
             self.group_fields = GroupFields
             """ [list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
@@ -248,47 +248,6 @@ class BoMOptions(BaseOptions):
                 - ['sw', 'switch']
                 - ['zener', 'zenersmall']
                 - ['d', 'diode', 'd_small'] """
-            self.include_only = BoMRegex
-            """ [list(dict)] A series of regular expressions used to select included parts.
-                If there are any regex defined here, only components that match against ANY of them will be included.
-                Column names are case-insensitive.
-                If empty all the components are included """
-            self.exclude_any = BoMRegex
-            """ [list(dict)] A series of regular expressions used to exclude parts.
-                If a component matches ANY of these, it will be excluded.
-                Column names are case-insensitive.
-                If empty the following list is used:
-                - column: References
-                ..regex: '^TP[0-9]*'
-                - column: References
-                ..regex: '^FID'
-                - column: Part
-                ..regex: 'mount.*hole'
-                - column: Part
-                ..regex: 'solder.*bridge'
-                - column: Part
-                ..regex: 'solder.*jump'
-                - column: Part
-                ..regex: 'test.*point'
-                - column: Footprint
-                ..regex: 'test.*point'
-                - column: Footprint
-                ..regex: 'mount.*hole'
-                - column: Footprint
-                ..regex: 'fiducial' """
-            self.columns = BoMColumns
-            """ [list(dict)|list(string)] List of columns to display.
-                Can be just the name of the field """
-            self.normalize_values = False
-            """ Try to normalize the R, L and C values, producing uniform units and prefixes """
-            self.normalize_locale = False
-            """ When normalizing values use the locale decimal point """
-            self.html = BoMHTML
-            """ [dict] Options for the HTML format """
-            self.xlsx = BoMXLSX
-            """ [dict] Options for the XLSX format """
-            self.csv = BoMCSV
-            """ [dict] Options for the CSV, TXT and TSV formats """
         super().__init__()
 
     @staticmethod
@@ -311,26 +270,56 @@ class BoMOptions(BaseOptions):
         # Explicit selection
         return self.format.lower()
 
-    @staticmethod
-    def _fix_ref_field(field):
-        """ References -> Reference """
-        col = field.lower()
-        if col == ColumnList.COL_REFERENCE_L:
-            col = col[:-1]
-        return col
-
     def _normalize_variant(self):
         """ Replaces the name of the variant by an object handling it. """
         if self.variant:
-            if self.variant not in RegOutput._def_variants:
+            if not RegOutput.is_variant(self.variant):
                 raise KiPlotConfigurationError("Unknown variant name `{}`".format(self.variant))
-            self.variant = RegOutput._def_variants[self.variant]
+            self.variant = RegOutput.get_variant(self.variant)
         else:
             # If no variant is specified use the KiBoM variant class with basic functionality
             self.variant = KiBoM()
             self.variant.config_field = self.fit_field
             self.variant.variant = []
             self.variant.name = 'default'
+
+    def _solve_exclude_filter(self):
+        """ Check we have a valid exclude filter. Create it if needed. """
+        if not RegOutput.is_filter(self.exclude_filter):
+            if self.exclude_filter == '_mechanical':
+                o = Generic()
+                o_tree = {'name': '_mechanical', 'type': 'generic', 'comment': 'Internal default mechanical filter'}
+                o_tree['exclude_any'] = BoMOptions.DEFAULT_EXCLUDE
+                o.set_tree(o_tree)
+                o.config()
+                RegOutput.add_filter(o)
+                self.exclude_filter = o
+                return
+            raise KiPlotConfigurationError("Unknown filter `{}` used for `exclude_filter`".format(self.exclude_filter))
+        self.exclude_filter = RegOutput.get_filter(self.exclude_filter)
+
+    def _solve_dnx_filter(self, name, type, invert=False):
+        real_name = name
+        if real_name == '_kibom_'+type:
+            # Allow different internal filters using different config fields
+            real_name += '_'+self.fit_field
+            if not RegOutput.is_filter(real_name):
+                o = Generic()
+                o_tree = {'name': real_name, 'type': 'generic'}
+                o_tree['comment'] = 'Internal KiBoM '+type.upper()+' filter ('+self.fit_field+')'
+                o_tree['config_field'] = self.fit_field
+                o_tree['exclude_value'] = True
+                o_tree['exclude_config'] = True
+                o_tree['keys'] = type+'_list'
+                if invert:
+                    o_tree['invert'] = True
+                o.set_tree(o_tree)
+                o.config()
+                RegOutput.add_filter(o)
+                return o
+        if not RegOutput.is_filter(real_name):
+            raise KiPlotConfigurationError("Unknown filter `{}` used for `{}_filter`".format(real_name, type))
+        return RegOutput.get_filter(real_name)
 
     def config(self):
         super().config()
@@ -359,28 +348,16 @@ class BoMOptions(BaseOptions):
         # component_aliases
         if isinstance(self.component_aliases, type):
             self.component_aliases = DEFAULT_ALIASES
-        # include_only
-        if isinstance(self.include_only, type):
-            self.include_only = None
-        else:
-            for r in self.include_only:
-                r.regex = compile(r.regex, flags=IGNORECASE)
-        # exclude_any
-        if isinstance(self.exclude_any, type):
-            self.exclude_any = []
-            for r in BoMOptions.DEFAULT_EXCLUDE:
-                o = BoMRegex()
-                o.column = self._fix_ref_field(r[0])
-                o.regex = compile(r[1], flags=IGNORECASE)
-                self.exclude_any.append(o)
-        else:
-            for r in self.exclude_any:
-                r.column = self._fix_ref_field(r.column)
-                r.regex = compile(r.regex, flags=IGNORECASE)
-        # Make the config field name lowercase
-        self.fit_field = self.fit_field.lower()
+        # exclude_filter
+        self._solve_exclude_filter()
+        # dnf_filter
+        self.dnf_filter = self._solve_dnx_filter(self.dnf_filter, 'dnf')
+        # dnc_filter
+        self.dnc_filter = self._solve_dnx_filter(self.dnc_filter, 'dnc', True)
         # Variants, make it an object
         self._normalize_variant()
+        # Field names are handled in lowercase
+        self.fit_field = self.fit_field.lower()
         # Columns
         self.column_rename = {}
         self.join = []

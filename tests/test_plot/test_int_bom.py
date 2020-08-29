@@ -915,19 +915,19 @@ def test_int_bom_include_only():
     ctx.clean_up()
 
 
-def test_int_bom_no_test_regex():
-    prj = 'kibom-test'
-    ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_simple_csv', prj, 'int_bom_no_include_only', BOM_DIR)
-    ctx.run()
-    out = prj + '-bom.' + ext
-    rows, header, info = ctx.load_csv(out)
-    assert header == KIBOM_TEST_HEAD
-    ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
-    ctx.clean_up()
+# def test_int_bom_no_test_regex():
+#     prj = 'kibom-test'
+#     ext = 'csv'
+#     ctx = context.TestContextSCH('test_int_bom_simple_csv', prj, 'int_bom_no_include_only', BOM_DIR)
+#     ctx.run()
+#     out = prj + '-bom.' + ext
+#     rows, header, info = ctx.load_csv(out)
+#     assert header == KIBOM_TEST_HEAD
+#     ref_column = header.index(REF_COLUMN_NAME)
+#     qty_column = header.index(QTY_COLUMN_NAME)
+#     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+#     check_dnc(rows, 'R7', ref_column, qty_column)
+#     ctx.clean_up()
 
 
 def test_int_bom_sub_sheet_alt():

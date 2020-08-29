@@ -263,37 +263,6 @@ class ComponentGroup(object):
         return row
 
 
-def test_reg_exclude(cfg, c):
-    """ Test if this part should be included, based on any regex expressions provided in the preferences """
-    for reg in cfg.exclude_any:
-        field_value = c.get_field_value(reg.column)
-        if reg.regex.search(field_value):
-            if cfg.debug_level > 1:
-                logger.debug("Excluding '{ref}': Field '{field}' ({value}) matched '{re}'".format(
-                             ref=c.ref, field=reg.column, value=field_value, re=reg.regex))
-            # Found a match
-            return True
-    # Default, could not find any matches
-    return False
-
-
-def test_reg_include(cfg, c):
-    """ Reject components that doesn't match the provided regex.
-        So we include only the components that matches any of the regexs. """
-    if not cfg.include_only:  # Nothing to match against, means include all
-        return True
-    for reg in cfg.include_only:
-        field_value = c.get_field_value(reg.column)
-        if reg.regex.search(field_value):
-            if cfg.debug_level > 1:
-                logger.debug("Including '{ref}': Field '{field}' ({value}) matched '{re}'".format(
-                             ref=c.ref, field=reg.column, value=field_value, re=reg.regex))
-                # Found a match
-                return True
-    # Default, could not find a match
-    return False
-
-
 def get_value_sort(comp):
     """ Try to better sort R, L and C components """
     res = comp.value_sort
@@ -325,12 +294,8 @@ def group_components(cfg, components):
     groups = []
     # Iterate through each component, and test whether a group for these already exists
     for c in components:
-        if cfg.test_regex:
-            # Skip components if they do not meet regex requirements
-            if not test_reg_include(cfg, c):
-                continue
-            if test_reg_exclude(cfg, c):
-                continue
+        if not c.in_bom:  # Skip components marked as excluded from BoM
+            continue
         # Cache the value used to sort
         if c.ref_prefix in RLC_PREFIX and c.value.lower() not in DNF:
             c.value_sort = comp_match(c.value, c.ref_prefix)
@@ -390,7 +355,12 @@ def group_components(cfg, components):
 
 
 def do_bom(file_name, ext, comps, cfg):
-    # Solve `fixed` and `fitted` attributes for all components
+    # Apply all the filters
+    for c in comps:
+        c.in_bom = cfg.exclude_filter.filter(c)
+        c.fitted = cfg.dnf_filter.filter(c)
+        c.fixed = cfg.dnc_filter.filter(c)
+    # Apply the variant
     cfg.variant.filter(comps)
     # Group components according to group_fields
     groups = group_components(cfg, comps)

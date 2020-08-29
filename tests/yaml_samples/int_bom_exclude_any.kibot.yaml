@@ -2,26 +2,34 @@
 kibot:
   version: 1
 
+filters:
+ - name: 'exclude_any'
+   type: 'generic'
+   comment: 'Almost same as KiBoM, no fiducial'
+   exclude_any:
+     - column: References
+       regex: '^TP[0-9]*'
+     - column: References
+       regex: '^FID'
+     - column: Part
+       regex: 'mount.*hole'
+     - column: Part
+       regex: 'solder.*bridge'
+     - column: Part
+       regex: 'solder.*jump'
+     - column: Part
+       regex: 'test.*point'
+     - column: Footprint
+       regex: 'test.*point'
+     - column: Footprint
+       regex: 'mount.*hole'
+
+
 outputs:
   - name: 'bom_internal'
     comment: "Bill of Materials in CSV format"
     type: bom
     dir: BoM
     options:
-      exclude_any:
-        - column: References
-          regex: '^TP[0-9]*'
-        - column: References
-          regex: '^FID'
-        - column: Part
-          regex: 'mount.*hole'
-        - column: Part
-          regex: 'solder.*bridge'
-        - column: Part
-          regex: 'solder.*jump'
-        - column: Part
-          regex: 'test.*point'
-        - column: Footprint
-          regex: 'test.*point'
-        - column: Footprint
-          regex: 'mount.*hole'
+      exclude_filter: 'exclude_any'
+
