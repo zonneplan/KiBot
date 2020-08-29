@@ -75,6 +75,8 @@ logger = None
 has_macro = [
              'layer',
              'drill_marks',
+             'fil_base',
+             'fil_generic',
              'out_any_drill',
              'out_any_layer',
              'out_base',

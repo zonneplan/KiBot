@@ -20,6 +20,3 @@ class BaseVariant(RegVariant):
             """ A comment for documentation purposes """
             self.file_id = ''
             """ Text to use as the """
-
-    def __str__(self):
-        return "'{}' ({}) [{}]".format(self.comment, self.name, self.type)

@@ -27,12 +27,17 @@ class Registrable(object):
     def get_registered(cl):
         return cl._registered
 
+    def __str__(self):
+        return "'{}' ({}) [{}]".format(self.comment, self.name, self.type)
+
 
 class RegOutput(Optionable, Registrable):
     """ An optionable that is also registrable.
         Used by BaseOutput.
         Here because it doesn't need macros. """
     _registered = {}
+    # List of defined filters
+    _def_filters = {}
     # List of defined variants
     _def_variants = {}
 
@@ -43,10 +48,44 @@ class RegOutput(Optionable, Registrable):
     def set_variants(variants):
         RegOutput._def_variants = variants
 
+    @staticmethod
+    def is_variant(name):
+        return name in RegOutput._def_variants
+
+    @staticmethod
+    def get_variant(name):
+        return RegOutput._def_variants[name]
+
+    @staticmethod
+    def set_filters(filters):
+        RegOutput._def_filters = filters
+
+    @staticmethod
+    def is_filter(name):
+        return name in RegOutput._def_filters
+
+    @staticmethod
+    def get_filter(name):
+        return RegOutput._def_filters[name]
+
+    @staticmethod
+    def add_filter(obj):
+        RegOutput._def_filters[obj.name] = obj
+
 
 class RegVariant(Optionable, Registrable):
     """ An optionable that is also registrable.
         Used by BaseVariant.
+        Here because it doesn't need macros. """
+    _registered = {}
+
+    def __init__(self):
+        super().__init__()
+
+
+class RegFilter(Optionable, Registrable):
+    """ An optionable that is also registrable.
+        Used by BaseFilter.
         Here because it doesn't need macros. """
     _registered = {}
 
