@@ -63,13 +63,13 @@ outputs:
         quote_all: false
         # [string=','] CSV Separator. TXT and TSV always use tab as delimiter
         separator: ','
-      # [string='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
+      # [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
       # The default filter marks components with a DNC value or DNC in the Config field
       dnc_filter: '_kibom_dnc'
-      # [string='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
+      # [string|list(string)='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
       # The default filter marks components with a DNF value or DNF in the Config field
       dnf_filter: '_kibom_dnf'
-      # [string='_mechanical'] Name of the filter to exclude components from BoM processing.
+      # [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
       # The default filter excludes test points, fiducial marks, mounting holes, etc
       exclude_filter: '_mechanical'
       # [string='Config'] Field name used for internal filters

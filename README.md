@@ -371,11 +371,11 @@ Next time you need this list just use an alias, like this:
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `quote_all`: [boolean=false] Enclose all values using double quotes.
             - `separator`: [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
-        - `dnc_filter`: [string='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
+        - `dnc_filter`: [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
                         The default filter marks components with a DNC value or DNC in the Config field.
-        - `dnf_filter`: [string='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
+        - `dnf_filter`: [string|list(string)='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
                         The default filter marks components with a DNF value or DNF in the Config field.
-        - `exclude_filter`: [string='_mechanical'] Name of the filter to exclude components from BoM processing.
+        - `exclude_filter`: [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
                             The default filter excludes test points, fiducial marks, mounting holes, etc.
         - `fit_field`: [string='Config'] Field name used for internal filters.
         - `format`: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
