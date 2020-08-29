@@ -67,6 +67,10 @@ class Optionable(object):
             return getattr(self, '_help_'+alias).strip(), alias, True
         return doc, name, False
 
+    def add_to_doc(self, name, text):
+        doc = getattr(self, '_help_'+name).strip()
+        setattr(self, '_help_'+name, doc+'.\n'+text)
+
     @staticmethod
     def _typeof(v):
         if isinstance(v, bool):

@@ -29,13 +29,6 @@ class IBoM(BaseVariant):  # noqa: F821
             """ [string|list(string)=''] List of board variants to exclude from the BOM """
             self.variants_whitelist = Optionable
             """ [string|list(string)=''] List of board variants to include in the BOM """
-            self.blacklist = Optionable
-            """ [string|list(string)=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*' """
-            self.blacklist_empty_val = False
-            """ Blacklist components with empty value """
-            self.dnp_field = ''
-            """ Name of the extra field that indicates do not populate status.
-                Components with this field not empty will be blacklisted """
 
     @staticmethod
     def _force_list(val):
@@ -55,25 +48,9 @@ class IBoM(BaseVariant):  # noqa: F821
         super().config()
         self.variants_blacklist = self._force_list(self.variants_blacklist)
         self.variants_whitelist = self._force_list(self.variants_whitelist)
-        self.blacklist = self._force_list(self.blacklist)
 
     def skip_component(self, c):
-        """ Skip blacklisted components.
-            This is what IBoM does internally """
-        if c.ref in self.blacklist:
-            return True
-        if c.ref_prefix + '*' in self.blacklist:
-            return True
-        # Remove components with empty value
-        if self.blacklist_empty_val and c.value in ['', '~']:
-            return True
-        # Skip virtual components if needed
-        # TODO: We currently lack this information
-        # if config.blacklist_virtual and m.attr == 'Virtual':
-        #     return True
-        # Skip components with dnp field not empty
-        if self.dnp_field and c.get_field_value(self.dnp_field):
-            return True
+        """ Skip components that doesn't belong to this variant. """
         # Apply variants white/black lists
         if self.variant_field:
             ref_variant = c.get_field_value(self.variant_field).lower()
@@ -85,13 +62,15 @@ class IBoM(BaseVariant):  # noqa: F821
         return False
 
     def filter(self, comps):
-        logger.debug("Applying IBoM style filter `{}`".format(self.name))
+        logger.debug("Applying IBoM style variants `{}`".format(self.name))
         # Make black/white lists case insensitive
         self.variants_whitelist = [v.lower() for v in self.variants_whitelist]
         self.variants_blacklist = [v.lower() for v in self.variants_blacklist]
         # Apply to all the components
         for c in comps:
+            if not (c.fitted and c.in_bom):
+                # Don't check if we already discarded it
+                continue
             c.fitted = not self.skip_component(c)
-            c.fixed = False
             if not c.fitted and GS.debug_level > 2:
                 logger.debug('ref: {} value: {} -> False'.format(c.ref, c.value))

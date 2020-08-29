@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegOutput
+from .optionable import Optionable
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -29,9 +30,6 @@ class BaseOutput(RegOutput):
     def attr2longopt(attr):
         return '--'+attr.replace('_', '-')
 
-    def __str__(self):
-        return "'{}' ({}) [{}]".format(self.comment, self.name, self.type)
-
     def is_sch(self):
         """ True for outputs that works on the schematic """
         return self._sch_related
@@ -50,3 +48,19 @@ class BaseOutput(RegOutput):
 
     def run(self, output_dir, board):
         self.options.run(output_dir, board)
+
+
+class BoMRegex(Optionable):
+    """ Implements the pair column/regex """
+    def __init__(self):
+        super().__init__()
+        self._unkown_is_error = True
+        with document:
+            self.column = ''
+            """ Name of the column to apply the regular expression """
+            self.regex = ''
+            """ Regular expression to match """
+            self.field = None
+            """ {column} """
+            self.regexp = None
+            """ {regex} """
