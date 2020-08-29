@@ -371,35 +371,13 @@ Next time you need this list just use an alias, like this:
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `quote_all`: [boolean=false] Enclose all values using double quotes.
             - `separator`: [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
-        - `exclude_any`: [list(dict)] A series of regular expressions used to exclude parts.
-                         If a component matches ANY of these, it will be excluded.
-                         Column names are case-insensitive.
-                         If empty the following list is used:
-                         - column: References
-                           regex: '^TP[0-9]*'
-                         - column: References
-                           regex: '^FID'
-                         - column: Part
-                           regex: 'mount.*hole'
-                         - column: Part
-                           regex: 'solder.*bridge'
-                         - column: Part
-                           regex: 'solder.*jump'
-                         - column: Part
-                           regex: 'test.*point'
-                         - column: Footprint
-                           regex: 'test.*point'
-                         - column: Footprint
-                           regex: 'mount.*hole'
-                         - column: Footprint
-                           regex: 'fiducial'.
-          * Valid keys:
-            - `column`: [string=''] Name of the column to apply the regular expression.
-            - *field*: Alias for column.
-            - `regex`: [string=''] Regular expression to match.
-            - *regexp*: Alias for regex.
-        - `fit_field`: [string='Config'] Field name used to determine if a particular part is to be fitted (also DNC, not for variants).
-                       This value is used only when no variants are specified.
+        - `dnc_filter`: [string='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
+                        The default filter marks components with a DNC value or DNC in the Config field.
+        - `dnf_filter`: [string='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
+                        The default filter marks components with a DNF value or DNF in the Config field.
+        - `exclude_filter`: [string='_mechanical'] Name of the filter to exclude components from BoM processing.
+                            The default filter excludes test points, fiducial marks, mounting holes, etc.
+        - `fit_field`: [string='Config'] Field name used for internal filters.
         - `format`: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
                     If empty defaults to CSV or a guess according to the options..
         - `group_connectors`: [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector.
@@ -421,22 +399,11 @@ Next time you need this list just use an alias, like this:
                        Or you can provide a CSS file name. Please use .css as file extension..
             - `title`: [string='KiBot Bill of Materials'] BoM title.
         - `ignore_dnf`: [boolean=true] Exclude DNF (Do Not Fit) components.
-        - `include_only`: [list(dict)] A series of regular expressions used to select included parts.
-                          If there are any regex defined here, only components that match against ANY of them will be included.
-                          Column names are case-insensitive.
-                          If empty all the components are included.
-          * Valid keys:
-            - `column`: [string=''] Name of the column to apply the regular expression.
-            - *field*: Alias for column.
-            - `regex`: [string=''] Regular expression to match.
-            - *regexp*: Alias for regex.
         - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
         - `normalize_locale`: [boolean=false] When normalizing values use the locale decimal point.
         - `normalize_values`: [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.
         - `number`: [number=1] Number of boards to build (components multiplier).
         - `output`: [string='%f-%i%v.%x'] filename for the output (%i=bom). Affected by global options.
-        - `test_regex`: [boolean=true] Each component group will be tested against a number of regular-expressions
-                        (see `include_only` and `exclude_any`).
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `variant`: [string=''] Board variant(s), used to determine which components
                      are output to the BoM..
@@ -612,12 +579,15 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `ibom` output.
       * Valid keys:
+        - `blacklist`: [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
+        - `blacklist_empty_val`: [boolean=false] Blacklist components with empty value.
         - `board_rotation`: [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
         - `bom_view`: [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view.
         - `checkboxes`: [string='Sourced,Placed'] Comma separated list of checkbox columns.
         - `dark_mode`: [boolean=false] Default to dark mode.
+        - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status. Components with this field not empty will be
+                       blacklisted.
         - `extra_fields`: [string=''] Comma separated list of extra fields to pull from netlist or xml file.
-                          These are extra columns in the BoM.
         - `hide_pads`: [boolean=false] Hide footprint pads by default.
         - `hide_silkscreen`: [boolean=false] Hide silkscreen by default.
         - `highlight_pin1`: [boolean=false] Highlight pin1 by default.
@@ -641,6 +611,9 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%v.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
         - `show_fabrication`: [boolean=false] Show fabrication layer by default.
         - `sort_order`: [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once.
+        - `variant_field`: [string=''] Name of the extra field that stores board variant for component.
+        - `variants_blacklist`: [string=''] List of board variants to exclude from the BOM.
+        - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
 
 * KiBoM (KiCad Bill of Materials)
   * Type: `kibom`
