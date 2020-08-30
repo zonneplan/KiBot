@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- Now variants are separated entities.
+  - Only the internal BoM currently supports it.
+  - In the future IBoM will also support it, contact me if you think this is
+    high priority.
+- New filters entities. They implement all the functionality in KiBoM and IBoM.
+- Implemented the IBoM variants style.
+- The internal BoM format supports filters for:
+  - Excluding components from processing
+  - Marking components as "Do Not Fit"
+  - Marking components as "Do Not Change"
+- The internal BoM format supports KiBoM and IBoM style variants
 
 ## [0.6.2] - 2020-08-25
 ### Changed
