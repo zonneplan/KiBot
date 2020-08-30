@@ -591,6 +591,19 @@ class SchematicAltRef():
 
 
 class SchematicComponent(object):
+    """ Class for a component in the schematic.
+        Here are special members currently computed elsehere:
+        - fitted: equivalent to 'Exclude from board' but inverted
+                  - Solded: only if True
+                  - BoM normal: only if True
+                  - BoM DNF: only if False
+        - in_bom: equivalent to 'Exclude from BoM' but inverted
+                  - Solded: doesn't affected
+                  - BoM normal: only if True
+                  - BoM DNF: only if True (and fitted is False)
+        - fixed: means you can't change it by a replacement without authorization
+                 Is just a flag and doesn't affect much.
+        """
     ref_re = re.compile(r'([^\d]+)([\?\d]+)')
 
     def __init__(self):

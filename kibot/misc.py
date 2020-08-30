@@ -45,3 +45,28 @@ PCBDRAW = 'pcbdraw'
 URL_PCBDRAW = 'https://github.com/INTI-CMNB/pcbdraw'
 EXAMPLE_CFG = 'example.kibot.yaml'
 AUTO_SCALE = 0
+
+# Supported values for "do not fit"
+DNF = {
+    "dnf": 1,
+    "dnl": 1,
+    "dnp": 1,
+    "do not fit": 1,
+    "do not place": 1,
+    "do not load": 1,
+    "nofit": 1,
+    "nostuff": 1,
+    "noplace": 1,
+    "noload": 1,
+    "not fitted": 1,
+    "not loaded": 1,
+    "not placed": 1,
+    "no stuff": 1,
+}
+# String matches for marking a component as "do not change" or "fixed"
+DNC = {
+    "dnc": 1,
+    "do not change": 1,
+    "no change": 1,
+    "fixed": 1
+}

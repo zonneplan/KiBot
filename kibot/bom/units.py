@@ -103,8 +103,12 @@ def comp_match(component, ref_prefix):
     e.g. comp_match('10R2') returns (10, R)
     e.g. comp_match('3.3mOhm') returns (0.0033, R)
     """
-
     original = component
+    # Remove useless spaces
+    component = component.strip()
+    # ~ is the same as empty for KiCad
+    if component == '~':
+        component = ''
     # Convert the decimal point from the current locale to a '.'
     global decimal_point
     if decimal_point is None:

@@ -1,0 +1,57 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+variants:
+  - name: 'production'
+    comment: 'Production variant'
+    type: ibom
+    file_id: '_(production)'
+    variants_blacklist: T2
+
+  - name: 'test'
+    comment: 'Test variant'
+    type: ibom
+    file_id: '_(test)'
+    variants_blacklist: T1
+
+  - name: 'default'
+    comment: 'Default variant'
+    type: ibom
+    variants_blacklist: T2,T3
+    variants_whitelist: ''
+
+  - name: 'default2'
+    comment: 'Default variant 2'
+    type: ibom
+    file_id: '_[2]'
+    variants_whitelist: T1, Default
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      variant: default
+
+  - name: 'bom_internal2'
+    comment: "Bill of Materials in CSV format (2)"
+    type: bom
+    dir: BoM
+    options:
+      variant: default2
+
+  - name: 'bom_internal_production'
+    comment: "Bill of Materials in CSV format for production"
+    type: bom
+    dir: BoM
+    options:
+      variant: production
+
+  - name: 'bom_internal_test'
+    comment: "Bill of Materials in CSV format for test"
+    type: bom
+    dir: BoM
+    options:
+      variant: test

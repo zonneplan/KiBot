@@ -53,7 +53,7 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
             if not cfg.csv.hide_pcb_info:
                 writer.writerow(["Project info:"])
                 writer.writerow(["Schematic:", cfg.source])
-                writer.writerow(["Variant:", ' + '.join(cfg.variant)])
+                writer.writerow(["Variant:", cfg.variant.name])
                 writer.writerow(["Revision:", cfg.revision])
                 writer.writerow(["Date:", cfg.date])
                 writer.writerow(["KiCad Version:", cfg.kicad_version])

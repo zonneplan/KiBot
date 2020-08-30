@@ -1,0 +1,31 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+variants:
+  - name: 'dummy'
+    comment: 'Dummy variant'
+    type: kibom
+    file_id: '_(dummy)'
+    variant: ''
+
+  - name: 'dummy2'
+    comment: 'Dummy 2 variant'
+    type: kibom
+    file_id: '_(dummy2)'
+
+outputs:
+  - name: 'bom_internal_dummy'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      variant: dummy
+
+  - name: 'bom_internal_dummy2'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      variant: dummy2
+

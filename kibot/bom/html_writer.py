@@ -213,7 +213,7 @@ def write_html(filename, groups, headings, head_names, cfg):
             html.write(' <td class="cell-info">\n')
             if not cfg.html.hide_pcb_info:
                 html.write("   <b>Schematic</b>: {}<br>\n".format(cfg.source))
-                html.write("   <b>Variant</b>: {}<br>\n".format(', '.join(cfg.variant)))
+                html.write("   <b>Variant</b>: {}<br>\n".format(cfg.variant.name))
                 html.write("   <b>Revision</b>: {}<br>\n".format(cfg.revision))
                 html.write("   <b>Date</b>: {}<br>\n".format(cfg.date))
                 html.write("   <b>KiCad Version</b>: {}<br>\n".format(cfg.kicad_version))

@@ -8,7 +8,6 @@ outputs:
     type: bom
     dir: BoM
     options:
-      test_regex: false
-      include_only:
-        - column: 'Footprint'
-          regex: '0805'
+      use_alt: true
+      exclude_filter: ''
+

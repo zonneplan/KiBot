@@ -1,0 +1,86 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+ - name: 'empty val'
+   type: 'generic'
+   comment: 'Remove components with empty value'
+   exclude_empty_val: true
+
+ - name: 'by prefix'
+   type: 'generic'
+   comment: 'Remove components by prefix'
+   exclude_refs:
+     - R1
+     - C*
+
+ - name: no_KK_Q,Q
+   type: 'generic'
+   comment: 'Remove components with K K and Q,Q fields'
+   keys: ['K K', 'Q,Q']
+   exclude_field: true
+
+ - name: no Conf KK
+   type: 'generic'
+   comment: 'Remove components with K K and Q,Q in config'
+   keys: ['K K', 'Q,Q']
+   exclude_config: true
+   config_separators: ''
+   config_field: BB
+
+outputs:
+  - name: 'empty_val'
+    comment: "BoM no empty val"
+    type: bom
+    dir: BoM
+    options:
+      output: 'empty_val.csv'
+      use_alt: true
+      exclude_filter: 'empty val'
+
+  - name: 'by_prefix'
+    comment: "BoM no R1 C*"
+    type: bom
+    dir: BoM
+    options:
+      output: 'by_prefix.csv'
+      use_alt: true
+      exclude_filter: 'by prefix'
+
+  - name: 'no_KK'
+    comment: "BoM no K K/Q,Q"
+    type: bom
+    dir: BoM
+    options:
+      output: 'no_kk.csv'
+      use_alt: true
+      exclude_filter: 'no_KK_Q,Q'
+
+  - name: 'no conf KK'
+    comment: "BoM no K K/Q,Q in config"
+    type: bom
+    dir: BoM
+    options:
+      output: 'no_conf_kk.csv'
+      use_alt: true
+      exclude_filter: 'no Conf KK'
+
+  - name: 'no_by_prefix'
+    comment: "BoM R1 C*"
+    type: bom
+    dir: BoM
+    options:
+      output: 'no_by_prefix.csv'
+      use_alt: true
+      exclude_filter: '!by prefix'
+
+  - name: 'multi'
+    comment: "BoM C*"
+    type: bom
+    dir: BoM
+    options:
+      output: 'multi.csv'
+      use_alt: true
+      exclude_filter: ['!by prefix', 'empty val']
+

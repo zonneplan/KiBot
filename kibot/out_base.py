@@ -3,7 +3,8 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from .reg_out import RegOutput
+from .registrable import RegOutput
+from .optionable import Optionable
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -11,8 +12,6 @@ logger = log.get_logger(__name__)
 
 
 class BaseOutput(RegOutput):
-    _registered = {}
-
     def __init__(self):
         super().__init__()
         with document:
@@ -30,9 +29,6 @@ class BaseOutput(RegOutput):
     @staticmethod
     def attr2longopt(attr):
         return '--'+attr.replace('_', '-')
-
-    def __str__(self):
-        return "'{}' ({}) [{}]".format(self.comment, self.name, self.type)
 
     def is_sch(self):
         """ True for outputs that works on the schematic """
@@ -52,3 +48,19 @@ class BaseOutput(RegOutput):
 
     def run(self, output_dir, board):
         self.options.run(output_dir, board)
+
+
+class BoMRegex(Optionable):
+    """ Implements the pair column/regex """
+    def __init__(self):
+        super().__init__()
+        self._unkown_is_error = True
+        with document:
+            self.column = ''
+            """ Name of the column to apply the regular expression """
+            self.regex = ''
+            """ Regular expression to match """
+            self.field = None
+            """ {column} """
+            self.regexp = None
+            """ {regex} """

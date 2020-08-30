@@ -122,6 +122,28 @@ def output_class(tree, **kw):
     return _do_wrap_class_register(tree, 'out_base', 'BaseOutput')
 
 
+def variant_class(tree, **kw):
+    """A decorator to wrap a class with:
+
+       from .var_base import BaseVariant
+       ... Class definition
+       BaseVariant.register(CLASS_NAME_LOWER_STRING, CLASS_NAME)
+
+       Allowing to register the class as a variant. """
+    return _do_wrap_class_register(tree, 'var_base', 'BaseVariant')
+
+
+def filter_class(tree, **kw):
+    """A decorator to wrap a class with:
+
+       from .fil_base import BaseFilter
+       ... Class definition
+       BaseFilter.register(CLASS_NAME_LOWER_STRING, CLASS_NAME)
+
+       Allowing to register the class as a variant. """
+    return _do_wrap_class_register(tree, 'fil_base', 'BaseFilter')
+
+
 def pre_class(tree, **kw):
     """A decorator to wrap a class with:
 

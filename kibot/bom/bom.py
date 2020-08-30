@@ -14,33 +14,10 @@ from copy import deepcopy
 from .units import compare_values, comp_match
 from .bom_writer import write_bom
 from .columnlist import ColumnList
+from ..misc import DNF
 from .. import log
 
 logger = log.get_logger(__name__)
-# Supported values for "do not fit"
-DNF = {
-    "dnf": 1,
-    "dnl": 1,
-    "dnp": 1,
-    "do not fit": 1,
-    "do not place": 1,
-    "do not load": 1,
-    "nofit": 1,
-    "nostuff": 1,
-    "noplace": 1,
-    "noload": 1,
-    "not fitted": 1,
-    "not loaded": 1,
-    "not placed": 1,
-    "no stuff": 1,
-}
-# String matches for marking a component as "do not change" or "fixed"
-DNC = {
-    "dnc": 1,
-    "do not change": 1,
-    "no change": 1,
-    "fixed": 1
-}
 # RV == Resistor Variable or Varistor
 # RN == Resistor 'N'(Pack)
 # RT == Thermistor
@@ -49,8 +26,15 @@ RLC_PREFIX = {'R': 1, 'L': 1, 'C': 1, 'RV': 1, 'RN': 1, 'RT': 1}
 
 def compare_value(c1, c2, cfg):
     """ Compare the value of two components """
+    c1_value = c1.value.strip().lower()
+    c2_value = c2.value.strip().lower()
+    # '~' is the same as empty for KiCad
+    if c1_value == '~':
+        c1_value = ''
+    if c2_value == '~':
+        c2_value = ''
     # Simple string comparison
-    if c1.value.lower() == c2.value.lower():
+    if c1_value == c2_value:
         return True
     # Otherwise, perform a more complicated value comparison
     if compare_values(c1, c2):
@@ -286,37 +270,6 @@ class ComponentGroup(object):
         return row
 
 
-def test_reg_exclude(cfg, c):
-    """ Test if this part should be included, based on any regex expressions provided in the preferences """
-    for reg in cfg.exclude_any:
-        field_value = c.get_field_value(reg.column)
-        if reg.regex.search(field_value):
-            if cfg.debug_level > 1:
-                logger.debug("Excluding '{ref}': Field '{field}' ({value}) matched '{re}'".format(
-                             ref=c.ref, field=reg.column, value=field_value, re=reg.regex))
-            # Found a match
-            return True
-    # Default, could not find any matches
-    return False
-
-
-def test_reg_include(cfg, c):
-    """ Reject components that doesn't match the provided regex.
-        So we include only the components that matches any of the regexs. """
-    if not cfg.include_only:  # Nothing to match against, means include all
-        return True
-    for reg in cfg.include_only:
-        field_value = c.get_field_value(reg.column)
-        if reg.regex.search(field_value):
-            if cfg.debug_level > 1:
-                logger.debug("Including '{ref}': Field '{field}' ({value}) matched '{re}'".format(
-                             ref=c.ref, field=reg.column, value=field_value, re=reg.regex))
-                # Found a match
-                return True
-    # Default, could not find a match
-    return False
-
-
 def get_value_sort(comp):
     """ Try to better sort R, L and C components """
     res = comp.value_sort
@@ -348,12 +301,8 @@ def group_components(cfg, components):
     groups = []
     # Iterate through each component, and test whether a group for these already exists
     for c in components:
-        if cfg.test_regex:
-            # Skip components if they do not meet regex requirements
-            if not test_reg_include(cfg, c):
-                continue
-            if test_reg_exclude(cfg, c):
-                continue
+        if not c.in_bom:  # Skip components marked as excluded from BoM
+            continue
         # Cache the value used to sort
         if c.ref_prefix in RLC_PREFIX and c.value.lower() not in DNF:
             c.value_sort = comp_match(c.value, c.ref_prefix)
@@ -412,88 +361,16 @@ def group_components(cfg, components):
     return groups
 
 
-def comp_is_fixed(value, config, variants):
-    """ Determine if a component is FIXED or not.
-        Fixed components shouldn't be replaced without express authorization.
-        value: component value (lowercase).
-        config: content of the 'Config' field (lowercase).
-        variants: list of variants to match. """
-    # Check the value field first
-    if value in DNC:
-        return True
-    # Empty is not fixed
-    if not config:
-        return False
-    # Also support space separated list (simple cases)
-    opts = config.split(" ")
-    for opt in opts:
-        if opt in DNC:
-            return True
-    # Normal separator is ","
-    opts = config.split(",")
-    for opt in opts:
-        if opt in DNC:
-            return True
-    return False
-
-
-def comp_is_fitted(value, config, variants):
-    """ Determine if a component will be or not.
-        value: component value (lowercase).
-        config: content of the 'Config' field (lowercase).
-        variants: list of variants to match. """
-    # Check the value field first
-    if value in DNF:
-        return False
-    # Empty value means part is fitted
-    if not config:
-        return True
-    # Also support space separated list (simple cases)
-    opts = config.split(" ")
-    for opt in opts:
-        if opt in DNF:
-            return False
-    # Variants logic
-    opts = config.split(",")
-    # Only fit for ...
-    exclusive = False
-    for opt in opts:
-        opt = opt.strip()
-        # Any option containing a DNF is not fitted
-        if opt in DNF:
-            return False
-        # Options that start with '-' are explicitly removed from certain configurations
-        if opt.startswith("-") and opt[1:] in variants:
-            return False
-        # Options that start with '+' are fitted only for certain configurations
-        if opt.startswith("+"):
-            exclusive = True
-            if opt[1:] in variants:
-                return True
-    # No match
-    return not exclusive
-
-
 def do_bom(file_name, ext, comps, cfg):
-    # Make the config field name lowercase
-    cfg.fit_field = cfg.fit_field.lower()
-    f_config = cfg.fit_field
-    # Make the variants lowercase
-    variants = [v.lower() for v in cfg.variant]
-    # Solve `fixed` and `fitted` attributes for all components
+    # Apply all the filters
     for c in comps:
-        value = c.value.lower()
-        config = c.get_field_value(f_config).lower()
-        c.fitted = comp_is_fitted(value, config, variants)
-        if cfg.debug_level > 2:
-            logger.debug('ref: {} value: {} config: {} variants: {} -> fitted {}'.
-                         format(c.ref, value, config, variants, c.fitted))
-        c.fixed = comp_is_fixed(value, config, variants)
+        c.in_bom = cfg.exclude_filter.filter(c)
+        c.fitted = cfg.dnf_filter.filter(c)
+        c.fixed = cfg.dnc_filter.filter(c)
+    # Apply the variant
+    cfg.variant.filter(comps)
     # Group components according to group_fields
     groups = group_components(cfg, comps)
-    # Give a name to empty variant
-    if not variants:
-        cfg.variant = ['default']
     # Create the BoM
     logger.debug("Saving BOM File: "+file_name)
     write_bom(file_name, ext, groups, cfg.columns, cfg)

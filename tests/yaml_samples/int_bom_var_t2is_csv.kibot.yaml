@@ -1,0 +1,27 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+ - name: 'no R1'
+   type: 'generic'
+   comment: 'Remove components by prefix'
+   exclude_refs:
+     - R1
+
+variants:
+  - name: 'test'
+    comment: 'Test variant'
+    type: ibom
+    file_id: '_(test)'
+    variants_blacklist: T1
+
+outputs:
+  - name: 'bom filtered'
+    comment: "Bill of Materials test, no R1"
+    type: bom
+    dir: BoM
+    options:
+      exclude_filter: no R1
+      variant: test
+      output: filter_R1.csv

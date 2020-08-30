@@ -1,0 +1,11 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_internal2'
+    comment: "Bill of Materials in CSV format (2)"
+    type: bom
+    dir: BoM
+    options:
+      variant: foobar

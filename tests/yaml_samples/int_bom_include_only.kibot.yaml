@@ -2,12 +2,18 @@
 kibot:
   version: 1
 
+filters:
+ - name: 'include_only'
+   type: 'generic'
+   comment: 'Test for include_only'
+   include_only:
+     - column: 'Footprint'
+       regex: '0805'
+
 outputs:
   - name: 'bom_internal'
     comment: "Bill of Materials in CSV format"
     type: bom
     dir: BoM
     options:
-      include_only:
-        - column: 'Footprint'
-          regex: '0805'
+      exclude_filter: 'include_only'
