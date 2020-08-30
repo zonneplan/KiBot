@@ -559,7 +559,7 @@ class LibComponent(object):
             dr.write(f)
             if cross:
                 xm, ym, xM, yM, ok = dr.get_rect()
-                logger.debug([dr, xm, ym, xM, yM, ok])
+                # logger.debug([dr, xm, ym, xM, yM, ok])
                 if ok:
                     ok_t = True
                     xmt = min(xm, xmt)
@@ -1390,5 +1390,8 @@ class Schematic(object):
             f.write('EESchema-LIBRARY Version 2.4\n')
             f.write('#encoding utf-8\n')
             for k, v in self.comps_data.items():
-                v.write(f, k, cross=cross)
+                if v:
+                    v.write(f, k, cross=cross)
+                else:
+                    logger.warning('Missing component `{}`'.format(k))
             f.write('#\n#End Library\n')
