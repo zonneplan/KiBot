@@ -44,10 +44,10 @@ class NotFilter(Registrable):
         self.name = filter.name
         self.type = '!'+filter.type
         self.comment = filter.comment
-        self.filter = filter
+        self._filter = filter
 
     def filter(self, comp):
-        return not self.filter(comp)
+        return not self._filter.filter(comp)
 
 
 class BaseFilter(RegFilter):
@@ -63,23 +63,23 @@ class BaseFilter(RegFilter):
             """ A comment for documentation purposes """
 
     @staticmethod
-    def solve_filter(name, def_key, def_real, creator, target_name):
+    def solve_filter(names, def_key, def_real, creator, target_name):
         """ Name can be:
             - A class, meaning we have to use a default.
             - A string, the name of a filter.
             - A list of strings, the name of 1 or more filters.
             If any of the names matches def_key we call creator asking to create the filter.
             If def_real is not None we pass this name to creator. """
-        if isinstance(name, type):
+        if isinstance(names, type):
             # Nothing specified, use the default
             names = [def_key]
-        elif isinstance(name, str):
+        elif isinstance(names, str):
             # User provided, but only one, make a list
-            names = [name]
+            names = [names]
         # Here we should have a list of strings
         filters = []
         for name in names:
-            if name[0] == '!':
+            if name and name[0] == '!':
                 invert = True
                 name = name[1:]
             else:
