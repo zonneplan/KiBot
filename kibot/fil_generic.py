@@ -21,8 +21,8 @@ logger = log.get_logger(__name__)
 class DNFList(Optionable):
     _default = DNF
 
-    def __init__(self):
-        super().__init__()
+#     def __init__(self):
+#         super().__init__()
 
 
 @filter_class
