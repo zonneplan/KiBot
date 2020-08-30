@@ -26,8 +26,15 @@ RLC_PREFIX = {'R': 1, 'L': 1, 'C': 1, 'RV': 1, 'RN': 1, 'RT': 1}
 
 def compare_value(c1, c2, cfg):
     """ Compare the value of two components """
+    c1_value = c1.value.strip().lower()
+    c2_value = c2.value.strip().lower()
+    # '~' is the same as empty for KiCad
+    if c1_value == '~':
+        c1_value = ''
+    if c2_value == '~':
+        c2_value = ''
     # Simple string comparison
-    if c1.value.lower() == c2.value.lower():
+    if c1_value == c2_value:
         return True
     # Otherwise, perform a more complicated value comparison
     if compare_values(c1, c2):
