@@ -157,6 +157,9 @@ def load_sch():
         GS.sch.load_libs(GS.sch_file)
         if GS.debug_level > 1:
             logger.debug('Schematic dependencies: '+str(GS.sch.get_files()))
+        # Testing 1, 2, 3 ...
+        GS.sch.gen_lib('test.lib')
+        GS.sch.gen_lib('test_cross.lib', cross=True)
     except SchFileError as e:
         trace_dump()
         logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))

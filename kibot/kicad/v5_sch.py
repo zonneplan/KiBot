@@ -140,6 +140,19 @@ class LibComponentField(object):
             field.name = ['Reference', 'Value', 'Footprint', 'Datasheet'][field.number]
         return field
 
+    def write(self, f):
+        s = 'F'+str(self.number)
+        s += ' "{}" {} {} {} '.format(self.value, self.x, self.y, self.size)
+        s += 'H' if self.horizontal else 'V'
+        s += ' '
+        s += 'V' if self.visible else 'I'
+        s += ' '+self.hjustify+' '+self.vjustify
+        s += 'I' if self.italic else 'N'
+        s += 'B' if self.bold else 'N'
+        if self.number > 3:
+            s += ' "'+self.name+'"'
+        f.write(s+'\n')
+
 
 class DrawPoligon(object):
     pol_re = re.compile(r'P\s+(\d+)\s+'     # 0 Number of points
@@ -168,8 +181,29 @@ class DrawPoligon(object):
         coords = _split_space(g[4])
         if len(coords) != 2*pol.points:
             logger.warning('Expected {} coordinates and got {} in poligon'.format(2*pol.points, len(coords)))
-        pol.coords = coords
+            pol.points = int(len(coords)/2)
+        pol.coords = [int(c) for c in coords]
         return pol
+
+    def write(self, f):
+        f.write('P {} {} {} {}'.format(self.points, self.sub_part, self.convert, self.thickness))
+        for p in self.coords:
+            f.write(' '+str(p))
+        f.write(' '+self.fill+'\n')
+
+    def get_rect(self):
+        if not self.points:
+            return 0, 0, 0, 0, False
+        xm = xM = self.coords[0]
+        ym = yM = self.coords[1]
+        for i in range(1, self.points):
+            x = self.coords[i*2]
+            y = self.coords[i*2+1]
+            xm = min(x, xm)
+            xM = max(x, xM)
+            ym = min(y, ym)
+            yM = max(y, yM)
+        return xm, ym, xM, yM, True
 
 
 class DrawRectangle(object):
@@ -204,6 +238,17 @@ class DrawRectangle(object):
         rec.fill = g[7]
         return rec
 
+    def write(self, f):
+        f.write('S {} {} {} {}'.format(self.start_x, self.start_y, self.end_x, self.end_y))
+        f.write(' {} {} {} {}\n'.format(self.sub_part, self.convert, self.thickness, self.fill))
+
+    def get_rect(self):
+        xm = min(self.start_x, self.end_x)
+        ym = min(self.start_y, self.end_y)
+        xM = max(self.start_x, self.end_x)
+        yM = max(self.start_y, self.end_y)
+        return xm, ym, xM, yM, True
+
 
 class DrawCircle(object):
     cir_re = re.compile(r'C\s+'
@@ -234,6 +279,17 @@ class DrawCircle(object):
         cir.thickness = int(g[5])
         cir.fill = g[6]
         return cir
+
+    def write(self, f):
+        f.write('C {} {} {}'.format(self.pos_x, self.pos_y, self.radius))
+        f.write(' {} {} {} {}\n'.format(self.sub_part, self.convert, self.thickness, self.fill))
+
+    def get_rect(self):
+        xm = self.pos_x-self.radius
+        ym = self.pos_y-self.radius
+        xM = self.pos_x+self.radius
+        yM = self.pos_y+self.radius
+        return xm, ym, xM, yM, True
 
 
 class DrawArc(object):
@@ -278,6 +334,19 @@ class DrawArc(object):
         arc.end_y = int(g[12])
         return arc
 
+    def write(self, f):
+        f.write('A {} {} {}'.format(self.pos_x, self.pos_y, self.radius))
+        f.write(' {} {}'.format(self.start, self.end))
+        f.write(' {} {} {} {}'.format(self.sub_part, self.convert, self.thickness, self.fill))
+        f.write(' {} {} {} {}\n'.format(self.start_x, self.start_y, self.end_x, self.end_y))
+
+    def get_rect(self):
+        xm = self.pos_x-self.radius
+        ym = self.pos_y-self.radius
+        xM = self.pos_x+self.radius
+        yM = self.pos_y+self.radius
+        return xm, ym, xM, yM, True
+
 
 class DrawText(object):
     txt_re = re.compile(r'T\s+'
@@ -305,7 +374,7 @@ class DrawText(object):
             return None
         txt = DrawText()
         g = m.groups()
-        txt.vertical = g[0] != '0'
+        txt.orientation = int(g[0])
         txt.pos_x = int(g[1])
         txt.pos_y = int(g[2])
         txt.size = int(g[3])
@@ -318,6 +387,14 @@ class DrawText(object):
         txt.hjustify = g[10]
         txt.vjustify = g[11]
         return txt
+
+    def write(self, f):
+        f.write('T {} {} {} {}'.format(self.orientation, self.pos_x, self.pos_y, self.radius))
+        f.write(' {} {} {} "{}"'.format(self.type, self.sub_part, self.convert, self.text))
+        f.write(' {} {} {} {}\n" '.format(['Normal', 'Italic'][self.italic], int(self.bold), self.hjustify, self.vjustify))
+
+    def get_rect(self):
+        return 0, 0, 0, 0, False
 
 
 class Pin(object):
@@ -360,6 +437,25 @@ class Pin(object):
         pin.gtype = g[11]
         return pin
 
+    def write(self, f):
+        f.write('X {} {} {} {}'.format(self.name, self.number, self.pos_x, self.pos_y))
+        f.write(' {} {} {} {}'.format(self.len, self.dir, self.size_name, self.size_num))
+        f.write(' {} {} {}'.format(self.sub_part, self.convert, self.type))
+        if self.gtype:
+            f.write(' '+self.gtype)
+        f.write('\n')
+
+    def get_rect(self):
+        if self.dir == 'U':
+            return self.pos_x, self.pos_y, self.pos_x, self.pos_y+self.len, True
+        if self.dir == 'D':
+            return self.pos_x, self.pos_y-self.len, self.pos_x, self.pos_y, True
+        if self.dir == 'L':
+            return self.pos_x, self.pos_y, self.pos_x+self.len, self.pos_y, True
+        if self.dir == 'R':
+            return self.pos_x-self.len, self.pos_y, self.pos_x, self.pos_y, True
+        return 0, 0, 0, 0, False
+
 
 class LibComponent(object):
     def_re = re.compile(r'DEF\s+'
@@ -393,7 +489,7 @@ class LibComponent(object):
                 self.vname = True
             else:
                 self.vname = False
-            if GS.debug_level > 1:
+            if GS.debug_level > 2:
                 logger.debug('- Loading component {} from {}'.format(self.name, lib_name))
         else:
             logger.warning('Failed to load component definition: `{}`'.format(line))
@@ -438,6 +534,53 @@ class LibComponent(object):
                     line = f.get_line()
             line = f.get_line()
 
+    def write(self, f, id, cross=False):
+        id = id.replace(':', '_')
+        if self.vname:
+            id = '~'+id
+        f.write('#\n# '+id+'\n#\n')
+        f.write('DEF {} {} {} {} {} {} {} {} {}\n'.
+                format(id, self.ref_prefix, self.unused, self.text_offset, ['N', 'Y'][self.draw_pinnumber],
+                       ['N', 'Y'][self.draw_pinname], self.unit_count, ['F', 'L'][self.units_locked],
+                       ['N', 'P'][self.is_power]))
+        for field in self.fields:
+            field.write(f)
+        f.write('$FPLIST\n')
+        for fp in self.fp_list:
+            f.write(' '+fp+'\n')
+        f.write('$ENDFPLIST\n')
+        if self.alias:
+            f.write('ALIAS '+' '.join(self.alias)+'\n')
+        f.write('DRAW\n')
+        xmt = ymt = 1e6
+        xMt = yMt = -1e6
+        ok_t = False
+        for dr in self.draw:
+            dr.write(f)
+            if cross:
+                xm, ym, xM, yM, ok = dr.get_rect()
+                logger.debug([dr, xm, ym, xM, yM, ok])
+                if ok:
+                    ok_t = True
+                    xmt = min(xm, xmt)
+                    ymt = min(ym, ymt)
+                    xMt = max(xM, xMt)
+                    yMt = max(yM, yMt)
+        if ok_t:
+            # Cross this component using 2 lines
+            o = DrawPoligon()
+            o.points = 2
+            o.sub_part = o.convert = 0
+            o.thickness = 30
+            o.fill = 'N'
+            o.coords = [xmt, ymt, xMt, yMt]
+            o.write(f)
+            o.coords = [xmt, yMt, xMt, ymt]
+            o.write(f)
+        f.write('ENDDRAW\n')
+        f.write('ENDDEF\n')
+
+
 #     def __repr__(self):
 #         s = 'Component('+self.name
 #         if self.desc:
@@ -453,7 +596,20 @@ class SymLib(object):
         self.comps = OrderedDict()
         self.alias = {}
 
-    def load(self, file):
+    @staticmethod
+    def _check_add(o, id, lib, needed):
+        name = lib+':'+id
+        if name in needed:
+            needed[name] = o
+            return True
+        else:
+            name = 'None:'+id
+            if name in needed:
+                needed[name] = o
+                return True
+        return False
+
+    def load(self, file, lib_alias, needed):
         """ Populates the class, file must exist """
         logger.debug('Loading library `{}`'.format(file))
         with open(file, 'rt') as fh:
@@ -466,10 +622,13 @@ class SymLib(object):
                 if line.startswith('DEF'):
                     o = LibComponent(line, f, file)
                     if o.name:
-                        self.comps[o.name] = o
+                        # Only add components we need
+                        if self._check_add(o, o.name, lib_alias, needed):
+                            self.comps[o.name] = o
                         if o.alias:
                             for a in o.alias:
-                                self.alias[a] = o
+                                if self._check_add(o, a, lib_alias, needed):
+                                    self.alias[a] = o
                 else:
                     raise SchLibError('Unknown library entry', line, f)
                 line = f.get_line()
@@ -1183,13 +1342,17 @@ class Schematic(object):
                     logger.debug('Using `{}` for library alias `{}`'.format(alias.uri, k))
             else:
                 logger.warning('Missing library `{}`'.format(k))
+        # Create a hash with all the used components
+        self.comps_data = {'{}:{}'.format(c.lib, c.name): None for c in self.components}
+        if GS.debug_level > 1:
+            logger.debug("Components before loading: "+str(self.comps_data))
         # Load the libraries and descriptions
         for k, v in self.libs.items():
             if v:
                 # Load library
                 if os.path.isfile(v):
                     o = SymLib()
-                    o.load(v)
+                    o.load(v, k, self.comps_data)
                 else:
                     logger.warning('Missing library `{}` ({})'.format(v, k))
                     o = None
@@ -1206,6 +1369,8 @@ class Schematic(object):
                 # Mark as None if we don't know the file
                 self.lib_comps[k] = None
                 self.dcms[k] = None
+        if GS.debug_level > 1:
+            logger.debug("Components after loading: "+str(self.comps_data))
         # Join the descriptions with the components
         for k in self.libs.keys():
             lib = self.lib_comps[k]
@@ -1213,7 +1378,17 @@ class Schematic(object):
             if lib and dcm:
                 for name, comp in lib.comps.items():
                     comp.dcm = dcm.comps.get(name)
-                    if not comp.dcm:
+                    if not comp.dcm and k+':'+name in self.comps_data:
                         logger.warning('Missing doc-lib entry for {}:{}'.format(k, name))
         # Transfer the descriptions to the instances of the components
         self.walk_components(self.apply_dcm, self)
+
+    def gen_lib(self, name, cross=False):
+        """ Dumps all the used components to one library.
+            This is like the KiCad cache. """
+        with open(name, 'wt') as f:
+            f.write('EESchema-LIBRARY Version 2.4\n')
+            f.write('#encoding utf-8\n')
+            for k, v in self.comps_data.items():
+                v.write(f, k, cross=cross)
+            f.write('#\n#End Library\n')
