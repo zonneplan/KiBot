@@ -529,3 +529,52 @@ def test_error_int_bom_logo_format():
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Only PNG images are supported for the logo")
     ctx.clean_up()
+
+
+def test_error_var_no_name():
+    ctx = context.TestContextSCH('test_error_var_no_name', 'links', 'error_var_no_name', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Variant needs a name in:")
+    ctx.clean_up()
+
+
+def test_error_var_empty_name():
+    ctx = context.TestContextSCH('test_error_var_empty_name', 'links', 'error_var_empty_name', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Variant needs a name in:")
+    ctx.clean_up()
+
+
+def test_error_var_wrong_type():
+    ctx = context.TestContextSCH('test_error_var_wrong_type', 'links', 'error_var_wrong_type', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Unknown variant type")
+    ctx.clean_up()
+
+
+def test_error_var_no_type():
+    ctx = context.TestContextSCH('test_error_var_no_type', 'links', 'error_var_no_type', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Variant (.*) needs a type")
+    ctx.clean_up()
+
+
+def test_error_var_no_list():
+    ctx = context.TestContextSCH('test_error_var_no_list', 'links', 'error_var_no_list', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(".?variants.? must be a list")
+    ctx.clean_up()
+
+
+def test_error_fil_no_list():
+    ctx = context.TestContextSCH('test_error_fil_no_list', 'links', 'error_fil_no_list', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(".?filters.? must be a list")
+    ctx.clean_up()
+
+
+def test_error_fil_unknown():
+    ctx = context.TestContextSCH('test_error_fil_unknown', 'links', 'error_fil_unknown', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Unknown filter (.*) used for ")
+    ctx.clean_up()

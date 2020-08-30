@@ -31,9 +31,7 @@ Tests of Internal BoM files
 - No XLSX support
 
 Missing:
-- Variants
 - number_boards
-
 - XLSX/HTML colors (for real)
 
 For debug information use:
@@ -1212,6 +1210,18 @@ def test_int_bom_variant_t2():
     ctx.clean_up()
 
 
+def test_int_bom_variant_t2s():
+    prj = 'kibom-variant_2'
+    ctx = context.TestContextSCH('test_int_bom_variant_t2s', prj, 'int_bom_var_t2s_csv', BOM_DIR)
+    ctx.run(extra_debug=True)
+    rows, header, info = ctx.load_csv(prj+'-bom_(dummy).csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    rows, header, info = ctx.load_csv(prj+'-bom_(dummy2).csv')
+    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    ctx.clean_up()
+
+
 def test_int_bom_variant_t2i():
     prj = 'kibom-variant_3'
     ctx = context.TestContextSCH('test_int_bom_variant_t2i', prj, 'int_bom_var_t2i_csv', BOM_DIR)
@@ -1225,4 +1235,51 @@ def test_int_bom_variant_t2i():
     check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
     rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
     check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+    ctx.clean_up()
+
+
+def test_int_bom_variant_t2is():
+    prj = 'kibom-variant_3'
+    ctx = context.TestContextSCH('test_int_bom_variant_t2is', prj, 'int_bom_var_t2is_csv', BOM_DIR)
+    ctx.run(extra_debug=True)
+    rows, header, info = ctx.load_csv('filter_R1.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R1'], ['C1', 'C2'])
+    ctx.clean_up()
+
+
+def test_int_bom_wrong_variant():
+    ctx = context.TestContextSCH('test_int_bom_wrong_variant', 'links', 'int_bom_wrong_variant', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Unknown variant name")
+    ctx.clean_up()
+
+
+def test_int_bom_fil_dummy():
+    prj = 'kibom-test-4'
+    ctx = context.TestContextSCH('test_int_bom_fil_dummy', prj, 'int_bom_fil_dummy', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 4, None, ['R1-R2', 'R3-R4', 'R5-R6', 'C1-C2'])
+    ctx.clean_up()
+
+
+def test_int_bom_fil_1():
+    prj = 'kibom-test-4'
+    ctx = context.TestContextSCH('test_int_bom_fil_1', prj, 'int_bom_fil_1', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv('empty_val.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 3, None, ['R3-R4', 'R5-R6', 'C1-C2'])
+    rows, header, info = ctx.load_csv('by_prefix.csv')
+    check_kibom_test_netlist(rows, ref_column, 3, None, ['R2', 'R3-R4', 'R5-R6'])
+    rows, header, info = ctx.load_csv('no_kk.csv')
+    check_kibom_test_netlist(rows, ref_column, 3, None, ['R1-R2', 'R5-R6', 'C1-C2'])
+    rows, header, info = ctx.load_csv('no_conf_kk.csv')
+    check_kibom_test_netlist(rows, ref_column, 3, None, ['R1-R2', 'R3-R4', 'C1-C2'])
+    rows, header, info = ctx.load_csv('no_by_prefix.csv')
+    check_kibom_test_netlist(rows, ref_column, 2, None, ['R1', 'C1-C2'])
+    rows, header, info = ctx.load_csv('multi.csv')
+    check_kibom_test_netlist(rows, ref_column, 1, None, ['C1-C2'])
     ctx.clean_up()

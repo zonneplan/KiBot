@@ -1,0 +1,14 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'empty_val'
+    comment: "BoM no empty val"
+    type: bom
+    dir: BoM
+    options:
+      output: 'empty_val.csv'
+      use_alt: true
+      exclude_filter: 'empty val'
+

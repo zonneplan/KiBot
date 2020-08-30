@@ -19,6 +19,7 @@ variants:
     comment: 'Default variant'
     type: ibom
     variants_blacklist: T2,T3
+    variants_whitelist: ''
 
   - name: 'default2'
     comment: 'Default variant 2'
