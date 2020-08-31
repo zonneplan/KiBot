@@ -535,6 +535,7 @@ class LibComponent(object):
             line = f.get_line()
 
     def write(self, f, id, cross=False):
+        """ cross is used to cross the component (DNF) """
         id = id.replace(':', '_')
         if self.vname:
             id = '~'+id
@@ -552,31 +553,39 @@ class LibComponent(object):
         if self.alias:
             f.write('ALIAS '+' '.join(self.alias)+'\n')
         f.write('DRAW\n')
-        xmt = ymt = 1e6
-        xMt = yMt = -1e6
-        ok_t = False
         for dr in self.draw:
             dr.write(f)
-            if cross:
-                xm, ym, xM, yM, ok = dr.get_rect()
-                # logger.debug([dr, xm, ym, xM, yM, ok])
-                if ok:
-                    ok_t = True
-                    xmt = min(xm, xmt)
-                    ymt = min(ym, ymt)
-                    xMt = max(xM, xMt)
-                    yMt = max(yM, yMt)
-        if ok_t:
-            # Cross this component using 2 lines
-            o = DrawPoligon()
-            o.points = 2
-            o.sub_part = o.convert = 0
-            o.thickness = 30
-            o.fill = 'N'
-            o.coords = [xmt, ymt, xMt, yMt]
-            o.write(f)
-            o.coords = [xmt, yMt, xMt, ymt]
-            o.write(f)
+        if cross:
+            # Generated the crossed stuff
+            # logger.debug('Computing size for {}:'.format(id))
+            for unit in range(self.unit_count):
+                xmt = ymt = 1e6
+                xMt = yMt = -1e6
+                ok_t = False
+                logger.debug("Unit "+str(unit+1))
+                for dr in self.draw:
+                    if dr.sub_part != unit + 1 and dr.sub_part != 0:
+                        continue
+                    xm, ym, xM, yM, ok = dr.get_rect()
+                    # logger.debug([dr, xm, ym, xM, yM, ok])
+                    if ok:
+                        ok_t = True
+                        xmt = min(xm, xmt)
+                        ymt = min(ym, ymt)
+                        xMt = max(xM, xMt)
+                        yMt = max(yM, yMt)
+                if ok_t:
+                    # Cross this component using 2 lines
+                    o = DrawPoligon()
+                    o.points = 2
+                    o.sub_part = unit+1
+                    o.convert = 0
+                    o.thickness = 30
+                    o.fill = 'N'
+                    o.coords = [xmt, ymt, xMt, yMt]
+                    o.write(f)
+                    o.coords = [xmt, yMt, xMt, ymt]
+                    o.write(f)
         f.write('ENDDRAW\n')
         f.write('ENDDEF\n')
 
