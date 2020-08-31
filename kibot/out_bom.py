@@ -12,6 +12,7 @@ from .gs import GS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
+from .misc import IFILL_MECHANICAL
 from .macros import macros, document, output_class  # noqa: F401
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
@@ -174,17 +175,6 @@ class GroupFields(Optionable):
 
 
 class BoMOptions(BaseOptions):
-    DEFAULT_EXCLUDE = [{'column': ColumnList.COL_REFERENCE, 'regex': '^TP[0-9]*'},
-                       {'column': ColumnList.COL_REFERENCE, 'regex': '^FID'},
-                       {'column': ColumnList.COL_PART, 'regex': 'mount.*hole'},
-                       {'column': ColumnList.COL_PART, 'regex': 'solder.*bridge'},
-                       {'column': ColumnList.COL_PART, 'regex': 'solder.*jump'},
-                       {'column': ColumnList.COL_PART, 'regex': 'test.*point'},
-                       {'column': ColumnList.COL_FP, 'regex': 'test.*point'},
-                       {'column': ColumnList.COL_FP, 'regex': 'mount.*hole'},
-                       {'column': ColumnList.COL_FP, 'regex': 'fiducial'},
-                       ]
-
     def __init__(self):
         with document:
             self.number = 1
@@ -282,31 +272,7 @@ class BoMOptions(BaseOptions):
             self.variant.config_field = self.fit_field
             self.variant.variant = []
             self.variant.name = 'default'
-
-    @staticmethod
-    def _create_mechanical(name):
-        o_tree = {'name': name}
-        o_tree['type'] = 'generic'
-        o_tree['comment'] = 'Internal default mechanical filter'
-        o_tree['exclude_any'] = BoMOptions.DEFAULT_EXCLUDE
-        logger.debug('Creating internal filter: '+str(o_tree))
-        return o_tree
-
-    @staticmethod
-    def _create_kibom_dnx(name):
-        type = name[7:10]
-        subtype = name[11:]
-        o_tree = {'name': name}
-        o_tree['type'] = 'generic'
-        o_tree['comment'] = 'Internal KiBoM '+type.upper()+' filter ('+subtype+')'
-        o_tree['config_field'] = subtype
-        o_tree['exclude_value'] = True
-        o_tree['exclude_config'] = True
-        o_tree['keys'] = type+'_list'
-        if type[-1] == 'c':
-            o_tree['invert'] = True
-        logger.debug('Creating internal filter: '+str(o_tree))
-        return o_tree
+            self.variant.config()  # Fill or adjust any detail
 
     def config(self):
         super().config()
@@ -335,15 +301,10 @@ class BoMOptions(BaseOptions):
         # component_aliases
         if isinstance(self.component_aliases, type):
             self.component_aliases = DEFAULT_ALIASES
-        # exclude_filter
-        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, '_mechanical', None,
-                                                      BoMOptions._create_mechanical, 'exclude_filter')
-        # dnf_filter
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, '_kibom_dnf', '_kibom_dnf_'+self.fit_field,
-                                                  BoMOptions._create_kibom_dnx, 'dnf_filter')
-        # dnc_filter
-        self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, '_kibom_dnc', '_kibom_dnc_'+self.fit_field,
-                                                  BoMOptions._create_kibom_dnx, 'dnc_filter')
+        # Filters
+        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', IFILL_MECHANICAL)
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter', '_kibom_dnf_'+self.fit_field)
+        self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter', '_kibom_dnc_'+self.fit_field)
         # Variants, make it an object
         self._normalize_variant()
         # Field names are handled in lowercase
