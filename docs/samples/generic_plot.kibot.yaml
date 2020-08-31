@@ -258,8 +258,8 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
-      # [string='%f-%i.%x'] name for the gerber job file (%i='job', %x='gbrjob')
-      gerber_job_file: '%f-%i.%x'
+      # [string='%f-%i%v.%x'] name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options
+      gerber_job_file: '%f-%i%v.%x'
       # [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6
       gerber_precision: 4.6
       # [number=0.1] [0.02,2] line_width for objects without width [mm]
@@ -685,6 +685,17 @@ outputs:
       # Only used to plot pads and tracks
       width_adjust: 0
     layers: all
+
+  # Schematic with variant generator:
+  # This copy isn't intended for development.
+  # Is just a tweaked version of the original where you can look at the results.
+  - name: 'sch_variant_example'
+    comment: 'Creates a copy of the schematic with all the filters and variants applied.'
+    type: 'sch_variant'
+    dir: 'Example/sch_variant_dir'
+    options:
+      # [string=''] Board variant(s) to apply
+      variant: ''
 
   # STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure):
   # This is the most common 3D format for exchange purposes.
