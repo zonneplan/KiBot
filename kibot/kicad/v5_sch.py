@@ -450,9 +450,9 @@ class Pin(object):
             return self.pos_x, self.pos_y, self.pos_x, self.pos_y+self.len, True
         if self.dir == 'D':
             return self.pos_x, self.pos_y-self.len, self.pos_x, self.pos_y, True
-        if self.dir == 'L':
-            return self.pos_x, self.pos_y, self.pos_x+self.len, self.pos_y, True
         if self.dir == 'R':
+            return self.pos_x, self.pos_y, self.pos_x+self.len, self.pos_y, True
+        if self.dir == 'L':
             return self.pos_x-self.len, self.pos_y, self.pos_x, self.pos_y, True
         return 0, 0, 0, 0, False
 
