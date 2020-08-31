@@ -151,7 +151,7 @@ def test_sch_errors_bad_conn():
 
 
 def test_sch_errors_bad_text():
-    setup_ctx('bad_text', 'Malformed text')
+    setup_ctx('bad_text', 'Malformed .?Text.?')
 
 
 def test_sch_errors_bad_wire():
