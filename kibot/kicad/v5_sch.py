@@ -730,6 +730,14 @@ class SchematicField(object):
             field.name = ['Reference', 'Value', 'Footprint', 'Datasheet'][field.number]
         return field
 
+    def write(self, f):
+        f.write('F {} "{}" {}'.format(self.number, self.value, ['V', 'H'][self.horizontal]))
+        f.write(' {} {} {} {}'.format(self.x, self.y, self.size, self.flags))
+        f.write(' {} {}{}{}'.format(self.hjustify, self.vjustify, ['N', 'I'][self.italic], ['N', 'B'][self.bold]))
+        if self.number > 3:
+            f.write(' "{}"'.format(self.name))
+        f.write('\n')
+
 
 class SchematicAltRef():
     def __init__(self):
@@ -757,6 +765,16 @@ class SchematicAltRef():
             logger.warning('Alternative Reference without reference `{}`'.format(line))
         return ar
 
+    def write(self, f):
+        f.write('AR')
+        if self.path:
+            f.write(' Path="{}"'.format(self.path))
+        if self.ref:
+            f.write(' Ref="{}"'.format(self.ref))
+        if self.part:
+            f.write(' Part="{}"'.format(self.part))
+        f.write('\n')
+
 
 class SchematicComponent(object):
     """ Class for a component in the schematic.
@@ -781,6 +799,10 @@ class SchematicComponent(object):
         self.footprint = ''
         self.datasheet = ''
         self.desc = ''
+        # Will be computed
+        self.fitted = True
+        self.in_bom = True
+        self.fixed = False
 
     def get_field_value(self, field):
         field = field.lower()
@@ -968,6 +990,24 @@ class SchematicComponent(object):
         comp._validate()
         return comp
 
+    def write(self, f):
+        # Fake lib to reflect fitted status
+        lib = 'y' if self.fitted else 'n'
+        # Fake name using cache style
+        name = '{}:{}_{}'.format(lib, self.lib, self.name)
+        f.write('$Comp\n')
+        f.write('L {} {}\n'.format(name, self.f_ref))
+        f.write('U {} {} {}\n'.format(self.unit, self.unit2, self.id))
+        f.write('P {} {}\n'.format(self.x, self.y))
+        for ar in self.ar:
+            ar.write(f)
+        for field in self.fields:
+            if field.number >= 0:
+                field.write(f)
+        f.write('\t1 {} {}\n'.format(self.x, self.y))
+        f.write('\t{} {} {} {}\n'.format(self.matrix[0], self.matrix[1], self.matrix[2], self.matrix[3]))
+        f.write('$EndComp\n')
+
 
 class SchematicConnection(object):
     conn_re = re.compile(r'\s*~\s+(-?\d+)\s+(-?\d+)')
@@ -1047,6 +1087,7 @@ class SchematicWire(object):
     ENTRY_WIRE = 3
     ENTRY_BUS = 4
     ENTRIES = {'Wire': ENTRY_WIRE, 'Bus': ENTRY_BUS}
+    NAMES = ['Wire Wire Line', 'Wire Bus Line', 'Wire Notes Line', 'Entry Wire Line', 'Entry Bus Bus']
 
     def __init__(self):
         super().__init__()
@@ -1081,6 +1122,10 @@ class SchematicWire(object):
         wire.ex = int(res[2])
         wire.ey = int(res[3])
         return wire
+
+    def write(self, f):
+        f.write(SchematicWire.NAMES[self.type])
+        f.write('\n\t{} {} {} {}\n'.format(self.x, self.y, self.ex, self.ey))
 
 
 class SchematicBitmap(object):
@@ -1126,6 +1171,18 @@ class SchematicBitmap(object):
             raise SchFileError('Missing end of bitmap', line, f)
         return bmp
 
+    def write(self, f):
+        f.write('$Bitmap\n')
+        f.write('Pos {} {}\n'.format(self.x, self.y))
+        f.write('Scale {}\n'.format(self.scale))
+        f.write('Data')
+        for c, b in enumerate(self.data):
+            if (c % 32) == 0:
+                f.write('\n')
+            f.write('%02X ' % b)
+        f.write('\nEndData\n')
+        f.write('$EndBitmap\n')
+
 
 class SchematicPort(object):
     port_re = re.compile(r'(\d+)\s+"(.*?)"\s+([IOBTU])\s+([RLTB])\s+(-?\d+)\s+(-?\d+)\s+(\d+)$')
@@ -1148,6 +1205,9 @@ class SchematicPort(object):
         port.y = int(res[5])
         port.size = int(res[6])
         return port
+
+    def write(s, f):
+        f.write('F{} "{}" {} {} {} {} {}\n'.format(s.number, s.name, s.form, s.side, s.x, s.y, s.size))
 
 
 class SchematicSheet(object):
@@ -1216,6 +1276,18 @@ class SchematicSheet(object):
             raise SchFileError('Missing sub-sheet file name', sch.name, f)
         return sch
 
+    def write(self, f):
+        # Fake file name
+        file = self.file.replace('/', '_')
+        f.write('$Sheet\n')
+        f.write('S {} {} {} {}\n'.format(self.x, self.y, self.w, self.h))
+        f.write('U {}\n'.format(self.id))
+        f.write('F0 "{}" {}\n'.format(self.name, self.name_size))
+        f.write('F1 "{}" {}\n'.format(file, self.file_size))
+        for label in self.labels:
+            label.write(f)
+        f.write('$EndSheet\n')
+
 
 class Schematic(object):
     def __init__(self):
@@ -1232,8 +1304,8 @@ class Schematic(object):
         self.page_width = m.group(2)
         self.page_height = m.group(3)
         self.sheet = 1
-        self.sheets = 1
-        self.title_block = {}
+        self.nsheets = 1
+        self.title_block = OrderedDict()
         while True:
             line = f.get_line()
             if line.startswith('$EndDescr'):
@@ -1246,7 +1318,7 @@ class Schematic(object):
                 if len(res) != 2:
                     raise SchFileError('Wrong sheet number', line, f)
                 self.sheet = int(res[0])
-                self.sheets = int(res[1])
+                self.nsheets = int(res[1])
             else:
                 m = re.match(r'(\S+)\s+"(.*)"', line)
                 if not m:
@@ -1381,7 +1453,7 @@ class Schematic(object):
             else:
                 logger.warning('Missing library `{}`'.format(k))
         # Create a hash with all the used components
-        self.comps_data = {'{}:{}'.format(c.lib, c.name): None for c in self.components}
+        self.comps_data = {'{}:{}'.format(c.lib, c.name): None for c in self.get_components(exclude_power=False)}
         if GS.debug_level > 1:
             logger.debug("Components before loading: "+str(self.comps_data))
         # Load the libraries and descriptions
@@ -1433,3 +1505,39 @@ class Schematic(object):
                 else:
                     logger.warning('Missing component `{}`'.format(k))
             f.write('#\n#End Library\n')
+
+    def save(self, fname, dest_dir):
+        fname = os.path.join(dest_dir, fname)
+        with open(fname, 'wt') as f:
+            f.write('EESchema Schematic File Version {}\n'.format(self.version))
+            f.write('EELAYER {} {}\n'.format(self.eelayer_n, self.eelayer_m))
+            f.write('EELAYER END\n')
+            f.write('$Descr {} {} {}\n'.format(self.page_type, self.page_width, self.page_height))
+            f.write('encoding utf-8\n')
+            f.write('Sheet {} {}\n'.format(self.sheet, self.nsheets))
+            for k, v in self.title_block.items():
+                f.write('{} "{}"\n'.format(k, v))
+            f.write('$EndDescr\n')
+            for e in self.all:
+                e.write(f)
+            f.write('$EndSCHEMATC\n')
+        # Save sub-sheets
+        for c, sch in enumerate(self.sheets):
+            # Fake file name
+            file = sch.file.replace('/', '_')
+            self.sub_sheets[c].save(file, dest_dir)
+
+    def save_variant(self, dest_dir):
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        lib_yes = os.path.join(dest_dir, 'y.lib')
+        lib_no = os.path.join(dest_dir, 'n.lib')
+        self.gen_lib(lib_yes)
+        self.gen_lib(lib_no, cross=True)
+        self.save(os.path.basename(self.fname), dest_dir)
+        # SymLibTable to use y/n
+        with open(os.path.join(dest_dir, 'sym-lib-table'), 'wt') as f:
+            f.write('(sym_lib_table\n')
+            f.write(' (lib (name y)(type Legacy)(uri ${KIPRJMOD}/y.lib)(options "")(descr ""))\n')
+            f.write(' (lib (name n)(type Legacy)(uri ${KIPRJMOD}/n.lib)(options "")(descr ""))\n')
+            f.write(')\n')
