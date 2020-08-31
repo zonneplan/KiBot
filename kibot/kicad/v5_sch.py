@@ -986,28 +986,57 @@ class SchematicConnection(object):
         c.y = int(m.group(2))
         return c
 
+    def write(self, f):
+        f.write('{} ~ {} {}\n'.format(['NoConn', 'Connection'][self.connect], self.x, self.y))
+
 
 class SchematicText(object):
     label_re = re.compile(r'Text\s+(Notes|HLabel|GLabel|Label)\s+(-?\d+)\s+(-?\d+)\s+(\d)\s+(\d+)\s+(\S+)')
+    TYPES = ['Notes', 'HLabel', 'GLabel', 'Label']
 
     def __init__(self):
         super().__init__()
 
     @staticmethod
     def load(f, line):
-        m = SchematicText.label_re.match(line)
-        if not m:
-            raise SchFileError('Malformed text', line, f)
+        gs = _split_space(line)
+        c = len(gs)
+        if c < 6 or gs[0] != 'Text' or gs[1] not in SchematicText.TYPES:
+            raise SchFileError('Malformed `Text`', line, f)
         text = SchematicText()
-        gs = m.groups()
-        text.type = gs[0]
-        text.x = int(gs[1])
-        text.y = int(gs[2])
-        text.orient = int(gs[3])
-        text.size = int(gs[4])
-        text.shape = gs[5]
+        text.type = gs[1]
+        try:
+            text.x = int(gs[2])
+            text.y = int(gs[3])
+            text.orient = int(gs[4])
+            text.size = int(gs[5])
+            offset = 6
+            text.shape = None
+            if gs[1][0] in 'GH':
+                if c < 7:
+                    raise SchFileError('Missing `Text` shape', line, f)
+                text.shape = gs[6]
+                offset += 1
+            # New versions adds Italics and Bold, in a different way of course
+            text.italic = False
+            if c > offset:
+                text.italic = gs[offset] == 'Italic'
+                offset += 1
+            text.thickness = 0
+            if c > offset:
+                text.thickness = int(gs[offset])
+                offset += 1
+        except ValueError:
+            raise SchFileError('Not a number in `Text`', line, f)
         text.text = f.get_line()
         return text
+
+    def write(self, f):
+        f.write('Text {} {} {} {} {}'.format(self.type, self.x, self.y, self.orient, self.size))
+        if self.type[0] in 'GH':
+            f.write(' '+self.shape)
+        f.write(' {} {}\n'.format(['~', 'Italic'][self.italic], self.thickness))
+        f.write(self.text+'\n')
 
 
 class SchematicWire(object):
