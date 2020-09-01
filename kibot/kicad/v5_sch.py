@@ -1004,7 +1004,7 @@ class SchematicComponent(object):
         for field in self.fields:
             if field.number >= 0:
                 field.write(f)
-        f.write('\t1 {} {}\n'.format(self.x, self.y))
+        f.write('\t{} {} {}\n'.format(self.unit, self.x, self.y))
         f.write('\t{} {} {} {}\n'.format(self.matrix[0], self.matrix[1], self.matrix[2], self.matrix[3]))
         f.write('$EndComp\n')
 
