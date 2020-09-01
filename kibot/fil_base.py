@@ -141,6 +141,8 @@ class BaseFilter(RegFilter):
             names = [default]
         elif isinstance(names, str):
             # User provided, but only one, make a list
+            if names == '_none':
+                return None
             names = [names]
         # Here we should have a list of strings
         filters = []
@@ -150,6 +152,10 @@ class BaseFilter(RegFilter):
             if name[0] == '!':
                 invert = True
                 name = name[1:]
+                # '!' => always False
+                if not name:
+                    filters.append(NotFilter(DummyFilter()))
+                    continue
             else:
                 invert = False
             # Is already defined?
