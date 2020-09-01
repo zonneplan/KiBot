@@ -180,7 +180,7 @@ class BoMOptions(BaseOptions):
             self.number = 1
             """ Number of boards to build (components multiplier) """
             self.variant = ''
-            """ Board variant(s), used to determine which components
+            """ Board variant, used to determine which components
                 are output to the BoM. """
             self.output = GS.def_global_output
             """ filename for the output (%i=bom)"""
