@@ -562,7 +562,7 @@ class LibComponent(object):
                 xmt = ymt = 1e6
                 xMt = yMt = -1e6
                 ok_t = False
-                logger.debug("Unit "+str(unit+1))
+                # logger.debug("Unit "+str(unit+1))
                 for dr in self.draw:
                     if dr.sub_part != unit + 1 and dr.sub_part != 0:
                         continue
