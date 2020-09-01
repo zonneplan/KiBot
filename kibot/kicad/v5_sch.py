@@ -1534,10 +1534,12 @@ class Schematic(object):
         lib_no = os.path.join(dest_dir, 'n.lib')
         self.gen_lib(lib_yes)
         self.gen_lib(lib_no, cross=True)
-        self.save(os.path.basename(self.fname), dest_dir)
+        fname = os.path.basename(self.fname)
+        self.save(fname, dest_dir)
         # SymLibTable to use y/n
         with open(os.path.join(dest_dir, 'sym-lib-table'), 'wt') as f:
             f.write('(sym_lib_table\n')
             f.write(' (lib (name y)(type Legacy)(uri ${KIPRJMOD}/y.lib)(options "")(descr ""))\n')
             f.write(' (lib (name n)(type Legacy)(uri ${KIPRJMOD}/n.lib)(options "")(descr ""))\n')
             f.write(')\n')
+        return fname
