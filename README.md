@@ -405,7 +405,7 @@ Next time you need this list just use an alias, like this:
         - `number`: [number=1] Number of boards to build (components multiplier).
         - `output`: [string='%f-%i%v.%x'] filename for the output (%i=bom). Affected by global options.
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
-        - `variant`: [string=''] Board variant(s), used to determine which components
+        - `variant`: [string=''] Board variant, used to determine which components
                      are output to the BoM..
         - `xlsx`: [dict] Options for the XLSX format.
           * Valid keys:
@@ -812,7 +812,10 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_sch_print` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `output`: [string='%f-%i%v.%x'] filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
+        - `variant`: [string=''] Board variant(s), used to determine which components are crossed..
 
 * Pick & place
   * Type: `position`
@@ -877,6 +880,8 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `sch_variant` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant(s) to apply.
 
 * STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)

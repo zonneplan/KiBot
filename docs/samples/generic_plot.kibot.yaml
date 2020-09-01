@@ -121,7 +121,7 @@ outputs:
       output: '%f-%i%v.%x'
       # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
       use_alt: false
-      # [string=''] Board variant(s), used to determine which components
+      # [string=''] Board variant, used to determine which components
       # are output to the BoM.
       variant: ''
       # [dict] Options for the XLSX format
@@ -619,8 +619,13 @@ outputs:
     type: 'pdf_sch_print'
     dir: 'Example/pdf_sch_print_dir'
     options:
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [string='%f-%i%v.%x'] filename for the output PDF (%i=schematic %x=pdf). Affected by global options
       output: '%f-%i%v.%x'
+      # [string=''] Board variant(s), used to determine which components are crossed.
+      variant: ''
 
   # Pick & place:
   # This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew.
@@ -694,6 +699,9 @@ outputs:
     type: 'sch_variant'
     dir: 'Example/sch_variant_dir'
     options:
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [string=''] Board variant(s) to apply
       variant: ''
 
