@@ -1,0 +1,39 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+
+variants:
+  - name: 't1_v1'
+    comment: 'Test 1 Variant V1'
+    type: kibom
+    file_id: '_(V1)'
+    variant: V1
+    dnc_filter: '_kibom_dnc'
+    dnf_filter: '_kibom_dnf_Config'
+    exclude_filter: '_mechanical'
+
+  - name: 't1_v1b'
+    comment: 'Test 1 Variant V1'
+    type: kibom
+    file_id: '_(V1b)'
+    variant: V1
+
+outputs:
+  - name: 'bom_internal_v1'
+    comment: "Bill of Materials in CSV format for variant t1_v1"
+    type: bom
+    dir: BoM
+    options:
+      variant: t1_v1
+      dnc_filter: '_none'
+      dnf_filter: '_none'
+      exclude_filter: '_none'
+
+  - name: 'bom_internal_v1b'
+    comment: "Bill of Materials in CSV format for variant t1_v1"
+    type: bom
+    dir: BoM
+    options:
+      variant: t1_v1b
+      dnc_filter: '!'
