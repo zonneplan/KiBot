@@ -154,6 +154,14 @@ def test_sch_errors_bad_text():
     setup_ctx('bad_text', 'Malformed .?Text.?')
 
 
+def test_sch_errors_bad_text2():
+    setup_ctx('bad_text2', 'Missing .?Text.? shape')
+
+
+def test_sch_errors_bad_text3():
+    setup_ctx('bad_text3', 'Not a number in .?Text.?')
+
+
 def test_sch_errors_bad_wire():
     setup_ctx('bad_wire', 'Malformed wire')
 
