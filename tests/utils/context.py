@@ -20,6 +20,10 @@ MODE_SCH = 1
 MODE_PCB = 0
 
 
+def quote(s):
+    return '"'+s+'"'
+
+
 class TestContext(object):
 
     def __init__(self, test_name, board_name, yaml_name, sub_dir, yaml_compressed=False):
@@ -296,17 +300,21 @@ class TestContext(object):
             m = re.search(t, txt, re.MULTILINE)
             assert m is None
 
-    def compare_image(self, image, reference=None, diff='diff.png'):
+    def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False):
         """ For images and single page PDFs """
         if reference is None:
             reference = image
+        if ref_out_dir:
+            reference = self.get_out_path(reference)
+        else:
+            reference = os.path.join(REF_DIR, reference)
         cmd = ['compare',
                # Tolerate 5 % error in color
                '-fuzz', '5%',
                # Count how many pixels differ
                '-metric', 'AE',
                self.get_out_path(image),
-               os.path.join(REF_DIR, reference),
+               reference,
                # Avoid the part where KiCad version is printed
                '-crop', '100%x92%+0+0', '+repage',
                '-colorspace', 'RGB',
@@ -344,16 +352,7 @@ class TestContext(object):
         assert len(ref_pages) == len(gen_pages)
         # Compare each page
         for page in range(len(ref_pages)):
-            cmd = ['compare', '-metric', 'MSE',
-                   self.get_out_path('ref-'+str(page)+'.png'),
-                   self.get_out_path('gen-'+str(page)+'.png'),
-                   self.get_out_path(diff.format(page))]
-            logging.debug('Comparing images with: '+str(cmd))
-            res = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-            m = re.match(r'([\d\.]+) \(([\d\.]+)\)', res.decode())
-            assert m
-            logging.debug('MSE={} ({})'.format(m.group(1), m.group(2)))
-            assert float(m.group(2)) == 0.0
+            self.compare_image('gen-'+str(page)+'.png', 'ref-'+str(page)+'.png', diff.format(page), ref_out_dir=True)
 
     def compare_txt(self, text, reference=None, diff='diff.txt'):
         if reference is None:
