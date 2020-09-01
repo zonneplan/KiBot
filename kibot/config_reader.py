@@ -109,12 +109,10 @@ class CfgYamlReader(object):
         logger.debug("Parsing "+kind+" "+name_type)
         o_var = reg_class.get_class_for(otype)()
         o_var.set_tree(o_tree)
-        # No errors yet
-#         try:
-#             o_var.config()
-#         except KiPlotConfigurationError as e:
-#             config_error("In section `"+name_type+"`: "+str(e))
-        o_var.config()
+        try:
+            o_var.config()
+        except KiPlotConfigurationError as e:
+            config_error("In section `"+name_type+"`: "+str(e))
         return o_var
 
     def _parse_variants(self, v):
