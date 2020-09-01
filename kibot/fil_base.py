@@ -88,6 +88,7 @@ class BaseFilter(RegFilter):
         o_tree = {'name': name}
         o_tree['type'] = 'generic'
         o_tree['comment'] = 'Internal default mechanical filter'
+        o_tree['exclude_all_hash_ref'] = True
         o_tree['exclude_any'] = DEFAULT_EXCLUDE
         logger.debug('Creating internal filter: '+str(o_tree))
         return o_tree
