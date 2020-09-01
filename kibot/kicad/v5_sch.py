@@ -389,9 +389,9 @@ class DrawText(object):
         return txt
 
     def write(self, f):
-        f.write('T {} {} {} {}'.format(self.orientation, self.pos_x, self.pos_y, self.radius))
+        f.write('T {} {} {} {}'.format(self.orientation, self.pos_x, self.pos_y, self.size))
         f.write(' {} {} {} "{}"'.format(self.type, self.sub_part, self.convert, self.text))
-        f.write(' {} {} {} {}\n" '.format(['Normal', 'Italic'][self.italic], int(self.bold), self.hjustify, self.vjustify))
+        f.write(' {} {} {} {}\n'.format(['Normal', 'Italic'][self.italic], int(self.bold), self.hjustify, self.vjustify))
 
     def get_rect(self):
         return 0, 0, 0, 0, False
