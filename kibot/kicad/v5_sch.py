@@ -1528,8 +1528,9 @@ class Schematic(object):
             self.sub_sheets[c].save(file, dest_dir)
 
     def save_variant(self, dest_dir):
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
+        # Currently imposible
+        # if not os.path.exists(dest_dir):
+        #    os.makedirs(dest_dir)
         lib_yes = os.path.join(dest_dir, 'y.lib')
         lib_no = os.path.join(dest_dir, 'n.lib')
         self.gen_lib(lib_yes)
