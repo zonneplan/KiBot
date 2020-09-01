@@ -3,11 +3,11 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from .error import KiPlotConfigurationError
 from .gs import GS
-from .optionable import BaseOptions
+from .optionable import BaseOptions, Optionable
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
+from .fil_base import BaseFilter
 from . import log
 
 logger = log.get_logger(__name__)
@@ -18,23 +18,28 @@ class Sch_Variant_Options(BaseOptions):
         with document:
             self.variant = ''
             """ Board variant(s) to apply """
+            self.dnf_filter = Optionable
+            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
+                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
 
     def config(self):
         super().config()
-        if self.variant:
-            if not RegOutput.is_variant(self.variant):
-                raise KiPlotConfigurationError("Unknown variant name `{}`".format(self.variant))
-            self.variant = RegOutput.get_variant(self.variant)
-        else:
-            self.variant = None
+        self.variant = RegOutput.check_variant(self.variant)
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
 
     def run(self, output_dir, board):
-        if self.variant:
+        if self.dnf_filter or self.variant:
             # Get the components list from the schematic
             comps = GS.sch.get_components()
+            # Apply the filter
+            if self.dnf_filter:
+                for c in comps:
+                    c.fitted = self.dnf_filter.filter(c)
             # Apply the variant
-            self.variant.filter(comps)
+            if self.variant:
+                # Apply the variant
+                self.variant.filter(comps)
         # Create the schematic
         GS.sch.save_variant(output_dir)
 
