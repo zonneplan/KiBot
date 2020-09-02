@@ -65,6 +65,36 @@ class NotFilter(Registrable):
         return not self._filter.filter(comp)
 
 
+def apply_in_bom_filter(comps, filter, reset=True):
+    if filter:
+        logger.debug('Applying filter `{}` to in_bom'.format(filter.name))
+        for c in comps:
+            c.in_bom = filter.filter(c)
+    elif reset:  # Reset the field
+        for c in comps:
+            c.in_bom = True
+
+
+def apply_fitted_filter(comps, filter, reset=True):
+    if filter:
+        logger.debug('Applying filter `{}` to fitted'.format(filter.name))
+        for c in comps:
+            c.fitted = filter.filter(c)
+    elif reset:  # Reset the field
+        for c in comps:
+            c.fitted = True
+
+
+def apply_fixed_filter(comps, filter, reset=True):
+    if filter:
+        logger.debug('Applying filter `{}` to fixed'.format(filter.name))
+        for c in comps:
+            c.fixed = filter.filter(c)
+    elif reset:  # Reset the field
+        for c in comps:
+            c.fixed = False
+
+
 class BaseFilter(RegFilter):
     def __init__(self):
         super().__init__()

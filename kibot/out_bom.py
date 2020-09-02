@@ -18,7 +18,7 @@ from .macros import macros, document, output_class  # noqa: F401
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
 from .var_kibom import KiBoM
-from .fil_base import BaseFilter
+from .fil_base import BaseFilter, apply_in_bom_filter, apply_fitted_filter, apply_fixed_filter
 from . import log
 
 logger = log.get_logger(__name__)
@@ -366,6 +366,12 @@ class BoMOptions(BaseOptions):
         # Get the components list from the schematic
         comps = GS.sch.get_components()
         get_board_comps_data(comps)
+        # Apply all the filters
+        apply_in_bom_filter(comps, self.exclude_filter)
+        apply_fitted_filter(comps, self.dnf_filter)
+        apply_fixed_filter(comps, self.dnc_filter)
+        # Apply the variant
+        self.variant.filter(comps)
         try:
             do_bom(output, format, comps, self)
         except BoMError as e:

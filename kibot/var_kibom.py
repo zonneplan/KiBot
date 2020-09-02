@@ -63,8 +63,8 @@ class KiBoM(BaseVariant):  # noqa: F821
         # No match
         return not exclusive
 
-    def filter(self, comps):
-        super().filter(comps)
+    def filter(self, comps, reset=False):
+        super().filter(comps, reset)
         logger.debug("Applying KiBoM style variants `{}`".format(self.name))
         for c in comps:
             if not (c.fitted and c.in_bom):

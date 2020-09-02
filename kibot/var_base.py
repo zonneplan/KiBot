@@ -5,7 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegVariant
 from .optionable import Optionable
-from .fil_base import BaseFilter
+from .fil_base import BaseFilter, apply_in_bom_filter, apply_fitted_filter, apply_fixed_filter
 from .macros import macros, document  # noqa: F401
 
 
@@ -42,14 +42,8 @@ class BaseVariant(RegVariant):
         # dnc_filter
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
 
-    def filter(self, comps):
+    def filter(self, comps, reset):
         # Apply all the filters
-        if self.exclude_filter:
-            for c in comps:
-                c.in_bom = self.exclude_filter.filter(c)
-        if self.dnf_filter:
-            for c in comps:
-                c.fitted = self.dnf_filter.filter(c)
-        if self.dnc_filter:
-            for c in comps:
-                c.fixed = self.dnc_filter.filter(c)
+        apply_in_bom_filter(comps, self.exclude_filter, reset)
+        apply_fitted_filter(comps, self.dnf_filter, reset)
+        apply_fixed_filter(comps, self.dnc_filter, reset)

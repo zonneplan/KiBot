@@ -12,7 +12,7 @@ from .misc import (CMD_EESCHEMA_DO, PDF_SCH_PRINT)
 from .optionable import BaseOptions, Optionable
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
-from .fil_base import BaseFilter
+from .fil_base import BaseFilter, apply_fitted_filter
 from . import log
 
 logger = log.get_logger(__name__)
@@ -41,9 +41,7 @@ class PDF_Sch_PrintOptions(BaseOptions):
             # Get the components list from the schematic
             comps = GS.sch.get_components()
             # Apply the filter
-            if self.dnf_filter:
-                for c in comps:
-                    c.fitted = self.dnf_filter.filter(c)
+            apply_fitted_filter(comps, self.dnf_filter)
             # Apply the variant
             if self.variant:
                 self.variant.filter(comps)
