@@ -148,6 +148,8 @@ def load_board(pcb_file=None):
 
 
 def load_sch():
+    if GS.sch:  # Already loaded
+        return
     GS.kicad_version = pcbnew.GetBuildVersion()
     logger.debug('KiCad: '+GS.kicad_version)
     GS.check_sch()
@@ -189,6 +191,7 @@ def get_board_comps_data(comps):
             c.virtual = True
         else:
             c.tht = True
+    GS.board_comps_joined = True
 
 
 def preflight_checks(skip_pre):
