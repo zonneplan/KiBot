@@ -178,7 +178,7 @@ def get_board_comps_data(comps):
     for m in GS.board.GetModules():
         ref = m.GetReference()
         if ref not in comps_hash:
-            logger.warning('{} component in board, but not in schematic'.format(ref))
+            logger.warning('`{}` component in board, but not in schematic'.format(ref))
             continue
         c = comps_hash[ref]
         attrs = m.GetAttributes()

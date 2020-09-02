@@ -1296,6 +1296,7 @@ def test_int_bom_fil_2():
     check_kibom_test_netlist(rows, ref_column, 2, None, ['R1', 'C1'])
     rows, header, info = ctx.load_csv('virtual.csv')
     check_kibom_test_netlist(rows, ref_column, 2, None, ['R1-R2', 'C2'])
+    ctx.search_err(r".?R3.? component in board, but not in schematic")
     ctx.clean_up()
 
 
