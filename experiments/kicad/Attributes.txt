@@ -1,0 +1,81 @@
+Kicad 5 attributes
+------------------
+
+The modules for a PCB can be extracted using board.GetModules()
+This is an iterable. Each module has a GetAttributes() method.
+We are currently using it in the out_position.py but with a magic "1".
+What's this value?
+
+1) Is poorly documented. The documentation says
+
+    GetAttributes()
+    Definition at line 261 of file class_module.h.
+    261 { return m_Attributs; }
+
+    And asking for m_Attributs you get:
+
+    m_Attributs
+    int MODULE::m_Attributs
+    private
+    Definition at line 708 of file class_module.h.
+
+    Clear as water! ... dark water.
+
+2) Looking in the code:
+
+   void MODULE::GetMsgPanelInfo( EDA_DRAW_FRAME* aFrame, std::vector<MSG_PANEL_ITEM>& aList )
+   (class_module.cpp)
+
+   693     if( m_Attributs & MOD_BOARD_ONLY )
+   694         addToken( &attrs, _( "not in schematic" ) );
+   695 
+   696     if( m_Attributs & MOD_EXCLUDE_FROM_POS_FILES )
+   697         addToken( &attrs, _( "exclude from pos files" ) );
+   698 
+   699     if( m_Attributs & MOD_EXCLUDE_FROM_BOM )
+   700         addToken( &attrs, _( "exclude from BOM" ) );
+
+   And looking for MOD_BOARD_ONLY you finally get the definitions: (class_module.h)
+
+   67     MOD_THROUGH_HOLE           = 0x0001,
+   68     MOD_SMD                    = 0x0002,
+   69     MOD_EXCLUDE_FROM_POS_FILES = 0x0004,
+   70     MOD_EXCLUDE_FROM_BOM       = 0x0008,
+   71     MOD_BOARD_ONLY             = 0x0010    // Footprint has no corresponding symbol
+
+3) IBoM uses it: (./ecad/kicad.py)
+        attr = module.GetAttributes()
+        attr = {
+            0: 'Normal',
+            1: 'Normal+Insert',
+            2: 'Virtual'
+        }.get(attr, str(attr))
+
+4) What does pcbnew?
+   TH -> nothing in the file and GetAttributes returns 0
+   SMD -> puts (attr smd) and GetAttributes returns 1
+   Virtual -> puts (attr virtual) and GetAttributes returns 2
+
+5) 3 and 4 doesn't match
+   Lets see gitlab, tag 5.1
+   class_module.h:
+
+   enum MODULE_ATTR_T
+   {
+       MOD_DEFAULT = 0,    ///< default
+       MOD_CMS     = 1,    ///< Set for modules listed in the automatic insertion list
+                           ///< (usually SMD footprints)
+       MOD_VIRTUAL = 2     ///< Virtual component: when created by copper shapes on
+                           ///<  board (Like edge card connectors, mounting hole...)
+   };
+
+   They are changing this value!!!!
+   Not only changing the values, the data whole type!!!!
+   And this definition is different to what the UI says!!! even different to what the
+   file format implies.
+
+
+Conclusion:
+- KiCad 6 will break the current scheme
+- Current out_position checking for 1 is right
+- In the future we will have it as a flag (inverted)
