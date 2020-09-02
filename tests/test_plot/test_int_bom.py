@@ -1283,3 +1283,22 @@ def test_int_bom_fil_1():
     rows, header, info = ctx.load_csv('multi.csv')
     check_kibom_test_netlist(rows, ref_column, 1, None, ['C1-C2'])
     ctx.clean_up()
+
+
+def test_int_bom_variant_t3():
+    """ Test if we can move the filters to the variant.
+        Also test the '!' filter (always false) """
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH('test_int_bom_variant_t3', prj, 'int_bom_var_t3_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom_(V1).csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, ['R3', 'R4'], ['R1', 'R2'])
+    VARIANTE_PRJ_INFO[1] = 't1_v1'
+    check_csv_info(info, VARIANTE_PRJ_INFO, [4, 20, 2, 1, 2])
+    ctx.search_err(r"Creating internal filter(.*)_mechanical")
+    ctx.search_err(r"Creating internal filter(.*)_kibom_dnf_Config")
+    ctx.search_err(r"Creating internal filter(.*)_kibom_dnc")
+    rows, header, info = ctx.load_csv(prj+'-bom_(V1b).csv')
+    # Here we remove the DNC, so R1 and R2 becomes identical
+    check_kibom_test_netlist(rows, ref_column, 1, ['R3', 'R4'], ['R1', 'R2'])

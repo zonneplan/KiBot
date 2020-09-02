@@ -578,3 +578,17 @@ def test_error_fil_unknown():
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown filter (.*) used for ")
     ctx.clean_up()
+
+
+def test_error_var_unknown():
+    ctx = context.TestContextSCH('test_error_var_unknown', 'links', 'error_unk_variant', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Unknown variant name")
+    ctx.clean_up()
+
+
+def test_error_wrong_fil_name():
+    ctx = context.TestContextSCH('test_error_wrong_fil_name', 'links', 'error_wrong_fil_name', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Filter names starting with (.*) are reserved")
+    ctx.clean_up()

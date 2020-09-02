@@ -1,0 +1,11 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'no_inductor'
+    comment: "Inductors removed"
+    type: sch_variant
+    dir: no_inductor
+    options:
+      variant: 'no_inductor'

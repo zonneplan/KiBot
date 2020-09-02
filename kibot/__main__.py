@@ -94,6 +94,7 @@ has_macro = [
              'out_pdf_sch_print',
              'out_position',
              'out_ps',
+             'out_sch_variant',
              'out_step',
              'out_svg',
              'out_svg_sch_print',

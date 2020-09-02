@@ -363,10 +363,15 @@ def group_components(cfg, components):
 
 def do_bom(file_name, ext, comps, cfg):
     # Apply all the filters
-    for c in comps:
-        c.in_bom = cfg.exclude_filter.filter(c)
-        c.fitted = cfg.dnf_filter.filter(c)
-        c.fixed = cfg.dnc_filter.filter(c)
+    if cfg.exclude_filter:
+        for c in comps:
+            c.in_bom = cfg.exclude_filter.filter(c)
+    if cfg.dnf_filter:
+        for c in comps:
+            c.fitted = cfg.dnf_filter.filter(c)
+    if cfg.dnc_filter:
+        for c in comps:
+            c.fixed = cfg.dnc_filter.filter(c)
     # Apply the variant
     cfg.variant.filter(comps)
     # Group components according to group_fields

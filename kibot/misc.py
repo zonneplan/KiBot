@@ -46,6 +46,9 @@ URL_PCBDRAW = 'https://github.com/INTI-CMNB/pcbdraw'
 EXAMPLE_CFG = 'example.kibot.yaml'
 AUTO_SCALE = 0
 
+# Internal filter names
+IFILL_MECHANICAL = '_mechanical'
+
 # Supported values for "do not fit"
 DNF = {
     "dnf": 1,

@@ -106,6 +106,9 @@ gen_ref:
 	cp -a $(REFILL).refill $(REFILL)
 	src/kibot -c tests/yaml_samples/pdf_zone-refill.kibot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)
 	src/kibot -c tests/yaml_samples/print_pcb_zone-refill.kibot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)
+	src/kibot -c tests/yaml_samples/print_pdf_no_inductors_1.kibot.yaml -e tests/board_samples/test_v5.sch -d $(REFDIR)
+	mv "$(REFDIR)no_inductor/test_v5-schematic_(no_L).pdf" $(REFDIR)
+	rmdir $(REFDIR)no_inductor/
 	cp -a $(REFILL).ok $(REFILL)
 
 doc:

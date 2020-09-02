@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .optionable import Optionable
+from .error import KiPlotConfigurationError
 
 
 class Registrable(object):
@@ -71,6 +72,14 @@ class RegOutput(Optionable, Registrable):
     @staticmethod
     def add_filter(obj):
         RegOutput._def_filters[obj.name] = obj
+
+    @staticmethod
+    def check_variant(variant):
+        if variant:
+            if not RegOutput.is_variant(variant):
+                raise KiPlotConfigurationError("Unknown variant name `{}`".format(variant))
+            return RegOutput.get_variant(variant)
+        return None
 
 
 class RegVariant(Optionable, Registrable):

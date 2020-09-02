@@ -64,6 +64,8 @@ class Generic(BaseFilter):  # noqa: F821
             self.exclude_refs = Optionable
             """ [list(string)] List of references to be excluded.
                 Use R* for all references with R prefix """
+            self.exclude_all_hash_ref = False
+            """ Exclude all components with a reference starting with # """
             # Skip virtual components if needed
             # TODO: We currently lack this information
             # if config.blacklist_virtual and m.attr == 'Virtual':
@@ -145,6 +147,9 @@ class Generic(BaseFilter):  # noqa: F821
         value = comp.value.strip().lower()
         # Exclude components with empty 'Value'
         if self.exclude_empty_val and (value == '' or value == '~'):
+            return exclude
+        # Exclude all ref == #*
+        if self.exclude_all_hash_ref and comp.ref[0] == '#':
             return exclude
         # List of references to be excluded
         if self.exclude_refs and (comp.ref in self.exclude_refs or comp.ref_prefix+'*' in self.exclude_refs):

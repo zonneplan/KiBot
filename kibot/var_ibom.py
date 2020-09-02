@@ -62,6 +62,7 @@ class IBoM(BaseVariant):  # noqa: F821
         return False
 
     def filter(self, comps):
+        super().filter(comps)
         logger.debug("Applying IBoM style variants `{}`".format(self.name))
         # Make black/white lists case insensitive
         self.variants_whitelist = [v.lower() for v in self.variants_whitelist]

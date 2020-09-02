@@ -405,7 +405,7 @@ Next time you need this list just use an alias, like this:
         - `number`: [number=1] Number of boards to build (components multiplier).
         - `output`: [string='%f-%i%v.%x'] filename for the output (%i=bom). Affected by global options.
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
-        - `variant`: [string=''] Board variant(s), used to determine which components
+        - `variant`: [string=''] Board variant, used to determine which components
                      are output to the BoM..
         - `xlsx`: [dict] Options for the XLSX format.
           * Valid keys:
@@ -522,7 +522,7 @@ Next time you need this list just use an alias, like this:
         - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
         - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-        - `gerber_job_file`: [string='%f-%i.%x'] name for the gerber job file (%i='job', %x='gbrjob').
+        - `gerber_job_file`: [string='%f-%i%v.%x'] name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options.
         - `gerber_precision`: [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6.
         - `line_width`: [number=0.1] [0.02,2] line_width for objects without width [mm].
         - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
@@ -812,7 +812,10 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_sch_print` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `output`: [string='%f-%i%v.%x'] filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
+        - `variant`: [string=''] Board variant(s), used to determine which components are crossed..
 
 * Pick & place
   * Type: `position`
@@ -865,6 +868,21 @@ Next time you need this list just use an alias, like this:
         - `tent_vias`: [boolean=true] cover the vias.
         - `width_adjust`: [number=0] this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
+
+* Schematic with variant generator
+  * Type: `sch_variant`
+  * Description: Creates a copy of the schematic with all the filters and variants applied.
+                 This copy isn't intended for development.
+                 Is just a tweaked version of the original where you can look at the results.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `sch_variant` output.
+      * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `variant`: [string=''] Board variant(s) to apply.
 
 * STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
   * Type: `step`

@@ -1,0 +1,10 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+  - name: '_no_inductor'
+    comment: 'Inductors removed'
+    type: generic
+    exclude_refs:
+      - L*
