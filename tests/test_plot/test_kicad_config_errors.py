@@ -79,6 +79,8 @@ def check_load_conf(caplog, dir='kicad', fail=False, catch_conf_error=False):
             KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
     else:
         KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
+        # Check we can call it again and nothing is done
+        KiConf.init('bogus')
         err = None
     cov.stop()
     cov.save()
