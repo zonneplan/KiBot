@@ -66,10 +66,12 @@ class Generic(BaseFilter):  # noqa: F821
                 Use R* for all references with R prefix """
             self.exclude_all_hash_ref = False
             """ Exclude all components with a reference starting with # """
-            # Skip virtual components if needed
-            # TODO: We currently lack this information
-            # if config.blacklist_virtual and m.attr == 'Virtual':
-            #     return True
+            self.exclude_virtual = False
+            """ KiCad 5: exclude components marked as virtual in the PCB """
+            self.exclude_smd = False
+            """ KiCad 5: exclude components marked as smd in the PCB """
+            self.exclude_tht = False
+            """ KiCad 5: exclude components marked as through-hole in the PCB """
         self.add_to_doc('keys', 'Use `dnf_list` for '+str(DNF))
         self.add_to_doc('keys', 'Use `dnc_list` for '+str(DNC))
 
@@ -150,6 +152,13 @@ class Generic(BaseFilter):  # noqa: F821
             return exclude
         # Exclude all ref == #*
         if self.exclude_all_hash_ref and comp.ref[0] == '#':
+            return exclude
+        # KiCad 5 PCB classification
+        if self.exclude_virtual and comp.virtual:
+            return exclude
+        if self.exclude_smd and comp.smd:
+            return exclude
+        if self.exclude_tht and comp.tht:
             return exclude
         # List of references to be excluded
         if self.exclude_refs and (comp.ref in self.exclude_refs or comp.ref_prefix+'*' in self.exclude_refs):

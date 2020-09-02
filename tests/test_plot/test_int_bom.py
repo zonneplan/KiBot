@@ -1285,6 +1285,21 @@ def test_int_bom_fil_1():
     ctx.clean_up()
 
 
+def test_int_bom_fil_2():
+    prj = 'kibom-variant_3'
+    ctx = context.TestContextSCH('test_int_bom_fil_2', prj, 'int_bom_fil_2', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv('smd.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, None, ['R2', 'C1-C2'])
+    rows, header, info = ctx.load_csv('tht.csv')
+    check_kibom_test_netlist(rows, ref_column, 2, None, ['R1', 'C1'])
+    rows, header, info = ctx.load_csv('virtual.csv')
+    check_kibom_test_netlist(rows, ref_column, 2, None, ['R1-R2', 'C2'])
+    ctx.search_err(r".?R3.? component in board, but not in schematic")
+    ctx.clean_up()
+
+
 def test_int_bom_variant_t3():
     """ Test if we can move the filters to the variant.
         Also test the '!' filter (always false) """

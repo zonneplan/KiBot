@@ -19,13 +19,13 @@ class GS(object):
     Is a static class, just a placeholder for some global variables.
     """
     # PCB name and useful parts
-    pcb_file = None      # /.../dir/file.sch
-    pcb_no_ext = None    # /.../dir/file
+    pcb_file = None      # /.../dir/pcb.kicad_pcb
+    pcb_no_ext = None    # /.../dir/pcb
     pcb_dir = None       # /.../dir
     pcb_basename = None  # file
     # SCH name and useful parts
-    sch_file = None      # /.../dir/pcb.kicad_pcb
-    sch_basename = None  # /.../dir/pcb
+    sch_file = None      # /.../dir/file.sch
+    sch_basename = None  # /.../dir/file
     sch_no_ext = None    # /.../dir
     sch_dir = None       # pcb
     # Main output dir
@@ -39,6 +39,7 @@ class GS(object):
     today = n.strftime('%Y-%m-%d')
     time = n.strftime('%H-%M-%S')
     kicad_version = ''
+    board_comps_joined = False  # Flag to indicate we already merged data from the board
     # Data from the SCH because it doesn't have a Python API
     sch_title = None
     sch_date = None

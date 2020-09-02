@@ -13,6 +13,7 @@ from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
 from .misc import IFILL_MECHANICAL
+from .kiplot import get_board_comps_data
 from .macros import macros, document, output_class  # noqa: F401
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
@@ -364,6 +365,7 @@ class BoMOptions(BaseOptions):
         self.kicad_version = GS.kicad_version
         # Get the components list from the schematic
         comps = GS.sch.get_components()
+        get_board_comps_data(comps)
         try:
             do_bom(output, format, comps, self)
         except BoMError as e:
