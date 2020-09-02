@@ -89,7 +89,7 @@ single_test:
 	@echo "********************" Output
 	@cat pp/*/output.txt
 	@echo "********************" Error
-	@cat pp/*/error.txt
+	@tail -n 30 pp/*/error.txt
 	@rm -f tests/input_samples/bom.ini
 
 single_tests:
