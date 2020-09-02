@@ -263,18 +263,26 @@ class TestContext(object):
         logging.debug('output match: `{}` OK'.format(text))
         return m
 
-    def search_err(self, text):
+    def search_err(self, text, invert=False):
         if isinstance(text, list):
             res = []
             for t in text:
                 m = re.search(t, self.err, re.MULTILINE)
-                assert m is not None, t
-                logging.debug('error match: `{}` (`{}`) OK'.format(t, m.group(0)))
-                res.append(m)
+                if invert:
+                    assert m is None, t
+                    logging.debug('error no match: `{}` OK'.format(t))
+                else:
+                    assert m is not None, t
+                    logging.debug('error match: `{}` (`{}`) OK'.format(t, m.group(0)))
+                    res.append(m)
             return res
         m = re.search(text, self.err, re.MULTILINE)
-        assert m is not None
-        logging.debug('error match: `{}` (`{}`) OK'.format(text, m.group(0)))
+        if invert:
+            assert m is None, text
+            logging.debug('error no match: `{}` OK'.format(text))
+        else:
+            assert m is not None, text
+            logging.debug('error match: `{}` (`{}`) OK'.format(text, m.group(0)))
         return m
 
     def search_in_file(self, file, texts):
