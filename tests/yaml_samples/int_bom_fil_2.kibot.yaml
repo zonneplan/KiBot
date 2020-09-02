@@ -1,0 +1,48 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+ - name: 'no smd'
+   type: 'generic'
+   comment: 'Remove components with smd attribute'
+   exclude_smd: true
+
+ - name: 'no tht'
+   type: 'generic'
+   comment: 'Remove components with through-hole attribute'
+   exclude_tht: true
+
+ - name: 'no virtual'
+   type: 'generic'
+   comment: 'Remove components with virtual attribute'
+   exclude_virtual: true
+
+outputs:
+  - name: 'no smd'
+    comment: "BoM no smd"
+    type: bom
+    dir: BoM
+    options:
+      output: 'smd.csv'
+      use_alt: true
+      exclude_filter: 'no smd'
+
+  - name: 'no tht'
+    comment: "BoM no THT"
+    type: bom
+    dir: BoM
+    options:
+      output: 'tht.csv'
+      use_alt: true
+      exclude_filter: 'no tht'
+
+  - name: 'no smd'
+    comment: "BoM no virtual"
+    type: bom
+    dir: BoM
+    options:
+      output: 'virtual.csv'
+      use_alt: true
+      exclude_filter: 'no virtual'
+

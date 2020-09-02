@@ -803,6 +803,10 @@ class SchematicComponent(object):
         self.fitted = True
         self.in_bom = True
         self.fixed = False
+        # KiCad 5 PCB flags (mutually exclusive)
+        self.smd = False
+        self.virtual = False
+        self.tht = False
 
     def get_field_value(self, field):
         field = field.lower()

@@ -169,6 +169,28 @@ def load_sch():
         exit(EXIT_BAD_CONFIG)
 
 
+def get_board_comps_data(comps):
+    if GS.board_comps_joined or not GS.pcb_file:
+        return
+    if not GS.board:
+        load_board()
+    comps_hash = {c.ref: c for c in comps}
+    for m in GS.board.GetModules():
+        ref = m.GetReference()
+        if ref not in comps_hash:
+            logger.warning('{} component in board, but not in schematic'.format(ref))
+            continue
+        c = comps_hash[ref]
+        attrs = m.GetAttributes()
+        # KiCad 5 (6 will change it)
+        if attrs == 1:
+            c.smd = True
+        elif attrs == 2:
+            c.virtual = True
+        else:
+            c.tht = True
+
+
 def preflight_checks(skip_pre):
     logger.debug("Preflight checks")
 
