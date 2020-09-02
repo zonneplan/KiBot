@@ -20,6 +20,7 @@ pytest-3 --log-cli-level debug
 
 import os
 import sys
+import logging
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -144,4 +145,27 @@ def test_3Rs_position_inches_csv():
     ctx.expect_out_file(pos_bot)
     expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'], inches=True, csv=True)
     expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'], inches=True, csv=True)
+    ctx.clean_up()
+
+
+def check_comps(rows, comps):
+    assert len(rows) == len(comps)
+    logging.debug('{} components OK'.format(len(rows)))
+    col1 = [r[0] for r in rows]
+    assert col1 == comps
+    logging.debug('Components list {} OK'.format(comps))
+
+
+def test_position_variant_t2i():
+    prj = 'kibom-variant_3'
+    ctx = context.TestContext('test_position_variant_t2i', prj, 'simple_position_t2i', POS_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-both_pos.csv')
+    check_comps(rows, ['R1', 'R2', 'R3'])
+    rows, header, info = ctx.load_csv(prj+'-both_pos_[2].csv')
+    check_comps(rows, ['R1', 'R2', 'R3'])
+    rows, header, info = ctx.load_csv(prj+'-both_pos_(production).csv')
+    check_comps(rows, ['C2', 'R1', 'R2', 'R3'])
+    rows, header, info = ctx.load_csv(prj+'-both_pos_(test).csv')
+    check_comps(rows, ['C2', 'R1', 'R3'])
     ctx.clean_up()

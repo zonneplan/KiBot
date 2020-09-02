@@ -827,11 +827,14 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `position` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `format`: [string='ASCII'] [ASCII,CSV] format for the position file.
         - `only_smd`: [boolean=true] only include the surface mount components.
         - `output`: [string='%f-%i%v.%x'] output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
         - `separate_files_for_front_and_back`: [boolean=true] generate two separated files, one for the top and another for the bottom.
         - `units`: [string='millimeters'] [millimeters,inches] units used for the positions.
+        - `variant`: [string=''] Board variant(s) to apply.
 
 * PS (Postscript)
   * Type: `ps`

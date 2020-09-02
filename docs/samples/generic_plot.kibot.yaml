@@ -634,6 +634,9 @@ outputs:
     type: 'position'
     dir: 'Example/position_dir'
     options:
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [string='ASCII'] [ASCII,CSV] format for the position file
       format: 'ASCII'
       # [boolean=true] only include the surface mount components
@@ -644,6 +647,8 @@ outputs:
       separate_files_for_front_and_back: true
       # [string='millimeters'] [millimeters,inches] units used for the positions
       units: 'millimeters'
+      # [string=''] Board variant(s) to apply
+      variant: ''
 
   # PS (Postscript):
   # This output is what you get from the File/Plot menu in pcbnew.

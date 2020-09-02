@@ -8,9 +8,19 @@
 import operator
 from datetime import datetime
 from pcbnew import (IU_PER_MM, IU_PER_MILS)
-from .optionable import BaseOptions
+from .optionable import BaseOptions, Optionable
+from .registrable import RegOutput
 from .gs import GS
+from .kiplot import load_sch
 from .macros import macros, document, output_class  # noqa: F401
+from .fil_base import BaseFilter, apply_fitted_filter
+from . import log
+
+logger = log.get_logger(__name__)
+# KiCad 5 GUI values for the attribute
+UI_THT = 0
+UI_SMD = 1
+UI_VIRTUAL = 2
 
 
 class PositionOptions(BaseOptions):
@@ -26,7 +36,17 @@ class PositionOptions(BaseOptions):
             """ output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
             self.units = 'millimeters'
             """ [millimeters,inches] units used for the positions """
+            self.variant = ''
+            """ Board variant(s) to apply """
+            self.dnf_filter = Optionable
+            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
+                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
+
+    def config(self):
+        super().config()
+        self.variant = RegOutput.check_variant(self.variant)
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
 
     def _do_position_plot_ascii(self, board, output_dir, columns, modulesStr, maxSizes):
         topf = None
@@ -120,6 +140,18 @@ class PositionOptions(BaseOptions):
             bothf.close()
 
     def run(self, output_dir, board):
+        comps = None
+        if self.dnf_filter or self.variant:
+            load_sch()
+            # Get the components list from the schematic
+            comps = GS.sch.get_components()
+            # Apply the filter
+            apply_fitted_filter(comps, self.dnf_filter)
+            # Apply the variant
+            if self.variant:
+                # Apply the variant
+                self.variant.filter(comps)
+            comps_hash = {c.ref: c for c in comps}
         columns = ["Ref", "Val", "Package", "PosX", "PosY", "Rot", "Side"]
         colcount = len(columns)
         # Note: the parser already checked the units are milimeters or inches
@@ -131,12 +163,22 @@ class PositionOptions(BaseOptions):
         # Format all strings
         modules = []
         for m in sorted(board.GetModules(), key=operator.methodcaller('GetReference')):
-            if (self.only_smd and m.GetAttributes() == 1) or not self.only_smd:
+            ref = m.GetReference()
+            # Apply any filter or variant data
+            if comps:
+                c = comps_hash.get(ref, None)
+                if c:
+                    logger.debug("{} {} {}".format(ref, c.fitted, c.in_bom))
+                if c and not c.fitted:
+                    continue
+            # If passed check the position options
+            if (self.only_smd and m.GetAttributes() == UI_SMD) or \
+               (not self.only_smd and m.GetAttributes() != UI_VIRTUAL):
                 center = m.GetCenter()
                 # See PLACE_FILE_EXPORTER::GenPositionData() in
                 # export_footprints_placefile.cpp for C++ version of this.
                 modules.append([
-                    "{}".format(m.GetReference()),
+                    "{}".format(ref),
                     "{}".format(m.GetValue()),
                     "{}".format(m.GetFPID().GetLibItemName()),
                     "{:.4f}".format(center.x * conv),
