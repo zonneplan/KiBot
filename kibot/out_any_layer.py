@@ -69,21 +69,7 @@ class AnyLayerOptions(BaseOptions):
         # We'll come back to this on a per-layer basis
         po.SetSkipPlotNPTH_Pads(False)
 
-    def run(self, output_dir, board, layers):
-        # fresh plot controller
-        plot_ctrl = PLOT_CONTROLLER(board)
-        # set up plot options for the whole output
-        po = plot_ctrl.GetPlotOptions()
-        self._configure_plot_ctrl(po, output_dir)
-
-        # Gerber Job files aren't automagically created
-        # We need to assist KiCad
-        create_job = po.GetCreateGerberJobFile()
-        if create_job:
-            jobfile_writer = GERBER_JOBFILE_WRITER(board)
-
-        plot_ctrl.SetColorMode(True)
-
+    def filter_components(self, board):
         # Apply the variants and filters
         exclude = None
         if hasattr(self, 'variant') and (self.dnf_filter or self.variant):
@@ -102,13 +88,15 @@ class AnyLayerOptions(BaseOptions):
             exclude.addLayer(board.GetLayerID('F.Paste'))
             exclude.addLayer(board.GetLayerID('B.Paste'))
             old_layers = []
+            fadhes = board.GetLayerID('F.Adhes')
+            badhes = board.GetLayerID('B.Adhes')
+            old_fadhes = []
+            old_badhes = []
             for m in board.GetModules():
                 ref = m.GetReference()
-                # logger.debug('Ref {}'.format(ref))
                 c = comps_hash.get(ref, None)
-                # logger.debug('Component {}'.format(c))
                 if (c and not c.fitted) or m.GetAttributes() == UI_VIRTUAL:
-                    # logger.debug('Removing')
+                    # Remove all pads from *.Paste
                     old_c_layers = []
                     for p in m.Pads():
                         pad_layers = p.GetLayerSet()
@@ -116,9 +104,57 @@ class AnyLayerOptions(BaseOptions):
                         pad_layers.removeLayerSet(exclude)
                         p.SetLayerSet(pad_layers)
                     old_layers.append(old_c_layers)
+                    # Remove any graphical item in the *.Adhes layers
+                    for gi in m.GraphicalItems():
+                        l_gi = gi.GetLayer()
+                        if l_gi == fadhes:
+                            gi.SetLayer(-1)
+                            old_fadhes.append(gi)
+                        if l_gi == badhes:
+                            gi.SetLayer(-1)
+                            old_badhes.append(gi)
+                        # if gi.GetClass() == 'MGRAPHIC':
+                        #     logger.debug(gi.GetShapeStr())
+            self.comps_hash = comps_hash
+            self.old_layers = old_layers
+            self.old_fadhes = old_fadhes
+            self.old_badhes = old_badhes
+        return exclude
 
+    def unfilter_components(self, board):
+        for m in board.GetModules():
+            ref = m.GetReference()
+            c = self.comps_hash.get(ref, None)
+            if (c and not c.fitted) or m.GetAttributes() == UI_VIRTUAL:
+                restore = self.old_layers.pop(0)
+                for p in m.Pads():
+                    pad_layers = p.GetLayerSet()
+                    res = restore.pop(0)
+                    pad_layers.ParseHex(res, len(res))
+                    p.SetLayerSet(pad_layers)
+        fadhes = board.GetLayerID('F.Adhes')
+        for gi in self.old_fadhes:
+            gi.SetLayer(fadhes)
+        badhes = board.GetLayerID('B.Adhes')
+        for gi in self.old_badhes:
+            gi.SetLayer(badhes)
+
+    def run(self, output_dir, board, layers):
+        # fresh plot controller
+        plot_ctrl = PLOT_CONTROLLER(board)
+        # set up plot options for the whole output
+        po = plot_ctrl.GetPlotOptions()
+        self._configure_plot_ctrl(po, output_dir)
+        # Gerber Job files aren't automagically created
+        # We need to assist KiCad
+        create_job = po.GetCreateGerberJobFile()
+        if create_job:
+            jobfile_writer = GERBER_JOBFILE_WRITER(board)
+        plot_ctrl.SetColorMode(True)
+        # Apply the variants and filters
+        exclude = self.filter_components(board)
+        # Plot every layer in the output
         layers = Layer.solve(layers)
-        # plot every layer in the output
         for la in layers:
             suffix = la.suffix
             desc = la.description
@@ -129,13 +165,12 @@ class AnyLayerOptions(BaseOptions):
             # a copper layer
             is_cu = IsCopperLayer(id)
             po.SetSkipPlotNPTH_Pads(is_cu)
-
             # Plot single layer to file
             logger.debug("Opening plot file for layer `{}` format `{}`".format(la, self._plot_format))
             if not plot_ctrl.OpenPlotfile(suffix, self._plot_format, desc):
                 # Shouldn't happen
                 raise PlotError("OpenPlotfile failed!")  # pragma: no cover
-
+            # Compute the current file name and the one we want
             k_filename = plot_ctrl.GetPlotFileName()
             if self.output:
                 filename = self.expand_filename(output_dir, self.output, suffix, os.path.splitext(k_filename)[1][1:])
@@ -148,21 +183,12 @@ class AnyLayerOptions(BaseOptions):
                 os.rename(k_filename, filename)
             if create_job:
                 jobfile_writer.AddGbrFile(id, os.path.basename(filename))
-
+        # Create the job file
         if create_job:
             jobfile_writer.CreateJobFile(self.expand_filename(output_dir, po.gerber_job_file, 'job', 'gbrjob'))
         # Restore the eliminated layers
         if exclude:
-            for m in board.GetModules():
-                ref = m.GetReference()
-                c = comps_hash.get(ref, None)
-                if (c and not c.fitted) or m.GetAttributes() == UI_VIRTUAL:
-                    restore = old_layers.pop(0)
-                    for p in m.Pads():
-                        pad_layers = p.GetLayerSet()
-                        res = restore.pop(0)
-                        pad_layers.ParseHex(res, len(res))
-                        p.SetLayerSet(pad_layers)
+            self.unfilter_components(board)
 
     def read_vals_from_po(self, po):
         # excludeedgelayer

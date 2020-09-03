@@ -91,12 +91,13 @@ def check_layers_exist(ctx, dir, prefix, layers, suffix):
     ctx.expect_out_file(compose_fname(dir, prefix, 'job', suffix, 'gbrjob'))
 
 
-def check_components(ctx, dir, prefix, layer, suffix, exclude, include):
-    fname = compose_fname(dir, prefix, layer, suffix)
-    inc = [r'%TO\.C,{}\*%'.format(v) for v in include]
-    ctx.search_in_file(fname, inc)
-    exc = [r'%TO\.C,{}\*%'.format(v) for v in exclude]
-    ctx.search_not_in_file(fname, exc)
+def check_components(ctx, dir, prefix, layers, suffix, exclude, include):
+    for layer in layers:
+        fname = compose_fname(dir, prefix, layer, suffix)
+        inc = [r'%TO\.C,{}\*%'.format(v) for v in include]
+        ctx.search_in_file(fname, inc)
+        exc = [r'%TO\.C,{}\*%'.format(v) for v in exclude]
+        ctx.search_not_in_file(fname, exc)
 
 
 def test_gerber_variant_1():
@@ -108,11 +109,11 @@ def test_gerber_variant_1():
     # R3 is a component added to the PCB, included in all cases
     # variant: default     directory: gerber      components: R1, R2 and R3
     check_layers_exist(ctx, 'gerber', prj, ALL_LAYERS, '')
-    check_components(ctx, 'gerber', prj, 'F_Paste', '', ['C1', 'C2'], ['R1', 'R2', 'R3'])
+    check_components(ctx, 'gerber', prj, ['F_Paste', 'F_Adhes'], '', ['C1', 'C2'], ['R1', 'R2', 'R3'])
     # variant: production  directory: production  components: R1, R2, R3 and C2
     check_layers_exist(ctx, 'production', prj, ALL_LAYERS, '_(production)')
-    check_components(ctx, 'production', prj, 'F_Paste', '_(production)', ['C1'], ['R1', 'R2', 'R3', 'C2'])
+    check_components(ctx, 'production', prj, ['F_Paste', 'F_Adhes'], '_(production)', ['C1'], ['R1', 'R2', 'R3', 'C2'])
     # variant: test        directory: test        components: R1, R3 and C2
     check_layers_exist(ctx, 'test', prj, ALL_LAYERS, '_(test)')
-    check_components(ctx, 'test', prj, 'F_Paste', '_(test)', ['C1', 'R2'], ['R1', 'R3', 'C2'])
+    check_components(ctx, 'test', prj, ['F_Paste', 'F_Adhes'], '_(test)', ['C1', 'R2'], ['R1', 'R3', 'C2'])
     ctx.clean_up()
