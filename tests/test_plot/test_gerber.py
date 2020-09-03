@@ -19,6 +19,27 @@ from kibot.misc import (PLOT_ERROR)
 
 
 GERBER_DIR = 'gerberdir'
+ALL_LAYERS = ['B_Adhes',
+              'B_CrtYd',
+              'B_Cu',
+              'B_Fab',
+              'B_Mask',
+              'B_Paste',
+              'B_SilkS',
+              'Cmts_User',
+              'Dwgs_User',
+              'Eco1_User',
+              'Eco2_User',
+              'Edge_Cuts',
+              'F_Adhes',
+              'F_CrtYd',
+              'F_Cu',
+              'F_Fab',
+              'F_Mask',
+              'F_Paste',
+              'F_SilkS',
+              'Margin',
+              ]
 
 
 def test_gerber_2layer():
@@ -57,4 +78,41 @@ def test_gerber_inner_wrong():
     ctx = context.TestContext('Gerber_InnerWrong', prj, 'gerber_inner_wrong', GERBER_DIR)
     ctx.run(PLOT_ERROR)
     assert ctx.search_err('is not valid for this board')
+    ctx.clean_up()
+
+
+def compose_fname(dir, prefix, layer, suffix, ext='gbr'):
+    return os.path.join(dir, prefix+'-'+layer+suffix+'.'+ext)
+
+
+def check_layers_exist(ctx, dir, prefix, layers, suffix):
+    for layer in layers:
+        ctx.expect_out_file(compose_fname(dir, prefix, layer, suffix))
+    ctx.expect_out_file(compose_fname(dir, prefix, 'job', suffix, 'gbrjob'))
+
+
+def check_components(ctx, dir, prefix, layer, suffix, exclude, include):
+    fname = compose_fname(dir, prefix, layer, suffix)
+    inc = [r'%TO\.C,{}\*%'.format(v) for v in include]
+    ctx.search_in_file(fname, inc)
+    exc = [r'%TO\.C,{}\*%'.format(v) for v in exclude]
+    ctx.search_not_in_file(fname, exc)
+
+
+def test_gerber_variant_1():
+    prj = 'kibom-variant_3'
+    ctx = context.TestContext('test_gerber_variant_1', prj, 'gerber_variant_1', GERBER_DIR)
+    ctx.run()
+
+    # C1 is virtual, not included for all cases
+    # R3 is a component added to the PCB, included in all cases
+    # variant: default     directory: gerber      components: R1, R2 and R3
+    check_layers_exist(ctx, 'gerber', prj, ALL_LAYERS, '')
+    check_components(ctx, 'gerber', prj, 'F_Paste', '', ['C1', 'C2'], ['R1', 'R2', 'R3'])
+    # variant: production  directory: production  components: R1, R2, R3 and C2
+    check_layers_exist(ctx, 'production', prj, ALL_LAYERS, '_(production)')
+    check_components(ctx, 'production', prj, 'F_Paste', '_(production)', ['C1'], ['R1', 'R2', 'R3', 'C2'])
+    # variant: test        directory: test        components: R1, R3 and C2
+    check_layers_exist(ctx, 'test', prj, ALL_LAYERS, '_(test)')
+    check_components(ctx, 'test', prj, 'F_Paste', '_(test)', ['C1', 'R2'], ['R1', 'R3', 'C2'])
     ctx.clean_up()

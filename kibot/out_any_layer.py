@@ -6,13 +6,17 @@
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 import os
-from pcbnew import (GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer)
+from pcbnew import GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, LSET
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
-from .optionable import BaseOptions
+from .optionable import BaseOptions, Optionable
+from .registrable import RegOutput
 from .layer import Layer
 from .gs import GS
+from .misc import UI_VIRTUAL
+from .kiplot import load_sch
 from .macros import macros, document  # noqa: F401
+from .fil_base import BaseFilter, apply_fitted_filter
 from . import log
 
 logger = log.get_logger(__name__)
@@ -38,7 +42,17 @@ class AnyLayerOptions(BaseOptions):
             """ output file name, the default KiCad name if empty """
             self.tent_vias = True
             """ cover the vias """
+            self.variant = ''
+            """ Board variant(s) to apply """
+            self.dnf_filter = Optionable
+            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
+                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
+
+    def config(self):
+        super().config()
+        self.variant = RegOutput.check_variant(self.variant)
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
 
     def _configure_plot_ctrl(self, po, output_dir):
         logger.debug("Configuring plot controller for output")
@@ -69,6 +83,39 @@ class AnyLayerOptions(BaseOptions):
             jobfile_writer = GERBER_JOBFILE_WRITER(board)
 
         plot_ctrl.SetColorMode(True)
+
+        # Apply the variants and filters
+        exclude = None
+        if hasattr(self, 'variant') and (self.dnf_filter or self.variant):
+            load_sch()
+            # Get the components list from the schematic
+            comps = GS.sch.get_components()
+            # Apply the filter
+            apply_fitted_filter(comps, self.dnf_filter)
+            # Apply the variant
+            if self.variant:
+                # Apply the variant
+                self.variant.filter(comps)
+            comps_hash = {c.ref: c for c in comps}
+            # Remove from solder past layers the filtered components
+            exclude = LSET()
+            exclude.addLayer(board.GetLayerID('F.Paste'))
+            exclude.addLayer(board.GetLayerID('B.Paste'))
+            old_layers = []
+            for m in board.GetModules():
+                ref = m.GetReference()
+                # logger.debug('Ref {}'.format(ref))
+                c = comps_hash.get(ref, None)
+                # logger.debug('Component {}'.format(c))
+                if (c and not c.fitted) or m.GetAttributes() == UI_VIRTUAL:
+                    # logger.debug('Removing')
+                    old_c_layers = []
+                    for p in m.Pads():
+                        pad_layers = p.GetLayerSet()
+                        old_c_layers.append(pad_layers.FmtHex())
+                        pad_layers.removeLayerSet(exclude)
+                        p.SetLayerSet(pad_layers)
+                    old_layers.append(old_c_layers)
 
         layers = Layer.solve(layers)
         # plot every layer in the output
@@ -104,6 +151,18 @@ class AnyLayerOptions(BaseOptions):
 
         if create_job:
             jobfile_writer.CreateJobFile(self.expand_filename(output_dir, po.gerber_job_file, 'job', 'gbrjob'))
+        # Restore the eliminated layers
+        if exclude:
+            for m in board.GetModules():
+                ref = m.GetReference()
+                c = comps_hash.get(ref, None)
+                if (c and not c.fitted) or m.GetAttributes() == UI_VIRTUAL:
+                    restore = old_layers.pop(0)
+                    for p in m.Pads():
+                        pad_layers = p.GetLayerSet()
+                        res = restore.pop(0)
+                        pad_layers.ParseHex(res, len(res))
+                        p.SetLayerSet(pad_layers)
 
     def read_vals_from_po(self, po):
         # excludeedgelayer

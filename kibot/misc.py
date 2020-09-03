@@ -48,6 +48,10 @@ AUTO_SCALE = 0
 
 # Internal filter names
 IFILL_MECHANICAL = '_mechanical'
+# KiCad 5 GUI values for the attribute
+UI_THT = 0
+UI_SMD = 1
+UI_VIRTUAL = 2
 
 # Supported values for "do not fit"
 DNF = {
