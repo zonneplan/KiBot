@@ -304,9 +304,11 @@ class TestContext(object):
         with open(self.get_out_path(file)) as f:
             txt = f.read()
         for t in texts:
-            logging.debug('- r"'+t+'"')
+            msg = '- r"'+t+'"'
             m = re.search(t, txt, re.MULTILINE)
-            assert m is None
+            assert m is None, msg
+            logging.debug(msg+' OK')
+            # logging.debug(' '+m.group(0))
 
     def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False):
         """ For images and single page PDFs """

@@ -11,16 +11,13 @@ from pcbnew import (IU_PER_MM, IU_PER_MILS)
 from .optionable import BaseOptions, Optionable
 from .registrable import RegOutput
 from .gs import GS
+from .misc import UI_SMD, UI_VIRTUAL
 from .kiplot import load_sch
 from .macros import macros, document, output_class  # noqa: F401
 from .fil_base import BaseFilter, apply_fitted_filter
 from . import log
 
 logger = log.get_logger(__name__)
-# KiCad 5 GUI values for the attribute
-UI_THT = 0
-UI_SMD = 1
-UI_VIRTUAL = 2
 
 
 class PositionOptions(BaseOptions):
@@ -167,8 +164,6 @@ class PositionOptions(BaseOptions):
             # Apply any filter or variant data
             if comps:
                 c = comps_hash.get(ref, None)
-                if c:
-                    logger.debug("{} {} {}".format(ref, c.fitted, c.in_bom))
                 if c and not c.fitted:
                     continue
             # If passed check the position options

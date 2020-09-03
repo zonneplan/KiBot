@@ -1,0 +1,18 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+variants:
+  - name: 'default'
+    comment: 'Default variant'
+    type: ibom
+    variants_blacklist: T2,T3
+
+outputs:
+  - name: 'pdf_default'
+    comment: "PDF w/variant"
+    type: pdf
+    layers: [ F.Fab, B.Fab ]
+    options:
+      variant: default
+

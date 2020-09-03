@@ -22,13 +22,11 @@ def test_pdf():
     prj = 'simple_2layer'
     ctx = context.TestContext('Plot_PDF', prj, 'pdf', PS_DIR)
     ctx.run()
-
     f_cu = ctx.get_gerber_filename('F_Cu', '.pdf')
     f_silk = ctx.get_gerber_filename('B_Silks', '.pdf')
     ctx.expect_out_file(f_cu)
     ctx.expect_out_file(f_silk)
     ctx.dont_expect_out_file(ctx.get_gerber_job_filename())
-
     ctx.clean_up()
 
 
@@ -36,7 +34,20 @@ def test_pdf_refill():
     prj = 'zone-refill'
     ctx = context.TestContext('Plot_PDF_Refill', prj, 'pdf_zone-refill', '')
     ctx.run()
-
     b_cu = ctx.get_gerber_filename('B_Cu', '.pdf')
     ctx.expect_out_file(b_cu)
     ctx.compare_image(b_cu)
+    ctx.clean_up()
+
+
+def test_pdf_variant_1():
+    prj = 'kibom-variant_4'
+    ctx = context.TestContext('test_pdf_variant_1', prj, 'pdf_variant_1', '')
+    ctx.run()
+    fname = prj+'-F_Fab.pdf'
+    ctx.expect_out_file(fname)
+    ctx.compare_image(fname)
+    fname = prj+'-B_Fab.pdf'
+    ctx.expect_out_file(fname)
+    ctx.compare_image(fname)
+    ctx.clean_up()
