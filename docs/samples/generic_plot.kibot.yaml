@@ -156,6 +156,9 @@ outputs:
     type: 'dxf'
     dir: 'Example/dxf_dir'
     options:
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
       # [boolean=true] do not include the PCB edge layer
@@ -182,6 +185,8 @@ outputs:
       tent_vias: true
       # [boolean=false] use the auxiliar axis as origin for coordinates
       use_aux_axis_as_origin: false
+      # [string=''] Board variant(s) to apply
+      variant: ''
     layers: all
 
   # Excellon drill format:
@@ -252,6 +257,9 @@ outputs:
       # [boolean=true] creates a file with information about all the generated gerbers.
       # You can use it in gerbview to load all gerbers at once
       create_gerber_job_file: true
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [boolean=true] do not include the PCB edge layer
       exclude_edge_layer: true
       # [boolean=false] do not plot the component pads in the silk screen
@@ -284,6 +292,8 @@ outputs:
       use_gerber_x2_attributes: true
       # [boolean=false] use legacy Protel file extensions
       use_protel_extensions: false
+      # [string=''] Board variant(s) to apply
+      variant: ''
     layers: all
 
   # HPGL (Hewlett & Packard Graphics Language):
@@ -293,6 +303,9 @@ outputs:
     type: 'hpgl'
     dir: 'Example/hpgl_dir'
     options:
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
       # [boolean=true] do not include the PCB edge layer
@@ -323,6 +336,8 @@ outputs:
       sketch_plot: false
       # [boolean=true] cover the vias
       tent_vias: true
+      # [string=''] Board variant(s) to apply
+      variant: ''
     layers: all
 
   # IBoM (Interactive HTML BoM):
@@ -572,6 +587,9 @@ outputs:
     type: 'pdf'
     dir: 'Example/pdf_dir'
     options:
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
       # [boolean=true] do not include the PCB edge layer
@@ -596,6 +614,8 @@ outputs:
       plot_sheet_reference: false
       # [boolean=true] cover the vias
       tent_vias: true
+      # [string=''] Board variant(s) to apply
+      variant: ''
     layers: all
 
   # PDF PCB Print (Portable Document Format):
@@ -659,6 +679,9 @@ outputs:
     options:
       # [boolean=true] force A4 paper size
       a4_output: true
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
       # [boolean=true] do not include the PCB edge layer
@@ -691,6 +714,8 @@ outputs:
       sketch_plot: false
       # [boolean=true] cover the vias
       tent_vias: true
+      # [string=''] Board variant(s) to apply
+      variant: ''
       # [number=0] this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
       # Only used to plot pads and tracks
       width_adjust: 0
@@ -739,6 +764,9 @@ outputs:
     type: 'svg'
     dir: 'Example/svg_dir'
     options:
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
       # [boolean=true] do not include the PCB edge layer
@@ -763,6 +791,8 @@ outputs:
       plot_sheet_reference: false
       # [boolean=true] cover the vias
       tent_vias: true
+      # [string=''] Board variant(s) to apply
+      variant: ''
     layers: all
 
   # SVG Schematic Print:

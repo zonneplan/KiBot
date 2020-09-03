@@ -437,6 +437,8 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `dxf` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
         - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
@@ -450,6 +452,7 @@ Next time you need this list just use an alias, like this:
         - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] cover the vias.
         - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
+        - `variant`: [string=''] Board variant(s) to apply.
 
 * Excellon drill format
   * Type: `excellon`
@@ -519,6 +522,8 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `create_gerber_job_file`: [boolean=true] creates a file with information about all the generated gerbers.
                                     You can use it in gerbview to load all gerbers at once.
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
         - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
@@ -535,6 +540,7 @@ Next time you need this list just use an alias, like this:
         - `use_gerber_net_attributes`: [boolean=true] include netlist metadata.
         - `use_gerber_x2_attributes`: [boolean=true] use the extended X2 format.
         - `use_protel_extensions`: [boolean=false] use legacy Protel file extensions.
+        - `variant`: [string=''] Board variant(s) to apply.
 
 * HPGL (Hewlett & Packard Graphics Language)
   * Type: `hpgl`
@@ -552,6 +558,8 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `hpgl` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
         - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
@@ -567,6 +575,7 @@ Next time you need this list just use an alias, like this:
         - `scaling`: [number=0] scale factor (0 means autoscaling).
         - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] cover the vias.
+        - `variant`: [string=''] Board variant(s) to apply.
 
 * IBoM (Interactive HTML BoM)
   * Type: `ibom`
@@ -750,6 +759,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='.'] Output directory for the generated files.
+    - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                    A short-cut to use for simple cases where a variant is an overkill.
     - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
     - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
@@ -763,6 +774,8 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
         - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
@@ -775,11 +788,13 @@ Next time you need this list just use an alias, like this:
         - `plot_footprint_values`: [boolean=true] include the footprint values.
         - `plot_sheet_reference`: [boolean=false] currently without effect.
         - `tent_vias`: [boolean=true] cover the vias.
+        - `variant`: [string=''] Board variant(s) to apply.
     - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
     - `plot_footprint_refs`: [boolean=true] include the footprint references.
     - `plot_footprint_values`: [boolean=true] include the footprint values.
     - `plot_sheet_reference`: [boolean=false] currently without effect.
     - `tent_vias`: [boolean=true] cover the vias.
+    - `variant`: [string=''] Board variant(s) to apply.
 
 * PDF PCB Print (Portable Document Format)
   * Type: `pdf_pcb_print`
@@ -853,6 +868,8 @@ Next time you need this list just use an alias, like this:
     - `options`: [dict] Options for the `ps` output.
       * Valid keys:
         - `a4_output`: [boolean=true] force A4 paper size.
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
         - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
@@ -869,6 +886,7 @@ Next time you need this list just use an alias, like this:
         - `scaling`: [number=1] scale factor (0 means autoscaling).
         - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] cover the vias.
+        - `variant`: [string=''] Board variant(s) to apply.
         - `width_adjust`: [number=0] this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
 
@@ -923,6 +941,8 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `svg` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
         - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen.
@@ -935,6 +955,7 @@ Next time you need this list just use an alias, like this:
         - `plot_footprint_values`: [boolean=true] include the footprint values.
         - `plot_sheet_reference`: [boolean=false] currently without effect.
         - `tent_vias`: [boolean=true] cover the vias.
+        - `variant`: [string=''] Board variant(s) to apply.
 
 * SVG Schematic Print
   * Type: `svg_sch_print`
