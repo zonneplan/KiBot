@@ -104,7 +104,6 @@ def test_gerber_variant_1():
     prj = 'kibom-variant_3'
     ctx = context.TestContext('test_gerber_variant_1', prj, 'gerber_variant_1', GERBER_DIR)
     ctx.run()
-
     # C1 is virtual, not included for all cases
     # R3 is a component added to the PCB, included in all cases
     # variant: default     directory: gerber      components: R1, R2 and R3

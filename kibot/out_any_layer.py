@@ -6,7 +6,7 @@
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 import os
-from pcbnew import GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, LSET
+from pcbnew import GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, LSET, wxPoint, EDGE_MODULE
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
 from .optionable import BaseOptions, Optionable
@@ -20,6 +20,28 @@ from .fil_base import BaseFilter, apply_fitted_filter
 from . import log
 
 logger = log.get_logger(__name__)
+
+
+class Rect(object):
+    """ What KiCad returns isn't a real wxWidget's wxRect.
+        Here I add what I really need """
+    def __init__(self):
+        self.x1 = None
+        self.y1 = None
+        self.x2 = None
+        self.y2 = None
+
+    def Union(self, wxRect):
+        if self.x1 is None:
+            self.x1 = wxRect.x
+            self.y1 = wxRect.y
+            self.x2 = wxRect.x+wxRect.width
+            self.y2 = wxRect.y+wxRect.height
+        else:
+            self.x1 = min(self.x1, wxRect.x)
+            self.y1 = min(self.y1, wxRect.y)
+            self.x2 = max(self.x2, wxRect.x+wxRect.width)
+            self.y2 = max(self.y2, wxRect.y+wxRect.height)
 
 
 class AnyLayerOptions(BaseOptions):
@@ -69,6 +91,22 @@ class AnyLayerOptions(BaseOptions):
         # We'll come back to this on a per-layer basis
         po.SetSkipPlotNPTH_Pads(False)
 
+    @staticmethod
+    def cross_module(m, rect, layer):
+        seg1 = EDGE_MODULE(m)
+        m.Add(seg1)
+        seg1.SetWidth(120000)
+        seg1.SetStart(wxPoint(rect.x1, rect.y1))
+        seg1.SetEnd(wxPoint(rect.x2, rect.y2))
+        seg1.SetLayer(layer)
+        seg2 = EDGE_MODULE(m)
+        m.Add(seg2)
+        seg2.SetWidth(120000)
+        seg2.SetStart(wxPoint(rect.x1, rect.y2))
+        seg2.SetEnd(wxPoint(rect.x2, rect.y1))
+        seg2.SetLayer(layer)
+        return [seg1, seg2]
+
     def filter_components(self, board):
         # Apply the variants and filters
         exclude = None
@@ -92,8 +130,15 @@ class AnyLayerOptions(BaseOptions):
             badhes = board.GetLayerID('B.Adhes')
             old_fadhes = []
             old_badhes = []
+            ffab = board.GetLayerID('F.Fab')
+            bfab = board.GetLayerID('B.Fab')
+            extra_ffab_lines = []
+            extra_bfab_lines = []
             for m in board.GetModules():
                 ref = m.GetReference()
+                # Rectangle containing the drawings, no text
+                frect = Rect()
+                brect = Rect()
                 c = comps_hash.get(ref, None)
                 if (c and not c.fitted) or m.GetAttributes() == UI_VIRTUAL:
                     # Remove all pads from *.Paste
@@ -105,6 +150,7 @@ class AnyLayerOptions(BaseOptions):
                         p.SetLayerSet(pad_layers)
                     old_layers.append(old_c_layers)
                     # Remove any graphical item in the *.Adhes layers
+                    # Also: meassure the *.Fab drawings size
                     for gi in m.GraphicalItems():
                         l_gi = gi.GetLayer()
                         if l_gi == fadhes:
@@ -113,12 +159,27 @@ class AnyLayerOptions(BaseOptions):
                         if l_gi == badhes:
                             gi.SetLayer(-1)
                             old_badhes.append(gi)
-                        # if gi.GetClass() == 'MGRAPHIC':
-                        #     logger.debug(gi.GetShapeStr())
+                        if gi.GetClass() == 'MGRAPHIC':
+                            if l_gi == ffab:
+                                frect.Union(gi.GetBoundingBox().getWxRect())
+                            if l_gi == bfab:
+                                brect.Union(gi.GetBoundingBox().getWxRect())
+                    # Cross the graphics in *.Fab
+                    if frect.x1 is not None:
+                        extra_ffab_lines.append(self.cross_module(m, frect, ffab))
+                    else:
+                        extra_ffab_lines.append(None)
+                    if brect.x1 is not None:
+                        extra_bfab_lines.append(self.cross_module(m, brect, bfab))
+                    else:
+                        extra_bfab_lines.append(None)
+            # Store the data to undo the above actions
             self.comps_hash = comps_hash
             self.old_layers = old_layers
             self.old_fadhes = old_fadhes
             self.old_badhes = old_badhes
+            self.extra_ffab_lines = extra_ffab_lines
+            self.extra_bfab_lines = extra_bfab_lines
         return exclude
 
     def unfilter_components(self, board):
@@ -132,6 +193,14 @@ class AnyLayerOptions(BaseOptions):
                     res = restore.pop(0)
                     pad_layers.ParseHex(res, len(res))
                     p.SetLayerSet(pad_layers)
+                restore = self.extra_ffab_lines.pop(0)
+                if restore:
+                    for line in restore:
+                        m.Remove(line)
+                restore = self.extra_bfab_lines.pop(0)
+                if restore:
+                    for line in restore:
+                        m.Remove(line)
         fadhes = board.GetLayerID('F.Adhes')
         for gi in self.old_fadhes:
             gi.SetLayer(fadhes)
