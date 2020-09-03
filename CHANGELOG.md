@@ -18,7 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Marking components as "Do Not Fit"
   - Marking components as "Do Not Change"
 - The internal BoM format supports KiBoM and IBoM style variants
-- Schematic print to PDF supports variants. Not fitted components are crossed.
+- Schematic print to PDF support for variants. Not fitted components are crossed.
+- Position (Pick & Place) support for variants.
+- All plot formats (gerber, pdf, svg, etc.) support for variants:
+  - Pads removed from *.Paste
+  - Drawings removed from *.Adhes
+  - Components crossed in *.Fab
+
+### Fixed
+- Virtual components are always excluded from position files.
 
 ## [0.6.2] - 2020-08-25
 ### Changed
