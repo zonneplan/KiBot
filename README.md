@@ -849,7 +849,7 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%v.%x'] output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
         - `separate_files_for_front_and_back`: [boolean=true] generate two separated files, one for the top and another for the bottom.
         - `units`: [string='millimeters'] [millimeters,inches] units used for the positions.
-        - `variant`: [string=''] Board variant(s) to apply.
+        - `variant`: [string=''] Board variant to apply.
 
 * PS (Postscript)
   * Type: `ps`
@@ -916,6 +916,8 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `step` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `metric_units`: [boolean=true] use metric units instead of inches.
         - `min_distance`: [number=-1] the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
         - `no_virtual`: [boolean=false] used to exclude 3D models for components with 'virtual' attribute.
@@ -923,6 +925,7 @@ Next time you need this list just use an alias, like this:
                     The drill option uses the auxiliar reference defined by the user.
                     You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
         - `output`: [string='%f-%i%v.%x'] name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
+        - `variant`: [string=''] Board variant to apply.
 
 * SVG (Scalable Vector Graphics)
   * Type: `svg`

@@ -34,7 +34,7 @@ class PositionOptions(BaseOptions):
             self.units = 'millimeters'
             """ [millimeters,inches] units used for the positions """
             self.variant = ''
-            """ Board variant(s) to apply """
+            """ Board variant to apply """
             self.dnf_filter = Optionable
             """ [string|list(string)=''] Name of the filter to mark components as not fitted.
                 A short-cut to use for simple cases where a variant is an overkill """

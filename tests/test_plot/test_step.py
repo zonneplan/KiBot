@@ -47,3 +47,12 @@ def test_step_3():
     # Check all outputs are there
     ctx.expect_out_file(os.path.join(STEP_DIR, prj+'.step'))
     ctx.clean_up()
+
+
+def test_step_variant_1():
+    prj = 'kibom-variant_3'
+    ctx = context.TestContext('test_step_variant_1', prj, 'step_variant_1', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-3D.step')
+    ctx.clean_up()

@@ -667,7 +667,7 @@ outputs:
       separate_files_for_front_and_back: true
       # [string='millimeters'] [millimeters,inches] units used for the positions
       units: 'millimeters'
-      # [string=''] Board variant(s) to apply
+      # [string=''] Board variant to apply
       variant: ''
 
   # PS (Postscript):
@@ -743,6 +743,9 @@ outputs:
     type: 'step'
     dir: 'Example/step_dir'
     options:
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [boolean=true] use metric units instead of inches
       metric_units: true
       # [number=-1] the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm)
@@ -755,6 +758,8 @@ outputs:
       origin: 'grid'
       # [string='%f-%i%v.%x'] name for the generated STEP file (%i='3D' %x='step'). Affected by global options
       output: '%f-%i%v.%x'
+      # [string=''] Board variant to apply
+      variant: ''
 
   # SVG (Scalable Vector Graphics):
   # Unlike bitmaps SVG drawings can be scaled without losing resolution.

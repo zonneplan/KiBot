@@ -4,11 +4,16 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import re
+import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
+from tempfile import NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .misc import (KICAD2STEP, KICAD2STEP_ERR)
 from .gs import (GS)
-from .optionable import BaseOptions
+from .optionable import BaseOptions, Optionable
+from .registrable import RegOutput
+from .kiplot import load_sch
+from .fil_base import BaseFilter, apply_fitted_filter
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -30,7 +35,17 @@ class STEPOptions(BaseOptions):
             """ the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm) """
             self.output = GS.def_global_output
             """ name for the generated STEP file (%i='3D' %x='step') """
+            self.variant = ''
+            """ Board variant to apply """
+            self.dnf_filter = Optionable
+            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
+                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
+
+    def config(self):
+        super().config()
+        self.variant = RegOutput.check_variant(self.variant)
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
 
     @property
     def origin(self):
@@ -41,6 +56,46 @@ class STEPOptions(BaseOptions):
         if (val not in ['grid', 'drill']) and (re.match(r'[-\d\.]+\s*,\s*[-\d\.]+\s*$', val) is None):
             raise KiPlotConfigurationError('Origin must be `grid` or `drill` or `X,Y`')
         self._origin = val
+
+    def filter_components(self):
+        if not self.dnf_filter and not self.variant:
+            return GS.pcb_file
+        load_sch()
+        # Get the components list from the schematic
+        comps = GS.sch.get_components()
+        # Apply the filter
+        apply_fitted_filter(comps, self.dnf_filter)
+        # Apply the variant
+        if self.variant:
+            # Apply the variant
+            self.variant.filter(comps)
+        comps_hash = {c.ref: c for c in comps}
+        # Remove the 3D models for not fitted components
+        rem_models = []
+        for m in GS.board.GetModules():
+            ref = m.GetReference()
+            c = comps_hash.get(ref, None)
+            if c and not c.fitted:
+                models = m.Models()
+                rem_m_models = []
+                while not models.empty():
+                    rem_m_models.append(models.pop())
+                rem_models.append(rem_m_models)
+        # Save the PCB to a temporal file
+        with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
+            fname = f.name
+        logger.debug('Storing filtered PCB to `{}`'.format(fname))
+        GS.board.Save(fname)
+        # Undo the removing
+        for m in GS.board.GetModules():
+            ref = m.GetReference()
+            c = comps_hash.get(ref, None)
+            if c and not c.fitted:
+                models = m.Models()
+                restore = rem_models.pop(0)
+                for model in restore:
+                    models.push_front(model)
+        return fname
 
     def run(self, output_dir, board):
         # Output file name
@@ -64,7 +119,8 @@ class STEPOptions(BaseOptions):
         else:
             cmd.extend(['--user-origin', "{}{}".format(self.origin.replace(',', 'x'), units)])
         # The board
-        cmd.append(GS.pcb_file)
+        board_name = self.filter_components()
+        cmd.append(board_name)
         # Execute and inform is successful
         logger.debug('Executing: '+str(cmd))
         try:
@@ -76,6 +132,10 @@ class STEPOptions(BaseOptions):
             if e.output:
                 logger.debug('Output from command: '+e.output.decode())
             exit(KICAD2STEP_ERR)
+        finally:
+            # Remove the temporal PCB
+            if board_name != GS.pcb_file:
+                os.remove(board_name)
         logger.debug('Output from command:\n'+cmd_output.decode())
 
 
