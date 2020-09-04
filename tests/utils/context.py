@@ -310,7 +310,7 @@ class TestContext(object):
             logging.debug(msg+' OK')
             # logging.debug(' '+m.group(0))
 
-    def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False):
+    def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False, fuzz='5%'):
         """ For images and single page PDFs """
         if reference is None:
             reference = image
@@ -320,7 +320,7 @@ class TestContext(object):
             reference = os.path.join(REF_DIR, reference)
         cmd = ['compare',
                # Tolerate 5 % error in color
-               '-fuzz', '5%',
+               '-fuzz', fuzz,
                # Count how many pixels differ
                '-metric', 'AE',
                self.get_out_path(image),

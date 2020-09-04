@@ -105,7 +105,10 @@ def test_pcbdraw_variant_1():
     # Check all outputs are there
     fname = prj+'-top.png'
     ctx.expect_out_file(fname)
-    ctx.compare_image(fname)
+    # We use 30% because different versions of the tools are generating large differences
+    # in the borders. With 30% these differences are removed and we still detect is a
+    # components was removed.
+    ctx.compare_image(fname, fuzz='30%')
     ctx.clean_up()
 
 
@@ -116,7 +119,7 @@ def test_pcbdraw_variant_2():
     # Check all outputs are there
     fname = prj+'-top-C1.png'
     ctx.expect_out_file(fname)
-    ctx.compare_image(fname)
+    ctx.compare_image(fname, fuzz='30%')
     ctx.clean_up()
 
 
@@ -127,6 +130,6 @@ def test_pcbdraw_variant_3():
     # Check all outputs are there
     fname = prj+'-top.png'
     ctx.expect_out_file(fname)
-    ctx.compare_image(fname)
+    ctx.compare_image(fname, fuzz='30%')
     assert ctx.search_err("Ambiguous list of components to show .?none.? vs variant/filter")
     ctx.clean_up()
