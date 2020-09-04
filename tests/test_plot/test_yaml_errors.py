@@ -592,3 +592,10 @@ def test_error_wrong_fil_name():
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Filter names starting with (.*) are reserved")
     ctx.clean_up()
+
+
+def test_error_pcbdraw_comp_key():
+    ctx = context.TestContext('test_error_pcbdraw_comp_key', 'bom', 'error_pcbdraw_comp_key', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Option .?show_components.? must be any of")
+    ctx.clean_up()

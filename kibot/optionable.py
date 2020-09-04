@@ -22,8 +22,8 @@ def filter(v):
 class Optionable(object):
     """ A class to validate and hold configuration outputs/options.
         Is configured from a dict and the collected values are stored in its attributes. """
-    _str_values_re = compile(r"\[string=.*\] \[([^\]]+)\]")
-    _num_range_re = compile(r"\[number=.*\] \[(-?\d+),(-?\d+)\]")
+    _str_values_re = compile(r"string=.*\] \[([^\]]+)\]")
+    _num_range_re = compile(r"number=.*\] \[(-?\d+),(-?\d+)\]")
 
     def __init__(self):
         self._unkown_is_error = False
@@ -37,7 +37,7 @@ class Optionable(object):
         if not isinstance(val, str):
             raise KiPlotConfigurationError("Option `{}` must be a string".format(key))
         # If the docstring specifies the allowed values in the form [v1,v2...] enforce it
-        m = Optionable._str_values_re.match(doc)
+        m = Optionable._str_values_re.search(doc)
         if m:
             vals = m.group(1).split(',')
             if val not in vals:
@@ -48,7 +48,7 @@ class Optionable(object):
         if not isinstance(val, (int, float)):
             raise KiPlotConfigurationError("Option `{}` must be a number".format(key))
         # If the docstring specifies a range in the form [from-to] enforce it
-        m = Optionable._num_range_re.match(doc)
+        m = Optionable._num_range_re.search(doc)
         if m:
             min = float(m.group(1))
             max = float(m.group(2))

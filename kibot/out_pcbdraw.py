@@ -124,7 +124,7 @@ class PcbDrawOptions(BaseOptions):
             self.highlight = Optionable
             """ [list(string)=[]] list of components to highlight """
             self.show_components = Optionable
-            """ [string|list(string)=none] [none,all] list of components to draw, can be also a string for none or all.
+            """ [list(string)|string=none] [none,all] list of components to draw, can be also a string for none or all.
                 The default is none """
             self.vcuts = False
             """ render V-CUTS on the Cmts.User layer """
