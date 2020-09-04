@@ -725,6 +725,8 @@ Next time you need this list just use an alias, like this:
     - `options`: [dict] Options for the `pcbdraw` output.
       * Valid keys:
         - `bottom`: [boolean=false] render the bottom side of the board (default is top side).
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `dpi`: [number=300] [10,1200] dots per inch (resolution) of the generated image.
         - `format`: [string='svg'] [svg,png,jpg] output format. Only used if no `output` is specified.
         - `highlight`: [list(string)=[]] list of components to highlight.
@@ -734,7 +736,7 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%v.%x'] name for the generated file. Affected by global options.
         - `placeholder`: [boolean=false] show placeholder for missing components.
         - `remap`: [dict|None] replacements for PCB references using components (lib:component).
-        - `show_components`: [string|list(string)=none] [none,all] list of components to draw, can be also a string for none or all.
+        - `show_components`: [list(string)|string=none] [none,all] list of components to draw, can be also a string for none or all.
                              The default is none.
         - `style`: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
           * Valid keys:
@@ -748,6 +750,7 @@ Next time you need this list just use an alias, like this:
             - `pads`: [string='#b5ae30'] color for the exposed pads (metal finish).
             - `silk`: [string='#f0f0f0'] color for the silk screen.
             - `vcut`: [string='#bf2600'] color for the V-CUTS.
+        - `variant`: [string=''] Board variant to apply.
         - `vcuts`: [boolean=false] render V-CUTS on the Cmts.User layer.
         - `warnings`: [string='visible'] [visible,all,none] using visible only the warnings about components in the visible side are generated.
 

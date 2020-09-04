@@ -13,6 +13,7 @@ outputs:
       mirror: True
       vcuts: True
       warnings: all
+      show_components: all
 
   - name: PcbDraw
     comment: "PcbDraw test bottom"

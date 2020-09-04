@@ -13,7 +13,10 @@ from .misc import PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW
 from .kiplot import check_script
 from .error import KiPlotConfigurationError
 from .gs import (GS)
-from .optionable import (BaseOptions, Optionable)
+from .optionable import BaseOptions, Optionable
+from .registrable import RegOutput
+from .kiplot import load_sch
+from .fil_base import BaseFilter, apply_fitted_filter
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -136,6 +139,11 @@ class PcbDrawOptions(BaseOptions):
             """ [svg,png,jpg] output format. Only used if no `output` is specified """
             self.output = GS.def_global_output
             """ name for the generated file """
+            self.variant = ''
+            """ Board variant to apply """
+            self.dnf_filter = Optionable
+            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
+                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
 
     def config(self):
@@ -150,10 +158,15 @@ class PcbDrawOptions(BaseOptions):
             self.highlight = None
         else:
             self.highlight = ','.join(self.highlight)
+        # Variants
+        self.variant = RegOutput.check_variant(self.variant)
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         # Filter
         if isinstance(self.show_components, type):
             self.show_components = ''
         elif isinstance(self.show_components, str):
+            if self.variant or self.dnf_filter:
+                logger.warning('Ambiguous list of components to show `{}` vs variant/filter'.format(self.show_components))
             if self.show_components == 'none':
                 self.show_components = ''
             else:
@@ -204,6 +217,39 @@ class PcbDrawOptions(BaseOptions):
             f.close()
             return f.name
 
+    def get_filtered_refs(self):
+        if not self.dnf_filter and not self.variant:
+            return []
+        load_sch()
+        # Get the components list from the schematic
+        comps = GS.sch.get_components()
+        # Apply the filter
+        apply_fitted_filter(comps, self.dnf_filter)
+        # Apply the variant
+        if self.variant:
+            # Apply the variant
+            self.variant.filter(comps)
+        return [c.ref for c in comps if c.fitted]
+
+    def _append_output(self, cmd, output):
+        svg = None
+        if self.format == 'svg':
+            cmd.append(output)
+        else:
+            # PNG and JPG outputs are unreliable
+            if shutil.which(SVG2PNG) is None:
+                logger.warning('`{}` not installed, using unreliable PNG/JPG conversion'.format(SVG2PNG))
+                logger.warning('If you experiment problems install `librsvg2-bin` or equivalent')
+                cmd.append(output)
+            elif shutil.which(CONVERT) is None:
+                logger.warning('`{}` not installed, using unreliable PNG/JPG conversion'.format(CONVERT))
+                logger.warning('If you experiment problems install `imagemagick` or equivalent')
+                cmd.append(output)
+            else:
+                svg = _get_tmp_name('.svg')
+                cmd.append(svg)
+        return svg
+
     def run(self, output_dir, board):
         check_script(PCBDRAW, URL_PCBDRAW, '0.6.0')
         # Output file name
@@ -231,6 +277,10 @@ class PcbDrawOptions(BaseOptions):
         if self.highlight:
             cmd.extend(['-a', self.highlight])
         if self.show_components is not None:
+            to_add = ','.join(self.get_filtered_refs())
+            if self.show_components and to_add:
+                self.show_components += ','
+            self.show_components += to_add
             cmd.extend(['-f', self.show_components])
         if self.vcuts:
             cmd.append('-v')
@@ -247,22 +297,7 @@ class PcbDrawOptions(BaseOptions):
             tmp_remap = None
         # The board & output
         cmd.append(GS.pcb_file)
-        svg = None
-        if self.format == 'svg':
-            cmd.append(output)
-        else:
-            # PNG and JPG outputs are unreliable
-            if shutil.which(SVG2PNG) is None:
-                logger.warning('`{}` not installed, using unreliable PNG/JPG conversion'.format(SVG2PNG))
-                logger.warning('If you experiment problems install `librsvg2-bin` or equivalent')
-                cmd.append(output)
-            elif shutil.which(CONVERT) is None:
-                logger.warning('`{}` not installed, using unreliable PNG/JPG conversion'.format(CONVERT))
-                logger.warning('If you experiment problems install `imagemagick` or equivalent')
-                cmd.append(output)
-            else:
-                svg = _get_tmp_name('.svg')
-                cmd.append(svg)
+        svg = self._append_output(cmd, output)
         # Execute and inform is successful
         _run_command(cmd, tmp_remap, tmp_style)
         if svg is not None:

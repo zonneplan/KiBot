@@ -110,6 +110,8 @@ gen_ref:
 	mv "$(REFDIR)no_inductor/test_v5-schematic_(no_L).pdf" $(REFDIR)
 	rmdir $(REFDIR)no_inductor/
 	src/kibot -b tests/board_samples/kibom-variant_4.kicad_pcb -c tests/yaml_samples/pdf_variant_1.kibot.yaml -d $(REFDIR)
+	src/kibot -b tests/board_samples/kibom-variant_3.kicad_pcb -c tests/yaml_samples/pcbdraw_variant_1.kibot.yaml -d $(REFDIR)
+	src/kibot -b tests/board_samples/kibom-variant_3.kicad_pcb -c tests/yaml_samples/pcbdraw_variant_2.kibot.yaml -d $(REFDIR)
 	cp -a $(REFILL).ok $(REFILL)
 
 doc:

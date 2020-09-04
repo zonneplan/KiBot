@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Drawings removed from *.Adhes
   - Components crossed in *.Fab
 - STEP (3D) support for variants.
+- PcbDraw support for variants.
 
 ### Fixed
 - Virtual components are always excluded from position files.

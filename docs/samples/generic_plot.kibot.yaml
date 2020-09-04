@@ -531,6 +531,9 @@ outputs:
     options:
       # [boolean=false] render the bottom side of the board (default is top side)
       bottom: false
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [number=300] [10,1200] dots per inch (resolution) of the generated image
       dpi: 300
       # [string='svg'] [svg,png,jpg] output format. Only used if no `output` is specified
@@ -549,7 +552,7 @@ outputs:
       placeholder: false
       # [dict|None] replacements for PCB references using components (lib:component)
       remap:
-      # [string|list(string)=none] [none,all] list of components to draw, can be also a string for none or all.
+      # [list(string)|string=none] [none,all] list of components to draw, can be also a string for none or all.
       # The default is none
       show_components: none
       # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
@@ -574,6 +577,8 @@ outputs:
         silk: '#f0f0f0'
         # [string='#bf2600'] color for the V-CUTS
         vcut: '#bf2600'
+      # [string=''] Board variant to apply
+      variant: ''
       # [boolean=false] render V-CUTS on the Cmts.User layer
       vcuts: false
       # [string='visible'] [visible,all,none] using visible only the warnings about components in the visible side are generated

@@ -69,6 +69,7 @@ def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
         o.style = ''
         o.remap = None
         o.format = 'jpg'
+        o.config()
         cov.load()
         cov.start()
         o.run('', None)
@@ -87,6 +88,7 @@ def test_pcbdraw_miss_convert(caplog, monkeypatch):
         o.style = ''
         o.remap = None
         o.format = 'jpg'
+        o.config()
         cov.load()
         cov.start()
         o.run('', None)
@@ -94,3 +96,37 @@ def test_pcbdraw_miss_convert(caplog, monkeypatch):
         cov.save()
         assert 'using unreliable PNG/JPG' in caplog.text, caplog.text
         assert 'imagemagick' in caplog.text, caplog.text
+
+
+def test_pcbdraw_variant_1():
+    prj = 'kibom-variant_3'
+    ctx = context.TestContext('test_pcbdraw_variant_1', prj, 'pcbdraw_variant_1', '')
+    ctx.run()
+    # Check all outputs are there
+    fname = prj+'-top.png'
+    ctx.expect_out_file(fname)
+    ctx.compare_image(fname)
+    ctx.clean_up()
+
+
+def test_pcbdraw_variant_2():
+    prj = 'kibom-variant_3'
+    ctx = context.TestContext('test_pcbdraw_variant_2', prj, 'pcbdraw_variant_2', '')
+    ctx.run()
+    # Check all outputs are there
+    fname = prj+'-top-C1.png'
+    ctx.expect_out_file(fname)
+    ctx.compare_image(fname)
+    ctx.clean_up()
+
+
+def test_pcbdraw_variant_3():
+    prj = 'kibom-variant_3'
+    ctx = context.TestContext('test_pcbdraw_variant_1', prj, 'pcbdraw_variant_3', '')
+    ctx.run()
+    # Check all outputs are there
+    fname = prj+'-top.png'
+    ctx.expect_out_file(fname)
+    ctx.compare_image(fname)
+    assert ctx.search_err("Ambiguous list of components to show .?none.? vs variant/filter")
+    ctx.clean_up()
