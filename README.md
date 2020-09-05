@@ -589,13 +589,19 @@ Next time you need this list just use an alias, like this:
     - `options`: [dict] Options for the `ibom` output.
       * Valid keys:
         - `blacklist`: [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
+                       IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `blacklist_empty_val`: [boolean=false] Blacklist components with empty value.
+                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `board_rotation`: [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
         - `bom_view`: [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view.
         - `checkboxes`: [string='Sourced,Placed'] Comma separated list of checkbox columns.
         - `dark_mode`: [boolean=false] Default to dark mode.
-        - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status. Components with this field not empty will be
-                       blacklisted.
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+                        Avoid using it in conjunction with with IBoM native filtering options.
+        - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status.
+                       Components with this field not empty will be blacklisted.
+                       IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `extra_fields`: [string=''] Comma separated list of extra fields to pull from netlist or xml file.
         - `hide_pads`: [boolean=false] Hide footprint pads by default.
         - `hide_silkscreen`: [boolean=false] Hide silkscreen by default.
@@ -615,14 +621,20 @@ Next time you need this list just use an alias, like this:
                          Note that this name is used only when output is ''.
         - `netlist_file`: [string=''] Path to netlist or xml file.
         - `no_blacklist_virtual`: [boolean=false] Do not blacklist virtual components.
+                                  IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
         - `normalize_field_case`: [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
         - `output`: [string='%f-%i%v.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
         - `show_fabrication`: [boolean=false] Show fabrication layer by default.
         - `sort_order`: [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once.
+        - `variant`: [string=''] Board variant to apply.
+                     Avoid using it in conjunction with with IBoM native filtering options.
         - `variant_field`: [string=''] Name of the extra field that stores board variant for component.
+                           IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `variants_blacklist`: [string=''] List of board variants to exclude from the BOM.
+                                IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
+                                IBoM option, avoid using in conjunction with KiBot variants/filters.
 
 * KiBoM (KiCad Bill of Materials)
   * Type: `kibom`
