@@ -8,6 +8,7 @@ Implements the IBoM variants mechanism.
 """
 from .optionable import Optionable
 from .gs import GS
+from .fil_base import BaseFilter
 from .macros import macros, document, variant_class  # noqa: F401
 from . import log
 
@@ -46,6 +47,9 @@ class IBoM(BaseVariant):  # noqa: F821
 
     def config(self):
         super().config()
+        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
+        self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
         self.variants_blacklist = self._force_list(self.variants_blacklist)
         self.variants_whitelist = self._force_list(self.variants_whitelist)
 

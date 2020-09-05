@@ -12,7 +12,6 @@ from .gs import GS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
-from .misc import IFILL_MECHANICAL
 from .kiplot import get_board_comps_data
 from .macros import macros, document, output_class  # noqa: F401
 from .bom.columnlist import ColumnList, BoMError
@@ -273,6 +272,9 @@ class BoMOptions(BaseOptions):
             self.variant.config_field = self.fit_field
             self.variant.variant = []
             self.variant.name = 'default'
+            # Delegate any filter to the variant
+            self.variant.set_def_filters(self.exclude_filter, self.dnf_filter, self.dnc_filter)
+            self.exclude_filter = self.dnf_filter = self.dnc_filter = None
             self.variant.config()  # Fill or adjust any detail
 
     def config(self):
@@ -303,9 +305,9 @@ class BoMOptions(BaseOptions):
         if isinstance(self.component_aliases, type):
             self.component_aliases = DEFAULT_ALIASES
         # Filters
-        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', IFILL_MECHANICAL)
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter', '_kibom_dnf_'+self.fit_field)
-        self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter', '_kibom_dnc_'+self.fit_field)
+        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
+        self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
         # Variants, make it an object
         self._normalize_variant()
         # Field names are handled in lowercase

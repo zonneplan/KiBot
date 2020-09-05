@@ -180,6 +180,10 @@ class BaseFilter(RegFilter):
         for name in names:
             if not name:
                 continue
+            if isinstance(name, Registrable):
+                # A filter already converted
+                filters.append(name)
+                continue
             if name[0] == '!':
                 invert = True
                 name = name[1:]

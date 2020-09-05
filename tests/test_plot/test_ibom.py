@@ -118,4 +118,3 @@ def test_ibom_variant_1():
     logging.debug("* `bla bla` variant")
     check_modules(ctx, prj+'-ibom_bla_bla.html', ['R1', 'R4'])
     ctx.clean_up()
-
