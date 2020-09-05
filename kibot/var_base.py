@@ -5,7 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegVariant
 from .optionable import Optionable
-from .fil_base import BaseFilter, apply_in_bom_filter, apply_fitted_filter, apply_fixed_filter
+from .fil_base import apply_in_bom_filter, apply_fitted_filter, apply_fixed_filter
 from .macros import macros, document  # noqa: F401
 
 
@@ -32,15 +32,6 @@ class BaseVariant(RegVariant):
             self.dnc_filter = Optionable
             """ [string|list(string)=''] Name of the filter to mark components as 'Do Not Change'.
                 Use '_kibom_dnc' for the default KiBoM behavior """
-
-    def config(self):
-        super().config()
-        # exclude_filter
-        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
-        # dnf_filter
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
-        # dnc_filter
-        self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
 
     def filter(self, comps, reset):
         # Apply all the filters

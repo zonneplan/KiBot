@@ -2,8 +2,10 @@ import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR)
 from .gs import (GS)
-from .kiplot import (check_script)
-from .optionable import BaseOptions
+from .optionable import BaseOptions, Optionable
+from .registrable import RegOutput
+from .kiplot import check_script, load_sch
+from .fil_base import BaseFilter, apply_fitted_filter
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -52,28 +54,62 @@ class IBoMOptions(BaseOptions):
             """ Include netlist information in output. """
             self.sort_order = 'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'
             """ Default sort order for components. Must contain '~' once """
-            self.blacklist = ''
-            """ List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*' """
-            self.no_blacklist_virtual = False
-            """ Do not blacklist virtual components """
-            self.blacklist_empty_val = False
-            """ Blacklist components with empty value """
             self.netlist_file = ''
             """ Path to netlist or xml file """
             self.extra_fields = ''
             """ Comma separated list of extra fields to pull from netlist or xml file """
             self.normalize_field_case = False
             """ Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field """
+            self.blacklist = ''
+            """ List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
+                IBoM option, avoid using in conjunction with KiBot variants/filters """
+            self.no_blacklist_virtual = False
+            """ Do not blacklist virtual components.
+                IBoM option, avoid using in conjunction with KiBot variants/filters """
+            self.blacklist_empty_val = False
+            """ Blacklist components with empty value.
+                IBoM option, avoid using in conjunction with KiBot variants/filters """
             self.variant_field = ''
-            """ Name of the extra field that stores board variant for component """
+            """ Name of the extra field that stores board variant for component.
+                IBoM option, avoid using in conjunction with KiBot variants/filters """
             self.variants_whitelist = ''
-            """ List of board variants to include in the BOM """
+            """ List of board variants to include in the BOM.
+                IBoM option, avoid using in conjunction with KiBot variants/filters """
             self.variants_blacklist = ''
-            """ List of board variants to exclude from the BOM """
+            """ List of board variants to exclude from the BOM.
+                IBoM option, avoid using in conjunction with KiBot variants/filters """
             self.dnp_field = ''
-            """ Name of the extra field that indicates do not populate status. Components with this field not empty will be
-                blacklisted """
+            """ Name of the extra field that indicates do not populate status.
+                Components with this field not empty will be blacklisted.
+                IBoM option, avoid using in conjunction with KiBot variants/filters """
+            self.variant = ''
+            """ Board variant to apply.
+                Avoid using it in conjunction with with IBoM native filtering options """
+            self.dnf_filter = Optionable
+            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
+                A short-cut to use for simple cases where a variant is an overkill.
+                Avoid using it in conjunction with with IBoM native filtering options """
         super().__init__()
+
+    def config(self):
+        super().config()
+        self.variant = RegOutput.check_variant(self.variant)
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
+
+    # TODO: move to a base class?
+    def get_filtered_refs(self):
+        if not self.dnf_filter and not self.variant:
+            return []
+        load_sch()
+        # Get the components list from the schematic
+        comps = GS.sch.get_components()
+        # Apply the filter
+        apply_fitted_filter(comps, self.dnf_filter)
+        # Apply the variant
+        if self.variant:
+            # Apply the variant
+            self.variant.filter(comps)
+        return [c.ref for c in comps if not c.fitted]
 
     def run(self, output_dir, board):
         check_script(CMD_IBOM, URL_IBOM)
@@ -87,9 +123,14 @@ class IBoMOptions(BaseOptions):
             output = self.expand_filename(output_dir, self.output, 'ibom', 'html')
             self.name_format = 'ibom'
             cur = os.path.join(output_dir, 'ibom.html')
+        # Apply variants/filters
+        to_remove = ','.join(self.get_filtered_refs())
+        if self.blacklist and to_remove:
+            self.blacklist += ','
+        self.blacklist += to_remove
         # Convert attributes into options
         for k, v in self.get_attrs_gen():
-            if not v or k == 'output':
+            if not v or k in ['output', 'variant', 'dnf_filter']:
                 continue
             cmd.append(BaseOutput.attr2longopt(k))  # noqa: F821
             if not isinstance(v, bool):  # must be str/(int, float)

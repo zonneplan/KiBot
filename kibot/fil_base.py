@@ -56,7 +56,7 @@ class NotFilter(Registrable):
     """ A filter that returns the inverted result """
     def __init__(self, filter):
         super().__init__()
-        self.name = filter.name
+        self.name = 'Not '+filter.name
         self.type = '!'+filter.type
         self.comment = filter.comment
         self._filter = filter
@@ -179,6 +179,10 @@ class BaseFilter(RegFilter):
         filters = []
         for name in names:
             if not name:
+                continue
+            if isinstance(name, Registrable):
+                # A filter already converted
+                filters.append(name)
                 continue
             if name[0] == '!':
                 invert = True

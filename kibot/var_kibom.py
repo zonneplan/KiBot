@@ -8,6 +8,8 @@ Implements the KiBoM variants mechanism.
 """
 from .optionable import Optionable
 from .gs import GS
+from .misc import IFILL_MECHANICAL
+from .fil_base import BaseFilter
 from .macros import macros, document, variant_class  # noqa: F401
 from . import log
 
@@ -22,13 +24,23 @@ class KiBoM(BaseVariant):  # noqa: F821
         +VARIANT includes the component only if we are using this variant. """
     def __init__(self):
         super().__init__()
+        self._def_exclude_filter = None
+        self._def_dnf_filter = None
+        self._def_dnc_filter = None
         with document:
             self.config_field = 'Config'
             """ Name of the field used to clasify components """
             self.variant = Optionable
             """ [string|list(string)=''] Board variant(s) """
 
+    def set_def_filters(self, exclude_filter, dnf_filter, dnc_filter):
+        """ Filters delegated to the variant """
+        self._def_exclude_filter = exclude_filter
+        self._def_dnf_filter = dnf_filter
+        self._def_dnc_filter = dnc_filter
+
     def config(self):
+        # Now we can let the parent initialize the filters
         super().config()
         # Variants, ensure a list
         if isinstance(self.variant, type):
@@ -39,6 +51,22 @@ class KiBoM(BaseVariant):  # noqa: F821
             else:
                 self.variant = []
         self.variant = [v.lower() for v in self.variant]
+        # Filters priority:
+        # 1) Defined here
+        # 2) Delegated from the output format
+        # 3) KiBoM default behavior
+        # exclude_filter
+        if not self._def_exclude_filter:
+            self._def_exclude_filter = IFILL_MECHANICAL
+        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', self._def_exclude_filter)
+        # dnf_filter
+        if not self._def_dnf_filter:
+            self._def_dnf_filter = '_kibom_dnf_'+self.config_field
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter', self._def_dnf_filter)
+        # dnc_filter
+        if not self._def_dnc_filter:
+            self._def_dnc_filter = '_kibom_dnc_'+self.config_field
+        self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter', self._def_dnc_filter)
         # Config field must be lowercase
         self.config_field = self.config_field.lower()
 

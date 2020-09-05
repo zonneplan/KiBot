@@ -348,9 +348,11 @@ outputs:
     type: 'ibom'
     dir: 'Example/ibom_dir'
     options:
-      # [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'
+      # [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
+      # IBoM option, avoid using in conjunction with KiBot variants/filters
       blacklist: ''
-      # [boolean=false] Blacklist components with empty value
+      # [boolean=false] Blacklist components with empty value.
+      # IBoM option, avoid using in conjunction with KiBot variants/filters
       blacklist_empty_val: false
       # [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5
       board_rotation: 0
@@ -360,8 +362,13 @@ outputs:
       checkboxes: 'Sourced,Placed'
       # [boolean=false] Default to dark mode
       dark_mode: false
-      # [string=''] Name of the extra field that indicates do not populate status. Components with this field not empty will be
-      # blacklisted
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill.
+      # Avoid using it in conjunction with with IBoM native filtering options
+      dnf_filter: ''
+      # [string=''] Name of the extra field that indicates do not populate status.
+      # Components with this field not empty will be blacklisted.
+      # IBoM option, avoid using in conjunction with KiBot variants/filters
       dnp_field: ''
       # [string=''] Comma separated list of extra fields to pull from netlist or xml file
       extra_fields: ''
@@ -390,7 +397,8 @@ outputs:
       name_format: 'ibom'
       # [string=''] Path to netlist or xml file
       netlist_file: ''
-      # [boolean=false] Do not blacklist virtual components
+      # [boolean=false] Do not blacklist virtual components.
+      # IBoM option, avoid using in conjunction with KiBot variants/filters
       no_blacklist_virtual: false
       # [boolean=false] Do not redraw pcb on drag by default
       no_redraw_on_drag: false
@@ -402,11 +410,17 @@ outputs:
       show_fabrication: false
       # [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once
       sort_order: 'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'
-      # [string=''] Name of the extra field that stores board variant for component
+      # [string=''] Board variant to apply.
+      # Avoid using it in conjunction with with IBoM native filtering options
+      variant: ''
+      # [string=''] Name of the extra field that stores board variant for component.
+      # IBoM option, avoid using in conjunction with KiBot variants/filters
       variant_field: ''
-      # [string=''] List of board variants to exclude from the BOM
+      # [string=''] List of board variants to exclude from the BOM.
+      # IBoM option, avoid using in conjunction with KiBot variants/filters
       variants_blacklist: ''
-      # [string=''] List of board variants to include in the BOM
+      # [string=''] List of board variants to include in the BOM.
+      # IBoM option, avoid using in conjunction with KiBot variants/filters
       variants_whitelist: ''
 
   # KiBoM (KiCad Bill of Materials):
