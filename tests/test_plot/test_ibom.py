@@ -12,12 +12,16 @@ pytest-3 --log-cli-level debug
 
 import os
 import sys
+import re
+import json
+import logging
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
+from utils.lzstring import LZString
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
@@ -25,6 +29,24 @@ from kibot.misc import (BOM_ERROR)
 
 BOM_DIR = 'BoM'
 IBOM_OUT = 'bom-ibom.html'
+
+
+def check_modules(ctx, fname, expected):
+    with open(ctx.get_out_path(os.path.join(BOM_DIR, fname)), 'rt') as f:
+        text = f.read()
+    m = re.search(r'var pcbdata = JSON.parse\(LZString.decompressFromBase64\("(.*)"\)\)', text, re.MULTILINE)
+    assert m, text
+    lz = LZString()
+    js = lz.decompressFromBase64(m.group(1))
+    data = json.loads(js)
+    skipped = data['bom']['skipped']
+    modules = [m['ref'] for m in data['modules']]
+    assert len(modules)-len(skipped) == len(expected)
+    logging.debug("{} components OK".format(len(expected)))
+    for m in expected:
+        assert m in modules
+        assert modules.index(m) not in skipped
+    logging.debug("List of components OK")
 
 
 def test_ibom():
@@ -43,7 +65,9 @@ def test_ibom_no_ops():
     prj = 'bom'
     ctx = context.TestContext('BoM_interactiveNoOps', prj, 'ibom_no_ops', BOM_DIR)
     ctx.run()
-    ctx.expect_out_file(os.path.join(BOM_DIR, IBOM_OUT))
+    fname = os.path.join(BOM_DIR, IBOM_OUT)
+    ctx.expect_out_file(fname)
+    check_modules(ctx, IBOM_OUT, ['C1', 'R1', 'R2'])
     ctx.clean_up()
 
 
@@ -72,3 +96,26 @@ def test_ibom_all_ops():
                              r'"layer_view": "B"',
                              r'"extra_fields": \["EF"\]'])
     ctx.clean_up()
+
+
+def test_ibom_variant_1():
+    prj = 'kibom-variante'
+    ctx = context.TestContext('test_ibom_variant_1', prj, 'ibom_variant_1', BOM_DIR)
+    ctx.run(extra_debug=True)
+    # No variant
+    logging.debug("* No variant")
+    check_modules(ctx, prj+'-ibom.html', ['R1', 'R2', 'R3'])
+    # V1
+    logging.debug("* t1_v1 variant")
+    check_modules(ctx, prj+'-ibom_(V1).html', ['R1', 'R2'])
+    # V2
+    logging.debug("* t1_v2 variant")
+    check_modules(ctx, prj+'-ibom_(V2).html', ['R1', 'R3'])
+    # V3
+    logging.debug("* t1_v3 variant")
+    check_modules(ctx, prj+'-ibom_V3.html', ['R1', 'R4'])
+    # V1,V3
+    logging.debug("* `bla bla` variant")
+    check_modules(ctx, prj+'-ibom_bla_bla.html', ['R1', 'R4'])
+    ctx.clean_up()
+
