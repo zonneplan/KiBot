@@ -56,7 +56,7 @@ class NotFilter(Registrable):
     """ A filter that returns the inverted result """
     def __init__(self, filter):
         super().__init__()
-        self.name = filter.name
+        self.name = 'Not '+filter.name
         self.type = '!'+filter.type
         self.comment = filter.comment
         self._filter = filter
