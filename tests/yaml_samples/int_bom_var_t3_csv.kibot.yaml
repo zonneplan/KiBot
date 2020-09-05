@@ -9,6 +9,8 @@ variants:
     type: kibom
     file_id: '_(V1)'
     variant: V1
+    # This isn't needed is just to be sure we can default to _kibom_dnc_config
+    dnc_filter: '_kibom_dnc'
 
   - name: 't1_v1b'
     comment: 'Test 1 Variant V1'

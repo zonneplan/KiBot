@@ -38,7 +38,6 @@ outputs:
     type: ibom
     dir: BoM
     options:
-      dnf_filter: '_kibom_dnf_Config'
       variant: 'default'
 
   - name: 'bom_internal_v1'
@@ -46,7 +45,6 @@ outputs:
     type: ibom
     dir: BoM
     options:
-      dnf_filter: '_kibom_dnf_Config'
       variant: t1_v1
 
   - name: 'bom_internal_v2'
@@ -54,7 +52,6 @@ outputs:
     type: ibom
     dir: BoM
     options:
-      dnf_filter: '_kibom_dnf_Config'
       variant: t1_v2
 
   - name: 'bom_internal_v3'
@@ -62,7 +59,6 @@ outputs:
     type: ibom
     dir: BoM
     options:
-      dnf_filter: '_kibom_dnf_Config'
       variant: t1_v3
 
   - name: 'bom_internal_bla_bla'
@@ -70,5 +66,6 @@ outputs:
     type: ibom
     dir: BoM
     options:
-      dnf_filter: '_kibom_dnf_Config'
       variant: 'bla bla'
+      # This will let only R4
+      blacklist: R1

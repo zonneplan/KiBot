@@ -116,5 +116,5 @@ def test_ibom_variant_1():
     check_modules(ctx, prj+'-ibom_V3.html', ['R1', 'R4'])
     # V1,V3
     logging.debug("* `bla bla` variant")
-    check_modules(ctx, prj+'-ibom_bla_bla.html', ['R1', 'R4'])
+    check_modules(ctx, prj+'-ibom_bla_bla.html', ['R4'])
     ctx.clean_up()
