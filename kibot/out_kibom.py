@@ -321,7 +321,8 @@ class KiBoMOptions(BaseOptions):
             """ Board variant(s), used to determine which components
                 are output to the BoM. To specify multiple variants,
                 with a BOM file exported for each variant, separate
-                variants with the ';' (semicolon) character """
+                variants with the ';' (semicolon) character.
+                This isn't related to the KiBot concept of variants """
             self.conf = KiBoMConfig
             """ [string|dict] BoM configuration file, relative to PCB.
                 You can also define the configuration here, will be stored in `config.kibom.ini` """
@@ -392,6 +393,8 @@ class KiBoM(BaseOutput):  # noqa: F821
     """ KiBoM (KiCad Bill of Materials)
         Used to generate the BoM in HTML or CSV format using the KiBoM plug-in.
         For more information: https://github.com/INTI-CMNB/KiBoM
+        Note that this output is provided as a compatibility tool.
+        We recommend using the `bom` output instead.
         This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema. """
     def __init__(self):
         super().__init__()
