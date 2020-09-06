@@ -109,6 +109,9 @@ gen_ref:
 	src/kibot -c tests/yaml_samples/print_pdf_no_inductors_1.kibot.yaml -e tests/board_samples/test_v5.sch -d $(REFDIR)
 	mv "$(REFDIR)no_inductor/test_v5-schematic_(no_L).pdf" $(REFDIR)
 	rmdir $(REFDIR)no_inductor/
+	src/kibot -c tests/yaml_samples/print_svg_no_inductors_1.kibot.yaml -e tests/board_samples/test_v5.sch -d $(REFDIR)
+	mv "$(REFDIR)no_inductor/test_v5-schematic_(no_L).svg" $(REFDIR)
+	-@rm -rf $(REFDIR)no_inductor/
 	src/kibot -b tests/board_samples/kibom-variant_4.kicad_pcb -c tests/yaml_samples/pdf_variant_1.kibot.yaml -d $(REFDIR)
 	src/kibot -b tests/board_samples/kibom-variant_3.kicad_pcb -c tests/yaml_samples/pcbdraw_variant_1.kibot.yaml -d $(REFDIR)
 	src/kibot -b tests/board_samples/kibom-variant_3.kicad_pcb -c tests/yaml_samples/pcbdraw_variant_2.kibot.yaml -d $(REFDIR)

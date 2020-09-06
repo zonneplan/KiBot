@@ -830,6 +830,12 @@ outputs:
     type: 'svg_sch_print'
     dir: 'Example/svg_sch_print_dir'
     options:
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [string='%f-%i%v.%x'] filename for the output SVG (%i=schematic %x=svg). Affected by global options
       output: '%f-%i%v.%x'
+      # [string=''] Board variant to apply.
+      # Not fitted components are crossed
+      variant: ''
 

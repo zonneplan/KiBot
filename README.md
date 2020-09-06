@@ -989,7 +989,11 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `svg_sch_print` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `output`: [string='%f-%i%v.%x'] filename for the output SVG (%i=schematic %x=svg). Affected by global options.
+        - `variant`: [string=''] Board variant to apply.
+                     Not fitted components are crossed.
 
 
 ## Using KiBot

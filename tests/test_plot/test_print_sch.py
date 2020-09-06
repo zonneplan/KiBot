@@ -107,6 +107,18 @@ def test_print_sch_variant_ni_1():
     ctx.clean_up()
 
 
+def test_print_sch_svg_variant_ni_1():
+    """ SVG using a variant """
+    prj = 'test_v5'  # Is the most complete, contains every KiCad object I know
+    ctx = context.TestContextSCH('test_print_sch_svg_variant_ni_1', prj, 'print_svg_no_inductors_1', PDF_DIR)
+    ctx.run()
+    r_name = 'test_v5-schematic_(no_L).svg'
+    o_name = os.path.join(NI_DIR, r_name)
+    ctx.expect_out_file(o_name)
+    ctx.compare_image(o_name, r_name)
+    ctx.clean_up()
+
+
 def test_print_sch_variant_ni_2():
     """ Using a filter """
     prj = 'test_v5'  # Is the most complete, contains every KiCad object I know

@@ -318,12 +318,23 @@ class TestContext(object):
             reference = self.get_out_path(reference)
         else:
             reference = os.path.join(REF_DIR, reference)
+        image = self.get_out_path(image)
+        png_ref = None
+        if reference[-3:] == 'svg':
+            png_ref = reference[:-3]+'png'
+            subprocess.check_call(['rsvg-convert', '-d', '300', '-p', '300', '-o', png_ref, reference])
+            reference = png_ref
+        png_image = None
+        if image[-3:] == 'svg':
+            png_image = image[:-3]+'png'
+            subprocess.check_call(['rsvg-convert', '-d', '300', '-p', '300', '-o', png_image, image])
+            image = png_image
         cmd = ['compare',
                # Tolerate 5 % error in color
                '-fuzz', fuzz,
                # Count how many pixels differ
                '-metric', 'AE',
-               self.get_out_path(image),
+               image,
                reference,
                # Avoid the part where KiCad version is printed
                '-crop', '100%x92%+0+0', '+repage',
@@ -336,6 +347,10 @@ class TestContext(object):
         # logging.debug('MSE={} ({})'.format(m.group(1), m.group(2)))
         ae = int(res.decode())
         logging.debug('AE=%d' % ae)
+        if png_ref:
+            os.remove(png_ref)
+        if png_image:
+            os.remove(png_image)
         assert ae == 0
 
     def compare_pdf(self, gen, reference=None, diff='diff-{}.png'):
