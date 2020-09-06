@@ -8,19 +8,16 @@
 import operator
 from datetime import datetime
 from pcbnew import (IU_PER_MM, IU_PER_MILS)
-from .optionable import BaseOptions, Optionable
-from .registrable import RegOutput
 from .gs import GS
 from .misc import UI_SMD, UI_VIRTUAL
-from .kiplot import load_sch
+from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
-from .fil_base import BaseFilter, apply_fitted_filter
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-class PositionOptions(BaseOptions):
+class PositionOptions(VariantOptions):
     def __init__(self):
         with document:
             self.format = 'ASCII'
@@ -33,17 +30,7 @@ class PositionOptions(BaseOptions):
             """ output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
             self.units = 'millimeters'
             """ [millimeters,inches] units used for the positions """
-            self.variant = ''
-            """ Board variant to apply """
-            self.dnf_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
-                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
-
-    def config(self):
-        super().config()
-        self.variant = RegOutput.check_variant(self.variant)
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
 
     def _do_position_plot_ascii(self, board, output_dir, columns, modulesStr, maxSizes):
         topf = None
@@ -137,18 +124,7 @@ class PositionOptions(BaseOptions):
             bothf.close()
 
     def run(self, output_dir, board):
-        comps = None
-        if self.dnf_filter or self.variant:
-            load_sch()
-            # Get the components list from the schematic
-            comps = GS.sch.get_components()
-            # Apply the filter
-            apply_fitted_filter(comps, self.dnf_filter)
-            # Apply the variant
-            if self.variant:
-                # Apply the variant
-                self.variant.filter(comps)
-            comps_hash = {c.ref: c for c in comps}
+        super().run(output_dir, board)
         columns = ["Ref", "Val", "Package", "PosX", "PosY", "Rot", "Side"]
         colcount = len(columns)
         # Note: the parser already checked the units are milimeters or inches
@@ -158,11 +134,12 @@ class PositionOptions(BaseOptions):
         else:  # self.units == 'inches':
             conv = 0.001 / IU_PER_MILS
         # Format all strings
+        comps_hash = self.get_refs_hash()
         modules = []
         for m in sorted(board.GetModules(), key=operator.methodcaller('GetReference')):
             ref = m.GetReference()
             # Apply any filter or variant data
-            if comps:
+            if comps_hash:
                 c = comps_hash.get(ref, None)
                 if c and not c.fitted:
                     continue

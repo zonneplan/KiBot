@@ -10,17 +10,14 @@ from tempfile import NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .misc import (KICAD2STEP, KICAD2STEP_ERR)
 from .gs import (GS)
-from .optionable import BaseOptions, Optionable
-from .registrable import RegOutput
-from .kiplot import load_sch
-from .fil_base import BaseFilter, apply_fitted_filter
+from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-class STEPOptions(BaseOptions):
+class STEPOptions(VariantOptions):
     def __init__(self):
         with document:
             self.metric_units = True
@@ -35,17 +32,7 @@ class STEPOptions(BaseOptions):
             """ the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm) """
             self.output = GS.def_global_output
             """ name for the generated STEP file (%i='3D' %x='step') """
-            self.variant = ''
-            """ Board variant to apply """
-            self.dnf_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
-                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
-
-    def config(self):
-        super().config()
-        self.variant = RegOutput.check_variant(self.variant)
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
 
     @property
     def origin(self):
@@ -58,18 +45,9 @@ class STEPOptions(BaseOptions):
         self._origin = val
 
     def filter_components(self):
-        if not self.dnf_filter and not self.variant:
+        if not self._comps:
             return GS.pcb_file
-        load_sch()
-        # Get the components list from the schematic
-        comps = GS.sch.get_components()
-        # Apply the filter
-        apply_fitted_filter(comps, self.dnf_filter)
-        # Apply the variant
-        if self.variant:
-            # Apply the variant
-            self.variant.filter(comps)
-        comps_hash = {c.ref: c for c in comps}
+        comps_hash = self.get_refs_hash()
         # Remove the 3D models for not fitted components
         rem_models = []
         for m in GS.board.GetModules():
@@ -98,6 +76,7 @@ class STEPOptions(BaseOptions):
         return fname
 
     def run(self, output_dir, board):
+        super().run(output_dir, board)
         # Output file name
         output = self.expand_filename(output_dir, self.output, '3D', 'step')
         # Make units explicit

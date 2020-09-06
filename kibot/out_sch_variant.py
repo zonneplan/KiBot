@@ -4,40 +4,16 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
-from .optionable import BaseOptions, Optionable
-from .registrable import RegOutput
+from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
-from .fil_base import BaseFilter, apply_fitted_filter
-from . import log
-
-logger = log.get_logger(__name__)
 
 
-class Sch_Variant_Options(BaseOptions):
+class Sch_Variant_Options(VariantOptions):
     def __init__(self):
-        with document:
-            self.variant = ''
-            """ Board variant(s) to apply """
-            self.dnf_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
-                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
 
-    def config(self):
-        super().config()
-        self.variant = RegOutput.check_variant(self.variant)
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
-
     def run(self, output_dir, board):
-        if self.dnf_filter or self.variant:
-            # Get the components list from the schematic
-            comps = GS.sch.get_components()
-            # Apply the filter
-            apply_fitted_filter(comps, self.dnf_filter)
-            # Apply the variant
-            if self.variant:
-                # Apply the variant
-                self.variant.filter(comps)
+        super().run(output_dir, board)
         # Create the schematic
         GS.sch.save_variant(output_dir)
 

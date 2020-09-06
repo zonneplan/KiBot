@@ -452,7 +452,7 @@ Next time you need this list just use an alias, like this:
         - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] cover the vias.
         - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
-        - `variant`: [string=''] Board variant(s) to apply.
+        - `variant`: [string=''] Board variant to apply.
 
 * Excellon drill format
   * Type: `excellon`
@@ -540,7 +540,7 @@ Next time you need this list just use an alias, like this:
         - `use_gerber_net_attributes`: [boolean=true] include netlist metadata.
         - `use_gerber_x2_attributes`: [boolean=true] use the extended X2 format.
         - `use_protel_extensions`: [boolean=false] use legacy Protel file extensions.
-        - `variant`: [string=''] Board variant(s) to apply.
+        - `variant`: [string=''] Board variant to apply.
 
 * HPGL (Hewlett & Packard Graphics Language)
   * Type: `hpgl`
@@ -575,7 +575,7 @@ Next time you need this list just use an alias, like this:
         - `scaling`: [number=0] scale factor (0 means autoscaling).
         - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] cover the vias.
-        - `variant`: [string=''] Board variant(s) to apply.
+        - `variant`: [string=''] Board variant to apply.
 
 * IBoM (Interactive HTML BoM)
   * Type: `ibom`
@@ -640,6 +640,8 @@ Next time you need this list just use an alias, like this:
   * Type: `kibom`
   * Description: Used to generate the BoM in HTML or CSV format using the KiBoM plug-in.
                  For more information: https://github.com/INTI-CMNB/KiBoM
+                 Note that this output is provided as a compatibility tool.
+                 We recommend using the `bom` output instead.
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
@@ -724,6 +726,7 @@ Next time you need this list just use an alias, like this:
                      are output to the BoM. To specify multiple variants,
                      with a BOM file exported for each variant, separate
                      variants with the ';' (semicolon) character.
+                     This isn't related to the KiBot concept of variants.
 
 * PcbDraw - Beautiful 2D PCB render
   * Type: `pcbdraw`
@@ -803,13 +806,13 @@ Next time you need this list just use an alias, like this:
         - `plot_footprint_values`: [boolean=true] include the footprint values.
         - `plot_sheet_reference`: [boolean=false] currently without effect.
         - `tent_vias`: [boolean=true] cover the vias.
-        - `variant`: [string=''] Board variant(s) to apply.
+        - `variant`: [string=''] Board variant to apply.
     - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
     - `plot_footprint_refs`: [boolean=true] include the footprint references.
     - `plot_footprint_values`: [boolean=true] include the footprint values.
     - `plot_sheet_reference`: [boolean=false] currently without effect.
     - `tent_vias`: [boolean=true] cover the vias.
-    - `variant`: [string=''] Board variant(s) to apply.
+    - `variant`: [string=''] Board variant to apply.
 
 * PDF PCB Print (Portable Document Format)
   * Type: `pdf_pcb_print`
@@ -845,7 +848,8 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `output`: [string='%f-%i%v.%x'] filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
-        - `variant`: [string=''] Board variant(s), used to determine which components are crossed..
+        - `variant`: [string=''] Board variant to apply.
+                     Not fitted components are crossed.
 
 * Pick & place
   * Type: `position`
@@ -901,7 +905,7 @@ Next time you need this list just use an alias, like this:
         - `scaling`: [number=1] scale factor (0 means autoscaling).
         - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] cover the vias.
-        - `variant`: [string=''] Board variant(s) to apply.
+        - `variant`: [string=''] Board variant to apply.
         - `width_adjust`: [number=0] this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
 
@@ -918,7 +922,7 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `variant`: [string=''] Board variant(s) to apply.
+        - `variant`: [string=''] Board variant to apply.
 
 * STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
   * Type: `step`
@@ -973,7 +977,7 @@ Next time you need this list just use an alias, like this:
         - `plot_footprint_values`: [boolean=true] include the footprint values.
         - `plot_sheet_reference`: [boolean=false] currently without effect.
         - `tent_vias`: [boolean=true] cover the vias.
-        - `variant`: [string=''] Board variant(s) to apply.
+        - `variant`: [string=''] Board variant to apply.
 
 * SVG Schematic Print
   * Type: `svg_sch_print`

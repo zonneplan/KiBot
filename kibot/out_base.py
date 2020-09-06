@@ -3,8 +3,11 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+from .gs import GS
+from .kiplot import load_sch
 from .registrable import RegOutput
-from .optionable import Optionable
+from .optionable import Optionable, BaseOptions
+from .fil_base import BaseFilter, apply_fitted_filter
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -64,3 +67,51 @@ class BoMRegex(Optionable):
             """ {column} """
             self.regexp = None
             """ {regex} """
+
+
+class VariantOptions(BaseOptions):
+    """ BaseOptions plus generic support for variants. """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.variant = ''
+            """ Board variant to apply """
+            self.dnf_filter = Optionable
+            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
+                A short-cut to use for simple cases where a variant is an overkill """
+        self._comps = None
+
+    def config(self):
+        super().config()
+        self.variant = RegOutput.check_variant(self.variant)
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
+
+    def get_refs_hash(self):
+        if not self._comps:
+            return None
+        return {c.ref: c for c in self._comps}
+
+    def get_fitted_refs(self):
+        if not self._comps:
+            return []
+        return [c.ref for c in self._comps if c.fitted]
+
+    def get_not_fitted_refs(self):
+        if not self._comps:
+            return []
+        return [c.ref for c in self._comps if not c.fitted]
+
+    def run(self, output_dir, board):
+        """ Makes the list of components available """
+        if not self.dnf_filter and not self.variant:
+            return
+        load_sch()
+        # Get the components list from the schematic
+        comps = GS.sch.get_components()
+        # Apply the filter
+        apply_fitted_filter(comps, self.dnf_filter)
+        # Apply the variant
+        if self.variant:
+            # Apply the variant
+            self.variant.filter(comps)
+        self._comps = comps

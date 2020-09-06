@@ -9,14 +9,11 @@ import os
 from pcbnew import GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, LSET, wxPoint, EDGE_MODULE
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
-from .optionable import BaseOptions, Optionable
-from .registrable import RegOutput
 from .layer import Layer
 from .gs import GS
 from .misc import UI_VIRTUAL
-from .kiplot import load_sch
+from .out_base import VariantOptions
 from .macros import macros, document  # noqa: F401
-from .fil_base import BaseFilter, apply_fitted_filter
 from . import log
 
 logger = log.get_logger(__name__)
@@ -44,7 +41,7 @@ class Rect(object):
             self.y2 = max(self.y2, wxRect.y+wxRect.height)
 
 
-class AnyLayerOptions(BaseOptions):
+class AnyLayerOptions(VariantOptions):
     """ Base class for: DXF, Gerber, HPGL, PDF, PS and SVG """
     def __init__(self):
         with document:
@@ -64,17 +61,7 @@ class AnyLayerOptions(BaseOptions):
             """ output file name, the default KiCad name if empty """
             self.tent_vias = True
             """ cover the vias """
-            self.variant = ''
-            """ Board variant(s) to apply """
-            self.dnf_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
-                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
-
-    def config(self):
-        super().config()
-        self.variant = RegOutput.check_variant(self.variant)
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
 
     def _configure_plot_ctrl(self, po, output_dir):
         logger.debug("Configuring plot controller for output")
@@ -108,78 +95,69 @@ class AnyLayerOptions(BaseOptions):
         return [seg1, seg2]
 
     def filter_components(self, board):
-        # Apply the variants and filters
-        exclude = None
-        if hasattr(self, 'variant') and (self.dnf_filter or self.variant):
-            load_sch()
-            # Get the components list from the schematic
-            comps = GS.sch.get_components()
-            # Apply the filter
-            apply_fitted_filter(comps, self.dnf_filter)
-            # Apply the variant
-            if self.variant:
-                # Apply the variant
-                self.variant.filter(comps)
-            comps_hash = {c.ref: c for c in comps}
-            # Remove from solder past layers the filtered components
-            exclude = LSET()
-            exclude.addLayer(board.GetLayerID('F.Paste'))
-            exclude.addLayer(board.GetLayerID('B.Paste'))
-            old_layers = []
-            fadhes = board.GetLayerID('F.Adhes')
-            badhes = board.GetLayerID('B.Adhes')
-            old_fadhes = []
-            old_badhes = []
-            ffab = board.GetLayerID('F.Fab')
-            bfab = board.GetLayerID('B.Fab')
-            extra_ffab_lines = []
-            extra_bfab_lines = []
-            for m in board.GetModules():
-                ref = m.GetReference()
-                # Rectangle containing the drawings, no text
-                frect = Rect()
-                brect = Rect()
-                c = comps_hash.get(ref, None)
-                if (c and not c.fitted) or m.GetAttributes() == UI_VIRTUAL:
-                    # Remove all pads from *.Paste
-                    old_c_layers = []
-                    for p in m.Pads():
-                        pad_layers = p.GetLayerSet()
-                        old_c_layers.append(pad_layers.FmtHex())
-                        pad_layers.removeLayerSet(exclude)
-                        p.SetLayerSet(pad_layers)
-                    old_layers.append(old_c_layers)
-                    # Remove any graphical item in the *.Adhes layers
-                    # Also: meassure the *.Fab drawings size
-                    for gi in m.GraphicalItems():
-                        l_gi = gi.GetLayer()
-                        if l_gi == fadhes:
-                            gi.SetLayer(-1)
-                            old_fadhes.append(gi)
-                        if l_gi == badhes:
-                            gi.SetLayer(-1)
-                            old_badhes.append(gi)
-                        if gi.GetClass() == 'MGRAPHIC':
-                            if l_gi == ffab:
-                                frect.Union(gi.GetBoundingBox().getWxRect())
-                            if l_gi == bfab:
-                                brect.Union(gi.GetBoundingBox().getWxRect())
-                    # Cross the graphics in *.Fab
-                    if frect.x1 is not None:
-                        extra_ffab_lines.append(self.cross_module(m, frect, ffab))
-                    else:
-                        extra_ffab_lines.append(None)
-                    if brect.x1 is not None:
-                        extra_bfab_lines.append(self.cross_module(m, brect, bfab))
-                    else:
-                        extra_bfab_lines.append(None)
-            # Store the data to undo the above actions
-            self.comps_hash = comps_hash
-            self.old_layers = old_layers
-            self.old_fadhes = old_fadhes
-            self.old_badhes = old_badhes
-            self.extra_ffab_lines = extra_ffab_lines
-            self.extra_bfab_lines = extra_bfab_lines
+        """  Apply the variants and filters """
+        if not self._comps:
+            return None
+        comps_hash = self.get_refs_hash()
+        # Remove from solder past layers the filtered components
+        exclude = LSET()
+        exclude.addLayer(board.GetLayerID('F.Paste'))
+        exclude.addLayer(board.GetLayerID('B.Paste'))
+        old_layers = []
+        fadhes = board.GetLayerID('F.Adhes')
+        badhes = board.GetLayerID('B.Adhes')
+        old_fadhes = []
+        old_badhes = []
+        ffab = board.GetLayerID('F.Fab')
+        bfab = board.GetLayerID('B.Fab')
+        extra_ffab_lines = []
+        extra_bfab_lines = []
+        for m in board.GetModules():
+            ref = m.GetReference()
+            # Rectangle containing the drawings, no text
+            frect = Rect()
+            brect = Rect()
+            c = comps_hash.get(ref, None)
+            if (c and not c.fitted) or m.GetAttributes() == UI_VIRTUAL:
+                # Remove all pads from *.Paste
+                old_c_layers = []
+                for p in m.Pads():
+                    pad_layers = p.GetLayerSet()
+                    old_c_layers.append(pad_layers.FmtHex())
+                    pad_layers.removeLayerSet(exclude)
+                    p.SetLayerSet(pad_layers)
+                old_layers.append(old_c_layers)
+                # Remove any graphical item in the *.Adhes layers
+                # Also: meassure the *.Fab drawings size
+                for gi in m.GraphicalItems():
+                    l_gi = gi.GetLayer()
+                    if l_gi == fadhes:
+                        gi.SetLayer(-1)
+                        old_fadhes.append(gi)
+                    if l_gi == badhes:
+                        gi.SetLayer(-1)
+                        old_badhes.append(gi)
+                    if gi.GetClass() == 'MGRAPHIC':
+                        if l_gi == ffab:
+                            frect.Union(gi.GetBoundingBox().getWxRect())
+                        if l_gi == bfab:
+                            brect.Union(gi.GetBoundingBox().getWxRect())
+                # Cross the graphics in *.Fab
+                if frect.x1 is not None:
+                    extra_ffab_lines.append(self.cross_module(m, frect, ffab))
+                else:
+                    extra_ffab_lines.append(None)
+                if brect.x1 is not None:
+                    extra_bfab_lines.append(self.cross_module(m, brect, bfab))
+                else:
+                    extra_bfab_lines.append(None)
+        # Store the data to undo the above actions
+        self.comps_hash = comps_hash
+        self.old_layers = old_layers
+        self.old_fadhes = old_fadhes
+        self.old_badhes = old_badhes
+        self.extra_ffab_lines = extra_ffab_lines
+        self.extra_bfab_lines = extra_bfab_lines
         return exclude
 
     def unfilter_components(self, board):
@@ -209,6 +187,7 @@ class AnyLayerOptions(BaseOptions):
             gi.SetLayer(badhes)
 
     def run(self, output_dir, board, layers):
+        super().run(output_dir, board)
         # fresh plot controller
         plot_ctrl = PLOT_CONTROLLER(board)
         # set up plot options for the whole output

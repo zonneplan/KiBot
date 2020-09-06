@@ -185,7 +185,7 @@ outputs:
       tent_vias: true
       # [boolean=false] use the auxiliar axis as origin for coordinates
       use_aux_axis_as_origin: false
-      # [string=''] Board variant(s) to apply
+      # [string=''] Board variant to apply
       variant: ''
     layers: all
 
@@ -292,7 +292,7 @@ outputs:
       use_gerber_x2_attributes: true
       # [boolean=false] use legacy Protel file extensions
       use_protel_extensions: false
-      # [string=''] Board variant(s) to apply
+      # [string=''] Board variant to apply
       variant: ''
     layers: all
 
@@ -336,7 +336,7 @@ outputs:
       sketch_plot: false
       # [boolean=true] cover the vias
       tent_vias: true
-      # [string=''] Board variant(s) to apply
+      # [string=''] Board variant to apply
       variant: ''
     layers: all
 
@@ -425,6 +425,8 @@ outputs:
 
   # KiBoM (KiCad Bill of Materials):
   # For more information: https://github.com/INTI-CMNB/KiBoM
+  # Note that this output is provided as a compatibility tool.
+  # We recommend using the `bom` output instead.
   # This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   - name: 'kibom_example'
     comment: 'Used to generate the BoM in HTML or CSV format using the KiBoM plug-in.'
@@ -532,7 +534,8 @@ outputs:
       # [string=''] Board variant(s), used to determine which components
       # are output to the BoM. To specify multiple variants,
       # with a BOM file exported for each variant, separate
-      # variants with the ';' (semicolon) character
+      # variants with the ';' (semicolon) character.
+      # This isn't related to the KiBot concept of variants
       variant: ''
 
   # PcbDraw - Beautiful 2D PCB render:
@@ -633,7 +636,7 @@ outputs:
       plot_sheet_reference: false
       # [boolean=true] cover the vias
       tent_vias: true
-      # [string=''] Board variant(s) to apply
+      # [string=''] Board variant to apply
       variant: ''
     layers: all
 
@@ -663,7 +666,8 @@ outputs:
       dnf_filter: ''
       # [string='%f-%i%v.%x'] filename for the output PDF (%i=schematic %x=pdf). Affected by global options
       output: '%f-%i%v.%x'
-      # [string=''] Board variant(s), used to determine which components are crossed.
+      # [string=''] Board variant to apply.
+      # Not fitted components are crossed
       variant: ''
 
   # Pick & place:
@@ -733,7 +737,7 @@ outputs:
       sketch_plot: false
       # [boolean=true] cover the vias
       tent_vias: true
-      # [string=''] Board variant(s) to apply
+      # [string=''] Board variant to apply
       variant: ''
       # [number=0] this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
       # Only used to plot pads and tracks
@@ -751,7 +755,7 @@ outputs:
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''
-      # [string=''] Board variant(s) to apply
+      # [string=''] Board variant to apply
       variant: ''
 
   # STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure):
@@ -815,7 +819,7 @@ outputs:
       plot_sheet_reference: false
       # [boolean=true] cover the vias
       tent_vias: true
-      # [string=''] Board variant(s) to apply
+      # [string=''] Board variant to apply
       variant: ''
     layers: all
 

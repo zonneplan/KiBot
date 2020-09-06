@@ -9,42 +9,25 @@ from shutil import rmtree
 from .gs import (GS)
 from .kiplot import check_eeschema_do, exec_with_retry
 from .misc import (CMD_EESCHEMA_DO, PDF_SCH_PRINT)
-from .optionable import BaseOptions, Optionable
-from .registrable import RegOutput
+from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
-from .fil_base import BaseFilter, apply_fitted_filter
 from . import log
 
 logger = log.get_logger(__name__)
 
 
-class PDF_Sch_PrintOptions(BaseOptions):
+class PDF_Sch_PrintOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
             """ filename for the output PDF (%i=schematic %x=pdf) """
-            self.variant = ''
-            """ Board variant(s), used to determine which components are crossed. """
-            self.dnf_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
-                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
-
-    def config(self):
-        super().config()
-        self.variant = RegOutput.check_variant(self.variant)
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
+        self.add_to_doc('variant', "Not fitted components are crossed")
 
     def run(self, output_dir, board):
+        super().run(output_dir, board)
         check_eeschema_do()
-        if self.variant or self.dnf_filter:
-            # Get the components list from the schematic
-            comps = GS.sch.get_components()
-            # Apply the filter
-            apply_fitted_filter(comps, self.dnf_filter)
-            # Apply the variant
-            if self.variant:
-                self.variant.filter(comps)
+        if self._comps:
             # Save it to a temporal dir
             sch_dir = mkdtemp(prefix='tmp-kibot-pdf_sch_print-')
             fname = GS.sch.save_variant(sch_dir)

@@ -2,17 +2,16 @@ import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR)
 from .gs import (GS)
-from .optionable import BaseOptions, Optionable
-from .registrable import RegOutput
-from .kiplot import check_script, load_sch
-from .fil_base import BaseFilter, apply_fitted_filter
+from .kiplot import check_script
+from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
+WARNING_MIX = "Avoid using it in conjunction with with IBoM native filtering options"
 
 
-class IBoMOptions(BaseOptions):
+class IBoMOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
@@ -82,36 +81,12 @@ class IBoMOptions(BaseOptions):
             """ Name of the extra field that indicates do not populate status.
                 Components with this field not empty will be blacklisted.
                 IBoM option, avoid using in conjunction with KiBot variants/filters """
-            self.variant = ''
-            """ Board variant to apply.
-                Avoid using it in conjunction with with IBoM native filtering options """
-            self.dnf_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
-                A short-cut to use for simple cases where a variant is an overkill.
-                Avoid using it in conjunction with with IBoM native filtering options """
         super().__init__()
-
-    def config(self):
-        super().config()
-        self.variant = RegOutput.check_variant(self.variant)
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
-
-    # TODO: move to a base class?
-    def get_filtered_refs(self):
-        if not self.dnf_filter and not self.variant:
-            return []
-        load_sch()
-        # Get the components list from the schematic
-        comps = GS.sch.get_components()
-        # Apply the filter
-        apply_fitted_filter(comps, self.dnf_filter)
-        # Apply the variant
-        if self.variant:
-            # Apply the variant
-            self.variant.filter(comps)
-        return [c.ref for c in comps if not c.fitted]
+        self.add_to_doc('variant', WARNING_MIX)
+        self.add_to_doc('dnf_filter', WARNING_MIX)
 
     def run(self, output_dir, board):
+        super().run(output_dir, board)
         check_script(CMD_IBOM, URL_IBOM)
         logger.debug('Doing Interactive BoM')
         # Tell ibom we don't want to use the screen
@@ -124,7 +99,7 @@ class IBoMOptions(BaseOptions):
             self.name_format = 'ibom'
             cur = os.path.join(output_dir, 'ibom.html')
         # Apply variants/filters
-        to_remove = ','.join(self.get_filtered_refs())
+        to_remove = ','.join(self.get_not_fitted_refs())
         if self.blacklist and to_remove:
             self.blacklist += ','
         self.blacklist += to_remove

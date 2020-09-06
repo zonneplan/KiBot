@@ -13,10 +13,8 @@ from .misc import PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW
 from .kiplot import check_script
 from .error import KiPlotConfigurationError
 from .gs import (GS)
-from .optionable import BaseOptions, Optionable
-from .registrable import RegOutput
-from .kiplot import load_sch
-from .fil_base import BaseFilter, apply_fitted_filter
+from .optionable import Optionable
+from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -107,7 +105,7 @@ def _run_command(cmd, tmp_remap=False, tmp_style=False):
     logger.debug('Output from command:\n'+cmd_output.decode())
 
 
-class PcbDrawOptions(BaseOptions):
+class PcbDrawOptions(VariantOptions):
     def __init__(self):
         with document:
             self.style = PcbDrawStyle
@@ -139,11 +137,6 @@ class PcbDrawOptions(BaseOptions):
             """ [svg,png,jpg] output format. Only used if no `output` is specified """
             self.output = GS.def_global_output
             """ name for the generated file """
-            self.variant = ''
-            """ Board variant to apply """
-            self.dnf_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
-                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
 
     def config(self):
@@ -158,9 +151,6 @@ class PcbDrawOptions(BaseOptions):
             self.highlight = None
         else:
             self.highlight = ','.join(self.highlight)
-        # Variants
-        self.variant = RegOutput.check_variant(self.variant)
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         # Filter
         if isinstance(self.show_components, type):
             self.show_components = ''
@@ -217,20 +207,6 @@ class PcbDrawOptions(BaseOptions):
             f.close()
             return f.name
 
-    def get_filtered_refs(self):
-        if not self.dnf_filter and not self.variant:
-            return []
-        load_sch()
-        # Get the components list from the schematic
-        comps = GS.sch.get_components()
-        # Apply the filter
-        apply_fitted_filter(comps, self.dnf_filter)
-        # Apply the variant
-        if self.variant:
-            # Apply the variant
-            self.variant.filter(comps)
-        return [c.ref for c in comps if c.fitted]
-
     def _append_output(self, cmd, output):
         svg = None
         if self.format == 'svg':
@@ -251,6 +227,7 @@ class PcbDrawOptions(BaseOptions):
         return svg
 
     def run(self, output_dir, board):
+        super().run(output_dir, board)
         check_script(PCBDRAW, URL_PCBDRAW, '0.6.0')
         # Output file name
         output = self.expand_filename(output_dir, self.output, 'bottom' if self.bottom else 'top', self.format)
@@ -277,7 +254,7 @@ class PcbDrawOptions(BaseOptions):
         if self.highlight:
             cmd.extend(['-a', self.highlight])
         if self.show_components is not None:
-            to_add = ','.join(self.get_filtered_refs())
+            to_add = ','.join(self.get_fitted_refs())
             if self.show_components and to_add:
                 self.show_components += ','
             self.show_components += to_add
