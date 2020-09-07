@@ -11,34 +11,12 @@ from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
 from .layer import Layer
 from .gs import GS
-from .misc import UI_VIRTUAL
+from .misc import UI_VIRTUAL, Rect
 from .out_base import VariantOptions
 from .macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
-
-
-class Rect(object):
-    """ What KiCad returns isn't a real wxWidget's wxRect.
-        Here I add what I really need """
-    def __init__(self):
-        self.x1 = None
-        self.y1 = None
-        self.x2 = None
-        self.y2 = None
-
-    def Union(self, wxRect):
-        if self.x1 is None:
-            self.x1 = wxRect.x
-            self.y1 = wxRect.y
-            self.x2 = wxRect.x+wxRect.width
-            self.y2 = wxRect.y+wxRect.height
-        else:
-            self.x1 = min(self.x1, wxRect.x)
-            self.y1 = min(self.y1, wxRect.y)
-            self.x2 = max(self.x2, wxRect.x+wxRect.width)
-            self.y2 = max(self.y2, wxRect.y+wxRect.height)
 
 
 class AnyLayerOptions(VariantOptions):

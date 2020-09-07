@@ -39,3 +39,14 @@ def test_print_pcb_refill():
 
     ctx.expect_out_file(PDF_FILE_B)
     ctx.compare_image(PDF_FILE_B)
+
+
+def test_print_variant_1():
+    prj = 'kibom-variant_3'
+    ctx = context.TestContext('test_print_variant_1', prj, 'print_pcb_variant_1', '')
+    ctx.run()
+    # Check all outputs are there
+    fname = prj+'-F_Fab.pdf'
+    ctx.expect_out_file(fname)
+    ctx.compare_pdf(fname)
+    ctx.clean_up()

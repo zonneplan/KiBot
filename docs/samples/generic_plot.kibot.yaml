@@ -648,9 +648,14 @@ outputs:
     type: 'pdf_pcb_print'
     dir: 'Example/pdf_pcb_print_dir'
     options:
+      # [string|list(string)=''] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: ''
       # [string='%f-%i%v.%x'] filename for the output PDF (%i=layers, %x=pdf). Affected by global options
       output: '%f-%i%v.%x'
       # `output_name` is an alias for `output`
+      # [string=''] Board variant to apply
+      variant: ''
     layers: all
 
   # PDF Schematic Print (Portable Document Format):

@@ -831,8 +831,11 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_pcb_print` output.
       * Valid keys:
+        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `output`: [string='%f-%i%v.%x'] filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
         - *output_name*: Alias for output.
+        - `variant`: [string=''] Board variant to apply.
 
 * PDF Schematic Print (Portable Document Format)
   * Type: `pdf_sch_print`

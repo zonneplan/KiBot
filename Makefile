@@ -115,6 +115,7 @@ gen_ref:
 	src/kibot -b tests/board_samples/kibom-variant_4.kicad_pcb -c tests/yaml_samples/pdf_variant_1.kibot.yaml -d $(REFDIR)
 	src/kibot -b tests/board_samples/kibom-variant_3.kicad_pcb -c tests/yaml_samples/pcbdraw_variant_1.kibot.yaml -d $(REFDIR)
 	src/kibot -b tests/board_samples/kibom-variant_3.kicad_pcb -c tests/yaml_samples/pcbdraw_variant_2.kibot.yaml -d $(REFDIR)
+	src/kibot -b tests/board_samples/kibom-variant_3.kicad_pcb -c tests/yaml_samples/print_pcb_variant_1.kibot.yaml -d $(REFDIR)
 	cp -a $(REFILL).ok $(REFILL)
 
 doc:

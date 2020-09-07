@@ -337,7 +337,7 @@ class TestContext(object):
                image,
                reference,
                # Avoid the part where KiCad version is printed
-               '-crop', '100%x92%+0+0', '+repage',
+               '-crop', '100%x88%+0+0', '+repage',
                '-colorspace', 'RGB',
                self.get_out_path(diff)]
         logging.debug('Comparing images with: '+str(cmd))

@@ -77,3 +77,25 @@ DNC = {
     "no change": 1,
     "fixed": 1
 }
+
+
+class Rect(object):
+    """ What KiCad returns isn't a real wxWidget's wxRect.
+        Here I add what I really need """
+    def __init__(self):
+        self.x1 = None
+        self.y1 = None
+        self.x2 = None
+        self.y2 = None
+
+    def Union(self, wxRect):
+        if self.x1 is None:
+            self.x1 = wxRect.x
+            self.y1 = wxRect.y
+            self.x2 = wxRect.x+wxRect.width
+            self.y2 = wxRect.y+wxRect.height
+        else:
+            self.x1 = min(self.x1, wxRect.x)
+            self.y1 = min(self.y1, wxRect.y)
+            self.x2 = max(self.x2, wxRect.x+wxRect.width)
+            self.y2 = max(self.y2, wxRect.y+wxRect.height)
