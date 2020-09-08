@@ -141,7 +141,7 @@ class PositionOptions(VariantOptions):
             # Apply any filter or variant data
             if comps_hash:
                 c = comps_hash.get(ref, None)
-                if c and not c.fitted:
+                if c and (not c.fitted or not c.included):
                     continue
             # If passed check the position options
             if (self.only_smd and m.GetAttributes() == UI_SMD) or \

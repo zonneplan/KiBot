@@ -65,4 +65,15 @@ F 4 "T1" H 2500 1700 50  0001 C CNN "Config"
 $EndComp
 Text Notes 5950 3200 0    118  ~ 0
 The test tests the following \nvariants matrix:\n        production   test   default\nC1                     X\nC2          X          X\nR1          X          X       X\nR2          X                  X\n\nproduction: blacklist T2\ntest: blacklist T1\ndefault: whitelist T1,default \n         blacklist T2,T3
+$Comp
+L Mechanical:Fiducial FID1
+U 1 1 5F57EDDB
+P 1750 2250
+F 0 "FID1" H 1835 2296 50  0000 L CNN
+F 1 "Fiducial" H 1835 2205 50  0000 L CNN
+F 2 "Fiducial:Fiducial_0.5mm_Mask1mm" H 1750 2250 50  0001 C CNN
+F 3 "~" H 1750 2250 50  0001 C CNN
+	1    1750 2250
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

@@ -8,6 +8,7 @@ Implements the IBoM variants mechanism.
 """
 from .optionable import Optionable
 from .gs import GS
+from .misc import IFILL_MECHANICAL
 from .fil_base import BaseFilter
 from .macros import macros, document, variant_class  # noqa: F401
 from . import log
@@ -47,7 +48,7 @@ class IBoM(BaseVariant):  # noqa: F821
 
     def config(self):
         super().config()
-        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
+        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', IFILL_MECHANICAL)
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
         self.variants_blacklist = self._force_list(self.variants_blacklist)
@@ -65,15 +66,16 @@ class IBoM(BaseVariant):  # noqa: F821
                 return True
         return False
 
-    def filter(self, comps, reset=False):
-        super().filter(comps, reset)
+    def filter(self, comps):
+        super().filter(comps)
         logger.debug("Applying IBoM style variants `{}`".format(self.name))
         # Make black/white lists case insensitive
         self.variants_whitelist = [v.lower() for v in self.variants_whitelist]
         self.variants_blacklist = [v.lower() for v in self.variants_blacklist]
         # Apply to all the components
         for c in comps:
-            if not (c.fitted and c.in_bom):
+            logger.debug("{} {} {}".format(c.ref, c.fitted, c.included))
+            if not (c.fitted and c.included):
                 # Don't check if we already discarded it
                 continue
             c.fitted = not self.skip_component(c)

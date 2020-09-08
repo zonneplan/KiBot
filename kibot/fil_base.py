@@ -65,34 +65,35 @@ class NotFilter(Registrable):
         return not self._filter.filter(comp)
 
 
-def apply_in_bom_filter(comps, filter, reset=True):
+def reset_filters(comps):
+    for c in comps:
+        c.included = True
+        c.fitted = True
+        c.fixed = False
+
+
+def apply_exclude_filter(comps, filter):
     if filter:
-        logger.debug('Applying filter `{}` to in_bom'.format(filter.name))
+        logger.debug('Applying filter `{}` to exclude'.format(filter.name))
         for c in comps:
-            c.in_bom = filter.filter(c)
-    elif reset:  # Reset the field
-        for c in comps:
-            c.in_bom = True
+            if c.included:
+                c.included = filter.filter(c)
 
 
-def apply_fitted_filter(comps, filter, reset=True):
+def apply_fitted_filter(comps, filter):
     if filter:
         logger.debug('Applying filter `{}` to fitted'.format(filter.name))
         for c in comps:
-            c.fitted = filter.filter(c)
-    elif reset:  # Reset the field
-        for c in comps:
-            c.fitted = True
+            if c.fitted:
+                c.fitted = filter.filter(c)
 
 
-def apply_fixed_filter(comps, filter, reset=True):
+def apply_fixed_filter(comps, filter):
     if filter:
         logger.debug('Applying filter `{}` to fixed'.format(filter.name))
         for c in comps:
-            c.fixed = filter.filter(c)
-    elif reset:  # Reset the field
-        for c in comps:
-            c.fixed = False
+            if not c.fixed:
+                c.fixed = filter.filter(c)
 
 
 class BaseFilter(RegFilter):
@@ -120,6 +121,7 @@ class BaseFilter(RegFilter):
         o_tree['comment'] = 'Internal default mechanical filter'
         o_tree['exclude_all_hash_ref'] = True
         o_tree['exclude_any'] = DEFAULT_EXCLUDE
+        o_tree['exclude_virtual'] = True
         logger.debug('Creating internal filter: '+str(o_tree))
         return o_tree
 

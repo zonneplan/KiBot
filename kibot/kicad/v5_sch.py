@@ -783,7 +783,8 @@ class SchematicComponent(object):
                   - Solded: only if True
                   - BoM normal: only if True
                   - BoM DNF: only if False
-        - in_bom: equivalent to 'Exclude from BoM' but inverted
+        - included: related to 'Exclude from BoM' but inverted,
+                   but also applied to other situations.
                   - Solded: doesn't affected
                   - BoM normal: only if True
                   - BoM DNF: only if True (and fitted is False)
@@ -801,7 +802,7 @@ class SchematicComponent(object):
         self.desc = ''
         # Will be computed
         self.fitted = True
-        self.in_bom = True
+        self.included = True
         self.fixed = False
         # KiCad 5 PCB flags (mutually exclusive)
         self.smd = False
@@ -996,7 +997,7 @@ class SchematicComponent(object):
 
     def write(self, f):
         # Fake lib to reflect fitted status
-        lib = 'y' if self.fitted else 'n'
+        lib = 'y' if self.fitted or not self.included else 'n'
         # Fake name using cache style
         name = '{}:{}_{}'.format(lib, self.lib, self.name)
         f.write('$Comp\n')

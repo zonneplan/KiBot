@@ -91,11 +91,11 @@ class KiBoM(BaseVariant):  # noqa: F821
         # No match
         return not exclusive
 
-    def filter(self, comps, reset=False):
-        super().filter(comps, reset)
+    def filter(self, comps):
+        super().filter(comps)
         logger.debug("Applying KiBoM style variants `{}`".format(self.name))
         for c in comps:
-            if not (c.fitted and c.in_bom):
+            if not (c.fitted and c.included):
                 # Don't check if we already discarded it
                 continue
             value = c.value.lower()

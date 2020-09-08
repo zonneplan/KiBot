@@ -6,12 +6,11 @@
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 import os
-from pcbnew import GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, LSET, wxPoint, EDGE_MODULE
+from pcbnew import GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
 from .layer import Layer
 from .gs import GS
-from .misc import UI_VIRTUAL, Rect
 from .out_base import VariantOptions
 from .macros import macros, document  # noqa: F401
 from . import log
@@ -56,113 +55,17 @@ class AnyLayerOptions(VariantOptions):
         # We'll come back to this on a per-layer basis
         po.SetSkipPlotNPTH_Pads(False)
 
-    @staticmethod
-    def cross_module(m, rect, layer):
-        seg1 = EDGE_MODULE(m)
-        m.Add(seg1)
-        seg1.SetWidth(120000)
-        seg1.SetStart(wxPoint(rect.x1, rect.y1))
-        seg1.SetEnd(wxPoint(rect.x2, rect.y2))
-        seg1.SetLayer(layer)
-        seg2 = EDGE_MODULE(m)
-        m.Add(seg2)
-        seg2.SetWidth(120000)
-        seg2.SetStart(wxPoint(rect.x1, rect.y2))
-        seg2.SetEnd(wxPoint(rect.x2, rect.y1))
-        seg2.SetLayer(layer)
-        return [seg1, seg2]
-
     def filter_components(self, board):
         """  Apply the variants and filters """
         if not self._comps:
             return None
-        comps_hash = self.get_refs_hash()
-        # Remove from solder past layers the filtered components
-        exclude = LSET()
-        exclude.addLayer(board.GetLayerID('F.Paste'))
-        exclude.addLayer(board.GetLayerID('B.Paste'))
-        old_layers = []
-        fadhes = board.GetLayerID('F.Adhes')
-        badhes = board.GetLayerID('B.Adhes')
-        old_fadhes = []
-        old_badhes = []
-        ffab = board.GetLayerID('F.Fab')
-        bfab = board.GetLayerID('B.Fab')
-        extra_ffab_lines = []
-        extra_bfab_lines = []
-        for m in board.GetModules():
-            ref = m.GetReference()
-            # Rectangle containing the drawings, no text
-            frect = Rect()
-            brect = Rect()
-            c = comps_hash.get(ref, None)
-            if (c and not c.fitted) or m.GetAttributes() == UI_VIRTUAL:
-                # Remove all pads from *.Paste
-                old_c_layers = []
-                for p in m.Pads():
-                    pad_layers = p.GetLayerSet()
-                    old_c_layers.append(pad_layers.FmtHex())
-                    pad_layers.removeLayerSet(exclude)
-                    p.SetLayerSet(pad_layers)
-                old_layers.append(old_c_layers)
-                # Remove any graphical item in the *.Adhes layers
-                # Also: meassure the *.Fab drawings size
-                for gi in m.GraphicalItems():
-                    l_gi = gi.GetLayer()
-                    if l_gi == fadhes:
-                        gi.SetLayer(-1)
-                        old_fadhes.append(gi)
-                    if l_gi == badhes:
-                        gi.SetLayer(-1)
-                        old_badhes.append(gi)
-                    if gi.GetClass() == 'MGRAPHIC':
-                        if l_gi == ffab:
-                            frect.Union(gi.GetBoundingBox().getWxRect())
-                        if l_gi == bfab:
-                            brect.Union(gi.GetBoundingBox().getWxRect())
-                # Cross the graphics in *.Fab
-                if frect.x1 is not None:
-                    extra_ffab_lines.append(self.cross_module(m, frect, ffab))
-                else:
-                    extra_ffab_lines.append(None)
-                if brect.x1 is not None:
-                    extra_bfab_lines.append(self.cross_module(m, brect, bfab))
-                else:
-                    extra_bfab_lines.append(None)
-        # Store the data to undo the above actions
-        self.comps_hash = comps_hash
-        self.old_layers = old_layers
-        self.old_fadhes = old_fadhes
-        self.old_badhes = old_badhes
-        self.extra_ffab_lines = extra_ffab_lines
-        self.extra_bfab_lines = extra_bfab_lines
-        return exclude
+        self.comps_hash = self.get_refs_hash()
+        self.cross_modules(board, self.comps_hash)
+        return self.remove_paste_and_glue(board, self.comps_hash)
 
     def unfilter_components(self, board):
-        for m in board.GetModules():
-            ref = m.GetReference()
-            c = self.comps_hash.get(ref, None)
-            if (c and not c.fitted) or m.GetAttributes() == UI_VIRTUAL:
-                restore = self.old_layers.pop(0)
-                for p in m.Pads():
-                    pad_layers = p.GetLayerSet()
-                    res = restore.pop(0)
-                    pad_layers.ParseHex(res, len(res))
-                    p.SetLayerSet(pad_layers)
-                restore = self.extra_ffab_lines.pop(0)
-                if restore:
-                    for line in restore:
-                        m.Remove(line)
-                restore = self.extra_bfab_lines.pop(0)
-                if restore:
-                    for line in restore:
-                        m.Remove(line)
-        fadhes = board.GetLayerID('F.Adhes')
-        for gi in self.old_fadhes:
-            gi.SetLayer(fadhes)
-        badhes = board.GetLayerID('B.Adhes')
-        for gi in self.old_badhes:
-            gi.SetLayer(badhes)
+        self.uncross_modules(board, self.comps_hash)
+        self.restore_paste_and_glue(board, self.comps_hash)
 
     def run(self, output_dir, board, layers):
         super().run(output_dir, board)

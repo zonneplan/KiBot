@@ -301,7 +301,7 @@ def group_components(cfg, components):
     groups = []
     # Iterate through each component, and test whether a group for these already exists
     for c in components:
-        if not c.in_bom:  # Skip components marked as excluded from BoM
+        if not c.included:  # Skip components marked as excluded from BoM
             continue
         # Cache the value used to sort
         if c.ref_prefix in RLC_PREFIX and c.value.lower() not in DNF:

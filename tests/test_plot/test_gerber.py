@@ -104,7 +104,6 @@ def test_gerber_variant_1():
     prj = 'kibom-variant_3'
     ctx = context.TestContext('test_gerber_variant_1', prj, 'gerber_variant_1', GERBER_DIR)
     ctx.run()
-    # C1 is virtual, not included for all cases
     # R3 is a component added to the PCB, included in all cases
     # variant: default     directory: gerber      components: R1, R2 and R3
     check_layers_exist(ctx, 'gerber', prj, ALL_LAYERS, '')
@@ -114,5 +113,5 @@ def test_gerber_variant_1():
     check_components(ctx, 'production', prj, ['F_Paste', 'F_Adhes'], '_(production)', ['C1'], ['R1', 'R2', 'R3', 'C2'])
     # variant: test        directory: test        components: R1, R3 and C2
     check_layers_exist(ctx, 'test', prj, ALL_LAYERS, '_(test)')
-    check_components(ctx, 'test', prj, ['F_Paste', 'F_Adhes'], '_(test)', ['C1', 'R2'], ['R1', 'R3', 'C2'])
+    check_components(ctx, 'test', prj, ['F_Paste', 'F_Adhes'], '_(test)', ['R2'], ['C1', 'R1', 'R3', 'C2'])
     ctx.clean_up()

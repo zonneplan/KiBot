@@ -53,7 +53,7 @@ class STEPOptions(VariantOptions):
         for m in GS.board.GetModules():
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
-            if c and not c.fitted:
+            if c and c.included and not c.fitted:
                 models = m.Models()
                 rem_m_models = []
                 while not models.empty():
@@ -68,7 +68,7 @@ class STEPOptions(VariantOptions):
         for m in GS.board.GetModules():
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
-            if c and not c.fitted:
+            if c and c.included and not c.fitted:
                 models = m.Models()
                 restore = rem_models.pop(0)
                 for model in restore:

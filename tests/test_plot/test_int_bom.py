@@ -1222,9 +1222,9 @@ def test_int_bom_variant_t2s():
     ctx.clean_up()
 
 
-def test_int_bom_variant_t2i():
+def test_int_bom_variant_t2if():
     prj = 'kibom-variant_3'
-    ctx = context.TestContextSCH('test_int_bom_variant_t2i', prj, 'int_bom_var_t2i_csv', BOM_DIR)
+    ctx = context.TestContextSCH('test_int_bom_variant_t2if', prj, 'int_bom_var_t2i_csv', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1291,11 +1291,11 @@ def test_int_bom_fil_2():
     ctx.run()
     rows, header, info = ctx.load_csv('smd.csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, 2, None, ['R2', 'C1-C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, None, ['R2', 'C2', 'FID1'])
     rows, header, info = ctx.load_csv('tht.csv')
-    check_kibom_test_netlist(rows, ref_column, 2, None, ['R1', 'C1'])
+    check_kibom_test_netlist(rows, ref_column, 3, None, ['R1', 'C1', 'FID1'])
     rows, header, info = ctx.load_csv('virtual.csv')
-    check_kibom_test_netlist(rows, ref_column, 2, None, ['R1-R2', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 2, None, ['R1-R2', 'C1-C2'])
     ctx.search_err(r".?R3.? component in board, but not in schematic")
     ctx.clean_up()
 

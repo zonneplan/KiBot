@@ -167,5 +167,5 @@ def test_position_variant_t2i():
     rows, header, info = ctx.load_csv(prj+'-both_pos_(production).csv')
     check_comps(rows, ['C2', 'R1', 'R2', 'R3'])
     rows, header, info = ctx.load_csv(prj+'-both_pos_(test).csv')
-    check_comps(rows, ['C2', 'R1', 'R3'])
+    check_comps(rows, ['C1', 'C2', 'R1', 'R3'])
     ctx.clean_up()
