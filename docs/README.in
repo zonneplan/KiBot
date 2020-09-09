@@ -6,6 +6,16 @@
 [![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 
+## Index
+
+* [Introduction](#introduction)
+* [Configuration](#configuration)
+* [Usage](#usage)
+* [Installation](#installation)
+* [Usage for CI/CD](#usage-for-cicd)
+* [Credits](#credits)
+
+## Introduction
 
 KiBot is a program which helps you to generate the fabrication and
 documentation files for your KiCad projects easily, repeatable, and
@@ -29,7 +39,7 @@ KiBot lets you do this. The following picture depicts the data flow:
 ![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Esquema.png)
 
 
-## The configuration file
+## Configuration
 
 KiBot uses a configuration file where you can specify what *outputs* to
 generate. By default you'll generate all of them, but you can specify which
@@ -317,7 +327,7 @@ Next time you need this list just use an alias, like this:
 
 #### @outputs@
 
-## Using KiBot
+## Usage
 
 If you need a template for the configuration file try:
 
@@ -405,7 +415,7 @@ kibot --list
 @cmd_help@
 ```
 
-## Installing
+## Installation
 
 ### Dependencies
 
@@ -414,7 +424,7 @@ kibot --list
 - For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
 - For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw)
 
-### Installation on Ubuntu/Debian:
+### Installation on Ubuntu/Debian
 
 Get the Debian package from the [releases section](https://github.com/INTI-CMNB/KiBot/releases) and run:
 ```
@@ -428,7 +438,7 @@ In this case the packages are also included in the release page. As an example v
 sudo apt install ./python3-mcpy_2.0.2-1_all.deb ./kibot_0.6.0-1_all.deb
 ```
 
-### Installation using pip:
+### Installation using pip
 
 ```
 pip install --no-compile kibot
@@ -445,7 +455,7 @@ There is no advantage in doing it and it interferes with the `mcpy` macros.
 - Run the script *src/kibot*
 
 
-## Using for CI/CD
+## Usage for CI/CD
 
 When using a GitHub or GitLab repo you can use KiBot to generate all the needed stuff each time you commit a change to the schematic and/or PCB file.
 
