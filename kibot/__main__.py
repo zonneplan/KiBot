@@ -315,8 +315,10 @@ def main():
     GS.set_sch(solve_schematic(args.schematic, args.board_file))
     # Determine the PCB file
     GS.set_pcb(solve_board_file(GS.sch_file, args.board_file))
-
+    # Do all the job (pre-flight + outputs)
     generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre)
+    # Print total warnings
+    logger.log_totals()
 
 
 if __name__ == "__main__":

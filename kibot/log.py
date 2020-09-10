@@ -30,10 +30,30 @@ def set_domain(name):
     domain = name
 
 
+class MyLogger(logging.Logger):
+    warn_hash = {}
+    warn_tcnt = warn_cnt = 0
+
+    def warning(self, msg, *args, **kwargs):
+        MyLogger.warn_tcnt += 1
+        if msg in MyLogger.warn_hash:
+            MyLogger.warn_hash[msg] += 1
+            return
+        MyLogger.warn_cnt += 1
+        MyLogger.warn_hash[msg] = 1
+        super().warning(msg, *args, **kwargs)
+
+    def log_totals(self):
+        if MyLogger.warn_cnt:
+            self.info('Found {} unique warning/s ({} total)'.format(MyLogger.warn_cnt, MyLogger.warn_tcnt))
+
+
 def init(verbose, quiet):
     """Initialize the logging feature using a custom format and the specified
        verbosity level"""
-
+    # Use a class to count and filter warnings
+    logging.setLoggerClass(MyLogger)
+    # Choose the log level
     log_level = logging.INFO
     if verbose:
         log_level = logging.DEBUG
