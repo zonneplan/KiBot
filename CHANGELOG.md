@@ -6,31 +6,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [0.7.0rc1] - 2020-09-10
 ### Added
-- Now variants are separated entities.
-  - Only the internal BoM and Schematic print currently supports it.
-  - In the future IBoM will also support it, contact me if you think this is
-    high priority.
-- New filters entities. They implement all the functionality in KiBoM and IBoM.
-- Implemented the IBoM variants style.
-- The internal BoM format supports filters for:
-  - Excluding components from processing
-  - Marking components as "Do Not Fit"
-  - Marking components as "Do Not Change"
-- The internal BoM format supports KiBoM and IBoM style variants
-- Schematic/PCB print to PDF/SVG support for variants. Not fitted components
-  are crossed.
-- Position (Pick & Place) support for variants.
-- All plot formats (gerber, pdf, svg, etc.) support for variants:
-  - Pads removed from *.Paste
-  - Drawings removed from *.Adhes
-  - Components crossed in *.Fab
-- STEP (3D) support for variants.
-- PcbDraw support for variants.
-- IBoM support for variants.
+- Now variants are separated entities. Two flavors implemented: KiBoM
+  and IBoM.
+- New filters entities. They work in complement with variants.
+  All the filtering functionality found in KiBoM and IBoM is supported.
+- Most outputs now supports variants. You can:
+  - Mark not fitted components with a cross in the schematic
+  - Mark not fitted components with a cross in the *.Fab layers of the
+    PCB
+  - Remove solder paste from not fitted components
+  - Remove adhesive glue from not fitted components
+  - Exclude components from the BoM (also mark them as DNF and/or DNC
+    (Do Not Change))
+  - Exclude components from the interactive BoM
+  - Remove not fitted components from the STEP file
+  - Exclude components from the position (pick & place) file
+- Default output file name format and default variant can be specified
+  from the command line.
 
 ### Fixed
 - Virtual components are always excluded from position files.
+  Note you can change it using the variants mechanism.
 
 ## [0.6.2] - 2020-08-25
 ### Changed
