@@ -150,7 +150,6 @@ class CfgYamlReader(object):
                 config_error("In preflight '"+k+"': "+str(e))
             BasePreFlight.add_preflight(o_pre)
 
-
     @staticmethod
     def _parse_global_str(k, v, current):
         if not isinstance(v, str):
