@@ -31,6 +31,10 @@ class PDF_Sch_PrintOptions(VariantOptions):
             # Save it to a temporal dir
             sch_dir = mkdtemp(prefix='tmp-kibot-pdf_sch_print-')
             fname = GS.sch.save_variant(sch_dir)
+            # Create a dummy project file to avoid warnings
+            prj_file = os.path.join(sch_dir, GS.sch_basename+'.pro')
+            f = open(prj_file, 'wt')
+            f.close()
             sch_file = os.path.join(sch_dir, fname)
         else:
             sch_dir = None
