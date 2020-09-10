@@ -1098,7 +1098,7 @@ KiBot: KiCad automation tool for documents generation
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
-         [-q | -v...] [-i] [TARGET...]
+         [-q | -v...] [-i] [-g DEF]... [TARGET...]
   kibot [-v...] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] --help-list-outputs
@@ -1117,6 +1117,7 @@ Options:
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
+  -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   --help-list-outputs              List supported outputs
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details
