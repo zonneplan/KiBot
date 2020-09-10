@@ -44,7 +44,7 @@ class STEPOptions(VariantOptions):
             raise KiPlotConfigurationError('Origin must be `grid` or `drill` or `X,Y`')
         self._origin = val
 
-    def filter_components(self):
+    def filter_components(self, dir):
         if not self._comps:
             return GS.pcb_file
         comps_hash = self.get_refs_hash()
@@ -60,7 +60,7 @@ class STEPOptions(VariantOptions):
                     rem_m_models.append(models.pop())
                 rem_models.append(rem_m_models)
         # Save the PCB to a temporal file
-        with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
+        with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False, dir=dir) as f:
             fname = f.name
         logger.debug('Storing filtered PCB to `{}`'.format(fname))
         GS.board.Save(fname)
@@ -98,7 +98,7 @@ class STEPOptions(VariantOptions):
         else:
             cmd.extend(['--user-origin', "{}{}".format(self.origin.replace(',', 'x'), units)])
         # The board
-        board_name = self.filter_components()
+        board_name = self.filter_components(GS.pcb_dir)
         cmd.append(board_name)
         # Execute and inform is successful
         logger.debug('Executing: '+str(cmd))
