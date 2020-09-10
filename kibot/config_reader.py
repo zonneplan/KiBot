@@ -150,17 +150,27 @@ class CfgYamlReader(object):
                 config_error("In preflight '"+k+"': "+str(e))
             BasePreFlight.add_preflight(o_pre)
 
+
+    @staticmethod
+    def _parse_global_str(k, v, current):
+        if not isinstance(v, str):
+            config_error("Global `{}` must be a string".format(k))
+        if current:
+            logger.info('Using command line value `{}` for global option `{}`'.format(current, k))
+            return current
+        return v
+
     def _parse_global(self, gb):
         """ Get global options """
         logger.debug("Parsing global options: {}".format(gb))
         if not isinstance(gb, dict):
             config_error("Incorrect `global` section")
-
+        # Parse all keys inside it
         for k, v in gb.items():
             if k == 'output':
-                if not isinstance(v, str):
-                    config_error("Global `output` must be a string")
-                GS.global_output = v
+                GS.global_output = self._parse_global_str(k, v, GS.global_output)
+            elif k == 'variant':
+                GS.global_variant = self._parse_global_str(k, v, GS.global_variant)
             else:
                 logger.warning("Unknown global option `{}`".format(k))
 
@@ -174,6 +184,9 @@ class CfgYamlReader(object):
             data = yaml.safe_load(fstream)
         except yaml.YAMLError as e:
             config_error("Error loading YAML "+str(e))
+        # Transfer command line global overwrites
+        GS.global_output = GS.global_from_cli.get('output', None)
+        GS.global_variant = GS.global_from_cli.get('variant', None)
         # List of outputs
         outputs = []
         version = None

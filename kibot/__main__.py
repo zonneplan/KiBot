@@ -9,7 +9,7 @@
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
-         [-q | -v...] [-i] [TARGET...]
+         [-q | -v...] [-i] [-g DEF]... [TARGET...]
   kibot [-v...] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] --help-list-outputs
@@ -28,6 +28,7 @@ Options:
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
+  -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   --help-list-outputs              List supported outputs
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details
@@ -256,6 +257,14 @@ def main():
     logger = log.init(args.verbose, args.quiet)
     GS.debug_enabled = logger.getEffectiveLevel() <= DEBUG
     GS.debug_level = args.verbose
+
+    # Parse global overwrite options
+    for redef in args.global_redef:
+        if '=' not in redef:
+            logger.error('Malformed global-redef option, must be VARIABLE=VALUE ({})'.format(redef))
+            sys.exit(EXIT_BAD_ARGS)
+        var = redef.split('=')[0]
+        GS.global_from_cli[var] = redef[len(var)+1:]
 
     clean_cache()
 

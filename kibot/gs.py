@@ -22,12 +22,12 @@ class GS(object):
     pcb_file = None      # /.../dir/pcb.kicad_pcb
     pcb_no_ext = None    # /.../dir/pcb
     pcb_dir = None       # /.../dir
-    pcb_basename = None  # file
+    pcb_basename = None  # pcb
     # SCH name and useful parts
     sch_file = None      # /.../dir/file.sch
-    sch_basename = None  # /.../dir/file
-    sch_no_ext = None    # /.../dir
-    sch_dir = None       # pcb
+    sch_no_ext = None    # /.../dir/file
+    sch_dir = None       # /.../dir
+    sch_basename = None  # file
     # Main output dir
     out_dir = None
     filter_file = None
@@ -56,7 +56,9 @@ class GS(object):
     #  This value will overwrite GS.def_global_output if defined
     #  Classes supporting global "output" option must call super().__init__()
     #  after defining its own options to allow Optionable do the overwrite.
+    global_from_cli = {}
     global_output = None
+    global_variant = None
 
     @staticmethod
     def set_sch(name):

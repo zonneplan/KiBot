@@ -31,6 +31,8 @@ class Optionable(object):
         super().__init__()
         if GS.global_output is not None and getattr(self, 'output', None):
             setattr(self, 'output', GS.global_output)
+        if GS.global_variant is not None and hasattr(self, 'variant'):
+            setattr(self, 'variant', GS.global_variant)
 
     @staticmethod
     def _check_str(key, val, doc):
