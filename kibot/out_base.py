@@ -187,6 +187,7 @@ class VariantOptions(BaseOptions):
         badhes = board.GetLayerID('B.Adhes')
         old_fadhes = []
         old_badhes = []
+        rescue = board.GetLayerID('Rescue')
         for m in board.GetModules():
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
@@ -203,10 +204,10 @@ class VariantOptions(BaseOptions):
                 for gi in m.GraphicalItems():
                     l_gi = gi.GetLayer()
                     if l_gi == fadhes:
-                        gi.SetLayer(-1)
+                        gi.SetLayer(rescue)
                         old_fadhes.append(gi)
                     if l_gi == badhes:
-                        gi.SetLayer(-1)
+                        gi.SetLayer(rescue)
                         old_badhes.append(gi)
         # Store the data to undo the above actions
         self.old_layers = old_layers
