@@ -6,6 +6,10 @@
 [![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 
+**New on 0.7.0**:
+Now KiBot supports *variants*. To my knowledge this is the first tool to implement such a feature, in a transparent way and from schematic to PCB, for KiCad.
+To learn more about KiBot variants visit the [example repo](https://github.com/INTI-CMNB/kibot_variants_arduprog).
+
 ## Index
 
 * [Introduction](#introduction)
@@ -38,6 +42,9 @@ KiBot lets you do this. The following picture depicts the data flow:
 
 ![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Esquema.png)
 
+**New on 0.7.0**:
+Now KiBot supports *variants*. To my knowledge this is the first tool to implement such a feature, in a transparent way and from schematic to PCB, for KiCad.
+To learn more about KiBot variants visit the [example repo](https://github.com/INTI-CMNB/kibot_variants_arduprog).
 
 ## Configuration
 
