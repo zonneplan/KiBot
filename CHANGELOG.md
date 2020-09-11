@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.7.0rc2] - 2020-09-11
+## [0.7.0] - 2020-09-11
 ### Added
 - Now variants are separated entities. Two flavors implemented: KiBoM
   and IBoM.
