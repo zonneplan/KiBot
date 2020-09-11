@@ -1,4 +1,4 @@
-kibot (0.7.0rc1-1) stable; urgency=medium
+kibot (0.7.0rc2-1) stable; urgency=medium
 
   * Variants and filters support for most outputs.
 
