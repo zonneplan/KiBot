@@ -32,12 +32,14 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             return GS.pcb_file
         comps_hash = self.get_refs_hash()
         self.cross_modules(board, comps_hash)
+        self.remove_paste_and_glue(board, comps_hash)
         # Save the PCB to a temporal file
         with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
             fname = f.name
         logger.debug('Storing filtered PCB to `{}`'.format(fname))
         GS.board.Save(fname)
         self.uncross_modules(board, comps_hash)
+        self.restore_paste_and_glue(board, comps_hash)
         return fname
 
     def run(self, output_dir, board, layers):
