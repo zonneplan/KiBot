@@ -1317,3 +1317,69 @@ def test_int_bom_variant_t3():
     rows, header, info = ctx.load_csv(prj+'-bom_(V1b).csv')
     # Here we remove the DNC, so R1 and R2 becomes identical
     check_kibom_test_netlist(rows, ref_column, 1, ['R3', 'R4'], ['R1', 'R2'])
+    ctx.clean_up()
+
+
+def test_int_bom_variant_cli():
+    """ Assing t1_v1 to default from cli. Make sure t1_v3 isn't affected """
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH('test_int_bom_variant_cli', prj, 'int_bom_var_t1_cli', BOM_DIR)
+    ctx.run(extra=['--global-redef', 'variant=t1_v1'])
+    # No variant -> t1_v1
+    logging.debug("* No variant -> t1_v1")
+    rows, header, info = ctx.load_csv(prj+'-bom_(V1).csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, ['R3', 'R4'], ['R1', 'R2'])
+    VARIANTE_PRJ_INFO[1] = 't1_v1'
+    check_csv_info(info, VARIANTE_PRJ_INFO, [4, 20, 2, 1, 2])
+    # V3
+    logging.debug("* t1_v3 variant")
+    rows, header, info = ctx.load_csv(prj+'-bom_V3.csv')
+    check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R3'], ['R1', 'R4'])
+    VARIANTE_PRJ_INFO[1] = 't1_v3'
+    check_csv_info(info, VARIANTE_PRJ_INFO, [3, 20, 2, 1, 2])
+    ctx.clean_up()
+
+
+def test_int_bom_variant_glb():
+    """ Assing t1_v1 to default from global. Make sure t1_v3 isn't affected """
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH('test_int_bom_variant_glb', prj, 'int_bom_var_t1_glb', BOM_DIR)
+    ctx.run()
+    # No variant -> t1_v1
+    logging.debug("* No variant -> t1_v1")
+    rows, header, info = ctx.load_csv(prj+'-bom_(V1).csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, ['R3', 'R4'], ['R1', 'R2'])
+    VARIANTE_PRJ_INFO[1] = 't1_v1'
+    check_csv_info(info, VARIANTE_PRJ_INFO, [4, 20, 2, 1, 2])
+    # V3
+    logging.debug("* t1_v3 variant")
+    rows, header, info = ctx.load_csv(prj+'-bom_V3.csv')
+    check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R3'], ['R1', 'R4'])
+    VARIANTE_PRJ_INFO[1] = 't1_v3'
+    check_csv_info(info, VARIANTE_PRJ_INFO, [3, 20, 2, 1, 2])
+
+
+def test_int_bom_variant_cl_gl():
+    """ Assing t1_v1 to default from global.
+        Overwrite it from cli to t1_v2.
+        Make sure t1_v3 isn't affected """
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH('test_int_bom_variant_cl_gl', prj, 'int_bom_var_t1_glb', BOM_DIR)
+    ctx.run(extra=['--global-redef', 'variant=t1_v2'])
+    ctx.search_err(r'Using command line value .?t1_v2.? for global option .?variant.?')
+    # No variant -> t1_v2
+    logging.debug("* No variant -> t1_v2")
+    rows, header, info = ctx.load_csv(prj+'-bom_(V2).csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R4'], ['R1', 'R3'])
+    VARIANTE_PRJ_INFO[1] = 't1_v2'
+    check_csv_info(info, VARIANTE_PRJ_INFO, [3, 20, 2, 1, 2])
+    # V3
+    logging.debug("* t1_v3 variant")
+    rows, header, info = ctx.load_csv(prj+'-bom_V3.csv')
+    check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R3'], ['R1', 'R4'])
+    VARIANTE_PRJ_INFO[1] = 't1_v3'
+    check_csv_info(info, VARIANTE_PRJ_INFO, [3, 20, 2, 1, 2])
+    ctx.clean_up()

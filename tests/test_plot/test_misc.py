@@ -498,3 +498,10 @@ def test_import_no_fail():
         if os.path.isfile(cache_file):
             os.remove(cache_file)
     ctx.clean_up()
+
+
+def test_wrong_global_redef():
+    ctx = context.TestContext('test_wrong_global_redef', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.run(EXIT_BAD_ARGS, extra=['--global-redef', 'bogus'])
+    assert ctx.search_err('Malformed global-redef option')
+    ctx.clean_up()
