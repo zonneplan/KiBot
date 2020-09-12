@@ -21,7 +21,7 @@ logger = log.get_logger(__name__)
 # RV == Resistor Variable or Varistor
 # RN == Resistor 'N'(Pack)
 # RT == Thermistor
-RLC_PREFIX = {'R': 1, 'L': 1, 'C': 1, 'RV': 1, 'RN': 1, 'RT': 1}
+RLC_PREFIX = {'R', 'L', 'C', 'RV', 'RN', 'RT'}
 
 
 def compare_value(c1, c2, cfg):

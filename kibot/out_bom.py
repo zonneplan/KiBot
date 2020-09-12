@@ -21,7 +21,7 @@ from .fil_base import BaseFilter, apply_exclude_filter, apply_fitted_filter, app
 from . import log
 
 logger = log.get_logger(__name__)
-VALID_STYLES = {'modern-blue': 1, 'modern-green': 1, 'modern-red': 1, 'classic': 1}
+VALID_STYLES = {'modern-blue', 'modern-green', 'modern-red', 'classic'}
 DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
                    ['l', 'l_small', 'inductor'],
                    ['c', 'c_small', 'cap', 'capacitor'],

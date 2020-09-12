@@ -943,7 +943,7 @@ class SchematicComponent(object):
             # Add to the global collection
             if name_lc not in fields_lc:
                 fields.append(field.name)
-                fields_lc[name_lc] = 1
+                fields_lc.add(name_lc)
             # Add to the component
             comp.add_field(field)
             line = f.get_line()
@@ -1330,7 +1330,7 @@ class Schematic(object):
                     raise SchFileError('Wrong entry in title block', line, f)
                 self.title_block[m.group(1)] = m.group(2)
 
-    def load(self, fname, sheet_path='', sheet_path_h='/', libs={}, fields=[], fields_lc={}):
+    def load(self, fname, sheet_path='', sheet_path_h='/', libs={}, fields=[], fields_lc=set()):
         """ Load a v5.x KiCad Schematic.
             The caller must be sure the file exists.
             Only the schematics are loaded not the libs. """
@@ -1419,12 +1419,12 @@ class Schematic(object):
 
     def get_field_names(self, fields):
         """ Appends the collected field names to the provided names """
-        fields_lc = {v.lower(): 1 for v in fields}
+        fields_lc = {v.lower() for v in fields}
         for f in self.fields:
             name_lc = f.lower()
             if name_lc not in fields_lc:
                 fields.append(f)
-                fields_lc[name_lc] = 1
+                fields_lc.add(name_lc)
         return fields
 
     def walk_components(self, function, obj):

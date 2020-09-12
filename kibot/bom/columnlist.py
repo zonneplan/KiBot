@@ -74,16 +74,16 @@ class ColumnList:
     # Default columns
     # These columns are 'immutable'
     COLUMNS_PROTECTED_L = {
-        COL_REFERENCE_L[:-1]: 1,  # The column is References and the field Reference
-        COL_GRP_QUANTITY_L: 1,
-        COL_VALUE_L: 1,
-        COL_PART_L: 1,
-        COL_PART_LIB_L: 1,
+        COL_REFERENCE_L[:-1],  # The column is References and the field Reference
+        COL_GRP_QUANTITY_L,
+        COL_VALUE_L,
+        COL_PART_L,
+        COL_PART_LIB_L,
         # COL_DESCRIPTION_L: 1,
-        COL_DATASHEET_L: 1,
-        COL_SHEETPATH_L: 1,
-        COL_FP_L: 1,
-        COL_FP_LIB_L: 1
+        COL_DATASHEET_L,
+        COL_SHEETPATH_L,
+        COL_FP_L,
+        COL_FP_LIB_L
     }
 
     # Default fields used to group components
