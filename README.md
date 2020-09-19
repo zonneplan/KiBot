@@ -421,6 +421,7 @@ Next time you need this list just use an alias, like this:
         - `normalize_values`: [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.
         - `number`: [number=1] Number of boards to build (components multiplier).
         - `output`: [string='%f-%i%v.%x'] filename for the output (%i=bom). Affected by global options.
+        - `ref_separator`: [string=' '] Separator used for the list of references.
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `variant`: [string=''] Board variant, used to determine which components
                      are output to the BoM..
@@ -733,6 +734,7 @@ Next time you need this list just use an alias, like this:
                 - *regexp*: Alias for regex.
             - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
             - `number_rows`: [boolean=true] First column is the row number.
+            - `ref_separator`: [string=' '] Separator used for the list of references.
             - `test_regex`: [boolean=true] Each component group will be tested against a number of regular-expressions (see ``)..
             - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `format`: [string='HTML'] [HTML,CSV,XML,XLSX] format for the BoM.

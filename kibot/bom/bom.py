@@ -190,7 +190,7 @@ class ComponentGroup(object):
 
     def get_refs(self):
         """ Return a list of the components """
-        return " ".join([c.ref for c in self.components])
+        return self.cfg.ref_separator.join([c.ref for c in self.components])
 
     def get_alt_refs(self):
         """ Alternative list of references using ranges """

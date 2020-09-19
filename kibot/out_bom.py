@@ -201,6 +201,8 @@ class BoMOptions(BaseOptions):
             """ Try to normalize the R, L and C values, producing uniform units and prefixes """
             self.normalize_locale = False
             """ When normalizing values use the locale decimal point """
+            self.ref_separator = ' '
+            """ Separator used for the list of references """
             self.html = BoMHTML
             """ [dict] Options for the HTML format """
             self.xlsx = BoMXLSX

@@ -119,6 +119,8 @@ outputs:
       number: 1
       # [string='%f-%i%v.%x'] filename for the output (%i=bom). Affected by global options
       output: '%f-%i%v.%x'
+      # [string=' '] Separator used for the list of references
+      ref_separator: ' '
       # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
       use_alt: false
       # [string=''] Board variant, used to determine which components
@@ -519,6 +521,8 @@ outputs:
         merge_blank_fields: true
         # [boolean=true] First column is the row number
         number_rows: true
+        # [string=' '] Separator used for the list of references
+        ref_separator: ' '
         # [boolean=true] Each component group will be tested against a number of regular-expressions (see ``).
         test_regex: true
         # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18

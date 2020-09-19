@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- The KiBoM and internal BoM generators now support configuring the
+  separator used for the list of references.
 
 ## [0.7.0] - 2020-09-11
 ### Added

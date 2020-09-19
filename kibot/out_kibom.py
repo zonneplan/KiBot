@@ -109,6 +109,8 @@ class KiBoMConfig(Optionable):
             """ Hide column headers """
             self.hide_pcb_info = False
             """ Hide project information """
+            self.ref_separator = ' '
+            """ Separator used for the list of references """
             self.digikey_link = Optionable
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only) """
             self.group_fields = GroupFields
@@ -299,6 +301,7 @@ class KiBoMConfig(Optionable):
             self.write_str('datasheet_as_link')
             self.write_bool('hide_headers')
             self.write_bool('hide_pcb_info')
+            self.write_str('ref_separator')
             self.write_str('digikey_link')
             # Ask to keep the output name
             f.write('output_file_name = %O\n')

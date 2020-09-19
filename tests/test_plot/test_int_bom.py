@@ -89,7 +89,7 @@ STATS_ROWS = ['Component Groups:', 'Component Count:', 'Fitted Components:', 'Nu
 DEF_TITLE = 'KiBot Bill of Materials'
 
 
-def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps):
+def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps, ref_sep=' '):
     """ Checks the kibom-test.sch expected results """
     # Groups
     assert len(rows) == groups
@@ -98,7 +98,7 @@ def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps):
     if comps:
         components = []
         for r in rows:
-            components.extend(r[ref_column].split(' '))
+            components.extend(r[ref_column].split(ref_sep))
         assert len(components) == len(comps)
         logging.debug(str(len(comps)) + " components OK")
     # Excluded
@@ -219,12 +219,12 @@ def check_csv_info(r, info, stats):
     assert row == len(r)
 
 
-def kibom_verif(rows, header, skip_head=False, qty_name=QTY_COLUMN_NAME):
+def kibom_verif(rows, header, skip_head=False, qty_name=QTY_COLUMN_NAME, ref_sep=' '):
     if not skip_head:
         assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     qty_column = header.index(qty_name)
-    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS, ref_sep)
     check_dnc(rows, 'R7', ref_column, qty_column)
 
 
@@ -1382,4 +1382,12 @@ def test_int_bom_variant_cl_gl():
     check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R3'], ['R1', 'R4'])
     VARIANTE_PRJ_INFO[1] = 't1_v3'
     check_csv_info(info, VARIANTE_PRJ_INFO, [3, 20, 2, 1, 2])
+    ctx.clean_up()
+
+
+def test_int_bom_ref_separator():
+    ctx, out = kibom_setup('int_bom_ref_separator')
+    rows, header, info = ctx.load_csv(out)
+    check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
+    kibom_verif(rows, header, ref_sep=',')
     ctx.clean_up()
