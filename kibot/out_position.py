@@ -153,7 +153,6 @@ class PositionOptions(VariantOptions):
         comps_hash = self.get_refs_hash()
         modules = []
         if GS.kicad_version_n < KICAD_VERSION_5_99:
-            logger.warning(GS.kicad_version)
             is_pure_smd = self.is_pure_smd_5
             is_not_virtual = self.is_not_virtual_5
         else:
