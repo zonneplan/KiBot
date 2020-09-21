@@ -11,6 +11,7 @@ Handles logging initialization and formating.
 """
 import sys
 import logging
+from io import StringIO
 
 # Default domain, base name for the tool
 domain = 'kilog'
@@ -36,12 +37,21 @@ class MyLogger(logging.Logger):
 
     def warning(self, msg, *args, **kwargs):
         MyLogger.warn_tcnt += 1
-        if msg in MyLogger.warn_hash:
-            MyLogger.warn_hash[msg] += 1
+        if isinstance(msg, str):
+            buf = StringIO()
+            buf.write(msg % args)
+            buf = buf.getvalue()
+        else:
+            buf = str(msg)
+        if buf in MyLogger.warn_hash:
+            MyLogger.warn_hash[buf] += 1
             return
         MyLogger.warn_cnt += 1
-        MyLogger.warn_hash[msg] = 1
-        super().warning(msg, *args, **kwargs)
+        MyLogger.warn_hash[buf] = 1
+        if sys.version_info.major > 3 or (sys.version_info.major == 3 and sys.version_info.minor >= 8):
+            super().warning(buf, stacklevel=2, **kwargs)
+        else:
+            super().warning(buf, **kwargs)
 
     def log_totals(self):
         if MyLogger.warn_cnt:
