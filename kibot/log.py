@@ -37,7 +37,7 @@ class MyLogger(logging.Logger):
 
     def warning(self, msg, *args, **kwargs):
         MyLogger.warn_tcnt += 1
-        if isinstance(msg, str):
+        if isinstance(msg, str) and len(args):
             buf = StringIO()
             buf.write(msg % args)
             buf = buf.getvalue()
