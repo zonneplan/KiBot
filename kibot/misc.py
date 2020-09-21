@@ -50,8 +50,8 @@ KICAD_VERSION_5_99 = 5099000
 # Internal filter names
 IFILL_MECHANICAL = '_mechanical'
 # KiCad 5 GUI values for the attribute
-UI_THT = 0       #  1 for KiCad 6
-UI_SMD = 1       #  2 for KiCad 6
+UI_THT = 0       # 1 for KiCad 6
+UI_SMD = 1       # 2 for KiCad 6
 UI_VIRTUAL = 2   # 12 for KiCad 6
 # KiCad 6 module attributes from class_module.h
 MOD_THROUGH_HOLE = 1

@@ -7,7 +7,7 @@
 # Adapted from: https://github.com/johnbeard/kiplot/pull/10
 import operator
 from datetime import datetime
-from pcbnew import (IU_PER_MM, IU_PER_MILS, GetBuildVersion)
+from pcbnew import IU_PER_MM, IU_PER_MILS
 from .gs import GS
 from .misc import UI_SMD, UI_VIRTUAL, KICAD_VERSION_5_99, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES
 from .out_base import VariantOptions
