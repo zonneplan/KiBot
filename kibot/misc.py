@@ -45,13 +45,22 @@ PCBDRAW = 'pcbdraw'
 URL_PCBDRAW = 'https://github.com/INTI-CMNB/pcbdraw'
 EXAMPLE_CFG = 'example.kibot.yaml'
 AUTO_SCALE = 0
+KICAD_VERSION_5_99 = 5099000
 
 # Internal filter names
 IFILL_MECHANICAL = '_mechanical'
 # KiCad 5 GUI values for the attribute
-UI_THT = 0
-UI_SMD = 1
-UI_VIRTUAL = 2
+UI_THT = 0       #  1 for KiCad 6
+UI_SMD = 1       #  2 for KiCad 6
+UI_VIRTUAL = 2   # 12 for KiCad 6
+# KiCad 6 module attributes from class_module.h
+MOD_THROUGH_HOLE = 1
+MOD_SMD = 2
+MOD_EXCLUDE_FROM_POS_FILES = 4
+MOD_EXCLUDE_FROM_BOM = 8
+MOD_BOARD_ONLY = 16  # Footprint has no corresponding symbol
+# This is what a virtual component gets when loaded by KiCad 6
+MOD_VIRTUAL = MOD_EXCLUDE_FROM_POS_FILES | MOD_EXCLUDE_FROM_BOM
 
 # Supported values for "do not fit"
 DNF = {

@@ -67,8 +67,8 @@ def expect_position(ctx, file, comp, no_comp=[], inches=False, csv=False):
     ctx.search_not_in_file(file, texts)
 
 
-def test_3Rs_position():
-    ctx = context.TestContext('3Rs_position', '3Rs', 'simple_position', POS_DIR)
+def test_3Rs_position_1():
+    ctx = context.TestContext('3Rs_position_1', '3Rs', 'simple_position', POS_DIR)
     ctx.run()
     pos_top = ctx.get_pos_top_filename()
     pos_bot = ctx.get_pos_bot_filename()

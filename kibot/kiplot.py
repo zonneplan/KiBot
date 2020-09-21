@@ -195,13 +195,22 @@ def get_board_comps_data(comps):
             continue
         c = comps_hash[ref]
         attrs = m.GetAttributes()
-        # KiCad 5 (6 will change it)
-        if attrs == 1:
-            c.smd = True
-        elif attrs == 2:
-            c.virtual = True
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            # KiCad 5
+            if attrs == UI_SMD:
+                c.smd = True
+            elif attrs == UI_VIRTUAL:
+                c.virtual = True
+            else:
+                c.tht = True
         else:
-            c.tht = True
+            # KiCad 6
+            if attrs & MOD_SMD:
+                c.smd = True
+            if attrs & MOD_THROUGH_HOLE:
+                c.tht = True
+            if attrs & MOD_VIRTUAL == MOD_VIRTUAL:
+                c.virtual = True
     GS.board_comps_joined = True
 
 

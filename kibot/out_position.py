@@ -7,9 +7,9 @@
 # Adapted from: https://github.com/johnbeard/kiplot/pull/10
 import operator
 from datetime import datetime
-from pcbnew import (IU_PER_MM, IU_PER_MILS)
+from pcbnew import (IU_PER_MM, IU_PER_MILS, GetBuildVersion)
 from .gs import GS
-from .misc import UI_SMD, UI_VIRTUAL
+from .misc import UI_SMD, UI_VIRTUAL, KICAD_VERSION_5_99, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -123,6 +123,22 @@ class PositionOptions(VariantOptions):
         if bothf is not None:
             bothf.close()
 
+    @staticmethod
+    def is_pure_smd_5(m):
+        return m.GetAttributes() == UI_SMD
+
+    @staticmethod
+    def is_pure_smd_6(m):
+        return m.GetAttributes() & (MOD_THROUGH_HOLE | MOD_SMD) == MOD_SMD
+
+    @staticmethod
+    def is_not_virtual_5(m):
+        return m.GetAttributes() != UI_VIRTUAL
+
+    @staticmethod
+    def is_not_virtual_6(m):
+        return not (m.GetAttributes() & MOD_EXCLUDE_FROM_POS_FILES)
+
     def run(self, output_dir, board):
         super().run(output_dir, board)
         columns = ["Ref", "Val", "Package", "PosX", "PosY", "Rot", "Side"]
@@ -136,6 +152,13 @@ class PositionOptions(VariantOptions):
         # Format all strings
         comps_hash = self.get_refs_hash()
         modules = []
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            logger.warning(GS.kicad_version)
+            is_pure_smd = self.is_pure_smd_5
+            is_not_virtual = self.is_not_virtual_5
+        else:
+            is_pure_smd = self.is_pure_smd_6
+            is_not_virtual = self.is_not_virtual_6
         for m in sorted(board.GetModules(), key=operator.methodcaller('GetReference')):
             ref = m.GetReference()
             # Apply any filter or variant data
@@ -144,8 +167,7 @@ class PositionOptions(VariantOptions):
                 if c and (not c.fitted or not c.included):
                     continue
             # If passed check the position options
-            if (self.only_smd and m.GetAttributes() == UI_SMD) or \
-               (not self.only_smd and m.GetAttributes() != UI_VIRTUAL):
+            if (self.only_smd and is_pure_smd(m)) or (not self.only_smd and is_not_virtual(m)):
                 center = m.GetCenter()
                 # See PLACE_FILE_EXPORTER::GenPositionData() in
                 # export_footprints_placefile.cpp for C++ version of this.
