@@ -12,15 +12,17 @@ Main KiBot code
 import os
 import re
 from sys import exit
+from sys import path as sys_path
 from shutil import which
 from subprocess import run, PIPE, call
 from glob import glob
 from distutils.version import StrictVersion
 from importlib.util import (spec_from_file_location, module_from_spec)
 
-from .gs import (GS)
+from .gs import GS
 from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
-                   EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL)
+                   EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, KICAD_VERSION_5_99,
+                   MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .pre_base import BasePreFlight
 from .kicad.v5_sch import Schematic, SchFileError
@@ -30,8 +32,10 @@ from . import log
 logger = log.get_logger(__name__)
 # Cache to avoid running external many times to check their versions
 script_versions = {}
-
-
+# Check if we have to run the nightly KiCad build
+if os.environ.get('KIAUS_USE_NIGHTLY'):
+    # Path to the Python module
+    sys_path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
 try:
     import pcbnew
 except ImportError:  # pragma: no cover
@@ -40,6 +44,13 @@ except ImportError:  # pragma: no cover
                  " Is KiCad installed?"
                  " Do you need to add it to PYTHONPATH?")
     exit(NO_PCBNEW_MODULE)
+m = re.match(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
+GS.kicad_version_major = int(m.group(1))
+GS.kicad_version_minor = int(m.group(2))
+GS.kicad_version_patch = int(m.group(3))
+GS.kicad_version_n = GS.kicad_version_major*1000000+GS.kicad_version_minor*1000+GS.kicad_version_patch
+logger.debug('Detected KiCad v{}.{}.{} ({})'.format(GS.kicad_version_major, GS.kicad_version_minor,
+             GS.kicad_version_patch, GS.kicad_version_n))
 
 
 def _import(name, path):

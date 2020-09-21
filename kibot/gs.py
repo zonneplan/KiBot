@@ -39,6 +39,11 @@ class GS(object):
     today = n.strftime('%Y-%m-%d')
     time = n.strftime('%H-%M-%S')
     kicad_version = ''
+    # KiCad version: major*1e6+minor*1e3+patch
+    kicad_version_n = 0
+    kicad_version_major = 0
+    kicad_version_minor = 0
+    kicad_version_patch = 0
     board_comps_joined = False  # Flag to indicate we already merged data from the board
     # Data from the SCH because it doesn't have a Python API
     sch_title = None
