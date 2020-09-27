@@ -17,6 +17,7 @@ To learn more about KiBot variants visit the [example repo](https://inti-cmnb.gi
 * [Usage](#usage)
 * [Installation](#installation)
 * [Usage for CI/CD](#usage-for-cicd)
+  * [Github Actions](#usage-of-github-actions)
 * [Credits](#credits)
 
 ## Introduction
@@ -1193,6 +1194,44 @@ In order to run KiBot on these environments you need a lot of software installed
 
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
+### Usage of Github Actions
+
+You need to put a [config.kibot.yaml](#configuration) file into the KiCad project folder. 
+
+```yaml
+name: example
+
+on:
+  push:
+    paths:
+    - '**.sch'
+    - '**.kicad_pcb'
+  pull_request:
+    paths:
+      - '**.sch'
+      - '**.kicad_pcb'
+
+  jobs:
+    example:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+      - uses: INTI-CMNB/KiBot@v0.7.0
+        with:
+        # Required - kibot config file
+          config: config.kibot.yaml
+        # optional - prefix to output defined in config
+          dir: output
+        # optional - schematic file
+          schema: '*.sch'
+        # optional - PCB design file
+          board: '*.kicad_pcb'
+      - name: upload results
+        uses: actions/upload-artifact@v2.0
+        with:
+          name: output
+          path: output
+```
 
 ## Credits
 
@@ -1204,6 +1243,6 @@ For more information about the docker images visit [kicad_debian](https://github
 - **PcbDraw**: Jan Mrázek (@yaqwsx)
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
-  - **SVG output**: @nerdyscout
+  - **GitHub Actions Integration**: @nerdyscout
 - **Others**:
   - **Robot in the logo**: Christian Plaza (from pixabay)
