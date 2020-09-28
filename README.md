@@ -79,7 +79,7 @@ Note that the explanation could be useful even if you know YAML.
 
 All configuration files must start with:
 
-```
+```yaml
 kibot:
   version: 1
 ```
@@ -111,7 +111,7 @@ This section is used to specify tasks that will be executed before generating an
 
 Here is an example of a *preflight* section:
 
-```
+```yaml
 preflight:
   run_erc: true
   update_xml: true
@@ -130,7 +130,7 @@ For this you must declare `filters` entry in the `preflight` section. Then you c
 Each filter entry has an optional description and defines to which error type is applied (`number`) and a regular expression
 that the error must match to be ignored (`regex`). Like this:
 
-```
+```yaml
   filters:
     - filter: 'Optional filter description'
       number: Numeric_error_type
@@ -153,7 +153,7 @@ ErrType(2): Unconnected items
 
 And you want to ignore them. You can add the following filters:
 
-```
+```yaml
   filters:
     - filter: 'Ignore C3 pad 2 too close to anything'
       number: 4
@@ -198,7 +198,7 @@ They are compatible with the ones used by IBoM.
 The default value for `global.output` is `%f-%i.%x`.
 If you want to include the revision you could add the following definition:
 
-```
+```yaml
 global:
   output: '%f_rev_%r-%i.%x'
 ```
@@ -270,8 +270,8 @@ Currently the only type available is `generic`.
     - `invert`: [boolean=false] Invert the result of the filter.
     - `keys`: [string|list(string)=dnf_list] [dnc_list,dnf_list] List of keys to match.
               The `dnf_list` and `dnc_list` internal lists can be specified as strings.
-              Use `dnf_list` for {'no stuff', 'not loaded', 'do not fit', 'nostuff', 'dnp', 'noload', 'nofit', 'dnl', 'not placed', 'noplace', 'not fitted', 'do not load', 'dnf', 'do not place'}.
-              Use `dnc_list` for {'do not change', 'dnc', 'no change', 'fixed'}.
+              Use `dnf_list` for {'do not load', 'do not fit', 'dnf', 'noload', 'dnl', 'not placed', 'no stuff', 'dnp', 'not loaded', 'noplace', 'not fitted', 'nofit', 'do not place', 'nostuff'}.
+              Use `dnc_list` for {'dnc', 'do not change', 'no change', 'fixed'}.
     - `name`: [string=''] Used to identify this particular filter definition.
 
 
@@ -377,7 +377,7 @@ The available values for *type* are:
 
 Here is an example of a configuration file to generate the gerbers for the top and bottom layers:
 
-```
+```yaml
 kibot:
   version: 1
 
@@ -422,20 +422,20 @@ Most options are the same you'll find in the KiCad dialogs.
 
 You have various ways to specify the layers. If you need to specify just one layer you can just use its name:
 
-```
+```yaml
     layers: 'F.Cu'
 ```
 
 If you want to specify all the available layers:
 
-```
+```yaml
     layers: 'all'
 ```
 
 You can also select the layers you want in KiCad (using File, Plot dialog) and save your PCB.
 Then you just need to use:
 
-```
+```yaml
     layers: 'selected'
 ```
 
@@ -447,7 +447,7 @@ You can also use any of the following grup of layers:
 
 You can also mix the above definitions using a list:
 
-```
+```yaml
     layers:
       - 'copper'
       - 'Dwgs.User'
@@ -457,7 +457,7 @@ This will select all the copper layers and the user drawings.
 Note that the above mentioned options will use file name suffixes and descriptions selected automatically.
 If you want to use a particular suffix and provide better descriptions you can use the following format:
 
-```
+```yaml
     layers:
       - layer: 'F.Cu'
         suffix: 'F_Cu'
@@ -469,7 +469,7 @@ If you want to use a particular suffix and provide better descriptions you can u
 
 You can also mix the styles:
 
-```
+```yaml
     layers:
       - 'copper'
       - layer: 'Cmts.User'
@@ -481,7 +481,7 @@ You can also mix the styles:
 If you need to use the same list of layers for various outputs you can use YAML anchors.
 The first time you define the list of layers just assign an ancho, here is an example:
 
-```
+```yaml
     layers: &copper_and_cmts
       - copper
       - 'Cmts.User'
@@ -489,7 +489,7 @@ The first time you define the list of layers just assign an ancho, here is an ex
 
 Next time you need this list just use an alias, like this:
 
-```
+```yaml
     layers: *copper_and_cmts
 ```
 
@@ -1166,7 +1166,7 @@ Next time you need this list just use an alias, like this:
 
 If you need a template for the configuration file try:
 
-```
+```shell
 kibot --example
 ```
 
@@ -1175,13 +1175,13 @@ You can use it to create your own configuration file.
 
 If you want to use the layers of a particular PCB in the example use:
 
-```
+```shell
 kibot -b PCB_FILE --example
 ```
 
 And if you want to use the same options selected in the plot dialog use:
 
-```
+```shell
 kibot -b PCB_FILE -p --example
 ```
 
@@ -1191,14 +1191,14 @@ you can just call `kibot`. No arguments needed. The tool will figure out which f
 If more than one file is found in the current directory `kibot` will use the first found and issue a
 warning. If you need to use other file just tell it explicitly:
 
-```
+```shell
 kibot -b PCB_FILE.kicad_pcb -c CONFIG.kibot.yaml
 ```
 
 A simple target can be added to your `makefile`, so you can just run
 `make pcb_files` or integrate into your current build process.
 
-```
+```Makefile
 pcb_files:
     kibot -b $(PCB) -c $(KIBOT_CFG)
 ```
@@ -1208,39 +1208,39 @@ what's going on use `--verbose` or `-v`.
 
 If you want to generate only some of the outputs use:
 
-```
+```shell
 kibot OUTPUT_1 OUTPUT_2
 ```
 
 If you want to generate all outputs with some exceptions use:
 
 
-```
+```shell
 kibot --invert-sel OUTPUT_1 OUTPUT_2
 ```
 
 If you want to skip the DRC and ERC use:
 
-```
+```shell
 kibot --skip-pre run_erc,run_drc
 ```
 
 If you want to skip all the `preflight` tasks use:
 
-```
+```shell
 kibot --skip-pre all
 ```
 
 All outputs are generated using the current directory as base. If you want to use another
 directory as base use:
 
-```
+```shell
 kibot --out-dir OTHER_PLACE
 ```
 
 If you want to list the available outputs defined in the configuration file use:
 
-```
+```shell
 kibot --list
 ```
 
@@ -1301,20 +1301,20 @@ Options:
 ### Installation on Ubuntu/Debian
 
 Get the Debian package from the [releases section](https://github.com/INTI-CMNB/KiBot/releases) and run:
-```
+```shell
 sudo apt install ./kibot*_all.deb
 ```
 
 **Important note**: Sometimes the release needs another packages that aren't part of the stable Debian distribution.
 In this case the packages are also included in the release page. As an example version 0.6.0 needs:
 
-```
+```shell
 sudo apt install ./python3-mcpy_2.0.2-1_all.deb ./kibot_0.6.0-1_all.deb
 ```
 
 ### Installation using pip
 
-```
+```shell
 pip install --no-compile kibot
 ```
 
