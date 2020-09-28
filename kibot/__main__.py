@@ -12,6 +12,7 @@ Usage:
          [-q | -v...] [-i] [-g DEF]... [TARGET...]
   kibot [-v...] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
+  kibot [-v...] --help-filters
   kibot [-v...] --help-list-outputs
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] --help-outputs
@@ -29,6 +30,7 @@ Options:
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
+  --help-filters                   List supported filters and details
   --help-list-outputs              List supported outputs
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details
@@ -68,7 +70,8 @@ log.set_domain('kibot')
 from .gs import (GS)
 from .kiplot import (generate_outputs, load_actions, config_output)
 from .pre_base import (BasePreFlight)
-from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example)
+from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
+                            print_filters_help)
 from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS)
 from .docopt import docopt
 
@@ -282,6 +285,9 @@ def main():
         sys.exit(0)
     if args.help_preflights:
         print_preflights_help()
+        sys.exit(0)
+    if args.help_filters:
+        print_filters_help()
         sys.exit(0)
     if args.example:
         check_board_file(args.board_file)

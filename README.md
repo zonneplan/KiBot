@@ -14,6 +14,21 @@ To learn more about KiBot variants visit the [example repo](https://inti-cmnb.gi
 
 * [Introduction](#introduction)
 * [Configuration](#configuration)
+  * [The header](#the-header)
+  * [The *preflight* section](#the-preflight-section)
+    * [Supported *preflight* options](#supported-preflight-options)
+    * [Filtering DRC and ERC errors](#filtering-drc-and-erc-errors)
+  * [Default global options](#default-global-options)
+    * [Default *output* option](#default-output-option)
+  * [Filters and variants](#filters-and-variants)
+    * [Supported filters](#supported-filters)
+    * [Examples for filters](#examples-for-filters)
+    * [Built-in filters](#built-in-filters)
+    * [DNF and DNC internal keys](#dnf-and-dnc-internal-keys)
+  * [The *outputs* section](#the-outputs-section)
+    * [Specifying the layers](#specifying-the-layers)
+    * [Supported outputs](#supported-outputs)
+    * [Filters and variants](#filters-and-variants)
 * [Usage](#usage)
 * [Installation](#installation)
 * [Usage for CI/CD](#usage-for-cicd)
@@ -105,7 +120,7 @@ preflight:
   ignore_unconnected: false
 ```
 
-#### Filtering DRC/ERC errors
+#### Filtering DRC and ERC errors
 
 Sometimes KiCad reports DRC or ERC errors that you can't get rid off.
 This could be just because you are part of a team including lazzy people that doesn't want to take the extra effort to solve
@@ -162,7 +177,7 @@ A complete Python regular expressions explanation is out the scope of this manua
 The section `global` contains default global options that affects all the outputs.
 Currently only one option is supported.
 
-#### Default `output` option
+#### Default *output* option
 
 This option controls the default file name pattern used by all the outputs. This makes all the file names coherent.
 You can always choose the file name for a particular output.
@@ -187,6 +202,135 @@ If you want to include the revision you could add the following definition:
 global:
   output: '%f_rev_%r-%i.%x'
 ```
+
+### Filters and variants
+
+The filters and variants are mechanism used to modify the circuit components.
+Both concepts are closely related. In fact variants can use filters.
+
+The current implementation of the filters allow to exclude components from some of the processing stages. The most common use is to exclude them from some output.
+In the future more advanced filters will allow modification of component details.
+
+Variants are currently used to create *assembly variants*. This concept is used to manufature one PCB used for various products.
+You can learn more about KiBot variants on the following [example repo](https://inti-cmnb.github.io/kibot_variants_arduprog/).
+
+As mentioned above the current use of filters is to mark some components. Mainly to exclude them, but also to mark them as special.
+This is the case of *do not change* components in the BoM.
+
+Filters and variants are defined in separated sections. A filter section looks like this:
+
+```yaml
+filters:
+ - name: 'a_short_name'
+   type: 'generic'
+   comment: 'A description'
+   # Filter options
+```
+
+Currently the only type available is `generic`.
+
+#### Supported filters:
+
+- generic: Generic filter
+        This filter is based on regular exressions.
+        It also provides some shortcuts for common situations.
+        Note that matches aren't case sensitive and spaces at the beggining and the end are removed.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `config_field`: [string='Config'] Name of the field used to clasify components.
+    - `config_separators`: [string=' ,'] Characters used to separate options inside the config field.
+    - `exclude_all_hash_ref`: [boolean=false] Exclude all components with a reference starting with #.
+    - `exclude_any`: [list(dict)] A series of regular expressions used to exclude parts.
+                     If a component matches ANY of these, it will be excluded.
+                     Column names are case-insensitive.
+      * Valid keys:
+        - `column`: [string=''] Name of the column to apply the regular expression.
+        - *field*: Alias for column.
+        - `regex`: [string=''] Regular expression to match.
+        - *regexp*: Alias for regex.
+    - `exclude_config`: [boolean=false] Exclude components containing a key value in the config field.
+                        Separators are applied.
+    - `exclude_empty_val`: [boolean=false] Exclude components with empty 'Value'.
+    - `exclude_field`: [boolean=false] Exclude components if a field is named as any of the keys.
+    - `exclude_refs`: [list(string)] List of references to be excluded.
+                      Use R* for all references with R prefix.
+    - `exclude_smd`: [boolean=false] KiCad 5: exclude components marked as smd in the PCB.
+    - `exclude_tht`: [boolean=false] KiCad 5: exclude components marked as through-hole in the PCB.
+    - `exclude_value`: [boolean=false] Exclude components if their 'Value' is any of the keys.
+    - `exclude_virtual`: [boolean=false] KiCad 5: exclude components marked as virtual in the PCB.
+    - `include_only`: [list(dict)] A series of regular expressions used to include parts.
+                      If there are any regex defined here, only components that match against ANY of them will be included.
+                      Column/field names are case-insensitive.
+                      If empty this rule is ignored.
+      * Valid keys:
+        - `column`: [string=''] Name of the column to apply the regular expression.
+        - *field*: Alias for column.
+        - `regex`: [string=''] Regular expression to match.
+        - *regexp*: Alias for regex.
+    - `invert`: [boolean=false] Invert the result of the filter.
+    - `keys`: [string|list(string)=dnf_list] [dnc_list,dnf_list] List of keys to match.
+              The `dnf_list` and `dnc_list` internal lists can be specified as strings.
+              Use `dnf_list` for {'no stuff', 'not loaded', 'do not fit', 'nostuff', 'dnp', 'noload', 'nofit', 'dnl', 'not placed', 'noplace', 'not fitted', 'do not load', 'dnf', 'do not place'}.
+              Use `dnc_list` for {'do not change', 'dnc', 'no change', 'fixed'}.
+    - `name`: [string=''] Used to identify this particular filter definition.
+
+
+
+#### Examples for filters
+
+The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/yaml_samples) directory contains all the regression tests. Many of them test the filters functionality.
+
+- [int_bom_exclude_any.kibot.yaml](https://github.com/INTI-CMNB/KiBot/tree/master/tests/yaml_samples/int_bom_exclude_any.kibot.yaml): Shows how to use regular expressions to match fields and exclude components. Is the more powerful filter mechanism.
+- [int_bom_fil_1.kibot.yaml](https://github.com/INTI-CMNB/KiBot/tree/master/tests/yaml_samples/int_bom_fil_1.kibot.yaml): Shows various mechanisms. In particular how to change the list of keywords, usually used to match 'DNF', meaning you can exclude components with arbitrary text.
+- [int_bom_fil_2.kibot.yaml](https://github.com/INTI-CMNB/KiBot/tree/master/tests/yaml_samples/int_bom_fil_2.kibot.yaml): Shows how to use KiCad 5 module attributes (from the PCB) to filter SMD, THT and Virtual components. Note KiCad 6 is redefining the attributes.
+- [int_bom_include_only.kibot.yaml](https://github.com/INTI-CMNB/KiBot/tree/master/tests/yaml_samples/int_bom_include_only.kibot.yaml): Shows how to use regular expressions to match only some components, instead of including a few.
+- [int_bom_var_t2is_csv.kibot.yaml](https://github.com/INTI-CMNB/KiBot/tree/master/tests/yaml_samples/int_bom_var_t2is_csv.kibot.yaml): Shows how to use filters and variants simultaneously, not a good idea, but possible.
+- [print_pdf_no_inductors_1.kibot.yaml](https://github.com/INTI-CMNB/KiBot/tree/master/tests/yaml_samples/print_pdf_no_inductors_1.kibot.yaml): Shows how to change the `dnf_filter` for a KiBoM variant.
+- [print_pdf_no_inductors_2.kibot.yaml](https://github.com/INTI-CMNB/KiBot/tree/master/tests/yaml_samples/print_pdf_no_inductors_2.kibot.yaml): Shows how to do what `print_pdf_no_inductors_1.kibot.yaml` does but without the need of a variant.
+
+#### Built-in filters
+
+- **_mechanical** is used to exclude:
+  - References that start with #
+  - Virtual components
+  - References that match: '^TP[0-9]*' or '^FID'
+  - Part names that match: 'regex': 'mount.*hole' or 'solder.*bridge' or 'solder.*jump' or 'test.*point'
+  - Footprints that match:  'test.*point' or 'mount.*hole' or 'fiducial'
+- **_kibom_dnf_Config** it uses the internal `dnf_list` to exclude components with
+  - Value matching any of the keys
+  - Any of the keys in the `Config` field (comma or space separated)
+- **_kibom_dnc_Config** it uses the internal `dnc_list` to exclude components with
+  - Value matching any of the keys
+  - Any of the keys in the `Config` field (comma or space separated)
+
+Note that the last two uses a field named `Config`, but you can customise them invoking **_kibom_dnf_FIELD**. This will create an equivalent filter, but using the indicated **FIELD**.
+
+#### DNF and DNC internal keys
+
+The current list of **DNF** keys is:
+- dnf
+- dnl
+- dnp
+- do not fit
+- do not place
+- do not load
+- nofit
+- nostuff
+- noplace
+- noload
+- not fitted
+- not loaded
+- not placed
+- no stuff
+
+The current list of **DNC** keys is:
+- dnc
+- do not change
+- no change
+- fixed
+
+You can define your own lists as the `int_bom_fil_1.kibot.yaml` shows.
+
 
 ### The *outputs* section
 
@@ -1110,6 +1254,7 @@ Usage:
          [-q | -v...] [-i] [-g DEF]... [TARGET...]
   kibot [-v...] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
+  kibot [-v...] --help-filters
   kibot [-v...] --help-list-outputs
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] --help-outputs
@@ -1127,6 +1272,7 @@ Options:
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
+  --help-filters                   List supported filters and details
   --help-list-outputs              List supported outputs
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details

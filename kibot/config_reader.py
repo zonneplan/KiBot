@@ -322,6 +322,18 @@ def print_preflights_help():
             print_output_options(n, options, 2)
 
 
+def print_filters_help():
+    fils = RegFilter.get_registered()
+    logger.debug('{} supported filters'.format(len(fils)))
+    print('Supported filters:\n')
+    for n, o in OrderedDict(sorted(fils.items())).items():
+        help = o.__doc__
+        if help is None:
+            help = 'Undocumented'  # pragma: no cover
+        print('- {}: {}.'.format(n, help.strip()))
+        print_output_options(n, o, 2)
+
+
 def print_example_options(f, cls, name, indent, po):
     ind_str = indent*' '
     obj = cls()
