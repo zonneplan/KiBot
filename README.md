@@ -1345,9 +1345,12 @@ In order to run KiBot on these environments you need a lot of software installed
 
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
+
 ### Usage of Github Actions
 
-You need to put a [config.kibot.yaml](#configuration) file into the KiCad project folder. 
+You need to put a [config.kibot.yaml](#configuration) file into the KiCad project folder.
+
+Here is an example of workflow file using the GitHub Action:
 
 ```yaml
 name: example
@@ -1384,6 +1387,7 @@ on:
           path: output
 ```
 
+
 ## Credits
 
 - **KiBot project**: Salvador E. Tropea (@set-soft)
@@ -1394,6 +1398,6 @@ on:
 - **PcbDraw**: Jan Mrázek (@yaqwsx)
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
-  - **GitHub Actions Integration**: @nerdyscout
+  - **GitHub Actions Integration/SVG output**: @nerdyscout
 - **Others**:
   - **Robot in the logo**: Christian Plaza (from pixabay)
