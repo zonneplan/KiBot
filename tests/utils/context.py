@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import tempfile
 import logging
@@ -13,9 +14,9 @@ import xml.etree.ElementTree as ET
 COVERAGE_SCRIPT = 'python3-coverage'
 KICAD_PCB_EXT = '.kicad_pcb'
 KICAD_SCH_EXT = '.sch'
-REF_DIR = 'tests/reference'
 BOARDS_DIR = 'tests/board_samples'
-
+KICAD_VERSION_5_99 = 5099000
+KICAD_VERSION_5_1_7 = 5001007
 MODE_SCH = 1
 MODE_PCB = 0
 
@@ -24,9 +25,32 @@ def quote(s):
     return '"'+s+'"'
 
 
+def usable_cmd(cmd):
+    return ' '.join(cmd)
+
+
 class TestContext(object):
 
     def __init__(self, test_name, board_name, yaml_name, sub_dir, yaml_compressed=False):
+        ng_ver = os.environ.get('KIAUS_USE_NIGHTLY')
+        if ng_ver:
+            # Path to the Python module
+            sys.path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
+            self.kicad_cfg_dir = os.path.join(os.environ['HOME'], '.config/kicadnightly/'+ng_ver)
+        else:
+            self.kicad_cfg_dir = os.path.join(os.environ['HOME'], '.config/kicad')
+        import pcbnew
+        # Detect version
+        m = re.match(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
+        major = int(m.group(1))
+        minor = int(m.group(2))
+        patch = int(m.group(3))
+        self.kicad_version = major*1000000+minor*1000+patch
+        logging.debug('Detected KiCad v{}.{}.{} ({})'.format(major, minor, patch, self.kicad_version))
+        if self.kicad_version == KICAD_VERSION_5_1_7:
+            self.ref_dir = 'tests/reference/5_1_7'
+        else:
+            self.ref_dir = 'tests/reference/5_1_6'
         if not hasattr(self, 'mode'):
             # We are using PCBs
             self.mode = MODE_PCB
@@ -317,7 +341,7 @@ class TestContext(object):
         if ref_out_dir:
             reference = self.get_out_path(reference)
         else:
-            reference = os.path.join(REF_DIR, reference)
+            reference = os.path.join(self.ref_dir, reference)
         image = self.get_out_path(image)
         png_ref = None
         if reference[-3:] == 'svg':
@@ -340,7 +364,7 @@ class TestContext(object):
                '-crop', '100%x87%+0+0', '+repage',
                '-colorspace', 'RGB',
                self.get_out_path(diff)]
-        logging.debug('Comparing images with: '+str(cmd))
+        logging.debug('Comparing images with: '+usable_cmd(cmd))
         res = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         # m = re.match(r'([\d\.e-]+) \(([\d\.e-]+)\)', res.decode())
         # assert m
@@ -361,7 +385,7 @@ class TestContext(object):
         # Split the reference
         logging.debug('Splitting '+reference)
         cmd = ['convert', '-density', '150',
-               os.path.join(REF_DIR, reference),
+               os.path.join(self.ref_dir, reference),
                self.get_out_path('ref-%d.png')]
         subprocess.check_call(cmd)
         # Split the generated
@@ -382,9 +406,9 @@ class TestContext(object):
     def compare_txt(self, text, reference=None, diff='diff.txt'):
         if reference is None:
             reference = text
-        cmd = ['/bin/sh', '-c', 'diff -ub '+os.path.join(REF_DIR, reference)+' ' +
+        cmd = ['/bin/sh', '-c', 'diff -ub '+os.path.join(self.ref_dir, reference)+' ' +
                self.get_out_path(text)+' > '+self.get_out_path(diff)]
-        logging.debug('Comparing texts with: '+str(cmd))
+        logging.debug('Comparing texts with: '+usable_cmd(cmd))
         res = subprocess.call(cmd)
         assert res == 0
 

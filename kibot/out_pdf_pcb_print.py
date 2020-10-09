@@ -19,13 +19,40 @@ logger = log.get_logger(__name__)
 
 
 class PDF_Pcb_PrintOptions(VariantOptions):
+    # Mappings to KiCad config values. They should be the same used in drill_marks.py
+    _drill_marks_map = {'none': 0, 'small': 1, 'full': 2}
+
     def __init__(self):
         with document:
             self.output = GS.def_global_output
             """ filename for the output PDF (%i=layers, %x=pdf)"""
             self.output_name = None
             """ {output} """
+            self.scaling = 1.0
+            """ scale factor (0 means autoscaling)"""
+            self._drill_marks = 'full'
+            """ what to use to indicate the drill places, can be none, small or full (for real scale) """
+            self.plot_sheet_reference = True
+            """ include the title-block """
+            self.monochrome = False
+            """ print in black and white """
+            self.separated = False
+            """ print layers in separated pages """
         super().__init__()
+
+    @property
+    def drill_marks(self):
+        return self._drill_marks
+
+    @drill_marks.setter
+    def drill_marks(self, val):
+        if val not in self._drill_marks_map:
+            raise KiPlotConfigurationError("Unknown drill mark type: {}".format(val))
+        self._drill_marks = val
+
+    def config(self):
+        super().config()
+        self._drill_marks = PDF_Pcb_PrintOptions._drill_marks_map[self._drill_marks]
 
     def filter_components(self, board):
         if not self._comps:
@@ -44,7 +71,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
 
     def run(self, output_dir, board, layers):
         super().run(board, layers)
-        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.4.1')
+        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.5.1')
         layers = Layer.solve(layers)
         # Output file name
         id = '+'.join([la.suffix for la in layers])
@@ -52,6 +79,13 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):
             cmd.append('-f')
+        cmd.extend(['--scaling', str(self.scaling), '--pads', str(self._drill_marks)])
+        if not self.plot_sheet_reference:
+            cmd.append('--no-title')
+        if self.monochrome:
+            cmd.append('--monochrome')
+        if self.separated:
+            cmd.append('--separate')
         board_name = self.filter_components(board)
         cmd.extend([board_name, output_dir])
         if GS.debug_enabled:

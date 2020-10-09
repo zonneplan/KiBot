@@ -25,7 +25,7 @@ PDF_FILE_B = 'PCB_Bot.pdf'
 
 def test_print_pcb_simple():
     prj = 'bom'
-    ctx = context.TestContext('PrPCB', prj, 'print_pcb', PDF_DIR)
+    ctx = context.TestContext('print_pcb_simple', prj, 'print_pcb', PDF_DIR)
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(os.path.join(PDF_DIR, PDF_FILE))
@@ -34,19 +34,29 @@ def test_print_pcb_simple():
 
 def test_print_pcb_refill():
     prj = 'zone-refill'
-    ctx = context.TestContext('PrPCB_Refill', prj, 'print_pcb_zone-refill', '')
+    ctx = context.TestContext('print_pcb_refill', prj, 'print_pcb_zone-refill', '')
     ctx.run()
-
     ctx.expect_out_file(PDF_FILE_B)
     ctx.compare_image(PDF_FILE_B)
+    ctx.clean_up()
 
 
 def test_print_variant_1():
     prj = 'kibom-variant_3'
-    ctx = context.TestContext('test_print_variant_1', prj, 'print_pcb_variant_1', '')
+    ctx = context.TestContext('print_variant_1', prj, 'print_pcb_variant_1', '')
     ctx.run()
     # Check all outputs are there
     fname = prj+'-F_Fab.pdf'
     ctx.expect_out_file(fname)
     ctx.compare_pdf(fname)
+    ctx.clean_up()
+
+
+def test_print_pcb_options():
+    prj = 'bom'
+    ctx = context.TestContext('print_pcb_options', prj, 'print_pcb_options', PDF_DIR)
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(PDF_FILE)
+    ctx.compare_pdf(PDF_FILE)
     ctx.clean_up()

@@ -1,7 +1,7 @@
 #!/usr/bin/make
 PY_COV=python3-coverage
 PYTEST=pytest-3
-REFDIR=tests/reference/
+REFDIR=tests/reference/5_1_7/
 REFILL=tests/board_samples/zone-refill.kicad_pcb
 CWD := $(abspath $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST))))))
 USER_ID=$(shell id -u)
@@ -103,6 +103,7 @@ deb_clean:
 
 gen_ref:
 	# Reference outputs, must be manually inspected if regenerated
+	pcbnew_do export --output_name bom-F_Cu+F_SilkS.pdf --scaling 4 --pads 0 --no-title --monochrome --separate tests/board_samples/bom.kicad_pcb $(REFDIR) F.Cu F.SilkS
 	cp -a $(REFILL).refill $(REFILL)
 	src/kibot -c tests/yaml_samples/pdf_zone-refill.kibot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)
 	src/kibot -c tests/yaml_samples/print_pcb_zone-refill.kibot.yaml -b tests/board_samples/zone-refill.kicad_pcb -d $(REFDIR)

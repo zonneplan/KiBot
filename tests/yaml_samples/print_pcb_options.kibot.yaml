@@ -1,0 +1,18 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'print_front'
+    comment: "Print F.Cu+F.SilkS"
+    type: pdf_pcb_print
+    options:
+      scaling: 4
+      drill_marks: none
+      plot_sheet_reference: false
+      monochrome: true
+      separated: true
+    layers:
+      - layer: F.Cu
+      - layer: F.SilkS
+

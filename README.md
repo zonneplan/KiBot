@@ -996,8 +996,13 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
+        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `monochrome`: [boolean=false] print in black and white.
         - `output`: [string='%f-%i%v.%x'] filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
         - *output_name*: Alias for output.
+        - `plot_sheet_reference`: [boolean=true] include the title-block.
+        - `scaling`: [number=1.0] scale factor (0 means autoscaling).
+        - `separated`: [boolean=false] print layers in separated pages.
         - `variant`: [string=''] Board variant to apply.
 
 * PDF Schematic Print (Portable Document Format)
