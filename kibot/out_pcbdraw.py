@@ -9,7 +9,7 @@ from tempfile import (NamedTemporaryFile)
 # Here we import the whole module to make monkeypatch work
 import subprocess
 import shutil
-from .misc import PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW
+from .misc import PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK
 from .kiplot import check_script
 from .error import KiPlotConfigurationError
 from .gs import (GS)
@@ -156,7 +156,8 @@ class PcbDrawOptions(VariantOptions):
             self.show_components = ''
         elif isinstance(self.show_components, str):
             if self.variant or self.dnf_filter:
-                logger.warning('Ambiguous list of components to show `{}` vs variant/filter'.format(self.show_components))
+                logger.warning(W_AMBLIST + 'Ambiguous list of components to show `{}` vs variant/filter'.
+                               format(self.show_components))
             if self.show_components == 'none':
                 self.show_components = ''
             else:
@@ -214,12 +215,12 @@ class PcbDrawOptions(VariantOptions):
         else:
             # PNG and JPG outputs are unreliable
             if shutil.which(SVG2PNG) is None:
-                logger.warning('`{}` not installed, using unreliable PNG/JPG conversion'.format(SVG2PNG))
-                logger.warning('If you experiment problems install `librsvg2-bin` or equivalent')
+                logger.warning(W_UNRETOOL + '`{}` not installed, using unreliable PNG/JPG conversion'.format(SVG2PNG))
+                logger.warning(W_USESVG2 + 'If you experiment problems install `librsvg2-bin` or equivalent')
                 cmd.append(output)
             elif shutil.which(CONVERT) is None:
-                logger.warning('`{}` not installed, using unreliable PNG/JPG conversion'.format(CONVERT))
-                logger.warning('If you experiment problems install `imagemagick` or equivalent')
+                logger.warning(W_UNRETOOL + '`{}` not installed, using unreliable PNG/JPG conversion'.format(CONVERT))
+                logger.warning(W_USEIMAGICK + 'If you experiment problems install `imagemagick` or equivalent')
                 cmd.append(output)
             else:
                 svg = _get_tmp_name('.svg')

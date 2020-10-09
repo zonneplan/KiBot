@@ -22,7 +22,7 @@ from importlib.util import (spec_from_file_location, module_from_spec)
 from .gs import GS
 from .misc import (PLOT_ERROR, NO_PCBNEW_MODULE, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
                    EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, KICAD_VERSION_5_99,
-                   MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL)
+                   MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .pre_base import BasePreFlight
 from .kicad.v5_sch import Schematic, SchFileError
@@ -191,7 +191,7 @@ def get_board_comps_data(comps):
     for m in GS.board.GetModules():
         ref = m.GetReference()
         if ref not in comps_hash:
-            logger.warning('`{}` component in board, but not in schematic'.format(ref))
+            logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
             continue
         c = comps_hash[ref]
         attrs = m.GetAttributes()
@@ -234,7 +234,7 @@ def preflight_checks(skip_pre):
                         exit(EXIT_BAD_ARGS)
                     o_pre = BasePreFlight.get_preflight(skip)
                     if not o_pre:
-                        logger.warning('`{}` preflight is not in use, no need to skip'.format(skip))
+                        logger.warning(W_NONEEDSKIP + '`{}` preflight is not in use, no need to skip'.format(skip))
                     else:
                         logger.debug('Skipping `{}`'.format(skip))
                         o_pre.disable()

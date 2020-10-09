@@ -227,8 +227,8 @@ def test_auto_pcb_and_cfg_2():
 
     ctx.run(extra=['-s', 'all', '-i', 'pos_ascii'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
 
-    assert ctx.search_err('WARNING:More than one PCB')
-    assert ctx.search_err('WARNING:More than one config')
+    assert ctx.search_err('More than one PCB')
+    assert ctx.search_err('More than one config')
     m = ctx.search_err('Using (.*).kicad_pcb')
     assert m
     ctx.board_name = m.group(1)

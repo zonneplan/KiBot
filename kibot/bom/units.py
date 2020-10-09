@@ -16,6 +16,7 @@ Oriented to normalize and sort R, L and C values.
 import re
 import locale
 from .. import log
+from ..misc import W_BADVAL1, W_BADVAL2, W_BADVAL3
 
 logger = log.get_logger(__name__)
 
@@ -131,12 +132,12 @@ def comp_match(component, ref_prefix):
 
     result = match.match(component)
     if not result:
-        logger.warning("Malformed value: `{}` (no match)".format(original))
+        logger.warning(W_BADVAL1 + "Malformed value: `{}` (no match)".format(original))
         return None
 
     value, prefix, units, post = result.groups()
     if value == '.':
-        logger.warning("Malformed value: `{}` (reduced to decimal point)".format(original))
+        logger.warning(W_BADVAL2 + "Malformed value: `{}` (reduced to decimal point)".format(original))
         return None
     if value == '':
         value = '0'
@@ -147,7 +148,7 @@ def comp_match(component, ref_prefix):
     # We will also have a trailing number
     if post:
         if "." in value:
-            logger.warning("Malformed value: `{}` (unit split, but contains decimal point)".format(original))
+            logger.warning(W_BADVAL3 + "Malformed value: `{}` (unit split, but contains decimal point)".format(original))
             return None
         value = float(value)
         postValue = float(post) / (10 ** len(post))

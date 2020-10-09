@@ -10,6 +10,7 @@ import inspect
 from re import compile
 from .error import KiPlotConfigurationError
 from .gs import GS
+from .misc import W_UNKOPS
 from . import log
 
 logger = log.get_logger(__name__)
@@ -97,7 +98,7 @@ class Optionable(object):
             if (k[0] == '_') or (k not in attrs):
                 if self._unkown_is_error:
                     raise KiPlotConfigurationError("Unknown option `{}`".format(k))
-                logger.warning("Unknown option `{}`".format(k))
+                logger.warning(W_UNKOPS + "Unknown option `{}`".format(k))
                 continue
             # Check the data type
             cur_doc, alias, is_alias = self.get_doc(k)

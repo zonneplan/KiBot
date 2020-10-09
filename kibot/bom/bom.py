@@ -14,7 +14,7 @@ from copy import deepcopy
 from .units import compare_values, comp_match
 from .bom_writer import write_bom
 from .columnlist import ColumnList
-from ..misc import DNF
+from ..misc import DNF, W_FIELDCONF
 from .. import log
 
 logger = log.get_logger(__name__)
@@ -215,7 +215,7 @@ class ComponentGroup(object):
             # Config contains variant information, which is different for each component
             # Part can be one of the defined aliases
             if field != self.cfg.fit_field and field != 'part':
-                logger.warning("Field conflict: ({refs}) [{name}] : '{flds}' <- '{fld}' (in {ref})".format(
+                logger.warning(W_FIELDCONF + "Field conflict: ({refs}) [{name}] : '{flds}' <- '{fld}' (in {ref})".format(
                     refs=self.get_refs(),
                     name=field,
                     flds=self.fields[field],

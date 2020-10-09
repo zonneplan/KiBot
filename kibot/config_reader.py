@@ -15,7 +15,7 @@ from collections import OrderedDict
 
 from .error import (KiPlotConfigurationError, config_error)
 from .kiplot import (load_board)
-from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE)
+from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_UNKGLOBAL)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter
 from .pre_base import BasePreFlight
@@ -171,7 +171,7 @@ class CfgYamlReader(object):
             elif k == 'variant':
                 GS.global_variant = self._parse_global_str(k, v, GS.global_variant)
             else:
-                logger.warning("Unknown global option `{}`".format(k))
+                logger.warning(W_UNKGLOBAL + "Unknown global option `{}`".format(k))
 
     def read(self, fstream):
         """

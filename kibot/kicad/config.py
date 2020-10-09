@@ -23,6 +23,7 @@ import platform
 import sysconfig
 from ..gs import GS
 from .. import log
+from ..misc import W_NOHOME, W_NOUSER, W_BADSYS, W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB
 
 # Check python version to determine which version of ConfirParser to import
 if sys.version_info.major >= 3:
@@ -140,7 +141,7 @@ class KiConf(object):
             # Linux: ~/.config/kicad/
             home = os.environ.get('HOME')
             if not home:
-                logger.warning('Environment variable `HOME` not defined, using `/`')
+                logger.warning(W_NOHOME + 'Environment variable `HOME` not defined, using `/`')
                 home = '/'
             cfg = os.path.join(home, '.config', 'kicad', KICAD_COMMON)
             if os.path.isfile(cfg):
@@ -149,7 +150,7 @@ class KiConf(object):
             # MacOSX: ~/Library/Preferences/kicad/
             home = os.environ.get('HOME')
             if not home:
-                logger.warning('Environment variable `HOME` not defined, using `/`')
+                logger.warning(W_NOHOME + 'Environment variable `HOME` not defined, using `/`')
                 home = '/'
             cfg = os.path.join(home, 'Library', 'Preferences', 'kicad', KICAD_COMMON)
             if os.path.isfile(cfg):
@@ -159,7 +160,7 @@ class KiConf(object):
             #      or  C:\Documents and Settings\username\Application Data\kicad
             username = os.environ.get('username')
             if not username:
-                logger.warning('Unable to determine current user')
+                logger.warning(W_NOUSER + 'Unable to determine current user')
                 return None
             cfg = os.path.join('C:', 'Users', username, 'AppData', 'Roaming', 'kicad', KICAD_COMMON)
             if os.path.isfile(cfg):
@@ -168,9 +169,9 @@ class KiConf(object):
             if os.path.isfile(cfg):
                 return cfg
         else:  # pragma: no cover
-            logger.warning('Unsupported system `{}`'.format(system))
+            logger.warning(W_BADSYS + 'Unsupported system `{}`'.format(system))
             return None
-        logger.warning('Unable to find KiCad configuration file ({})'.format(cfg))
+        logger.warning(W_NOCONFIG + 'Unable to find KiCad configuration file ({})'.format(cfg))
         return None
 
     def guess_symbol_dir():
@@ -230,7 +231,7 @@ class KiConf(object):
             cf.optionxform = str
             cf.readfp(io_buf, cfg)
             if 'EnvironmentVariables' not in cf.sections():
-                logger.warning('KiCad config without EnvironmentVariables section')
+                logger.warning(W_NOKIENV + 'KiCad config without EnvironmentVariables section')
             else:
                 for k, v in cf.items('EnvironmentVariables'):
                     if GS.debug_level > 1:
@@ -245,7 +246,7 @@ class KiConf(object):
                 KiConf.sym_lib_dir = sym_dir
                 logger.debug('Detected KICAD_SYMBOL_DIR="{}"'.format(sym_dir))
             else:
-                logger.warning('Unable to find KiCad libraries')
+                logger.warning(W_NOLIBS + 'Unable to find KiCad libraries')
 
     def load_lib_aliases(fname):
         if not os.path.isfile(fname):
@@ -275,7 +276,7 @@ class KiConf(object):
         if KiConf.config_dir:
             KiConf.load_lib_aliases(os.path.join(KiConf.config_dir, SYM_LIB_TABLE))
         else:
-            logger.warning('Missing default symbol library table')
+            logger.warning(W_NODEFSYMLIB + 'Missing default symbol library table')
             # No default symbol libs table, try to create one
             if KiConf.sym_lib_dir:
                 for f in glob(os.path.join(KiConf.sym_lib_dir, '*.lib')):

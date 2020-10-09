@@ -485,7 +485,6 @@ def test_unk_global():
     ctx = context.TestContext('UnkGlobal', 'bom', 'error_unk_global', '')
     ctx.run()
     assert ctx.search_err("Unknown global option")
-    ctx.search_err("WARNING:Unknown global option")
     ctx.clean_up()
 
 

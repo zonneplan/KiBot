@@ -72,7 +72,7 @@ from .kiplot import (generate_outputs, load_actions, config_output)
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help)
-from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS)
+from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, W_PYCACHE)
 from .docopt import docopt
 
 logger = None
@@ -148,7 +148,7 @@ def solve_schematic(a_schematic, a_board_file):
                     break
             if schematic is None:
                 schematic = schematics[0]
-            logger.warning('More than one SCH file found in current directory.\n'
+            logger.warning(W_VARSCH + 'More than one SCH file found in current directory.\n'
                            '  Using '+schematic+' if you want to use another use -e option.')
     if schematic and not os.path.isfile(schematic):
         logger.error("Schematic file not found: "+schematic)
@@ -170,7 +170,7 @@ def solve_config(a_plot_config):
             logger.info('Using config file: '+plot_config)
         elif len(plot_configs) > 1:
             plot_config = plot_configs[0]
-            logger.warning('More than one config file found in current directory.\n'
+            logger.warning(W_VARCFG + 'More than one config file found in current directory.\n'
                            '  Using '+plot_config+' if you want to use another use -c option.')
         else:
             logger.error('No config file found (*.kibot.yaml), use -c to specify one.')
@@ -201,7 +201,7 @@ def solve_board_file(schematic, a_board_file):
             logger.info('Using PCB file: '+board_file)
         elif len(board_files) > 1:
             board_file = board_files[0]
-            logger.warning('More than one PCB file found in current directory.\n'
+            logger.warning(W_VARPCB + 'More than one PCB file found in current directory.\n'
                            '  Using '+board_file+' if you want to use another use -b option.')
     check_board_file(board_file)
     if board_file:
@@ -245,7 +245,7 @@ def clean_cache():
                         else:
                             raise PermissionError()
     except PermissionError:
-        logger.warning('Wrong installation, avoid creating Python cache files\n'
+        logger.warning(W_PYCACHE + 'Wrong installation, avoid creating Python cache files\n'
                        'If you are using `pip` to install use the `--no-compile` option:\n'
                        '$ pip install --no-compile kibot\n')
 

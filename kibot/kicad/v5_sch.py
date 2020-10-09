@@ -14,6 +14,9 @@ import os
 from collections import OrderedDict
 from .config import KiConf, un_quote
 from ..gs import GS
+from ..misc import (W_BADPOLI, W_POLICOORDS, W_BADSQUARE, W_BADCIRCLE, W_BADARC, W_BADTEXT, W_BADPIN, W_BADCOMP, W_BADDRAW,
+                    W_UNKDCM, W_UNKAR, W_ARNOPATH, W_ARNOREF, W_MISCFLD, W_EXTRASPC, W_NOLIB, W_INCPOS, W_NOANNO, W_MISSLIB,
+                    W_MISSDCM, W_MISSCMP)
 from .. import log
 
 logger = log.get_logger(__name__)
@@ -169,7 +172,7 @@ class DrawPoligon(object):
     def parse(line):
         m = DrawPoligon.pol_re.match(line)
         if not m:
-            logger.warning('Unknown poligon definition `{}`'.format(line))
+            logger.warning(W_BADPOLI + 'Unknown poligon definition `{}`'.format(line))
             return None
         pol = DrawPoligon()
         g = m.groups()
@@ -180,7 +183,7 @@ class DrawPoligon(object):
         pol.fill = g[5]
         coords = _split_space(g[4])
         if len(coords) != 2*pol.points:
-            logger.warning('Expected {} coordinates and got {} in poligon'.format(2*pol.points, len(coords)))
+            logger.warning(W_POLICOORDS + 'Expected {} coordinates and got {} in poligon'.format(2*pol.points, len(coords)))
             pol.points = int(len(coords)/2)
         pol.coords = [int(c) for c in coords]
         return pol
@@ -224,7 +227,7 @@ class DrawRectangle(object):
     def parse(line):
         m = DrawRectangle.rec_re.match(line)
         if not m:
-            logger.warning('Unknown square definition `{}`'.format(line))
+            logger.warning(W_BADSQUARE + 'Unknown square definition `{}`'.format(line))
             return None
         rec = DrawRectangle()
         g = m.groups()
@@ -267,7 +270,7 @@ class DrawCircle(object):
     def parse(line):
         m = DrawCircle.cir_re.match(line)
         if not m:
-            logger.warning('Unknown circle definition `{}`'.format(line))
+            logger.warning(W_BADCIRCLE + 'Unknown circle definition `{}`'.format(line))
             return None
         cir = DrawCircle()
         g = m.groups()
@@ -315,7 +318,7 @@ class DrawArc(object):
     def parse(line):
         m = DrawArc.arc_re.match(line)
         if not m:
-            logger.warning('Unknown arc definition `{}`'.format(line))
+            logger.warning(W_BADARC + 'Unknown arc definition `{}`'.format(line))
             return None
         arc = DrawArc()
         g = m.groups()
@@ -370,7 +373,7 @@ class DrawText(object):
     def parse(line):
         m = DrawText.txt_re.match(line)
         if not m:
-            logger.warning('Unknown text definition `{}`'.format(line))
+            logger.warning(W_BADTEXT + 'Unknown text definition `{}`'.format(line))
             return None
         txt = DrawText()
         g = m.groups()
@@ -419,7 +422,7 @@ class Pin(object):
     def parse(line):
         m = Pin.pin_re.match(line)
         if not m:
-            logger.warning('Unknown pin definition `{}`'.format(line))
+            logger.warning(W_BADPIN + 'Unknown pin definition `{}`'.format(line))
             return None
         pin = Pin()
         g = m.groups()
@@ -492,7 +495,7 @@ class LibComponent(object):
             if GS.debug_level > 2:
                 logger.debug('- Loading component {} from {}'.format(self.name, lib_name))
         else:
-            logger.warning('Failed to load component definition: `{}`'.format(line))
+            logger.warning(W_BADCOMP + 'Failed to load component definition: `{}`'.format(line))
             # Mark it as broken
             self.name = None
         self.fields = []
@@ -530,7 +533,7 @@ class LibComponent(object):
                     elif line[0] == 'X':
                         self.draw.append(Pin.parse(line))
                     else:
-                        logger.warning('Unknown draw element `{}`'.format(line))
+                        logger.warning(W_BADDRAW + 'Unknown draw element `{}`'.format(line))
                     line = f.get_line()
             line = f.get_line()
 
@@ -659,7 +662,7 @@ class DocLibEntry(object):
             elif line[0] == 'F':
                 self.datasheet = line[2:].lstrip()
             else:
-                logger.warning('Unknown DCM attribute `{}` on line {}'.format(line, f.line))
+                logger.warning(W_UNKDCM + 'Unknown DCM attribute `{}` on line {}'.format(line, f.line))
             line = f.get_line()
 
     def __repr__(self):
@@ -758,11 +761,11 @@ class SchematicAltRef():
             elif r.startswith('Part='):
                 ar.part = r[6:-1]
             else:
-                logger.warning('Unknown AR field `{}`'.format(r))
+                logger.warning(W_UNKAR + 'Unknown AR field `{}`'.format(r))
         if not ar.path:
-            logger.warning('Alternative Reference without path `{}`'.format(line))
+            logger.warning(W_ARNOPATH + 'Alternative Reference without path `{}`'.format(line))
         if not ar.ref:
-            logger.warning('Alternative Reference without reference `{}`'.format(line))
+            logger.warning(W_ARNOREF + 'Alternative Reference without reference `{}`'.format(line))
         return ar
 
     def write(self, f):
@@ -874,14 +877,14 @@ class SchematicComponent(object):
                 self.datasheet = f.value
                 basic += 1
         if basic < 4:
-            logger.warning('Component `{}` without the basic fields'.format(self.f_ref))
+            logger.warning(W_MISCFLD + 'Component `{}` without the basic fields'.format(self.f_ref))
 
     def _validate(self):
         for field in self.fields:
             cur_val = field.value
             stripped_val = cur_val.strip()
             if len(cur_val) != len(stripped_val):
-                logger.warning("Field {} of component {} contains extra spaces: `{}` removing them.".
+                logger.warning(W_EXTRASPC + "Field {} of component {} contains extra spaces: `{}` removing them.".
                                format(field.name, self, field.value))
                 field.value = stripped_val
 
@@ -908,7 +911,7 @@ class SchematicComponent(object):
             comp.lib = res[0]
             libs[comp.lib] = None
         else:
-            logger.warning("Component `{}` doesn't specify its library".format(comp.name))
+            logger.warning(W_NOLIB + "Component `{}` doesn't specify its library".format(comp.name))
         # U N mm time_stamp
         line = f.get_line()
         if line[0] != 'U':
@@ -962,7 +965,7 @@ class SchematicComponent(object):
         xr = int(res[0])
         yr = int(res[1])
         if comp.x != xr or comp.y != yr:
-            logger.warning('Inconsistent position for component {} ({},{} vs {},{})'.
+            logger.warning(W_INCPOS + 'Inconsistent position for component {} ({},{} vs {},{})'.
                            format(comp.f_ref, comp.x, comp.y, xr, yr))
         # Orientation matrix
         line = f.get_line()
@@ -980,7 +983,7 @@ class SchematicComponent(object):
         # Power, ground or power flag
         comp.is_power = comp.ref.startswith('#PWR') or comp.ref.startswith('#FLG')
         if comp.ref[-1] == '?':
-            logger.warning('Component {} is not annotated'.format(comp))
+            logger.warning(W_NOANNO + 'Component {} is not annotated'.format(comp))
         # Separate the reference in its components
         m = SchematicComponent.ref_re.match(comp.ref)
         if not m:
@@ -1456,7 +1459,7 @@ class Schematic(object):
                 if GS.debug_level > 1:
                     logger.debug('Using `{}` for library alias `{}`'.format(alias.uri, k))
             else:
-                logger.warning('Missing library `{}`'.format(k))
+                logger.warning(W_MISSLIB + 'Missing library `{}`'.format(k))
         # Create a hash with all the used components
         self.comps_data = {'{}:{}'.format(c.lib, c.name): None for c in self.get_components(exclude_power=False)}
         if GS.debug_level > 1:
@@ -1469,7 +1472,7 @@ class Schematic(object):
                     o = SymLib()
                     o.load(v, k, self.comps_data)
                 else:
-                    logger.warning('Missing library `{}` ({})'.format(v, k))
+                    logger.warning(W_MISSLIB + 'Missing library `{}` ({})'.format(v, k))
                     o = None
                 self.lib_comps[k] = o
                 # Load doc-lib
@@ -1494,7 +1497,7 @@ class Schematic(object):
                 for name, comp in lib.comps.items():
                     comp.dcm = dcm.comps.get(name)
                     if not comp.dcm and k+':'+name in self.comps_data:
-                        logger.warning('Missing doc-lib entry for {}:{}'.format(k, name))
+                        logger.warning(W_MISSDCM + 'Missing doc-lib entry for {}:{}'.format(k, name))
         # Transfer the descriptions to the instances of the components
         self.walk_components(self.apply_dcm, self)
 
@@ -1508,7 +1511,7 @@ class Schematic(object):
                 if v:
                     v.write(f, k, cross=cross)
                 else:
-                    logger.warning('Missing component `{}`'.format(k))
+                    logger.warning(W_MISSCMP + 'Missing component `{}`'.format(k))
             f.write('#\n#End Library\n')
 
     def save(self, fname, dest_dir):
