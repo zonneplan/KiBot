@@ -1,0 +1,18 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+variants:
+  - name: 'test multi'
+    comment: 'Test multi variant'
+    type: kibom
+    variant: [A,B]
+
+outputs:
+  - name: 'bom filtered'
+    comment: "Bill of Materials test, only R2"
+    type: bom
+    dir: BoM
+    options:
+      variant: 'test multi'
+

@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Help for filters and variants.
 - Support for new `pcbnew_do export` options.
 
+### Fixed
+- KiBom variants when using multiple variants and a components used more
+  than one, specifying oposite rules.
+
 ## [0.7.0] - 2020-09-11
 ### Added
 - Now variants are separated entities. Two flavors implemented: KiBoM

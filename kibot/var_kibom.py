@@ -76,13 +76,15 @@ class KiBoM(BaseVariant):  # noqa: F821
             config: content of the 'Config' field (lowercase). """
         # Variants logic
         opts = config.split(",")
-        # Only fit for ...
-        exclusive = False
+        # Exclude components that match a -VARIANT
         for opt in opts:
             opt = opt.strip()
             # Options that start with '-' are explicitly removed from certain configurations
             if opt.startswith("-") and opt[1:] in self.variant:
                 return False
+        # Include components that match +VARIANT
+        exclusive = False
+        for opt in opts:
             # Options that start with '+' are fitted only for certain configurations
             if opt.startswith("+"):
                 exclusive = True

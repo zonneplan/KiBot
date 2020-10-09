@@ -1391,3 +1391,13 @@ def test_int_bom_ref_separator():
     check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
     kibom_verif(rows, header, ref_sep=',')
     ctx.clean_up()
+
+
+def test_int_bom_variant_5():
+    prj = 'kibom-variant_5'
+    ctx = context.TestContextSCH('test_int_bom_variant_5', prj, 'int_bom_var_5_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2', 'R1'], ['R2'])
+    ctx.clean_up()
