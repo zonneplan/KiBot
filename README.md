@@ -270,8 +270,8 @@ Currently the only type available is `generic`.
     - `invert`: [boolean=false] Invert the result of the filter.
     - `keys`: [string|list(string)=dnf_list] [dnc_list,dnf_list] List of keys to match.
               The `dnf_list` and `dnc_list` internal lists can be specified as strings.
-              Use `dnf_list` for {'do not load', 'do not fit', 'dnf', 'noload', 'dnl', 'not placed', 'no stuff', 'dnp', 'not loaded', 'noplace', 'not fitted', 'nofit', 'do not place', 'nostuff'}.
-              Use `dnc_list` for {'dnc', 'do not change', 'no change', 'fixed'}.
+              Use `dnf_list` for ['dnf', 'dnl', 'dnp', 'do not fit', 'do not load', 'do not place', 'no stuff', 'nofit', 'noload', 'noplace', 'nostuff', 'not fitted', 'not loaded', 'not placed'].
+              Use `dnc_list` for ['dnc', 'do not change', 'fixed', 'no change'].
     - `name`: [string=''] Used to identify this particular filter definition.
 
 

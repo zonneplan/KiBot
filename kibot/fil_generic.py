@@ -72,8 +72,8 @@ class Generic(BaseFilter):  # noqa: F821
             """ KiCad 5: exclude components marked as smd in the PCB """
             self.exclude_tht = False
             """ KiCad 5: exclude components marked as through-hole in the PCB """
-        self.add_to_doc('keys', 'Use `dnf_list` for '+str(DNF))
-        self.add_to_doc('keys', 'Use `dnc_list` for '+str(DNC))
+        self.add_to_doc('keys', 'Use `dnf_list` for '+str(sorted(DNF)))
+        self.add_to_doc('keys', 'Use `dnc_list` for '+str(sorted(DNC)))
 
     @staticmethod
     def _fix_field(field):
