@@ -347,6 +347,13 @@ def test_help_output_unk():
     ctx.clean_up()
 
 
+def test_help_filters():
+    ctx = context.TestContext('test_help_filters', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.run(extra=['--help-filters'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('Generic filter')
+    ctx.clean_up()
+
+
 def test_help_output_plugin_1():
     ctx = context.TestContext('test_help_output_plugin_1', '3Rs', 'pre_and_position', POS_DIR)
     home = os.environ['HOME']

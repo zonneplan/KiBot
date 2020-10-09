@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - The KiBoM and internal BoM generators now support configuring the
   separator used for the list of references.
+- Help for filters and variants.
 - Support for new `pcbnew_do export` options.
 
 ## [0.7.0] - 2020-09-11
