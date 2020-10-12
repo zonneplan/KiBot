@@ -65,10 +65,12 @@ def _import(name, path):
         exit(WRONG_INSTALL)
 
 
-def _load_actions(path):
+def _load_actions(path, load_internals=False):
     logger.debug("Importing from "+path)
     lst = glob(os.path.join(path, 'out_*.py')) + glob(os.path.join(path, 'pre_*.py'))
     lst += glob(os.path.join(path, 'var_*.py')) + glob(os.path.join(path, 'fil_*.py'))
+    if load_internals:
+        lst += [os.path.join(path, 'globals.py')]
     for p in lst:
         name = os.path.splitext(os.path.basename(p))[0]
         logger.debug("- Importing "+name)
@@ -79,7 +81,7 @@ def load_actions():
     """ Load all the available ouputs and preflights """
     from kibot.mcpy import activate
     # activate.activate()
-    _load_actions(os.path.abspath(os.path.dirname(__file__)))
+    _load_actions(os.path.abspath(os.path.dirname(__file__)), True)
     home = os.environ.get('HOME')
     if home:
         dir = os.path.join(home, '.config', 'kiplot', 'plugins')

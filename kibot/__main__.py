@@ -67,6 +67,7 @@ from logging import DEBUG
 # Import log first to set the domain
 from . import log
 log.set_domain('kibot')
+logger = log.init()
 from .gs import (GS)
 from .kiplot import (generate_outputs, load_actions, config_output)
 from .pre_base import (BasePreFlight)
@@ -75,12 +76,12 @@ from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help
 from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, W_PYCACHE)
 from .docopt import docopt
 
-logger = None
 has_macro = [
              'layer',
              'drill_marks',
              'fil_base',
              'fil_generic',
+             'globals',
              'out_any_drill',
              'out_any_layer',
              'out_base',
@@ -255,9 +256,8 @@ def main():
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
     args = docopt(__doc__, version=ver, options_first=True)
 
-    # Create a logger with the specified verbosity
-    global logger
-    logger = log.init(args.verbose, args.quiet)
+    # Set the specified verbosity
+    log.set_verbosity(logger, args.verbose, args.quiet)
     GS.debug_enabled = logger.getEffectiveLevel() <= DEBUG
     GS.debug_level = args.verbose
 

@@ -64,6 +64,7 @@ class GS(object):
     global_from_cli = {}
     global_output = None
     global_variant = None
+    global_opts_class = None
 
     @staticmethod
     def set_sch(name):

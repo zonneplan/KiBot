@@ -15,7 +15,7 @@ from collections import OrderedDict
 
 from .error import (KiPlotConfigurationError, config_error)
 from .kiplot import (load_board)
-from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_UNKGLOBAL)
+from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter
 from .pre_base import BasePreFlight
@@ -150,28 +150,18 @@ class CfgYamlReader(object):
                 config_error("In preflight '"+k+"': "+str(e))
             BasePreFlight.add_preflight(o_pre)
 
-    @staticmethod
-    def _parse_global_str(k, v, current):
-        if not isinstance(v, str):
-            config_error("Global `{}` must be a string".format(k))
-        if current:
-            logger.info('Using command line value `{}` for global option `{}`'.format(current, k))
-            return current
-        return v
-
     def _parse_global(self, gb):
         """ Get global options """
         logger.debug("Parsing global options: {}".format(gb))
         if not isinstance(gb, dict):
             config_error("Incorrect `global` section")
         # Parse all keys inside it
-        for k, v in gb.items():
-            if k == 'output':
-                GS.global_output = self._parse_global_str(k, v, GS.global_output)
-            elif k == 'variant':
-                GS.global_variant = self._parse_global_str(k, v, GS.global_variant)
-            else:
-                logger.warning(W_UNKGLOBAL + "Unknown global option `{}`".format(k))
+        glb = GS.global_opts_class()
+        glb.set_tree(gb)
+        try:
+            glb.config()
+        except KiPlotConfigurationError as e:
+            config_error("In `global` section: "+str(e))
 
     def read(self, fstream):
         """

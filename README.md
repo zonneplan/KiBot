@@ -20,6 +20,8 @@ To learn more about KiBot variants visit the [example repo](https://inti-cmnb.gi
     * [Filtering DRC and ERC errors](#filtering-drc-and-erc-errors)
   * [Default global options](#default-global-options)
     * [Default *output* option](#default-output-option)
+    * [Default *variant* option](#default-variant-option)
+    * [Filtering KiBot warnings](#filtering-kibot-warnings)
   * [Filters and variants](#filters-and-variants)
     * [Supported filters](#supported-filters)
     * [Examples for filters](#examples-for-filters)
@@ -202,6 +204,37 @@ If you want to include the revision you could add the following definition:
 ```yaml
 global:
   output: '%f_rev_%r-%i.%x'
+```
+
+#### Default *variant* option
+
+This option controls the default variant applied to all the outputs. Example:
+
+```yaml
+global:
+  variant: 'production'
+```
+
+#### Filtering KiBot warnings
+
+KiBot warnings are marked with `(Wn)` where *n* is the warning id.
+
+Some warnings are just recommendations and you could want to avoid them to focus on details that are more relevant to your project.
+In this case you can define filters in a similar way used to [filter DRC/ERC errors](#filtering-drc-and-erc-errors).
+
+As an example, if you have the following warning:
+
+```
+WARNING:(W43) Missing component `l1:FooBar`
+```
+
+You can create the following filter to remove it:
+
+```yaml
+global:
+  filters:
+    - number: 43
+      regex:  'FooBar'
 ```
 
 ### Filters and variants

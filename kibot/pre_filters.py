@@ -5,6 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 # Contributors: Leandro Heck (@leoheck)
 import os
+import re
 from .gs import GS
 from .error import KiPlotConfigurationError
 from .optionable import Optionable
@@ -41,25 +42,32 @@ class FiltersOptions(Optionable):
         with document:
             self.filters = FilterOptions
             """ [list(dict)] DRC/ERC errors to be ignored """
+        self._filter_what = 'DRC/ERC errors'
 
     def config(self):
         super().config()
         parsed = None
-        for f in self.filters:
-            where = ' (in `{}` filter)'.format(f.filter) if f.filter else ''
-            number = f.number
-            if not number:
-                raise KiPlotConfigurationError('Missing `number`'+where)
-            regex = f.regex
-            if regex == 'None':
-                raise KiPlotConfigurationError('Missing `regex`'+where)
-            comment = f.filter
-            logger.debug("Adding DRC/ERC filter '{}','{}','{}'".format(comment, number, regex))
-            if parsed is None:
-                parsed = ''
-            if comment:
-                parsed += '# '+comment+'\n'
-            parsed += '{},{}\n'.format(number, regex)
+        self.unparsed = None
+        if not isinstance(self.filters, type):
+            for f in self.filters:
+                where = ' (in `{}` filter)'.format(f.filter) if f.filter else ''
+                number = f.number
+                if not number:
+                    raise KiPlotConfigurationError('Missing `number`'+where)
+                regex = f.regex
+                if regex == 'None':
+                    raise KiPlotConfigurationError('Missing `regex`'+where)
+                comment = f.filter
+                logger.debug("Adding {} filter '{}','{}','{}'".format(self._filter_what, comment, number, regex))
+                if parsed is None:
+                    parsed = ''
+                if comment:
+                    parsed += '# '+comment+'\n'
+                parsed += '{},{}\n'.format(number, regex)
+                f.regex = re.compile(regex)
+        # If the list is valid make a copy for the warnings filter
+        if parsed:
+            self.unparsed = self.filters
         self.filters = parsed
 
 

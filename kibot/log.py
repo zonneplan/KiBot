@@ -15,11 +15,13 @@ from io import StringIO
 
 # Default domain, base name for the tool
 domain = 'kilog'
+filters = None
 
 
 def get_logger(name=None):
     """Get a module for a submodule or the root logger if no name is
        provided"""
+    # print('get_logger '+str(name))
     if name:
         return logging.getLogger(domain+'.'+name)
     return logging.getLogger(domain)
@@ -31,21 +33,38 @@ def set_domain(name):
     domain = name
 
 
+def set_filters(f):
+    """Set the list of warning filters"""
+    global filters
+    filters = f
+
+
 class MyLogger(logging.Logger):
     warn_hash = {}
-    warn_tcnt = warn_cnt = 0
+    warn_tcnt = warn_cnt = n_filtered = 0
 
     def warning(self, msg, *args, **kwargs):
         MyLogger.warn_tcnt += 1
+        # Get the message applying optional C style expansions
         if isinstance(msg, str) and len(args):
             buf = StringIO()
             buf.write(msg % args)
             buf = buf.getvalue()
         else:
             buf = str(msg)
+        # Avoid repeated warnings
         if buf in MyLogger.warn_hash:
             MyLogger.warn_hash[buf] += 1
             return
+        # Apply the filters
+        if filters and buf.startswith('(W'):
+            pos_end = buf.find(')')
+            if pos_end > 0:
+                number = int(buf[2:pos_end])
+                for f in filters:
+                    if f.number == number and f.regex.search(buf):
+                        MyLogger.n_filtered += 1
+                        return
         MyLogger.warn_cnt += 1
         MyLogger.warn_hash[buf] = 1
         if sys.version_info.major > 3 or (sys.version_info.major == 3 and sys.version_info.minor >= 8):
@@ -55,27 +74,30 @@ class MyLogger(logging.Logger):
 
     def log_totals(self):
         if MyLogger.warn_cnt:
-            self.info('Found {} unique warning/s ({} total)'.format(MyLogger.warn_cnt, MyLogger.warn_tcnt))
+            filt_msg = ''
+            if MyLogger.n_filtered:
+                filt_msg = ', {} filtered'.format(MyLogger.n_filtered)
+            self.info('Found {} unique warning/s ({} total{})'.format(MyLogger.warn_cnt, MyLogger.warn_tcnt, filt_msg))
 
 
-def init(verbose, quiet):
-    """Initialize the logging feature using a custom format and the specified
-       verbosity level"""
-    # Use a class to count and filter warnings
-    logging.setLoggerClass(MyLogger)
+def set_verbosity(logger, verbose, quiet):
     # Choose the log level
     log_level = logging.INFO
     if verbose:
         log_level = logging.DEBUG
     if quiet:
         log_level = logging.WARNING
-
-    logger = get_logger()
     logger.setLevel(log_level)
+
+
+def init():
+    """Initialize the logging feature using a custom format"""
+    # Use a class to count and filter warnings
+    logging.setLoggerClass(MyLogger)
+    logger = get_logger()
     ch = logging.StreamHandler()
     ch.setFormatter(CustomFormatter())
     logger.addHandler(ch)
-
     return logger
 
 

@@ -475,15 +475,15 @@ def test_wrong_global():
 
 
 def test_goutput_not_string():
-    ctx = context.TestContext('GOutNotString', 'bom', 'error_goutput_not_string', '')
+    ctx = context.TestContext('test_goutput_not_string', 'bom', 'error_goutput_not_string', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Global .?output.? must be a string")
+    assert ctx.search_err("Option .?output.? must be a string")
     ctx.clean_up()
 
 
 def test_unk_global():
-    ctx = context.TestContext('UnkGlobal', 'bom', 'error_unk_global', '')
-    ctx.run()
+    ctx = context.TestContext('test_unk_global', 'bom', 'error_unk_global', '')
+    ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown global option")
     ctx.clean_up()
 

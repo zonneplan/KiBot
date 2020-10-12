@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   separator used for the list of references.
 - Help for filters and variants.
 - Support for new `pcbnew_do export` options.
+- Filters for KiBot warnings.
 
 ### Fixed
 - KiBom variants when using multiple variants and a components used more

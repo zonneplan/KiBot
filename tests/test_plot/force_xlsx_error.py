@@ -10,7 +10,7 @@ sys.modules['xlsxwriter'] = None
 # Initialize the logger
 from kibot import log
 log.set_domain('kibot')
-logger = log.init(True, False)
+logger = log.init()
 logger.debug("Testing bom_writer without xlsxwriter")
 
 # Import the module to test

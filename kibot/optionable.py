@@ -28,6 +28,7 @@ class Optionable(object):
 
     def __init__(self):
         self._unkown_is_error = False
+        self._error_context = ''
         self._tree = {}
         super().__init__()
         if GS.global_output is not None and getattr(self, 'output', None):
@@ -74,6 +75,9 @@ class Optionable(object):
         doc = getattr(self, '_help_'+name).strip()
         setattr(self, '_help_'+name, doc+'.\n'+text)
 
+    def set_doc(self, name, text):
+        setattr(self, '_help_'+name, text)
+
     @staticmethod
     def _typeof(v):
         if isinstance(v, bool):
@@ -97,8 +101,8 @@ class Optionable(object):
             # Map known attributes and avoid mapping private ones
             if (k[0] == '_') or (k not in attrs):
                 if self._unkown_is_error:
-                    raise KiPlotConfigurationError("Unknown option `{}`".format(k))
-                logger.warning(W_UNKOPS + "Unknown option `{}`".format(k))
+                    raise KiPlotConfigurationError("Unknown {}option `{}`".format(self._error_context, k))
+                logger.warning(W_UNKOPS + "Unknown {}option `{}`".format(self._error_context, k))
                 continue
             # Check the data type
             cur_doc, alias, is_alias = self.get_doc(k)
