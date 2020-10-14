@@ -3,10 +3,14 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from pcbnew import EDGE_MODULE, wxPoint, LSET
 from .gs import GS
-from .misc import Rect
 from .kiplot import load_sch
+from .misc import Rect, KICAD_VERSION_5_99
+if GS.kicad_version_n >= KICAD_VERSION_5_99:
+    # New name, no alias ...
+    from pcbnew import FP_SHAPE, wxPoint, LSET
+else:
+    from pcbnew import EDGE_MODULE, wxPoint, LSET
 from .registrable import RegOutput
 from .optionable import Optionable, BaseOptions
 from .fil_base import BaseFilter, apply_fitted_filter, reset_filters
@@ -106,18 +110,24 @@ class VariantOptions(BaseOptions):
         return [c.ref for c in self._comps if not c.fitted or not c.included]
 
     @staticmethod
+    def create_module_element(m):
+        if GS.kicad_version_n >= KICAD_VERSION_5_99:
+            return FP_SHAPE(m)
+        return EDGE_MODULE(m)
+
+    @staticmethod
     def cross_module(m, rect, layer):
         """ Draw a cross over a module.
             The rect is a Rect object with the size.
             The layer is which layer id will be used. """
-        seg1 = EDGE_MODULE(m)
+        seg1 = VariantOptions.create_module_element(m)
         seg1.SetWidth(120000)
         seg1.SetStart(wxPoint(rect.x1, rect.y1))
         seg1.SetEnd(wxPoint(rect.x2, rect.y2))
         seg1.SetLayer(layer)
         seg1.SetLocalCoord()  # Update the local coordinates
         m.Add(seg1)
-        seg2 = EDGE_MODULE(m)
+        seg2 = VariantOptions.create_module_element(m)
         seg2.SetWidth(120000)
         seg2.SetStart(wxPoint(rect.x1, rect.y2))
         seg2.SetEnd(wxPoint(rect.x2, rect.y1))
