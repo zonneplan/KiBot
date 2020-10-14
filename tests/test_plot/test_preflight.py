@@ -26,7 +26,7 @@ from utils import context
 from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR)
 
 
-def test_erc():
+def test_erc_1():
     prj = 'bom'
     ctx = context.TestContext('ERC', prj, 'erc', '')
     ctx.run()
@@ -53,7 +53,7 @@ def test_erc_fail_2():
     ctx.clean_up()
 
 
-def test_drc():
+def test_drc_1():
     prj = 'bom'
     ctx = context.TestContext('DRC', prj, 'drc', '')
     ctx.run()
