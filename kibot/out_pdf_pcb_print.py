@@ -38,6 +38,8 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             """ print in black and white """
             self.separated = False
             """ print layers in separated pages """
+            self.mirror = False
+            """ print mirrored (X axis inverted). ONLY for KiCad 6 """
         super().__init__()
 
     @property
@@ -71,7 +73,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
 
     def run(self, output_dir, board, layers):
         super().run(board, layers)
-        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.5.1')
+        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.5.2')
         layers = Layer.solve(layers)
         # Output file name
         id = '+'.join([la.suffix for la in layers])
@@ -86,6 +88,8 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             cmd.append('--monochrome')
         if self.separated:
             cmd.append('--separate')
+        if self.mirror:
+            cmd.append('--mirror')
         board_name = self.filter_components(board)
         cmd.extend([board_name, output_dir])
         if GS.debug_enabled:

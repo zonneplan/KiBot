@@ -12,6 +12,7 @@ outputs:
       plot_sheet_reference: false
       monochrome: true
       separated: true
+      mirror: true
     layers:
       - layer: F.Cu
       - layer: F.SilkS
