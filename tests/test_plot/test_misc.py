@@ -357,7 +357,7 @@ def test_help_filters():
 def test_help_output_plugin_1():
     ctx = context.TestContext('test_help_output_plugin_1', '3Rs', 'pre_and_position', POS_DIR)
     home = os.environ['HOME']
-    os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '..')
+    os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '../..')
     logging.debug('HOME='+os.environ['HOME'])
     try:
         ctx.run(extra=['--help-output', 'test'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
@@ -373,7 +373,7 @@ def test_help_output_plugin_1():
 def test_help_output_plugin_2():
     ctx = context.TestContext('test_help_output_plugin_2', '3Rs', 'pre_and_position', POS_DIR)
     home = os.environ['HOME']
-    os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '..')
+    os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '../..')
     logging.debug('HOME='+os.environ['HOME'])
     try:
         ctx.run(extra=['--help-output', 'test2'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)

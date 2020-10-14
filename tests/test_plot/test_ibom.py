@@ -79,7 +79,7 @@ def test_ibom_fail():
 
 def test_ibom_all_ops():
     prj = 'bom'
-    ctx = context.TestContext('BoM_interactiveAll', prj, 'ibom_all_ops', BOM_DIR)
+    ctx = context.TestContext('BoM_interactiveAll', prj, 'ibom_all_ops', BOM_DIR, add_cfg_kmajor=True)
     ctx.run()
     out = os.path.join(BOM_DIR, IBOM_OUT)
     ctx.expect_out_file(out)

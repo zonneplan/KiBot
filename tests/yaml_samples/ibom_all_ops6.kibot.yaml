@@ -25,7 +25,7 @@ outputs:
       blacklist: 'DNF*'
       no_blacklist_virtual: true
       blacklist_empty_val: true
-      netlist_file: 'tests/board_samples/bom.xml'
+      netlist_file: 'tests/board_samples/kicad_6/bom.xml'
       extra_fields: 'EF'
       normalize_field_case: true
       variant_field: 'DL'

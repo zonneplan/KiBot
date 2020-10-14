@@ -14,11 +14,26 @@ import xml.etree.ElementTree as ET
 COVERAGE_SCRIPT = 'python3-coverage'
 KICAD_PCB_EXT = '.kicad_pcb'
 KICAD_SCH_EXT = '.sch'
-BOARDS_DIR = 'tests/board_samples'
 KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_5_1_7 = 5001007
 MODE_SCH = 1
 MODE_PCB = 0
+
+import pcbnew
+m = re.match(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
+kicad_major = int(m.group(1))
+kicad_minor = int(m.group(2))
+kicad_patch = int(m.group(3))
+kicad_version = kicad_major*1000000+kicad_minor*1000+kicad_patch
+if kicad_version >= KICAD_VERSION_5_99:
+    BOARDS_DIR = '../board_samples/kicad_6'
+    REF_DIR = 'tests/reference/6_0_0'
+else:
+    BOARDS_DIR = '../board_samples/kicad_5'
+    if kicad_version == KICAD_VERSION_5_1_7:
+        REF_DIR = 'tests/reference/5_1_7'
+    else:
+        REF_DIR = 'tests/reference/5_1_6'
 
 
 def quote(s):
@@ -31,7 +46,7 @@ def usable_cmd(cmd):
 
 class TestContext(object):
 
-    def __init__(self, test_name, board_name, yaml_name, sub_dir, yaml_compressed=False):
+    def __init__(self, test_name, board_name, yaml_name, sub_dir, yaml_compressed=False, add_cfg_kmajor=False):
         ng_ver = os.environ.get('KIAUS_USE_NIGHTLY')
         if ng_ver:
             # Path to the Python module
@@ -39,18 +54,14 @@ class TestContext(object):
             self.kicad_cfg_dir = os.path.join(os.environ['HOME'], '.config/kicadnightly/'+ng_ver)
         else:
             self.kicad_cfg_dir = os.path.join(os.environ['HOME'], '.config/kicad')
-        import pcbnew
-        # Detect version
-        m = re.match(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
-        major = int(m.group(1))
-        minor = int(m.group(2))
-        patch = int(m.group(3))
-        self.kicad_version = major*1000000+minor*1000+patch
-        logging.debug('Detected KiCad v{}.{}.{} ({})'.format(major, minor, patch, self.kicad_version))
-        if self.kicad_version == KICAD_VERSION_5_1_7:
-            self.ref_dir = 'tests/reference/5_1_7'
-        else:
-            self.ref_dir = 'tests/reference/5_1_6'
+        logging.debug('Detected KiCad v{}.{}.{} ({})'.format(kicad_major, kicad_minor, kicad_patch, kicad_version))
+        self.kicad_version = kicad_version
+        if add_cfg_kmajor:
+            major = kicad_major
+            if kicad_minor == 99:
+                # KiCad 5.99 is 6.0.0 alpha
+                major = 6
+            yaml_name += str(major)
         if not hasattr(self, 'mode'):
             # We are using PCBs
             self.mode = MODE_PCB
@@ -73,7 +84,7 @@ class TestContext(object):
 
     def get_board_dir(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))
-        return os.path.join(this_dir, '../board_samples')
+        return os.path.join(this_dir, BOARDS_DIR)
 
     def _get_board_file(self):
         self.board_file = os.path.abspath(os.path.join(self.get_board_dir(), self.board_name + KICAD_PCB_EXT))
@@ -341,7 +352,7 @@ class TestContext(object):
         if ref_out_dir:
             reference = self.get_out_path(reference)
         else:
-            reference = os.path.join(self.ref_dir, reference)
+            reference = os.path.join(REF_DIR, reference)
         image = self.get_out_path(image)
         png_ref = None
         if reference[-3:] == 'svg':
@@ -385,7 +396,7 @@ class TestContext(object):
         # Split the reference
         logging.debug('Splitting '+reference)
         cmd = ['convert', '-density', '150',
-               os.path.join(self.ref_dir, reference),
+               os.path.join(REF_DIR, reference),
                self.get_out_path('ref-%d.png')]
         subprocess.check_call(cmd)
         # Split the generated
@@ -406,7 +417,7 @@ class TestContext(object):
     def compare_txt(self, text, reference=None, diff='diff.txt'):
         if reference is None:
             reference = text
-        cmd = ['/bin/sh', '-c', 'diff -ub '+os.path.join(self.ref_dir, reference)+' ' +
+        cmd = ['/bin/sh', '-c', 'diff -ub '+os.path.join(REF_DIR, reference)+' ' +
                self.get_out_path(text)+' > '+self.get_out_path(diff)]
         logging.debug('Comparing texts with: '+usable_cmd(cmd))
         res = subprocess.call(cmd)
