@@ -657,6 +657,8 @@ outputs:
       dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
+      # [boolean=false] print mirrored (X axis inverted). ONLY for KiCad 6
+      mirror: false
       # [boolean=false] print in black and white
       monochrome: false
       # [string='%f-%i%v.%x'] filename for the output PDF (%i=layers, %x=pdf). Affected by global options
