@@ -66,7 +66,7 @@ def test_bom_cfg_2():
     name = os.path.join(BOM_DIR, prj)
     csv = name+'-bom.csv'
     ctx.expect_out_file(csv)
-    ctx.search_in_file(csv, ['R,100,R1', 'R,200,R2'])
+    ctx.search_in_file(csv, ['R,100 R_0805_2012Metric,R1', 'R,200 R_0805_2012Metric,R2'])
     ctx.search_not_in_file(csv, ['C,1uF,C1'])
     ctx.clean_up()
 
