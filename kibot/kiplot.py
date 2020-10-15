@@ -166,6 +166,9 @@ def load_sch():
     GS.kicad_version = pcbnew.GetBuildVersion()
     logger.debug('KiCad: '+GS.kicad_version)
     GS.check_sch()
+    # We can't yet load the new format
+    if GS.sch_file[-9:] == 'kicad_sch':
+        return
     GS.sch = Schematic()
     try:
         GS.sch.load(GS.sch_file)
