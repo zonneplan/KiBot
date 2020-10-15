@@ -131,11 +131,16 @@ def list_pre_and_outs(logger, outputs):
 def solve_schematic(a_schematic, a_board_file):
     schematic = a_schematic
     if not schematic and a_board_file:
-        sch = os.path.splitext(a_board_file)[0]+'.sch'
+        base = os.path.splitext(a_board_file)[0]
+        sch = base+'.sch'
         if os.path.isfile(sch):
             schematic = sch
+        else:
+            sch = base+'.kicad_sch'
+            if os.path.isfile(sch):
+                schematic = sch
     if not schematic:
-        schematics = glob('*.sch')
+        schematics = glob('*.sch')+glob('*.kicad_sch')
         if len(schematics) == 1:
             schematic = schematics[0]
             logger.info('Using SCH file: '+schematic)
