@@ -25,8 +25,10 @@ class FilterOptions(Optionable):
             """ Name for the filter, for documentation purposes """
             self.filter_msg = None
             """ {filter} """
+            self.error = ''
+            """ Error id we want to exclude. A name for KiCad 6 or a number for KiCad 5, but always a string """
             self.number = 0
-            """ Error number we want to exclude """
+            """ Error number we want to exclude. KiCad 5 only """
             self.error_number = None
             """ {number} """
             self.regex = 'None'
@@ -51,19 +53,21 @@ class FiltersOptions(Optionable):
         if not isinstance(self.filters, type):
             for f in self.filters:
                 where = ' (in `{}` filter)'.format(f.filter) if f.filter else ''
-                number = f.number
-                if not number:
-                    raise KiPlotConfigurationError('Missing `number`'+where)
+                error = f.error
+                if not error:
+                    if not f.number:
+                        raise KiPlotConfigurationError('Missing `error`'+where)
+                    error = str(f.number)
                 regex = f.regex
                 if regex == 'None':
                     raise KiPlotConfigurationError('Missing `regex`'+where)
                 comment = f.filter
-                logger.debug("Adding {} filter '{}','{}','{}'".format(self._filter_what, comment, number, regex))
+                logger.debug("Adding {} filter '{}','{}','{}'".format(self._filter_what, comment, error, regex))
                 if parsed is None:
                     parsed = ''
                 if comment:
                     parsed += '# '+comment+'\n'
-                parsed += '{},{}\n'.format(number, regex)
+                parsed += '{},{}\n'.format(error, regex)
                 f.regex = re.compile(regex)
         # If the list is valid make a copy for the warnings filter
         if parsed:
@@ -82,7 +86,7 @@ class Filters(BasePreFlight):  # noqa: F821
 
     def get_example():
         """ Returns a YAML value for the example config """
-        return "\n    - filter: 'Filter description'\n      number: 10\n      regex: 'Regular expression to match'"
+        return "\n    - filter: 'Filter description'\n      error: '10'\n      regex: 'Regular expression to match'"
 
     @classmethod
     def get_doc(cls):

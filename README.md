@@ -98,10 +98,11 @@ This section is used to specify tasks that will be executed before generating an
 - check_zone_fills: [boolean=false] Zones are filled before doing any operation involving PCB layers.
 - filters: [list(dict)] A list of entries to filter out ERC/DRC messages.
   * Valid keys:
+    - `error`: [string=''] Error id we want to exclude. A name for KiCad 6 or a number for KiCad 5, but always a string.
     - *error_number*: Alias for number.
     - `filter`: [string=''] Name for the filter, for documentation purposes.
     - *filter_msg*: Alias for filter.
-    - `number`: [number=0] Error number we want to exclude.
+    - `number`: [number=0] Error number we want to exclude. KiCad 5 only.
     - `regex`: [string='None'] Regular expression to match the text for the error we want to exclude.
     - *regexp*: Alias for regex.
 - ignore_unconnected: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
@@ -136,11 +137,11 @@ that the error must match to be ignored (`regex`). Like this:
 ```yaml
   filters:
     - filter: 'Optional filter description'
-      number: Numeric_error_type
+      error: 'Error_type'
       regex:  'Expression to match'
 ```
 
-Here is an example, suppose you are getting the following errors:
+Here is a KiCad 5 example, suppose you are getting the following errors:
 
 ```
 ** Found 1 DRC errors **
@@ -159,10 +160,10 @@ And you want to ignore them. You can add the following filters:
 ```yaml
   filters:
     - filter: 'Ignore C3 pad 2 too close to anything'
-      number: 4
+      error: '4'
       regex:  'Pad 2 of C3'
     - filter: 'Ignore unconnected pad 2 of C4'
-      number: 2
+      error: '2'
       regex:  'Pad 2 of C4'
 ```
 
@@ -171,6 +172,8 @@ If you need to match text from two different lines in the error message try usin
 If you have two or more different options for a text to match try using `(OPTION1|OPTION2)`.
 
 A complete Python regular expressions explanation is out the scope of this manual. For a complete reference consult the [Python manual](https://docs.python.org/3/library/re.html).
+
+KiCad 6 uses strings to differentiate errors, use them for the `error` field. To keep compatibility you can use the `number` or `error_number` options for KiCad 5.
 
 **Important note**: this will create a file named *kibot_errors.filter* in the output directory.
 

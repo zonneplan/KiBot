@@ -119,11 +119,11 @@ that the error must match to be ignored (`regex`). Like this:
 ```yaml
   filters:
     - filter: 'Optional filter description'
-      number: Numeric_error_type
+      error: 'Error_type'
       regex:  'Expression to match'
 ```
 
-Here is an example, suppose you are getting the following errors:
+Here is a KiCad 5 example, suppose you are getting the following errors:
 
 ```
 ** Found 1 DRC errors **
@@ -142,10 +142,10 @@ And you want to ignore them. You can add the following filters:
 ```yaml
   filters:
     - filter: 'Ignore C3 pad 2 too close to anything'
-      number: 4
+      error: '4'
       regex:  'Pad 2 of C3'
     - filter: 'Ignore unconnected pad 2 of C4'
-      number: 2
+      error: '2'
       regex:  'Pad 2 of C4'
 ```
 
@@ -154,6 +154,8 @@ If you need to match text from two different lines in the error message try usin
 If you have two or more different options for a text to match try using `(OPTION1|OPTION2)`.
 
 A complete Python regular expressions explanation is out the scope of this manual. For a complete reference consult the [Python manual](https://docs.python.org/3/library/re.html).
+
+KiCad 6 uses strings to differentiate errors, use them for the `error` field. To keep compatibility you can use the `number` or `error_number` options for KiCad 5.
 
 **Important note**: this will create a file named *kibot_errors.filter* in the output directory.
 
