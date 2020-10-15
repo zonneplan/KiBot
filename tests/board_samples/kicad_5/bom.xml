@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <export version="D">
   <design>
-    <source>/home/salvador/0Data/Eccosur/kiplot.INTI-CMNB/tests/board_samples/bom/bom.sch</source>
-    <date>vie 15 may 2020 09:26:40 -03</date>
-    <tool>Eeschema 5.1.5+dfsg1-2~bpo10+1</tool>
+    <source>tests/board_samples/kicad_5/bom/bom.sch</source>
+    <date>jue 15 oct 2020 18:50:36</date>
+    <tool>Eeschema 5.1.7+dfsg1-1</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
         <title/>
@@ -21,6 +21,7 @@
   <components>
     <comp ref="R1">
       <value>100</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -28,6 +29,7 @@
     </comp>
     <comp ref="R2">
       <value>200</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -35,6 +37,7 @@
     </comp>
     <comp ref="C1">
       <value>1uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <sheetpath names="/" tstamps="/"/>
