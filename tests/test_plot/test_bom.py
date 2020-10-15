@@ -28,8 +28,8 @@ BOM_DIR = 'BoM'
 
 def test_bom_ok():
     prj = 'bom'
-    ctx = context.TestContext('BoM_simple', prj, prj, BOM_DIR)
-    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
+    ctx = context.TestContext('test_bom_ok', prj, prj, BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', ctx.sch_file])
     # Check all outputs are there
     # Default format is PRJ_bom_REVISION
     name = os.path.join(BOM_DIR, prj)
@@ -43,19 +43,19 @@ def test_bom_ok():
 
 
 def test_bom_fail():
-    ctx = context.TestContext('BoM_fail', 'bom_no_xml', 'bom', BOM_DIR)
+    ctx = context.TestContext('test_bom_fail', 'bom_no_xml', 'bom', BOM_DIR)
     ctx.run(BOM_ERROR)
     ctx.clean_up()
 
 
 def test_bom_cfg_1():
     prj = 'bom'
-    ctx = context.TestContext('BoMConfig1', prj, 'bom_cfg', BOM_DIR)
-    ctx.run(no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
+    ctx = context.TestContext('test_bom_cfg_1', prj, 'bom_cfg', BOM_DIR)
+    ctx.run(no_board_file=True, extra=['-e', ctx.sch_file])
     name = os.path.join(BOM_DIR, prj)
     csv = name+'-bom.csv'
     ctx.expect_out_file(csv)
-    ctx.search_in_file(csv, ['R,R1,100 ~', 'R,R2,200 ~', 'C,C1,1uF ~'])
+    ctx.search_in_file(csv, ['R,R1,100 R_0805_2012Metric ~', 'R,R2,200 R_0805_2012Metric ~', 'C,C1,1uF C_0805_2012Metric ~'])
     ctx.clean_up()
 
 

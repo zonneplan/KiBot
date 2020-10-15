@@ -13,12 +13,15 @@ import xml.etree.ElementTree as ET
 
 COVERAGE_SCRIPT = 'python3-coverage'
 KICAD_PCB_EXT = '.kicad_pcb'
-KICAD_SCH_EXT = '.sch'
 KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_5_1_7 = 5001007
 MODE_SCH = 1
 MODE_PCB = 0
 
+ng_ver = os.environ.get('KIAUS_USE_NIGHTLY')
+if ng_ver:
+    # Path to the Python module
+    sys.path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
 import pcbnew
 m = re.match(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
 kicad_major = int(m.group(1))
@@ -28,12 +31,15 @@ kicad_version = kicad_major*1000000+kicad_minor*1000+kicad_patch
 if kicad_version >= KICAD_VERSION_5_99:
     BOARDS_DIR = '../board_samples/kicad_6'
     REF_DIR = 'tests/reference/6_0_0'
+    KICAD_SCH_EXT = '.kicad_sch'
 else:
     BOARDS_DIR = '../board_samples/kicad_5'
+    KICAD_SCH_EXT = '.sch'
     if kicad_version == KICAD_VERSION_5_1_7:
         REF_DIR = 'tests/reference/5_1_7'
     else:
         REF_DIR = 'tests/reference/5_1_6'
+logging.debug('Detected KiCad v{}.{}.{} ({})'.format(kicad_major, kicad_minor, kicad_patch, kicad_version))
 
 
 def quote(s):
@@ -47,14 +53,6 @@ def usable_cmd(cmd):
 class TestContext(object):
 
     def __init__(self, test_name, board_name, yaml_name, sub_dir, yaml_compressed=False, add_cfg_kmajor=False):
-        ng_ver = os.environ.get('KIAUS_USE_NIGHTLY')
-        if ng_ver:
-            # Path to the Python module
-            sys.path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
-            self.kicad_cfg_dir = os.path.join(os.environ['HOME'], '.config/kicadnightly/'+ng_ver)
-        else:
-            self.kicad_cfg_dir = os.path.join(os.environ['HOME'], '.config/kicad')
-        logging.debug('Detected KiCad v{}.{}.{} ({})'.format(kicad_major, kicad_minor, kicad_patch, kicad_version))
         self.kicad_version = kicad_version
         if add_cfg_kmajor:
             major = kicad_major
