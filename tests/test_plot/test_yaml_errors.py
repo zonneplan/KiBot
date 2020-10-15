@@ -296,7 +296,7 @@ def test_filter_no_number():
 def test_filter_no_number_2():
     ctx = context.TestContext('FilterNoNumber2', PRJ, 'error_filter_no_number_2', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Missing .?number.?")
+    assert ctx.search_err("Missing .?error.?")
     ctx.clean_up()
 
 
