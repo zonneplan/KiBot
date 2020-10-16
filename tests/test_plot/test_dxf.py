@@ -20,7 +20,7 @@ PS_DIR = 'DXF'
 
 def test_dxf():
     prj = 'simple_2layer'
-    ctx = context.TestContext('DXF', prj, 'dxf', PS_DIR)
+    ctx = context.TestContext('test_dxf', prj, 'dxf', PS_DIR)
     ctx.run()
 
     f_cu = ctx.get_gerber_filename('F_Cu', '.dxf')

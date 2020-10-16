@@ -11,6 +11,7 @@ from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
 from .layer import Layer
 from .gs import GS
+from .misc import KICAD_VERSION_5_99
 from .out_base import VariantOptions
 from .macros import macros, document  # noqa: F401
 from . import log
@@ -25,7 +26,7 @@ class AnyLayerOptions(VariantOptions):
             self.exclude_edge_layer = True
             """ do not include the PCB edge layer """
             self.exclude_pads_from_silkscreen = False
-            """ do not plot the component pads in the silk screen """
+            """ do not plot the component pads in the silk screen (KiCad 5.x only) """
             self.plot_sheet_reference = False
             """ currently without effect """
             self.plot_footprint_refs = True
@@ -48,7 +49,8 @@ class AnyLayerOptions(VariantOptions):
         po.SetPlotValue(self.plot_footprint_values)
         po.SetPlotInvisibleText(self.force_plot_invisible_refs_vals)
         po.SetExcludeEdgeLayer(self.exclude_edge_layer)
-        po.SetPlotPadsOnSilkLayer(not self.exclude_pads_from_silkscreen)
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            po.SetPlotPadsOnSilkLayer(not self.exclude_pads_from_silkscreen)
         po.SetPlotViaOnMaskLayer(not self.tent_vias)
         # Only useful for gerber outputs
         po.SetCreateGerberJobFile(False)
@@ -132,8 +134,9 @@ class AnyLayerOptions(VariantOptions):
         self.force_plot_invisible_refs_vals = po.GetPlotInvisibleText()
         # viasonmask
         self.tent_vias = not po.GetPlotViaOnMaskLayer()
-        # padsonsilk
-        self.exclude_pads_from_silkscreen = not po.GetPlotPadsOnSilkLayer()
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            # padsonsilk
+            self.exclude_pads_from_silkscreen = not po.GetPlotPadsOnSilkLayer()
 
 
 class AnyLayer(BaseOutput):
