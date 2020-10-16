@@ -98,11 +98,9 @@ def get_macros(macroimport, *, filename, reload=False, allow_asname=True):
     This function is meant for implementing actual macro expanders.
     '''
     package_absname = None
-    #print('macroimport.level: '+str(macroimport.level))
     if macroimport.level and filename.endswith(".py"):
         try:
             package_absname = resolve_package(filename)
-            #print('package_absname: '+package_absname)
         except (ValueError, ImportError) as err:
             raise ImportError(f"while resolving absolute package name of {filename}, which uses relative macro-imports") from err
 
@@ -114,7 +112,6 @@ def get_macros(macroimport, *, filename, reload=False, allow_asname=True):
     module_absname = importlib.util.resolve_name('.' * macroimport.level + macroimport.module, package_absname)
 
     try:
-        #print('module_absname: '+module_absname)
         module = importlib.import_module(module_absname)
     except ModuleNotFoundError as err:
         approx_sourcecode = unparse_with_fallbacks(macroimport)

@@ -9,7 +9,7 @@ from contextlib import contextmanager
 from collections import ChainMap
 
 from .astfixers import fix_missing_ctx, fix_missing_locations
-from .markers import ASTMarker
+from .markers import ASTMarker, delete_markers
 from .utils import flatten_suite, format_location
 
 # Global macro bindings shared across all expanders in the current process.
@@ -200,7 +200,7 @@ class BaseMacroExpander(NodeTransformer):
         if it detects any more macro invocations.
         '''
         if expansion is not None:
-            expansion = fix_missing_locations(expansion, target)
+            expansion = fix_missing_locations(expansion, target, mode="reference")
             expansion = fix_missing_ctx(expansion)
             if self.recursive:
                 expansion = self.visit(expansion)
@@ -231,16 +231,4 @@ def global_postprocess(tree):
     Call this after macro expansion is otherwise done, before sending `tree`
     to Python's `compile`.
     '''
-    class MacroExpanderMarkerDeleter(NodeTransformer):
-        def visit(self, tree):
-            if isinstance(tree, list):
-                newtree = flatten_suite(self.visit(elt) for elt in tree)
-                if newtree:
-                    tree[:] = newtree
-                    return tree
-                return None
-            self.generic_visit(tree)
-            if isinstance(tree, MacroExpanderMarker):
-                return tree.body
-            return tree
-    return MacroExpanderMarkerDeleter().visit(tree)
+    return delete_markers(tree, cls=MacroExpanderMarker)

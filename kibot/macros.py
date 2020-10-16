@@ -8,7 +8,7 @@ Macros to make the output plug-ins cleaner.
 """
 from .gs import GS  # noqa: F401
 from ast import (Assign, Name, Attribute, Expr, Num, Str, NameConstant, Load, Store, UnaryOp, USub,
-                 ClassDef, Call, ImportFrom, alias)  # , copy_location
+                 ClassDef, Call, ImportFrom, copy_location, alias)
 from .mcpyrate import unparse
 
 
@@ -79,7 +79,7 @@ def document(sentences, **kw):
                 target = Name(id=doc_id, ctx=Store())
             sentences[n] = Assign(targets=[target], value=Str(s=type_hint+s.value.s.rstrip()+post_hint))
             # Copy the line number from the original docstring
-            # copy_location(sentences[n], s)
+            copy_location(sentences[n], s)
         prev = s
     # Return the modified AST
     return sentences
