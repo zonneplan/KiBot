@@ -8,6 +8,7 @@ from pcbnew import (PLOT_FORMAT_HPGL, PLOT_FORMAT_POST, PLOT_FORMAT_GERBER, PLOT
                     PLOT_FORMAT_PDF, wxPoint)
 from .optionable import (Optionable, BaseOptions)
 from .gs import GS
+from .misc import KICAD_VERSION_5_99
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -33,6 +34,13 @@ class DrillReport(Optionable):
             """ name of the drill report. Not generated unless a name is specified.
                 (%i='drill_report' %x='txt') """
         self._unkown_is_error = True
+
+
+def get_aux_origin(board):
+    if GS.kicad_version_n >= KICAD_VERSION_5_99:
+        settings = board.GetDesignSettings()
+        return settings.m_AuxOrigin
+    return board.GetAuxOrigin()
 
 
 class AnyDrill(BaseOptions):
@@ -82,7 +90,7 @@ class AnyDrill(BaseOptions):
     def run(self, output_dir, board):
         # dialog_gendrill.cpp:357
         if self.use_aux_axis_as_origin:
-            offset = board.GetAuxOrigin()
+            offset = get_aux_origin(board)
         else:
             offset = wxPoint(0, 0)
         drill_writer, ext = self._configure_writer(board, offset)

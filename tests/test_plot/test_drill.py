@@ -63,8 +63,8 @@ def do_3Rs(conf, dir, modern):
 
 
 def test_drill_3Rs():
-    do_3Rs('drill', 'Drill_3Rs', True)
+    do_3Rs('drill', 'test_drill_3Rs', True)
 
 
 def test_drill_legacy_3Rs():
-    do_3Rs('drill_legacy', 'DrillLegacy_3Rs', False)
+    do_3Rs('drill_legacy', 'test_drill_legacy_3Rs', False)
