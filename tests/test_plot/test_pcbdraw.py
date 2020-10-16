@@ -19,7 +19,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kibot.mcpy import activate  # noqa: F401
+from kibot.mcpyrate import activate  # noqa: F401
 from kibot.out_pcbdraw import PcbDrawOptions
 
 OUT_DIR = 'PcbDraw'
