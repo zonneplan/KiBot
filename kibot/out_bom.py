@@ -37,14 +37,14 @@ class BoMColumns(Optionable):
     def __init__(self):
         super().__init__()
         self._unkown_is_error = True
-        with step_expansion:
-            with document:
-                self.field = ''
-                """ Name of the field to use for this column """
-                self.name = ''
-                """ Name to display in the header. The field is used when empty """
-                self.join = Optionable
-                """ [list(string)|string=''] List of fields to join to this column """
+        # with step_expansion:
+        with document:
+            self.field = ''
+            """ Name of the field to use for this column """
+            self.name = ''
+            """ Name to display in the header. The field is used when empty """
+            self.join = Optionable
+            """ [list(string)|string=''] List of fields to join to this column """
 
     def config(self):
         super().config()
