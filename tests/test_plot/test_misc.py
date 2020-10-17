@@ -481,13 +481,19 @@ def test_import_fail():
     os.chmod(cache_file, stat.S_IREAD)
     os.chmod(cache_dir, stat.S_IREAD | stat.S_IEXEC)
     try:
+        # mcpyrate: not a problem
+        ret_code = 0
+        # mcpy:
+        # ret_code = WRONG_INSTALL
         # Run the command
-        ctx.run(WRONG_INSTALL, extra=['--help-list-outputs'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
+        ctx.run(ret_code, extra=['--help-list-outputs'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
     finally:
         os.chmod(cache_dir, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC)
         os.remove(cache_file)
-    assert ctx.search_err('Wrong installation')
-    assert ctx.search_err('Unable to import plug-ins')
+    if False:
+        # mcpy
+        assert ctx.search_err('Wrong installation')
+        assert ctx.search_err('Unable to import plug-ins')
     ctx.clean_up()
 
 
@@ -500,7 +506,9 @@ def test_import_no_fail():
     try:
         # Run the command
         ctx.run(extra=['--help-list-outputs'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
-        assert not os.path.isfile(cache_file)
+        if False:
+            # mcpy
+            assert not os.path.isfile(cache_file)
     finally:
         if os.path.isfile(cache_file):
             os.remove(cache_file)
