@@ -59,9 +59,9 @@ def _import(name, path):
     mod = module_from_spec(spec)
     try:
         spec.loader.exec_module(mod)
-    except ImportError:
+    except ImportError as e:
         trace_dump()
-        logger.error('Unable to import plug-ins')
+        logger.error('Unable to import plug-ins: '+str(e))
         exit(WRONG_INSTALL)
 
 
@@ -79,7 +79,7 @@ def _load_actions(path, load_internals=False):
 
 def load_actions():
     """ Load all the available ouputs and preflights """
-    from kibot.mcpy import activate
+    from kibot.mcpyrate import activate
     # activate.activate()
     _load_actions(os.path.abspath(os.path.dirname(__file__)), True)
     home = os.environ.get('HOME')

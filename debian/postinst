@@ -1,15 +1,3 @@
 #!/bin/sh
 set -e
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/__init__.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/__main__.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/config_reader.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/docopt.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/error.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/gs.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/kiplot.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/log.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/macros.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/misc.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/optionable.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/pre_base.py
-py3compile -V 3.2- /usr/lib/python3/dist-packages/kibot/registrable.py
+kibot --help-outputs > /dev/null

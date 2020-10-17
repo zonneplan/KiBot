@@ -58,7 +58,6 @@ __version__ = '0.7.0'
 
 import os
 import sys
-import stat
 import gzip
 import locale
 from glob import glob
@@ -73,45 +72,8 @@ from .kiplot import (generate_outputs, load_actions, config_output)
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help)
-from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, W_PYCACHE)
+from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB)
 from .docopt import docopt
-
-has_macro = [
-             'layer',
-             'drill_marks',
-             'fil_base',
-             'fil_generic',
-             'globals',
-             'out_any_drill',
-             'out_any_layer',
-             'out_base',
-             'out_bom',
-             'out_dxf',
-             'out_excellon',
-             'out_gerb_drill',
-             'out_gerber',
-             'out_hpgl',
-             'out_ibom',
-             'out_kibom',
-             'out_pcbdraw',
-             'out_pdf',
-             'out_pdf_pcb_print',
-             'out_pdf_sch_print',
-             'out_position',
-             'out_ps',
-             'out_sch_variant',
-             'out_step',
-             'out_svg',
-             'out_svg_sch_print',
-             'pre_check_zone_fills',
-             'pre_drc',
-             'pre_erc',
-             'pre_filters',
-             'pre_ignore_unconnected',
-             'pre_update_xml',
-             'var_base',
-             'var_kibom',
-            ]
 
 
 def list_pre_and_outs(logger, outputs):
@@ -232,30 +194,6 @@ def set_locale():
         pass
 
 
-def clean_cache():
-    """ Files that expands macros can't be pre-compiled """
-    here = os.path.abspath(os.path.dirname(__file__))
-    cache = os.path.join(here, '__pycache__')
-    logger.debug('Python cache dir: '+cache)
-    try:
-        if os.path.isdir(cache):
-            for f in has_macro:
-                fnames = glob(os.path.join(cache, f+'.*'))
-                for fname in fnames:
-                    if os.path.isfile(fname):
-                        # Don't remove read-only files
-                        r = os.stat(fname)
-                        if stat.S_IMODE(r.st_mode) & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH):
-                            logger.debug('Removing '+fname)
-                            os.remove(fname)
-                        else:
-                            raise PermissionError()
-    except PermissionError:
-        logger.warning(W_PYCACHE + 'Wrong installation, avoid creating Python cache files\n'
-                       'If you are using `pip` to install use the `--no-compile` option:\n'
-                       '$ pip install --no-compile kibot\n')
-
-
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -273,8 +211,6 @@ def main():
             sys.exit(EXIT_BAD_ARGS)
         var = redef.split('=')[0]
         GS.global_from_cli[var] = redef[len(var)+1:]
-
-    clean_cache()
 
     # Output dir: relative to CWD (absolute path overrides)
     GS.out_dir = os.path.join(os.getcwd(), args.out_dir)

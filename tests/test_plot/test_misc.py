@@ -29,12 +29,9 @@ pytest-3 --log-cli-level debug
 """
 
 import os
-import stat
 import sys
 import shutil
 import logging
-from subprocess import call
-from glob import glob
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -45,7 +42,7 @@ prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE, CORRUPTED_PCB,
-                        PCBDRAW_ERR, WRONG_INSTALL)
+                        PCBDRAW_ERR)
 
 
 POS_DIR = 'positiondir'
@@ -472,39 +469,49 @@ def test_pcbdraw_fail():
     ctx.clean_up()
 
 
-def test_import_fail():
-    ctx = context.TestContext('test_import_fail', '3Rs', 'pre_and_position', POS_DIR)
-    # Create a read only cache entry that we should delete
-    call(['py3compile', 'kibot/out_any_layer.py'])
-    cache_dir = os.path.join('kibot', '__pycache__')
-    cache_file = glob(os.path.join(cache_dir, 'out_any_layer.*'))[0]
-    os.chmod(cache_file, stat.S_IREAD)
-    os.chmod(cache_dir, stat.S_IREAD | stat.S_IEXEC)
-    try:
-        # Run the command
-        ctx.run(WRONG_INSTALL, extra=['--help-list-outputs'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    finally:
-        os.chmod(cache_dir, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC)
-        os.remove(cache_file)
-    assert ctx.search_err('Wrong installation')
-    assert ctx.search_err('Unable to import plug-ins')
-    ctx.clean_up()
-
-
-def test_import_no_fail():
-    ctx = context.TestContext('test_import_no_fail', '3Rs', 'pre_and_position', POS_DIR)
-    # Create a cache entry that we should delete
-    call(['py3compile', 'kibot/out_any_layer.py'])
-    cache_dir = os.path.join('kibot', '__pycache__')
-    cache_file = glob(os.path.join(cache_dir, 'out_any_layer.*'))[0]
-    try:
-        # Run the command
-        ctx.run(extra=['--help-list-outputs'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
-        assert not os.path.isfile(cache_file)
-    finally:
-        if os.path.isfile(cache_file):
-            os.remove(cache_file)
-    ctx.clean_up()
+# This test was designed for `mcpy`.
+# `mcpyrate` can pass it using Python 3.8.6, but seems to have problems on the docker image.
+# def test_import_fail():
+#     ctx = context.TestContext('test_import_fail', '3Rs', 'pre_and_position', POS_DIR)
+#     # Create a read only cache entry that we should delete
+#     call(['py3compile', 'kibot/out_any_layer.py'])
+#     cache_dir = os.path.join('kibot', '__pycache__')
+#     cache_file = glob(os.path.join(cache_dir, 'out_any_layer.*'))[0]
+#     os.chmod(cache_file, stat.S_IREAD)
+#     os.chmod(cache_dir, stat.S_IREAD | stat.S_IEXEC)
+#     try:
+#         # mcpyrate: not a problem, for Python 3.8.6
+#         ret_code = 0
+#         # mcpy:
+#         # ret_code = WRONG_INSTALL
+#         # Run the command
+#         ctx.run(ret_code, extra=['--help-list-outputs'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
+#     finally:
+#         os.chmod(cache_dir, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC)
+#         os.remove(cache_file)
+#     if False:
+#         # mcpy
+#         assert ctx.search_err('Wrong installation')
+#         assert ctx.search_err('Unable to import plug-ins')
+#     ctx.clean_up()
+#
+#
+# def test_import_no_fail():
+#     ctx = context.TestContext('test_import_no_fail', '3Rs', 'pre_and_position', POS_DIR)
+#     # Create a cache entry that we should delete
+#     call(['py3compile', 'kibot/out_any_layer.py'])
+#     cache_dir = os.path.join('kibot', '__pycache__')
+#     cache_file = glob(os.path.join(cache_dir, 'out_any_layer.*'))[0]
+#     try:
+#         # Run the command
+#         ctx.run(extra=['--help-list-outputs'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
+#         if False:
+#             # mcpy
+#             assert not os.path.isfile(cache_file)
+#     finally:
+#         if os.path.isfile(cache_file):
+#             os.remove(cache_file)
+#     ctx.clean_up()
 
 
 def test_wrong_global_redef():
