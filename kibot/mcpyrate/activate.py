@@ -25,21 +25,11 @@ the `PYTHONDONTWRITEBYTECODE` environment variable, and the attribute
     https://www.python.org/dev/peps/pep-0552/
 '''
 
-# from importlib.machinery import SourceFileLoader, FileFinder
-# 
-# from .importer import source_to_xcode, path_xstats, invalidate_xcaches
-# 
-# SourceFileLoader.source_to_code = source_to_xcode
-# # we could replace SourceFileLoader.set_data with a no-op to force-disable pyc caching.
-# SourceFileLoader.path_stats = path_xstats
-# FileFinder.invalidate_caches = invalidate_xcaches
+from importlib.machinery import SourceFileLoader, FileFinder
 
-from importlib.machinery import SourceFileLoader
-
-from .importer import source_to_xcode
-
-def nop(*args, **kwargs):
-    pass
+from .importer import source_to_xcode, path_xstats, invalidate_xcaches
 
 SourceFileLoader.source_to_code = source_to_xcode
-SourceFileLoader.set_data = nop
+# we could replace SourceFileLoader.set_data with a no-op to force-disable pyc caching.
+SourceFileLoader.path_stats = path_xstats
+FileFinder.invalidate_caches = invalidate_xcaches

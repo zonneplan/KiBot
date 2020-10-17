@@ -274,7 +274,7 @@ def main():
         var = redef.split('=')[0]
         GS.global_from_cli[var] = redef[len(var)+1:]
 
-    clean_cache()
+    # clean_cache()
 
     # Output dir: relative to CWD (absolute path overrides)
     GS.out_dir = os.path.join(os.getcwd(), args.out_dir)
