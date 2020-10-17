@@ -20,8 +20,6 @@ $(error Revert tests/board_samples/bom.xml-bak)
 endif
 
 deb:
-	perl debian/make_postinst.pl > debian/postinst
-	chmod +x debian/postinst
 	fakeroot dpkg-buildpackage -uc -b
 
 lint: doc
