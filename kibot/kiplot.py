@@ -59,9 +59,9 @@ def _import(name, path):
     mod = module_from_spec(spec)
     try:
         spec.loader.exec_module(mod)
-    except ImportError:
+    except ImportError as e:
         trace_dump()
-        logger.error('Unable to import plug-ins')
+        logger.error('Unable to import plug-ins: '+str(e))
         exit(WRONG_INSTALL)
 
 
