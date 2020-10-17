@@ -1364,6 +1364,13 @@ pip install --no-compile kibot
 Note that `pip` has the dubious idea of compiling everything it downloads.
 There is no advantage in doing it and it interferes with the `mcpy` macros.
 
+If you are installing at system level I recommend generating the compilation caches after installing.
+As `root` just run:
+
+```shell
+kibot --help-outputs > /dev/null
+```
+
 ### Installation on other targets
 
 - Install KiCad 5.x
