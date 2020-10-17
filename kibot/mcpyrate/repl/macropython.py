@@ -4,18 +4,21 @@
 
 # TODO: Currently tested in CPython 3.6, and PyPy3 7.3.0 (Python 3.6). Test in 3.7+.
 
+import argparse
+import atexit
 from importlib import import_module
 from importlib.util import resolve_name, module_from_spec
-import pathlib
 import os
+import pathlib
 import sys
-import argparse
 
 from ..coreutils import relativize
 
 from .. import activate  # noqa: F401
 
 __version__ = "3.0.0"
+
+_config_dir = "~/.config/mcpyrate"
 _macropython_module = None  # sys.modules doesn't always seem to keep it, so stash it locally too.
 
 def import_module_as_main(name, script_mode):
@@ -153,6 +156,18 @@ def main():
         readline.set_completer(rlcompleter.Completer(namespace=repl_locals).complete)
         readline.parse_and_bind("tab: complete")  # PyPy ignores this, but not needed there.
 
+        config_dir = pathlib.Path(_config_dir).expanduser().resolve()
+        try:
+            readline.read_history_file(config_dir / "macropython_history")
+        except FileNotFoundError:
+            pass
+
+        def save_history():
+            config_dir.mkdir(parents=True, exist_ok=True)
+            readline.set_history_length(1000)
+            readline.write_history_file(config_dir / "macropython_history")
+        atexit.register(save_history)
+
         # Add CWD to import path like the builtin interactive console does.
         if sys.path[0] != "":
             sys.path.insert(0, "")
@@ -209,6 +224,8 @@ def main():
         # if not spec:
         #     raise ImportError(f"Not a Python module: '{opts.filename}'"
         # module = module_from_spec(spec)
+        # TODO: if we use this approach, we should first initialize parent packages.
+        # sys.modules[module.__name__] = module
         # spec.loader.exec_module(module)
 
         root_path, relative_path = relativize(opts.filename)

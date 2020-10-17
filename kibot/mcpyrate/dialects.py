@@ -5,10 +5,10 @@ __all__ = ["Dialect",
            "expand_dialects"]
 
 import ast
-from collections import deque
+import importlib
+import importlib.util
 import re
 from sys import stderr
-import tokenize
 
 from .coreutils import ismacroimport, get_macros
 from .unparser import unparse_with_fallbacks
@@ -154,7 +154,7 @@ class DialectExpander:
 
         Return value is an AST for the module.
         '''
-        text = _decode_source_content(data)
+        text = importlib.util.decode_source(data)
         text = self.transform_source(text)
         try:
             tree = ast.parse(data, filename=self.filename, mode="exec")
@@ -276,9 +276,11 @@ class DialectExpander:
         '''Find the first dialect-import statement by scanning the AST `tree`.
 
         Transform the dialect-import into `import ...`, where `...` is the absolute
-        module name the dialects are being imported from.
+        module name the dialects are being imported from. As a side effect, import
+        the dialect definition module.
 
-        As a side effect, import the dialect definition module.
+        Primarily meant to be called with `tree` the AST of a module that
+        uses dialects, but works with any `tree` that has a `body` attribute.
 
         A dialect-import is a statement of the form::
 
@@ -301,15 +303,6 @@ class DialectExpander:
         tree.body[index] = ast.copy_location(ast.Import(names=[ast.alias(name=module_absname, asname=None)]),
                                              statement)
         return module_absname, bindings
-
-
-def _decode_source_content(data):
-    '''Decode a .py source file from bytes to string, parsing the encoding tag like `tokenize`.'''
-    lines = deque(data.split(b"\n"))
-    def readline():
-        return lines.popleft()
-    encoding, lines_read = tokenize.detect_encoding(readline)
-    return data.decode(encoding)
 
 # --------------------------------------------------------------------------------
 
