@@ -77,8 +77,12 @@ def document(sentences, **kw):
                 target = Attribute(value=Name(id='self', ctx=Load()), attr=doc_id, ctx=Store())
             else:  # pragma: no cover
                 target = Name(id=doc_id, ctx=Store())
-            sentences[n] = Assign(targets=[target], value=Str(s=type_hint+s.value.s.rstrip()+post_hint))
+            # Reuse the s.value Str
+            help_str = s.value
+            help_str.s = type_hint+s.value.s.rstrip()+post_hint
+            sentences[n] = Assign(targets=[target], value=help_str)
             # Copy the line number from the original docstring
+            copy_location(target, s)
             copy_location(sentences[n], s)
         prev = s
     # Return the modified AST
