@@ -19,7 +19,9 @@ from .bom.bom import do_bom
 from .var_kibom import KiBoM
 from .fil_base import BaseFilter, apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, reset_filters
 from . import log
-from .mcpyrate.debug import macros, step_expansion
+# To debug the `with document` we can use:
+# from .mcpyrate.debug import macros, step_expansion
+# with step_expansion:
 
 logger = log.get_logger(__name__)
 VALID_STYLES = {'modern-blue', 'modern-green', 'modern-red', 'classic'}
@@ -37,7 +39,6 @@ class BoMColumns(Optionable):
     def __init__(self):
         super().__init__()
         self._unkown_is_error = True
-        # with step_expansion:
         with document:
             self.field = ''
             """ Name of the field to use for this column """

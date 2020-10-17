@@ -45,7 +45,7 @@ prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE, CORRUPTED_PCB,
-                        PCBDRAW_ERR, WRONG_INSTALL)
+                        PCBDRAW_ERR)
 
 
 POS_DIR = 'positiondir'
@@ -472,6 +472,8 @@ def test_pcbdraw_fail():
     ctx.clean_up()
 
 
+# This test was designed for `mcpy`.
+# `mcpyrate` can pass it using Python 3.8.6, but seems to have problems on the docker image
 def test_import_fail():
     ctx = context.TestContext('test_import_fail', '3Rs', 'pre_and_position', POS_DIR)
     # Create a read only cache entry that we should delete
@@ -481,7 +483,7 @@ def test_import_fail():
     os.chmod(cache_file, stat.S_IREAD)
     os.chmod(cache_dir, stat.S_IREAD | stat.S_IEXEC)
     try:
-        # mcpyrate: not a problem
+        # mcpyrate: not a problem, for Python 3.8.6
         ret_code = 0
         # mcpy:
         # ret_code = WRONG_INSTALL

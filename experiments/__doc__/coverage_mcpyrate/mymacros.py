@@ -47,7 +47,7 @@ def document(tree, **kw):
             else:
                 target = Name(id=doc_id, ctx=Store())
             help_str = s.value
-            help_str.s=type_hint+s.value.s
+            help_str.s = type_hint+s.value.s
             tree[n] = Assign(targets=[target], value=help_str)
             # Copy the line number from the original docstring
             copy_location(target, s)

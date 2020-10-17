@@ -1,5 +1,5 @@
 from mymacros import macros, document  # noqa: F401
-from mcpyrate.debug import macros, step_expansion
+from mcpyrate.debug import macros, step_expansion  # noqa: F401,F811
 
 
 with step_expansion["dump"]:
@@ -19,9 +19,9 @@ class d(object):
             self.at1 = 4.5
             """ documenting d.at1 """  # <--- Not covered?
 
+
 print("a = "+str(a)+"  # "+_help_a)  # noqa: F821
 print("b = "+str(b)+"  # "+_help_b)  # noqa: F821
 print("c = "+str(c)+"  # "+_help_c)  # noqa: F821
 e = d()
 print("e.at1 = "+str(e.at1)+"  # "+e._help_at1)  # noqa: F821
-
