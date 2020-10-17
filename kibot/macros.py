@@ -93,22 +93,13 @@ def _do_wrap_class_register(tree, mod, base_class):
     if isinstance(tree, ClassDef):
         # Create the register call
         name = tree.name
-        # l_start = tree.lineno
-        # Python 3.8:
-        # l_end = tree.end_lineno
-        # Python 3.7, this is good enough for our needs:
-        # l_end = l_start + 1
         reg_name = name.lower()
         # BaseOutput.register member:
         attr = Attribute(value=Name(id=base_class, ctx=Load()), attr='register', ctx=Load())
         # Function call to it passing reg_name and name
-        # Put it in the last line.
         do_register = Expr(value=Call(func=attr, args=[Str(s=reg_name), Name(id=name, ctx=Load())], keywords=[]))
-
         # Create the import
-        # Put it in the decorator line.
         do_import = ImportFrom(module=mod, names=[alias(name=base_class, asname=None)], level=1)
-
         return [do_import, tree, do_register]
     # Just in case somebody applies it to anything other than a class
     return tree  # pragma: no cover
