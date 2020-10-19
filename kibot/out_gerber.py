@@ -78,7 +78,8 @@ class GerberOptions(AnyLayerOptions):
         # useauxorigin
         self.use_aux_axis_as_origin = po.GetUseAuxOrigin()
         # linewidth
-        self.line_width = ToMM(po.GetLineWidth())
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            self.line_width = ToMM(po.GetLineWidth())
 
 
 @output_class

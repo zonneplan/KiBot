@@ -19,7 +19,7 @@ class PDFOptions(DrillMarks):
         super().__init__()
         with document:
             self.line_width = 0.1
-            """ [0.02,2] for objects without width [mm] """
+            """ [0.02,2] for objects without width [mm] (KiCad 5) """
             self.mirror_plot = False
             """ plot mirrored """
             self.negative_plot = False
@@ -29,13 +29,15 @@ class PDFOptions(DrillMarks):
     def _configure_plot_ctrl(self, po, output_dir):
         super()._configure_plot_ctrl(po, output_dir)
         po.SetMirror(self.mirror_plot)
-        po.SetLineWidth(FromMM(self.line_width))
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            po.SetLineWidth(FromMM(self.line_width))
         po.SetNegative(self.negative_plot)
 
     def read_vals_from_po(self, po):
         super().read_vals_from_po(po)
         self.mirror_plot = po.GetMirror()
-        self.line_width = ToMM(po.GetLineWidth())
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            self.line_width = ToMM(po.GetLineWidth())
         self.negative_plot = po.GetNegative()
 
 

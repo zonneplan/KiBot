@@ -26,7 +26,7 @@ class PSOptions(DrillMarks):
         super().__init__()
         with document:
             self.line_width = 0.15
-            """ [0.02,2] for objects without width [mm] """
+            """ [0.02,2] for objects without width [mm] (KiCad 5) """
             self.mirror_plot = False
             """ plot mirrored """
             self.negative_plot = False
@@ -53,7 +53,8 @@ class PSOptions(DrillMarks):
         po.SetFineScaleAdjustX(self.scale_adjust_y)
         po.SetA4Output(self.a4_output)
         po.SetPlotMode(SKETCH if self.sketch_plot else FILLED)
-        po.SetLineWidth(FromMM(self.line_width))
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            po.SetLineWidth(FromMM(self.line_width))
         po.SetNegative(self.negative_plot)
         po.SetMirror(self.mirror_plot)
         # Scaling/Autoscale
@@ -71,7 +72,8 @@ class PSOptions(DrillMarks):
         self.scale_adjust_y = po.GetFineScaleAdjustX()
         self.a4_output = po.GetA4Output()
         self.sketch_plot = po.GetPlotMode() == SKETCH
-        self.line_width = ToMM(po.GetLineWidth())
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            self.line_width = ToMM(po.GetLineWidth())
         self.negative_plot = po.GetNegative()
         self.mirror_plot = po.GetMirror()
         # scaleselection
