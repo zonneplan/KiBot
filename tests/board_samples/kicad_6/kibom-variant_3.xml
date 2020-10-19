@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="D">
+  <design>
+    <source>/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_6/1/kibom-variant_3.kicad_sch</source>
+    <date>lun 19 oct 2020 13:08:28</date>
+    <tool>Eeschema 5.99.0-unknown-688a03179~104~ubuntu20.10.1</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>KiBom Test Schematic</title>
+        <company>https://github.com/SchrodingersGat/KiBom</company>
+        <rev>A</rev>
+        <date>2020-03-12</date>
+        <source>kibom-variant_3.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C1">
+      <value>1nF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <datasheet>~</datasheet>
+      <fields>
+        <field name="Config">T2</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="Config" value="T2"/>
+      <property name="Nombre de hoja" value=""/>
+      <property name="Sheet file" value="/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_6/1/kibom-variant_3.sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>00000000-0000-0000-0000-00005f43bec2</tstamp>
+    </comp>
+    <comp ref="C2">
+      <value>1000 pF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <datasheet>~</datasheet>
+      <fields>
+        <field name="Config">T3</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="Config" value="T3"/>
+      <property name="Nombre de hoja" value=""/>
+      <property name="Sheet file" value="/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_6/1/kibom-variant_3.sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>00000000-0000-0000-0000-00005f43ce1c</tstamp>
+    </comp>
+    <comp ref="FID1">
+      <value>Fiducial</value>
+      <footprint>Fiducial:Fiducial_0.5mm_Mask1mm</footprint>
+      <datasheet>~</datasheet>
+      <libsource lib="Mechanical" part="Fiducial" description="Fiducial Marker"/>
+      <property name="Nombre de hoja" value=""/>
+      <property name="Sheet file" value="/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_6/1/kibom-variant_3.sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>00000000-0000-0000-0000-00005f57eddb</tstamp>
+    </comp>
+    <comp ref="R1">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
+      <datasheet>~</datasheet>
+      <fields>
+        <field name="Config">default</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Config" value="default"/>
+      <property name="Nombre de hoja" value=""/>
+      <property name="Sheet file" value="/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_6/1/kibom-variant_3.sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>00000000-0000-0000-0000-00005f43d144</tstamp>
+    </comp>
+    <comp ref="R2">
+      <value>1000</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
+      <datasheet>~</datasheet>
+      <fields>
+        <field name="Config">T1</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Config" value="T1"/>
+      <property name="Nombre de hoja" value=""/>
+      <property name="Sheet file" value="/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_6/1/kibom-variant_3.sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>00000000-0000-0000-0000-00005f43d4bb</tstamp>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Device" part="C">
+      <description>Unpolarized capacitor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="R">
+      <description>Resistor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Mechanical" part="Fiducial">
+      <description>Fiducial Marker</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Fiducial*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">FID</field>
+        <field name="Value">Fiducial</field>
+        <field name="Datasheet">~</field>
+      </fields>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Device">
+      <uri>/usr/share/kicad/library/Device.lib</uri>
+    </library>
+    <library logical="Mechanical">
+      <uri>/usr/share/kicad/library/Mechanical.lib</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="Net-(C1-Pad1)">
+      <node ref="C1" pin="1"/>
+    </net>
+    <net code="2" name="Net-(C1-Pad2)">
+      <node ref="C1" pin="2"/>
+    </net>
+    <net code="3" name="Net-(C2-Pad1)">
+      <node ref="C2" pin="1"/>
+    </net>
+    <net code="4" name="Net-(C2-Pad2)">
+      <node ref="C2" pin="2"/>
+    </net>
+    <net code="5" name="Net-(R1-Pad1)">
+      <node ref="R1" pin="1"/>
+    </net>
+    <net code="6" name="Net-(R1-Pad2)">
+      <node ref="R1" pin="2"/>
+    </net>
+    <net code="7" name="Net-(R2-Pad1)">
+      <node ref="R2" pin="1"/>
+    </net>
+    <net code="8" name="Net-(R2-Pad2)">
+      <node ref="R2" pin="2"/>
+    </net>
+  </nets>
+</export>
