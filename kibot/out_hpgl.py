@@ -3,11 +3,20 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from pcbnew import (PLOT_FORMAT_HPGL, SKETCH, FILLED)
+from pcbnew import (PLOT_FORMAT_HPGL)  # , SKETCH, FILLED Bug: https://gitlab.com/kicad/code/kicad/-/issues/6070
 from .misc import AUTO_SCALE
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
 from .macros import macros, document, output_class  # noqa: F401
+
+# From kicad/include/outline_mode.h KiCad 5.99 is missing:
+# enum OUTLINE_MODE
+# {
+#     SKETCH = 0,  // sketch mode: draw segments outlines only
+#     FILLED = 1 // normal mode: solid segments
+# };
+SKETCH = 0
+FILLED = 1
 
 
 class HPGLOptions(DrillMarks):
