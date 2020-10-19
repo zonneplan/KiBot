@@ -624,7 +624,7 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
-      # [number=0.1] [0.02,2] for objects without width [mm]
+      # [number=0.1] [0.02,2] for objects without width [mm] (KiCad 5)
       line_width: 0.1
       # [boolean=false] plot mirrored
       mirror_plot: false
@@ -734,7 +734,7 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
-      # [number=0.15] [0.02,2] for objects without width [mm]
+      # [number=0.15] [0.02,2] for objects without width [mm] (KiCad 5)
       line_width: 0.15
       # [boolean=false] plot mirrored
       mirror_plot: false
@@ -824,7 +824,7 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
-      # [number=0.25] [0.02,2] for objects without width [mm]
+      # [number=0.25] [0.02,2] for objects without width [mm] (KiCad 5)
       line_width: 0.25
       # [boolean=false] plot mirrored
       mirror_plot: false
