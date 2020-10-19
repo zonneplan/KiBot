@@ -5,7 +5,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
-from pcbnew import (PLOT_FORMAT_HPGL, FromMM, ToMM)  # , SKETCH, FILLED Bug: https://gitlab.com/kicad/code/kicad/-/issues/6070
+from pcbnew import (PLOT_FORMAT_POST, FromMM, ToMM)  # , SKETCH, FILLED Bug: https://gitlab.com/kicad/code/kicad/-/issues/6070
 from .misc import AUTO_SCALE
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
