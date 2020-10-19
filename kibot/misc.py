@@ -29,7 +29,31 @@ PCBDRAW_ERR = 20
 SVG_SCH_PRINT = 21
 CORRUPTED_SCH = 22
 WRONG_INSTALL = 23
-
+error_level_to_name = ['NONE',
+                       'INTERNAL_ERROR',
+                       'WRONG_ARGUMENTS',
+                       'USUPPORTED_OPTION',
+                       'MISSING_TOOL',
+                       'DRC_ERROR',
+                       'EXIT_BAD_ARGS',
+                       'EXIT_BAD_CONFIG',
+                       'NO_PCB_FILE',
+                       'NO_SCH_FILE',
+                       'ERC_ERROR',
+                       'BOM_ERROR',
+                       'PDF_SCH_PRINT',
+                       'PDF_PCB_PRINT',
+                       'PLOT_ERROR',
+                       'NO_YAML_MODULE',
+                       'NO_PCBNEW_MODULE',
+                       'CORRUPTED_PCB',
+                       'KICAD2STEP_ERR',
+                       'WONT_OVERWRITE',
+                       'PCBDRAW_ERR',
+                       'SVG_SCH_PRINT',
+                       'CORRUPTED_SCH',
+                       'WRONG_INSTALL',
+                      ]
 CMD_EESCHEMA_DO = 'eeschema_do'
 URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/kicad-automation-scripts'
 CMD_PCBNEW_RUN_DRC = 'pcbnew_do'

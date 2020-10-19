@@ -10,6 +10,10 @@ import csv
 from glob import glob
 from pty import openpty
 import xml.etree.ElementTree as ET
+prev_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if prev_dir not in sys.path:
+    sys.path.insert(0, prev_dir)
+from kibot.misc import (error_level_to_name)
 
 COVERAGE_SCRIPT = 'python3-coverage'
 KICAD_PCB_EXT = '.kicad_pcb'
@@ -226,7 +230,7 @@ class TestContext(object):
             self.err = self.err.decode()
             self.out = self.err
         exp_ret = 0 if ret_val is None else ret_val
-        assert ret_code == exp_ret, 'ret_code: {} expected {}'.format(ret_code, exp_ret)
+        assert ret_code == exp_ret, 'ret_code: {} ({}) expected {}'.format(ret_code, error_level_to_name[ret_code], exp_ret)
         if use_a_tty:
             os.close(master)
             os.close(slave)
