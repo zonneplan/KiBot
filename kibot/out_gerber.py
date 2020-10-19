@@ -7,6 +7,7 @@
 # Adapted from: https://github.com/johnbeard/kiplot
 from pcbnew import (PLOT_FORMAT_GERBER, FromMM, ToMM)
 from .gs import GS
+from .misc import KICAD_VERSION_5_99
 from .out_any_layer import (AnyLayer, AnyLayerOptions)
 from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
@@ -18,7 +19,7 @@ class GerberOptions(AnyLayerOptions):
             self.use_aux_axis_as_origin = False
             """ use the auxiliar axis as origin for coordinates """
             self.line_width = 0.1
-            """ [0.02,2] line_width for objects without width [mm] """
+            """ [0.02,2] line_width for objects without width [mm] (KiCad 5) """
             self.subtract_mask_from_silk = False
             """ substract the solder mask from the silk screen """
             self.use_protel_extensions = False
@@ -56,7 +57,8 @@ class GerberOptions(AnyLayerOptions):
         po.SetUseGerberX2format(self.use_gerber_x2_attributes)
         po.SetIncludeGerberNetlistInfo(self.use_gerber_net_attributes)
         po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
-        po.SetLineWidth(FromMM(self.line_width))
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            po.SetLineWidth(FromMM(self.line_width))
         setattr(po, 'gerber_job_file', self.gerber_job_file)
 
     def read_vals_from_po(self, po):
