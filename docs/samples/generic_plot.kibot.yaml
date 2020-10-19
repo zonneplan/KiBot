@@ -165,7 +165,7 @@ outputs:
       drill_marks: 'full'
       # [boolean=true] do not include the PCB edge layer
       exclude_edge_layer: true
-      # [boolean=false] do not plot the component pads in the silk screen
+      # [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only)
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
@@ -264,7 +264,7 @@ outputs:
       dnf_filter: ''
       # [boolean=true] do not include the PCB edge layer
       exclude_edge_layer: true
-      # [boolean=false] do not plot the component pads in the silk screen
+      # [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only)
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
@@ -272,7 +272,7 @@ outputs:
       gerber_job_file: '%f-%i%v.%x'
       # [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6
       gerber_precision: 4.6
-      # [number=0.1] [0.02,2] line_width for objects without width [mm]
+      # [number=0.1] [0.02,2] line_width for objects without width [mm] (KiCad 5)
       line_width: 0.1
       # [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options
       output: '%f-%i%v.%x'
@@ -312,7 +312,7 @@ outputs:
       drill_marks: 'full'
       # [boolean=true] do not include the PCB edge layer
       exclude_edge_layer: true
-      # [boolean=false] do not plot the component pads in the silk screen
+      # [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only)
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
@@ -620,7 +620,7 @@ outputs:
       drill_marks: 'full'
       # [boolean=true] do not include the PCB edge layer
       exclude_edge_layer: true
-      # [boolean=false] do not plot the component pads in the silk screen
+      # [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only)
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
@@ -730,7 +730,7 @@ outputs:
       drill_marks: 'full'
       # [boolean=true] do not include the PCB edge layer
       exclude_edge_layer: true
-      # [boolean=false] do not plot the component pads in the silk screen
+      # [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only)
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
@@ -820,7 +820,7 @@ outputs:
       drill_marks: 'full'
       # [boolean=true] do not include the PCB edge layer
       exclude_edge_layer: true
-      # [boolean=false] do not plot the component pads in the silk screen
+      # [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only)
       exclude_pads_from_silkscreen: false
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
