@@ -6,10 +6,13 @@
 import pcbnew
 from .optionable import Optionable
 from .gs import GS
+from .misc import KICAD_VERSION_5_99
 from re import match
-
 from .error import (PlotError, KiPlotConfigurationError)
 from .macros import macros, document, output_class  # noqa: F401
+from . import log
+
+logger = log.get_logger(__name__)
 
 
 class Layer(Optionable):
@@ -59,6 +62,18 @@ class Layer(Optionable):
         'B.CrtYd': 'Bottom courtyard area',
         'F.Fab': 'Front documentation',
         'B.Fab': 'Bottom documentation',
+    }
+    KICAD6_RENAME = {
+        'F.Adhes': 'F.Adhesive',
+        'B.Adhes': 'B.Adhesive',
+        'F.SilkS': 'F.Silkscreen',
+        'B.SilkS': 'B.Silkscreen',
+        'Dwgs.User': 'User.Drawings',
+        'Cmts.User': 'User.Comments',
+        'Eco1.User': 'User.Eco1',
+        'Eco2.User': 'User.Eco2',
+        'F.CrtYd': 'F.Courtyard',
+        'B.CrtYd': 'B.Courtyard',
     }
     # Names from the board file
     _pcb_layers = None
@@ -135,6 +150,9 @@ class Layer(Optionable):
                         ext = Layer._get_layers(Layer._get_user())
                     elif layer in Layer._pcb_layers:
                         ext = [Layer.create_layer(layer)]
+                    # Give compatibility for the KiCad 5 default names (automagically renamed by KiCad 6)
+                    elif GS.kicad_version_n >= KICAD_VERSION_5_99 and layer in Layer.KICAD6_RENAME:
+                        ext = [Layer.create_layer(Layer.KICAD6_RENAME[layer])]
                     if ext is None:
                         raise KiPlotConfigurationError("Unknown layer spec: `{}`".format(layer))
                     new_vals.extend(ext)

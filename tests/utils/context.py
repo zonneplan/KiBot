@@ -36,9 +36,25 @@ if kicad_version >= KICAD_VERSION_5_99:
     BOARDS_DIR = '../board_samples/kicad_6'
     REF_DIR = 'tests/reference/6_0_0'
     KICAD_SCH_EXT = '.kicad_sch'
+    # Now these layers can be renamed.
+    # KiCad 6 takes the freedom to give them more descriptive names ...
+    DEF_ADHES = 'Adhesive'
+    DEF_CRTYD = 'Courtyard'
+    DEF_SILKS = 'Silkscreen'
+    DEF_CMTSU = 'User_Comments'
+    DEF_DWGSU = 'User_Drawings'
+    DEF_ECO1U = 'User_Eco1'
+    DEF_ECO2U = 'User_Eco2'
 else:
     BOARDS_DIR = '../board_samples/kicad_5'
     KICAD_SCH_EXT = '.sch'
+    DEF_ADHES = 'Adhes'
+    DEF_CRTYD = 'CrtYd'
+    DEF_SILKS = 'SilkS'
+    DEF_CMTSU = 'Cmts_User'
+    DEF_DWGSU = 'Dwgs_User'
+    DEF_ECO1U = 'Eco1_User'
+    DEF_ECO2U = 'Eco2_User'
     if kicad_version == KICAD_VERSION_5_1_7:
         REF_DIR = 'tests/reference/5_1_7'
     else:
