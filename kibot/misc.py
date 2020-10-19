@@ -53,7 +53,7 @@ error_level_to_name = ['NONE',
                        'SVG_SCH_PRINT',
                        'CORRUPTED_SCH',
                        'WRONG_INSTALL',
-                      ]
+                       ]
 CMD_EESCHEMA_DO = 'eeschema_do'
 URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/kicad-automation-scripts'
 CMD_PCBNEW_RUN_DRC = 'pcbnew_do'
