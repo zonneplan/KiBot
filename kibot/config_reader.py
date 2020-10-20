@@ -27,8 +27,8 @@ logger = log.get_logger(__name__)
 
 try:
     import yaml
-except ImportError:  # pragma: no cover
-    log.init(False, False)
+except ImportError:
+    log.init()
     logger.error('No yaml module for Python, install python3-yaml')
     exit(NO_YAML_MODULE)
 

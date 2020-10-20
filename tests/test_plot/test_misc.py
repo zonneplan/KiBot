@@ -42,7 +42,7 @@ prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE, CORRUPTED_PCB,
-                        PCBDRAW_ERR)
+                        PCBDRAW_ERR, NO_PCBNEW_MODULE, NO_YAML_MODULE)
 
 
 POS_DIR = 'positiondir'
@@ -519,3 +519,18 @@ def test_wrong_global_redef():
     ctx.run(EXIT_BAD_ARGS, extra=['--global-redef', 'bogus'])
     assert ctx.search_err('Malformed global-redef option')
     ctx.clean_up()
+
+
+def test_no_pcbnew():
+    ctx = context.TestContext('test_no_pcbnew', 'bom', 'bom', '')
+    cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_pcbnew_error.py')]
+    ctx.do_run(cmd, NO_PCBNEW_MODULE)
+    ctx.search_err('Failed to import pcbnew Python module.')
+    ctx.search_err('PYTHONPATH')
+
+
+def test_no_yaml():
+    ctx = context.TestContext('test_no_yaml', 'bom', 'bom', '')
+    cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_yaml_error.py')]
+    ctx.do_run(cmd, NO_YAML_MODULE)
+    ctx.search_err('No yaml module for Python, install python3-yaml')

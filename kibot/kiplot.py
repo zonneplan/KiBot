@@ -38,8 +38,8 @@ if os.environ.get('KIAUS_USE_NIGHTLY'):
     sys_path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
 try:
     import pcbnew
-except ImportError:  # pragma: no cover
-    log.init(False, False)
+except ImportError:
+    log.init()
     logger.error("Failed to import pcbnew Python module."
                  " Is KiCad installed?"
                  " Do you need to add it to PYTHONPATH?")

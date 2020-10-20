@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import os
 import sys
 # Setup the path to load local kibot module
