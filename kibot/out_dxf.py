@@ -3,19 +3,17 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from pcbnew import (PLOT_FORMAT_DXF)  # , SKETCH, FILLED Bug: https://gitlab.com/kicad/code/kicad/-/issues/6070
+from pcbnew import PLOT_FORMAT_DXF, SKETCH, FILLED
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
+from .gs import GS
+from .misc import KICAD_VERSION_5_99
 from .macros import macros, document, output_class  # noqa: F401
-
-# From kicad/include/outline_mode.h KiCad 5.99 is missing:
-# enum OUTLINE_MODE
-# {
-#     SKETCH = 0,  // sketch mode: draw segments outlines only
-#     FILLED = 1 // normal mode: solid segments
-# };
-SKETCH = 0
-FILLED = 1
+if GS.kicad_version_n >= KICAD_VERSION_5_99:
+    from pcbnew import DXF_UNITS_MILLIMETERS, DXF_UNITS_INCHES
+else:
+    DXF_UNITS_MILLIMETERS = 1
+    DXF_UNITS_INCHES = 0
 
 
 class DXFOptions(DrillMarks):
@@ -37,7 +35,7 @@ class DXFOptions(DrillMarks):
         po.SetDXFPlotPolygonMode(self.polygon_mode)
         # DXF_PLOTTER::DXF_UNITS isn't available
         # According to https://docs.kicad-pcb.org/doxygen/classDXF__PLOTTER.html 1 is mm
-        po.SetDXFPlotUnits(1 if self.metric_units else 0)
+        po.SetDXFPlotUnits(DXF_UNITS_MILLIMETERS if self.metric_units else DXF_UNITS_INCHES)
         po.SetPlotMode(SKETCH if self.sketch_plot else FILLED)
         po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
 
