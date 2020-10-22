@@ -8,5 +8,4 @@ if prev_dir not in sys.path:
 # Force the pcbnew module load to fail
 sys.modules['pcbnew'] = None
 # Import the module to test
-from kibot.kiplot import check_eeschema_do
-
+from kibot.kiplot import check_eeschema_do  # noqa: F401
