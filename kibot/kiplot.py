@@ -44,7 +44,7 @@ except ImportError:
                  " Is KiCad installed?"
                  " Do you need to add it to PYTHONPATH?")
     exit(NO_PCBNEW_MODULE)
-m = re.match(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
+m = re.search(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
 GS.kicad_version_major = int(m.group(1))
 GS.kicad_version_minor = int(m.group(2))
 GS.kicad_version_patch = int(m.group(3))

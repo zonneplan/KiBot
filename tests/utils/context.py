@@ -27,7 +27,8 @@ if ng_ver:
     # Path to the Python module
     sys.path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
 import pcbnew
-m = re.match(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
+m = re.search(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
+logging.debug(pcbnew.GetBuildVersion())
 kicad_major = int(m.group(1))
 kicad_minor = int(m.group(2))
 kicad_patch = int(m.group(3))
