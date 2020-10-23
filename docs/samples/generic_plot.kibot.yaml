@@ -698,6 +698,12 @@ outputs:
     type: 'position'
     dir: 'Example/position_dir'
     options:
+      # [list(dict)|list(string)] which columns are included in the output
+      columns:
+        # [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name
+        id: ''
+        # [string=''] Name to use in the outut file. The id is used when empty
+        name: ''
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''

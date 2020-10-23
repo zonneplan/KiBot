@@ -1070,6 +1070,10 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `position` output.
       * Valid keys:
+        - `columns`: [list(dict)|list(string)] which columns are included in the output.
+          * Valid keys:
+            - `id`: [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name.
+            - `name`: [string=''] Name to use in the outut file. The id is used when empty.
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `format`: [string='ASCII'] [ASCII,CSV] format for the position file.

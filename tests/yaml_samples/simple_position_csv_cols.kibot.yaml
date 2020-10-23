@@ -1,0 +1,20 @@
+# Example KiBot config file for a basic 2-layer board
+kibot:
+  version: 1
+
+outputs:
+
+  - name: 'position'
+    type: position
+    dir: positiondir
+    options:
+      format: CSV   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: true
+      only_smd: true
+      columns:
+        - "Ref"
+        - id: Val
+          name: Value
+        - id: PosX
+          name: "Center X"

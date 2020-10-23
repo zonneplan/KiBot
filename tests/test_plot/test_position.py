@@ -119,6 +119,17 @@ def test_3Rs_position_csv():
     ctx.clean_up()
 
 
+def test_position_csv_cols():
+    ctx = context.TestContext('test_position_csv_cols', '3Rs', 'simple_position_csv_cols', POS_DIR)
+    ctx.run()
+    pos_top = ctx.get_pos_top_csv_filename()
+    pos_bot = ctx.get_pos_bot_csv_filename()
+    ctx.expect_out_file(pos_top)
+    ctx.expect_out_file(pos_bot)
+    assert ctx.search_in_file(pos_top, ["Ref,Value,Center X"]) is not None
+    ctx.clean_up()
+
+
 def test_3Rs_position_unified_csv():
     """ Also test the quiet mode """
     ctx = context.TestContext('3Rs_position_unified_csv', '3Rs', 'simple_position_unified_csv', POS_DIR)

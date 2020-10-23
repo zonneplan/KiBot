@@ -8,13 +8,33 @@
 import operator
 from datetime import datetime
 from pcbnew import IU_PER_MM, IU_PER_MILS
+from collections import OrderedDict
 from .gs import GS
 from .misc import UI_SMD, UI_VIRTUAL, KICAD_VERSION_5_99, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES
+from .optionable import Optionable
 from .out_base import VariantOptions
+from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
+
+
+class PosColumns(Optionable):
+    """ Which columns we want and its names """
+    def __init__(self):
+        super().__init__()
+        self._unkown_is_error = True
+        with document:
+            self.id = ''
+            """ [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name """
+            self.name = ''
+            """ Name to use in the outut file. The id is used when empty """
+
+    def config(self):
+        super().config()
+        if not self.id:
+            raise KiPlotConfigurationError("Missing or empty `id` in columns list ({})".format(str(self._tree)))
 
 
 class PositionOptions(VariantOptions):
@@ -30,7 +50,27 @@ class PositionOptions(VariantOptions):
             """ output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
             self.units = 'millimeters'
             """ [millimeters,inches] units used for the positions """
+            self.columns = PosColumns
+            """ [list(dict)|list(string)] which columns are included in the output """
         super().__init__()
+
+    def config(self):
+        super().config()
+        if isinstance(self.columns, type):
+            # Default list of columns
+            self.columns = OrderedDict([('Ref', 'Ref'), ('Val', 'Val'), ('Package', 'Package'), ('PosX', 'PosX'),
+                                        ('PosY', 'PosY'), ('Rot', 'Rot'), ('Side', 'Side')])
+        else:
+            new_columns = OrderedDict()
+            for col in self.columns:
+                if isinstance(col, str):
+                    # Just a string, add to the list of used
+                    new_name = new_col = col
+                else:
+                    new_col = col.id
+                    new_name = col.name if col.name else new_col
+                new_columns[new_col] = new_name
+            self.columns = new_columns
 
     def _do_position_plot_ascii(self, board, output_dir, columns, modulesStr, maxSizes):
         topf = None
@@ -141,8 +181,7 @@ class PositionOptions(VariantOptions):
 
     def run(self, output_dir, board):
         super().run(output_dir, board)
-        columns = ["Ref", "Val", "Package", "PosX", "PosY", "Rot", "Side"]
-        colcount = len(columns)
+        columns = self.columns.values()
         # Note: the parser already checked the units are milimeters or inches
         conv = 1.0
         if self.units == 'millimeters':
@@ -168,24 +207,31 @@ class PositionOptions(VariantOptions):
             # If passed check the position options
             if (self.only_smd and is_pure_smd(m)) or (not self.only_smd and is_not_virtual(m)):
                 center = m.GetCenter()
-                # See PLACE_FILE_EXPORTER::GenPositionData() in
-                # export_footprints_placefile.cpp for C++ version of this.
-                modules.append([
-                    "{}".format(ref),
-                    "{}".format(m.GetValue()),
-                    "{}".format(m.GetFPID().GetLibItemName()),
-                    "{:.4f}".format(center.x * conv),
-                    "{:.4f}".format(-center.y * conv),
-                    "{:.4f}".format(m.GetOrientationDegrees()),
-                    "{}".format("bottom" if m.IsFlipped() else "top")
-                ])
-
+                # KiCad: PLACE_FILE_EXPORTER::GenPositionData() in export_footprints_placefile.cpp
+                row = []
+                for k in self.columns:
+                    if k == 'Ref':
+                        row.append(ref)
+                    elif k == 'Val':
+                        row.append(m.GetValue())
+                    elif k == 'Package':
+                        row.append(str(m.GetFPID().GetLibItemName()))  # pcbnew.UTF8 type
+                    elif k == 'PosX':
+                        row.append("{:.4f}".format(center.x * conv))
+                    elif k == 'PosY':
+                        row.append("{:.4f}".format(-center.y * conv))
+                    elif k == 'Rot':
+                        row.append("{:.4f}".format(m.GetOrientationDegrees()))
+                    elif k == 'Side':
+                        row.append("bottom" if m.IsFlipped() else "top")
+                modules.append(row)
         # Find max width for all columns
-        maxlengths = [0] * colcount
-        for row in range(len(modules)):
-            for col in range(colcount):
-                maxlengths[col] = max(maxlengths[col], len(modules[row][col]))
-
+        maxlengths = []
+        for col, name in enumerate(columns):
+            max_l = len(name)
+            for row in modules:
+                max_l = max(max_l, len(row[col]))
+            maxlengths.append(max_l)
         # Note: the parser already checked the format is ASCII or CSV
         if self.format == 'ASCII':
             self._do_position_plot_ascii(board, output_dir, columns, modules, maxlengths)
