@@ -47,6 +47,7 @@ def test_print_variant_1():
     ctx.run()
     # Check all outputs are there
     fname = prj+'-F_Fab.pdf'
+    ctx.search_err(r'KiCad project file not found', True)
     ctx.expect_out_file(fname)
     ctx.compare_pdf(fname)
     ctx.clean_up()
