@@ -115,7 +115,7 @@ def test_3Rs_position_csv():
     ctx.expect_out_file(pos_bot)
     expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'], csv=True)
     expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'], csv=True)
-    assert ctx.search_err(r"\[36;1mDEBUG:") is not None
+    assert ctx.search_err(r"\[36m.\[1mDEBUG:") is not None
     ctx.clean_up()
 
 
