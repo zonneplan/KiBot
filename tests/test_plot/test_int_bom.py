@@ -1235,7 +1235,7 @@ def test_int_bom_variant_t2if():
     check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
     rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
     check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_int_bom_variant_t2is():
@@ -1245,7 +1245,7 @@ def test_int_bom_variant_t2is():
     rows, header, info = ctx.load_csv('filter_R1.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R1'], ['C1', 'C2'])
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_int_bom_wrong_variant():
@@ -1297,7 +1297,7 @@ def test_int_bom_fil_2():
     rows, header, info = ctx.load_csv('virtual.csv')
     check_kibom_test_netlist(rows, ref_column, 2, None, ['R1-R2', 'C1-C2'])
     ctx.search_err(r".?R3.? component in board, but not in schematic")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_int_bom_variant_t3():

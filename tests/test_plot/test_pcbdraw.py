@@ -110,7 +110,7 @@ def test_pcbdraw_variant_1():
     # components was removed.
     # Expected: R1 and R2 populated
     ctx.compare_image(fname, fuzz='30%')
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_pcbdraw_variant_2():
@@ -122,7 +122,7 @@ def test_pcbdraw_variant_2():
     ctx.expect_out_file(fname)
     # Expected: R1 and R2 populated + C1 manually added
     ctx.compare_image(fname, fuzz='30%')
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_pcbdraw_variant_3():
@@ -134,4 +134,4 @@ def test_pcbdraw_variant_3():
     ctx.expect_out_file(fname)
     ctx.compare_image(fname, fuzz='30%')
     assert ctx.search_err("Ambiguous list of components to show .?none.? vs variant/filter")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)

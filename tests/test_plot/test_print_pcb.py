@@ -50,7 +50,7 @@ def test_print_variant_1():
     ctx.search_err(r'KiCad project file not found', True)
     ctx.expect_out_file(fname)
     ctx.compare_pdf(fname)
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_print_pcb_options():

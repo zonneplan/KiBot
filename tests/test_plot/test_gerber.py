@@ -114,4 +114,4 @@ def test_gerber_variant_1():
     # variant: test        directory: test        components: R1, R3 and C2
     check_layers_exist(ctx, 'test', prj, ALL_LAYERS, '_(test)')
     check_components(ctx, 'test', prj, ['F_Paste', 'F_Adhes'], '_(test)', ['R2'], ['C1', 'R1', 'R3', 'C2'])
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)

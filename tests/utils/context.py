@@ -138,14 +138,14 @@ class TestContext(object):
             self._del_dir_after = True
         logging.info('Output dir: '+self.output_dir)
 
-    def clean_up(self):
+    def clean_up(self, keep_project=False):
         logging.debug('Clean-up')
         if self._del_dir_after:
             logging.debug('Removing dir')
             shutil.rmtree(self.output_dir)
         # We don't have a project, and we don't want one
         pro = os.path.join(self.get_board_dir(), self.board_name+'.pro')
-        if os.path.isfile(pro):
+        if os.path.isfile(pro) and not keep_project:
             os.remove(pro)
         # We don't have a footprint cache, and we don't want one
         fp_cache = os.path.join(self.get_board_dir(), 'fp-info-cache')
