@@ -12,7 +12,16 @@ Handles logging initialization and formating.
 import sys
 import logging
 from io import StringIO
-
+no_colorama = False
+try:
+    from colorama import init as colorama_init, Fore, Back, Style
+except ImportError:  # pragma: no cover
+    no_colorama = True
+# If colorama isn't installed use an ANSI basic replacement
+if no_colorama:
+    from .ansi import Fore, Back, Style
+else:
+    colorama_init()
 # Default domain, base name for the tool
 domain = 'kilog'
 filters = None
@@ -105,17 +114,17 @@ class CustomFormatter(logging.Formatter):
     """Logging Formatter to add colors"""
 
     if sys.stderr.isatty():
-        grey = "\x1b[38;21m"
-        yellow = "\x1b[93;1m"
-        red = "\x1b[91;1m"
-        bold_red = "\x1b[91;21m"
-        cyan = "\x1b[36;1m"
-        reset = "\x1b[0m"
+        white = Fore.WHITE
+        yellow = Fore.YELLOW + Style.BRIGHT
+        red = Fore.RED + Style.BRIGHT
+        red_alarm = Fore.RED + Back.WHITE + Style.BRIGHT
+        cyan = Fore.CYAN + Style.BRIGHT
+        reset = Style.RESET_ALL
     else:
-        grey = ""
+        white = ""
         yellow = ""
         red = ""
-        bold_red = ""
+        red_alarm = ""
         cyan = ""
         reset = ""
     # format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s "
@@ -125,10 +134,10 @@ class CustomFormatter(logging.Formatter):
 
     FORMATS = {
         logging.DEBUG: cyan + format + reset,
-        logging.INFO: grey + format_simple + reset,
+        logging.INFO: white + format_simple + reset,
         logging.WARNING: yellow + format + reset,
         logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset
+        logging.CRITICAL: red_alarm + format + reset
     }
 
     def format(self, record):
