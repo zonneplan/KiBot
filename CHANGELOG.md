@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - KiBom variants when using multiple variants and a components used more
   than one, specifying oposite rules.
+- Problems when using the `pdf_pcb_print` output and variants to remove
+  a component with ridiculous pads that only has solder paste (no
+  copper, nor even solder mask aperture).
+
 
 ## [0.7.0] - 2020-09-11
 ### Added

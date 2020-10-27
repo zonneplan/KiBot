@@ -1,0 +1,17 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+variants:
+  - name: 'default'
+    comment: 'Default variant'
+    type: ibom
+    variants_blacklist: DNF
+
+outputs:
+  - name: 'pdf_default'
+    comment: "PCB print w/variant"
+    type: pdf_pcb_print
+    options:
+      variant: default
+    layers: F.Fab

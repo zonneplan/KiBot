@@ -61,3 +61,14 @@ def test_print_pcb_options():
     ctx.expect_out_file(PDF_FILE)
     ctx.compare_pdf(PDF_FILE)
     ctx.clean_up()
+
+
+def test_print_wrong_paste():
+    prj = 'wrong_paste'
+    ctx = context.TestContext('print_wrong_paste', prj, 'wrong_paste', PDF_DIR)
+    ctx.run()
+    # Check all outputs are there
+    fname = prj+'-F_Fab.pdf'
+    ctx.expect_out_file(fname)
+    ctx.search_err(r'Pad with solder paste, but no copper')
+    ctx.clean_up()

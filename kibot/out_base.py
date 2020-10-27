@@ -5,7 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
 from .kiplot import load_sch
-from .misc import Rect, KICAD_VERSION_5_99
+from .misc import Rect, KICAD_VERSION_5_99, W_WRONGPASTE
 if GS.kicad_version_n >= KICAD_VERSION_5_99:
     # New name, no alias ...
     from pcbnew import FP_SHAPE, wxPoint, LSET
@@ -190,14 +190,18 @@ class VariantOptions(BaseOptions):
     def remove_paste_and_glue(self, board, comps_hash):
         """ Remove from solder paste layers the filtered components. """
         exclude = LSET()
-        exclude.addLayer(board.GetLayerID('F.Paste'))
-        exclude.addLayer(board.GetLayerID('B.Paste'))
+        fpaste = board.GetLayerID('F.Paste')
+        bpaste = board.GetLayerID('B.Paste')
+        exclude.addLayer(fpaste)
+        exclude.addLayer(bpaste)
         old_layers = []
         fadhes = board.GetLayerID('F.Adhes')
         badhes = board.GetLayerID('B.Adhes')
         old_fadhes = []
         old_badhes = []
         rescue = board.GetLayerID('Rescue')
+        fmask = board.GetLayerID('F.Mask')
+        bmask = board.GetLayerID('B.Mask')
         for m in board.GetModules():
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
@@ -206,8 +210,14 @@ class VariantOptions(BaseOptions):
                 old_c_layers = []
                 for p in m.Pads():
                     pad_layers = p.GetLayerSet()
+                    is_front = fpaste in pad_layers.Seq()
                     old_c_layers.append(pad_layers.FmtHex())
                     pad_layers.removeLayerSet(exclude)
+                    if len(pad_layers.Seq()) == 0:
+                        # No layers at all. Ridiculous, but happends.
+                        # At least add an F.Mask
+                        pad_layers.addLayer(fmask if is_front else bmask)
+                        logger.warning(W_WRONGPASTE+'Pad with solder paste, but no copper or solder mask aperture in '+ref)
                     p.SetLayerSet(pad_layers)
                 old_layers.append(old_c_layers)
                 # Remove any graphical item in the *.Adhes layers
