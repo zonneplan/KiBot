@@ -19,7 +19,7 @@ except ImportError:  # pragma: no cover
     no_colorama = True
 # If colorama isn't installed use an ANSI basic replacement
 if no_colorama:
-    from .ansi import Fore, Back, Style
+    from .ansi import Fore, Back, Style  # noqa: F811
 else:
     colorama_init()
 # Default domain, base name for the tool
