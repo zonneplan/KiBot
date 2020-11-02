@@ -67,6 +67,7 @@ class AnyDrill(BaseOptions):
                          'pdf': PLOT_FORMAT_PDF
                         }
         self._map_ext = {'hpgl': 'plt', 'ps': 'ps', 'gerber': 'gbr', 'dxf': 'dxf', 'svg': 'svg', 'pdf': 'pdf'}
+        self._unified_output = False
 
     def config(self):
         super().config()
@@ -103,19 +104,20 @@ class AnyDrill(BaseOptions):
         # We always generate the drill file
         drill_writer.CreateDrillandMapFilesSet(output_dir, True, gen_map)
         # Rename the files
-        for d in ['', 'N']:
+        files = [''] if self._unified_output else ['PTH', 'NPTH']
+        for d in files:
+            kicad_id = '-'+d if d else d
+            kibot_id = d+'_drill' if d else 'drill'
             if self.output:
-                id = 'PTH_drill'
                 if ext == 'drl':
-                    k_file = self.expand_filename(output_dir, '%f-'+d+'PTH.%x', '', ext)
+                    k_file = self.expand_filename(output_dir, '%f'+kicad_id+'.%x', '', ext)
                 else:  # gbr
-                    k_file = self.expand_filename(output_dir, '%f-'+d+'PTH-drl.%x', '', ext)
-                file = self.expand_filename(output_dir, self.output, d+id, ext)
+                    k_file = self.expand_filename(output_dir, '%f'+kicad_id+'-drl.%x', '', ext)
+                file = self.expand_filename(output_dir, self.output, kibot_id, ext)
                 os.rename(k_file, file)
             if gen_map and self.map_output:
-                id = 'PTH_drill_map'
-                k_file = self.expand_filename(output_dir, '%f-'+d+'PTH-drl_map.%x', '', self.map_ext)
-                file = self.expand_filename(output_dir, self.map_output, d+id, self.map_ext)
+                k_file = self.expand_filename(output_dir, '%f'+kicad_id+'-drl_map.%x', '', self.map_ext)
+                file = self.expand_filename(output_dir, self.map_output, kibot_id+'_map', self.map_ext)
                 os.rename(k_file, file)
         # Generate the report
         if self.report:
