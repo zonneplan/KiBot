@@ -32,9 +32,11 @@ class GerberOptions(AnyLayerOptions):
             self.gerber_job_file = GS.def_global_output
             """ name for the gerber job file (%i='job', %x='gbrjob') """
             self.use_gerber_x2_attributes = True
-            """ use the extended X2 format """
+            """ use the extended X2 format (otherwise use X1 formerly RS-274X) """
             self.use_gerber_net_attributes = True
             """ include netlist metadata """
+            self.disable_aperture_macros = False
+            """ disable aperture macros (workaround for buggy CAM software) (KiCad 6) """
         super().__init__()
         self._plot_format = PLOT_FORMAT_GERBER
 
@@ -59,6 +61,8 @@ class GerberOptions(AnyLayerOptions):
         po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
         if GS.kicad_version_n < KICAD_VERSION_5_99:
             po.SetLineWidth(FromMM(self.line_width))
+        else:
+            po.SetDisableGerberMacros(self.disable_aperture_macros)
         setattr(po, 'gerber_job_file', self.gerber_job_file)
 
     def read_vals_from_po(self, po):
@@ -77,9 +81,12 @@ class GerberOptions(AnyLayerOptions):
         self.subtract_mask_from_silk = po.GetSubtractMaskFromSilk()
         # useauxorigin
         self.use_aux_axis_as_origin = po.GetUseAuxOrigin()
-        # linewidth
         if GS.kicad_version_n < KICAD_VERSION_5_99:
+            # linewidth
             self.line_width = ToMM(po.GetLineWidth())
+        else:
+            # disableapertmacros
+            self.disable_aperture_macros = po.GetDisableGerberMacros()
 
 
 @output_class
