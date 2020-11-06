@@ -259,6 +259,8 @@ outputs:
       # [boolean=true] creates a file with information about all the generated gerbers.
       # You can use it in gerbview to load all gerbers at once
       create_gerber_job_file: true
+      # [boolean=false] disable aperture macros (workaround for buggy CAM software) (KiCad 6)
+      disable_aperture_macros: false
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''
@@ -290,7 +292,7 @@ outputs:
       use_aux_axis_as_origin: false
       # [boolean=true] include netlist metadata
       use_gerber_net_attributes: true
-      # [boolean=true] use the extended X2 format
+      # [boolean=true] use the extended X2 format (otherwise use X1 formerly RS-274X)
       use_gerber_x2_attributes: true
       # [boolean=false] use legacy Protel file extensions
       use_protel_extensions: false
