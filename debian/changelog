@@ -1,3 +1,15 @@
+kibot (0.8.0-1) stable; urgency=medium
+
+  * Added: BoM references separator.
+  * Added: More PCB print options.
+  * Added: Filters for KiBot warnings.
+  * Added: Columns customization for .pos files.
+  * Fixed: Variants issues.
+  * Fixed: Problem with bogus pads without solder mask aperture.
+  * Fixed: Problems when generating unified drill files.
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Fri, 06 Nov 2020 13:40:49 -0300
+
 kibot (0.7.0-1) stable; urgency=medium
 
   * Variants and filters support for most outputs.

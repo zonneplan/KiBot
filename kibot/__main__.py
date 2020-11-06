@@ -53,7 +53,7 @@ __license__ = 'GPL v3+'
 __email__ = 'set@ieee.org'
 __url__ = 'https://github.com/INTI-CMNB/KiBot/'
 __status__ = 'stable'
-__version__ = '0.7.0'
+__version__ = '0.8.0'
 
 
 import os

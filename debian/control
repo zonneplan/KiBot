@@ -5,7 +5,7 @@ Maintainer: Salvador Eduardo Tropea <salvador@inti.gob.ar>
 Build-Depends: debhelper (>=11~), dh-python, python3-all
 Standards-Version: 4.1.4
 Homepage: https://github.com/INTI-CMNB/KiBot
-X-Python3-Version: >= 3.4
+X-Python3-Version: >= 3.6
 
 Package: kibot
 Architecture: all

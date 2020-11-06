@@ -32,5 +32,5 @@ setup(name='kibot',
                    ],
       platforms='POSIX',
       license='GPL-3.0',
-      python_requires='>=3.4',
+      python_requires='>=3.6',
       )
