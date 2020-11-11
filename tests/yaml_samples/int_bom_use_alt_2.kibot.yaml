@@ -9,5 +9,6 @@ outputs:
     dir: BoM
     options:
       use_alt: true
+      ref_separator: ;
       merge_blank_fields: false
 

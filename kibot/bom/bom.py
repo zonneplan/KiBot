@@ -198,7 +198,7 @@ class ComponentGroup(object):
         for n in self.components:
             P, N = (n.ref_prefix, _suffix_to_num(n.ref_suffix))
             S.add(P, N)
-        return S.flush(' ')
+        return S.flush(self.cfg.ref_separator)
 
     def update_field(self, field, value, ref=None):
         """ Update a given field, concatenates existing values and informs a collision """
