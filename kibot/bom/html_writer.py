@@ -14,14 +14,18 @@ from struct import unpack
 from .columnlist import ColumnList, BoMError
 from .kibot_logo import KIBOT_LOGO, KIBOT_LOGO_W, KIBOT_LOGO_H
 
-BG_GEN = "#E6FFEE"
-BG_KICAD = "#FFE6B3"
-BG_USER = "#E6F9FF"
-BG_EMPTY = "#FF8080"
-BG_GEN_L = "#F0FFF4"
-BG_KICAD_L = "#FFF0BD"
-BG_USER_L = "#F0FFFF"
-BG_EMPTY_L = "#FF8A8A"
+BG_GEN = "#DCF5E4"
+BG_KICAD = "#F5DCA9"
+BG_USER = "#DCEFF5"
+BG_EMPTY = "#F57676"
+BG_GEN_L = "#E6FFEE"
+BG_KICAD_L = "#FFE6B3"
+BG_USER_L = "#E6F9FF"
+BG_EMPTY_L = "#FF8080"
+BG_GEN_D = "#D2EBDA"
+BG_KICAD_D = "#EBD29F"
+BG_USER_D = "#D2E5EB"
+BG_EMPTY_D = "#EB6C6C"
 HEAD_COLOR_R = "#982020"
 HEAD_COLOR_G = "#009879"
 HEAD_COLOR_B = "#0e4e8e"
@@ -38,6 +42,14 @@ STYLE_COMMON = (" .cell-title { vertical-align: bottom; }\n"
                 " .td-gen1 { text-align: center; background-color: "+BG_GEN_L+";}\n"
                 " .td-kicad1 { text-align: center; background-color: "+BG_KICAD_L+";}\n"
                 " .td-user1 { text-align: center; background-color: "+BG_USER_L+";}\n"
+                " .td-empty0:hover { text-align: center; background-color: "+BG_EMPTY_D+";}\n"
+                " .td-gen0:hover { text-align: center; background-color: "+BG_GEN_D+";}\n"
+                " .td-kicad0:hover { text-align: center; background-color: "+BG_KICAD_D+";}\n"
+                " .td-user0:hover { text-align: center; background-color: "+BG_USER_D+";}\n"
+                " .td-empty1:hover { text-align: center; background-color: "+BG_EMPTY_D+";}\n"
+                " .td-gen1:hover { text-align: center; background-color: "+BG_GEN_D+";}\n"
+                " .td-kicad1:hover { text-align: center; background-color: "+BG_KICAD_D+";}\n"
+                " .td-user1:hover { text-align: center; background-color: "+BG_USER_D+";}\n"
                 " .color-ref { margin: 25px 0; }\n"
                 " .color-ref th { text-align: left }\n"
                 " .color-ref td { padding: 5px 20px; }\n"
@@ -108,7 +120,7 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
         row = group.get_row(headings)
         if link_datasheet != -1:
             datasheet = group.get_field(ColumnList.COL_DATASHEET_L)
-        html.write("  <tr>\n")
+        html.write('  <tr id="{}">\n'.format(i))
         for n, r in enumerate(row):
             # A link to Digi-Key?
             if link_digikey and headings[n] in link_digikey:
@@ -123,6 +135,9 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
                 else:
                     cl = cell_class(headings[n])
                 cl = ' class="td-{}{}"'.format(cl, rc % 2)
+            if headings[n] == ColumnList.COL_REFERENCE_L:
+                for ref in r.split(cfg.ref_separator):
+                    r = '<div id="{}"></div>'.format(ref)+r
             html.write('   <td{}>{}</td>\n'.format(cl, link(r)))
         html.write("  </tr>\n")
         rc += 1

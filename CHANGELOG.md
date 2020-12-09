@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 # [Unreleased]
+### Added
+- Internal BoM HTML: highlight cell when hover.
+- Internal BoM HTML: allow to jump to REF of row number using anchors.
 ### Fixed
 - Internal BoM separator wasn't applied when using `use_alt`
 

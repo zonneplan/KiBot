@@ -534,7 +534,7 @@ class TestContext(object):
                         sh_head['stats'] = stats_entries
             elif cl == 'content-table':
                 # Header
-                m = re.search(r'<tr>\s+((?:<th.*?>(?:.*)</th>\s+)+)</tr>', body, re.MULTILINE)
+                m = re.search(r'<tr[^>]*>\s+((?:<th.*?>(?:.*)</th>\s+)+)</tr>', body, re.MULTILINE)
                 assert m, 'Failed to get table header'
                 h = []
                 head = m.group(1)
@@ -543,10 +543,13 @@ class TestContext(object):
                 headers.append(h)
                 # Rows
                 b = []
-                for row_txt in re.findall(r'<tr>\s+((?:<td.*?>(?:.*)</td>\s+)+)</tr>', body, re.MULTILINE):
+                for row_txt in re.findall(r'<tr[^>]*>\s+((?:<td.*?>(?:.*)</td>\s+)+)</tr>', body, re.MULTILINE):
                     r = []
                     for cell in re.findall(r'<td.*?>(.*?)</td>', row_txt, re.MULTILINE):
-                        r.append(cell)
+                        if '<div' in cell:
+                            r.append(cell.split('>')[-1])
+                        else:
+                            r.append(cell)
                     b.append(r)
                 rows.append(b)
         return rows, headers, sh_head
