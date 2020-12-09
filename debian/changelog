@@ -1,3 +1,11 @@
+kibot (0.8.1-1) stable; urgency=medium
+
+  * Added: Small details to internal BoM HTML output.
+  * Fixed: Internal BoM separator wasn't applied when using `use_alt`
+  * Fixed: Problems loading plug-ins when using `pip`.
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Wed, 09 Dec 2020 12:55:23 -0300
+
 kibot (0.8.0-1) stable; urgency=medium
 
   * Added: BoM references separator.
