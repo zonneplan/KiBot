@@ -56,7 +56,9 @@ def match_syspath(filename):
     If `filename` is not under any directory in `sys.path`, raises `ValueError`.
     """
     absolute_filename = str(pathlib.Path(filename).expanduser().resolve())
-    for root_path in sys.path:
+    # We sort the paths in reverse order of length so a longer path matches
+    # before a shorter one.
+    for root_path in sorted(sys.path, key=len, reverse=True):
         root_path = pathlib.Path(root_path).expanduser().resolve()
         if absolute_filename.startswith(str(root_path)):
             return root_path
