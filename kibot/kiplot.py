@@ -62,6 +62,7 @@ def _import(name, path):
     except ImportError as e:
         trace_dump()
         logger.error('Unable to import plug-ins: '+str(e))
+        logger.error('Make sure you used `--no-compile` if you used pip for installation')
         exit(WRONG_INSTALL)
 
 
