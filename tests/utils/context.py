@@ -56,7 +56,8 @@ else:
     DEF_DWGSU = 'Dwgs_User'
     DEF_ECO1U = 'Eco1_User'
     DEF_ECO2U = 'Eco2_User'
-    if kicad_version == KICAD_VERSION_5_1_7:
+    if kicad_version >= KICAD_VERSION_5_1_7:
+        # 5.1.8 uses the same references as 5.1.7
         REF_DIR = 'tests/reference/5_1_7'
     else:
         REF_DIR = 'tests/reference/5_1_6'
