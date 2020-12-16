@@ -131,18 +131,18 @@ def test_print_sch_variant_ni_2():
     ctx.clean_up()
 
 
-def test_sch_missing():
+def test_sch_missing_1():
     """ R1 exists in l1.lib, but the lib isn't specified.
         R2 is bogus, completely missing """
     prj = 'missing'
-    ctx = context.TestContextSCH('test_sch_missing', prj, 'sch_no_inductors_1', PDF_DIR)
+    ctx = context.TestContextSCH('test_sch_missing_1', prj, 'sch_no_inductors_1', PDF_DIR)
     ctx.run()
     o_name = os.path.join(NI_DIR, prj+'.sch')
     ctx.expect_out_file(o_name)
     ctx.search_err("Component .?Resistor.? doesn't specify its library")
     ctx.search_err("Missing component .?l1:FooBar.?")
     ctx.search_err("Missing component(.*)Resistor", invert=True)
-    ctx.search_err(r"Found 2 unique warning/s \(3 total\)")
+    ctx.search_err(r"Found 3 unique warning/s \(4 total\)")
     ctx.clean_up()
 
 
@@ -150,14 +150,14 @@ def test_sch_missing_filtered():
     """ R1 exists in l1.lib, but the lib isn't specified.
         R2 is bogus, completely missing """
     prj = 'missing'
-    ctx = context.TestContextSCH('test_sch_missing', prj, 'sch_no_inductors_1_filtered', PDF_DIR)
+    ctx = context.TestContextSCH('test_sch_missing_filtered', prj, 'sch_no_inductors_1_filtered', PDF_DIR)
     ctx.run()
     o_name = os.path.join(NI_DIR, prj+'.sch')
     ctx.expect_out_file(o_name)
     ctx.search_err("Component .?Resistor.? doesn't specify its library")
     ctx.search_err("Missing component .?l1:FooBar.?", invert=True)
     ctx.search_err("Missing component(.*)Resistor", invert=True)
-    ctx.search_err(r"Found 1 unique warning/s \(3 total, 2 filtered\)")
+    ctx.search_err(r"Found 2 unique warning/s \(4 total, 2 filtered\)")
     ctx.clean_up()
 
 

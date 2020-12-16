@@ -61,8 +61,9 @@ def test_sch_errors_l3():
     setup_ctx('l3', 'Malformed component field')
 
 
-def test_sch_errors_l4():
-    setup_ctx('l4', 'Missing component field name')
+# Now we support it:
+# def test_sch_errors_l4():
+#     setup_ctx('l4', 'Missing component field name')
 
 
 def test_sch_errors_l5():

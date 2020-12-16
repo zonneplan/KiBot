@@ -28,6 +28,8 @@ F0 "#SYM_CAUTION" 0 150 50 H I C CNN
 F1 "SYM_CAUTION" 0 -175 50 H I C CNN
 F2 "Tedy:Symbol_Caution_Type2_FSilkS_Small" 100 -250 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
+# No field name, KiCad assigns Field4
+F4 "Hi!" 0 0 50 H I C CNN
 DRAW
 A 0 35 16 1616 184 0 0 0 N -15 40 15 40
 C 0 -46 10 0 0 0 F

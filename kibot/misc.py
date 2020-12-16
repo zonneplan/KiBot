@@ -156,6 +156,7 @@ W_MISSDCM = '(W042) '
 W_MISSCMP = '(W043) '
 W_VARSCH = '(W044) '
 W_WRONGPASTE = '(W045) '
+W_MISFLDNAME = '(W046) '
 
 
 class Rect(object):

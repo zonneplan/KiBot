@@ -16,7 +16,7 @@ from .config import KiConf, un_quote
 from ..gs import GS
 from ..misc import (W_BADPOLI, W_POLICOORDS, W_BADSQUARE, W_BADCIRCLE, W_BADARC, W_BADTEXT, W_BADPIN, W_BADCOMP, W_BADDRAW,
                     W_UNKDCM, W_UNKAR, W_ARNOPATH, W_ARNOREF, W_MISCFLD, W_EXTRASPC, W_NOLIB, W_INCPOS, W_NOANNO, W_MISSLIB,
-                    W_MISSDCM, W_MISSCMP)
+                    W_MISSDCM, W_MISSCMP, W_MISFLDNAME)
 from .. import log
 
 logger = log.get_logger(__name__)
@@ -139,8 +139,11 @@ class LibComponentField(object):
             field.name = gs[9][1:-1]
         else:
             if field.number > 3:
-                raise SchLibError('Missing component field name', line, f)
-            field.name = ['Reference', 'Value', 'Footprint', 'Datasheet'][field.number]
+                logger.warning(W_MISFLDNAME + 'Missing component field name ({} line {})'.format(lib_name, f.line))
+                # KiCad falls-back to `FieldN`
+                field.name = 'Field'+str(field.number)
+            else:
+                field.name = ['Reference', 'Value', 'Footprint', 'Datasheet'][field.number]
         return field
 
     def write(self, f):
