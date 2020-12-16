@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- iBoM output: file name patterns are allowed for the `netlist_file` option.
+- File name patterns: %F is the name of the source file without extension, but
+  with the path.
 
 ## [0.8.1] - 2020-12-09
 ### Added

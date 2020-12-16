@@ -54,7 +54,7 @@ class IBoMOptions(VariantOptions):
             self.sort_order = 'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'
             """ Default sort order for components. Must contain '~' once """
             self.netlist_file = ''
-            """ Path to netlist or xml file """
+            """ Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name """
             self.extra_fields = ''
             """ Comma separated list of extra fields to pull from netlist or xml file """
             self.normalize_field_case = False
@@ -84,6 +84,10 @@ class IBoMOptions(VariantOptions):
         super().__init__()
         self.add_to_doc('variant', WARNING_MIX)
         self.add_to_doc('dnf_filter', WARNING_MIX)
+
+    def config(self):
+        super().config()
+        self.netlist_file = self.expand_filename('', self.netlist_file, 'ibom', 'xml')
 
     def run(self, output_dir, board):
         super().run(output_dir, board)

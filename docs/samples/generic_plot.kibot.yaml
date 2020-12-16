@@ -399,7 +399,7 @@ outputs:
       # Extension .html will be added automatically.
       # Note that this name is used only when output is ''
       name_format: 'ibom'
-      # [string=''] Path to netlist or xml file
+      # [string=''] Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name
       netlist_file: ''
       # [boolean=false] Do not blacklist virtual components.
       # IBoM option, avoid using in conjunction with KiBot variants/filters

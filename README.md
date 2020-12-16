@@ -192,6 +192,7 @@ You can always choose the file name for a particular output.
 The pattern uses the following expansions:
 
 - **%f** original pcb/sch file name without extension.
+- **%F** original pcb/sch file name without extension. Including the directory part of the name.
 - **%p** pcb/sch title from pcb metadata.
 - **%c** company from pcb/sch metadata.
 - **%r** revision from pcb/sch metadata.
@@ -820,7 +821,7 @@ Next time you need this list just use an alias, like this:
                          %T : bom generation time.
                          Extension .html will be added automatically.
                          Note that this name is used only when output is ''.
-        - `netlist_file`: [string=''] Path to netlist or xml file.
+        - `netlist_file`: [string=''] Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
         - `no_blacklist_virtual`: [boolean=false] Do not blacklist virtual components.
                                   IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
