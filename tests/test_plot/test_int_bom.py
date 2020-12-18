@@ -60,6 +60,7 @@ REF_COLUMN_NAME_R = 'Referencias'
 QTY_COLUMN_NAME = 'Quantity Per PCB'
 COMP_COLUMN_NAME = 'Row'
 COMP_COLUMN_NAME_R = 'Renglón'
+VALUE_COLUMN_NAME = 'Value'
 DATASHEET_COLUMN_NAME = 'Datasheet'
 KIBOM_TEST_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
                    DATASHEET_COLUMN_NAME, 'Config']
@@ -1197,17 +1198,31 @@ def test_int_bom_variant_t1():
     ctx.clean_up()
 
 
-def test_int_bom_variant_t2():
+def check_value(rows, r_col, ref, v_col, val):
+    for r in rows:
+        refs = r[r_col].split(' ')
+        if ref in refs:
+            assert r[v_col] == val
+            logging.debug(ref+'='+val+' OK')
+            return
+    assert False, "Failed to find "+ref
+
+
+def test_int_bom_variant_t2b():
     prj = 'kibom-variant_2'
-    ctx = context.TestContextSCH('test_int_bom_variant_t2', prj, 'int_bom_var_t2_csv', BOM_DIR)
+    ctx = context.TestContextSCH('test_int_bom_variant_t2b', prj, 'int_bom_var_t2_csv', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
+    val_column = header.index(VALUE_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    check_value(rows, ref_column, 'R1', val_column, '1k')
     rows, header, info = ctx.load_csv(prj+'-bom_(production).csv')
     check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
+    check_value(rows, ref_column, 'R1', val_column, '1k')
     rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
     check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+    check_value(rows, ref_column, 'R1', val_column, '3k3')
     ctx.clean_up()
 
 

@@ -821,6 +821,15 @@ class SchematicComponent(object):
             return self.dfields[field].value
         return ''
 
+    def set_field(self, field, value):
+        """ Change the value for an existing field """
+        if field in self.dfields:
+            target = self.dfields[field]
+            target.value = value
+            # Adjust special fields
+            if target.number < 4:
+                self._solve_fields(LineReader(None, '**Internal**'))
+
     # def get_field_names(self):
     #     return [f.name for f in self.fields]
 

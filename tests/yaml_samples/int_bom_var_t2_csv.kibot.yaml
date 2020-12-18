@@ -14,6 +14,8 @@ variants:
     type: kibom
     file_id: '_(test)'
     variant: test
+    field_changer: true
+    field_variant_separator: ':'
 
 outputs:
   - name: 'bom_internal'
