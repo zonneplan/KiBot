@@ -1244,7 +1244,6 @@ def test_int_bom_variant_rename_1():
     ctx.run(extra_debug=True)
     rows, header, info = ctx.load_csv(prj+'-bom_(PROD).csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    val_column = header.index(VALUE_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 2, ['R2', 'D2'], ['R1', 'D1'])
     rows, header, info = ctx.load_csv(prj+'-bom_(DEV).csv')
     check_kibom_test_netlist(rows, ref_column, 3, None, ['R1', 'R2', 'D1', 'D2'])

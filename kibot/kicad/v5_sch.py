@@ -11,6 +11,7 @@ Currently oriented to collect the components for the BoM.
 # Encapsulate file/line
 import re
 import os
+from copy import deepcopy
 from collections import OrderedDict
 from .config import KiConf, un_quote
 from ..gs import GS
@@ -855,6 +856,19 @@ class SchematicComponent(object):
         self.fields.append(field)
         self.dfields[field.name.lower()] = field
 
+    def back_up_fields(self):
+        """ First call makes a back-up of the fields.
+            Next calls restores the back-up. """
+        if self.fields_bkp:
+            # We have a back-up, restore from it
+            self.fields = deepcopy(self.fields_bkp)
+            self.dfields = {f.name.lower(): f for f in self.fields}
+            self._solve_fields(LineReader(None, '**Internal**'))
+        else:
+            # No back-up. Make one for the next reset
+            self.fields_bkp = deepcopy(self.fields)
+            self.dfields_bkp = {f.name.lower(): f for f in self.fields_bkp}
+
     def _solve_ref(self, path):
         """ Look fo the correct reference for this path.
             Returns the default reference if no paths defined.
@@ -966,6 +980,8 @@ class SchematicComponent(object):
         # F field_number "text" orientation posX posY size Flags (see below) hjustify vjustify/italic/bold "name"
         comp.fields = []
         comp.dfields = {}
+        comp.fields_bkp = None
+        comp.dfields_bkp = None
         while line[0] == 'F':
             field = SchematicField.parse(line, f)
             name_lc = field.name.lower()

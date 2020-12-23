@@ -80,6 +80,15 @@ def apply_exclude_filter(comps, filter):
                 c.included = filter.filter(c)
 
 
+def reset_filters(comps):
+    logger.debug('Filters reset')
+    for c in comps:
+        c.included = True
+        c.fitted = True
+        c.fixed = False
+        c.back_up_fields()
+
+
 def apply_fitted_filter(comps, filter):
     if filter:
         logger.debug('Applying filter `{}` to fitted'.format(filter.name))
