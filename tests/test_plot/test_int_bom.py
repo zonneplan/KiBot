@@ -1226,6 +1226,18 @@ def test_int_bom_variant_t2b():
     ctx.clean_up()
 
 
+def test_int_bom_variant_t2c():
+    prj = 'kibom-variant_2'
+    ctx = context.TestContextSCH('test_int_bom_variant_t2c', prj, 'int_bom_var_t2c_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    val_column = header.index(VALUE_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+    check_value(rows, ref_column, 'R1', val_column, '3k3')
+    ctx.clean_up()
+
+
 def test_int_bom_variant_t2s():
     prj = 'kibom-variant_2'
     ctx = context.TestContextSCH('test_int_bom_variant_t2s', prj, 'int_bom_var_t2s_csv', BOM_DIR)

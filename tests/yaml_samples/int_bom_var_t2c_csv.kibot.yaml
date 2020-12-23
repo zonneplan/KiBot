@@ -2,11 +2,6 @@
 kibot:
   version: 1
 
-filters:
-  - name: 'Variant rename'
-    type: var_rename
-    separator: ':'
-
 variants:
   - name: 'production'
     comment: 'Production variant'
@@ -19,7 +14,7 @@ variants:
     type: kibom
     file_id: '_(test)'
     variant: test
-    pre_transform: 'Variant rename'
+    pre_transform: '_var_rename'
 
 outputs:
   - name: 'bom_internal'

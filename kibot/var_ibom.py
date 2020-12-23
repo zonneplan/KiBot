@@ -8,7 +8,7 @@ Implements the IBoM variants mechanism.
 """
 from .optionable import Optionable
 from .gs import GS
-from .misc import IFILL_MECHANICAL
+from .misc import IFILT_MECHANICAL
 from .fil_base import BaseFilter
 from .macros import macros, document, variant_class  # noqa: F401
 from . import log
@@ -48,7 +48,7 @@ class IBoM(BaseVariant):  # noqa: F821
 
     def config(self):
         super().config()
-        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', IFILL_MECHANICAL)
+        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', IFILT_MECHANICAL)
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
         self.variants_blacklist = self._force_list(self.variants_blacklist)
@@ -67,6 +67,7 @@ class IBoM(BaseVariant):  # noqa: F821
         return False
 
     def filter(self, comps):
+        GS.variant = self.variants_whitelist
         super().filter(comps)
         logger.debug("Applying IBoM style variants `{}`".format(self.name))
         # Make black/white lists case insensitive

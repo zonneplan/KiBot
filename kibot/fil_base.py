@@ -4,7 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegFilter, Registrable, RegOutput
-from .misc import IFILL_MECHANICAL
+from .misc import IFILT_MECHANICAL, IFILT_VAR_RENAME
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
 from .macros import macros, document  # noqa: F401
@@ -65,11 +65,11 @@ class NotFilter(Registrable):
         return not self._filter.filter(comp)
 
 
-def reset_filters(comps):
-    for c in comps:
-        c.included = True
-        c.fitted = True
-        c.fixed = False
+def apply_pre_transform(comps, filter):
+    if filter:
+        logger.debug('Applying transform filter `{}`'.format(filter.name))
+        for c in comps:
+            filter.filter(c)
 
 
 def apply_exclude_filter(comps, filter):
@@ -126,6 +126,14 @@ class BaseFilter(RegFilter):
         return o_tree
 
     @staticmethod
+    def _create_var_rename(name):
+        o_tree = {'name': name}
+        o_tree['type'] = 'var_rename'
+        o_tree['comment'] = 'Internal default variant field renamer filter'
+        logger.debug('Creating internal filter: '+str(o_tree))
+        return o_tree
+
+    @staticmethod
     def _create_kibom_dnx(name):
         type = name[7:10]
         if len(name) > 11:
@@ -146,10 +154,12 @@ class BaseFilter(RegFilter):
 
     @staticmethod
     def _create_internal_filter(name):
-        if name == IFILL_MECHANICAL:
+        if name == IFILT_MECHANICAL:
             tree = BaseFilter._create_mechanical(name)
         elif name.startswith('_kibom_dn') and len(name) >= 10:
             tree = BaseFilter._create_kibom_dnx(name)
+        elif name == IFILT_VAR_RENAME:
+            tree = BaseFilter._create_var_rename(name)
         else:
             return None
         filter = RegFilter.get_class_for(tree['type'])()

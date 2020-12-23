@@ -271,7 +271,7 @@ Currently the only type available is `generic`.
 #### Supported filters:
 
 - generic: Generic filter
-        This filter is based on regular exressions.
+        This filter is based on regular expressions.
         It also provides some shortcuts for common situations.
         Note that matches aren't case sensitive and spaces at the beggining and the end are removed.
   * Valid keys:
@@ -312,6 +312,12 @@ Currently the only type available is `generic`.
               Use `dnf_list` for ['dnf', 'dnl', 'dnp', 'do not fit', 'do not load', 'do not place', 'no stuff', 'nofit', 'noload', 'noplace', 'nostuff', 'not fitted', 'not loaded', 'not placed'].
               Use `dnc_list` for ['dnc', 'do not change', 'fixed', 'no change'].
     - `name`: [string=''] Used to identify this particular filter definition.
+- var_rename: Var_Rename
+        This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `name`: [string=''] Used to identify this particular filter definition.
+    - `separator`: [string=':'] Separator used between the variant and the field name.
 
 
 

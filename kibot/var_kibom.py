@@ -8,7 +8,7 @@ Implements the KiBoM variants mechanism.
 """
 from .optionable import Optionable
 from .gs import GS
-from .misc import IFILL_MECHANICAL
+from .misc import IFILT_MECHANICAL
 from .fil_base import BaseFilter
 from .macros import macros, document, variant_class  # noqa: F401
 from . import log
@@ -32,10 +32,6 @@ class KiBoM(BaseVariant):  # noqa: F821
             """ Name of the field used to clasify components """
             self.variant = Optionable
             """ [string|list(string)=''] Board variant(s) """
-            self.field_changer = False
-            """ Enable the VARIANT.FIELD to FIELD rename mechanism """
-            self.field_variant_separator = '.'
-            """ Separator used for the VARIANT.FIELD rename mechanism """
 
     def set_def_filters(self, exclude_filter, dnf_filter, dnc_filter):
         """ Filters delegated to the variant """
@@ -61,7 +57,7 @@ class KiBoM(BaseVariant):  # noqa: F821
         # 3) KiBoM default behavior
         # exclude_filter
         if not self._def_exclude_filter:
-            self._def_exclude_filter = IFILL_MECHANICAL
+            self._def_exclude_filter = IFILT_MECHANICAL
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', self._def_exclude_filter)
         # dnf_filter
         if not self._def_dnf_filter:
@@ -97,21 +93,8 @@ class KiBoM(BaseVariant):  # noqa: F821
         # No match
         return not exclusive
 
-    def _rename_var_fields(self, comp):
-        """ Look for fields containing VARIANT:FIELD used to change fields according to the variant """
-        for variant in self.variant:
-            for name, value in comp.get_user_fields():
-                res = name.strip().split(self.field_variant_separator)
-                if len(res) == 2:
-                    f_variant = res[0].lower()
-                    f_field = res[1].lower()
-                    if f_variant == variant:
-                        if GS.debug_level > 2:
-                            logger.debug('ref: {} value: {} -> {}'.format(comp.ref, comp.get_field_value(f_field), value))
-                        comp.set_field(f_field, value)
-
-
     def filter(self, comps):
+        GS.variant = self.variant
         super().filter(comps)
         logger.debug("Applying KiBoM style variants `{}`".format(self.name))
         for c in comps:
@@ -121,8 +104,6 @@ class KiBoM(BaseVariant):  # noqa: F821
             value = c.value.lower()
             config = c.get_field_value(self.config_field).lower()
             c.fitted = self._variant_comp_is_fitted(value, config)
-            if c.fitted and self.field_changer:
-                self._rename_var_fields(c)
-            elif not c.fitted and GS.debug_level > 2:
+            if not c.fitted and GS.debug_level > 2:
                 logger.debug('ref: {} value: {} config: {} variant: {} -> False'.
                              format(c.ref, value, config, self.variant))

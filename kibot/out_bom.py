@@ -8,6 +8,7 @@ Internal BoM (Bill of Materials) output for KiBot.
 This is somehow compatible with KiBoM.
 """
 import os
+from copy import deepcopy
 from .gs import GS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
@@ -17,7 +18,7 @@ from .macros import macros, document, output_class  # noqa: F401
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
 from .var_kibom import KiBoM
-from .fil_base import BaseFilter, apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, reset_filters
+from .fil_base import BaseFilter, apply_exclude_filter, apply_fitted_filter, apply_fixed_filter
 from . import log
 # To debug the `with document` we can use:
 # from .mcpyrate.debug import macros, step_expansion
@@ -373,8 +374,9 @@ class BoMOptions(BaseOptions):
         # Get the components list from the schematic
         comps = GS.sch.get_components()
         get_board_comps_data(comps)
+        # We work with a copy to avoid changes by filters affecting other outputs
+        comps = deepcopy(comps)
         # Apply all the filters
-        reset_filters(comps)
         apply_exclude_filter(comps, self.exclude_filter)
         apply_fitted_filter(comps, self.dnf_filter)
         apply_fixed_filter(comps, self.dnc_filter)

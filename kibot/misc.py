@@ -72,7 +72,8 @@ AUTO_SCALE = 0
 KICAD_VERSION_5_99 = 5099000
 
 # Internal filter names
-IFILL_MECHANICAL = '_mechanical'
+IFILT_MECHANICAL = '_mechanical'
+IFILT_VAR_RENAME = '_var_rename'
 # KiCad 5 GUI values for the attribute
 UI_THT = 0       # 1 for KiCad 6
 UI_SMD = 1       # 2 for KiCad 6

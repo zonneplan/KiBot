@@ -55,6 +55,8 @@ class GS(object):
     pcb_date = None
     pcb_rev = None
     pcb_comp = None
+    # Current variant/s
+    variant = None
     # Global defaults
     #  This is used as default value for classes supporting "output" option
     def_global_output = '%f-%i%v.%x'

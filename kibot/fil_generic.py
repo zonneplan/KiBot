@@ -28,7 +28,7 @@ class DNFList(Optionable):
 @filter_class
 class Generic(BaseFilter):  # noqa: F821
     """ Generic filter
-        This filter is based on regular exressions.
+        This filter is based on regular expressions.
         It also provides some shortcuts for common situations.
         Note that matches aren't case sensitive and spaces at the beggining and the end are removed """
     def __init__(self):

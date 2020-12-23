@@ -3,6 +3,7 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+from copy import deepcopy
 from .gs import GS
 from .kiplot import load_sch
 from .misc import Rect, KICAD_VERSION_5_99, W_WRONGPASTE
@@ -13,7 +14,7 @@ else:
     from pcbnew import EDGE_MODULE, wxPoint, LSET
 from .registrable import RegOutput
 from .optionable import Optionable, BaseOptions
-from .fil_base import BaseFilter, apply_fitted_filter, reset_filters
+from .fil_base import BaseFilter, apply_fitted_filter
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -259,9 +260,9 @@ class VariantOptions(BaseOptions):
             return
         load_sch()
         # Get the components list from the schematic
-        comps = GS.sch.get_components()
+        # Note: we work with a copy to avoid changes by filters affecting other outputs
+        comps = deepcopy(GS.sch.get_components())
         # Apply the filter
-        reset_filters(comps)
         apply_fitted_filter(comps, self.dnf_filter)
         # Apply the variant
         if self.variant:

@@ -5,7 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegVariant
 from .optionable import Optionable
-from .fil_base import apply_exclude_filter, apply_fitted_filter, apply_fixed_filter
+from .fil_base import apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, BaseFilter, apply_pre_transform
 from .macros import macros, document  # noqa: F401
 
 
@@ -23,6 +23,9 @@ class BaseVariant(RegVariant):
             self.file_id = ''
             """ Text to use as the """
             # * Filters
+            self.pre_transform = Optionable
+            """ [string|list(string)=''] Name of the filter to transform fields before applying other filters.
+                Use '_var_rename' to transform VARIANT:FIELD fields """
             self.exclude_filter = Optionable
             """ [string|list(string)=''] Name of the filter to exclude components from BoM processing.
                 Use '_mechanical' for the default KiBoM behavior """
@@ -33,8 +36,13 @@ class BaseVariant(RegVariant):
             """ [string|list(string)=''] Name of the filter to mark components as 'Do Not Change'.
                 Use '_kibom_dnc' for the default KiBoM behavior """
 
+    def config(self):
+        super().config()
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform')
+
     def filter(self, comps):
         # Apply all the filters
+        apply_pre_transform(comps, self.pre_transform)
         apply_exclude_filter(comps, self.exclude_filter)
         apply_fitted_filter(comps, self.dnf_filter)
         apply_fixed_filter(comps, self.dnc_filter)
