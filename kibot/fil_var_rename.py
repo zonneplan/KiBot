@@ -27,6 +27,8 @@ class Var_Rename(BaseFilter):  # noqa: F821
         with document:
             self.separator = ':'
             """ Separator used between the variant and the field name """
+            self.variant_to_value = False
+            """ Rename fields matching the variant to the value of the component """
 
     def config(self):
         super().config()
@@ -46,5 +48,10 @@ class Var_Rename(BaseFilter):  # noqa: F821
                     f_field = res[1].lower()
                     if f_variant == variant:
                         if GS.debug_level > 2:
-                            logger.debug('ref: {} value: {} -> {}'.format(comp.ref, comp.get_field_value(f_field), value))
+                            logger.debug('ref: {} {}: {} -> {}'.
+                                         format(comp.ref, f_field, comp.get_field_value(f_field), value))
                         comp.set_field(f_field, value)
+                elif self.variant_to_value and name.lower() == variant:
+                    if GS.debug_level > 2:
+                        logger.debug('ref: {} value: {} -> {}'.format(comp.ref, comp.value, value))
+                    comp.set_field('value', value)

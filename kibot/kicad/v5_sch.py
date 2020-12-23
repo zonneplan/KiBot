@@ -821,6 +821,14 @@ class SchematicComponent(object):
             return self.dfields[field].value
         return ''
 
+    def get_free_field_number(self):
+        """ Looks for a field number that isn't currently in use """
+        max_num = -1
+        for f in self.fields:
+            if f.number > max_num:
+                max_num = f.number
+        return max_num+1
+
     def set_field(self, field, value):
         """ Change the value for an existing field """
         if field in self.dfields:
@@ -829,6 +837,12 @@ class SchematicComponent(object):
             # Adjust special fields
             if target.number < 4:
                 self._solve_fields(LineReader(None, '**Internal**'))
+        else:
+            f = SchematicField()
+            f.name = field
+            f.value = value
+            f.number = self.get_free_field_number()
+            self.add_field(f)
 
     # def get_field_names(self):
     #     return [f.name for f in self.fields]

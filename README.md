@@ -318,6 +318,7 @@ Currently the only type available is `generic`.
     - `comment`: [string=''] A comment for documentation purposes.
     - `name`: [string=''] Used to identify this particular filter definition.
     - `separator`: [string=':'] Separator used between the variant and the field name.
+    - `variant_to_value`: [boolean=false] Rename fields matching the variant to the value of the component.
 
 
 
