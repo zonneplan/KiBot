@@ -6,13 +6,8 @@
 """
 Implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
 """
-# from re import compile, IGNORECASE
-# from .optionable import Optionable
-# from .bom.columnlist import ColumnList
 from .gs import GS
-# from .misc import DNF, DNC
 from .macros import macros, document, filter_class  # noqa: F401
-# from .out_base import BoMRegex
 from . import log
 
 logger = log.get_logger(__name__)

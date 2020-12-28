@@ -4,7 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegFilter, Registrable, RegOutput
-from .misc import IFILT_MECHANICAL, IFILT_VAR_RENAME
+from .misc import IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
 from .macros import macros, document  # noqa: F401
@@ -143,6 +143,14 @@ class BaseFilter(RegFilter):
         return o_tree
 
     @staticmethod
+    def _create_rot_footprint(name):
+        o_tree = {'name': name}
+        o_tree['type'] = 'rot_footprint'
+        o_tree['comment'] = 'Internal default footprint rotator'
+        logger.debug('Creating internal filter: '+str(o_tree))
+        return o_tree
+
+    @staticmethod
     def _create_kibom_dnx(name):
         type = name[7:10]
         if len(name) > 11:
@@ -169,6 +177,8 @@ class BaseFilter(RegFilter):
             tree = BaseFilter._create_kibom_dnx(name)
         elif name == IFILT_VAR_RENAME:
             tree = BaseFilter._create_var_rename(name)
+        elif name == IFILT_ROT_FOOTPRINT:
+            tree = BaseFilter._create_rot_footprint(name)
         else:
             return None
         filter = RegFilter.get_class_for(tree['type'])()

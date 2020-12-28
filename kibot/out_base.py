@@ -4,7 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
-from .kiplot import load_sch
+from .kiplot import load_sch, get_board_comps_data
 from .misc import Rect, KICAD_VERSION_5_99, W_WRONGPASTE
 if GS.kicad_version_n >= KICAD_VERSION_5_99:
     # New name, no alias ...
@@ -260,6 +260,7 @@ class VariantOptions(BaseOptions):
         load_sch()
         # Get the components list from the schematic
         comps = GS.sch.get_components()
+        get_board_comps_data(comps)
         # Apply the filter
         reset_filters(comps)
         apply_fitted_filter(comps, self.dnf_filter)

@@ -5,7 +5,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot/pull/10
-import operator
+from re import compile
 from datetime import datetime
 from pcbnew import IU_PER_MM, IU_PER_MILS
 from collections import OrderedDict
@@ -18,6 +18,17 @@ from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
+ref_re = compile(r'([^\d]+)([\?\d]+)')
+
+
+def _ref_key(ref_str):
+    """ Splits a reference intro prefix and suffix.
+        Helps to sort references in a natural way. """
+    m = ref_re.match(ref_str)
+    if not m:
+        return [ref_str]
+    pre, suf = m.groups()
+    return [pre, 0 if suf == '?' else int(suf)]
 
 
 class PosColumns(Optionable):
@@ -155,7 +166,7 @@ class PositionOptions(VariantOptions):
                     fle = topf
                 else:
                     fle = botf
-            fle.write(",".join('"{}"'.format(e) for e in m))
+            fle.write(",".join('{}'.format(e) for e in m))
             fle.write("\n")
 
         if topf is not None:
@@ -181,6 +192,12 @@ class PositionOptions(VariantOptions):
     def is_not_virtual_6(m):
         return not (m.GetAttributes() & MOD_EXCLUDE_FROM_POS_FILES)
 
+    @staticmethod
+    def get_attr_tests():
+        if GS.kicad_version_n < KICAD_VERSION_5_99:
+            return PositionOptions.is_pure_smd_5, PositionOptions.is_not_virtual_5
+        return PositionOptions.is_pure_smd_6, PositionOptions.is_not_virtual_6
+
     def run(self, output_dir, board):
         super().run(output_dir, board)
         columns = self.columns.values()
@@ -193,19 +210,26 @@ class PositionOptions(VariantOptions):
         # Format all strings
         comps_hash = self.get_refs_hash()
         modules = []
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
-            is_pure_smd = self.is_pure_smd_5
-            is_not_virtual = self.is_not_virtual_5
-        else:
-            is_pure_smd = self.is_pure_smd_6
-            is_not_virtual = self.is_not_virtual_6
-        for m in sorted(board.GetModules(), key=operator.methodcaller('GetReference')):
+        is_pure_smd, is_not_virtual = self.get_attr_tests()
+        quote_char = '"' if self.format == 'CSV' else ''
+        for m in sorted(board.GetModules(), key=lambda c: _ref_key(c.GetReference())):
             ref = m.GetReference()
+            value = None
             # Apply any filter or variant data
             if comps_hash:
                 c = comps_hash.get(ref, None)
-                if c and (not c.fitted or not c.included):
-                    continue
+                if c:
+                    if not c.fitted or not c.included:
+                        continue
+                    value = c.value
+                    footprint = c.footprint
+                    is_bottom = c.bottom
+                    rotation = c.footprint_rot
+            if value is None:
+                value = m.GetValue()
+                footprint = str(m.GetFPID().GetLibItemName())  # pcbnew.UTF8 type
+                is_bottom = m.IsFlipped()
+                rotation = m.GetOrientationDegrees()
             # If passed check the position options
             if (self.only_smd and is_pure_smd(m)) or (not self.only_smd and is_not_virtual(m)):
                 center = m.GetCenter()
@@ -213,22 +237,22 @@ class PositionOptions(VariantOptions):
                 row = []
                 for k in self.columns:
                     if k == 'Ref':
-                        row.append(ref)
+                        row.append(quote_char+ref+quote_char)
                     elif k == 'Val':
-                        row.append(m.GetValue())
+                        row.append(quote_char+value+quote_char)
                     elif k == 'Package':
-                        row.append(str(m.GetFPID().GetLibItemName()))  # pcbnew.UTF8 type
+                        row.append(quote_char+footprint+quote_char)
                     elif k == 'PosX':
                         pos_x = center.x * conv
-                        if self.bottom_negative_x and m.IsFlipped():
+                        if self.bottom_negative_x and is_bottom:
                             pos_x = -pos_x
                         row.append("{:.4f}".format(pos_x))
                     elif k == 'PosY':
                         row.append("{:.4f}".format(-center.y * conv))
                     elif k == 'Rot':
-                        row.append("{:.4f}".format(m.GetOrientationDegrees()))
+                        row.append("{:.4f}".format(rotation))
                     elif k == 'Side':
-                        row.append("bottom" if m.IsFlipped() else "top")
+                        row.append("bottom" if is_bottom else "top")
                 modules.append(row)
         # Find max width for all columns
         maxlengths = []

@@ -312,6 +312,17 @@ Currently the only type available is `generic`.
               Use `dnf_list` for ['dnf', 'dnl', 'dnp', 'do not fit', 'do not load', 'do not place', 'no stuff', 'nofit', 'noload', 'noplace', 'nostuff', 'not fitted', 'not loaded', 'not placed'].
               Use `dnc_list` for ['dnc', 'do not change', 'fixed', 'no change'].
     - `name`: [string=''] Used to identify this particular filter definition.
+- rot_footprint: Rot_Footprint
+        This filter can rotate footprints, used for the positions file generation.
+        Some manufacturers use a different rotation than KiCad..
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `extend`: [boolean=true] Extends the internal list of rotations with the one provided.
+                Otherwise just use the provided list.
+    - `name`: [string=''] Used to identify this particular filter definition.
+    - `negative_bottom`: [boolean=true] Rotation for bottom components is computed substracting.
+    - `rotations`: [list(list(string))] A list of pairs regular expression/rotation.
+                   Components matching the regular expression will be rotated the indicated angle.
 - var_rename: Var_Rename
         This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
   * Valid keys:

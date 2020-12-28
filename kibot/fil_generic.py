@@ -124,8 +124,8 @@ class Generic(BaseFilter):  # noqa: F821
                 if GS.debug_level > 1:
                     logger.debug("Including '{ref}': Field '{field}' ({value}) matched '{re}'".format(
                                  ref=c.ref, field=reg.column, value=field_value, re=reg.regex))
-                    # Found a match
-                    return True
+                # Found a match
+                return True
         # Default, could not find a match
         return False
 

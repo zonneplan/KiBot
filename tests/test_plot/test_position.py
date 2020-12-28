@@ -30,7 +30,7 @@ from utils import context
 
 POS_DIR = 'positiondir'
 positions = {'R1': (105, 35, 'top'), 'R2': (110, 35, 'bottom'), 'R3': (110, 45, 'top')}
-CSV_EXPR = r'^"%s",[^,]+,[^,]+,"([-\d\.]+)","([-\d\.]+)","([-\d\.]+)","(\S+)"$'
+CSV_EXPR = r'^"%s",[^,]+,[^,]+,([-\d\.]+),([-\d\.]+),([-\d\.]+),(\S+)$'
 ASCII_EXPR = r'^%s\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$'
 
 
@@ -194,3 +194,25 @@ def test_position_variant_t2i():
     rows, header, info = ctx.load_csv(prj+'-both_pos_(test).csv')
     check_comps(rows, ['C1', 'C2', 'R1', 'R3'])
     ctx.clean_up(keep_project=True)
+
+
+def test_position_rot_1():
+    prj = 'light_control'
+    ctx = context.TestContext('test_position_rot_1', prj, 'simple_position_rot_1', POS_DIR)
+    ctx.run()
+    output = prj+'_cpl_jlc.csv'
+    ctx.expect_out_file(output)
+    ctx.compare_txt(output)
+    ctx.compare_txt(prj+'_bom_jlc.csv')
+    ctx.clean_up()
+
+
+def test_position_rot_2():
+    prj = 'light_control'
+    ctx = context.TestContext('test_position_rot_2', prj, 'simple_position_rot_2', POS_DIR)
+    ctx.run()
+    output = prj+'_cpl_jlc.csv'
+    ctx.expect_out_file(output)
+    ctx.compare_txt(output)
+    ctx.compare_txt(prj+'_bom_jlc.csv')
+    ctx.clean_up()

@@ -200,6 +200,8 @@ def get_board_comps_data(comps):
             logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
             continue
         c = comps_hash[ref]
+        c.bottom = m.IsFlipped()
+        c.footprint_rot = m.GetOrientationDegrees()
         attrs = m.GetAttributes()
         if GS.kicad_version_n < KICAD_VERSION_5_99:
             # KiCad 5

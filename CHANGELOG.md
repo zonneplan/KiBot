@@ -13,13 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A hint for pip installations without using `--no-compile`.
 - Support to field overwrite according to variant.
 - Support to generate negative X positions for the bottom layer.
+
+### Changed
+- Now position files are naturally sorted (R10 after R9, not after R1)
+- Position files in CSV format quotes only the columns that could contain an
+  space. Just like KiCad does.
+
 ### Fixed
 - Now we support missing field names in schematic library entries.
+- Generic filter `include_only` option worked only when debug enabled.
 
 ## [0.8.1] - 2020-12-09
 ### Added
 - Internal BoM HTML: highlight cell when hover.
 - Internal BoM HTML: allow to jump to REF of row number using anchors.
+
 ### Fixed
 - Internal BoM separator wasn't applied when using `use_alt`
 - Problems loading plug-ins when using `pip`.

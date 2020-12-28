@@ -811,6 +811,8 @@ class SchematicComponent(object):
         self.fitted = True
         self.included = True
         self.fixed = False
+        self.bottom = False
+        self.footprint_rot = 0.0
         # KiCad 5 PCB flags (mutually exclusive)
         self.smd = False
         self.virtual = False

@@ -441,7 +441,7 @@ class TestContext(object):
                self.get_out_path(text)+' > '+self.get_out_path(diff)]
         logging.debug('Comparing texts with: '+usable_cmd(cmd))
         res = subprocess.call(cmd)
-        assert res == 0
+        assert res == 0, res
 
     def filter_txt(self, file, pattern, repl):
         fname = self.get_out_path(file)
