@@ -52,6 +52,8 @@ class PositionOptions(VariantOptions):
             """ [millimeters,inches] units used for the positions """
             self.columns = PosColumns
             """ [list(dict)|list(string)] which columns are included in the output """
+            self.bottom_negative_x = False
+            """ use negative X coordinates for footprints on bottom layer """
         super().__init__()
 
     def config(self):
@@ -217,7 +219,10 @@ class PositionOptions(VariantOptions):
                     elif k == 'Package':
                         row.append(str(m.GetFPID().GetLibItemName()))  # pcbnew.UTF8 type
                     elif k == 'PosX':
-                        row.append("{:.4f}".format(center.x * conv))
+                        pos_x = center.x * conv
+                        if self.bottom_negative_x and m.IsFlipped():
+                            pos_x = -pos_x
+                        row.append("{:.4f}".format(pos_x))
                     elif k == 'PosY':
                         row.append("{:.4f}".format(-center.y * conv))
                     elif k == 'Rot':

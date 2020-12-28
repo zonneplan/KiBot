@@ -700,6 +700,8 @@ outputs:
     type: 'position'
     dir: 'Example/position_dir'
     options:
+      # [boolean=false] use negative X coordinates for footprints on bottom layer
+      bottom_negative_x: false
       # [list(dict)|list(string)] which columns are included in the output
       columns:
         # [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name

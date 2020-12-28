@@ -1080,6 +1080,7 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `position` output.
       * Valid keys:
+        - `bottom_negative_x`: [boolean=false] use negative X coordinates for footprints on bottom layer.
         - `columns`: [list(dict)|list(string)] which columns are included in the output.
           * Valid keys:
             - `id`: [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name.

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with the path.
 - A hint for pip installations without using `--no-compile`.
 - Support to field overwrite according to variant.
+- Support to generate negative X positions for the bottom layer.
 ### Fixed
 - Now we support missing field names in schematic library entries.
 

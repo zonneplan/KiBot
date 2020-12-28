@@ -34,7 +34,7 @@ CSV_EXPR = r'^"%s",[^,]+,[^,]+,"([-\d\.]+)","([-\d\.]+)","([-\d\.]+)","(\S+)"$'
 ASCII_EXPR = r'^%s\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$'
 
 
-def expect_position(ctx, file, comp, no_comp=[], inches=False, csv=False):
+def expect_position(ctx, file, comp, no_comp=[], inches=False, csv=False, neg_x=False):
     """
     Check if a list of components are or aren't in the file
     """
@@ -51,6 +51,8 @@ def expect_position(ctx, file, comp, no_comp=[], inches=False, csv=False):
         if inches:
             x = x/25.4
             y = y/25.4
+        if neg_x:
+            x = -x
         matches = res.pop(0)
         assert(abs(float(x) - float(matches[0])) < 0.001)
         assert(abs(float(y) + float(matches[1])) < 0.001)
@@ -76,6 +78,18 @@ def test_3Rs_position_1():
     ctx.expect_out_file(pos_bot)
     expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'])
     expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'])
+    ctx.clean_up()
+
+
+def test_3Rs_position_neg_x():
+    ctx = context.TestContext('3Rs_position_neg_x', '3Rs', 'simple_position_neg_x', POS_DIR)
+    ctx.run()
+    pos_top = ctx.get_pos_top_filename()
+    pos_bot = ctx.get_pos_bot_filename()
+    ctx.expect_out_file(pos_top)
+    ctx.expect_out_file(pos_bot)
+    expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'])
+    expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'], neg_x=True)
     ctx.clean_up()
 
 
