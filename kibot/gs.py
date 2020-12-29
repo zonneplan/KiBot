@@ -44,7 +44,6 @@ class GS(object):
     kicad_version_major = 0
     kicad_version_minor = 0
     kicad_version_patch = 0
-    board_comps_joined = False  # Flag to indicate we already merged data from the board
     # Data from the SCH because it doesn't have a Python API
     sch_title = None
     sch_date = None

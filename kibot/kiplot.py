@@ -189,7 +189,9 @@ def load_sch():
 
 
 def get_board_comps_data(comps):
-    if GS.board_comps_joined or not GS.pcb_file:
+    """ Add information from the PCB to the list of components from the schematic.
+        Note that we do it every time the function is called to reset transformation filters like rot_footprint. """
+    if not GS.pcb_file:
         return
     if not GS.board:
         load_board()
@@ -219,7 +221,6 @@ def get_board_comps_data(comps):
                 c.tht = True
             if attrs & MOD_VIRTUAL == MOD_VIRTUAL:
                 c.virtual = True
-    GS.board_comps_joined = True
 
 
 def preflight_checks(skip_pre):
