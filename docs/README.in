@@ -33,9 +33,10 @@ To learn more about KiBot variants visit the [example repo](https://inti-cmnb.gi
     * [Filters and variants](#filters-and-variants)
 * [Usage](#usage)
 * [Installation](#installation)
-* [Notes about Gerber format](#notes-about-gerber-format)
 * [Usage for CI/CD](#usage-for-cicd)
   * [Github Actions](#usage-of-github-actions)
+* [Notes about Gerber format](#notes-about-gerber-format)
+* [Notes about the position file](#notes-about-the-position-file)
 * [Credits](#credits)
 
 ## Introduction
@@ -607,46 +608,6 @@ kibot --help-outputs > /dev/null
 - Run the script *src/kibot*
 
 
-## Notes about Gerber format
-
-I found this topic poorly documented and quite complex. So here is what I know, feel free to send me any corrections.
-Note that this is a very dynamic topic and this text was written in november 2020.
-
-The gerber format is controlled by [Ucamco](https://www.ucamco.com/en/), a leading manufacturer of equipment and software for PCB fabrication.
-Even when this isn't an open standard they release the spec for free and interact with Jean-Pierre Charras (father of KiCad).
-So KiCad support for gerber format is really updated.
-
-The gerber format evolved with time, here are the versions I know:
-
-* **RS-274D** obsolete version of the format.
-* **RS-274X** (aka **X1**) this is the *extended* version of the format. Is the most widely supported, but has some limitations.
-* **X2** this is the format currently recommended by Ucamco and the default for modern KiCad versions.
-  This extension adds important meta-data to the files. It helps CAM operators to know what's every drawing in the image.
-  So you know which are pads, tracks, etc. And also more interesting information: impedance controlled tracks, the role of each file, etc.
-  Using X2 you can know what is each file without the need of special names or file extensions.
-  KiCad can generate drill files using X2.
-* **X3** this is the current draft. One interesting addition is the *Components* role.
-  These files replaces the position files, adding important information about the footprint.
-
-In addition to them is the spec for the **Gerber Job** file. This file was introduced between X2 and X3, and is used to group all the gerber files.
-The *gbrjob* file contains all the missing stack-up information.
-
-KiCad 5 can generate X1, X2 and gerber job files, including drill information in gerber format.
-KiCad 5.99 (6.0 pre-release) can also generate X3 files (position files in gerber format).
-
-As you can see the idea of Ucamco is to unify all fabrication information in one format.
-
-The **X2** format was designed in a way that software that fully implement **X1** can just ignore the added meta-data.
-In an ideal world you shouldn't bother about it and generate **X2** files. Just use the **gbr** file extension and a *gbrjob* file.
-The problem is with poorly implemented CAM tools. In particular **CAM350**, used by various important cheap China manufacturers.
-This software has known issues interpretating aperture macros and some X2 data.
-If your manufacturer has problems with your files check the following:
-
-* Put gerber, drill and position files in the same directory.
-* Disable **X2** extensions (`use_gerber_x2_attributes` set to `false`)
-* Use arcaic role mechanism (`use_protel_extensions` set to `true`)
-* Disable **aperture macros** (KiCad 6 only: `disable_aperture_macros` set to `true`)
-
 ## Usage for CI/CD
 
 When using a GitHub or GitLab repo you can use KiBot to generate all the needed stuff each time you commit a change to the schematic and/or PCB file.
@@ -698,6 +659,259 @@ jobs:
         name: output
         path: output
 ```
+
+## Notes about Gerber format
+
+I found this topic poorly documented and quite complex. So here is what I know, feel free to send me any corrections.
+Note that this is a very dynamic topic and this text was written in november 2020.
+
+The gerber format is controlled by [Ucamco](https://www.ucamco.com/en/), a leading manufacturer of equipment and software for PCB fabrication.
+Even when this isn't an open standard they release the spec for free and interact with Jean-Pierre Charras (father of KiCad).
+So KiCad support for gerber format is really updated.
+
+The gerber format evolved with time, here are the versions I know:
+
+* **RS-274D** obsolete version of the format.
+* **RS-274X** (aka **X1**) this is the *extended* version of the format. Is the most widely supported, but has some limitations.
+* **X2** this is the format currently recommended by Ucamco and the default for modern KiCad versions.
+  This extension adds important meta-data to the files. It helps CAM operators to know what's every drawing in the image.
+  So you know which are pads, tracks, etc. And also more interesting information: impedance controlled tracks, the role of each file, etc.
+  Using X2 you can know what is each file without the need of special names or file extensions.
+  KiCad can generate drill files using X2.
+* **X3** this is the current draft. One interesting addition is the *Components* role.
+  These files replaces the position files, adding important information about the footprint.
+
+In addition to them is the spec for the **Gerber Job** file. This file was introduced between X2 and X3, and is used to group all the gerber files.
+The *gbrjob* file contains all the missing stack-up information.
+
+KiCad 5 can generate X1, X2 and gerber job files, including drill information in gerber format.
+KiCad 5.99 (6.0 pre-release) can also generate X3 files (position files in gerber format).
+
+As you can see the idea of Ucamco is to unify all fabrication information in one format.
+
+The **X2** format was designed in a way that software that fully implement **X1** can just ignore the added meta-data.
+In an ideal world you shouldn't bother about it and generate **X2** files. Just use the **gbr** file extension and a *gbrjob* file.
+The problem is with poorly implemented CAM tools. In particular **CAM350**, used by various important cheap China manufacturers.
+This software has known issues interpretating aperture macros and some X2 data.
+If your manufacturer has problems with your files check the following:
+
+* Put gerber, drill and position files in the same directory.
+* Disable **X2** extensions (`use_gerber_x2_attributes` set to `false`)
+* Use arcaic role mechanism (`use_protel_extensions` set to `true`)
+* Disable **aperture macros** (KiCad 6 only: `disable_aperture_macros` set to `true`)
+
+
+## Notes about the position file
+
+Position files are quite simple. You can generate them as plain text (ASCII) or as a spreadsheet (CSV).
+
+But some conventions can make them tricky. Some manufacturers, like [JLCPCB](https://jlcpcb.com/), uses conventions that are incompatible with KiCad.
+
+The [following blog](https://dubiouscreations.com/2019/10/21/using-kicad-with-jlcpcb-assembly-service/) explains how to adapt the position files generated by KiCad to what JLCPCB needs.
+To achieve it the author uses a script called [JLCKicadTools](https://github.com/matthewlai/JLCKicadTools).
+
+You can achieve the same using KiBot. Here is a configuration example that generates the BoM and position files in the same way JLCKicadTools does:
+
+```yaml
+kibot:
+  version: 1
+
+filters:
+  - name: only_jlc_parts
+    comment: 'Only parts with JLC code'
+    type: generic
+    include_only:
+      - column: Field4
+        regex: '^C\d+'
+
+variants:
+  - name: default
+    comment: 'Just a place holder for the rotation filter'
+    type: kibom
+    variant: default
+    pre_transform: _rot_footprint
+
+outputs:
+  - name: 'position'
+    comment: "Pick and place file, JLC style"
+    type: position
+    options:
+      variant: default
+      output: '%f_cpl_jlc.%x'
+      format: CSV
+      units: millimeters
+      separate_files_for_front_and_back: false
+      only_smd: true
+      columns:
+        - id: Ref
+          name: Designator
+        - Val
+        - Package
+        - id: PosX
+          name: "Mid X"
+        - id: PosY
+          name: "Mid Y"
+        - id: Rot
+          name: Rotation
+        - id: Side
+          name: Layer
+
+  - name: 'bom'
+    comment: "BoM for JLC"
+    type: bom
+    options:
+      output: '%f_%i_jlc.%x'
+      exclude_filter: 'only_jlc_parts'
+      ref_separator: ','
+      columns:
+        - field: Value
+          name: Comment
+        - field: References
+          name: Designator
+        - Footprint
+        - field: Field4
+          name: 'LCSC Part #'
+      csv:
+        hide_pcb_info: true
+        hide_stats_info: true
+        quote_all: true
+```
+
+The `only_jlc_parts` filter is used to generate the BoM and assumes you put the JLC component code in a field named `Field4`.
+This is what the blog author does, but I suggest using a more descriptive name, like `JLC#` or `LCSC#`.
+
+The `default` variant is used only to apply the `_rot_footprint` transformation filter. This filter is an internal filter of type `rot_footprint`.
+Here is the same configuration file making explicit use of the rotation filter:
+
+```yaml
+kibot:
+  version: 1
+
+filters:
+  - name: fix_rotation
+    comment: 'Adjust rotation for JLC'
+    type: rot_footprint
+
+  - name: only_jlc_parts
+    comment: 'Only parts with JLC code'
+    type: generic
+    include_only:
+      - column: Field4
+        regex: '^C\d+'
+
+variants:
+  - name: default
+    comment: 'Just a place holder for the rotation filter'
+    type: kibom
+    variant: default
+    pre_transform: fix_rotation
+
+outputs:
+  - name: 'position'
+    comment: "Pick and place file, JLC style"
+    type: position
+    options:
+      variant: default
+      output: '%f_cpl_jlc.%x'
+      format: CSV
+      units: millimeters
+      separate_files_for_front_and_back: false
+      only_smd: true
+      columns:
+        - id: Ref
+          name: Designator
+        - Val
+        - Package
+        - id: PosX
+          name: "Mid X"
+        - id: PosY
+          name: "Mid Y"
+        - id: Rot
+          name: Rotation
+        - id: Side
+          name: Layer
+
+  - name: 'bom'
+    comment: "BoM for JLC"
+    type: bom
+    options:
+      output: '%f_%i_jlc.%x'
+      exclude_filter: 'only_jlc_parts'
+      ref_separator: ','
+      columns:
+        - field: Value
+          name: Comment
+        - field: References
+          name: Designator
+        - Footprint
+        - field: Field4
+          name: 'LCSC Part #'
+      csv:
+        hide_pcb_info: true
+        hide_stats_info: true
+        quote_all: true
+```
+
+As you can see we now create a filter named `fix_rotation` of type `rot_footprint`:
+
+```yaml
+  - name: fix_rotation
+    comment: 'Adjust rotation for JLC'
+    type: rot_footprint
+```
+
+Using it, instead of the internal filter named `_rot_footprint`, is the same here. But you can then customize the filter.
+
+The filter supports the following options:
+
+- `extend`: [boolean=true] Extends the internal list of rotations with the one provided. Otherwise just use the provided list.
+- `negative_bottom`: [boolean=true] Rotation for bottom components is computed substracting. Note that this should be coherent with the `bottom_negative_x` of the position output.
+- `rotations`: [list(list(string))] A list of pairs regular expression/rotation. Components matching the regular expression will be rotated the indicated angle.
+
+In order to add a new rotation or just change an existing one you just need to use the `rotations` option.
+As an example: the internal list of rotations rotates QFN packages by 270 degrees, no suppose you want to rotate them just 90 degrees.
+The filter will look like this:
+
+```yaml
+  - name: fix_rotation
+    comment: 'Adjust rotation for JLC'
+    type: rot_footprint
+    rotations:
+      - ["^QFN-", 90.0]
+```
+
+This regular expression will match any footprint starting with `QFN-` and rotate it 90 degrees.
+
+The internal list of rotations is:
+
+| Footprint                                         | Rotation |
+| :------------------------------------------------ | :------: |
+|^Bosch_LGA-8_2x2.5mm_P0.65mm_ClockwisePinNumbering |   90.0   |
+|^R_Array_Convex_                                   |   90.0   |
+|^R_Array_Concave_                                  |   90.0   |
+|^SOT-223                                           |  180.0   |
+|^SOT-23                                            |  180.0   |
+|^TSOT-23                                           |  180.0   |
+|^SOT-353                                           |  180.0   |
+|^QFN-                                              |  270.0   |
+|^LQFP-                                             |  270.0   |
+|^TQFP-                                             |  270.0   |
+|^SOP-(?!18_)                                       |  270.0   |
+|^TSSOP-                                            |  270.0   |
+|^DFN-                                              |  270.0   |
+|^SOIC-                                             |  270.0   |
+|^VSSOP-10_                                         |  270.0   |
+|^CP_EIA-3216-18_                                   |  180.0   |
+|^CP_EIA-3528-15_AVX-H                              |  180.0   |
+|^CP_EIA-3528-21_Kemet-B                            |  180.0   |
+|^CP_Elec_8x10.5                                    |  180.0   |
+|^CP_Elec_6.3x7.7                                   |  180.0   |
+|^CP_Elec_8x6.7                                     |  180.0   |
+|^CP_Elec_8x10                                      |  180.0   |
+|^(.*?_|V)?QFN-(16|20|24|28|40)(-|_|$)              |  270.0   |
+|^PowerPAK_SO-8_Single                              |  270.0   |
+|^HTSSOP-28-1EP_4.4x9.7mm*                          |  270.0   |
+
 
 ## Credits
 
