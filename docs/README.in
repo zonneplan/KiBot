@@ -884,33 +884,33 @@ This regular expression will match any footprint starting with `QFN-` and rotate
 
 The internal list of rotations is:
 
-| Footprint                                         | Rotation |
-| :------------------------------------------------ | :------: |
-|^Bosch_LGA-8_2x2.5mm_P0.65mm_ClockwisePinNumbering |   90.0   |
-|^R_Array_Convex_                                   |   90.0   |
-|^R_Array_Concave_                                  |   90.0   |
-|^SOT-223                                           |  180.0   |
-|^SOT-23                                            |  180.0   |
-|^TSOT-23                                           |  180.0   |
-|^SOT-353                                           |  180.0   |
-|^QFN-                                              |  270.0   |
-|^LQFP-                                             |  270.0   |
-|^TQFP-                                             |  270.0   |
-|^SOP-(?!18_)                                       |  270.0   |
-|^TSSOP-                                            |  270.0   |
-|^DFN-                                              |  270.0   |
-|^SOIC-                                             |  270.0   |
-|^VSSOP-10_                                         |  270.0   |
-|^CP_EIA-3216-18_                                   |  180.0   |
-|^CP_EIA-3528-15_AVX-H                              |  180.0   |
-|^CP_EIA-3528-21_Kemet-B                            |  180.0   |
-|^CP_Elec_8x10.5                                    |  180.0   |
-|^CP_Elec_6.3x7.7                                   |  180.0   |
-|^CP_Elec_8x6.7                                     |  180.0   |
-|^CP_Elec_8x10                                      |  180.0   |
-|^(.*?_|V)?QFN-(16|20|24|28|40)(-|_|$)              |  270.0   |
-|^PowerPAK_SO-8_Single                              |  270.0   |
-|^HTSSOP-28-1EP_4.4x9.7mm*                          |  270.0   |
+| Footprint                                           | Rotation |
+| :-------------------------------------------------- | -------: |
+|`^Bosch_LGA-8_2x2.5mm_P0.65mm_ClockwisePinNumbering` |   90.0   |
+|`^R_Array_Convex_`                                   |   90.0   |
+|`^R_Array_Concave_`                                  |   90.0   |
+|`^SOT-223`                                           |  180.0   |
+|`^SOT-23`                                            |  180.0   |
+|`^TSOT-23`                                           |  180.0   |
+|`^SOT-353`                                           |  180.0   |
+|`^QFN-`                                              |  270.0   |
+|`^LQFP-`                                             |  270.0   |
+|`^TQFP-`                                             |  270.0   |
+|`^SOP-(?!18_)`                                       |  270.0   |
+|`^TSSOP-`                                            |  270.0   |
+|`^DFN-`                                              |  270.0   |
+|`^SOIC-`                                             |  270.0   |
+|`^VSSOP-10_`                                         |  270.0   |
+|`^CP_EIA-3216-18_`                                   |  180.0   |
+|`^CP_EIA-3528-15_AVX-H`                              |  180.0   |
+|`^CP_EIA-3528-21_Kemet-B`                            |  180.0   |
+|`^CP_Elec_8x10.5`                                    |  180.0   |
+|`^CP_Elec_6.3x7.7`                                   |  180.0   |
+|`^CP_Elec_8x6.7`                                     |  180.0   |
+|`^CP_Elec_8x10`                                      |  180.0   |
+|`^(.*?_\|V)?QFN-(16\|20\|24\|28\|40)(-\|_\|$)`       |  270.0   |
+|`^PowerPAK_SO-8_Single`                              |  270.0   |
+|`^HTSSOP-28-1EP_4.4x9.7mm*`                          |  270.0   |
 
 
 ## Credits
