@@ -38,9 +38,12 @@ def check_modules(ctx, fname, expected):
     assert m, text
     lz = LZString()
     js = lz.decompressFromBase64(m.group(1))
+    # with open('/tmp/dump', 'wt') as f:
+    #    f.write(js)
     data = json.loads(js)
     skipped = data['bom']['skipped']
-    modules = [m['ref'] for m in data['modules']]
+    footprints_name = 'modules' if 'modules' in data else 'footprints'
+    modules = [m['ref'] for m in data[footprints_name]]
     assert len(modules)-len(skipped) == len(expected)
     logging.debug("{} components OK".format(len(expected)))
     for m in expected:
