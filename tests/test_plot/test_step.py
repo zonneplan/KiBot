@@ -27,7 +27,10 @@ def test_step_1():
     ctx = context.TestContext('STEP_1', prj, 'step_simple', STEP_DIR)
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file(os.path.join(STEP_DIR, prj+'-3D.step'))
+    name = os.path.join(STEP_DIR, prj+'-3D.step')
+    ctx.expect_out_file(name)
+    # Check the R and C 3D models are there
+    ctx.search_in_file(name, ['R_0805_2012Metric', 'C_0805_2012Metric'])
     ctx.clean_up()
 
 
