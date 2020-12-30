@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support to field overwrite according to variant.
 - Support to generate negative X positions for the bottom layer.
 - A filter to rotate footprints in the position file (#28).
+- The step output now can download missing 3D models.
 
 ### Changed
 - Now position files are naturally sorted (R10 after R9, not after R1)

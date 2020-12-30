@@ -1173,6 +1173,8 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
+        - `download`: [boolean=true] downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+        - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] base URL for the KiCad 3D models.
         - `metric_units`: [boolean=true] use metric units instead of inches.
         - `min_distance`: [number=-1] the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
         - `no_virtual`: [boolean=false] used to exclude 3D models for components with 'virtual' attribute.

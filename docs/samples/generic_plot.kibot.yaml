@@ -800,6 +800,10 @@ outputs:
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''
+      # [boolean=true] downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD
+      download: true
+      # [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] base URL for the KiCad 3D models
+      kicad_3d_url: 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
       # [boolean=true] use metric units instead of inches
       metric_units: true
       # [number=-1] the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm)

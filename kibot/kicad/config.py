@@ -288,3 +288,6 @@ class KiConf(object):
                     KiConf.lib_aliases[alias.name] = alias
         # Load the project's table
         KiConf.load_lib_aliases(os.path.join(KiConf.dirname, SYM_LIB_TABLE))
+
+    def expand_env(name):
+        return os.path.abspath(expand_env(un_quote(name), KiConf.kicad_env))
