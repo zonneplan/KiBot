@@ -3,4 +3,4 @@ kibot:
 
 variants:
   - name: ok
-    type: ''
+    type: 'foobar'

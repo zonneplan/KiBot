@@ -51,17 +51,23 @@ class CfgYamlReader(object):
     def _parse_output(self, o_tree):
         try:
             name = o_tree['name']
+            if not name:
+                raise KeyError
         except KeyError:
             config_error("Output needs a name in: "+str(o_tree))
 
         try:
             otype = o_tree['type']
+            if not otype:
+                raise KeyError
         except KeyError:
             config_error("Output `"+name+"` needs a type")
 
         try:
             comment = o_tree['comment']
         except KeyError:
+            comment = ''
+        if comment is None:
             comment = ''
 
         name_type = "`"+name+"` ("+otype+")"
@@ -99,6 +105,8 @@ class CfgYamlReader(object):
             config_error(kind_f+" needs a name in: "+str(o_tree))
         try:
             otype = o_tree['type']
+            if not otype:
+                raise KeyError
         except KeyError:
             config_error(kind_f+" `"+name+"` needs a type")
         # Is a valid type?

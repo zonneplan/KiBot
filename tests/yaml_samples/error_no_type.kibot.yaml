@@ -5,6 +5,7 @@ outputs:
   - name: PDF
     comment: "PDF files"
     dir: PDF
+    type:
     options:
       exclude_edge_layer: false
       exclude_pads_from_silkscreen: false
