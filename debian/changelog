@@ -1,3 +1,20 @@
+kibot (0.9.0-1) stable; urgency=medium
+
+  * Added: file name patterns are allowed for the `netlist_file` option.
+  * Added: %F is the name of the source file without extension, but
+  with the path.
+  * Added support to field overwrite according to variant.
+  * Added support to generate negative X positions for the bottom layer.
+  * Added a filter to rotate footprints in the position file (#28).
+  * Added: The step output now can download missing 3D models.
+  * Now position files are naturally sorted (R10 after R9, not after R1)
+  * Position files in CSV format quotes only the columns that could contain an
+  space. Just like KiCad does.
+  * Fixed: Now we support missing field names in schematic library entries.
+  * Fixed: Generic filter `include_only` option worked only when debug enabled.
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Mon, 04 Jan 2021 15:27:48 -0300
+
 kibot (0.8.1-1) stable; urgency=medium
 
   * Added: Small details to internal BoM HTML output.
