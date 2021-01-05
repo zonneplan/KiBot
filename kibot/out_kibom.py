@@ -12,6 +12,7 @@ from .kiplot import (check_script)
 from .gs import (GS)
 from .optionable import Optionable, BaseOptions
 from .error import KiPlotConfigurationError
+from .bom.columnlist import ColumnList
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -51,6 +52,8 @@ class KiBoMColumns(Optionable):
             """ Name to display in the header. The field is used when empty """
             self.join = Optionable
             """ [list(string)|string=''] List of fields to join to this column """  # pragma: no cover
+        self._field_example = 'Row'
+        self._name_example = 'Line'
 
     def config(self):
         super().config()
@@ -175,6 +178,8 @@ class KiBoMConfig(Optionable):
     @staticmethod
     def _get_columns():
         """ Create a list of valid columns """
+        if not GS.sch:
+            return ColumnList.COLUMNS_DEFAULT
         check_script(CMD_KIBOM, URL_KIBOM, '1.8.0')
         config = None
         csv = None

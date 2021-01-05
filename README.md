@@ -598,7 +598,7 @@ Next time you need this list just use an alias, like this:
                             The default filter excludes test points, fiducial marks, mounting holes, etc.
         - `fit_field`: [string='Config'] Field name used for internal filters.
         - `format`: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
-                    If empty defaults to CSV or a guess according to the options..
+                    Defaults to CSV or a guess according to the options..
         - `group_connectors`: [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector.
         - `group_fields`: [list(string)] List of fields used for sorting individual components into groups.
                           Components which match (comparing *all* fields) will be grouped together.

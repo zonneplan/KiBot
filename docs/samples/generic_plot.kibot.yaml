@@ -37,11 +37,11 @@ outputs:
       # Can be just the name of the field
       columns:
         # [string=''] Name of the field to use for this column
-        - field: ''
+        - field: 'Row'
           # [list(string)|string=''] List of fields to join to this column
           join: ''
           # [string=''] Name to display in the header. The field is used when empty
-          name: ''
+          name: 'Line'
       # [list(list(string))] A series of values which are considered to be equivalent for the part name.
       # Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
       # will ensure the equivalent capacitor symbols can be grouped together.
@@ -75,8 +75,8 @@ outputs:
       # [string='Config'] Field name used for internal filters
       fit_field: 'Config'
       # [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
-      # If empty defaults to CSV or a guess according to the options.
-      format: ''
+      # Defaults to CSV or a guess according to the options.
+      format: 'CSV'
       # [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector
       group_connectors: true
       # [list(string)] List of fields used for sorting individual components into groups.
@@ -114,7 +114,7 @@ outputs:
       # [list(string)] List of fields where we tolerate conflicts.
       # Use it to avoid undesired warnings.
       # By default the field indicated in `fit_field` and the field `part` are excluded
-      no_conflict:
+      no_conflict: ['Config', 'Part']
       # [boolean=false] When normalizing values use the locale decimal point
       normalize_locale: false
       # [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes
@@ -448,11 +448,11 @@ outputs:
         # Can be just the name of the field
         columns:
           # [string=''] Name of the field to use for this column
-          - field: ''
+          - field: 'Row'
             # [list(string)|string=''] List of fields to join to this column
             join: ''
             # [string=''] Name to display in the header. The field is used when empty
-            name: ''
+            name: 'Line'
         # [list(list(string))] A series of values which are considered to be equivalent for the part name.
         # Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
         # will ensure the equivalent capacitor symbols can be grouped together.
@@ -709,9 +709,9 @@ outputs:
       # [list(dict)|list(string)] which columns are included in the output
       columns:
         # [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name
-        - id: ''
+        - id: 'Ref'
           # [string=''] Name to use in the outut file. The id is used when empty
-          name: ''
+          name: 'Reference'
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''

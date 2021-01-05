@@ -46,6 +46,8 @@ class BoMColumns(Optionable):
             """ Name to display in the header. The field is used when empty """
             self.join = Optionable
             """ [list(string)|string=''] List of fields to join to this column """
+        self._field_example = 'Row'
+        self._name_example = 'Line'
 
     def config(self):
         super().config()
@@ -177,6 +179,13 @@ class GroupFields(Optionable):
         super().__init__()
 
 
+class NoConflict(Optionable):
+    _default = "['Config', 'Part']"
+
+    def __init__(self):
+        super().__init__()
+
+
 class BoMOptions(BaseOptions):
     def __init__(self):
         with document:
@@ -189,7 +198,7 @@ class BoMOptions(BaseOptions):
             """ filename for the output (%i=bom)"""
             self.format = ''
             """ [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
-                If empty defaults to CSV or a guess according to the options. """
+                Defaults to CSV or a guess according to the options. """
             # Equivalent to KiBoM INI:
             self.ignore_dnf = True
             """ Exclude DNF (Do Not Fit) components """
@@ -243,10 +252,11 @@ class BoMOptions(BaseOptions):
                 - ['sw', 'switch']
                 - ['zener', 'zenersmall']
                 - ['d', 'diode', 'd_small'] """
-            self.no_conflict = Optionable
+            self.no_conflict = NoConflict
             """ [list(string)] List of fields where we tolerate conflicts.
                 Use it to avoid undesired warnings.
                 By default the field indicated in `fit_field` and the field `part` are excluded """
+        self._format_example = 'CSV'
         super().__init__()
 
     @staticmethod
@@ -254,6 +264,7 @@ class BoMOptions(BaseOptions):
         """ Create a list of valid columns """
         if GS.sch:
             return GS.sch.get_field_names(ColumnList.COLUMNS_DEFAULT)
+        return ColumnList.COLUMNS_DEFAULT
 
     def _guess_format(self):
         """ Figure out the format """

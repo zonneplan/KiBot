@@ -41,6 +41,8 @@ class PosColumns(Optionable):
             """ [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name """
             self.name = ''
             """ Name to use in the outut file. The id is used when empty """
+        self._id_example = 'Ref'
+        self._name_example = 'Reference'
 
     def config(self):
         super().config()

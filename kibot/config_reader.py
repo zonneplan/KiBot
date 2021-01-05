@@ -355,7 +355,11 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
                             break
                     hl = ' '*i+hl[i:]
                 f.write(ind_str+'# '+hl+'\n')
-        val = getattr(obj, k)
+        example_attr = '_'+k+'_example'
+        if hasattr(obj, example_attr):
+            val = getattr(obj, example_attr)
+        else:
+            val = getattr(obj, k)
         if isinstance(val, str):
             val = "'{}'".format(val)
         elif isinstance(val, bool):
