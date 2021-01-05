@@ -931,9 +931,14 @@ class SchematicComponent(object):
                 field.value = stripped_val
 
     def __str__(self):
+        ref = self.ref
+        # Add the sub-part id
+        # How to know if unit 1 is A?
+        if self.unit > 1:
+            ref += chr(ord('A')+self.unit-1)
         if self.name == self.value:
-            return '{} ({})'.format(self.ref, self.name)
-        return '{} ({} {})'.format(self.ref, self.name, self.value)
+            return '{} ({})'.format(ref, self.name)
+        return '{} ({} {})'.format(ref, self.name, self.value)
 
     @staticmethod
     def load(f, sheet_path, sheet_path_h, libs, fields, fields_lc):
