@@ -391,7 +391,9 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         pres = BasePreFlight.get_registered()
         for n, o in OrderedDict(sorted(pres.items())).items():
             if o.__doc__:
-                f.write('  #'+o.__doc__.rstrip()+'\n')
+                lines = trim(o.__doc__.rstrip()+'.')
+                for ln in lines:
+                    f.write('  # '+ln.rstrip()+'\n')
             f.write('  {}: {}\n'.format(n, o.get_example()))
         # Outputs
         outs = RegOutput.get_registered()
