@@ -1403,6 +1403,11 @@ As `root` just run:
 kibot --help-outputs > /dev/null
 ```
 
+Note that `pip` will automatically install all the needed Python dependencies.
+But it won't install other interesting dependencies.
+In particular you should take a look at the [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/) dependencies.
+If you have a Debian based OS I strongly recommend trying to use the `.deb` packages for all the tools.
+
 ### Notes about virtualenv
 
 If you try to use a Python virtual environment you'll need to find a way to make the KiCad module (`pcbnew`) available on it.
