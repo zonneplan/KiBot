@@ -619,6 +619,9 @@ Next time you need this list just use an alias, like this:
             - `title`: [string='KiBot Bill of Materials'] BoM title.
         - `ignore_dnf`: [boolean=true] Exclude DNF (Do Not Fit) components.
         - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
+        - `no_conflict`: [list(string)] List of fields where we tolerate conflicts.
+                         Use it to avoid undesired warnings.
+                         By default the field indicated in `fit_field` and the field `part` are excluded.
         - `normalize_locale`: [boolean=false] When normalizing values use the locale decimal point.
         - `normalize_values`: [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.
         - `number`: [number=1] Number of boards to build (components multiplier).

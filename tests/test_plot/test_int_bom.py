@@ -1302,6 +1302,7 @@ def test_int_bom_fil_dummy():
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 4, None, ['R1-R2', 'R3-R4', 'R5-R6', 'C1-C2'])
+    ctx.search_err('Field conflict', invert=True)
     ctx.clean_up()
 
 
@@ -1322,6 +1323,7 @@ def test_int_bom_fil_1():
     check_kibom_test_netlist(rows, ref_column, 2, None, ['R1', 'C1-C2'])
     rows, header, info = ctx.load_csv('multi.csv')
     check_kibom_test_netlist(rows, ref_column, 1, None, ['C1-C2'])
+    ctx.search_err('Field conflict')
     ctx.clean_up()
 
 

@@ -10,4 +10,5 @@ outputs:
     options:
       use_alt: true
       exclude_filter: ''
+      no_conflict: ['bb']
 

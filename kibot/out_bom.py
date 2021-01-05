@@ -243,6 +243,10 @@ class BoMOptions(BaseOptions):
                 - ['sw', 'switch']
                 - ['zener', 'zenersmall']
                 - ['d', 'diode', 'd_small'] """
+            self.no_conflict = Optionable
+            """ [list(string)] List of fields where we tolerate conflicts.
+                Use it to avoid undesired warnings.
+                By default the field indicated in `fit_field` and the field `part` are excluded """
         super().__init__()
 
     @staticmethod
@@ -317,6 +321,15 @@ class BoMOptions(BaseOptions):
         self._normalize_variant()
         # Field names are handled in lowercase
         self.fit_field = self.fit_field.lower()
+        # Fields excluded from conflict warnings
+        no_conflict = set()
+        if isinstance(self.no_conflict, type):
+            no_conflict.add(self.fit_field)
+            no_conflict.add('part')
+        else:
+            for field in self.no_conflict:
+                no_conflict.add(field.lower())
+        self.no_conflict = no_conflict
         # Columns
         self.column_rename = {}
         self.join = []

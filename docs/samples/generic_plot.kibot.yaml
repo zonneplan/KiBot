@@ -111,6 +111,10 @@ outputs:
       ignore_dnf: true
       # [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible
       merge_blank_fields: true
+      # [list(string)] List of fields where we tolerate conflicts.
+      # Use it to avoid undesired warnings.
+      # By default the field indicated in `fit_field` and the field `part` are excluded
+      no_conflict:
       # [boolean=false] When normalizing values use the locale decimal point
       normalize_locale: false
       # [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes
