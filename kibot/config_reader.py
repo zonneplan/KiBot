@@ -395,6 +395,10 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         exit(WONT_OVERWRITE)
     with open(fname, 'w') as f:
         logger.info('Creating {} example configuration'.format(fname))
+        f.write("# ATTENTION! THIS ISN'T A FULLY FUNCTIONAL EXAMPLE.\n")
+        f.write("# You should take portions of this example and edit the options to make\n")
+        f.write("# them suitable for your use.\n")
+        f.write("# This file is useful to know all the available options.\n")
         f.write('kibot:\n  version: 1\n')
         # Preflights
         f.write('\npreflight:\n')
