@@ -332,9 +332,10 @@ def print_filters_help():
         print_output_options(n, o, 2)
 
 
-def print_example_options(f, cls, name, indent, po):
+def print_example_options(f, cls, name, indent, po, is_list=False):
     ind_str = indent*' '
     obj = cls()
+    first = True
     if po:
         obj.read_vals_from_po(po)
     for k, v in obj.get_attrs_gen():
@@ -370,9 +371,14 @@ def print_example_options(f, cls, name, indent, po):
                 f.write(ind_str+'{}: {}\n'.format(k, val._default))
             else:
                 f.write(ind_str+'{}:\n'.format(k))
-                print_example_options(f, val, '', indent+2, None)
+                print_example_options(f, val, '', indent+2, None, help and 'list(dict' in help_lines[0])
         else:
+            if is_list and first:
+                k = '- '+k
             f.write(ind_str+'{}: {}\n'.format(k, val))
+            if is_list and first:
+                ind_str += '  '
+                first = False
     return obj
 
 

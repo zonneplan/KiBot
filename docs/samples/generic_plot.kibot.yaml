@@ -37,11 +37,11 @@ outputs:
       # Can be just the name of the field
       columns:
         # [string=''] Name of the field to use for this column
-        field: ''
-        # [list(string)|string=''] List of fields to join to this column
-        join: ''
-        # [string=''] Name to display in the header. The field is used when empty
-        name: ''
+        - field: ''
+          # [list(string)|string=''] List of fields to join to this column
+          join: ''
+          # [string=''] Name to display in the header. The field is used when empty
+          name: ''
       # [list(list(string))] A series of values which are considered to be equivalent for the part name.
       # Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
       # will ensure the equivalent capacitor symbols can be grouped together.
@@ -448,11 +448,11 @@ outputs:
         # Can be just the name of the field
         columns:
           # [string=''] Name of the field to use for this column
-          field: ''
-          # [list(string)|string=''] List of fields to join to this column
-          join: ''
-          # [string=''] Name to display in the header. The field is used when empty
-          name: ''
+          - field: ''
+            # [list(string)|string=''] List of fields to join to this column
+            join: ''
+            # [string=''] Name to display in the header. The field is used when empty
+            name: ''
         # [list(list(string))] A series of values which are considered to be equivalent for the part name.
         # Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
         # will ensure the equivalent capacitor symbols can be grouped together.
@@ -490,11 +490,11 @@ outputs:
         #   regex: 'fiducial'
         exclude_any:
           # [string=''] Name of the column to apply the regular expression
-          column: ''
-          # `field` is an alias for `column`
-          # [string=''] Regular expression to match
-          regex: ''
-          # `regexp` is an alias for `regex`
+          - column: ''
+            # `field` is an alias for `column`
+            # [string=''] Regular expression to match
+            regex: ''
+            # `regexp` is an alias for `regex`
         # [string='Config'] Field name used to determine if a particular part is to be fitted (also DNC and variants)
         fit_field: 'Config'
         # [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector
@@ -518,11 +518,11 @@ outputs:
         # If empty all the components are included
         include_only:
           # [string=''] Name of the column to apply the regular expression
-          column: ''
-          # `field` is an alias for `column`
-          # [string=''] Regular expression to match
-          regex: ''
-          # `regexp` is an alias for `regex`
+          - column: ''
+            # `field` is an alias for `column`
+            # [string=''] Regular expression to match
+            regex: ''
+            # `regexp` is an alias for `regex`
         # [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible
         merge_blank_fields: true
         # [boolean=true] First column is the row number
@@ -709,9 +709,9 @@ outputs:
       # [list(dict)|list(string)] which columns are included in the output
       columns:
         # [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name
-        id: ''
-        # [string=''] Name to use in the outut file. The id is used when empty
-        name: ''
+        - id: ''
+          # [string=''] Name to use in the outut file. The id is used when empty
+          name: ''
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''
