@@ -1403,11 +1403,16 @@ As `root` just run:
 kibot --help-outputs > /dev/null
 ```
 
+### Notes about virtualenv
+
+If you try to use a Python virtual environment you'll need to find a way to make the KiCad module (`pcbnew`) available on it.
+I don't know how to make it.
+
 ### Installation on other targets
 
 - Install KiCad 5.x
 - Install Python 3.5 or newer
-- Install the Python Yaml module
+- Install the Python Yaml and requests modules
 - Run the script *src/kibot*
 
 
