@@ -39,6 +39,7 @@ class GS(object):
     today = n.strftime('%Y-%m-%d')
     time = n.strftime('%H-%M-%S')
     kicad_version = ''
+    kicad_conf_path = None
     # KiCad version: major*1e6+minor*1e3+patch
     kicad_version_n = 0
     kicad_version_major = 0

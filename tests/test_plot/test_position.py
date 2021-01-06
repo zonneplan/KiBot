@@ -149,7 +149,10 @@ def test_3Rs_position_unified_csv():
     ctx = context.TestContext('3Rs_position_unified_csv', '3Rs', 'simple_position_unified_csv', POS_DIR)
     ctx.run(no_verbose=True, extra=['-q'])
     expect_position(ctx, ctx.get_pos_both_csv_filename(), ['R1', 'R2'], ['R3'], csv=True)
-    assert os.path.getsize(ctx.get_out_path('error.txt')) == 0
+    size = os.path.getsize(ctx.get_out_path('error.txt'))
+    # Bug in KiCad: `../src/common/stdpbase.cpp(62): assert "traits" failed in Get(): create wxApp before calling this`
+    # KiCad 5.1.8
+    assert size == 0 or size == 98
     ctx.clean_up()
 
 

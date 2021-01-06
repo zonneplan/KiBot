@@ -58,6 +58,8 @@ __version__ = '0.9.0'
 
 import os
 import sys
+from sys import path as sys_path
+import re
 import gzip
 import locale
 from glob import glob
@@ -67,13 +69,13 @@ from logging import DEBUG
 from . import log
 log.set_domain('kibot')
 logger = log.init()
+from .docopt import docopt
 from .gs import (GS)
-from .kiplot import (generate_outputs, load_actions, config_output)
+from .misc import NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, NO_PCBNEW_MODULE
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help)
-from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB)
-from .docopt import docopt
+from .kiplot import (generate_outputs, load_actions, config_output)
 
 
 def list_pre_and_outs(logger, outputs):
@@ -194,6 +196,31 @@ def set_locale():
         pass
 
 
+def detect_kicad():
+    # Check if we have to run the nightly KiCad build
+    if os.environ.get('KIAUS_USE_NIGHTLY'):
+        # Path to the Python module
+        sys_path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
+    try:
+        import pcbnew
+    except ImportError:
+        logger.error("Failed to import pcbnew Python module."
+                     " Is KiCad installed?"
+                     " Do you need to add it to PYTHONPATH?")
+        sys.exit(NO_PCBNEW_MODULE)
+    GS.kicad_version = pcbnew.GetBuildVersion()
+    m = re.search(r'(\d+)\.(\d+)\.(\d+)', GS.kicad_version)
+    GS.kicad_version_major = int(m.group(1))
+    GS.kicad_version_minor = int(m.group(2))
+    GS.kicad_version_patch = int(m.group(3))
+    GS.kicad_version_n = GS.kicad_version_major*1000000+GS.kicad_version_minor*1000+GS.kicad_version_patch
+    logger.debug('Detected KiCad v{}.{}.{} ({} {})'.format(GS.kicad_version_major, GS.kicad_version_minor,
+                 GS.kicad_version_patch, GS.kicad_version, GS.kicad_version_n))
+    GS.kicad_conf_path = pcbnew.GetKicadConfigPath()
+    if GS.debug_level > 1:
+        logger.debug('Config path {}'.format(GS.kicad_conf_path))
+
+
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -203,6 +230,8 @@ def main():
     log.set_verbosity(logger, args.verbose, args.quiet)
     GS.debug_enabled = logger.getEffectiveLevel() <= DEBUG
     GS.debug_level = args.verbose
+    # Now we have the debug level set we can check (and optionally inform) KiCad info
+    detect_kicad()
 
     # Parse global overwrite options
     for redef in args.global_redef:
