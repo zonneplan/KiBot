@@ -67,7 +67,7 @@ URL_IBOM = 'https://github.com/INTI-CMNB/InteractiveHtmlBom'
 KICAD2STEP = 'kicad2step'
 PCBDRAW = 'pcbdraw'
 URL_PCBDRAW = 'https://github.com/INTI-CMNB/pcbdraw'
-EXAMPLE_CFG = 'example.kibot.yaml'
+EXAMPLE_CFG = 'example_template.kibot.yaml'
 AUTO_SCALE = 0
 KICAD_VERSION_5_99 = 5099000
 

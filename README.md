@@ -1360,7 +1360,7 @@ Options:
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
   -v, --verbose                    Show debugging information
   -V, --version                    Show program's version number and exit
-  -x, --example                    Create an example configuration file.
+  -x, --example                    Create a template configuration file.
 
 ```
 
