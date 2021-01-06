@@ -71,7 +71,7 @@ log.set_domain('kibot')
 logger = log.init()
 from .docopt import docopt
 from .gs import (GS)
-from .misc import NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, NO_PCBNEW_MODULE
+from .misc import NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, NO_PCBNEW_MODULE, KICAD_VERSION_5_99
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help)
@@ -216,9 +216,12 @@ def detect_kicad():
     GS.kicad_version_n = GS.kicad_version_major*1000000+GS.kicad_version_minor*1000+GS.kicad_version_patch
     logger.debug('Detected KiCad v{}.{}.{} ({} {})'.format(GS.kicad_version_major, GS.kicad_version_minor,
                  GS.kicad_version_patch, GS.kicad_version, GS.kicad_version_n))
-    GS.kicad_conf_path = pcbnew.GetKicadConfigPath()
+    if GS.kicad_version_n >= KICAD_VERSION_5_99:
+        GS.kicad_conf_path = pcbnew.SETTINGS_MANAGER.GetUserSettingsPath()
+    else:
+        GS.kicad_conf_path = pcbnew.GetKicadConfigPath()
     if GS.debug_level > 1:
-        logger.debug('Config path {}'.format(GS.kicad_conf_path))
+        logger.debug('KiCad config path {}'.format(GS.kicad_conf_path))
 
 
 def main():
