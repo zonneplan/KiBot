@@ -69,9 +69,11 @@ def kiconf_de_init():
     KiConf.lib_aliases = {}
 
 
-def check_load_conf(caplog, dir='kicad', fail=False, catch_conf_error=False):
+def check_load_conf(caplog, dir='kicad', fail=False, catch_conf_error=False, no_conf_path=False):
     caplog.set_level(logging.DEBUG)
     kiconf_de_init()
+    import pcbnew
+    GS.kicad_conf_path = None if no_conf_path else pcbnew.GetKicadConfigPath()
     cov.load()
     cov.start()
     if catch_conf_error:
@@ -97,7 +99,7 @@ def test_kicad_conf_user(caplog, monkeypatch):
     with monkeypatch.context() as m:
         m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_ok')
         check_load_conf(caplog, dir='kicad_ok')
-    assert 'KICAD_TEMPLATE_DIR="/usr/share/kicad/template"' in caplog.text, caplog.text
+    assert 'KICAD_TEMPLATE_DIR="/usr/share/kicad/template_test"' in caplog.text, caplog.text
 
 
 def test_kicad_conf_xdg(caplog, monkeypatch):
@@ -108,23 +110,19 @@ def test_kicad_conf_xdg(caplog, monkeypatch):
     assert 'KiCad config without EnvironmentVariables section' in caplog.text, caplog.text
 
 
-def test_kicad_conf_miss_home(caplog, monkeypatch):
+def test_kicad_conf_guess_libs(caplog, monkeypatch):
     """ Check no HOME and fail to load kicad_common.
         Also check we correctly guess the libs dir. """
     with monkeypatch.context() as m:
-        m.setenv("HOME", '')
-        check_load_conf(caplog, fail=True)
-    assert '`HOME` not defined' in caplog.text, caplog.text
+        check_load_conf(caplog, fail=True, no_conf_path=True)
     assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/library"' in caplog.text, caplog.text
 
 
 def test_kicad_conf_lib_env(caplog, monkeypatch):
     """ Check we can use KICAD_SYMBOL_DIR as fallback """
     with monkeypatch.context() as m:
-        m.setenv("HOME", '')
         m.setenv("KICAD_SYMBOL_DIR", 'tests')
-        check_load_conf(caplog, fail=True)
-    assert '`HOME` not defined' in caplog.text, caplog.text
+        check_load_conf(caplog, fail=True, no_conf_path=True)
     assert 'Detected KICAD_SYMBOL_DIR="tests"' in caplog.text, caplog.text
 
 
@@ -178,6 +176,5 @@ def test_kicad_conf_no_conf(caplog, monkeypatch):
     """ Test a complete fail to find libs """
     with monkeypatch.context() as m:
         m.setattr("sysconfig.get_path", lambda a, b: '')
-        m.setenv('HOME', '')
-        check_load_conf(caplog, fail=True)
+        check_load_conf(caplog, fail=True, no_conf_path=True)
     assert 'Unable to find KiCad libraries' in caplog.text, caplog.text

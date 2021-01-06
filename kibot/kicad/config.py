@@ -23,7 +23,7 @@ import platform
 import sysconfig
 from ..gs import GS
 from .. import log
-from ..misc import W_NOHOME, W_NOUSER, W_BADSYS, W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB
+from ..misc import W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB
 
 # Check python version to determine which version of ConfirParser to import
 if sys.version_info.major >= 3:
@@ -123,54 +123,11 @@ class KiConf(object):
     def find_kicad_common():
         """ Looks for kicad_common config file.
             Returns its name or None. """
-        # User option has the higher priority
-        user_set = os.environ.get('KICAD_CONFIG_HOME')
-        if user_set:
-            cfg = os.path.join(user_set, KICAD_COMMON)
+        cfg = ''
+        if GS.kicad_conf_path:
+            cfg = os.path.join(GS.kicad_conf_path, KICAD_COMMON)
             if os.path.isfile(cfg):
                 return cfg
-        # XDG option is second
-        xdg_set = os.environ.get('XDG_CONFIG_HOME')
-        if xdg_set:
-            cfg = os.path.join(xdg_set, 'kicad', KICAD_COMMON)
-            if os.path.isfile(cfg):
-                return cfg
-        # Others depends on the OS
-        system = platform.system()
-        if system == 'Linux':
-            # Linux: ~/.config/kicad/
-            home = os.environ.get('HOME')
-            if not home:
-                logger.warning(W_NOHOME + 'Environment variable `HOME` not defined, using `/`')
-                home = '/'
-            cfg = os.path.join(home, '.config', 'kicad', KICAD_COMMON)
-            if os.path.isfile(cfg):
-                return cfg
-        elif system == 'Darwin':  # pragma: no cover
-            # MacOSX: ~/Library/Preferences/kicad/
-            home = os.environ.get('HOME')
-            if not home:
-                logger.warning(W_NOHOME + 'Environment variable `HOME` not defined, using `/`')
-                home = '/'
-            cfg = os.path.join(home, 'Library', 'Preferences', 'kicad', KICAD_COMMON)
-            if os.path.isfile(cfg):
-                return cfg
-        elif system == 'Windows':  # pragma: no cover
-            # Windows: C:\Users\username\AppData\Roaming\kicad
-            #      or  C:\Documents and Settings\username\Application Data\kicad
-            username = os.environ.get('username')
-            if not username:
-                logger.warning(W_NOUSER + 'Unable to determine current user')
-                return None
-            cfg = os.path.join('C:', 'Users', username, 'AppData', 'Roaming', 'kicad', KICAD_COMMON)
-            if os.path.isfile(cfg):
-                return cfg
-            cfg = os.path.join('C:', 'Documents and Settings', username, 'Application Data', 'kicad', KICAD_COMMON)
-            if os.path.isfile(cfg):
-                return cfg
-        else:  # pragma: no cover
-            logger.warning(W_BADSYS + 'Unsupported system `{}`'.format(system))
-            return None
         logger.warning(W_NOCONFIG + 'Unable to find KiCad configuration file ({})'.format(cfg))
         return None
 
