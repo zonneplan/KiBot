@@ -207,7 +207,7 @@ class KiConf(object):
 
     def load_lib_aliases(fname):
         if not os.path.isfile(fname):
-            return
+            return False
         logger.debug('Loading symbols lib table `{}`'.format(fname))
         with open(fname, 'rt') as f:
             line = f.readline().strip()
@@ -226,13 +226,19 @@ class KiConf(object):
                     raise KiConfError('Unknown symbol table entry', SYM_LIB_TABLE, cline, line)
                 line = f.readline()
                 cline += 1
+        return True
 
     def load_all_lib_aliases():
         # Load the default symbol libs table.
         # This is the list of libraries enabled by the user.
+        loaded = False
         if KiConf.config_dir:
-            KiConf.load_lib_aliases(os.path.join(KiConf.config_dir, SYM_LIB_TABLE))
-        else:
+            conf_dir = KiConf.config_dir
+            if 'KICAD_CONFIG_HOME' in KiConf.kicad_env:
+                conf_dir = KiConf.kicad_env['KICAD_CONFIG_HOME']
+                logger.debug('Redirecting symbols lib table to '+conf_dir)
+            loaded = KiConf.load_lib_aliases(os.path.join(conf_dir, SYM_LIB_TABLE))
+        if not loaded:
             logger.warning(W_NODEFSYMLIB + 'Missing default symbol library table')
             # No default symbol libs table, try to create one
             if KiConf.sym_lib_dir:

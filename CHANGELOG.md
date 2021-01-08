@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - The multipart id to references of multipart components others than part 1.
 - Internal BoM: `no_conflict` option to exclude fields from conflict detection.
+- Support for KICAD_CONFIG_HOME defined from inside KiCad
 
 ## [0.9.0] - 2021-01-04
 ### Added
