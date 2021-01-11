@@ -235,6 +235,8 @@ class KiConf(object):
         if KiConf.config_dir:
             conf_dir = KiConf.config_dir
             if 'KICAD_CONFIG_HOME' in KiConf.kicad_env:
+                # KiCad 5 unintentionally allows it, is a bug, and won't be fixed:
+                # https://forum.kicad.info/t/kicad-config-home-inconsistencies-and-detail/26875
                 conf_dir = KiConf.kicad_env['KICAD_CONFIG_HOME']
                 logger.debug('Redirecting symbols lib table to '+conf_dir)
             loaded = KiConf.load_lib_aliases(os.path.join(conf_dir, SYM_LIB_TABLE))

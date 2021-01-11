@@ -198,9 +198,11 @@ def set_locale():
 
 def detect_kicad():
     # Check if we have to run the nightly KiCad build
+    nightly = False
     if os.environ.get('KIAUS_USE_NIGHTLY'):
         # Path to the Python module
         sys_path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
+        nightly = True
     try:
         import pcbnew
     except ImportError:
@@ -217,8 +219,14 @@ def detect_kicad():
     logger.debug('Detected KiCad v{}.{}.{} ({} {})'.format(GS.kicad_version_major, GS.kicad_version_minor,
                  GS.kicad_version_patch, GS.kicad_version, GS.kicad_version_n))
     if GS.kicad_version_n >= KICAD_VERSION_5_99:
-        GS.kicad_conf_path = pcbnew.SETTINGS_MANAGER.GetUserSettingsPath()
+        GS.kicad_conf_path = pcbnew.GetSettingsManager().GetUserSettingsPath()
+        if nightly:
+            # Nightly Debian packages uses `/usr/share/kicad-nightly/kicad-nightly.env` as an environment extension
+            # This script defines KICAD_CONFIG_HOME="$HOME/.config/kicadnightly"
+            # So we just patch it, as we patch the name of the binaries
+            GS.kicad_conf_path = GS.kicad_conf_path.replace('/kicad/', '/kicadnightly/')
     else:
+        logger.debug('Ignore the next message about creating a wxApp, is a KiCad 5 bug (6989)')
         GS.kicad_conf_path = pcbnew.GetKicadConfigPath()
     if GS.debug_level > 1:
         logger.debug('KiCad config path {}'.format(GS.kicad_conf_path))
