@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -108,7 +108,7 @@ def check_script(cmd, url, version=None):
 
 
 def check_eeschema_do():
-    check_script(CMD_EESCHEMA_DO, URL_EESCHEMA_DO, '1.4.0')
+    check_script(CMD_EESCHEMA_DO, URL_EESCHEMA_DO, '1.5.4')
 
 
 def exec_with_retry(cmd):

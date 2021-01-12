@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from sys import (exit)
 from .macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
 from .gs import (GS)
-from .kiplot import check_script, exec_with_retry
+from .optionable import Optionable
+from .kiplot import check_script, exec_with_retry, load_board
 from .misc import (CMD_PCBNEW_RUN_DRC, URL_PCBNEW_RUN_DRC, DRC_ERROR)
 from .log import (get_logger)
 
@@ -16,7 +17,8 @@ logger = get_logger(__name__)
 
 @pre_class
 class Run_DRC(BasePreFlight):  # noqa: F821
-    """ [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB """
+    """ [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+        The report file name is controlled by the global output pattern (%i=drc %x=txt) """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):
@@ -26,7 +28,11 @@ class Run_DRC(BasePreFlight):  # noqa: F821
 
     def run(self):
         check_script(CMD_PCBNEW_RUN_DRC, URL_PCBNEW_RUN_DRC, '1.4.0')
-        cmd = [CMD_PCBNEW_RUN_DRC, 'run_drc']
+        if GS.board is None:
+            load_board()
+        output = Optionable.expand_filename(None, GS.out_dir, GS.def_global_output, 'drc', 'txt')
+        logger.debug('DRC report: '+output)
+        cmd = [CMD_PCBNEW_RUN_DRC, 'run_drc', '-o', output]
         if GS.filter_file:
             cmd.extend(['-f', GS.filter_file])
         if BasePreFlight.get_option('ignore_unconnected'):  # noqa: F821

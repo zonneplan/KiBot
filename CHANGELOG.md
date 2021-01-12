@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal BoM: `no_conflict` option to exclude fields from conflict detection.
 - Support for KICAD_CONFIG_HOME defined from inside KiCad
 
+### Changed
+- Now the default output name applies to the DRC and ERC report names.
+  This provides more coherent file names.
+
+
 ## [0.9.0] - 2021-01-04
 ### Added
 - iBoM output: file name patterns are allowed for the `netlist_file` option.

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """ Base class for output options """
@@ -199,7 +199,7 @@ class Optionable(object):
             name = name.replace('%p', GS.pcb_title)
             name = name.replace('%r', GS.pcb_rev)
             name = name.replace('%T', GS.time)
-            name = name.replace('%v', self._find_variant())
+            name = name.replace('%v', self._find_variant() if self else '')
             name = name.replace('%x', ext)
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')
@@ -221,7 +221,7 @@ class Optionable(object):
             name = name.replace('%p', GS.sch_title)
             name = name.replace('%r', GS.sch_rev)
             name = name.replace('%T', GS.time)
-            name = name.replace('%v', self._find_variant())
+            name = name.replace('%v', self._find_variant() if self else '')
             name = name.replace('%x', ext)
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')

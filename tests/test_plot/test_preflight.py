@@ -23,7 +23,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
-from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR)
+from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB)
 
 
 def test_erc_1():
@@ -31,7 +31,7 @@ def test_erc_1():
     ctx = context.TestContext('ERC', prj, 'erc', '')
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file(prj+'.erc')
+    ctx.expect_out_file(prj+'-erc.txt')
     ctx.clean_up()
 
 
@@ -41,7 +41,7 @@ def test_erc_fail_1():
     ctx = context.TestContext('ERCFail1', prj, 'erc', '')
     ctx.run(ERC_ERROR)
     # Check all outputs are there
-    ctx.expect_out_file(prj+'.erc')
+    ctx.expect_out_file(prj+'-erc.txt')
     ctx.clean_up()
 
 
@@ -58,7 +58,7 @@ def test_drc_1():
     ctx = context.TestContext('DRC', prj, 'drc', '')
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file('drc_result.rpt')
+    ctx.expect_out_file(prj+'-drc.txt')
     ctx.clean_up()
 
 
@@ -67,7 +67,7 @@ def test_drc_filter():
     ctx = context.TestContext('DRC_Filter', prj, 'drc_filter', '')
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file('drc_result.rpt')
+    ctx.expect_out_file(prj+'-drc.txt')
     ctx.expect_out_file('kibot_errors.filter')
     ctx.clean_up()
 
@@ -78,7 +78,7 @@ def test_drc_unco():
     ctx = context.TestContext('DRCUnco', prj, 'drc_unco', '')
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file('drc_result.rpt')
+    ctx.expect_out_file(prj+'-drc.txt')
     ctx.clean_up()
 
 
@@ -88,7 +88,7 @@ def test_drc_error():
     ctx = context.TestContext('DRCError', prj, 'drc', '')
     ctx.run(DRC_ERROR)
     # Check all outputs are there
-    ctx.expect_out_file('drc_result.rpt')
+    ctx.expect_out_file(prj+'-drc.txt')
     ctx.clean_up()
 
 
@@ -96,7 +96,7 @@ def test_drc_fail():
     """ Check we dummy PCB """
     prj = 'bom_no_xml'
     ctx = context.TestContext('DRCFail', prj, 'drc', '')
-    ctx.run(DRC_ERROR)
+    ctx.run(CORRUPTED_PCB)
     ctx.clean_up()
 
 
