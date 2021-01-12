@@ -13,13 +13,13 @@ class ExcellonOptions(AnyDrill):
         super().__init__()
         with document:
             self.metric_units = True
-            """ use metric units instead of inches """
+            """ Use metric units instead of inches """
             self.pth_and_npth_single_file = True
-            """ generate one file for both, plated holes and non-plated holes, instead of two separated files """
+            """ Generate one file for both, plated holes and non-plated holes, instead of two separated files """
             self.minimal_header = False
-            """ use a minimal header in the file """
+            """ Use a minimal header in the file """
             self.mirror_y_axis = False
-            """ invert the Y axis """
+            """ Invert the Y axis """
 
     def _configure_writer(self, board, offset):
         drill_writer = EXCELLON_WRITER(board)

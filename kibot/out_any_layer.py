@@ -24,21 +24,21 @@ class AnyLayerOptions(VariantOptions):
     def __init__(self):
         with document:
             self.exclude_edge_layer = True
-            """ do not include the PCB edge layer """
+            """ Do not include the PCB edge layer """
             self.exclude_pads_from_silkscreen = False
-            """ do not plot the component pads in the silk screen (KiCad 5.x only) """
+            """ Do not plot the component pads in the silk screen (KiCad 5.x only) """
             self.plot_sheet_reference = False
-            """ currently without effect """
+            """ Currently without effect """
             self.plot_footprint_refs = True
-            """ include the footprint references """
+            """ Include the footprint references """
             self.plot_footprint_values = True
-            """ include the footprint values """
+            """ Include the footprint values """
             self.force_plot_invisible_refs_vals = False
-            """ include references and values even when they are marked as invisible """
+            """ Include references and values even when they are marked as invisible """
             self.output = GS.def_global_output
-            """ output file name, the default KiCad name if empty """
+            """ Output file name, the default KiCad name if empty """
             self.tent_vias = True
-            """ cover the vias """
+            """ Cover the vias """
         super().__init__()
 
     def _configure_plot_ctrl(self, po, output_dir):

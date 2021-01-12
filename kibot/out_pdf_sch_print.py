@@ -20,7 +20,7 @@ class PDF_Sch_PrintOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ filename for the output PDF (%i=schematic %x=pdf) """
+            """ Filename for the output PDF (%i=schematic %x=pdf) """
         super().__init__()
         self.add_to_doc('variant', "Not fitted components are crossed")
 

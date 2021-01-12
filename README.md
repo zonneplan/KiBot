@@ -665,18 +665,18 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only).
-        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-        - `metric_units`: [boolean=false] use mm instead of inches.
-        - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
-        - `plot_footprint_refs`: [boolean=true] include the footprint references.
-        - `plot_footprint_values`: [boolean=true] include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] currently without effect.
-        - `polygon_mode`: [boolean=true] plot using the contour, instead of the center line.
-        - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
-        - `tent_vias`: [boolean=true] cover the vias.
-        - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
+        - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
+        - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `metric_units`: [boolean=false] Use mm instead of inches.
+        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `plot_footprint_refs`: [boolean=true] Include the footprint references.
+        - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `polygon_mode`: [boolean=true] Plot using the contour, instead of the center line.
+        - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
+        - `tent_vias`: [boolean=true] Cover the vias.
+        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliar axis as origin for coordinates.
         - `variant`: [string=''] Board variant to apply.
 
 * Excellon drill format
@@ -693,16 +693,16 @@ Next time you need this list just use an alias, like this:
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
-            - `output`: [string='%f-%i%v.%x'] name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
-            - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
-        - `metric_units`: [boolean=true] use metric units instead of inches.
-        - `minimal_header`: [boolean=false] use a minimal header in the file.
-        - `mirror_y_axis`: [boolean=false] invert the Y axis.
+            - `output`: [string='%f-%i%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
+            - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
+        - `metric_units`: [boolean=true] Use metric units instead of inches.
+        - `minimal_header`: [boolean=false] Use a minimal header in the file.
+        - `mirror_y_axis`: [boolean=false] Invert the Y axis.
         - `output`: [string='%f-%i%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
-        - `pth_and_npth_single_file`: [boolean=true] generate one file for both, plated holes and non-plated holes, instead of two separated files.
+        - `pth_and_npth_single_file`: [boolean=true] Generate one file for both, plated holes and non-plated holes, instead of two separated files.
         - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
           * Valid keys:
-            - `filename`: [string=''] name of the drill report. Not generated unless a name is specified.
+            - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
         - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
 
@@ -720,12 +720,12 @@ Next time you need this list just use an alias, like this:
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
-            - `output`: [string='%f-%i%v.%x'] name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
-            - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
+            - `output`: [string='%f-%i%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
+            - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
         - `output`: [string='%f-%i%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
         - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
           * Valid keys:
-            - `filename`: [string=''] name of the drill report. Not generated unless a name is specified.
+            - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
         - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
 
@@ -745,27 +745,27 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `gerber` output.
       * Valid keys:
-        - `create_gerber_job_file`: [boolean=true] creates a file with information about all the generated gerbers.
+        - `create_gerber_job_file`: [boolean=true] Creates a file with information about all the generated gerbers.
                                     You can use it in gerbview to load all gerbers at once.
-        - `disable_aperture_macros`: [boolean=false] disable aperture macros (workaround for buggy CAM software) (KiCad 6).
+        - `disable_aperture_macros`: [boolean=false] Disable aperture macros (workaround for buggy CAM software) (KiCad 6).
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only).
-        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-        - `gerber_job_file`: [string='%f-%i%v.%x'] name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options.
-        - `gerber_precision`: [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6.
-        - `line_width`: [number=0.1] [0.02,2] line_width for objects without width [mm] (KiCad 5).
-        - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
-        - `plot_footprint_refs`: [boolean=true] include the footprint references.
-        - `plot_footprint_values`: [boolean=true] include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] currently without effect.
-        - `subtract_mask_from_silk`: [boolean=false] substract the solder mask from the silk screen.
-        - `tent_vias`: [boolean=true] cover the vias.
-        - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
-        - `use_gerber_net_attributes`: [boolean=true] include netlist metadata.
-        - `use_gerber_x2_attributes`: [boolean=true] use the extended X2 format (otherwise use X1 formerly RS-274X).
-        - `use_protel_extensions`: [boolean=false] use legacy Protel file extensions.
+        - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
+        - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `gerber_job_file`: [string='%f-%i%v.%x'] Name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options.
+        - `gerber_precision`: [number=4.6] This the gerber coordinate format, can be 4.5 or 4.6.
+        - `line_width`: [number=0.1] [0.02,2] Line_width for objects without width [mm] (KiCad 5).
+        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `plot_footprint_refs`: [boolean=true] Include the footprint references.
+        - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `subtract_mask_from_silk`: [boolean=false] Substract the solder mask from the silk screen.
+        - `tent_vias`: [boolean=true] Cover the vias.
+        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliar axis as origin for coordinates.
+        - `use_gerber_net_attributes`: [boolean=true] Include netlist metadata.
+        - `use_gerber_x2_attributes`: [boolean=true] Use the extended X2 format (otherwise use X1 formerly RS-274X).
+        - `use_protel_extensions`: [boolean=false] Use legacy Protel file extensions.
         - `variant`: [string=''] Board variant to apply.
 
 * HPGL (Hewlett & Packard Graphics Language)
@@ -787,20 +787,20 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only).
-        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-        - `mirror_plot`: [boolean=false] plot mirrored.
-        - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
-        - `pen_number`: [number=1] [1,16] pen number.
-        - `pen_speed`: [number=20] [1,99] pen speed.
-        - `pen_width`: [number=15] [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
-        - `plot_footprint_refs`: [boolean=true] include the footprint references.
-        - `plot_footprint_values`: [boolean=true] include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] currently without effect.
-        - `scaling`: [number=0] scale factor (0 means autoscaling).
-        - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
-        - `tent_vias`: [boolean=true] cover the vias.
+        - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
+        - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `mirror_plot`: [boolean=false] Plot mirrored.
+        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `pen_number`: [number=1] [1,16] Pen number.
+        - `pen_speed`: [number=20] [1,99] Pen speed.
+        - `pen_width`: [number=15] [0,100] Pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
+        - `plot_footprint_refs`: [boolean=true] Include the footprint references.
+        - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `scaling`: [number=0] Scale factor (0 means autoscaling).
+        - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
+        - `tent_vias`: [boolean=true] Cover the vias.
         - `variant`: [string=''] Board variant to apply.
 
 * IBoM (Interactive HTML BoM)
@@ -966,19 +966,19 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pcbdraw` output.
       * Valid keys:
-        - `bottom`: [boolean=false] render the bottom side of the board (default is top side).
+        - `bottom`: [boolean=false] Render the bottom side of the board (default is top side).
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `dpi`: [number=300] [10,1200] dots per inch (resolution) of the generated image.
-        - `format`: [string='svg'] [svg,png,jpg] output format. Only used if no `output` is specified.
-        - `highlight`: [list(string)=[]] list of components to highlight.
-        - `libs`: [list(string)=[]] list of libraries.
-        - `mirror`: [boolean=false] mirror the board.
-        - `no_drillholes`: [boolean=false] do not make holes transparent.
-        - `output`: [string='%f-%i%v.%x'] name for the generated file. Affected by global options.
-        - `placeholder`: [boolean=false] show placeholder for missing components.
-        - `remap`: [dict|None] replacements for PCB references using components (lib:component).
-        - `show_components`: [list(string)|string=none] [none,all] list of components to draw, can be also a string for none or all.
+        - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
+        - `format`: [string='svg'] [svg,png,jpg] Output format. Only used if no `output` is specified.
+        - `highlight`: [list(string)=[]] List of components to highlight.
+        - `libs`: [list(string)=[]] List of libraries.
+        - `mirror`: [boolean=false] Mirror the board.
+        - `no_drillholes`: [boolean=false] Do not make holes transparent.
+        - `output`: [string='%f-%i%v.%x'] Name for the generated file. Affected by global options.
+        - `placeholder`: [boolean=false] Show placeholder for missing components.
+        - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
+        - `show_components`: [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
                              The default is none.
         - `style`: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
           * Valid keys:
@@ -993,8 +993,8 @@ Next time you need this list just use an alias, like this:
             - `silk`: [string='#f0f0f0'] color for the silk screen.
             - `vcut`: [string='#bf2600'] color for the V-CUTS.
         - `variant`: [string=''] Board variant to apply.
-        - `vcuts`: [boolean=false] render V-CUTS on the Cmts.User layer.
-        - `warnings`: [string='visible'] [visible,all,none] using visible only the warnings about components in the visible side are generated.
+        - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
+        - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
 
 * PDF (Portable Document Format)
   * Type: `pdf`
@@ -1007,9 +1007,9 @@ Next time you need this list just use an alias, like this:
     - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                     A short-cut to use for simple cases where a variant is an overkill.
     - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-    - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-    - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only).
-    - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
+    - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
+    - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
+    - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1022,23 +1022,23 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only).
-        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-        - `line_width`: [number=0.1] [0.02,2] for objects without width [mm] (KiCad 5).
-        - `mirror_plot`: [boolean=false] plot mirrored.
-        - `negative_plot`: [boolean=false] invert black and white.
-        - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
-        - `plot_footprint_refs`: [boolean=true] include the footprint references.
-        - `plot_footprint_values`: [boolean=true] include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] currently without effect.
-        - `tent_vias`: [boolean=true] cover the vias.
+        - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
+        - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `line_width`: [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5).
+        - `mirror_plot`: [boolean=false] Plot mirrored.
+        - `negative_plot`: [boolean=false] Invert black and white.
+        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `plot_footprint_refs`: [boolean=true] Include the footprint references.
+        - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `tent_vias`: [boolean=true] Cover the vias.
         - `variant`: [string=''] Board variant to apply.
-    - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
-    - `plot_footprint_refs`: [boolean=true] include the footprint references.
-    - `plot_footprint_values`: [boolean=true] include the footprint values.
-    - `plot_sheet_reference`: [boolean=false] currently without effect.
-    - `tent_vias`: [boolean=true] cover the vias.
+    - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+    - `plot_footprint_refs`: [boolean=true] Include the footprint references.
+    - `plot_footprint_values`: [boolean=true] Include the footprint values.
+    - `plot_sheet_reference`: [boolean=false] Currently without effect.
+    - `tent_vias`: [boolean=true] Cover the vias.
     - `variant`: [string=''] Board variant to apply.
 
 * PDF PCB Print (Portable Document Format)
@@ -1060,14 +1060,14 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `mirror`: [boolean=false] print mirrored (X axis inverted). ONLY for KiCad 6.
-        - `monochrome`: [boolean=false] print in black and white.
-        - `output`: [string='%f-%i%v.%x'] filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
+        - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
+        - `mirror`: [boolean=false] Print mirrored (X axis inverted). ONLY for KiCad 6.
+        - `monochrome`: [boolean=false] Print in black and white.
+        - `output`: [string='%f-%i%v.%x'] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
         - *output_name*: Alias for output.
-        - `plot_sheet_reference`: [boolean=true] include the title-block.
-        - `scaling`: [number=1.0] scale factor (0 means autoscaling).
-        - `separated`: [boolean=false] print layers in separated pages.
+        - `plot_sheet_reference`: [boolean=true] Include the title-block.
+        - `scaling`: [number=1.0] Scale factor (0 means autoscaling).
+        - `separated`: [boolean=false] Print layers in separated pages.
         - `variant`: [string=''] Board variant to apply.
 
 * PDF Schematic Print (Portable Document Format)
@@ -1083,7 +1083,7 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `output`: [string='%f-%i%v.%x'] filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
+        - `output`: [string='%f-%i%v.%x'] Filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
 
@@ -1097,18 +1097,18 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `position` output.
       * Valid keys:
-        - `bottom_negative_x`: [boolean=false] use negative X coordinates for footprints on bottom layer.
-        - `columns`: [list(dict)|list(string)] which columns are included in the output.
+        - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer.
+        - `columns`: [list(dict)|list(string)] Which columns are included in the output.
           * Valid keys:
             - `id`: [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name.
             - `name`: [string=''] Name to use in the outut file. The id is used when empty.
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `format`: [string='ASCII'] [ASCII,CSV] format for the position file.
-        - `only_smd`: [boolean=true] only include the surface mount components.
-        - `output`: [string='%f-%i%v.%x'] output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
-        - `separate_files_for_front_and_back`: [boolean=true] generate two separated files, one for the top and another for the bottom.
-        - `units`: [string='millimeters'] [millimeters,inches] units used for the positions.
+        - `format`: [string='ASCII'] [ASCII,CSV] Format for the position file.
+        - `only_smd`: [boolean=true] Only include the surface mount components.
+        - `output`: [string='%f-%i%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
+        - `separate_files_for_front_and_back`: [boolean=true] Generate two separated files, one for the top and another for the bottom.
+        - `units`: [string='millimeters'] [millimeters,inches] Units used for the positions.
         - `variant`: [string=''] Board variant to apply.
 
 * PS (Postscript)
@@ -1131,23 +1131,23 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only).
-        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-        - `line_width`: [number=0.15] [0.02,2] for objects without width [mm] (KiCad 5).
-        - `mirror_plot`: [boolean=false] plot mirrored.
-        - `negative_plot`: [boolean=false] invert black and white.
-        - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
-        - `plot_footprint_refs`: [boolean=true] include the footprint references.
-        - `plot_footprint_values`: [boolean=true] include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] currently without effect.
-        - `scale_adjust_x`: [number=1.0] fine grain adjust for the X scale (floating point multiplier).
-        - `scale_adjust_y`: [number=1.0] fine grain adjust for the Y scale (floating point multiplier).
-        - `scaling`: [number=1] scale factor (0 means autoscaling).
-        - `sketch_plot`: [boolean=false] don't fill objects, just draw the outline.
-        - `tent_vias`: [boolean=true] cover the vias.
+        - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
+        - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `line_width`: [number=0.15] [0.02,2] For objects without width [mm] (KiCad 5).
+        - `mirror_plot`: [boolean=false] Plot mirrored.
+        - `negative_plot`: [boolean=false] Invert black and white.
+        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `plot_footprint_refs`: [boolean=true] Include the footprint references.
+        - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `scale_adjust_x`: [number=1.0] Fine grain adjust for the X scale (floating point multiplier).
+        - `scale_adjust_y`: [number=1.0] Fine grain adjust for the Y scale (floating point multiplier).
+        - `scaling`: [number=1] Scale factor (0 means autoscaling).
+        - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
+        - `tent_vias`: [boolean=true] Cover the vias.
         - `variant`: [string=''] Board variant to apply.
-        - `width_adjust`: [number=0] this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
+        - `width_adjust`: [number=0] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
 
 * Schematic with variant generator
@@ -1178,15 +1178,15 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `download`: [boolean=true] downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
-        - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] base URL for the KiCad 3D models.
-        - `metric_units`: [boolean=true] use metric units instead of inches.
-        - `min_distance`: [number=-1] the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
-        - `no_virtual`: [boolean=false] used to exclude 3D models for components with 'virtual' attribute.
-        - `origin`: [string='grid'] determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
+        - `download`: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+        - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `metric_units`: [boolean=true] Use metric units instead of inches.
+        - `min_distance`: [number=-1] The minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
+        - `no_virtual`: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
+        - `origin`: [string='grid'] Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
                     The drill option uses the auxiliar reference defined by the user.
                     You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
-        - `output`: [string='%f-%i%v.%x'] name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
+        - `output`: [string='%f-%i%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
 
 * SVG (Scalable Vector Graphics)
@@ -1209,17 +1209,17 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `exclude_edge_layer`: [boolean=true] do not include the PCB edge layer.
-        - `exclude_pads_from_silkscreen`: [boolean=false] do not plot the component pads in the silk screen (KiCad 5.x only).
-        - `force_plot_invisible_refs_vals`: [boolean=false] include references and values even when they are marked as invisible.
-        - `line_width`: [number=0.25] [0.02,2] for objects without width [mm] (KiCad 5).
-        - `mirror_plot`: [boolean=false] plot mirrored.
-        - `negative_plot`: [boolean=false] invert black and white.
-        - `output`: [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options.
-        - `plot_footprint_refs`: [boolean=true] include the footprint references.
-        - `plot_footprint_values`: [boolean=true] include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] currently without effect.
-        - `tent_vias`: [boolean=true] cover the vias.
+        - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
+        - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
+        - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `line_width`: [number=0.25] [0.02,2] For objects without width [mm] (KiCad 5).
+        - `mirror_plot`: [boolean=false] Plot mirrored.
+        - `negative_plot`: [boolean=false] Invert black and white.
+        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `plot_footprint_refs`: [boolean=true] Include the footprint references.
+        - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `tent_vias`: [boolean=true] Cover the vias.
         - `variant`: [string=''] Board variant to apply.
 
 * SVG Schematic Print
@@ -1234,7 +1234,7 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `output`: [string='%f-%i%v.%x'] filename for the output SVG (%i=schematic %x=svg). Affected by global options.
+        - `output`: [string='%f-%i%v.%x'] Filename for the output SVG (%i=schematic %x=svg). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
 

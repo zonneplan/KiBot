@@ -54,19 +54,19 @@ class PositionOptions(VariantOptions):
     def __init__(self):
         with document:
             self.format = 'ASCII'
-            """ [ASCII,CSV] format for the position file """
+            """ [ASCII,CSV] Format for the position file """
             self.separate_files_for_front_and_back = True
-            """ generate two separated files, one for the top and another for the bottom """
+            """ Generate two separated files, one for the top and another for the bottom """
             self.only_smd = True
-            """ only include the surface mount components """
+            """ Only include the surface mount components """
             self.output = GS.def_global_output
-            """ output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
+            """ Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
             self.units = 'millimeters'
-            """ [millimeters,inches] units used for the positions """
+            """ [millimeters,inches] Units used for the positions """
             self.columns = PosColumns
-            """ [list(dict)|list(string)] which columns are included in the output """
+            """ [list(dict)|list(string)] Which columns are included in the output """
             self.bottom_negative_x = False
-            """ use negative X coordinates for footprints on bottom layer """
+            """ Use negative X coordinates for footprints on bottom layer """
         super().__init__()
 
     def config(self):

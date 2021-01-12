@@ -15,17 +15,17 @@ class HPGLOptions(DrillMarks):
         super().__init__()
         with document:
             self.mirror_plot = False
-            """ plot mirrored """
+            """ Plot mirrored """
             self.sketch_plot = False
-            """ don't fill objects, just draw the outline """
+            """ Don't fill objects, just draw the outline """
             self.scaling = 0
-            """ scale factor (0 means autoscaling) """
+            """ Scale factor (0 means autoscaling) """
             self.pen_number = 1
-            """ [1,16] pen number """
+            """ [1,16] Pen number """
             self.pen_speed = 20
-            """ [1,99] pen speed """
+            """ [1,99] Pen speed """
             self.pen_width = 15
-            """ [0,100] pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files """
+            """ [0,100] Pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files """
         self._plot_format = PLOT_FORMAT_HPGL
 
     def _configure_plot_ctrl(self, po, output_dir):

@@ -111,32 +111,32 @@ class PcbDrawOptions(VariantOptions):
             self.style = PcbDrawStyle
             """ [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options """
             self.libs = Optionable
-            """ [list(string)=[]] list of libraries """
+            """ [list(string)=[]] List of libraries """
             self.placeholder = False
-            """ show placeholder for missing components """
+            """ Show placeholder for missing components """
             self.remap = PcbDrawRemap
-            """ [dict|None] replacements for PCB references using components (lib:component) """
+            """ [dict|None] Replacements for PCB references using components (lib:component) """
             self.no_drillholes = False
-            """ do not make holes transparent """
+            """ Do not make holes transparent """
             self.bottom = False
-            """ render the bottom side of the board (default is top side) """
+            """ Render the bottom side of the board (default is top side) """
             self.mirror = False
-            """ mirror the board """
+            """ Mirror the board """
             self.highlight = Optionable
-            """ [list(string)=[]] list of components to highlight """
+            """ [list(string)=[]] List of components to highlight """
             self.show_components = Optionable
-            """ [list(string)|string=none] [none,all] list of components to draw, can be also a string for none or all.
+            """ [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
                 The default is none """
             self.vcuts = False
-            """ render V-CUTS on the Cmts.User layer """
+            """ Render V-CUTS on the Cmts.User layer """
             self.warnings = 'visible'
-            """ [visible,all,none] using visible only the warnings about components in the visible side are generated """
+            """ [visible,all,none] Using visible only the warnings about components in the visible side are generated """
             self.dpi = 300
-            """ [10,1200] dots per inch (resolution) of the generated image """
+            """ [10,1200] Dots per inch (resolution) of the generated image """
             self.format = 'svg'
-            """ [svg,png,jpg] output format. Only used if no `output` is specified """
+            """ [svg,png,jpg] Output format. Only used if no `output` is specified """
             self.output = GS.def_global_output
-            """ name for the generated file """
+            """ Name for the generated file """
         super().__init__()
 
     def config(self):

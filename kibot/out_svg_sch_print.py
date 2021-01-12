@@ -21,7 +21,7 @@ class SVG_Sch_PrintOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ filename for the output SVG (%i=schematic %x=svg) """
+            """ Filename for the output SVG (%i=schematic %x=svg) """
         super().__init__()
         self.add_to_doc('variant', "Not fitted components are crossed")
 

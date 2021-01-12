@@ -26,21 +26,21 @@ class PDF_Pcb_PrintOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ filename for the output PDF (%i=layers, %x=pdf)"""
+            """ Filename for the output PDF (%i=layers, %x=pdf)"""
             self.output_name = None
             """ {output} """
             self.scaling = 1.0
-            """ scale factor (0 means autoscaling)"""
+            """ Scale factor (0 means autoscaling)"""
             self._drill_marks = 'full'
-            """ what to use to indicate the drill places, can be none, small or full (for real scale) """
+            """ What to use to indicate the drill places, can be none, small or full (for real scale) """
             self.plot_sheet_reference = True
-            """ include the title-block """
+            """ Include the title-block """
             self.monochrome = False
-            """ print in black and white """
+            """ Print in black and white """
             self.separated = False
-            """ print layers in separated pages """
+            """ Print layers in separated pages """
             self.mirror = False
-            """ print mirrored (X axis inverted). ONLY for KiCad 6 """
+            """ Print mirrored (X axis inverted). ONLY for KiCad 6 """
         super().__init__()
 
     @property

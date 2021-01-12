@@ -21,13 +21,13 @@ class DXFOptions(DrillMarks):
         super().__init__()
         with document:
             self.use_aux_axis_as_origin = False
-            """ use the auxiliar axis as origin for coordinates """
+            """ Use the auxiliar axis as origin for coordinates """
             self.polygon_mode = True
-            """ plot using the contour, instead of the center line """
+            """ Plot using the contour, instead of the center line """
             self.metric_units = False
-            """ use mm instead of inches """
+            """ Use mm instead of inches """
             self.sketch_plot = False
-            """ don't fill objects, just draw the outline """
+            """ Don't fill objects, just draw the outline """
         self._plot_format = PLOT_FORMAT_DXF
 
     def _configure_plot_ctrl(self, po, output_dir):

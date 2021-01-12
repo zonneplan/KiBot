@@ -19,21 +19,21 @@ class PSOptions(DrillMarks):
         super().__init__()
         with document:
             self.line_width = 0.15
-            """ [0.02,2] for objects without width [mm] (KiCad 5) """
+            """ [0.02,2] For objects without width [mm] (KiCad 5) """
             self.mirror_plot = False
-            """ plot mirrored """
+            """ Plot mirrored """
             self.negative_plot = False
-            """ invert black and white """
+            """ Invert black and white """
             self.sketch_plot = False
-            """ don't fill objects, just draw the outline """
+            """ Don't fill objects, just draw the outline """
             self.scaling = 1
-            """ scale factor (0 means autoscaling)"""
+            """ Scale factor (0 means autoscaling)"""
             self.scale_adjust_x = 1.0
-            """ fine grain adjust for the X scale (floating point multiplier) """
+            """ Fine grain adjust for the X scale (floating point multiplier) """
             self.scale_adjust_y = 1.0
-            """ fine grain adjust for the Y scale (floating point multiplier) """
+            """ Fine grain adjust for the Y scale (floating point multiplier) """
             self.width_adjust = 0
-            """ this width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
+            """ This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                 Only used to plot pads and tracks """
             self.a4_output = True
             """ force A4 paper size """

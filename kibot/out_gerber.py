@@ -17,26 +17,26 @@ class GerberOptions(AnyLayerOptions):
     def __init__(self):
         with document:
             self.use_aux_axis_as_origin = False
-            """ use the auxiliar axis as origin for coordinates """
+            """ Use the auxiliar axis as origin for coordinates """
             self.line_width = 0.1
-            """ [0.02,2] line_width for objects without width [mm] (KiCad 5) """
+            """ [0.02,2] Line_width for objects without width [mm] (KiCad 5) """
             self.subtract_mask_from_silk = False
-            """ substract the solder mask from the silk screen """
+            """ Substract the solder mask from the silk screen """
             self.use_protel_extensions = False
-            """ use legacy Protel file extensions """
+            """ Use legacy Protel file extensions """
             self._gerber_precision = 4.6
-            """ this the gerber coordinate format, can be 4.5 or 4.6 """
+            """ This the gerber coordinate format, can be 4.5 or 4.6 """
             self.create_gerber_job_file = True
-            """ creates a file with information about all the generated gerbers.
+            """ Creates a file with information about all the generated gerbers.
                 You can use it in gerbview to load all gerbers at once """
             self.gerber_job_file = GS.def_global_output
-            """ name for the gerber job file (%i='job', %x='gbrjob') """
+            """ Name for the gerber job file (%i='job', %x='gbrjob') """
             self.use_gerber_x2_attributes = True
-            """ use the extended X2 format (otherwise use X1 formerly RS-274X) """
+            """ Use the extended X2 format (otherwise use X1 formerly RS-274X) """
             self.use_gerber_net_attributes = True
-            """ include netlist metadata """
+            """ Include netlist metadata """
             self.disable_aperture_macros = False
-            """ disable aperture macros (workaround for buggy CAM software) (KiCad 6) """
+            """ Disable aperture macros (workaround for buggy CAM software) (KiCad 6) """
         super().__init__()
         self._plot_format = PLOT_FORMAT_GERBER
 

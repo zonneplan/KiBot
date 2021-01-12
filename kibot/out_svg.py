@@ -18,11 +18,11 @@ class SVGOptions(DrillMarks):
         super().__init__()
         with document:
             self.line_width = 0.25
-            """ [0.02,2] for objects without width [mm] (KiCad 5) """
+            """ [0.02,2] For objects without width [mm] (KiCad 5) """
             self.mirror_plot = False
-            """ plot mirrored """
+            """ Plot mirrored """
             self.negative_plot = False
-            """ invert black and white """
+            """ Invert black and white """
         self._plot_format = PLOT_FORMAT_SVG
 
     def _configure_plot_ctrl(self, po, output_dir):

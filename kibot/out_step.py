@@ -25,21 +25,21 @@ class STEPOptions(VariantOptions):
     def __init__(self):
         with document:
             self.metric_units = True
-            """ use metric units instead of inches """
+            """ Use metric units instead of inches """
             self._origin = 'grid'
-            """ determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
+            """ Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
                 The drill option uses the auxiliar reference defined by the user.
                 You can define any other origin using the format 'X,Y', i.e. '3.2,-10' """
             self.no_virtual = False
-            """ used to exclude 3D models for components with 'virtual' attribute """
+            """ Used to exclude 3D models for components with 'virtual' attribute """
             self.min_distance = -1
-            """ the minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm) """
+            """ The minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm) """
             self.output = GS.def_global_output
-            """ name for the generated STEP file (%i='3D' %x='step') """
+            """ Name for the generated STEP file (%i='3D' %x='step') """
             self.download = True
-            """ downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD """
+            """ Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD """
             self.kicad_3d_url = 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
-            """ base URL for the KiCad 3D models """
+            """ Base URL for the KiCad 3D models """
         # Temporal dir used to store the downloaded files
         self._tmp_dir = None
         super().__init__()
