@@ -113,8 +113,7 @@ def test_kicad_conf_xdg(caplog, monkeypatch):
 def test_kicad_conf_guess_libs(caplog, monkeypatch):
     """ Check no HOME and fail to load kicad_common.
         Also check we correctly guess the libs dir. """
-    with monkeypatch.context() as m:
-        check_load_conf(caplog, fail=True, no_conf_path=True)
+    check_load_conf(caplog, fail=True, no_conf_path=True)
     assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/library"' in caplog.text, caplog.text
 
 
