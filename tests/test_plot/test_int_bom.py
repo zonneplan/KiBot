@@ -58,16 +58,17 @@ BOM_DIR = 'BoM'
 REF_COLUMN_NAME = 'References'
 REF_COLUMN_NAME_R = 'Referencias'
 QTY_COLUMN_NAME = 'Quantity Per PCB'
+STATUS_COLUMN_NAME = 'Status'
 COMP_COLUMN_NAME = 'Row'
 COMP_COLUMN_NAME_R = 'Renglón'
 VALUE_COLUMN_NAME = 'Value'
 DATASHEET_COLUMN_NAME = 'Datasheet'
-KIBOM_TEST_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
+KIBOM_TEST_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Status',
                    DATASHEET_COLUMN_NAME, 'Config']
 KIBOM_TEST_HEAD_TOL = [c for c in KIBOM_TEST_HEAD]
 KIBOM_TEST_HEAD_TOL.insert(-1, 'Tolerance')
 KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor', 'Código Digi-Key', 'Cantidad por PCB']
-CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME,
+CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Status',
              DATASHEET_COLUMN_NAME]
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
 KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
@@ -114,10 +115,10 @@ def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps, ref_sep='
         logging.debug("list of components OK")
 
 
-def check_dnc(rows, comp, ref, qty, datasheet=None):
+def check_dnc(rows, comp, ref, status, datasheet=None):
     for row in rows:
         if row[ref].find(comp) != -1:
-            assert row[qty] == '1 (DNC)'
+            assert '(DNC)' in row[status]
             logging.debug(comp + " is DNC OK")
             if datasheet is not None:
                 assert row[datasheet].startswith('<a href="')
@@ -220,13 +221,13 @@ def check_csv_info(r, info, stats):
     assert row == len(r)
 
 
-def kibom_verif(rows, header, skip_head=False, qty_name=QTY_COLUMN_NAME, ref_sep=' '):
+def kibom_verif(rows, header, skip_head=False, qty_name=STATUS_COLUMN_NAME, ref_sep=' '):
     if not skip_head:
         assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(qty_name)
+    status_column = header.index(qty_name)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS, ref_sep)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
 
 
 def kibom_setup(test, ext='csv'):
@@ -314,11 +315,11 @@ def simple_html_test(ctx, rows, headers, sh_head, prj, do_title=True, do_logo=Tr
     assert headers[0] == KIBOM_TEST_HEAD
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
-    qty_column = headers[0].index(QTY_COLUMN_NAME)
+    status_column = headers[0].index(STATUS_COLUMN_NAME)
     ds_column = headers[0].index(DATASHEET_COLUMN_NAME)
     # Check the normal table
     check_kibom_test_netlist(rows[0], ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows[0], 'R7', ref_column, qty_column, ds_column)
+    check_dnc(rows[0], 'R7', ref_column, status_column, ds_column)
     # Check the DNF table
     check_kibom_test_netlist(rows[1], ref_column, 1, KIBOM_TEST_COMPONENTS, KIBOM_TEST_EXCLUDE)
     ctx.clean_up()
@@ -414,7 +415,7 @@ def test_int_bom_simple_xml():
     # Columns get sorted by name, so we need to take care of it
     for c in KIBOM_TEST_HEAD:
         assert adapt_xml(c) in header, "Missing column "+c
-    kibom_verif(rows, header, skip_head=True, qty_name=adapt_xml(QTY_COLUMN_NAME))
+    kibom_verif(rows, header, skip_head=True, qty_name=adapt_xml(STATUS_COLUMN_NAME))
     ctx.clean_up()
 
 
@@ -426,9 +427,9 @@ def simple_xlsx_verify(ctx, prj, dnf=True):
     check_head_xlsx(sh_head, KIBOM_PRJ_INFO, KIBOM_STATS)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     rows, header, sh_head = ctx.load_xlsx(out, 2)
     if dnf:
         check_kibom_test_netlist(rows, ref_column, 1, [], KIBOM_TEST_EXCLUDE)
@@ -625,9 +626,9 @@ def test_int_include_dnf():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS+1, [], KIBOM_TEST_COMPONENTS+KIBOM_TEST_EXCLUDE)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -646,9 +647,9 @@ def test_int_bom_html_generate_dnf():
     assert headers[0] == KIBOM_TEST_HEAD
     # Look for reference and quantity columns
     ref_column = headers[0].index(REF_COLUMN_NAME)
-    qty_column = headers[0].index(QTY_COLUMN_NAME)
+    status_column = headers[0].index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows[0], ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows[0], 'R7', ref_column, qty_column)
+    check_dnc(rows[0], 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -662,9 +663,9 @@ def test_int_bom_use_alt():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS_ALT)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -678,11 +679,11 @@ def test_int_bom_use_alt_2():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     # R3 without footprint won't be merged with other 10K resistors
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS+1, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS_ALT2,
                              ref_sep=';')
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -696,9 +697,9 @@ def test_int_bom_no_number_rows():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD[1:]
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -808,9 +809,9 @@ def test_int_bom_alias_csv():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -824,10 +825,10 @@ def test_int_bom_alias_nm_csv():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     # R3 without footprint won't be merged with other 10K resistors
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS+1, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -841,10 +842,10 @@ def test_int_bom_no_group_csv():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     # R3 without footprint won't be merged with other 10K resistors
     check_kibom_test_netlist(rows, ref_column, len(KIBOM_TEST_COMPONENTS), KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -859,9 +860,9 @@ def test_int_bom_repeat_csv():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['U1', 'R1'])
-    check_dnc(rows, 'R1', ref_column, qty_column)
+    check_dnc(rows, 'R1', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -875,9 +876,9 @@ def test_int_bom_collision():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD_TOL
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.search_err('Field conflict')
     ctx.clean_up()
 
@@ -892,9 +893,9 @@ def test_int_bom_exclude_any():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD_TOL
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS+1, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS+['X1'])
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.search_err('Field conflict')
     ctx.clean_up()
 
@@ -909,9 +910,9 @@ def test_int_bom_include_only():
     rows, header, info = ctx.load_csv(out)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 3, KIBOM_TEST_EXCLUDE, ['R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8'])
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -924,9 +925,9 @@ def test_int_bom_include_only():
 #     rows, header, info = ctx.load_csv(out)
 #     assert header == KIBOM_TEST_HEAD
 #     ref_column = header.index(REF_COLUMN_NAME)
-#     qty_column = header.index(QTY_COLUMN_NAME)
+#     status_column = header.index(STATUS_COLUMN_NAME)
 #     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-#     check_dnc(rows, 'R7', ref_column, qty_column)
+#     check_dnc(rows, 'R7', ref_column, status_column)
 #     ctx.clean_up()
 
 
@@ -962,9 +963,9 @@ def test_int_bom_simple_xlsx_2():
     check_head_xlsx(sh_head, KIBOM_PRJ_INFO, KIBOM_STATS, title=None)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -986,9 +987,9 @@ def test_int_bom_simple_xlsx_4():
     check_head_xlsx(sh_head, KIBOM_PRJ_INFO, KIBOM_STATS, title=None)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -1003,9 +1004,9 @@ def test_int_bom_simple_xlsx_5():
     check_head_xlsx(sh_head, None, KIBOM_STATS, title=None)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 
@@ -1020,9 +1021,9 @@ def test_int_bom_simple_xlsx_6():
     assert len(sh_head) == 0
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
-    qty_column = header.index(QTY_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS)
-    check_dnc(rows, 'R7', ref_column, qty_column)
+    check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
 

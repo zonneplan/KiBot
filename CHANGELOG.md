@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Now the default output name applies to the DRC and ERC report names.
   This provides more coherent file names.
+- Internal BoM: The "Quantity" column no longer includes the DNF/C status.
+  This status was moved to a separated column named `Status`.
+  You can join both columns if you want.
 
 
 ## [0.9.0] - 2021-01-04

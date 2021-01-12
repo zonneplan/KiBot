@@ -15,6 +15,7 @@ outputs:
         - Value
         - Footprint
         - Quantity Per PCB
+        - Status
         - Datasheet
         - Config
 

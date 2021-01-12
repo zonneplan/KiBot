@@ -41,6 +41,8 @@ class ColumnList:
     COL_SHEETPATH_L = COL_SHEETPATH.lower()
     COL_ROW_NUMBER = 'Row'
     COL_ROW_NUMBER_L = COL_ROW_NUMBER.lower()
+    COL_STATUS = 'Status'
+    COL_STATUS_L = COL_STATUS.lower()
 
     # Default columns for groups
     COL_GRP_QUANTITY = 'Quantity Per PCB'
@@ -53,6 +55,7 @@ class ColumnList:
         COL_GRP_QUANTITY_L: 1,
         COL_GRP_BUILD_QUANTITY_L: 1,
         COL_ROW_NUMBER_L: 1,
+        COL_STATUS_L: 1,
     }
 
     # Default columns
@@ -67,6 +70,7 @@ class ColumnList:
         COL_FP_LIB,
         COL_GRP_QUANTITY,
         COL_GRP_BUILD_QUANTITY,
+        COL_STATUS,
         COL_DATASHEET,
         COL_SHEETPATH
     ]

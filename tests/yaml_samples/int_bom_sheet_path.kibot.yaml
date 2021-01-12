@@ -8,6 +8,6 @@ outputs:
     type: bom
     dir: BoM
     options:
-      columns: ['Row','Description','Part','References','Value','Footprint','Quantity Per PCB','Datasheet','Sheetpath']
+      columns: ['Row','Description','Part','References','Value','Footprint','Quantity Per PCB','Status','Datasheet','Sheetpath']
       group_fields: []
 

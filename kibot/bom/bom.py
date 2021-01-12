@@ -233,12 +233,16 @@ class ComponentGroup(object):
             self.fields[ColumnList.COL_REFERENCE_L] = self.get_refs()
         # Quantity
         q = self.get_count()
-        self.fields[ColumnList.COL_GRP_QUANTITY_L] = "{n}{dnf}{dnc}".format(
-            n=q,
-            dnf=" (DNF)" if not self.is_fitted() else "",
-            dnc=" (DNC)" if self.is_fixed() else "")
-
+        self.fields[ColumnList.COL_GRP_QUANTITY_L] = str(q)
         self.fields[ColumnList.COL_GRP_BUILD_QUANTITY_L] = str(q * self.cfg.number) if self.is_fitted() else "0"
+        # Group status
+        status = ' '
+        if not self.is_fitted():
+            status += '(DNF)'
+        if self.is_fixed():
+            status += '(DNC)'
+        self.fields[ColumnList.COL_STATUS_L] = status
+        # Component data
         comp = self.components[0]
         self.fields[ColumnList.COL_VALUE_L] = comp.value
         self.fields[ColumnList.COL_PART_L] = comp.name
