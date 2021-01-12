@@ -6,6 +6,6 @@ all: ../README.md  samples/generic_plot.kibot.yaml
 	cat README.in | perl replace_tags.pl > ../README.md
 
 samples/generic_plot.kibot.yaml: ../kibot/out_*.py ../kibot/pre_*.py ../kibot/config_reader.py
-	rm -f example.kibot.yaml
+	rm -f example_template.kibot.yaml
 	../src/kibot -v --example
-	mv example.kibot.yaml $@
+	mv example_template.kibot.yaml $@
