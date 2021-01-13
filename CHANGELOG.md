@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal BoM: `no_conflict` option to exclude fields from conflict detection.
 - Support for KICAD_CONFIG_HOME defined from inside KiCad.
 - Now layers can be selected using the default KiCad names.
+- More control over the name of the drill files.
 
 ### Changed
 - Now the default output name applies to the DRC and ERC report names.

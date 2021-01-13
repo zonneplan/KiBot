@@ -48,14 +48,18 @@ class AnyDrill(BaseOptions):
         # Options
         with document:
             self.use_aux_axis_as_origin = False
-            """ use the auxiliar axis as origin for coordinates """
+            """ Use the auxiliar axis as origin for coordinates """
             self.map = DrillMap
-            """ [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
+            """ [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                 Not generated unless a format is specified """
             self.output = GS.def_global_output
             """ name for the drill file, KiCad defaults if empty (%i='PTH_drill') """
             self.report = DrillReport
-            """ [dict|string] name of the drill report. Not generated unless a name is specified """
+            """ [dict|string] Name of the drill report. Not generated unless a name is specified """
+            self.pth_id = None
+            """ [string] Force this replacement for %i when generating PTH and unified files """
+            self.npth_id = None
+            """ [string] Force this replacement for %i when generating NPTH files """
         super().__init__()
         # Mappings to KiCad values
         self._map_map = {
@@ -88,6 +92,16 @@ class AnyDrill(BaseOptions):
         elif not isinstance(self.report, str):
             self.report = None
 
+    def solve_id(self, d):
+        if not d:
+            # Unified
+            return self.pth_id if self.pth_id is not None else 'drill'
+        if d[0] == 'N':
+            # NPTH
+            return self.npth_id if self.npth_id is not None else d+'_drill'
+        # PTH
+        return self.pth_id if self.pth_id is not None else d+'_drill'
+
     def run(self, output_dir, board):
         # dialog_gendrill.cpp:357
         if self.use_aux_axis_as_origin:
@@ -107,7 +121,7 @@ class AnyDrill(BaseOptions):
         files = [''] if self._unified_output else ['PTH', 'NPTH']
         for d in files:
             kicad_id = '-'+d if d else d
-            kibot_id = d+'_drill' if d else 'drill'
+            kibot_id = self.solve_id(d)
             if self.output:
                 if ext == 'drl':
                     k_file = self.expand_filename(output_dir, '%f'+kicad_id+'.%x', '', ext)
