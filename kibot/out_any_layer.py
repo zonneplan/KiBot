@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 import os
-from pcbnew import GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer
+from pcbnew import GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, F_Cu, B_Cu, Edge_Cuts
 from .out_base import (BaseOutput)
 from .error import (PlotError, KiPlotConfigurationError)
 from .layer import Layer
 from .gs import GS
-from .misc import KICAD_VERSION_5_99
+from .misc import KICAD_VERSION_5_99, W_NOLAYER
 from .out_base import VariantOptions
 from .macros import macros, document  # noqa: F401
 from . import log
@@ -90,6 +90,9 @@ class AnyLayerOptions(VariantOptions):
             suffix = la.suffix
             desc = la.description
             id = la.id
+            if not GS.board.IsLayerEnabled(id):
+                logger.warning(W_NOLAYER+'Layer "{}" isn\'t used'.format(desc))
+                continue
             # Set current layer
             plot_ctrl.SetLayer(id)
             # Skipping NPTH is controlled by whether or not this is

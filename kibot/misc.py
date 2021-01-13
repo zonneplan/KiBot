@@ -161,6 +161,7 @@ W_WRONGPASTE = '(W045) '
 W_MISFLDNAME = '(W046) '
 W_MISS3D = '(W047) '
 W_FAILDL = '(W048) '
+W_NOLAYER = '(W049) '
 
 
 class Rect(object):
