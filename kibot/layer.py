@@ -153,6 +153,8 @@ class Layer(Optionable):
                     # Give compatibility for the KiCad 5 default names (automagically renamed by KiCad 6)
                     elif GS.kicad_version_n >= KICAD_VERSION_5_99 and layer in Layer.KICAD6_RENAME:
                         ext = [Layer.create_layer(Layer.KICAD6_RENAME[layer])]
+                    elif layer in Layer.DEFAULT_LAYER_NAMES:
+                        ext = [Layer.create_layer(layer)]
                     if ext is None:
                         raise KiPlotConfigurationError("Unknown layer spec: `{}`".format(layer))
                     new_vals.extend(ext)
@@ -225,3 +227,8 @@ class Layer(Optionable):
 
     def __str__(self):
         return "{} ({} '{}' {})".format(self.layer, self._id, self.description, self.suffix)
+
+for i in range(1, 30):
+    name = 'In'+str(i)+'.Cu'
+    Layer.DEFAULT_LAYER_NAMES[name] = pcbnew.In1_Cu+i-1
+    Layer.DEFAULT_LAYER_DESC[name] = 'Inner layer '+str(i)
