@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   This status was moved to a separated column named `Status`.
   You can join both columns if you want.
 
+### Fixed
+- Extra data about drill marks in gerber files.
+
 
 ## [0.9.0] - 2021-01-04
 ### Added

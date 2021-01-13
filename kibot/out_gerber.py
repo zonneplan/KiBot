@@ -59,6 +59,7 @@ class GerberOptions(AnyLayerOptions):
         po.SetUseGerberX2format(self.use_gerber_x2_attributes)
         po.SetIncludeGerberNetlistInfo(self.use_gerber_net_attributes)
         po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
+        po.SetDrillMarksType(0)
         if GS.kicad_version_n < KICAD_VERSION_5_99:
             po.SetLineWidth(FromMM(self.line_width))
         else:
