@@ -39,6 +39,14 @@ class AnyLayerOptions(VariantOptions):
             """ Output file name, the default KiCad name if empty """
             self.tent_vias = True
             """ Cover the vias """
+            self.uppercase_extensions = False
+            """ Use uppercase names for the extensions """
+            self.inner_extension_pattern = ''
+            """ Used to change the Protel style extensions for inner layers.
+                The replacement pattern can contain %n for the inner layer number and %N for the layer number.
+                Example '.g%n' """
+            self.edge_cut_extension = ''
+            """ Used to configure the edge cuts layer extension for Protel mode """
         super().__init__()
 
     def _configure_plot_ctrl(self, po, output_dir):
@@ -110,6 +118,15 @@ class AnyLayerOptions(VariantOptions):
                 filename = self.expand_filename(output_dir, self.output, suffix, os.path.splitext(k_filename)[1][1:])
             else:
                 filename = k_filename
+            if id > F_Cu and id < B_Cu and self.inner_extension_pattern:
+                ext = self.inner_extension_pattern
+                ext = ext.replace('%n', str(id))
+                ext = ext.replace('%N', str(id+1))
+                filename = os.path.splitext(filename)[0]+ext
+            if id == Edge_Cuts and self.edge_cut_extension:
+                filename = os.path.splitext(filename)[0]+self.edge_cut_extension
+            if self.uppercase_extensions:
+                filename = os.path.splitext(filename)[0]+os.path.splitext(filename)[1].upper()
             logger.debug("Plotting layer `{}` to `{}`".format(la, filename))
             plot_ctrl.PlotLayer()
             plot_ctrl.ClosePlot()
