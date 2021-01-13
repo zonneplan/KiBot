@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for KICAD_CONFIG_HOME defined from inside KiCad.
 - Now layers can be selected using the default KiCad names.
 - More control over the name of the drill files.
+- More options to customize the excellon output.
 
 ### Changed
 - Now the default output name applies to the DRC and ERC report names.
