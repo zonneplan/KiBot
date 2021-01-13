@@ -665,9 +665,13 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
+                                     The replacement pattern can contain %n for the inner layer number and %N for the layer number.
+                                     Example '.g%n'.
         - `metric_units`: [boolean=false] Use mm instead of inches.
         - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
@@ -676,6 +680,7 @@ Next time you need this list just use an alias, like this:
         - `polygon_mode`: [boolean=true] Plot using the contour, instead of the center line.
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
+        - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliar axis as origin for coordinates.
         - `variant`: [string=''] Board variant to apply.
 
@@ -690,7 +695,8 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `excellon` output.
       * Valid keys:
-        - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
+        - `left_digits`: [number=0] number of digits for integer part of coordinates (0 is auto).
+        - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
             - `output`: [string='%f-%i%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
@@ -698,13 +704,17 @@ Next time you need this list just use an alias, like this:
         - `metric_units`: [boolean=true] Use metric units instead of inches.
         - `minimal_header`: [boolean=false] Use a minimal header in the file.
         - `mirror_y_axis`: [boolean=false] Invert the Y axis.
+        - `npth_id`: [string] Force this replacement for %i when generating NPTH files.
         - `output`: [string='%f-%i%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
         - `pth_and_npth_single_file`: [boolean=true] Generate one file for both, plated holes and non-plated holes, instead of two separated files.
-        - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
+        - `pth_id`: [string] Force this replacement for %i when generating PTH and unified files.
+        - `report`: [dict|string] Name of the drill report. Not generated unless a name is specified.
           * Valid keys:
             - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
-        - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
+        - `right_digits`: [number=0] number of digits for mantissa part of coordinates (0 is auto).
+        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliar axis as origin for coordinates.
+        - `zeros_format`: [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
 
 * Gerber drill format
   * Type: `gerb_drill`
@@ -717,17 +727,19 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `gerb_drill` output.
       * Valid keys:
-        - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] format for a graphical drill map.
+        - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
             - `output`: [string='%f-%i%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
             - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
+        - `npth_id`: [string] Force this replacement for %i when generating NPTH files.
         - `output`: [string='%f-%i%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
-        - `report`: [dict|string] name of the drill report. Not generated unless a name is specified.
+        - `pth_id`: [string] Force this replacement for %i when generating PTH and unified files.
+        - `report`: [dict|string] Name of the drill report. Not generated unless a name is specified.
           * Valid keys:
             - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
-        - `use_aux_axis_as_origin`: [boolean=false] use the auxiliar axis as origin for coordinates.
+        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliar axis as origin for coordinates.
 
 * Gerber format
   * Type: `gerber`
@@ -750,11 +762,15 @@ Next time you need this list just use an alias, like this:
         - `disable_aperture_macros`: [boolean=false] Disable aperture macros (workaround for buggy CAM software) (KiCad 6).
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
         - `gerber_job_file`: [string='%f-%i%v.%x'] Name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options.
         - `gerber_precision`: [number=4.6] This the gerber coordinate format, can be 4.5 or 4.6.
+        - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
+                                     The replacement pattern can contain %n for the inner layer number and %N for the layer number.
+                                     Example '.g%n'.
         - `line_width`: [number=0.1] [0.02,2] Line_width for objects without width [mm] (KiCad 5).
         - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
@@ -762,6 +778,7 @@ Next time you need this list just use an alias, like this:
         - `plot_sheet_reference`: [boolean=false] Currently without effect.
         - `subtract_mask_from_silk`: [boolean=false] Substract the solder mask from the silk screen.
         - `tent_vias`: [boolean=true] Cover the vias.
+        - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliar axis as origin for coordinates.
         - `use_gerber_net_attributes`: [boolean=true] Include netlist metadata.
         - `use_gerber_x2_attributes`: [boolean=true] Use the extended X2 format (otherwise use X1 formerly RS-274X).
@@ -787,9 +804,13 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
+                                     The replacement pattern can contain %n for the inner layer number and %N for the layer number.
+                                     Example '.g%n'.
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `pen_number`: [number=1] [1,16] Pen number.
@@ -801,6 +822,7 @@ Next time you need this list just use an alias, like this:
         - `scaling`: [number=0] Scale factor (0 means autoscaling).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
+        - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
 
 * IBoM (Interactive HTML BoM)
@@ -1007,9 +1029,13 @@ Next time you need this list just use an alias, like this:
     - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                     A short-cut to use for simple cases where a variant is an overkill.
     - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+    - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
     - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
     - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+    - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
+                                 The replacement pattern can contain %n for the inner layer number and %N for the layer number.
+                                 Example '.g%n'.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1022,9 +1048,13 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
+                                     The replacement pattern can contain %n for the inner layer number and %N for the layer number.
+                                     Example '.g%n'.
         - `line_width`: [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5).
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `negative_plot`: [boolean=false] Invert black and white.
@@ -1033,12 +1063,14 @@ Next time you need this list just use an alias, like this:
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `plot_sheet_reference`: [boolean=false] Currently without effect.
         - `tent_vias`: [boolean=true] Cover the vias.
+        - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
     - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
     - `plot_footprint_refs`: [boolean=true] Include the footprint references.
     - `plot_footprint_values`: [boolean=true] Include the footprint values.
     - `plot_sheet_reference`: [boolean=false] Currently without effect.
     - `tent_vias`: [boolean=true] Cover the vias.
+    - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
     - `variant`: [string=''] Board variant to apply.
 
 * PDF PCB Print (Portable Document Format)
@@ -1131,9 +1163,13 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
+                                     The replacement pattern can contain %n for the inner layer number and %N for the layer number.
+                                     Example '.g%n'.
         - `line_width`: [number=0.15] [0.02,2] For objects without width [mm] (KiCad 5).
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `negative_plot`: [boolean=false] Invert black and white.
@@ -1146,6 +1182,7 @@ Next time you need this list just use an alias, like this:
         - `scaling`: [number=1] Scale factor (0 means autoscaling).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
+        - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
         - `width_adjust`: [number=0] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
@@ -1209,9 +1246,13 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
+                                     The replacement pattern can contain %n for the inner layer number and %N for the layer number.
+                                     Example '.g%n'.
         - `line_width`: [number=0.25] [0.02,2] For objects without width [mm] (KiCad 5).
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `negative_plot`: [boolean=false] Invert black and white.
@@ -1220,6 +1261,7 @@ Next time you need this list just use an alias, like this:
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `plot_sheet_reference`: [boolean=false] Currently without effect.
         - `tent_vias`: [boolean=true] Cover the vias.
+        - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
 
 * SVG Schematic Print
