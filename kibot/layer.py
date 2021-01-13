@@ -228,6 +228,7 @@ class Layer(Optionable):
     def __str__(self):
         return "{} ({} '{}' {})".format(self.layer, self._id, self.description, self.suffix)
 
+
 for i in range(1, 30):
     name = 'In'+str(i)+'.Cu'
     Layer.DEFAULT_LAYER_NAMES[name] = pcbnew.In1_Cu+i-1
