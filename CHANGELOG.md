@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - More control over the name of the drill and gerber files.
 - More options to customize the excellon output.
 - Custom reports for plot outputs (i.e. custom gerber job generation)
+- Example configurations for gerber and drill files for:
+  - [Elecrow](https://www.elecrow.com/)
+  - [FusionPCB](https://www.seeedstudio.io/fusion.html)
+  - [JLCPCB](https://jlcpcb.com/)
+  - [P-Ban](https://www.p-ban.com/)
+  - [PCBWay](https://www.pcbway.com)
 
 ### Changed
 - Now the default output name applies to the DRC and ERC report names.
