@@ -168,6 +168,13 @@ outputs:
     type: 'dxf'
     dir: 'Example/dxf_dir'
     options:
+      # [list(dict)] A list of customized reports for the manufacturer
+      custom_reports:
+        # [string=''] Content for the report. Use ${basename} for the project name without extension.
+        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        - content: ''
+          # [string='Custom_report.txt'] File name for the custom report
+          output: 'Custom_report.txt'
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''
@@ -291,6 +298,13 @@ outputs:
       # [boolean=true] Creates a file with information about all the generated gerbers.
       # You can use it in gerbview to load all gerbers at once
       create_gerber_job_file: true
+      # [list(dict)] A list of customized reports for the manufacturer
+      custom_reports:
+        # [string=''] Content for the report. Use ${basename} for the project name without extension.
+        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        - content: ''
+          # [string='Custom_report.txt'] File name for the custom report
+          output: 'Custom_report.txt'
       # [boolean=false] Disable aperture macros (workaround for buggy CAM software) (KiCad 6)
       disable_aperture_macros: false
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
@@ -347,6 +361,13 @@ outputs:
     type: 'hpgl'
     dir: 'Example/hpgl_dir'
     options:
+      # [list(dict)] A list of customized reports for the manufacturer
+      custom_reports:
+        # [string=''] Content for the report. Use ${basename} for the project name without extension.
+        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        - content: ''
+          # [string='Custom_report.txt'] File name for the custom report
+          output: 'Custom_report.txt'
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''
@@ -663,6 +684,13 @@ outputs:
     type: 'pdf'
     dir: 'Example/pdf_dir'
     options:
+      # [list(dict)] A list of customized reports for the manufacturer
+      custom_reports:
+        # [string=''] Content for the report. Use ${basename} for the project name without extension.
+        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        - content: ''
+          # [string='Custom_report.txt'] File name for the custom report
+          output: 'Custom_report.txt'
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''
@@ -789,6 +817,13 @@ outputs:
     options:
       # [boolean=true] force A4 paper size
       a4_output: true
+      # [list(dict)] A list of customized reports for the manufacturer
+      custom_reports:
+        # [string=''] Content for the report. Use ${basename} for the project name without extension.
+        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        - content: ''
+          # [string='Custom_report.txt'] File name for the custom report
+          output: 'Custom_report.txt'
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''
@@ -891,6 +926,13 @@ outputs:
     type: 'svg'
     dir: 'Example/svg_dir'
     options:
+      # [list(dict)] A list of customized reports for the manufacturer
+      custom_reports:
+        # [string=''] Content for the report. Use ${basename} for the project name without extension.
+        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        - content: ''
+          # [string='Custom_report.txt'] File name for the custom report
+          output: 'Custom_report.txt'
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''

@@ -6,9 +6,11 @@
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 import os
+import re
 from pcbnew import GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, F_Cu, B_Cu, Edge_Cuts
-from .out_base import (BaseOutput)
-from .error import (PlotError, KiPlotConfigurationError)
+from .optionable import Optionable
+from .out_base import BaseOutput
+from .error import PlotError, KiPlotConfigurationError
 from .layer import Layer
 from .gs import GS
 from .misc import KICAD_VERSION_5_99, W_NOLAYER
@@ -17,6 +19,17 @@ from .macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
+
+
+class CustomReport(Optionable):
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.output = 'Custom_report.txt'
+            """ File name for the custom report """
+            self.content = ''
+            """ Content for the report. Use ${basename} for the project name without extension.
+                Use ${filename(LAYER)} for the file corresponding to LAYER """
 
 
 class AnyLayerOptions(VariantOptions):
@@ -47,7 +60,14 @@ class AnyLayerOptions(VariantOptions):
                 Example '.g%n' """
             self.edge_cut_extension = ''
             """ Used to configure the edge cuts layer extension for Protel mode """
+            self.custom_reports = CustomReport
+            """ [list(dict)] A list of customized reports for the manufacturer """
         super().__init__()
+
+    def config(self):
+        super().config()
+        if isinstance(self.custom_reports, type):
+            self.custom_reports = []
 
     def _configure_plot_ctrl(self, po, output_dir):
         logger.debug("Configuring plot controller for output")
@@ -93,6 +113,7 @@ class AnyLayerOptions(VariantOptions):
         # Apply the variants and filters
         exclude = self.filter_components(board)
         # Plot every layer in the output
+        generated = {}
         layers = Layer.solve(layers)
         for la in layers:
             suffix = la.suffix
@@ -134,9 +155,29 @@ class AnyLayerOptions(VariantOptions):
                 os.rename(k_filename, filename)
             if create_job:
                 jobfile_writer.AddGbrFile(id, os.path.basename(filename))
+            generated[la.layer] = os.path.basename(filename)
         # Create the job file
         if create_job:
             jobfile_writer.CreateJobFile(self.expand_filename(output_dir, po.gerber_job_file, 'job', 'gbrjob'))
+        # Custom reports
+        regex_fname = re.compile(r'\$\{filename\(.*\)\}')
+        for report in self.custom_reports:
+            filename = report.output
+            content = report.content
+            # Replace special white spaces
+            content = content.replace('\\r', chr(13))
+            content = content.replace('\\n', chr(10))
+            content = content.replace('\\t', chr(9))
+            # Replace file names, compatible with gerber_zipper_action
+            content = content.replace('${basename}', GS.pcb_basename)
+            for name, file in generated.items():
+                content = content.replace('${filename('+name+')}', file)
+            # Replace unused layers
+            content = regex_fname.sub('', content)
+            # Create the report
+            logger.debug('Creating custom report `'+filename+'`')
+            with open(os.path.join(output_dir, filename), 'wt') as f:
+                f.write(content)
         # Restore the eliminated layers
         if exclude:
             self.unfilter_components(board)

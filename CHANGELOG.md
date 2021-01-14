@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now layers can be selected using the default KiCad names.
 - More control over the name of the drill and gerber files.
 - More options to customize the excellon output.
+- Custom reports for plot outputs (i.e. custom gerber job generation)
 
 ### Changed
 - Now the default output name applies to the DRC and ERC report names.

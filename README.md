@@ -662,6 +662,11 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `dxf` output.
       * Valid keys:
+        - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
+          * Valid keys:
+            - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
+                         Use ${filename(LAYER)} for the file corresponding to LAYER.
+            - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
@@ -759,6 +764,11 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `create_gerber_job_file`: [boolean=true] Creates a file with information about all the generated gerbers.
                                     You can use it in gerbview to load all gerbers at once.
+        - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
+          * Valid keys:
+            - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
+                         Use ${filename(LAYER)} for the file corresponding to LAYER.
+            - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `disable_aperture_macros`: [boolean=false] Disable aperture macros (workaround for buggy CAM software) (KiCad 6).
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
@@ -801,6 +811,11 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `hpgl` output.
       * Valid keys:
+        - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
+          * Valid keys:
+            - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
+                         Use ${filename(LAYER)} for the file corresponding to LAYER.
+            - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
@@ -1025,6 +1040,11 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
+    - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
+      * Valid keys:
+        - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
+                     Use ${filename(LAYER)} for the file corresponding to LAYER.
+        - `output`: [string='Custom_report.txt'] File name for the custom report.
     - `dir`: [string='.'] Output directory for the generated files.
     - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                     A short-cut to use for simple cases where a variant is an overkill.
@@ -1045,6 +1065,11 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf` output.
       * Valid keys:
+        - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
+          * Valid keys:
+            - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
+                         Use ${filename(LAYER)} for the file corresponding to LAYER.
+            - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
@@ -1160,6 +1185,11 @@ Next time you need this list just use an alias, like this:
     - `options`: [dict] Options for the `ps` output.
       * Valid keys:
         - `a4_output`: [boolean=true] force A4 paper size.
+        - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
+          * Valid keys:
+            - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
+                         Use ${filename(LAYER)} for the file corresponding to LAYER.
+            - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
@@ -1243,6 +1273,11 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `svg` output.
       * Valid keys:
+        - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
+          * Valid keys:
+            - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
+                         Use ${filename(LAYER)} for the file corresponding to LAYER.
+            - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
