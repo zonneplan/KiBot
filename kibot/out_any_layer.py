@@ -9,12 +9,11 @@ import os
 import re
 from pcbnew import GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, F_Cu, B_Cu, Edge_Cuts
 from .optionable import Optionable
-from .out_base import BaseOutput
+from .out_base import BaseOutput, VariantOptions
 from .error import PlotError, KiPlotConfigurationError
 from .layer import Layer
 from .gs import GS
 from .misc import KICAD_VERSION_5_99, W_NOLAYER
-from .out_base import VariantOptions
 from .macros import macros, document  # noqa: F401
 from . import log
 
