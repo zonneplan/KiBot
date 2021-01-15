@@ -59,3 +59,12 @@ outputs:
       left_digits: 3
       right_digits: 3
       output: "%f.drl"
+
+  - name: P-Ban
+    comment: ZIP file for P-Ban
+    type: compress
+    dir: P-Ban
+    options:
+      files:
+        - source: P-Ban/*
+          dest: /

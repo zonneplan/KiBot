@@ -46,3 +46,12 @@ outputs:
       pth_and_npth_single_file: true
       use_aux_axis_as_origin: true
       output: "%f.TXT"
+
+  - name: FusionPCB
+    comment: ZIP file for FusionPCB
+    type: compress
+    dir: FusionPCB
+    options:
+      files:
+        - source: FusionPCB/*
+          dest: /

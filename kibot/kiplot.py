@@ -266,6 +266,7 @@ def generate_outputs(outputs, target, invert, skip_pre):
                 load_sch()
             config_output(out)
             logger.info('- '+str(out))
+            GS.current_output = out.name
             try:
                 out.run(get_output_dir(out.dir), board)
             except PlotError as e:

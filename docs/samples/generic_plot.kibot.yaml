@@ -161,6 +161,29 @@ outputs:
         # [string='KiBot Bill of Materials'] BoM title
         title: 'KiBot Bill of Materials'
 
+  # Archiver (files compressor):
+  # This is used to generate groups of files in compressed file format.
+  - name: 'compress_example'
+    comment: 'Generates a compressed file containing output files.'
+    type: 'compress'
+    dir: 'Example/compress_dir'
+    options:
+      # [string='auto'] [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one
+      compression: 'auto'
+      # [list(dict)] Which files will be included
+      files:
+        # [string=''] Destination directory inside the archive, empty means the same of the file
+        - dest: ''
+          # [string='.*'] A regular expression that source files must match
+          filter: '.*'
+          # [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
+          # Note this pattern is applied to the output dir specified with -d comman line option
+          source: '*'
+      # [string='ZIP'] [ZIP,TAR,RAR] Output file format
+      format: 'ZIP'
+      # [string='%f-%i%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options
+      output: '%f-%i%v.%x'
+
   # DXF (Drawing Exchange Format):
   # This output is what you get from the File/Plot menu in pcbnew.
   - name: 'dxf_example'

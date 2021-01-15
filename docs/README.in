@@ -568,7 +568,8 @@ kibot --list
 - For ERC, DRC, BoM XML update and PCB/SCH print install [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/)
 - BoM files (HTML/CSV/TSV/TXT/XML/XLSX) can be generated using the internal BoM generator or using [KiBoM](https://github.com/INTI-CMNB/KiBoM).
 - For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
-- For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw)
+- For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw). Also install the convert (from imagemagick) and rsvg-convert (from librsvg2-bin) tools.
+- To create RAR files install the rar tool.
 
 ### Installation on Ubuntu/Debian
 

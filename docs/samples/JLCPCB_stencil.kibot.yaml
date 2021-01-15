@@ -45,3 +45,12 @@ outputs:
       npth_id: '-NPTH'
       metric_units: false
       output: "%f%i.%x"
+
+  - name: JLCPCB
+    comment: ZIP file for JLCPCB
+    type: compress
+    dir: JLCPCB
+    options:
+      files:
+        - source: JLCPCB/*
+          dest: /

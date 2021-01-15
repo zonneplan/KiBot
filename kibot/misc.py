@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """ Miscellaneous definitions """
@@ -162,6 +162,7 @@ W_MISFLDNAME = '(W046) '
 W_MISS3D = '(W047) '
 W_FAILDL = '(W048) '
 W_NOLAYER = '(W049) '
+W_EMPTYZIP = '(W050) '
 
 
 class Rect(object):

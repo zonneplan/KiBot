@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -57,6 +57,8 @@ class GS(object):
     pcb_comp = None
     # Current variant/s
     variant = None
+    # Name for the output we are generating
+    current_output = None
     # Global defaults
     #  This is used as default value for classes supporting "output" option
     def_global_output = '%f-%i%v.%x'

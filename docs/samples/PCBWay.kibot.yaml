@@ -51,3 +51,13 @@ outputs:
       pth_id: ''
       npth_id: '-NPTH'
       output: "%f%i.drl"
+
+  - name: PCBWay
+    comment: ZIP file for PCBWay
+    type: compress
+    dir: PCBWay
+    options:
+      format: ZIP
+      files:
+        - source: PCBWay/*
+          dest: /

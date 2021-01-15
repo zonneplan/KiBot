@@ -646,6 +646,26 @@ Next time you need this list just use an alias, like this:
             - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic..
             - `title`: [string='KiBot Bill of Materials'] BoM title.
 
+* Archiver (files compressor)
+  * Type: `compress`
+  * Description: Generates a compressed file containing output files.
+                 This is used to generate groups of files in compressed file format.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `compress` output.
+      * Valid keys:
+        - `compression`: [string='auto'] [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one.
+        - `files`: [list(dict)] Which files will be included.
+          * Valid keys:
+            - `dest`: [string=''] Destination directory inside the archive, empty means the same of the file.
+            - `filter`: [string='.*'] A regular expression that source files must match.
+            - `source`: [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
+                        Note this pattern is applied to the output dir specified with -d comman line option.
+        - `format`: [string='ZIP'] [ZIP,TAR,RAR] Output file format.
+        - `output`: [string='%f-%i%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
+
 * DXF (Drawing Exchange Format)
   * Type: `dxf`
   * Description: Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
@@ -1450,7 +1470,8 @@ Options:
 - For ERC, DRC, BoM XML update and PCB/SCH print install [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/)
 - BoM files (HTML/CSV/TSV/TXT/XML/XLSX) can be generated using the internal BoM generator or using [KiBoM](https://github.com/INTI-CMNB/KiBoM).
 - For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
-- For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw)
+- For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw). Also install the convert (from imagemagick) and rsvg-convert (from librsvg2-bin) tools.
+- To create RAR files install the rar tool.
 
 ### Installation on Ubuntu/Debian
 

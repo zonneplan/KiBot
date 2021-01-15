@@ -48,3 +48,12 @@ outputs:
       pth_id: ''
       npth_id: '-NPTH'
       output: "%f%i.TXT"
+
+  - name: Elecrow
+    comment: ZIP file for Elecrow
+    type: compress
+    dir: Elecrow
+    options:
+      files:
+        - source: Elecrow/*
+          dest: /
