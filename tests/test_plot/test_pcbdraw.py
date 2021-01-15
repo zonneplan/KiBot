@@ -72,7 +72,7 @@ def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
         o.config()
         cov.load()
         cov.start()
-        o.run('', None)
+        o.run('')
         cov.stop()
         cov.save()
         assert 'using unreliable PNG/JPG' in caplog.text, caplog.text
@@ -91,7 +91,7 @@ def test_pcbdraw_miss_convert(caplog, monkeypatch):
         o.config()
         cov.load()
         cov.start()
-        o.run('', None)
+        o.run('')
         cov.stop()
         cov.save()
         assert 'using unreliable PNG/JPG' in caplog.text, caplog.text

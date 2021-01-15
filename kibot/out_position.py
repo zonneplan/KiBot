@@ -87,7 +87,7 @@ class PositionOptions(VariantOptions):
                 new_columns[new_col] = new_name
             self.columns = new_columns
 
-    def _do_position_plot_ascii(self, board, output_dir, columns, modulesStr, maxSizes):
+    def _do_position_plot_ascii(self, output_dir, columns, modulesStr, maxSizes):
         topf = None
         botf = None
         bothf = None
@@ -145,7 +145,7 @@ class PositionOptions(VariantOptions):
         if bothf is not None:
             bothf.close()
 
-    def _do_position_plot_csv(self, board, output_dir, columns, modulesStr):
+    def _do_position_plot_csv(self, output_dir, columns, modulesStr):
         topf = None
         botf = None
         bothf = None
@@ -200,8 +200,8 @@ class PositionOptions(VariantOptions):
             return PositionOptions.is_pure_smd_5, PositionOptions.is_not_virtual_5
         return PositionOptions.is_pure_smd_6, PositionOptions.is_not_virtual_6
 
-    def run(self, output_dir, board):
-        super().run(output_dir, board)
+    def run(self, output_dir):
+        super().run(output_dir)
         columns = self.columns.values()
         # Note: the parser already checked the units are milimeters or inches
         conv = 1.0
@@ -214,7 +214,7 @@ class PositionOptions(VariantOptions):
         modules = []
         is_pure_smd, is_not_virtual = self.get_attr_tests()
         quote_char = '"' if self.format == 'CSV' else ''
-        for m in sorted(board.GetModules(), key=lambda c: _ref_key(c.GetReference())):
+        for m in sorted(GS.board.GetModules(), key=lambda c: _ref_key(c.GetReference())):
             ref = m.GetReference()
             value = None
             # Apply any filter or variant data
@@ -265,9 +265,9 @@ class PositionOptions(VariantOptions):
             maxlengths.append(max_l)
         # Note: the parser already checked the format is ASCII or CSV
         if self.format == 'ASCII':
-            self._do_position_plot_ascii(board, output_dir, columns, modules, maxlengths)
+            self._do_position_plot_ascii(output_dir, columns, modules, maxlengths)
         else:  # if self.format == 'CSV':
-            self._do_position_plot_csv(board, output_dir, columns, modules)
+            self._do_position_plot_csv(output_dir, columns, modules)
 
 
 @output_class

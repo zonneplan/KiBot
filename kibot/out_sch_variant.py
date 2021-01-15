@@ -12,8 +12,8 @@ class Sch_Variant_Options(VariantOptions):
     def __init__(self):
         super().__init__()
 
-    def run(self, output_dir, board):
-        super().run(output_dir, board)
+    def run(self, output_dir):
+        super().run(output_dir)
         # Create the schematic
         GS.sch.save_variant(output_dir)
 

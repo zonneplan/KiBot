@@ -24,8 +24,8 @@ class PDF_Sch_PrintOptions(VariantOptions):
         super().__init__()
         self.add_to_doc('variant', "Not fitted components are crossed")
 
-    def run(self, output_dir, board):
-        super().run(output_dir, board)
+    def run(self, output_dir):
+        super().run(output_dir)
         check_eeschema_do()
         if self._comps:
             # Save it to a temporal dir

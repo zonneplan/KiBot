@@ -355,7 +355,7 @@ class KiBoMOptions(BaseOptions):
             self.conf.save(conf)
             self.conf = conf
 
-    def run(self, output_dir, board):
+    def run(self, output_dir):
         check_script(CMD_KIBOM, URL_KIBOM, '1.8.0')
         format = self.format.lower()
         prj = GS.sch_no_ext

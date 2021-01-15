@@ -96,10 +96,10 @@ class AnyLayerOptions(VariantOptions):
         self.uncross_modules(board, self.comps_hash)
         self.restore_paste_and_glue(board, self.comps_hash)
 
-    def run(self, output_dir, board, layers):
-        super().run(output_dir, board)
+    def run(self, output_dir, layers):
+        super().run(output_dir)
         # fresh plot controller
-        plot_ctrl = PLOT_CONTROLLER(board)
+        plot_ctrl = PLOT_CONTROLLER(GS.board)
         # set up plot options for the whole output
         po = plot_ctrl.GetPlotOptions()
         self._configure_plot_ctrl(po, output_dir)
@@ -107,10 +107,10 @@ class AnyLayerOptions(VariantOptions):
         # We need to assist KiCad
         create_job = po.GetCreateGerberJobFile()
         if create_job:
-            jobfile_writer = GERBER_JOBFILE_WRITER(board)
+            jobfile_writer = GERBER_JOBFILE_WRITER(GS.board)
         plot_ctrl.SetColorMode(True)
         # Apply the variants and filters
-        exclude = self.filter_components(board)
+        exclude = self.filter_components(GS.board)
         # Plot every layer in the output
         generated = {}
         layers = Layer.solve(layers)
@@ -179,7 +179,7 @@ class AnyLayerOptions(VariantOptions):
                 f.write(content)
         # Restore the eliminated layers
         if exclude:
-            self.unfilter_components(board)
+            self.unfilter_components(GS.board)
 
     def read_vals_from_po(self, po):
         # excludeedgelayer
@@ -213,5 +213,5 @@ class AnyLayer(BaseOutput):
         if isinstance(self.layers, type):
             raise KiPlotConfigurationError("Missing `layers` list")
 
-    def run(self, output_dir, board):
-        self.options.run(output_dir, board, self.layers)
+    def run(self, output_dir):
+        self.options.run(output_dir, self.layers)

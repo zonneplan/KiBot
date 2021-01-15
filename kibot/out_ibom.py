@@ -89,8 +89,8 @@ class IBoMOptions(VariantOptions):
         super().config()
         self.netlist_file = self.expand_filename('', self.netlist_file, 'ibom', 'xml')
 
-    def run(self, output_dir, board):
-        super().run(output_dir, board)
+    def run(self, output_dir):
+        super().run(output_dir)
         check_script(CMD_IBOM, URL_IBOM)
         logger.debug('Doing Interactive BoM')
         # Tell ibom we don't want to use the screen

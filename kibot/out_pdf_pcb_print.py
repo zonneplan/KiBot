@@ -85,8 +85,8 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         self.restore_paste_and_glue(board, comps_hash)
         return fname, fproj
 
-    def run(self, output_dir, board, layers):
-        super().run(board, layers)
+    def run(self, output_dir, layers):
+        super().run(layers)
         check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.5.2')
         layers = Layer.solve(layers)
         # Output file name
@@ -104,7 +104,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             cmd.append('--separate')
         if self.mirror:
             cmd.append('--mirror')
-        board_name, proj_name = self.filter_components(board)
+        board_name, proj_name = self.filter_components(GS.board)
         cmd.extend([board_name, output_dir])
         if GS.debug_enabled:
             cmd.insert(1, '-vv')
@@ -146,5 +146,5 @@ class PDF_Pcb_Print(BaseOutput):  # noqa: F821
         if isinstance(self.layers, type):
             raise KiPlotConfigurationError("Missing `layers` list")
 
-    def run(self, output_dir, board):
-        self.options.run(output_dir, board, self.layers)
+    def run(self, output_dir):
+        self.options.run(output_dir, self.layers)

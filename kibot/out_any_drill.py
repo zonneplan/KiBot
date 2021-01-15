@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -102,13 +102,13 @@ class AnyDrill(BaseOptions):
         # PTH
         return self.pth_id if self.pth_id is not None else d+'_drill'
 
-    def run(self, output_dir, board):
+    def run(self, output_dir):
         # dialog_gendrill.cpp:357
         if self.use_aux_axis_as_origin:
-            offset = get_aux_origin(board)
+            offset = get_aux_origin(GS.board)
         else:
             offset = wxPoint(0, 0)
-        drill_writer, ext = self._configure_writer(board, offset)
+        drill_writer, ext = self._configure_writer(GS.board, offset)
 
         logger.debug("Generating drill files in "+output_dir)
         gen_map = self.map is not None

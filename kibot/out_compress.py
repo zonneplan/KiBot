@@ -104,10 +104,8 @@ class CompressOptions(BaseOptions):
             ext += '.'+sub_ext
         return ext
 
-    def run(self, output_dir, board):
+    def run(self, output_dir):
         # Output file name
-        logger.debug('output_dir '+output_dir)
-        logger.debug('GS.out_dir '+GS.out_dir)
         output = self.expand_filename(output_dir, self.output, GS.current_output, self.solve_extension())
         logger.debug('Collecting files')
         output_real = os.path.realpath(output)

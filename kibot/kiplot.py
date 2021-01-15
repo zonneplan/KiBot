@@ -124,6 +124,9 @@ def exec_with_retry(cmd):
 
 
 def load_board(pcb_file=None):
+    if GS.board is not None:
+        # Already loaded
+        return GS.board
     import pcbnew
     if not pcb_file:
         GS.check_pcb()
@@ -172,8 +175,7 @@ def get_board_comps_data(comps):
         Note that we do it every time the function is called to reset transformation filters like rot_footprint. """
     if not GS.pcb_file:
         return
-    if not GS.board:
-        load_board()
+    load_board()
     comps_hash = {c.ref: c for c in comps}
     for m in GS.board.GetModules():
         ref = m.GetReference()
@@ -256,19 +258,18 @@ def generate_outputs(outputs, target, invert, skip_pre):
         logger.debug('Skipping all outputs')
         return
     # Generate outputs
-    board = None
     for out in outputs:
         if (n == 0) or ((out.name in target) ^ invert):
             # Should we load the PCB?
-            if out.is_pcb() and (board is None):
-                board = load_board()
+            if out.is_pcb():
+                load_board()
             if out.is_sch():
                 load_sch()
             config_output(out)
             logger.info('- '+str(out))
             GS.current_output = out.name
             try:
-                out.run(get_output_dir(out.dir), board)
+                out.run(get_output_dir(out.dir))
             except PlotError as e:
                 logger.error("In output `"+str(out)+"`: "+str(e))
                 exit(PLOT_ERROR)

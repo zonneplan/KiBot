@@ -55,8 +55,8 @@ class BaseOutput(RegOutput):
             # Configure them using an empty tree
             self.options.config()
 
-    def run(self, output_dir, board):
-        self.options.run(output_dir, board)
+    def run(self, output_dir):
+        self.options.run(output_dir)
 
 
 class BoMRegex(Optionable):
@@ -253,7 +253,7 @@ class VariantOptions(BaseOptions):
         for gi in self.old_badhes:
             gi.SetLayer(self.badhes)
 
-    def run(self, output_dir, board):
+    def run(self, output_dir):
         """ Makes the list of components available """
         if not self.dnf_filter and not self.variant:
             return

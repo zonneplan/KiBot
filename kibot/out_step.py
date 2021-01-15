@@ -185,8 +185,8 @@ class STEPOptions(VariantOptions):
                     models.push_front(model)
         return fname
 
-    def run(self, output_dir, board):
-        super().run(output_dir, board)
+    def run(self, output_dir):
+        super().run(output_dir)
         # Output file name
         output = self.expand_filename(output_dir, self.output, '3D', 'step')
         # Make units explicit

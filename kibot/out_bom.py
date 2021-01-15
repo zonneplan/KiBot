@@ -384,7 +384,7 @@ class BoMOptions(BaseOptions):
             # This is the ordered list with the case style defined by the user
             self.columns = columns
 
-    def run(self, output_dir, board):
+    def run(self, output_dir):
         format = self.format.lower()
         output = self.expand_filename_sch(output_dir, self.output, 'bom', format)
         # Add some info needed for the output to the config object.

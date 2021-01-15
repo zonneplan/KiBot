@@ -227,8 +227,8 @@ class PcbDrawOptions(VariantOptions):
                 cmd.append(svg)
         return svg
 
-    def run(self, output_dir, board):
-        super().run(output_dir, board)
+    def run(self, output_dir):
+        super().run(output_dir)
         check_script(PCBDRAW, URL_PCBDRAW, '0.6.0')
         # Output file name
         output = self.expand_filename(output_dir, self.output, 'bottom' if self.bottom else 'top', self.format)
