@@ -88,7 +88,7 @@ def list_pre_and_outs(logger, outputs):
     if len(outputs):
         logger.info('Outputs:')
         for o in outputs:
-            config_output(o)
+            config_output(o, dry=True)
             logger.info('- '+str(o))
 
 

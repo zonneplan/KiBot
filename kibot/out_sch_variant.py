@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
@@ -11,6 +11,9 @@ from .macros import macros, document, output_class  # noqa: F401
 class Sch_Variant_Options(VariantOptions):
     def __init__(self):
         super().__init__()
+
+    def get_targets(self, parent, out_dir):
+        return GS.sch.file_names_variant(out_dir)
 
     def run(self, output_dir):
         super().run(output_dir)

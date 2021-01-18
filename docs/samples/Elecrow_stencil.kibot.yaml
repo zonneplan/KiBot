@@ -55,5 +55,8 @@ outputs:
     dir: Elecrow
     options:
       files:
-        - source: Elecrow/*
+        - from_output: gerbers
           dest: /
+        - from_output: drill
+          dest: /
+

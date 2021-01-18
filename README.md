@@ -661,6 +661,8 @@ Next time you need this list just use an alias, like this:
           * Valid keys:
             - `dest`: [string=''] Destination directory inside the archive, empty means the same of the file.
             - `filter`: [string='.*'] A regular expression that source files must match.
+            - `from_output`: [string=''] Collect files from the selected output.
+                             When used the `source` option is ignored.
             - `source`: [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
                         Note this pattern is applied to the output dir specified with -d comman line option.
         - `format`: [string='ZIP'] [ZIP,TAR,RAR] Output file format.

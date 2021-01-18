@@ -57,6 +57,8 @@ class GS(object):
     pcb_comp = None
     # Current variant/s
     variant = None
+    # All the outputs
+    outputs = None
     # Name for the output we are generating
     current_output = None
     # Global defaults

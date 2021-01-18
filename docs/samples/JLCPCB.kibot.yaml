@@ -59,5 +59,8 @@ outputs:
     dir: JLCPCB
     options:
       files:
-        - source: JLCPCB/*
+        - from_output: gerbers
           dest: /
+        - from_output: drill
+          dest: /
+

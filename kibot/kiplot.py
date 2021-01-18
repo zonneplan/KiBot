@@ -241,15 +241,34 @@ def get_output_dir(o_dir):
     return outdir
 
 
-def config_output(out):
+def config_output(out, dry=False):
+    # Should we load the PCB?
+    if not dry:
+        if out.is_pcb():
+            load_board()
+        if out.is_sch():
+            load_sch()
     try:
         out.config()
     except KiPlotConfigurationError as e:
         config_error("In section '"+out.name+"' ("+out.type+"): "+str(e))
 
 
+def run_output(out):
+    GS.current_output = out.name
+    try:
+        out.run(get_output_dir(out.dir))
+        out._done = True
+    except PlotError as e:
+        logger.error("In output `"+str(out)+"`: "+str(e))
+        exit(PLOT_ERROR)
+    except KiPlotConfigurationError as e:
+        config_error("In section '"+out.name+"' ("+out.type+"): "+str(e))
+
+
 def generate_outputs(outputs, target, invert, skip_pre):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
+    GS.outputs = outputs
     preflight_checks(skip_pre)
     # Check if all must be skipped
     n = len(target)
@@ -260,20 +279,8 @@ def generate_outputs(outputs, target, invert, skip_pre):
     # Generate outputs
     for out in outputs:
         if (n == 0) or ((out.name in target) ^ invert):
-            # Should we load the PCB?
-            if out.is_pcb():
-                load_board()
-            if out.is_sch():
-                load_sch()
             config_output(out)
             logger.info('- '+str(out))
-            GS.current_output = out.name
-            try:
-                out.run(get_output_dir(out.dir))
-            except PlotError as e:
-                logger.error("In output `"+str(out)+"`: "+str(e))
-                exit(PLOT_ERROR)
-            except KiPlotConfigurationError as e:
-                config_error("In section '"+out.name+"' ("+out.type+"): "+str(e))
+            run_output(out)
         else:
             logger.debug('Skipping `%s` output', str(out))

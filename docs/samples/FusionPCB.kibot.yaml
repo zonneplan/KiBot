@@ -53,5 +53,8 @@ outputs:
     dir: FusionPCB
     options:
       files:
-        - source: FusionPCB/*
+        - from_output: gerbers
           dest: /
+        - from_output: drill
+          dest: /
+

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -1601,3 +1601,14 @@ class Schematic(object):
             f.write(' (lib (name n)(type Legacy)(uri ${KIPRJMOD}/n.lib)(options "")(descr ""))\n')
             f.write(')\n')
         return fname
+
+    def file_names_variant(self, dest_dir):
+        """ Returns a list of file names created by save_variant() """
+        fnames = [os.path.join(dest_dir, 'y.lib'),
+                  os.path.join(dest_dir, 'n.lib'),
+                  os.path.join(dest_dir, os.path.basename(self.fname)),
+                  os.path.join(dest_dir, 'sym-lib-table')]
+        # Sub-sheets
+        for sch in self.sheets:
+            fnames.append(os.path.join(dest_dir, sch.file.replace('/', '_')))
+        return fnames

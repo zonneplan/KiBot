@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -226,6 +226,9 @@ class PcbDrawOptions(VariantOptions):
                 svg = _get_tmp_name('.svg')
                 cmd.append(svg)
         return svg
+
+    def get_targets(self, parent, out_dir):
+        return [self.expand_filename(out_dir, self.output, 'bottom' if self.bottom else 'top', self.format)]
 
     def run(self, output_dir):
         super().run(output_dir)

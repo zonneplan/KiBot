@@ -59,5 +59,8 @@ outputs:
     options:
       format: ZIP
       files:
-        - source: PCBWay/*
+        - from_output: gerbers
           dest: /
+        - from_output: drill
+          dest: /
+

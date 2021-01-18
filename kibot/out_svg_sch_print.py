@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2020 @nerdyscout
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -24,6 +24,13 @@ class SVG_Sch_PrintOptions(VariantOptions):
             """ Filename for the output SVG (%i=schematic %x=svg) """
         super().__init__()
         self.add_to_doc('variant', "Not fitted components are crossed")
+
+    def get_targets(self, parent, out_dir):
+        id = 'schematic'
+        ext = 'svg'
+        if self.output:
+            return [self.expand_filename_sch(out_dir, self.output, id, ext)]
+        return [self.expand_filename_sch(out_dir, '%f.%x', id, ext)]
 
     def run(self, output_dir):
         super().run(output_dir)

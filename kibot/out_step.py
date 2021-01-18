@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import re
@@ -184,6 +184,9 @@ class STEPOptions(VariantOptions):
                 for model in restore:
                     models.push_front(model)
         return fname
+
+    def get_targets(self, parent, out_dir):
+        return [self.expand_filename_sch(out_dir, self.output, '3D', 'step')]
 
     def run(self, output_dir):
         super().run(output_dir)

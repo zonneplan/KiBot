@@ -102,13 +102,37 @@ class AnyDrill(BaseOptions):
         # PTH
         return self.pth_id if self.pth_id is not None else d+'_drill'
 
+    def get_file_names(self, output_dir):
+        """ Returns a dict containing KiCad names and its replacement.
+            If no replacement is needed the replacement is empty """
+        filenames = {}
+        files = [''] if self._unified_output else ['PTH', 'NPTH']
+        for d in files:
+            kicad_id = '-'+d if d else d
+            kibot_id = self.solve_id(d)
+            if self._ext == 'drl':
+                k_file = self.expand_filename(output_dir, '%f'+kicad_id+'.%x', '', self._ext)
+            else:  # gbr
+                k_file = self.expand_filename(output_dir, '%f'+kicad_id+'-drl.%x', '', self._ext)
+            file = ''
+            if self.output:
+                file = self.expand_filename(output_dir, self.output, kibot_id, self._ext)
+            filenames[k_file] = file
+            if self.map is not None:
+                k_file = self.expand_filename(output_dir, '%f'+kicad_id+'-drl_map.%x', '', self.map_ext)
+                file = ''
+                if self.map_output:
+                    file = self.expand_filename(output_dir, self.map_output, kibot_id+'_map', self.map_ext)
+                filenames[k_file] = file
+        return filenames
+
     def run(self, output_dir):
         # dialog_gendrill.cpp:357
         if self.use_aux_axis_as_origin:
             offset = get_aux_origin(GS.board)
         else:
             offset = wxPoint(0, 0)
-        drill_writer, ext = self._configure_writer(GS.board, offset)
+        drill_writer = self._configure_writer(GS.board, offset)
 
         logger.debug("Generating drill files in "+output_dir)
         gen_map = self.map is not None
@@ -118,23 +142,21 @@ class AnyDrill(BaseOptions):
         # We always generate the drill file
         drill_writer.CreateDrillandMapFilesSet(output_dir, True, gen_map)
         # Rename the files
-        files = [''] if self._unified_output else ['PTH', 'NPTH']
-        for d in files:
-            kicad_id = '-'+d if d else d
-            kibot_id = self.solve_id(d)
-            if self.output:
-                if ext == 'drl':
-                    k_file = self.expand_filename(output_dir, '%f'+kicad_id+'.%x', '', ext)
-                else:  # gbr
-                    k_file = self.expand_filename(output_dir, '%f'+kicad_id+'-drl.%x', '', ext)
-                file = self.expand_filename(output_dir, self.output, kibot_id, ext)
-                os.rename(k_file, file)
-            if gen_map and self.map_output:
-                k_file = self.expand_filename(output_dir, '%f'+kicad_id+'-drl_map.%x', '', self.map_ext)
-                file = self.expand_filename(output_dir, self.map_output, kibot_id+'_map', self.map_ext)
-                os.rename(k_file, file)
+        files = self.get_file_names(output_dir)
+        for k_f, f in files.items():
+            if f:
+                os.rename(k_f, f)
         # Generate the report
         if self.report:
             drill_report_file = self.expand_filename(output_dir, self.report, 'drill_report', 'txt')
             logger.debug("Generating drill report: "+drill_report_file)
             drill_writer.GenDrillReportFile(drill_report_file)
+
+    def get_targets(self, parent, out_dir):
+        targets = []
+        files = self.get_file_names(out_dir)
+        for k_f, f in files.items():
+            targets.append(f if f else k_f)
+        if self.report:
+            targets.append(self.expand_filename(out_dir, self.report, 'drill_report', 'txt'))
+        return targets

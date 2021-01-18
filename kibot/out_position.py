@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2019 Romain Deterre (@rdeterre)
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -199,6 +199,13 @@ class PositionOptions(VariantOptions):
         if GS.kicad_version_n < KICAD_VERSION_5_99:
             return PositionOptions.is_pure_smd_5, PositionOptions.is_not_virtual_5
         return PositionOptions.is_pure_smd_6, PositionOptions.is_not_virtual_6
+
+    def get_targets(self, parent, out_dir):
+        ext = 'pos' if self.format == 'ASCII' else 'csv'
+        if self.separate_files_for_front_and_back:
+            return [self.expand_filename(out_dir, self.output, 'top_pos', ext),
+                    self.expand_filename(out_dir, self.output, 'bottom_pos', ext)]
+        return [self.expand_filename(out_dir, self.output, 'both_pos', ext)]
 
     def run(self, output_dir):
         super().run(output_dir)

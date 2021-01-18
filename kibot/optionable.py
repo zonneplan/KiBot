@@ -30,6 +30,7 @@ class Optionable(object):
         self._unkown_is_error = False
         self._error_context = ''
         self._tree = {}
+        self._configured = False
         super().__init__()
         if GS.global_output is not None and getattr(self, 'output', None):
             setattr(self, 'output', GS.global_output)
@@ -165,8 +166,9 @@ class Optionable(object):
         self._tree = tree
 
     def config(self):
-        if self._tree:
+        if self._tree and not self._configured:
             self._perform_config_mapping()
+            self._configured = True
 
     def get_attrs_for(self):
         """ Returns all attributes """

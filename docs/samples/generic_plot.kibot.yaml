@@ -176,6 +176,9 @@ outputs:
         - dest: ''
           # [string='.*'] A regular expression that source files must match
           filter: '.*'
+          # [string=''] Collect files from the selected output.
+          # When used the `source` option is ignored
+          from_output: ''
           # [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
           # Note this pattern is applied to the output dir specified with -d comman line option
           source: '*'

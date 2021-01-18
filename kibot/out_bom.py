@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: MIT
 # Project: KiBot (formerly KiPlot)
 """
@@ -408,6 +408,9 @@ class BoMOptions(BaseOptions):
             do_bom(output, format, comps, self)
         except BoMError as e:
             raise KiPlotConfigurationError(str(e))
+
+    def get_targets(self, parent, out_dir):
+        return [self.expand_filename_sch(out_dir, self.output, 'bom', self.format.lower())]
 
 
 @output_class

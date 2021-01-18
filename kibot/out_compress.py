@@ -12,7 +12,8 @@ from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED, ZIP_BZIP2, ZIP_LZMA
 from tarfile import open as tar_open
 from collections import OrderedDict
 from .gs import GS
-from .misc import MISSING_TOOL, WRONG_INSTALL, W_EMPTYZIP
+from .kiplot import config_output, get_output_dir, run_output
+from .misc import MISSING_TOOL, WRONG_INSTALL, W_EMPTYZIP, WRONG_ARGUMENTS, INTERNAL_ERROR
 from .optionable import Optionable, BaseOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -27,6 +28,9 @@ class FilesList(Optionable):
             self.source = '*'
             """ File names to add, wildcards allowed. Use ** for recursive match.
                 Note this pattern is applied to the output dir specified with -d comman line option """
+            self.from_output = ''
+            """ Collect files from the selected output.
+                When used the `source` option is ignored """
             self.filter = '.*'
             """ A regular expression that source files must match """
             self.dest = ''
@@ -104,7 +108,10 @@ class CompressOptions(BaseOptions):
             ext += '.'+sub_ext
         return ext
 
-    def run(self, output_dir):
+    def get_targets(self, parent, out_dir):
+        return [self.expand_filename(out_dir, self.output, parent.name, self.solve_extension())]
+
+    def run(self, output_dir, parent):
         # Output file name
         output = self.expand_filename(output_dir, self.output, GS.current_output, self.solve_extension())
         logger.debug('Collecting files')
@@ -112,7 +119,31 @@ class CompressOptions(BaseOptions):
         # Collect the files
         files = OrderedDict()
         for f in self.files:
-            for fname in filter(re.compile(f.filter).match, glob.iglob(os.path.join(GS.out_dir, f.source), recursive=True)):
+            # Get the list of candidates
+            files_list = None
+            if f.from_output:
+                for out in GS.outputs:
+                    if out.name == f.from_output:
+                        config_output(out)
+                        files_list = out.get_targets(get_output_dir(out.dir))
+                        break
+                if files_list is None:
+                    logger.error('Unknown output `{}` selected in {}'.format(f.from_output, parent))
+                    exit(WRONG_ARGUMENTS)
+                for file in files_list:
+                    if not os.path.isfile(file):
+                        # The target doesn't exist
+                        if not out._done:
+                            # The output wasn't created in this run, try running it
+                            run_output(out)
+                        if not os.path.isfile(file):
+                            # Still missing, something is wrong
+                            logger.error('Unable to generate `{}` from {}'.format(file, out))
+                            exit(INTERNAL_ERROR)
+            else:
+                files_list = glob.iglob(os.path.join(GS.out_dir, f.source), recursive=True)
+            # Filter and adapt them
+            for fname in filter(re.compile(f.filter).match, files_list):
                 fname_real = os.path.realpath(fname)
                 # Avoid including the output
                 if fname_real == output_real:
@@ -143,3 +174,6 @@ class Compress(BaseOutput):  # noqa: F821
         with document:
             self.options = CompressOptions
             """ [dict] Options for the `compress` output """
+
+    def run(self, output_dir):
+        self.options.run(output_dir, self)

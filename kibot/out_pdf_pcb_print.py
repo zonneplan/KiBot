@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -85,6 +85,11 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         self.restore_paste_and_glue(board, comps_hash)
         return fname, fproj
 
+    def get_targets(self, out_dir, layers):
+        layers = Layer.solve(layers)
+        id = '+'.join([la.suffix for la in layers])
+        return [self.expand_filename(out_dir, self.output, id, 'pdf')]
+
     def run(self, output_dir, layers):
         super().run(layers)
         check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.5.2')
@@ -145,6 +150,9 @@ class PDF_Pcb_Print(BaseOutput):  # noqa: F821
         # We need layers
         if isinstance(self.layers, type):
             raise KiPlotConfigurationError("Missing `layers` list")
+
+    def get_targets(self, out_dir):
+        return self.options.get_targets(out_dir, self.layers)
 
     def run(self, output_dir):
         self.options.run(output_dir, self.layers)
