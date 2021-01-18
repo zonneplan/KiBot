@@ -75,6 +75,20 @@ class Layer(Optionable):
         'F.CrtYd': 'F.Courtyard',
         'B.CrtYd': 'B.Courtyard',
     }
+    # Protel extensions
+    PROTEL_EXTENSIONS = {
+        pcbnew.F_Cu: 'gtl',
+        pcbnew.B_Cu: 'gbl',
+        pcbnew.F_Adhes: 'gta',
+        pcbnew.B_Adhes: 'gba',
+        pcbnew.F_Paste: 'gtp',
+        pcbnew.B_Paste: 'gbp',
+        pcbnew.F_SilkS: 'gto',
+        pcbnew.B_SilkS: 'gbo',
+        pcbnew.F_Mask: 'gts',
+        pcbnew.B_Mask: 'gbs',
+        pcbnew.Edge_Cuts: 'gm1',
+    }
     # Names from the board file
     _pcb_layers = None
     _plot_layers = None
@@ -87,8 +101,9 @@ class Layer(Optionable):
             self.suffix = ''
             """ Suffix used in file names related to this layer. Derived from the name if not specified """
             self.description = ''
-            """ A description for the layer, for documentation purposes """  # pragma: no cover
+            """ A description for the layer, for documentation purposes """
         self._unkown_is_error = True
+        self._protel_extension = None
 
     def config(self):
         super().config()
@@ -105,6 +120,20 @@ class Layer(Optionable):
     @property
     def id(self):
         return self._id
+
+    def fix_protel_ext(self):
+        """ Makes sure we have a defined Protel extension """
+        if self._protel_extension is not None:
+            # Already set, keep it
+            return
+        if self._is_inner:
+            self._protel_extension = 'g'+str(self.id-pcbnew.F_Cu+1)
+            return
+        if self.id in Layer.PROTEL_EXTENSIONS:
+            self._protel_extension = Layer.PROTEL_EXTENSIONS[self.id]
+            return
+        self._protel_extension = 'gbr'
+        return
 
     @staticmethod
     def solve(values):
@@ -135,6 +164,7 @@ class Layer(Optionable):
                     # Check if the layer is in use
                     if layer._is_inner and (layer._id < 1 or layer._id >= layer_cnt - 1):
                         raise PlotError("Inner layer `{}` is not valid for this board".format(layer))
+                    layer.fix_protel_ext()
                     new_vals.append(layer)
                 else:  # A string
                     ext = None
@@ -184,6 +214,7 @@ class Layer(Optionable):
         layer.suffix = name.replace('.', '_')
         layer.description = Layer.DEFAULT_LAYER_DESC.get(name)
         layer._get_layer_id_from_name()
+        layer.fix_protel_ext()
         return layer
 
     @staticmethod
@@ -213,7 +244,7 @@ class Layer(Optionable):
             if id is not None:
                 # 2) List from the PCB
                 self._id = id
-                self._is_inner = id < pcbnew.B_Cu
+                self._is_inner = id > pcbnew.F_Cu and id < pcbnew.B_Cu
             elif self.layer.startswith("Inner"):
                 # 3) Inner.N names
                 m = match(r"^Inner\.([0-9]+)$", self.layer)
