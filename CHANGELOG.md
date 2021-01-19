@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal BoM: The "Quantity" column no longer includes the DNF/C status.
   This status was moved to a separated column named `Status`.
   You can join both columns if you want.
+- Internal BoM: HTML rows are highlighted on hover (not just the cell).
 
 ### Fixed
 - Extra data about drill marks in gerber files.

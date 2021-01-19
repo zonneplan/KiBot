@@ -22,13 +22,12 @@ BG_GEN_L = "#E6FFEE"
 BG_KICAD_L = "#FFE6B3"
 BG_USER_L = "#E6F9FF"
 BG_EMPTY_L = "#FF8080"
-BG_GEN_D = "#D2EBDA"
-BG_KICAD_D = "#EBD29F"
-BG_USER_D = "#D2E5EB"
-BG_EMPTY_D = "#EB6C6C"
 HEAD_COLOR_R = "#982020"
+HEAD_COLOR_R_L = "#c85050"
 HEAD_COLOR_G = "#009879"
+HEAD_COLOR_G_L = "#30c8a9"
 HEAD_COLOR_B = "#0e4e8e"
+HEAD_COLOR_B_L = "#3e7ebe"
 STYLE_COMMON = (" .cell-title { vertical-align: bottom; }\n"
                 " .cell-info { vertical-align: top; padding: 1em;}\n"
                 " .cell-stats { vertical-align: top; padding: 1em;}\n"
@@ -42,14 +41,6 @@ STYLE_COMMON = (" .cell-title { vertical-align: bottom; }\n"
                 " .td-gen1 { text-align: center; background-color: "+BG_GEN_L+";}\n"
                 " .td-kicad1 { text-align: center; background-color: "+BG_KICAD_L+";}\n"
                 " .td-user1 { text-align: center; background-color: "+BG_USER_L+";}\n"
-                " .td-empty0:hover { text-align: center; background-color: "+BG_EMPTY_D+";}\n"
-                " .td-gen0:hover { text-align: center; background-color: "+BG_GEN_D+";}\n"
-                " .td-kicad0:hover { text-align: center; background-color: "+BG_KICAD_D+";}\n"
-                " .td-user0:hover { text-align: center; background-color: "+BG_USER_D+";}\n"
-                " .td-empty1:hover { text-align: center; background-color: "+BG_EMPTY_D+";}\n"
-                " .td-gen1:hover { text-align: center; background-color: "+BG_GEN_D+";}\n"
-                " .td-kicad1:hover { text-align: center; background-color: "+BG_KICAD_D+";}\n"
-                " .td-user1:hover { text-align: center; background-color: "+BG_USER_D+";}\n"
                 " .color-ref { margin: 25px 0; }\n"
                 " .color-ref th { text-align: left }\n"
                 " .color-ref td { padding: 5px 20px; }\n"
@@ -80,8 +71,10 @@ TABLE_MODERN = """
  .content-table tbody tr { border-bottom: 1px solid #dddddd; }
  .content-table tbody tr:nth-of-type(even) { background-color: #f3f3f3; }
  .content-table tbody tr:last-of-type { border-bottom: 2px solid @bg@; }
+ .content-table * tr:hover > td { background-color: @bgl@ !important }
 """
-TABLE_CLASSIC = " .content-table, .content-table th, .content-table td { border: 1px solid black; }\n"
+TABLE_CLASSIC = (" .content-table, .content-table th, .content-table td { border: 1px solid black; }\n"
+                 " .content-table * tr:hover > td { background-color: #B0B0B0 !important }\n")
 # JavaScript table sorter. Is floating around internet, i.e.:
 # - Stack Overflow: https://stackoverflow.com/questions/61122696/addeventlistener-after-change-event
 # - pimpmykicadbom: https://gitlab.com/antto/pimpmykicadbom
@@ -307,11 +300,15 @@ def write_html(filename, groups, headings, head_names, cfg):
             # content-table details
             if style_name.endswith('green'):
                 head_color = HEAD_COLOR_G
+                head_color_l = HEAD_COLOR_G_L
             elif style_name.endswith('blue'):
                 head_color = HEAD_COLOR_B
+                head_color_l = HEAD_COLOR_B_L
             else:
                 head_color = HEAD_COLOR_R
+                head_color_l = HEAD_COLOR_R_L
             style += TABLE_MODERN.replace('@bg@', head_color)
+            style += TABLE_MODERN.replace('@bgl@', head_color_l)
         else:
             # Background is white, so we change the sorting cursor to black
             style = style.replace('border-color:#ffffff', 'border-color:#000000')
