@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - The multipart id to references of multipart components others than part 1.
 - Internal BoM: `no_conflict` option to exclude fields from conflict detection.
+- Internal BoM: HTML tables can be sorted selecting a column (Java Script).
 - Support for KICAD_CONFIG_HOME defined from inside KiCad.
 - Now layers can be selected using the default KiCad names.
 - More control over the name of the drill and gerber files.

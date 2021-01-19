@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -53,7 +53,15 @@ STYLE_COMMON = (" .cell-title { vertical-align: bottom; }\n"
                 " .color-ref { margin: 25px 0; }\n"
                 " .color-ref th { text-align: left }\n"
                 " .color-ref td { padding: 5px 20px; }\n"
-                " .head-table { margin-bottom: 2em; }\n")
+                " .head-table { margin-bottom: 2em; }\n"
+                # Table sorting cursor. 60% transparent when disabled. Solid white when enabled.
+                " .tg-sort-header::-moz-selection{background:0 0}\n"
+                " .tg-sort-header::selection{background:0 0}.tg-sort-header{cursor:pointer}\n"
+                " .tg-sort-header:after{content:'';float:right;border-width:0 5px 5px;border-style:solid;\n"
+                "                       border-color:#ffffff transparent;visibility:hidden;opacity:.6}\n"
+                " .tg-sort-header:hover:after{visibility:visible}\n"
+                " .tg-sort-asc:after,.tg-sort-asc:hover:after,.tg-sort-desc:after{visibility:visible;opacity:1}\n"
+                " .tg-sort-desc:after{border-bottom:none;border-width:5px 5px 0}\n")
 TABLE_MODERN = """
  .content-table {
    border-collapse:
@@ -74,6 +82,124 @@ TABLE_MODERN = """
  .content-table tbody tr:last-of-type { border-bottom: 2px solid @bg@; }
 """
 TABLE_CLASSIC = " .content-table, .content-table th, .content-table td { border: 1px solid black; }\n"
+# JavaScript table sorter. Is floating around internet, i.e.:
+# - Stack Overflow: https://stackoverflow.com/questions/61122696/addeventlistener-after-change-event
+# - pimpmykicadbom: https://gitlab.com/antto/pimpmykicadbom
+# - Table Generator: https://www.tablesgenerator.com/
+SORT_CODE = ('<script charset="utf-8">\n'
+             '  var TGSort = window.TGSort || function(n) {\n'
+             '    "use strict";\n'
+             '    function r(n) { return n ? n.length : 0 }\n'
+             '    function t(n, t, e, o = 0) { for (e = r(n); o < e; ++o) t(n[o], o) }\n'
+             '    function e(n) { return n.split("").reverse().join("") }\n'
+             '    function o(n) {\n'
+             '      var e = n[0];\n'
+             '      return t(n, function(n) {\n'
+             '        for (; !n.startsWith(e);) e = e.substring(0, r(e) - 1)\n'
+             '      }), r(e)\n'
+             '    }\n'
+             '    function u(n, r, e = []) {\n'
+             '      return t(n, function(n) {\n'
+             '        r(n) && e.push(n)\n'
+             '      }), e\n'
+             '    }\n'
+             '    var a = parseFloat;\n'
+             '    function i(n, r) {\n'
+             '      return function(t) {\n'
+             '        var e = "";\n'
+             '        return t.replace(n, function(n, t, o) {\n'
+             '          return e = t.replace(r, "") + "." + (o || "").substring(1)\n'
+             '        }), a(e)\n'
+             '      }\n'
+             '    }\n'
+             r'    var s = i(/^(?:\s*)([+-]?(?:\d+)(?:,\d{3})*)(\.\d*)?$/g, /,/g),''\n'
+             r'      c = i(/^(?:\s*)([+-]?(?:\d+)(?:\.\d{3})*)(,\d*)?$/g, /\./g);''\n'
+             '    function f(n) {\n'
+             '      var t = a(n);\n'
+             '      return !isNaN(t) && r("" + t) + 1 >= r(n) ? t : NaN\n'
+             '    }\n'
+             '    function d(n) {\n'
+             '      var e = [],\n'
+             '        o = n;\n'
+             '      return t([f, s, c], function(u) {\n'
+             '        var a = [],\n'
+             '          i = [];\n'
+             '        t(n, function(n, r) {\n'
+             '          r = u(n), a.push(r), r || i.push(n)\n'
+             '        }), r(i) < r(o) && (o = i, e = a)\n'
+             '      }), r(u(o, function(n) {\n'
+             '        return n == o[0]\n'
+             '      })) == r(o) ? e : []\n'
+             '    }\n'
+             '    function v(n) {\n'
+             '      if ("TABLE" == n.nodeName) {\n'
+             '        for (var a = function(r) {\n'
+             '            var e, o, u = [],\n'
+             '              a = [];\n'
+             '            return function n(r, e) {\n'
+             '              e(r), t(r.childNodes, function(r) {\n'
+             '                n(r, e)\n'
+             '              })\n'
+             '            }(n, function(n) {\n'
+             '              "TR" == (o = n.nodeName) ? (e = [], u.push(e), a.push(n)) : "TD" != o && "TH" != o || e.push(n)\n'  # noqa: E501
+             '            }), [u, a]\n'
+             '          }(), i = a[0], s = a[1], c = r(i), f = c > 1 && r(i[0]) < r(i[1]) ? 1 : 0, v = f + 1, p = i[f], h = r(p), l = [], g = [], N = [], m = v; m < c; ++m) {\n'  # noqa: E501
+             '          for (var T = 0; T < h; ++T) {\n'
+             '            r(g) < h && g.push([]);\n'
+             '            var C = i[m][T],\n'
+             '              L = C.textContent || C.innerText || "";\n'
+             '            g[T].push(L.trim())\n'
+             '          }\n'
+             '          N.push(m - v)\n'
+             '        }\n'
+             '        t(p, function(n, t) {\n'
+             '          l[t] = 0;\n'
+             '          var a = n.classList;\n'
+             '          a.add("tg-sort-header"), n.addEventListener("click", function() {\n'
+             '            var n = l[t];\n'
+             '            ! function() {\n'
+             '              for (var n = 0; n < h; ++n) {\n'
+             '                var r = p[n].classList;\n'
+             '                r.remove("tg-sort-asc"), r.remove("tg-sort-desc"), l[n] = 0\n'
+             '              }\n'
+             '            }(), (n = 1 == n ? -1 : +!n) && a.add(n > 0 ? "tg-sort-asc" : "tg-sort-desc"), l[t] = n;\n'
+             '            var i, f = g[t],\n'
+             '              m = function(r, t) {\n'
+             '                return n * f[r].localeCompare(f[t]) || n * (r - t)\n'
+             '              },\n'
+             '              T = function(n) {\n'
+             '                var t = d(n);\n'
+             '                if (!r(t)) {\n'
+             '                  var u = o(n),\n'
+             '                    a = o(n.map(e));\n'
+             '                  t = d(n.map(function(n) {\n'
+             '                    return n.substring(u, r(n) - a)\n'
+             '                  }))\n'
+             '                }\n'
+             '                return t\n'
+             '              }(f);\n'
+             '            (r(T) || r(T = r(u(i = f.map(Date.parse), isNaN)) ? [] : i)) && (m = function(r, t) {\n'
+             '              var e = T[r],\n'
+             '                o = T[t],\n'
+             '                u = isNaN(e),\n'
+             '                a = isNaN(o);\n'
+             '              return u && a ? 0 : u ? -n : a ? n : e > o ? n : e < o ? -n : n * (r - t)\n'
+             '            });\n'
+             '            var C, L = N.slice();\n'
+             '            L.sort(m);\n'
+             '            for (var E = v; E < c; ++E)(C = s[E].parentNode).removeChild(s[E]);\n'
+             '            for (E = v; E < c; ++E) C.appendChild(s[v + L[E - v]])\n'
+             '          })\n'
+             '        })\n'
+             '      }\n'
+             '    }\n'
+             '    n.addEventListener("DOMContentLoaded", function() {\n'
+             '      for (var t = n.getElementsByClassName("content-table"), e = 0; e < r(t); ++e) try {\n'
+             '        v(t[e])\n'
+             '      } catch (n) {}\n'
+             '    })\n'
+             '  }(document)\n'
+             '</script>\n')
 
 
 def cell_class(col):
@@ -187,6 +313,8 @@ def write_html(filename, groups, headings, head_names, cfg):
                 head_color = HEAD_COLOR_R
             style += TABLE_MODERN.replace('@bg@', head_color)
         else:
+            # Background is white, so we change the sorting cursor to black
+            style = style.replace('border-color:#ffffff', 'border-color:#000000')
             style += TABLE_CLASSIC
 
     with open(filename, "w") as html:
@@ -264,6 +392,7 @@ def write_html(filename, groups, headings, head_names, cfg):
                 html.write('<tr><td class="td-empty0">Empty Fields</td></tr>\n')
             html.write('</table>\n')
 
+        html.write(SORT_CODE)
         html.write("</body></html>")
 
     return True
