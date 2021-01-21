@@ -1858,7 +1858,8 @@ The internal list of rotations is:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout
 - **Sources of inspiration and good ideas**:
+  - **JLC Kicad Tools**: Matthew Lai @matthewlai
   - **KiCad Gerber Zipper**: @g200kg
-  - **pimpmykicadbom **: Anton Savov (@antto)
+  - **pimpmykicadbom**: Anton Savov (@antto)
 - **Others**:
   - **Robot in the logo**: Christian Plaza (from pixabay)
