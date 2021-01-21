@@ -12,12 +12,13 @@ from .gs import GS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
-from .kiplot import get_board_comps_data
-from .macros import macros, document, output_class  # noqa: F401
+from .kiplot import get_board_comps_data, load_any_sch
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
 from .var_kibom import KiBoM
+from .kicad.v5_sch import Schematic
 from .fil_base import BaseFilter, apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, reset_filters
+from .macros import macros, document, output_class  # noqa: F401
 from . import log
 # To debug the `with document` we can use:
 # from .mcpyrate.debug import macros, step_expansion
@@ -186,6 +187,27 @@ class NoConflict(Optionable):
         super().__init__()
 
 
+class Aggregate(Optionable):
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.file = ''
+            """ Name of the schematic to aggregate """
+            self.name = ''
+            """ Name to identify this source. If empty we use the name of the schematic """
+            self.ref_id = ''
+            """ A prefix to add to all the references from this project """
+            self.number = 1
+            """ Number of boards to build (components multiplier). Use negative to substract """
+
+    def config(self):
+        super().config()
+        if not self.file:
+            raise KiPlotConfigurationError("Missing or empty `file` in aggregate list ({})".format(str(self._tree)))
+        if not self.name:
+            self.name = os.path.splitext(os.path.basename(self.file))[0]
+
+
 class BoMOptions(BaseOptions):
     def __init__(self):
         with document:
@@ -256,6 +278,12 @@ class BoMOptions(BaseOptions):
             """ [list(string)] List of fields where we tolerate conflicts.
                 Use it to avoid undesired warnings.
                 By default the field indicated in `fit_field` and the field `part` are excluded """
+            self.aggregate = Aggregate
+            """ [list(dict)] Add components from other projects """
+            self.ref_id = ''
+            """ A prefix to add to all the references from this project. Used for multiple projects """
+            self.source_by_id = False
+            """ Generate the `Source BoM` column using the reference ID instead of the project name """
         self._format_example = 'CSV'
         super().__init__()
 
@@ -341,6 +369,9 @@ class BoMOptions(BaseOptions):
             for field in self.no_conflict:
                 no_conflict.add(field.lower())
         self.no_conflict = no_conflict
+        # Make sure aggregate is a list
+        if isinstance(self.aggregate, type):
+            self.aggregate = []
         # Columns
         self.column_rename = {}
         self.join = []
@@ -351,9 +382,11 @@ class BoMOptions(BaseOptions):
             # Ignore the part and footprint library, also sheetpath and the Reference in singular
             ignore = [ColumnList.COL_PART_LIB_L, ColumnList.COL_FP_LIB_L, ColumnList.COL_SHEETPATH_L,
                       ColumnList.COL_REFERENCE_L[:-1]]
-            if self.number <= 1:
-                # For one board avoid COL_GRP_BUILD_QUANTITY
-                ignore.append(ColumnList.COL_GRP_BUILD_QUANTITY_L)
+            if len(self.aggregate) == 0:
+                ignore.append(ColumnList.COL_SOURCE_BOM_L)
+                if self.number == 1:
+                    # For one board avoid COL_GRP_BUILD_QUANTITY
+                    ignore.append(ColumnList.COL_GRP_BUILD_QUANTITY_L)
             # Exclude the particular columns
             self.columns = [h for h in valid_columns if not h.lower() in ignore]
         else:
@@ -384,6 +417,24 @@ class BoMOptions(BaseOptions):
             # This is the ordered list with the case style defined by the user
             self.columns = columns
 
+    def aggregate_comps(self, comps):
+        self.qtys = {GS.sch_basename: self.number}
+        for prj in self.aggregate:
+            if not os.path.isfile(prj.file):
+                raise KiPlotConfigurationError("Missing `{}`".format(prj.file))
+            logger.debug('Adding components from project {} ({}) using reference id `{}`'.
+                         format(prj.name, prj.file, prj.ref_id))
+            self.qtys[prj.name] = prj.number
+            prj.sch = Schematic()
+            load_any_sch(prj.sch, prj.file, prj.name)
+            new_comps = prj.sch.get_components()
+            if prj.ref_id:
+                for c in new_comps:
+                    c.ref = prj.ref_id+c.ref
+                    c.ref_id = prj.ref_id
+            comps.extend(new_comps)
+            prj.source = os.path.basename(prj.file)
+
     def run(self, output_dir):
         format = self.format.lower()
         output = self.expand_filename_sch(output_dir, self.output, 'bom', format)
@@ -397,6 +448,12 @@ class BoMOptions(BaseOptions):
         # Get the components list from the schematic
         comps = GS.sch.get_components()
         get_board_comps_data(comps)
+        # Apply the reference prefix
+        for c in comps:
+            c.ref = self.ref_id+c.ref
+            c.ref_id = self.ref_id
+        # Aggregate components from other projects
+        self.aggregate_comps(comps)
         # Apply all the filters
         reset_filters(comps)
         apply_exclude_filter(comps, self.exclude_filter)
@@ -404,10 +461,27 @@ class BoMOptions(BaseOptions):
         apply_fixed_filter(comps, self.dnc_filter)
         # Apply the variant
         self.variant.filter(comps)
+        # We add the main project to the aggregate list so do_bom sees a complete list
+        base_sch = Aggregate()
+        base_sch.file = GS.sch_file
+        base_sch.name = GS.sch_basename
+        base_sch.ref_id = self.ref_id
+        base_sch.number = self.number
+        base_sch.sch = GS.sch
+        self.aggregate.insert(0, base_sch)
+        # To translate project to ID
+        if self.source_by_id:
+            self.source_to_id = {prj.name: prj.ref_id for prj in self.aggregate}
         try:
             do_bom(output, format, comps, self)
         except BoMError as e:
             raise KiPlotConfigurationError(str(e))
+        # Undo the reference prefix
+        if self.ref_id:
+            l_id = len(self.ref_id)
+            for c in filter(lambda c: c.project == GS.sch_basename, comps):
+                c.ref = c.ref[l_id:]
+                c.ref_id = ''
 
     def get_targets(self, parent, out_dir):
         return [self.expand_filename_sch(out_dir, self.output, 'bom', self.format.lower())]

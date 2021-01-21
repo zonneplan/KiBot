@@ -49,6 +49,8 @@ class ColumnList:
     COL_GRP_QUANTITY_L = COL_GRP_QUANTITY.lower()
     COL_GRP_BUILD_QUANTITY = 'Build Quantity'
     COL_GRP_BUILD_QUANTITY_L = COL_GRP_BUILD_QUANTITY.lower()
+    COL_SOURCE_BOM = 'Source BoM'
+    COL_SOURCE_BOM_L = COL_SOURCE_BOM.lower()
 
     # Generated columns
     COLUMNS_GEN_L = {
@@ -56,6 +58,7 @@ class ColumnList:
         COL_GRP_BUILD_QUANTITY_L: 1,
         COL_ROW_NUMBER_L: 1,
         COL_STATUS_L: 1,
+        COL_SOURCE_BOM_L: 1,
     }
 
     # Default columns
@@ -72,7 +75,8 @@ class ColumnList:
         COL_GRP_BUILD_QUANTITY,
         COL_STATUS,
         COL_DATASHEET,
-        COL_SHEETPATH
+        COL_SHEETPATH,
+        COL_SOURCE_BOM,
     ]
 
     # Default columns

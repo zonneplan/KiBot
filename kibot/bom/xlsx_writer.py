@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -67,14 +67,16 @@ def add_info(worksheet, column_widths, row, col_offset, formats, text, value):
 
 
 def compute_head_size(cfg):
-    head_size = 7
-    if cfg.xlsx.logo is None:
-        if not cfg.xlsx.title:
-            head_size -= 1
-        if cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info:
-            head_size -= 5
-        if head_size == 1:
-            head_size = 0
+    col_logo = 0 if cfg.xlsx.logo is None else 6
+    col_info = 1 if cfg.xlsx.title else 0
+    if not (cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info):
+        col_info += 5
+        if len(cfg.aggregate) > 1:
+            col_info += 6*len(cfg.aggregate)
+    head_size = max(col_logo, col_info)
+    if head_size:
+        # To separate
+        head_size += 1
     return head_size
 
 
@@ -110,6 +112,15 @@ def create_fmt_title(workbook, title):
         return None
     fmt_title = workbook.add_format(DEFAULT_FMT)
     fmt_title.set_font_size(24)
+    fmt_title.set_bold()
+    fmt_title.set_font_name('Arial')
+    fmt_title.set_align('left')
+    return fmt_title
+
+
+def create_fmt_subtitle(workbook):
+    fmt_title = workbook.add_format(DEFAULT_FMT)
+    fmt_title.set_font_size(18)
     fmt_title.set_bold()
     fmt_title.set_font_name('Arial')
     fmt_title.set_align('left')
@@ -202,6 +213,67 @@ def adjust_heights(worksheet, rows, max_width, head_size):
             worksheet.set_row(head_size+rn, 15.0*max_h)
 
 
+def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_subtitle):
+    if len(cfg.aggregate) == 1:
+        # Only one project
+        rc = r_info_start
+        if not cfg.xlsx.hide_pcb_info:
+            prj = cfg.aggregate[0]
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Schematic:", prj.name)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", cfg.variant.name)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Revision:", prj.sch.revision)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Date:", prj.sch.date)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "KiCad Version:", cfg.kicad_version)
+            col1 += 2
+        rc = r_info_start
+        if not cfg.xlsx.hide_stats_info:
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Groups:", cfg.n_groups)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", cfg.n_total)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", cfg.n_fitted)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", cfg.number)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", cfg.n_build)
+    else:
+        # Multiple projects
+        # Global stats
+        old_col1 = col1
+        rc = r_info_start
+        if not cfg.xlsx.hide_pcb_info:
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", cfg.variant.name)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "KiCad Version:", cfg.kicad_version)
+            col1 += 2
+        rc = r_info_start
+        if not cfg.xlsx.hide_stats_info:
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Groups:", cfg.n_groups)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", cfg.n_total)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", cfg.n_fitted)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", cfg.number)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", cfg.n_build)
+        # Individual stats
+        for prj in cfg.aggregate:
+            r_info_start += 5
+            col1 = old_col1
+            worksheet.set_row(r_info_start, 24)
+            worksheet.merge_range(r_info_start, col1, r_info_start, len(column_widths)-1, prj.sch.title, fmt_subtitle)
+            r_info_start += 1
+            rc = r_info_start
+            if not cfg.xlsx.hide_pcb_info:
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Schematic:", prj.name)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Revision:", prj.sch.revision)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Date:", prj.sch.date)
+                if prj.sch.company:
+                    rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Company:", prj.sch.company)
+                if prj.ref_id:
+                    rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "ID:", prj.ref_id)
+                col1 += 2
+            rc = r_info_start
+            if not cfg.xlsx.hide_stats_info:
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Groups:", prj.comp_groups)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", prj.comp_total)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", prj.comp_fitted)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", prj.number)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", prj.comp_build)
+
+
 def write_xlsx(filename, groups, col_fields, head_names, cfg):
     """
     Write BoM out to a XLSX file
@@ -245,6 +317,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     image_data = get_logo_data(cfg.xlsx.logo)
     # Title
     fmt_title = create_fmt_title(workbook, cfg.xlsx.title)
+    fmt_subtitle = create_fmt_subtitle(workbook)
     # Info
     fmt_info = create_fmt_info(workbook, cfg)
 
@@ -310,21 +383,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
             worksheet.merge_range(0, col1, 0, len(column_widths)-1, cfg.xlsx.title, fmt_title)
         # PCB & Stats Info
         if not (cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info):
-            rc = r_info_start
-            if not cfg.xlsx.hide_pcb_info:
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Schematic:", cfg.source)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", cfg.variant.name)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Revision:", cfg.revision)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Date:", cfg.date)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "KiCad Version:", cfg.kicad_version)
-                col1 += 2
-            rc = r_info_start
-            if not cfg.xlsx.hide_stats_info:
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Groups:", cfg.n_groups)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", cfg.n_total)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", cfg.n_fitted)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", cfg.number)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", cfg.n_build)
+            write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_subtitle)
 
         # Adjust cols and rows
         adjust_widths(worksheet, column_widths, max_width)

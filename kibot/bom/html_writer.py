@@ -32,6 +32,7 @@ STYLE_COMMON = (" .cell-title { vertical-align: bottom; }\n"
                 " .cell-info { vertical-align: top; padding: 1em;}\n"
                 " .cell-stats { vertical-align: top; padding: 1em;}\n"
                 " .title { font-size:2.5em; font-weight: bold; }\n"
+                " .subtitle { font-size:1.5em; font-weight: bold; }\n"
                 " .h2 { font-size:1.5em; font-weight: bold; }\n"
                 " .td-empty0 { text-align: center; background-color: "+BG_EMPTY+";}\n"
                 " .td-gen0 { text-align: center; background-color: "+BG_GEN+";}\n"
@@ -274,6 +275,75 @@ def embed_image(file):
     return int(w), int(h), 'data:image/png;base64,'+b64encode(s).decode('ascii')
 
 
+def write_stats(html, cfg):
+    if len(cfg.aggregate) == 1:
+        # Only one project
+        html.write('<tr>\n')
+        html.write(' <td class="cell-info">\n')
+        if not cfg.html.hide_pcb_info:
+            prj = cfg.aggregate[0]
+            html.write("   <b>Schematic</b>: {}<br>\n".format(prj.name))
+            html.write("   <b>Variant</b>: {}<br>\n".format(cfg.variant.name))
+            html.write("   <b>Revision</b>: {}<br>\n".format(prj.sch.revision))
+            html.write("   <b>Date</b>: {}<br>\n".format(prj.sch.date))
+            html.write("   <b>KiCad Version</b>: {}<br>\n".format(cfg.kicad_version))
+        html.write(' </td>\n')
+        html.write(' <td class="cell-stats">\n')
+        if not cfg.html.hide_stats_info:
+            html.write("   <b>Component Groups</b>: {}<br>\n".format(cfg.n_groups))
+            html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(cfg.n_total))
+            html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(cfg.n_fitted))
+            html.write("   <b>Number of PCBs</b>: {}<br>\n".format(cfg.number))
+            html.write("   <b>Total Components</b>: {t} (for {n} PCBs)<br>\n".format(n=cfg.number, t=cfg.n_build))
+        html.write(' </td>\n')
+        html.write('</tr>\n')
+    else:
+        # Multiple projects
+        # Global stats
+        html.write('<tr>\n')
+        html.write(' <td class="cell-info">\n')
+        if not cfg.html.hide_pcb_info:
+            html.write("   <b>Variant</b>: {}<br>\n".format(cfg.variant.name))
+            html.write("   <b>KiCad Version</b>: {}<br>\n".format(cfg.kicad_version))
+        html.write(' </td>\n')
+        html.write(' <td class="cell-stats">\n')
+        if not cfg.html.hide_stats_info:
+            html.write("   <b>Component Groups</b>: {}<br>\n".format(cfg.n_groups))
+            html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(cfg.n_total))
+            html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(cfg.n_fitted))
+            html.write("   <b>Number of PCBs</b>: {}<br>\n".format(cfg.number))
+            html.write("   <b>Total Components</b>: {t} (for {n} PCBs)<br>\n".format(n=cfg.number, t=cfg.n_build))
+        html.write(' </td>\n')
+        html.write('</tr>\n')
+        # Individual stats
+        for prj in cfg.aggregate:
+            html.write('<tr>\n')
+            html.write(' <td colspan="2" class="cell-title">\n')
+            html.write('  <div class="subtitle">'+prj.sch.title+'</div>\n')
+            html.write(' </td>\n')
+            html.write('</tr>\n')
+            html.write('<tr>\n')
+            html.write(' <td class="cell-info">\n')
+            if not cfg.html.hide_pcb_info:
+                html.write("   <b>Schematic</b>: {}<br>\n".format(prj.name))
+                html.write("   <b>Revision</b>: {}<br>\n".format(prj.sch.revision))
+                html.write("   <b>Date</b>: {}<br>\n".format(prj.sch.date))
+                if prj.sch.company:
+                    html.write("   <b>Company</b>: {}<br>\n".format(prj.sch.company))
+                if prj.ref_id:
+                    html.write("   <b>ID</b>: {}<br>\n".format(prj.ref_id))
+            html.write(' </td>\n')
+            html.write(' <td class="cell-stats">\n')
+            if not cfg.html.hide_stats_info:
+                html.write("   <b>Component Groups</b>: {}<br>\n".format(prj.comp_groups))
+                html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(prj.comp_total))
+                html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(prj.comp_fitted))
+                html.write("   <b>Number of PCBs</b>: {}<br>\n".format(prj.number))
+                html.write("   <b>Total Components</b>: {t} (for {n} PCBs)<br>\n".format(n=prj.number, t=prj.comp_build))
+            html.write(' </td>\n')
+            html.write('</tr>\n')
+
+
 def write_html(filename, groups, headings, head_names, cfg):
     """
     Write BoM out to a HTML file
@@ -340,7 +410,10 @@ def write_html(filename, groups, headings, head_names, cfg):
         if img or not cfg.html.hide_pcb_info or not cfg.html.hide_stats_info or cfg.html.title:
             html.write('<table class="head-table">\n')
             html.write('<tr>\n')
-            html.write(' <td rowspan="2">\n')
+            n = 2
+            if len(cfg.aggregate) > 1:
+                n += 2*len(cfg.aggregate)
+            html.write(' <td rowspan="{}">\n'.format(n))
             if img:
                 html.write('  <img src="'+img+'" alt="Logo" width="'+str(img_w)+'" height="'+str(img_h)+'">\n')
             html.write(' </td>\n')
@@ -349,24 +422,7 @@ def write_html(filename, groups, headings, head_names, cfg):
                 html.write('  <div class="title">'+cfg.html.title+'</div>\n')
             html.write(' </td>\n')
             html.write('</tr>\n')
-            html.write('<tr>\n')
-            html.write(' <td class="cell-info">\n')
-            if not cfg.html.hide_pcb_info:
-                html.write("   <b>Schematic</b>: {}<br>\n".format(cfg.source))
-                html.write("   <b>Variant</b>: {}<br>\n".format(cfg.variant.name))
-                html.write("   <b>Revision</b>: {}<br>\n".format(cfg.revision))
-                html.write("   <b>Date</b>: {}<br>\n".format(cfg.date))
-                html.write("   <b>KiCad Version</b>: {}<br>\n".format(cfg.kicad_version))
-            html.write(' </td>\n')
-            html.write(' <td class="cell-stats">\n')
-            if not cfg.html.hide_stats_info:
-                html.write("   <b>Component Groups</b>: {}<br>\n".format(cfg.n_groups))
-                html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(cfg.n_total))
-                html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(cfg.n_fitted))
-                html.write("   <b>Number of PCBs</b>: {}<br>\n".format(cfg.number))
-                html.write("   <b>Total Components</b>: {t} (for {n} PCBs)<br>\n".format(n=cfg.number, t=cfg.n_build))
-            html.write(' </td>\n')
-            html.write('</tr>\n')
+            write_stats(html, cfg)
             html.write('</table>\n')
 
         # Fitted groups

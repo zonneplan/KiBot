@@ -7,7 +7,7 @@ from sys import (exit)
 from .macros import macros, pre_class  # noqa: F401
 from .gs import (GS)
 from .optionable import Optionable
-from .kiplot import check_eeschema_do, exec_with_retry
+from .kiplot import check_eeschema_do, exec_with_retry, load_sch
 from .error import (KiPlotConfigurationError)
 from .misc import (CMD_EESCHEMA_DO, ERC_ERROR)
 from .log import (get_logger)
@@ -28,6 +28,9 @@ class Run_ERC(BasePreFlight):  # noqa: F821
 
     def run(self):
         check_eeschema_do()
+        # The schematic is loaded only before executing an output related to it.
+        # But here we need data from it.
+        load_sch()
         output = Optionable.expand_filename_sch(None, GS.out_dir, GS.def_global_output, 'erc', 'txt')
         logger.debug('ERC report: '+output)
         cmd = [CMD_EESCHEMA_DO, 'run_erc', '-o', output]

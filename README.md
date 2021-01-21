@@ -570,6 +570,12 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `bom` output.
       * Valid keys:
+        - `aggregate`: [list(dict)] Add components from other projects.
+          * Valid keys:
+            - `file`: [string=''] Name of the schematic to aggregate.
+            - `name`: [string=''] Name to identify this source. If empty we use the name of the schematic.
+            - `number`: [number=1] Number of boards to build (components multiplier). Use negative to substract.
+            - `ref_id`: [string=''] A prefix to add to all the references from this project.
         - `columns`: [list(dict)|list(string)] List of columns to display.
                      Can be just the name of the field.
           * Valid keys:
@@ -628,7 +634,9 @@ Next time you need this list just use an alias, like this:
         - `normalize_values`: [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.
         - `number`: [number=1] Number of boards to build (components multiplier).
         - `output`: [string='%f-%i%v.%x'] filename for the output (%i=bom). Affected by global options.
+        - `ref_id`: [string=''] A prefix to add to all the references from this project. Used for multiple projects.
         - `ref_separator`: [string=' '] Separator used for the list of references.
+        - `source_by_id`: [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name.
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `variant`: [string=''] Board variant, used to determine which components
                      are output to the BoM..
@@ -1846,9 +1854,11 @@ The internal list of rotations is:
 - **KiBoM**: Oliver Henry Walters (@SchrodingersGat)
 - **Interactive HTML BoM**: @qu1ck
 - **PcbDraw**: Jan Mrázek (@yaqwsx)
-- **KiCad Gerber Zipper**: @g200kg
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout
+- **Sources of inspiration and good ideas**:
+  - **KiCad Gerber Zipper**: @g200kg
+  - **pimpmykicadbom **: Anton Savov (@antto)
 - **Others**:
   - **Robot in the logo**: Christian Plaza (from pixabay)

@@ -4,7 +4,6 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-import re
 from datetime import datetime
 from sys import exit
 from .misc import (EXIT_BAD_ARGS)
@@ -94,37 +93,11 @@ class GS(object):
     def load_sch_title_block():
         if GS.sch_title is not None:
             return
-        GS.sch_title = ''
-        GS.sch_date = ''
-        GS.sch_rev = ''
-        GS.sch_comp = ''
-        re_val = re.compile(r"(\w+)\s+\"([^\"]+)\"")
-        with open(GS.sch_file) as f:
-            for line in f:
-                m = re_val.match(line)
-                if not m:
-                    if line.startswith("$EndDescr"):
-                        break
-                    # This line is executed, but coverage fails to detect it
-                    continue  # pragma: no cover
-                name, val = m.groups()
-                if name == "Title":
-                    GS.sch_title = val
-                elif name == "Date":
-                    GS.sch_date = val
-                elif name == "Rev":
-                    GS.sch_rev = val
-                elif name == "Comp":
-                    GS.sch_comp = val
-        if not GS.sch_date:
-            file_mtime = os.path.getmtime(GS.sch_file)
-            GS.sch_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d_%H-%M-%S')
-        if not GS.sch_title:
-            GS.sch_title = GS.sch_basename
-        logger.debug("SCH title: `{}`".format(GS.sch_title))
-        logger.debug("SCH date: `{}`".format(GS.sch_date))
-        logger.debug("SCH revision: `{}`".format(GS.sch_rev))
-        logger.debug("SCH company: `{}`".format(GS.sch_comp))
+        assert GS.sch is not None
+        GS.sch_title = GS.sch.title
+        GS.sch_date = GS.sch.date
+        GS.sch_rev = GS.sch.revision
+        GS.sch_comp = GS.sch.company
 
     @staticmethod
     def load_pcb_title_block():

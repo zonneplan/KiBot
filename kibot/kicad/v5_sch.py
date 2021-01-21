@@ -11,6 +11,7 @@ Currently oriented to collect the components for the BoM.
 # Encapsulate file/line
 import re
 import os
+from datetime import datetime
 from copy import deepcopy
 from collections import OrderedDict
 from .config import KiConf, un_quote
@@ -807,6 +808,10 @@ class SchematicComponent(object):
         self.footprint = ''
         self.datasheet = ''
         self.desc = ''
+        self.fields = []
+        self.dfields = {}
+        self.fields_bkp = None
+        self.dfields_bkp = None
         # Will be computed
         self.fitted = True
         self.included = True
@@ -941,7 +946,7 @@ class SchematicComponent(object):
         return '{} ({} {})'.format(ref, self.name, self.value)
 
     @staticmethod
-    def load(f, sheet_path, sheet_path_h, libs, fields, fields_lc):
+    def load(f, project, sheet_path, sheet_path_h, libs, fields, fields_lc):
         # L lib:name reference
         line = f.get_line()
         if not line or line[0] != 'L':
@@ -950,6 +955,7 @@ class SchematicComponent(object):
         if len(res) != 2:
             raise SchFileError('Malformed component label', line, f)
         comp = SchematicComponent()
+        comp.project = project
         comp.name, comp.f_ref = res
         res = comp.name.split(':')
         comp.lib = None
@@ -985,10 +991,6 @@ class SchematicComponent(object):
             comp.ar.append(SchematicAltRef.parse(line))
             line = f.get_line()
         # F field_number "text" orientation posX posY size Flags (see below) hjustify vjustify/italic/bold "name"
-        comp.fields = []
-        comp.dfields = {}
-        comp.fields_bkp = None
-        comp.dfields_bkp = None
         while line[0] == 'F':
             field = SchematicField.parse(line, f)
             name_lc = field.name.lower()
@@ -1275,7 +1277,7 @@ class SchematicSheet(object):
         self.sheet = None
         self.id = ''
 
-    def load_sheet(self, parent, sheet_path, sheet_path_h, libs, fields, fields_lc):
+    def load_sheet(self, project, parent, sheet_path, sheet_path_h, libs, fields, fields_lc):
         assert self.name
         self.sheet = Schematic()
         parent_dir = os.path.dirname(parent)
@@ -1283,7 +1285,7 @@ class SchematicSheet(object):
         if len(sheet_path_h) > 1:
             sheet_path_h += '/'
         sheet_path_h += self.name if self.name else 'Unknown'
-        self.sheet.load(os.path.join(parent_dir, self.file), sheet_path, sheet_path_h, libs, fields, fields_lc)
+        self.sheet.load(os.path.join(parent_dir, self.file), project, sheet_path, sheet_path_h, libs, fields, fields_lc)
         return self.sheet
 
     @staticmethod
@@ -1366,6 +1368,10 @@ class Schematic(object):
         while True:
             line = f.get_line()
             if line.startswith('$EndDescr'):
+                self.title = self.title_block['Title'] if 'Title' in self.title_block else ''
+                self.date = self.title_block['Date'] if 'Date' in self.title_block else ''
+                self.revision = self.title_block['Rev'] if 'Rev' in self.title_block else ''
+                self.company = self.title_block['Comp'] if 'Comp' in self.title_block else ''
                 return
             elif line.startswith('encoding'):
                 if line[9:14] != 'utf-8':
@@ -1382,7 +1388,7 @@ class Schematic(object):
                     raise SchFileError('Wrong entry in title block', line, f)
                 self.title_block[m.group(1)] = m.group(2)
 
-    def load(self, fname, sheet_path='', sheet_path_h='/', libs={}, fields=[], fields_lc=set()):
+    def load(self, fname, project, sheet_path='', sheet_path_h='/', libs={}, fields=[], fields_lc=set()):
         """ Load a v5.x KiCad Schematic.
             The caller must be sure the file exists.
             Only the schematics are loaded not the libs. """
@@ -1391,6 +1397,7 @@ class Schematic(object):
         self.libs = libs
         self.fields = fields
         self.fields_lc = fields_lc
+        self.project = project
         with open(fname, 'rt') as fh:
             f = SCHLineReader(fh, fname)
             line = f.get_line()
@@ -1410,7 +1417,18 @@ class Schematic(object):
             line = f.get_line()
             if not line.startswith('EELAYER END'):
                 raise SchFileError('Missing EELAYER END', line, f)
+            # Load the title block
             self._get_title_block(f)
+            # Fill in some missing info
+            if not self.date:
+                file_mtime = os.path.getmtime(fname)
+                self.date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d_%H-%M-%S')
+            if not self.title:
+                self.title = os.path.splitext(os.path.basename(fname))[0]
+            logger.debug("SCH title: `{}`".format(self.title))
+            logger.debug("SCH date: `{}`".format(self.date))
+            logger.debug("SCH revision: `{}`".format(self.revision))
+            logger.debug("SCH company: `{}`".format(self.company))
             line = f.get_line()
             self.all = []
             self.components = []
@@ -1421,7 +1439,7 @@ class Schematic(object):
             self.sheets = []
             while not line.startswith('$EndSCHEMATC'):
                 if line.startswith('$Comp'):
-                    obj = SchematicComponent.load(f, sheet_path, sheet_path_h, libs, fields, fields_lc)
+                    obj = SchematicComponent.load(f, project, sheet_path, sheet_path_h, libs, fields, fields_lc)
                     self.components.append(obj)
                 elif line.startswith('NoConn'):
                     obj = SchematicConnection.parse(False, line[7:], f)
@@ -1448,7 +1466,7 @@ class Schematic(object):
             # Load sub-sheets
             self.sub_sheets = []
             for sch in self.sheets:
-                self.sub_sheets.append(sch.load_sheet(fname, sheet_path, sheet_path_h, libs, fields, fields_lc))
+                self.sub_sheets.append(sch.load_sheet(project, fname, sheet_path, sheet_path_h, libs, fields, fields_lc))
 
     def get_files(self):
         """ A list of the names for all the sheets, including this one. """

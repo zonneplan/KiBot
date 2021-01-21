@@ -23,7 +23,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
-from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB)
+from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH)
 
 
 def test_erc_1():
@@ -49,7 +49,7 @@ def test_erc_fail_2():
     """ Using a dummy SCH """
     prj = '3Rs'
     ctx = context.TestContext('ERCFail2', prj, 'erc', '')
-    ctx.run(ERC_ERROR)
+    ctx.run(CORRUPTED_SCH)
     ctx.clean_up()
 
 

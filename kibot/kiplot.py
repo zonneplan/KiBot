@@ -145,19 +145,12 @@ def load_board(pcb_file=None):
     return board
 
 
-def load_sch():
-    if GS.sch:  # Already loaded
-        return
-    GS.check_sch()
-    # We can't yet load the new format
-    if GS.sch_file[-9:] == 'kicad_sch':
-        return
-    GS.sch = Schematic()
+def load_any_sch(sch, file, project):
     try:
-        GS.sch.load(GS.sch_file)
-        GS.sch.load_libs(GS.sch_file)
+        sch.load(file, project)
+        sch.load_libs(file)
         if GS.debug_level > 1:
-            logger.debug('Schematic dependencies: '+str(GS.sch.get_files()))
+            logger.debug('Schematic dependencies: '+str(sch.get_files()))
     except SchFileError as e:
         trace_dump()
         logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
@@ -168,6 +161,17 @@ def load_sch():
         logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
         logger.error('Line content: `{}`'.format(e.code))
         exit(EXIT_BAD_CONFIG)
+
+
+def load_sch():
+    if GS.sch:  # Already loaded
+        return
+    GS.check_sch()
+    # We can't yet load the new format
+    if GS.sch_file[-9:] == 'kicad_sch':
+        return
+    GS.sch = Schematic()
+    load_any_sch(GS.sch, GS.sch_file, GS.sch_basename)
 
 
 def get_board_comps_data(comps):

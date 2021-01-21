@@ -942,9 +942,11 @@ The internal list of rotations is:
 - **KiBoM**: Oliver Henry Walters (@SchrodingersGat)
 - **Interactive HTML BoM**: @qu1ck
 - **PcbDraw**: Jan Mrázek (@yaqwsx)
-- **KiCad Gerber Zipper**: @g200kg
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout
+- **Sources of inspiration and good ideas**:
+  - **KiCad Gerber Zipper**: @g200kg
+  - **pimpmykicadbom **: Anton Savov (@antto)
 - **Others**:
   - **Robot in the logo**: Christian Plaza (from pixabay)

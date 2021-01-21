@@ -166,8 +166,38 @@ class ComponentGroup(object):
             self.components.append(c)
             self.refs[c.ref] = c
 
-    def get_count(self):
-        return len(self.components)
+    def get_count(self, project=None):
+        if project is None:
+            # Total components
+            return len(self.components)
+        # Only for the specified project
+        return sum(map(lambda c: c.project == project, self.components))
+
+    def get_build_count(self):
+        if not self.is_fitted():
+            # Not fitted -> 0
+            return 0
+        if len(self.cfg.aggregate) == 1:
+            # Just one project
+            return len(self.components)*self.cfg.number
+        # Multiple projects, count them using the number of board for each project
+        return sum(map(lambda c: self.cfg.qtys[c.project], self.components))
+
+    def get_sources(self):
+        sources = {}
+        for c in self.components:
+            if c.project in sources:
+                sources[c.project] += 1
+            else:
+                sources[c.project] = 1
+        field = ''
+        for prj, n in sources.items():
+            if len(field):
+                field += ' '
+            if self.cfg.source_by_id:
+                prj = self.cfg.source_to_id[prj]
+            field += prj+'('+str(n)+')'
+        return field
 
     def is_fitted(self):
         # compare_components ensures all has the same status
@@ -196,7 +226,7 @@ class ComponentGroup(object):
         """ Alternative list of references using ranges """
         S = Joiner()
         for n in self.components:
-            P, N = (n.ref_prefix, _suffix_to_num(n.ref_suffix))
+            P, N = (n.ref_id+n.ref_prefix, _suffix_to_num(n.ref_suffix))
             S.add(P, N)
         return S.flush(self.cfg.ref_separator)
 
@@ -232,9 +262,10 @@ class ComponentGroup(object):
         else:
             self.fields[ColumnList.COL_REFERENCE_L] = self.get_refs()
         # Quantity
-        q = self.get_count()
-        self.fields[ColumnList.COL_GRP_QUANTITY_L] = str(q)
-        self.fields[ColumnList.COL_GRP_BUILD_QUANTITY_L] = str(q * self.cfg.number) if self.is_fitted() else "0"
+        self.fields[ColumnList.COL_GRP_QUANTITY_L] = str(self.get_count())
+        self.total = self.get_build_count()
+        self.fields[ColumnList.COL_GRP_BUILD_QUANTITY_L] = str(self.total)
+        self.fields[ColumnList.COL_SOURCE_BOM_L] = self.get_sources()
         # Group status
         status = ' '
         if not self.is_fitted():
@@ -301,6 +332,25 @@ def normalize_value(c, decimal_point):
     return '{} {}{}'.format(value, mult_s, unit)
 
 
+def compute_multiple_stats(cfg, groups):
+    for sch in cfg.aggregate:
+        sch.comp_total = 0
+        sch.comp_fitted = 0
+        sch.comp_build = 0
+        sch.comp_groups = 0
+        for g in groups:
+            g_l = g.get_count(sch.name)
+            if g_l:
+                sch.comp_groups = sch.comp_groups+1
+            sch.comp_total += g_l
+            if g.is_fitted():
+                sch.comp_fitted += g_l
+        sch.comp_build = sch.comp_fitted*sch.number
+        if cfg.debug_level > 1:
+            logger.debug('Stats for {}: total {} fitted {} build {}'.
+                         format(sch.name, sch.comp_total, sch.comp_fitted, sch.comp_build))
+
+
 def group_components(cfg, components):
     groups = []
     # Iterate through each component, and test whether a group for these already exists
@@ -343,6 +393,7 @@ def group_components(cfg, components):
     # Enumerate the groups and compute stats
     n_total = 0
     n_fitted = 0
+    n_build = 0
     c = 1
     dnf = 1
     cfg.n_groups = len(groups)
@@ -359,9 +410,15 @@ def group_components(cfg, components):
         n_total += g_l
         if is_fitted:
             n_fitted += g_l
+            n_build += g.total
     cfg.n_total = n_total
     cfg.n_fitted = n_fitted
-    cfg.n_build = n_fitted * cfg.number
+    cfg.n_build = n_build
+    if cfg.debug_level > 1:
+        logger.debug('Global stats: total {} fitted {} build {}'.format(n_total, n_fitted, n_build))
+    # Compute stats for multiple schematics
+    if len(cfg.aggregate) > 1:
+        compute_multiple_stats(cfg, groups)
     return groups
 
 
@@ -370,4 +427,7 @@ def do_bom(file_name, ext, comps, cfg):
     groups = group_components(cfg, comps)
     # Create the BoM
     logger.debug("Saving BOM File: "+file_name)
+    number = cfg.number
+    cfg.number = sum(map(lambda prj: prj.number, cfg.aggregate))
     write_bom(file_name, ext, groups, cfg.columns, cfg)
+    cfg.number = number

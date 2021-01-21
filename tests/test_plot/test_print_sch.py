@@ -67,7 +67,7 @@ def check_l1(ctx):
     ctx.expect_out_file(o_name)
     sch = Schematic()
     try:
-        sch.load(ctx.get_out_path(o_name))
+        sch.load(ctx.get_out_path(o_name), 'no_project')
     except SchFileError as e:
         logging.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
         logging.error('Line content: `{}`'.format(e.code))
