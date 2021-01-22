@@ -203,8 +203,8 @@ def test_auto_pcb_and_cfg():
 
     ctx.dont_expect_out_file(ctx.get_pos_both_filename())
     ctx.expect_out_file(ctx.get_pos_both_csv_filename())
-    assert ctx.search_err('Using PCB file: '+board_file)
-    assert ctx.search_err('Using config file: '+yaml_file)
+    assert ctx.search_out('Using PCB file: '+board_file)
+    assert ctx.search_out('Using config file: '+yaml_file)
 
     ctx.clean_up()
 
@@ -249,8 +249,8 @@ def test_auto_pcb_and_cfg_3():
 
     ctx.run(extra=['-s', 'all', '-i'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
 
-    assert ctx.search_err('Using SCH file: '+sch)
-    assert ctx.search_err('Using config file: '+yaml_file)
+    assert ctx.search_out('Using SCH file: '+sch)
+    assert ctx.search_out('Using config file: '+yaml_file)
 
     ctx.clean_up()
 
@@ -273,7 +273,7 @@ def test_auto_pcb_and_cfg_4():
     ctx.run(extra=['-s', 'all', '-i'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
 
     assert ctx.search_err('Using '+sch)
-    assert ctx.search_err('Using config file: '+yaml_file)
+    assert ctx.search_out('Using config file: '+yaml_file)
 
     ctx.clean_up()
 
@@ -293,7 +293,7 @@ def test_auto_pcb_and_cfg_5():
     ctx.run(extra=['-s', 'all', '-i'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
 
     assert ctx.search_err('Using (b_)?'+sch)
-    assert ctx.search_err('Using config file: '+yaml_file)
+    assert ctx.search_out('Using config file: '+yaml_file)
 
     ctx.clean_up()
 
@@ -302,11 +302,11 @@ def test_list():
     ctx = context.TestContext('List', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--list'], no_verbose=True, no_out_dir=True, no_board_file=True)
 
-    assert ctx.search_err('run_erc: True')
-    assert ctx.search_err('run_drc: True')
-    assert ctx.search_err('update_xml: True')
-    assert ctx.search_err(r'Pick and place file.? \(position\) \[position\]')
-    assert ctx.search_err(r'Pick and place file.? \(pos_ascii\) \[position\]')
+    assert ctx.search_out('run_erc: True')
+    assert ctx.search_out('run_drc: True')
+    assert ctx.search_out('update_xml: True')
+    assert ctx.search_out(r'Pick and place file.? \(position\) \[position\]')
+    assert ctx.search_out(r'Pick and place file.? \(pos_ascii\) \[position\]')
 
     ctx.clean_up()
 

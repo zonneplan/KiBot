@@ -52,7 +52,7 @@ def check_modules(ctx, fname, expected):
     logging.debug("List of components OK")
 
 
-def test_ibom():
+def test_ibom_1():
     prj = 'bom'
     ctx = context.TestContext('BoM_interactive', prj, 'ibom', BOM_DIR)
     ctx.run()

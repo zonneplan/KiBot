@@ -200,7 +200,7 @@ def test_svg_anchor():
     ctx = context.TestContext('test_svg_anchor', prj, 'svg_anchor', PS_DIR)
     ctx.run(extra=['SVG'])
 
-    assert ctx.search_err(r"- 'SVG files' \(SVG\) \[svg\]")
+    assert ctx.search_out(r"- 'SVG files' \(SVG\) \[svg\]")
     ctx.expect_out_file(ctx.get_gerber_filename('B_Cu', '.svg'))
     ctx.expect_out_file(ctx.get_gerber_filename('F_Cu', '.svg'))
     ctx.expect_out_file(ctx.get_gerber_filename('GND_Cu', '.svg'))

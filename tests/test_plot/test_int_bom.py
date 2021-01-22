@@ -1411,7 +1411,7 @@ def test_int_bom_variant_cl_gl():
     prj = 'kibom-variante'
     ctx = context.TestContextSCH('test_int_bom_variant_cl_gl', prj, 'int_bom_var_t1_glb', BOM_DIR)
     ctx.run(extra=['--global-redef', 'variant=t1_v2'])
-    ctx.search_err(r'Using command line value .?t1_v2.? for global option .?variant.?')
+    ctx.search_out(r'Using command line value .?t1_v2.? for global option .?variant.?')
     # No variant -> t1_v2
     logging.debug("* No variant -> t1_v2")
     rows, header, info = ctx.load_csv(prj+'-bom_(V2).csv')

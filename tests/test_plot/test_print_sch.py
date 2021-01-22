@@ -142,7 +142,7 @@ def test_sch_missing_1():
     ctx.search_err("Component .?Resistor.? doesn't specify its library")
     ctx.search_err("Missing component .?l1:FooBar.?")
     ctx.search_err("Missing component(.*)Resistor", invert=True)
-    ctx.search_err(r"Found 3 unique warning/s \(4 total\)")
+    ctx.search_out(r"Found 3 unique warning/s \(4 total\)")
     ctx.clean_up()
 
 
@@ -157,7 +157,7 @@ def test_sch_missing_filtered():
     ctx.search_err("Component .?Resistor.? doesn't specify its library")
     ctx.search_err("Missing component .?l1:FooBar.?", invert=True)
     ctx.search_err("Missing component(.*)Resistor", invert=True)
-    ctx.search_err(r"Found 2 unique warning/s \(4 total, 2 filtered\)")
+    ctx.search_out(r"Found 2 unique warning/s \(4 total, 2 filtered\)")
     ctx.clean_up()
 
 
