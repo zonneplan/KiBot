@@ -5,6 +5,8 @@
 # Project: KiBot (formerly KiPlot)
 """ Miscellaneous definitions """
 
+import re
+
 # Error levels
 INTERNAL_ERROR = 1    # Unhandled exceptions
 WRONG_ARGUMENTS = 2   # This is what argsparse uses
@@ -163,6 +165,7 @@ W_MISS3D = '(W047) '
 W_FAILDL = '(W048) '
 W_NOLAYER = '(W049) '
 W_EMPTYZIP = '(W050) '
+W_WRONGCHAR = '(W051) '
 
 
 class Rect(object):
@@ -185,3 +188,7 @@ class Rect(object):
             self.y1 = min(self.y1, wxRect.y)
             self.x2 = max(self.x2, wxRect.x+wxRect.width)
             self.y2 = max(self.y2, wxRect.y+wxRect.height)
+
+
+def name2make(name):
+    return re.sub(r'[ \$\.\\\/]', '_', name)

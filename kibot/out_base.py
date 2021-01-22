@@ -55,6 +55,14 @@ class BaseOutput(RegOutput):
             return []
         return self.options.get_targets(self, out_dir)
 
+    def get_dependencies(self):
+        """ Returns a list of files needed to create this output """
+        if self._sch_related:
+            if GS.sch:
+                return GS.sch.get_files()
+            return [GS.sch_file]
+        return [GS.pcb_file]
+
     def config(self):
         super().config()
         if getattr(self, 'options', None) and isinstance(self.options, type):

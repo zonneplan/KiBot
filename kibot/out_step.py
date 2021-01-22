@@ -88,7 +88,7 @@ class STEPOptions(VariantOptions):
             for model in models_l:
                 models.push_front(model)
 
-    def list_components(self):
+    def download_models(self):
         """ Check we have the 3D models.
             Inform missing models.
             Try to download the missing models """
@@ -141,6 +141,20 @@ class STEPOptions(VariantOptions):
                 models.push_front(model)
         return models_replaced
 
+    def list_models(self):
+        """ Get the list of 3D models """
+        # Load KiCad configuration so we can expand the 3D models path
+        KiConf.init(GS.pcb_file)
+        models = set()
+        # Look for all the footprints
+        for m in GS.board.GetModules():
+            # Look for all the 3D models for this footprint
+            for m3d in m.Models():
+                full_name = KiConf.expand_env(m3d.m_Filename)
+                if os.path.isfile(full_name):
+                    models.add(full_name)
+        return models.keys()
+
     def save_board(self, dir):
         """ Save the PCB to a temporal file """
         with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False, dir=dir) as f:
@@ -151,7 +165,7 @@ class STEPOptions(VariantOptions):
 
     def filter_components(self, dir):
         if not self._comps:
-            if self.list_components():
+            if self.download_models():
                 # Some missing components found and we downloaded them
                 # Save the fixed board
                 ret = self.save_board(dir)
@@ -171,7 +185,7 @@ class STEPOptions(VariantOptions):
                 while not models.empty():
                     rem_m_models.append(models.pop())
                 rem_models.append(rem_m_models)
-        self.list_components()
+        self.download_models()
         fname = self.save_board(dir)
         self.undo_3d_models_rename()
         # Undo the removing
@@ -245,3 +259,8 @@ class STEP(BaseOutput):  # noqa: F821
         with document:
             self.options = STEPOptions
             """ [dict] Options for the `step` output """
+
+    def get_dependencies(self):
+        files = super().get_dependencies()
+        files.extend(self.options.list_models())
+        return files

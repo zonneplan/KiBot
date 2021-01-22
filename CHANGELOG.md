@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [P-Ban](https://www.p-ban.com/)
   - [PCBWay](https://www.pcbway.com)
 - Support for ZIP/TAR/RAR generation.
+- Makefile generation.
 
 ### Changed
 - Now the default output name applies to the DRC and ERC report names.

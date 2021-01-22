@@ -913,6 +913,7 @@ Next time you need this list just use an alias, like this:
                          Extension .html will be added automatically.
                          Note that this name is used only when output is ''.
         - `netlist_file`: [string=''] Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
+                          Leave it blank for most uses, data will be extracted from the PCB.
         - `no_blacklist_virtual`: [boolean=false] Do not blacklist virtual components.
                                   IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
@@ -1435,7 +1436,7 @@ KiBot: KiCad automation tool for documents generation
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
-         [-q | -v...] [-i] [-g DEF]... [TARGET...]
+         [-q | -v...] [-i] [-m MKFILE] [-g DEF]... [TARGET...]
   kibot [-v...] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] --help-filters
@@ -1463,6 +1464,7 @@ Options:
   --help-preflights                List supported preflights and details
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
+  -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
   -p, --copy-options               Copy plot options from the PCB file
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs

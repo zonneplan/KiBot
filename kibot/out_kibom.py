@@ -417,3 +417,9 @@ class KiBoM(BaseOutput):  # noqa: F821
             self.options = KiBoMOptions
             """ [dict] Options for the `kibom` output """
         self._sch_related = True
+
+    def get_dependencies(self):
+        files = super().get_dependencies()
+        if isinstance(self.options.conf, str):
+            files.append(self.options.conf)
+        return files

@@ -508,7 +508,8 @@ outputs:
       # Extension .html will be added automatically.
       # Note that this name is used only when output is ''
       name_format: 'ibom'
-      # [string=''] Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name
+      # [string=''] Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
+      # Leave it blank for most uses, data will be extracted from the PCB
       netlist_file: ''
       # [boolean=false] Do not blacklist virtual components.
       # IBoM option, avoid using in conjunction with KiBot variants/filters

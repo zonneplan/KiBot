@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -9,7 +9,7 @@
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
-         [-q | -v...] [-i] [-g DEF]... [TARGET...]
+         [-q | -v...] [-i] [-m MKFILE] [-g DEF]... [TARGET...]
   kibot [-v...] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] --help-filters
@@ -37,6 +37,7 @@ Options:
   --help-preflights                List supported preflights and details
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
+  -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
   -p, --copy-options               Copy plot options from the PCB file
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
@@ -47,7 +48,7 @@ Options:
 
 """
 __author__ = 'Salvador E. Tropea, John Beard'
-__copyright__ = 'Copyright 2018-2020, Salvador E. Tropea/INTI/John Beard'
+__copyright__ = 'Copyright 2018-2021, Salvador E. Tropea/INTI/John Beard'
 __credits__ = ['Salvador E. Tropea', 'John Beard']
 __license__ = 'GPL v3+'
 __email__ = 'stropea@inti.gob.ar'
@@ -75,7 +76,7 @@ from .misc import NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help)
-from .kiplot import (generate_outputs, load_actions, config_output)
+from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile)
 
 
 def list_pre_and_outs(logger, outputs):
@@ -302,8 +303,12 @@ def main():
     GS.set_sch(solve_schematic(args.schematic, args.board_file))
     # Determine the PCB file
     GS.set_pcb(solve_board_file(GS.sch_file, args.board_file))
-    # Do all the job (pre-flight + outputs)
-    generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre)
+    if args.makefile:
+        # Only create a makefile
+        generate_makefile(args.makefile, plot_config, outputs)
+    else:
+        # Do all the job (pre-flight + outputs)
+        generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre)
     # Print total warnings
     logger.log_totals()
 

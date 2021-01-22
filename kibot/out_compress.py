@@ -108,17 +108,14 @@ class CompressOptions(BaseOptions):
             ext += '.'+sub_ext
         return ext
 
-    def get_targets(self, parent, out_dir):
-        return [self.expand_filename(out_dir, self.output, parent.name, self.solve_extension())]
-
-    def run(self, output_dir, parent):
-        # Output file name
-        output = self.expand_filename(output_dir, self.output, GS.current_output, self.solve_extension())
-        logger.debug('Collecting files')
+    def get_files(self, output, parent, no_out_expand=False):
         output_real = os.path.realpath(output)
-        # Collect the files
         files = OrderedDict()
         for f in self.files:
+            if f.from_output and no_out_expand:
+                # Just the name of the output
+                files[f.from_output] = 1
+                continue
             # Get the list of candidates
             files_list = None
             if f.from_output:
@@ -155,6 +152,22 @@ class CompressOptions(BaseOptions):
                 else:
                     dest = os.path.relpath(dest, GS.out_dir)
                 files[fname_real] = dest
+        return files
+
+    def get_targets(self, parent, out_dir):
+        return [self.expand_filename(out_dir, self.output, parent.name, self.solve_extension())]
+
+    def get_dependencies(self, parent):
+        output = self.get_targets(parent, GS.out_dir)[0]
+        files = self.get_files(output, parent, no_out_expand=True)
+        return files.keys()
+
+    def run(self, output_dir, parent):
+        # Output file name
+        output = self.get_targets(parent, output_dir)[0]
+        logger.debug('Collecting files')
+        # Collect the files
+        files = self.get_files(output, parent)
         logger.debug('Generating `{}` archive'.format(output))
         if self.format == 'ZIP':
             self.create_zip(output, files)
@@ -174,6 +187,9 @@ class Compress(BaseOutput):  # noqa: F821
         with document:
             self.options = CompressOptions
             """ [dict] Options for the `compress` output """
+
+    def get_dependencies(self):
+        return self.options.get_dependencies(self)
 
     def run(self, output_dir):
         self.options.run(output_dir, self)
