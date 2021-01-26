@@ -613,7 +613,7 @@ I don't know how to make it.
 
 ### Installation on other targets
 
-- Install KiCad 5.x
+- Install KiCad 5.1.6 or newer
 - Install Python 3.5 or newer
 - Install the Python Yaml and requests modules
 - Run the script *src/kibot*

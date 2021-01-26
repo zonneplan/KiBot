@@ -72,7 +72,8 @@ log.set_domain('kibot')
 logger = log.init()
 from .docopt import docopt
 from .gs import (GS)
-from .misc import NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, NO_PCBNEW_MODULE, KICAD_VERSION_5_99
+from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, NO_PCBNEW_MODULE,
+                   KICAD_VERSION_5_99, W_NOKIVER)
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help)
@@ -211,7 +212,12 @@ def detect_kicad():
                      " Is KiCad installed?"
                      " Do you need to add it to PYTHONPATH?")
         sys.exit(NO_PCBNEW_MODULE)
-    GS.kicad_version = pcbnew.GetBuildVersion()
+    try:
+        GS.kicad_version = pcbnew.GetBuildVersion()
+    except AttributeError:
+        logger.warning(W_NOKIVER+"Unknown KiCad version, please install KiCad 5.1.6 or newer")
+        # Assume the best case
+        GS.kicad_version = '5.1.5'
     m = re.search(r'(\d+)\.(\d+)\.(\d+)', GS.kicad_version)
     GS.kicad_version_major = int(m.group(1))
     GS.kicad_version_minor = int(m.group(2))
