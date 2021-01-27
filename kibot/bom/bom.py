@@ -186,16 +186,18 @@ class ComponentGroup(object):
     def get_sources(self):
         sources = {}
         for c in self.components:
-            if c.project in sources:
-                sources[c.project] += 1
-            else:
-                sources[c.project] = 1
-        field = ''
-        for prj, n in sources.items():
-            if len(field):
-                field += ' '
+            prj = c.project
             if self.cfg.source_by_id:
                 prj = self.cfg.source_to_id[prj]
+            if prj in sources:
+                sources[prj] += 1
+            else:
+                sources[prj] = 1
+        field = ''
+        for prj in sorted(sources.keys()):
+            n = sources[prj]
+            if len(field):
+                field += ' '
             field += prj+'('+str(n)+')'
         return field
 
