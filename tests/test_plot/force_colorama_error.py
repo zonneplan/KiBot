@@ -12,4 +12,3 @@ from kibot import log
 log.set_domain('kibot')
 logger = log.init()
 logger.error('Testing 1 2 3')
-
