@@ -598,3 +598,24 @@ def test_error_pcbdraw_comp_key():
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Option .?show_components.? must be any of")
     ctx.clean_up()
+
+
+def test_error_rot_not_two():
+    ctx = context.TestContext('test_error_rot_not_two', 'bom', 'error_rot_not_two', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Each regex/angle pair must contain exactly two values")
+    ctx.clean_up()
+
+
+def test_error_rot_not_number():
+    ctx = context.TestContext('test_error_rot_not_number', 'bom', 'error_rot_not_number', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("The second value in the regex/angle pairs must be a number")
+    ctx.clean_up()
+
+
+def test_error_rot_no_rotations():
+    ctx = context.TestContext('test_error_rot_no_rotations', 'bom', 'error_rot_no_rotations', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("No rotations provided")
+    ctx.clean_up()

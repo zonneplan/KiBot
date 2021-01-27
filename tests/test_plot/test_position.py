@@ -213,7 +213,7 @@ def test_position_rot_1():
 def test_position_rot_2():
     prj = 'light_control'
     ctx = context.TestContext('test_position_rot_2', prj, 'simple_position_rot_2', POS_DIR)
-    ctx.run()
+    ctx.run(extra_debug=True)
     output = prj+'_cpl_jlc.csv'
     ctx.expect_out_file(output)
     ctx.compare_txt(output)

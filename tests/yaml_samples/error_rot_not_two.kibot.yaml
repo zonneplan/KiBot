@@ -1,0 +1,14 @@
+kibot:
+  version: 1
+
+filters:
+  - name: fix_rotation
+    comment: 'Adjust rotation for JLC'
+    type: rot_footprint
+    rotations:
+      - ['U*', 180]
+      - - 'U*'
+        - 180
+      - [Hi!]
+
+
