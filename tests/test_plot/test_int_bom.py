@@ -1444,3 +1444,14 @@ def test_int_bom_variant_5():
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2', 'R1'], ['R2'])
     ctx.clean_up()
+
+
+def test_int_bom_merge_csv_1():
+    prj = 'merge_1'
+    ctx = context.TestContextSCH('test_int_bom_merge_csv_1', prj, 'int_bom_merge_csv_1', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    comps = ['A:R1-A:R3', 'A:C1', 'A:C2', 'B:R1', 'B:R2-B:R4', 'B:C1', 'B:C2', 'C:R1-C:R4', 'C:R5']
+    check_kibom_test_netlist(rows, ref_column, 4, None, comps)
+    ctx.clean_up()
