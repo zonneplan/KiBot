@@ -20,12 +20,12 @@ def set_title(title):
     return OSC + '2;' + title + BEL
 
 
-def clear_screen(mode=2):
-    return CSI + str(mode) + 'J'
+# def clear_screen(mode=2):
+#     return CSI + str(mode) + 'J'
 
 
-def clear_line(mode=2):
-    return CSI + str(mode) + 'K'
+# def clear_line(mode=2):
+#     return CSI + str(mode) + 'K'
 
 
 class AnsiCodes(object):
@@ -39,21 +39,21 @@ class AnsiCodes(object):
                 setattr(self, name, code_to_chars(value))
 
 
-class AnsiCursor(object):
-    def UP(self, n=1):
-        return CSI + str(n) + 'A'
-
-    def DOWN(self, n=1):
-        return CSI + str(n) + 'B'
-
-    def FORWARD(self, n=1):
-        return CSI + str(n) + 'C'
-
-    def BACK(self, n=1):
-        return CSI + str(n) + 'D'
-
-    def POS(self, x=1, y=1):
-        return CSI + str(y) + ';' + str(x) + 'H'
+# class AnsiCursor(object):
+#     def UP(self, n=1):
+#         return CSI + str(n) + 'A'
+# 
+#     def DOWN(self, n=1):
+#         return CSI + str(n) + 'B'
+# 
+#     def FORWARD(self, n=1):
+#         return CSI + str(n) + 'C'
+# 
+#     def BACK(self, n=1):
+#         return CSI + str(n) + 'D'
+# 
+#     def POS(self, x=1, y=1):
+#         return CSI + str(y) + ';' + str(x) + 'H'
 
 
 class AnsiFore(AnsiCodes):
@@ -110,4 +110,4 @@ class AnsiStyle(AnsiCodes):
 Fore = AnsiFore()
 Back = AnsiBack()
 Style = AnsiStyle()
-Cursor = AnsiCursor()
+# Cursor = AnsiCursor()
