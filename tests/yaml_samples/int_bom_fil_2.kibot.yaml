@@ -37,7 +37,7 @@ outputs:
       use_alt: true
       exclude_filter: 'no tht'
 
-  - name: 'no smd'
+  - name: 'virtual'
     comment: "BoM no virtual"
     type: bom
     dir: BoM
@@ -46,3 +46,11 @@ outputs:
       use_alt: true
       exclude_filter: 'no virtual'
 
+  - name: result
+    comment: Test zip compress
+    type: compress
+    options:
+      files:
+        - from_output: 'no smd'
+        - from_output: 'no tht'
+        - from_output: 'virtual'

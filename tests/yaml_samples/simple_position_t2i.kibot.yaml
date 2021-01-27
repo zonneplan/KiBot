@@ -27,7 +27,7 @@ variants:
     variants_whitelist: T1, Default
 
 outputs:
-  - name: 'bom_internal'
+  - name: 'pos_internal'
     comment: "Bill of Materials in CSV format"
     type: position
     dir: positiondir
@@ -37,7 +37,7 @@ outputs:
       only_smd: false
       variant: default
 
-  - name: 'bom_internal2'
+  - name: 'pos_internal2'
     comment: "Bill of Materials in CSV format (2)"
     type: position
     dir: positiondir
@@ -47,7 +47,7 @@ outputs:
       only_smd: false
       variant: default2
 
-  - name: 'bom_internal_production'
+  - name: 'pos_internal_production'
     comment: "Bill of Materials in CSV format for production"
     type: position
     dir: positiondir
@@ -57,7 +57,7 @@ outputs:
       only_smd: false
       variant: production
 
-  - name: 'bom_internal_test'
+  - name: 'pos_internal_test'
     comment: "Bill of Materials in CSV format for test"
     type: position
     dir: positiondir
@@ -66,3 +66,15 @@ outputs:
       separate_files_for_front_and_back: false
       only_smd: false
       variant: test
+
+  - name: result
+    comment: Test tarball compress
+    type: compress
+    options:
+      format: TAR
+      compression: bzip2
+      files:
+        - from_output: pos_internal
+        - from_output: pos_internal2
+        - from_output: pos_internal_production
+        - from_output: pos_internal_test

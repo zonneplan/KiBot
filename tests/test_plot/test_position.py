@@ -188,14 +188,18 @@ def test_position_variant_t2i():
     prj = 'kibom-variant_3'
     ctx = context.TestContext('test_position_variant_t2i', prj, 'simple_position_t2i', POS_DIR)
     ctx.run()
-    rows, header, info = ctx.load_csv(prj+'-both_pos.csv')
+    files = ['-both_pos.csv', '-both_pos_[2].csv', '-both_pos_(production).csv', '-both_pos_(test).csv']
+    files = [prj+f for f in files]
+    rows, header, info = ctx.load_csv(files[0])
     check_comps(rows, ['R1', 'R2', 'R3'])
-    rows, header, info = ctx.load_csv(prj+'-both_pos_[2].csv')
+    rows, header, info = ctx.load_csv(files[1])
     check_comps(rows, ['R1', 'R2', 'R3'])
-    rows, header, info = ctx.load_csv(prj+'-both_pos_(production).csv')
+    rows, header, info = ctx.load_csv(files[2])
     check_comps(rows, ['C2', 'R1', 'R2', 'R3'])
-    rows, header, info = ctx.load_csv(prj+'-both_pos_(test).csv')
+    rows, header, info = ctx.load_csv(files[3])
     check_comps(rows, ['C1', 'C2', 'R1', 'R3'])
+    files = [POS_DIR+'/'+f for f in files]
+    ctx.test_compress(prj+'-result.tar.bz2', files)
     ctx.clean_up(keep_project=True)
 
 

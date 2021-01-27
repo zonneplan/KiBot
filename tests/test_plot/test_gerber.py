@@ -66,10 +66,11 @@ def test_gerber_inner_ok():
     prj = 'good-project'
     ctx = context.TestContext('Gerber_Inner', prj, 'gerber_inner', GERBER_DIR)
     ctx.run()
-
-    ctx.expect_out_file(os.path.join(GERBER_DIR, prj+'_GND_Cu.gbr'))
-    ctx.expect_out_file(os.path.join(GERBER_DIR, prj+'_Signal1.gbr'))
-    ctx.expect_out_file(os.path.join(GERBER_DIR, 'test-'+prj+'.gbrjob'))
+    files = [prj+'_GND_Cu.gbr', prj+'_Signal1.gbr', 'test-'+prj+'.gbrjob']
+    files = [os.path.join(GERBER_DIR, f) for f in files]
+    for f in files:
+        ctx.expect_out_file(f)
+    ctx.test_compress(prj+'-result.rar', files)
     ctx.clean_up()
 
 

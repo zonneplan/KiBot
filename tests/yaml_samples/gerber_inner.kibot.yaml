@@ -3,7 +3,6 @@ kibot:
   version: 1
 
 outputs:
-
   - name: 'gerbers'
     comment: "Gerbers for the Gerber god"
     type: gerber
@@ -37,4 +36,12 @@ outputs:
       - layer: Inner.2
         suffix: Signal1
         description: 'Inner signals 1'
+
+  - name: result
+    comment: Test rar compress
+    type: compress
+    options:
+      format: RAR
+      files:
+        - from_output: gerbers
 

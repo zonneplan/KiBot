@@ -651,6 +651,24 @@ class TestContext(object):
         headers = rows.pop(0)
         return rows, headers, sh_head
 
+    def test_compress(self, fname, files):
+        logging.debug('Checking compressed output: '+fname)
+        if fname.endswith('.zip'):
+            cmd = ['unzip', '-t', self.get_out_path(fname)]
+        elif fname.endswith('.rar'):
+            cmd = ['rar', 't', self.get_out_path(fname)]
+        else:
+            cmd = ['tar', 'tvf', self.get_out_path(fname)]
+        res = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        text = res.decode()
+        if fname.endswith('.zip'):
+            assert 'No errors detected' in text
+        elif fname.endswith('.rar'):
+            assert 'All OK' in text
+        for f in files:
+            assert f in text, f
+            logging.debug('- `'+f+'` OK')
+
 
 class TestContextSCH(TestContext):
 
