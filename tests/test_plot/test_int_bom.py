@@ -63,6 +63,7 @@ COMP_COLUMN_NAME = 'Row'
 COMP_COLUMN_NAME_R = 'Renglón'
 VALUE_COLUMN_NAME = 'Value'
 DATASHEET_COLUMN_NAME = 'Datasheet'
+SOURCE_BOM_COLUMN_NAME = 'Source BoM'
 KIBOM_TEST_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Status',
                    DATASHEET_COLUMN_NAME, 'Config']
 KIBOM_TEST_HEAD_TOL = [c for c in KIBOM_TEST_HEAD]
@@ -89,6 +90,8 @@ LINKS_GROUPS = 2
 INFO_ROWS = ['Schematic:', 'Variant:', 'Revision:', 'Date:', 'KiCad Version:']
 STATS_ROWS = ['Component Groups:', 'Component Count:', 'Fitted Components:', 'Number of PCBs:', 'Total Components:']
 DEF_TITLE = 'KiBot Bill of Materials'
+MERGED_COMPS = ['A:R1-A:R3', 'A:C1', 'A:C2', 'B:R1', 'B:R2-B:R4', 'B:C1', 'B:C2', 'C:R1-C:R4', 'C:R5']
+MERGED_R1_SRC = 'A:(3) B:(3) C:(1)'
 
 
 def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps, ref_sep=' '):
@@ -123,6 +126,14 @@ def check_dnc(rows, comp, ref, status, datasheet=None):
             if datasheet is not None:
                 assert row[datasheet].startswith('<a href="')
                 logging.debug(comp + " datasheet link OK")
+            return
+
+
+def check_source(rows, comp, ref, src, val):
+    for row in rows:
+        if row[ref].find(comp) != -1:
+            assert row[src] == val
+            logging.debug(comp+" is from '"+val+"' OK")
             return
 
 
@@ -1452,6 +1463,44 @@ def test_int_bom_merge_csv_1():
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    comps = ['A:R1-A:R3', 'A:C1', 'A:C2', 'B:R1', 'B:R2-B:R4', 'B:C1', 'B:C2', 'C:R1-C:R4', 'C:R5']
-    check_kibom_test_netlist(rows, ref_column, 4, None, comps)
+    check_kibom_test_netlist(rows, ref_column, 4, None, MERGED_COMPS)
+    src_column = header.index(SOURCE_BOM_COLUMN_NAME)
+    check_source(rows, 'A:R1', ref_column, src_column, MERGED_R1_SRC)
+    ctx.clean_up()
+
+
+def test_int_bom_merge_html_1():
+    prj = 'merge_1'
+    ctx = context.TestContextSCH('test_int_bom_merge_html_1', prj, 'int_bom_merge_html_1', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_html(prj+'-bom.html')
+    logging.debug(rows[0])
+    ref_column = header[0].index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows[0], ref_column, 4, None, MERGED_COMPS)
+    src_column = header[0].index(SOURCE_BOM_COLUMN_NAME)
+    check_source(rows[0], 'A:R1', ref_column, src_column, MERGED_R1_SRC)
+    ctx.clean_up()
+
+
+def test_int_bom_merge_xlsx_1():
+    prj = 'merge_1'
+    ctx = context.TestContextSCH('test_int_bom_merge_xlsx_1', prj, 'int_bom_merge_xlsx_1', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_xlsx(prj+'-bom.xlsx')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 4, None, MERGED_COMPS)
+    src_column = header.index(SOURCE_BOM_COLUMN_NAME)
+    check_source(rows, 'A:R1', ref_column, src_column, MERGED_R1_SRC)
+    ctx.clean_up()
+
+
+def test_int_bom_merge_xml_1():
+    prj = 'merge_1'
+    ctx = context.TestContextSCH('test_int_bom_merge_xml_1', prj, 'int_bom_merge_xml_1', BOM_DIR)
+    ctx.run()
+    rows, header = ctx.load_xml(prj+'-bom.xml')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 4, None, MERGED_COMPS)
+    src_column = header.index(SOURCE_BOM_COLUMN_NAME.replace(' ', '_'))
+    check_source(rows, 'A:R1', ref_column, src_column, MERGED_R1_SRC)
     ctx.clean_up()
