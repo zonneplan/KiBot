@@ -534,3 +534,10 @@ def test_no_yaml():
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_yaml_error.py')]
     ctx.do_run(cmd, NO_YAML_MODULE)
     ctx.search_err('No yaml module for Python, install python3-yaml')
+
+
+def test_no_colorama():
+    ctx = context.TestContext('test_no_colorama', 'bom', 'bom', '')
+    cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_colorama_error.py')]
+    ctx.do_run(cmd, use_a_tty=True)
+    ctx.search_err(r'\[31m.\[1mERROR:Testing 1 2 3')
