@@ -101,32 +101,35 @@ def compare_components(c1, c2, cfg):
 
 class Joiner:
     def __init__(self):
-        self.stack = []
+        self.stack = {}
 
     def add(self, P, N):
-        if not self.stack:
-            self.stack.append(((P, N), (P, N)))
+        if P not in self.stack:
+            self.stack[P] = [((P, N), (P, N))]
             return
-        S, E = self.stack[-1]
+        stack = self.stack[P]
+        S, E = stack[-1]
         if N == E[1] + 1:
-            self.stack[-1] = (S, (P, N))
+            stack[-1] = (S, (P, N))
         else:
-            self.stack.append(((P, N), (P, N)))
+            stack.append(((P, N), (P, N)))
 
     def flush(self, sep, dash='-'):
         refstr = u''
         c = 0
-        for Q in self.stack:
-            if c != 0:
-                refstr += sep
-            S, E = Q
-            if S == E:
-                refstr += "%s%d" % S
-                c += 1
-            else:
-                # Do we have space?
-                refstr += "%s%d%s%s%d" % (S[0], S[1], dash, E[0], E[1])
-                c += 2
+        for pref in sorted(self.stack.keys()):
+            stack = self.stack[pref]
+            for Q in stack:
+                if c != 0:
+                    refstr += sep
+                S, E = Q
+                if S == E:
+                    refstr += "%s%d" % S
+                    c += 1
+                else:
+                    # Do we have space?
+                    refstr += "%s%d%s%s%d" % (S[0], S[1], dash, E[0], E[1])
+                    c += 2
         return refstr
 
 
@@ -228,8 +231,7 @@ class ComponentGroup(object):
         """ Alternative list of references using ranges """
         S = Joiner()
         for n in self.components:
-            P, N = (n.ref_id+n.ref_prefix, _suffix_to_num(n.ref_suffix))
-            S.add(P, N)
+            S.add(n.ref_id+n.ref_prefix, _suffix_to_num(n.ref_suffix))
         return S.flush(self.cfg.ref_separator)
 
     def update_field(self, field, value, ref=None):
