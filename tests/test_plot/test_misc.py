@@ -46,6 +46,7 @@ from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE
 
 
 POS_DIR = 'positiondir'
+MK_TARGETS = ['position']
 
 
 def test_skip_pre_and_outputs():
@@ -541,3 +542,27 @@ def test_no_colorama():
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_colorama_error.py')]
     ctx.do_run(cmd, use_a_tty=True)
     ctx.search_err(r'\[31m.\[1mERROR:Testing 1 2 3')
+
+
+def test_makefile_1():
+    prj = 'test_v5'
+    ctx = context.TestContext('test_makefile_1', prj, 'makefile_1', '')
+    mkfile = ctx.get_out_path('Makefile')
+    ctx.run(extra=['-m', mkfile])
+    ctx.expect_out_file('Makefile')
+    targets = ctx.read_mk_targets(mkfile)
+    all = targets['all']
+    phony = targets['.PHONY']
+    for target in MK_TARGETS:
+        assert target in all
+        assert target in phony
+        assert target in targets
+        logging.debug('- Target `'+target+'` in all, .PHONY and itself OK')
+    # position target
+    deps = targets['position'].split(' ')
+    assert len(deps) == 2, deps
+    assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-top_pos.csv'))
+    assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-bottom_pos.csv'))
+    assert os.path.abspath(targets[targets['position']]) == ctx.board_file
+    logging.debug('- Target `position` OK')
+    ctx.clean_up()

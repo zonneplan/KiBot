@@ -669,6 +669,15 @@ class TestContext(object):
             assert f in text, f
             logging.debug('- `'+f+'` OK')
 
+    def read_mk_targets(self, mkfile):
+        targets = {}
+        with open(mkfile, 'rt') as f:
+            for line in f.readlines():
+                parts = line.split(':')
+                if len(parts) == 2:
+                    targets[parts[0].strip()] = parts[1].strip()
+        return targets
+
 
 class TestContextSCH(TestContext):
 

@@ -300,6 +300,7 @@ def adapt_file_name(name):
 
 
 def generate_makefile(makefile, cfg_file, outputs):
+    cfg_file = os.path.relpath(cfg_file)
     logger.info('- Creating makefile `{}` from `{}`'.format(makefile, cfg_file))
     with open(makefile, 'wt') as f:
         f.write('#!/usr/bin/make\n')
