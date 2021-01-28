@@ -40,6 +40,37 @@ ALL_LAYERS = ['B_Adhes',
               'F_SilkS',
               'Margin',
               ]
+ALL_EXTS = ['gba',
+            'gbr',
+            'gbl',
+            'gbr',
+            'gbs',
+            'gbp',
+            'gbo',
+            'gbr',
+            'gbr',
+            'gbr',
+            'gbr',
+            'gm1',
+            'gta',
+            'gbr',
+            'gtl',
+            'gbr',
+            'gts',
+            'gtp',
+            'gto',
+            'gbr',
+            ]
+INNER_LAYERS = ['GND_Cu',
+                'Power_Cu',
+                'Signal1_Cu',
+                'Signal2_Cu',
+                ]
+INNER_EXTS = ['g2',
+              'g5',
+              'g3',
+              'g4',
+              ]
 
 
 def test_gerber_2layer():
@@ -116,3 +147,34 @@ def test_gerber_variant_1():
     check_layers_exist(ctx, 'test', prj, ALL_LAYERS, '_(test)')
     check_components(ctx, 'test', prj, ['F_Paste', 'F_Adhes'], '_(test)', ['R2'], ['C1', 'R1', 'R3', 'C2'])
     ctx.clean_up(keep_project=True)
+
+
+def test_gerber_protel_1():
+    prj = 'good-project'
+    ctx = context.TestContext('test_gerber_protel_1', prj, 'gerber_inner_protel_1', GERBER_DIR)
+    ctx.run()
+    exts = ALL_EXTS+INNER_EXTS
+    for n, suf in enumerate(ALL_LAYERS+INNER_LAYERS):
+        ctx.expect_out_file(os.path.join(GERBER_DIR, prj+'_'+suf+'.'+exts[n]))
+    ctx.clean_up()
+
+
+def test_gerber_protel_2():
+    prj = 'good-project'
+    ctx = context.TestContext('test_gerber_protel_2', prj, 'gerber_inner_protel_2', GERBER_DIR)
+    ctx.run()
+    inner = ['gin'+str(int(layer[-1])-1) for layer in INNER_EXTS]
+    exts = ALL_EXTS+inner
+    files = []
+    for n, suf in enumerate(ALL_LAYERS+INNER_LAYERS):
+        ext = exts[n]
+        if ext == 'gm1':
+            ext = 'e_cut'
+        file = os.path.join(GERBER_DIR, prj+'_'+suf+'.'+ext.upper())
+        ctx.expect_out_file(file)
+        files.append(file)
+    assert ctx.search_err('Layer "Inner layer 6" isn\'t used')
+    ctx.search_in_file(os.path.join(GERBER_DIR, 'Report.txt'),
+                       ['Top layer: good-project_F_Cu.GTL', 'Basename: good-project'])
+    ctx.test_compress(prj+'-result.tar.gz', files)
+    ctx.clean_up()
