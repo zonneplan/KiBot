@@ -162,7 +162,7 @@ def test_gerber_protel_1():
 def test_gerber_protel_2():
     prj = 'good-project'
     ctx = context.TestContext('test_gerber_protel_2', prj, 'gerber_inner_protel_2', GERBER_DIR)
-    ctx.run()
+    ctx.run(extra_debug=True)
     inner = ['gin'+str(int(layer[-1])-1) for layer in INNER_EXTS]
     exts = ALL_EXTS+inner
     files = []
