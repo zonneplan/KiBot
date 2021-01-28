@@ -67,7 +67,7 @@ class AnyLayerOptions(VariantOptions):
                 The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                 Example '.g%n' """
             self.edge_cut_extension = ''
-            """ Used to configure the edge cuts layer extension for Protel mode """
+            """ Used to configure the edge cuts layer extension for Protel mode. Include the dot """
             self.custom_reports = CustomReport
             """ [list(dict)] A list of customized reports for the manufacturer """
         super().__init__()

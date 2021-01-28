@@ -220,7 +220,7 @@ outputs:
       dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
-      # [string=''] Used to configure the edge cuts layer extension for Protel mode
+      # [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot
       edge_cut_extension: ''
       # [boolean=true] Do not include the PCB edge layer
       exclude_edge_layer: true
@@ -350,7 +350,7 @@ outputs:
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: ''
-      # [string=''] Used to configure the edge cuts layer extension for Protel mode
+      # [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot
       edge_cut_extension: ''
       # [boolean=true] Do not include the PCB edge layer
       exclude_edge_layer: true
@@ -413,7 +413,7 @@ outputs:
       dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
-      # [string=''] Used to configure the edge cuts layer extension for Protel mode
+      # [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot
       edge_cut_extension: ''
       # [boolean=true] Do not include the PCB edge layer
       exclude_edge_layer: true
@@ -737,7 +737,7 @@ outputs:
       dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
-      # [string=''] Used to configure the edge cuts layer extension for Protel mode
+      # [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot
       edge_cut_extension: ''
       # [boolean=true] Do not include the PCB edge layer
       exclude_edge_layer: true
@@ -870,7 +870,7 @@ outputs:
       dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
-      # [string=''] Used to configure the edge cuts layer extension for Protel mode
+      # [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot
       edge_cut_extension: ''
       # [boolean=true] Do not include the PCB edge layer
       exclude_edge_layer: true
@@ -979,7 +979,7 @@ outputs:
       dnf_filter: ''
       # [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
-      # [string=''] Used to configure the edge cuts layer extension for Protel mode
+      # [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot
       edge_cut_extension: ''
       # [boolean=true] Do not include the PCB edge layer
       exclude_edge_layer: true

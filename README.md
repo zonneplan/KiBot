@@ -700,7 +700,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
@@ -802,7 +802,7 @@ Next time you need this list just use an alias, like this:
         - `disable_aperture_macros`: [boolean=false] Disable aperture macros (workaround for buggy CAM software) (KiCad 6).
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
@@ -849,7 +849,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
@@ -1080,7 +1080,7 @@ Next time you need this list just use an alias, like this:
     - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                     A short-cut to use for simple cases where a variant is an overkill.
     - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-    - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
+    - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
     - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
     - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
@@ -1104,7 +1104,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
@@ -1224,7 +1224,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
@@ -1312,7 +1312,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode.
+        - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
