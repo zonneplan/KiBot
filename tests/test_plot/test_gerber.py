@@ -96,12 +96,14 @@ def test_gerber_2layer():
 def test_gerber_inner_ok():
     prj = 'good-project'
     ctx = context.TestContext('Gerber_Inner', prj, 'gerber_inner', GERBER_DIR)
+    rarfile = prj+'-result.rar'
+    ctx.create_dummy_out_file(rarfile)
     ctx.run()
     files = [prj+'_GND_Cu.gbr', prj+'_Signal1.gbr', 'test-'+prj+'.gbrjob']
     files = [os.path.join(GERBER_DIR, f) for f in files]
     for f in files:
         ctx.expect_out_file(f)
-    ctx.test_compress(prj+'-result.rar', files)
+    ctx.test_compress(rarfile, files)
     ctx.clean_up()
 
 

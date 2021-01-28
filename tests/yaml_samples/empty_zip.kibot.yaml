@@ -1,0 +1,9 @@
+# Example KiBot config file for a basic 2-layer board
+kibot:
+  version: 1
+
+outputs:
+  - name: result
+    comment: Test rar compress
+    type: compress
+

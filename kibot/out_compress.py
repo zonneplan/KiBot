@@ -65,7 +65,7 @@ class CompressOptions(BaseOptions):
         super().config()
         if isinstance(self.files, type):
             self.files = []
-            logger.warning(W_EMPTYZIP+' No files provided, creating an empty archive')
+            logger.warning(W_EMPTYZIP+'No files provided, creating an empty archive')
 
     def create_zip(self, output, files):
         with ZipFile(output, 'w', compression=self.ZIP_ALGORITHMS[self.compression], compresslevel=9) as zip:
@@ -90,7 +90,7 @@ class CompressOptions(BaseOptions):
             except FileNotFoundError:
                 logger.error('Missing `rar` command, install it')
                 exit(MISSING_TOOL)
-            except CalledProcessError as e:  # pragma: no cover
+            except CalledProcessError as e:
                 logger.error('Failed to invoke rar command, error {}'.format(e.returncode))
                 if e.output:
                     logger.debug('Output from command: '+e.output.decode())
