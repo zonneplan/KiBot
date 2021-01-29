@@ -11,11 +11,16 @@ outputs:
       separate_files_for_front_and_back: true
       only_smd: true
 
+  - name: 'interactive_bom'
+    type: ibom
+    dir: ibom
+
   - name: 'archive'
     type: compress
     options:
       files:
         - from_output: 'position'
+        - from_output: 'interactive_bom'
         - source: '*'
           dest: AnotherCopy
 
