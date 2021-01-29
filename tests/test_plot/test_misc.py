@@ -48,6 +48,7 @@ from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE
                         PCBDRAW_ERR, NO_PCBNEW_MODULE, NO_YAML_MODULE, MISSING_TOOL, WRONG_INSTALL)
 from kibot.kiplot import load_actions
 from kibot.registrable import RegOutput
+from kibot.out_base import BaseOutput
 from kibot.gs import GS
 
 
@@ -724,3 +725,22 @@ def test_rar_fail(caplog, monkeypatch):
     assert "Failed to invoke rar command, error 10" in caplog.text
     # Not in the docker image ... pytest issue?
     # assert "THE_ERROR" in caplog.text
+
+
+class NoGetTargets(BaseOutput):
+    def __init__(self):
+        self.options = True
+        self.comment = 'Fake'
+        self.name = 'dummy'
+        self.type = 'none'
+        self._sch_related = True
+
+
+def test_no_get_targets(caplog):
+    test = NoGetTargets()
+    test.get_targets('')
+    assert "Output 'Fake' (dummy) [none] doesn't implement get_targets(), plese report it" in caplog.text
+    # Also check the dependencies fallback
+    GS.sch = None
+    GS.sch_file = 'fake'
+    assert test.get_dependencies() == [GS.sch_file]
