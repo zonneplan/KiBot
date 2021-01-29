@@ -32,6 +32,7 @@ from . import log
 logger = log.get_logger(__name__)
 # Cache to avoid running external many times to check their versions
 script_versions = {}
+actions_loaded = False
 
 
 def _import(name, path):
@@ -61,6 +62,10 @@ def _load_actions(path, load_internals=False):
 
 def load_actions():
     """ Load all the available ouputs and preflights """
+    global actions_loaded
+    if actions_loaded:
+        return
+    actions_loaded = True
     from kibot.mcpyrate import activate
     # activate.activate()
     _load_actions(os.path.abspath(os.path.dirname(__file__)), True)

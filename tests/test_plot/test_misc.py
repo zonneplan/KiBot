@@ -31,9 +31,6 @@ pytest-3 --log-cli-level debug
 import os
 import sys
 import shutil
-import pytest
-import coverage
-from subprocess import CalledProcessError
 import logging
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -45,16 +42,11 @@ prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE, CORRUPTED_PCB,
-                        PCBDRAW_ERR, NO_PCBNEW_MODULE, NO_YAML_MODULE, MISSING_TOOL, WRONG_INSTALL)
-from kibot.kiplot import load_actions
-from kibot.registrable import RegOutput
-from kibot.out_base import BaseOutput
-from kibot.gs import GS
+                        PCBDRAW_ERR, NO_PCBNEW_MODULE, NO_YAML_MODULE)
 
 
 POS_DIR = 'positiondir'
 MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render']
-cov = coverage.Coverage()
 
 
 def test_skip_pre_and_outputs():
@@ -662,85 +654,3 @@ def test_empty_zip():
     ctx.expect_out_file(prj+'-result.zip')
     ctx.search_err('No files provided, creating an empty archive')
     ctx.clean_up()
-
-
-def mocked_check_output(cmd, stderr=None):
-    raise FileNotFoundError()
-
-
-def run_compress(ctx):
-    # Load the plug-ins
-    load_actions()
-    # Create a compress object with the dummy file as source
-    out = RegOutput.get_class_for('compress')()
-    out.set_tree({'options': {'format': 'RAR', 'files': [{'source': ctx.get_out_path('*')}]}})
-    out.config()
-    # Setup the GS output dir, needed for the output path
-    GS.out_dir = '.'
-    # Start coverage
-    cov.load()
-    cov.start()
-    # Run the compression and catch the error
-    with pytest.raises(SystemExit) as pytest_wrapped_e:
-        out.run('')
-    # Stop coverage
-    cov.stop()
-    cov.save()
-    return pytest_wrapped_e
-
-
-def test_no_rar(caplog, monkeypatch):
-    # Create a silly context to get the output path
-    ctx = context.TestContext('test_no_rar', 'test_v5', 'empty_zip', '')
-    # The file we pretend to compress
-    ctx.create_dummy_out_file('Test.txt')
-    # We will patch subprocess.check_output to make rar fail
-    with monkeypatch.context() as m:
-        m.setattr("subprocess.check_output", mocked_check_output)
-        pytest_wrapped_e = run_compress(ctx)
-    # Check we exited because rar isn't installed
-    assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == MISSING_TOOL
-    assert "Missing `rar` command" in caplog.text
-
-
-def mocked_check_output_2(cmd, stderr=None):
-    e = CalledProcessError(10, 'rar')
-    e.output = b'THE_ERROR'
-    raise e
-
-
-def test_rar_fail(caplog, monkeypatch):
-    # Create a silly context to get the output path
-    ctx = context.TestContext('test_no_rar', 'test_v5', 'empty_zip', '')
-    # The file we pretend to compress
-    ctx.create_dummy_out_file('Test.txt')
-    # We will patch subprocess.check_output to make rar fail
-    with monkeypatch.context() as m:
-        m.setattr("subprocess.check_output", mocked_check_output_2)
-        pytest_wrapped_e = run_compress(ctx)
-    # Check we exited because rar isn't installed
-    assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == WRONG_INSTALL
-    assert "Failed to invoke rar command, error 10" in caplog.text
-    # Not in the docker image ... pytest issue?
-    # assert "THE_ERROR" in caplog.text
-
-
-class NoGetTargets(BaseOutput):
-    def __init__(self):
-        self.options = True
-        self.comment = 'Fake'
-        self.name = 'dummy'
-        self.type = 'none'
-        self._sch_related = True
-
-
-def test_no_get_targets(caplog):
-    test = NoGetTargets()
-    test.get_targets('')
-    assert "Output 'Fake' (dummy) [none] doesn't implement get_targets(), plese report it" in caplog.text
-    # Also check the dependencies fallback
-    GS.sch = None
-    GS.sch_file = 'fake'
-    assert test.get_dependencies() == [GS.sch_file]
