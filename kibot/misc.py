@@ -167,6 +167,7 @@ W_NOLAYER = '(W049) '
 W_EMPTYZIP = '(W050) '
 W_WRONGCHAR = '(W051) '
 W_NOKIVER = '(W052) '
+W_EXTNAME = '(W053) '
 
 
 class Rect(object):
