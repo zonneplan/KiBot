@@ -23,6 +23,7 @@ from kibot.misc import (MISSING_TOOL, WRONG_INSTALL)
 cov = coverage.Coverage()
 mocked_check_output_FNF = True
 
+
 # Important note:
 # - We can't load the plug-ins twice, the import fails.
 # - Once we patched them using monkey patch the patch isn't reverted unless we load them again.
