@@ -43,6 +43,16 @@ outputs:
       # Keep the KiBoM name
       output: ''
 
+  - name: 'drill'
+    comment: 'Drilling data'
+    type: excellon
+    dir: gerbers
+    options:
+      report:
+        filename: '%f-%i.%x'
+      map:
+        type: pdf
+
   - name: 'archive'
     comment: 'Compressed files'
     type: compress
@@ -51,6 +61,7 @@ outputs:
         - from_output: 'position'
         - from_output: 'interactive_bom'
         - from_output: '3D'
+        - from_output: 'drill'
         - source: '*'
           dest: AnotherCopy
 
