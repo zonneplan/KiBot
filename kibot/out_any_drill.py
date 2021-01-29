@@ -106,6 +106,7 @@ class AnyDrill(BaseOptions):
         """ Returns a dict containing KiCad names and its replacement.
             If no replacement is needed the replacement is empty """
         filenames = {}
+        self._configure_writer(GS.board, wxPoint(0, 0))
         files = [''] if self._unified_output else ['PTH', 'NPTH']
         for d in files:
             kicad_id = '-'+d if d else d
