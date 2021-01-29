@@ -53,6 +53,10 @@ outputs:
       map:
         type: pdf
 
+  - name: 'pcb_render'
+    comment: 'Top layer in SVG'
+    type: pcbdraw
+
   - name: 'archive'
     comment: 'Compressed files'
     type: compress

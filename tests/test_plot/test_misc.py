@@ -52,7 +52,7 @@ from kibot.gs import GS
 
 
 POS_DIR = 'positiondir'
-MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill']
+MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render']
 cov = coverage.Coverage()
 
 
@@ -597,6 +597,12 @@ def test_makefile_1():
     assert ctx.get_out_path(os.path.join('ibom', prj+'-ibom.html')) in deps
     assert os.path.abspath(targets[targets['interactive_bom']]) == ctx.board_file
     logging.debug('- Target `interactive_bom` OK')
+    # pcb_render target
+    deps = targets['pcb_render'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(prj+'-top.svg') in deps
+    assert os.path.abspath(targets[targets['pcb_render']]) == ctx.board_file
+    logging.debug('- Target `pcb_render` OK')
     # drill target
     deps = targets['drill'].split(' ')
     assert len(deps) == 3, deps
