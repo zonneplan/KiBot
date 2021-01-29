@@ -52,7 +52,7 @@ from kibot.gs import GS
 
 
 POS_DIR = 'positiondir'
-MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc']
+MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D']
 cov = coverage.Coverage()
 
 
@@ -593,19 +593,29 @@ def test_makefile_1():
     assert ctx.get_out_path(prj+'-erc.txt') in deps
     check_test_v5_sch_deps(ctx, targets[targets['run_erc']].split(' '))
     logging.debug('- Target `run_erc` OK')
+    # 3D target
+    deps = targets['3D'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(os.path.join('3D', prj+'-3D.step')) in deps
+    deps = targets[targets['3D']].split(' ')
+    assert os.path.relpath(ctx.board_file) in deps
+    # We can't check the WRL because it isn't included in the docker image
+    logging.debug('- Target `3D` OK')
     # archive target
     deps = targets['archive'].split(' ')
     assert len(deps) == 1, deps
     assert ctx.get_out_path(prj+'-archive.zip') in deps
     deps = targets[targets['archive']].split(' ')
-    assert len(deps) == 7, deps
+    assert len(deps) == 9, deps
     assert 'position' in deps
     assert 'interactive_bom' in deps
+    assert '3D' in deps
     assert ctx.get_out_path('error.txt') in deps
     assert ctx.get_out_path('output.txt') in deps
     assert ctx.get_out_path('Makefile') in deps
     assert ctx.get_out_path('positiondir') in deps
     assert ctx.get_out_path('ibom') in deps
+    assert ctx.get_out_path('3D') in deps
     logging.debug('- Target `archive` OK')
     ctx.clean_up()
 

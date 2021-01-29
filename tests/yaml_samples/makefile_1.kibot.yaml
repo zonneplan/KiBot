@@ -21,6 +21,11 @@ outputs:
     type: ibom
     dir: ibom
 
+  - name: '3D'
+    comment: 'STEP 3D model'
+    type: step
+    dir: 3D
+
   - name: 'archive'
     comment: 'Compressed files'
     type: compress
@@ -28,6 +33,7 @@ outputs:
       files:
         - from_output: 'position'
         - from_output: 'interactive_bom'
+        - from_output: '3D'
         - source: '*'
           dest: AnotherCopy
 
