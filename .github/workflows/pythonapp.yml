@@ -35,8 +35,9 @@ jobs:
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
-        src/kibot --help-outputs
         python3-coverage erase
+        # Create the caches with macros
+        python3-coverage run -a src/kibot --help-outputs > /dev/null
         pytest-3 --test_dir output
         python3-coverage report
         python3-coverage html -d output/htmlcov
