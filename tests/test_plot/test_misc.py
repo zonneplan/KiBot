@@ -537,6 +537,13 @@ def test_no_pcbnew():
     ctx.search_err('PYTHONPATH')
 
 
+def test_old_pcbnew():
+    ctx = context.TestContext('test_old_pcbnew', 'bom', 'bom', '')
+    cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_pcbnew_error.py'), 'fake']
+    ctx.do_run(cmd)
+    ctx.search_err('Unknown KiCad version, please install KiCad 5.1.6 or newer')
+
+
 def test_no_yaml():
     ctx = context.TestContext('test_no_yaml', 'bom', 'bom', '')
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_yaml_error.py')]
