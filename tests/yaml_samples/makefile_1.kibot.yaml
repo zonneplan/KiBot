@@ -26,6 +26,23 @@ outputs:
     type: step
     dir: 3D
 
+  - name: 'kibom_internal'
+    comment: 'BoM by KiBoM using internal config'
+    type: kibom
+    dir: BoM
+    options:
+      conf:
+        hide_pcb_info: true
+
+  - name: 'kibom_external'
+    comment: 'BoM by KiBoM using external config'
+    type: kibom
+    dir: BoM2
+    options:
+      conf: tests/data/bom.ini
+      # Keep the KiBoM name
+      output: ''
+
   - name: 'archive'
     comment: 'Compressed files'
     type: compress
