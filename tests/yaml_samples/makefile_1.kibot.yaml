@@ -10,3 +10,12 @@ outputs:
       units: millimeters  # millimeters or inches
       separate_files_for_front_and_back: true
       only_smd: true
+
+  - name: 'archive'
+    type: compress
+    options:
+      files:
+        - from_output: 'position'
+        - source: '*'
+          dest: AnotherCopy
+

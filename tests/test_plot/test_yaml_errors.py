@@ -59,7 +59,7 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kibot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR, BOM_ERROR)
+from kibot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR, BOM_ERROR, WRONG_ARGUMENTS)
 
 
 PRJ = 'fail-project'
@@ -618,4 +618,11 @@ def test_error_rot_no_rotations():
     ctx = context.TestContext('test_error_rot_no_rotations', 'bom', 'error_rot_no_rotations', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("No rotations provided")
+    ctx.clean_up()
+
+
+def test_error_makefile_wrong_out():
+    ctx = context.TestContext('test_error_makefile_wrong_out', 'bom', 'error_makefile_wrong_out', '')
+    ctx.run(WRONG_ARGUMENTS)
+    assert ctx.search_err("Unknown output `position` selected in")
     ctx.clean_up()

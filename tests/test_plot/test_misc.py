@@ -52,7 +52,7 @@ from kibot.gs import GS
 
 
 POS_DIR = 'positiondir'
-MK_TARGETS = ['position']
+MK_TARGETS = ['position', 'archive']
 cov = coverage.Coverage()
 
 
@@ -555,6 +555,7 @@ def test_makefile_1():
     prj = 'test_v5'
     ctx = context.TestContext('test_makefile_1', prj, 'makefile_1', '')
     mkfile = ctx.get_out_path('Makefile')
+    ctx.run()
     ctx.run(extra=['-m', mkfile])
     ctx.expect_out_file('Makefile')
     targets = ctx.read_mk_targets(mkfile)
@@ -568,10 +569,22 @@ def test_makefile_1():
     # position target
     deps = targets['position'].split(' ')
     assert len(deps) == 2, deps
-    assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-top_pos.csv'))
-    assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-bottom_pos.csv'))
+    assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-top_pos.csv')) in deps
+    assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-bottom_pos.csv')) in deps
     assert os.path.abspath(targets[targets['position']]) == ctx.board_file
     logging.debug('- Target `position` OK')
+    # archive target
+    deps = targets['archive'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(prj+'-archive.zip') in deps
+    deps = targets[targets['archive']].split(' ')
+    assert len(deps) == 5, deps
+    assert 'position' in deps
+    assert ctx.get_out_path('error.txt') in deps
+    assert ctx.get_out_path('output.txt') in deps
+    assert ctx.get_out_path('Makefile') in deps
+    assert ctx.get_out_path('positiondir') in deps
+    logging.debug('- Target `archive` OK')
     ctx.clean_up()
 
 

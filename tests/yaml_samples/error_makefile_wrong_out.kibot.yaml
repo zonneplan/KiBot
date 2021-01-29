@@ -1,0 +1,10 @@
+kibot:
+  version: 1
+
+outputs:
+  - name: 'archive'
+    type: compress
+    options:
+      files:
+        - from_output: 'position'
+
