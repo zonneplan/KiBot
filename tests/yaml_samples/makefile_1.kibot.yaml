@@ -1,6 +1,9 @@
 kibot:
   version: 1
 
+preflight:
+  run_erc: true
+
 outputs:
   - name: 'position'
     type: position

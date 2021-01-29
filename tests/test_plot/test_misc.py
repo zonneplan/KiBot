@@ -52,7 +52,7 @@ from kibot.gs import GS
 
 
 POS_DIR = 'positiondir'
-MK_TARGETS = ['position', 'archive', 'interactive_bom']
+MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc']
 cov = coverage.Coverage()
 
 
@@ -551,11 +551,19 @@ def test_no_colorama():
     ctx.search_err(r'\[31m.\[1mERROR:Testing 1 2 3')
 
 
+def check_test_v5_sch_deps(ctx, deps):
+    assert len(deps) == 5, deps
+    dir = os.path.dirname(ctx.board_file)
+    deps_abs = [os.path.abspath(f) for f in deps]
+    for sch in ['test_v5.sch', 'sub-sheet.sch', 'deeper.sch', 'sub-sheet.sch', 'deeper.sch']:
+        assert os.path.abspath(os.path.join(dir, sch)) in deps_abs
+
+
 def test_makefile_1():
     prj = 'test_v5'
     ctx = context.TestContext('test_makefile_1', prj, 'makefile_1', '')
     mkfile = ctx.get_out_path('Makefile')
-    ctx.run(extra=['archive'])
+    ctx.run(extra=['-s', 'all', 'archive'])
     ctx.run(extra=['-m', mkfile])
     ctx.expect_out_file('Makefile')
     targets = ctx.read_mk_targets(mkfile)
@@ -579,6 +587,12 @@ def test_makefile_1():
     assert ctx.get_out_path(os.path.join('ibom', prj+'-ibom.html')) in deps
     assert os.path.abspath(targets[targets['interactive_bom']]) == ctx.board_file
     logging.debug('- Target `interactive_bom` OK')
+    # run_erc target
+    deps = targets['run_erc'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(prj+'-erc.txt') in deps
+    check_test_v5_sch_deps(ctx, targets[targets['run_erc']].split(' '))
+    logging.debug('- Target `run_erc` OK')
     # archive target
     deps = targets['archive'].split(' ')
     assert len(deps) == 1, deps
