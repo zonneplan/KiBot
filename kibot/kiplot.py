@@ -292,7 +292,8 @@ def generate_outputs(outputs, target, invert, skip_pre):
 
 
 def adapt_file_name(name):
-    name = os.path.relpath(name)
+    if not name.startswith('/usr'):
+        name = os.path.relpath(name)
     name = name.replace(' ', r'\ ')
     if '$' in name:
         logger.warning(W_WRONGCHAR+'Wrong character in file name `{}`'.format(name))

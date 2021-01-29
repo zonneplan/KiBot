@@ -153,7 +153,7 @@ class STEPOptions(VariantOptions):
                 full_name = KiConf.expand_env(m3d.m_Filename)
                 if os.path.isfile(full_name):
                     models.add(full_name)
-        return models.keys()
+        return list(models)
 
     def save_board(self, dir):
         """ Save the PCB to a temporal file """
@@ -200,12 +200,12 @@ class STEPOptions(VariantOptions):
         return fname
 
     def get_targets(self, parent, out_dir):
-        return [self.expand_filename_sch(out_dir, self.output, '3D', 'step')]
+        return [self.expand_filename(out_dir, self.output, '3D', 'step')]
 
     def run(self, output_dir):
         super().run(output_dir)
         # Output file name
-        output = self.expand_filename(output_dir, self.output, '3D', 'step')
+        output = self.get_targets(None, output_dir)[0]
         # Make units explicit
         if self.metric_units:
             units = 'mm'
