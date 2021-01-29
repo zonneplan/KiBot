@@ -339,7 +339,10 @@ def generate_makefile(makefile, cfg_file, outputs):
         for out in outputs:
             name = name2make(out.name)
             ori_names[name] = out.name
-            targets[name] = [adapt_file_name(fn) for fn in out.get_targets(os.path.join(GS.out_dir, out.dir))]
+            tg = out.get_targets(os.path.join(GS.out_dir, out.dir))
+            if not tg:
+                continue
+            targets[name] = [adapt_file_name(fn) for fn in tg]
             dependencies[name] = [adapt_file_name(fn) for fn in out.get_dependencies()]
             if out.comment:
                 comments[name] = out.comment
