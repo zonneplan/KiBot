@@ -104,7 +104,7 @@ def solve_schematic(a_schematic, a_board_file):
         else:
             sch = base+'.kicad_sch'
             if os.path.isfile(sch):
-                schematic = sch
+                schematic = sch  # pragma: no cover (Ki6)
     if not schematic:
         schematics = glob('*.sch')+glob('*.kicad_sch')
         if len(schematics) == 1:
@@ -201,7 +201,7 @@ def set_locale():
 def detect_kicad():
     # Check if we have to run the nightly KiCad build
     nightly = False
-    if os.environ.get('KIAUS_USE_NIGHTLY'):
+    if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (Ki6)
         # Path to the Python module
         sys_path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
         nightly = True
@@ -225,7 +225,7 @@ def detect_kicad():
     GS.kicad_version_n = GS.kicad_version_major*1000000+GS.kicad_version_minor*1000+GS.kicad_version_patch
     logger.debug('Detected KiCad v{}.{}.{} ({} {})'.format(GS.kicad_version_major, GS.kicad_version_minor,
                  GS.kicad_version_patch, GS.kicad_version, GS.kicad_version_n))
-    if GS.kicad_version_n >= KICAD_VERSION_5_99:
+    if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
         GS.kicad_conf_path = pcbnew.GetSettingsManager().GetUserSettingsPath()
         if nightly:
             # Nightly Debian packages uses `/usr/share/kicad-nightly/kicad-nightly.env` as an environment extension
