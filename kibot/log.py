@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://stackoverflow.com/questions/384076/how-can-i-color-python-logging-output
@@ -19,7 +19,7 @@ except ImportError:
     no_colorama = True
 # If colorama isn't installed use an ANSI basic replacement
 if no_colorama:
-    from .ansi import Fore, Back, Style  # noqa: F811
+    from .mcpyrate.ansi import Fore, Back, Style  # noqa: F811
 else:
     colorama_init()
 # Default domain, base name for the tool

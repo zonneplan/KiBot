@@ -18,9 +18,9 @@ from utils import context
 PS_DIR = 'PS'
 
 
-def test_ps():
+def test_ps(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext('Postscript', prj, 'ps', PS_DIR)
+    ctx = context.TestContext(test_dir, 'Postscript', prj, 'ps', PS_DIR)
     ctx.run()
 
     f_cu = ctx.get_gerber_filename('F_Cu', '.ps')
@@ -32,9 +32,9 @@ def test_ps():
     ctx.clean_up()
 
 
-def test_ps_auto():
+def test_ps_auto(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext('PostscriptAuto', prj, 'ps_auto', PS_DIR)
+    ctx = context.TestContext(test_dir, 'PostscriptAuto', prj, 'ps_auto', PS_DIR)
     ctx.run()
 
     f_cu = ctx.get_gerber_filename('F_Cu', '.ps')

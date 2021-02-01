@@ -1,22 +1,87 @@
 # -*- coding: utf-8; -*-
 """Utilities for splicing the actual code into a code template."""
 
-__all__ = ["splice_statements", "splice_dialect"]
+__all__ = ["splice_expression", "splice_statements", "splice_dialect"]
 
 import ast
 from copy import deepcopy
 
-from .astfixers import fix_missing_locations
+from .astfixers import fix_locations
 from .coreutils import ismacroimport
-from .walker import Walker
+from .markers import ASTMarker
+from .utils import getdocstring
+from .walkers import ASTTransformer
 
 
+def splice_expression(expr, template, tag="__paste_here__"):
+    """Splice `expr` into `template`.
+
+    This is somewhat like `mcpyrate.quotes.a`, but must be called from outside the
+    quoted snippet.
+
+    Parameters:
+
+        `expr`: an expression AST node, or an AST marker containing such.
+            The expression you would like to splice in.
+
+        `template`: an AST node, or a `list` of AST nodes.
+            Template into which to splice `expr`.
+
+            Must contain a paste-here indicator AST node that specifies where
+            `expr` is to be spliced in. The node is expected to have the format::
+
+                ast.Name(id=tag)
+
+            Or in plain English, it's a bare identifier.
+
+            The first-found instance (in AST scan order) of the paste-here indicator
+            is replaced by `expr`.
+
+            If the paste-here indicator appears multiple times, second and further
+            instances are replaced with a `copy.deepcopy` of `expr` so that they will
+            stay independent during any further AST edits.
+
+        `tag`: `str`
+            The name of the paste-here indicator in `template`.
+
+    Returns `template` with `expr` spliced in. Note `template` is **not** copied,
+    and will be mutated in-place.
+
+    """
+    if not template:
+        return expr
+
+    if not (isinstance(expr, ast.expr) or
+            (isinstance(expr, ASTMarker) and isinstance(expr.body, ast.expr))):
+        raise TypeError(f"`expr` must be an expression AST node or AST marker containing such; got {type(expr)} with value {repr(expr)}")
+    if not isinstance(template, (ast.AST, list)):
+        raise TypeError(f"`template` must be an AST or `list`; got {type(template)} with value {repr(template)}")
+
+    def ispastehere(tree):
+        return type(tree) is ast.Expr and type(tree.value) is ast.Name and tree.value.id == tag
+
+    class ExpressionSplicer(ASTTransformer):
+        def __init__(self):
+            self.first = True
+            super().__init__()
+
+        def transform(self, tree):
+            if ispastehere(tree):
+                if not self.first:
+                    return deepcopy(expr)
+                self.first = False
+                return expr
+            return self.generic_visit(tree)
+
+    return ExpressionSplicer().visit(template)
+
+
+# TODO: this is actually a generic list-of-ast splicer, not specific to statements.
 def splice_statements(body, template, tag="__paste_here__"):
     """Splice `body` into `template`.
 
     This is somewhat like `mcpyrate.quotes.a`, but must be called from outside the
-    quoted snippet, and splices statements (from a `list` of AST nodes) instead
-    of a single expression AST node.
+    quoted snippet.
 
     Parameters:
 
@@ -77,7 +142,7 @@ def splice_statements(body, template, tag="__paste_here__"):
     def ispastehere(tree):
         return type(tree) is ast.Expr and type(tree.value) is ast.Name and tree.value.id == tag
 
-    class StatementSplicer(Walker):
+    class StatementSplicer(ASTTransformer):
         def __init__(self):
             self.first = True
             super().__init__()
@@ -144,11 +209,15 @@ def splice_dialect(body, template, tag="__paste_here__"):
     # to the use site where `body` comes from.
     #
     # Pretend the template code appears at the beginning of the user module.
+    #
+    # TODO: It would be better to pretend it appears at the line that has the dialect-import.
+    # TODO: Requires a `lineno` parameter here, and `DialectExpander` must be modified to supply it.
+    # TODO: We could extract the `lineno` in `find_dialectimport_ast` and then pass it to the
+    # TODO: user-defined dialect AST transformer, so it could pass it to us if it wants to.
     for stmt in template:
-        fix_missing_locations(stmt, body[0], mode="overwrite")
+        fix_locations(stmt, body[0], mode="overwrite")
 
-    # TODO: remove ast.Str once we bump minimum language version to Python 3.8
-    if type(body[0]) is ast.Expr and type(body[0].value) in (ast.Constant, ast.Str):
+    if getdocstring(body):
         docstring, *body = body
         docstring = [docstring]
     else:
@@ -160,7 +229,7 @@ def splice_dialect(body, template, tag="__paste_here__"):
                 return False
             target = tree.targets[0]
             return type(target) is ast.Name and target.id == "__all__"
-        class MagicAllExtractor(Walker):
+        class MagicAllExtractor(ASTTransformer):
             def transform(self, tree):
                 if ismagicall(tree):
                     self.collect(tree)
@@ -173,7 +242,7 @@ def splice_dialect(body, template, tag="__paste_here__"):
     body, user_magic_all = extract_magic_all(body)
 
     def extract_macroimports(tree, *, magicname="macros"):
-        class MacroImportExtractor(Walker):
+        class MacroImportExtractor(ASTTransformer):
             def transform(self, tree):
                 if ismacroimport(tree, magicname):
                     self.collect(tree)
@@ -189,7 +258,7 @@ def splice_dialect(body, template, tag="__paste_here__"):
 
     finalbody = splice_statements(body, template, tag)
     return (docstring +
-            template_dialect_imports + user_dialect_imports +
             user_magic_all +
+            template_dialect_imports + user_dialect_imports +
             template_macro_imports + user_macro_imports +
             finalbody)

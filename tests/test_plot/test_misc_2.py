@@ -15,7 +15,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.out_base import BaseOutput
 from kibot.gs import GS
-from kibot.kiplot import load_actions
+from kibot.kiplot import load_actions, _import
 from kibot.registrable import RegOutput
 from kibot.misc import (MISSING_TOOL, WRONG_INSTALL)
 
@@ -38,7 +38,7 @@ def mocked_check_output(cmd, stderr=None):
         raise e
 
 
-def run_compress(ctx):
+def run_compress(ctx, test_import_fail=False):
     # Load the plug-ins
     load_actions()
     # Create a compress object with the dummy file as source
@@ -52,18 +52,21 @@ def run_compress(ctx):
     cov.start()
     # Run the compression and catch the error
     with pytest.raises(SystemExit) as pytest_wrapped_e:
-        out.run('')
+        if test_import_fail:
+            _import('out_bogus', os.path.abspath(os.path.join(os.path.dirname(__file__), 'fake_plugin/out_bogus.py')))
+        else:
+            out.run('')
     # Stop coverage
     cov.stop()
     cov.save()
     return pytest_wrapped_e
 
 
-def test_no_rar(caplog, monkeypatch):
+def test_no_rar(test_dir, caplog, monkeypatch):
     global mocked_check_output_FNF
     mocked_check_output_FNF = True
     # Create a silly context to get the output path
-    ctx = context.TestContext('test_no_rar', 'test_v5', 'empty_zip', '')
+    ctx = context.TestContext(test_dir, 'test_no_rar', 'test_v5', 'empty_zip', '')
     # The file we pretend to compress
     ctx.create_dummy_out_file('Test.txt')
     # We will patch subprocess.check_output to make rar fail
@@ -76,23 +79,28 @@ def test_no_rar(caplog, monkeypatch):
     assert "Missing `rar` command" in caplog.text
 
 
-def test_rar_fail(caplog, monkeypatch):
+def test_rar_fail(test_dir, caplog, monkeypatch):
     global mocked_check_output_FNF
     mocked_check_output_FNF = False
     # Create a silly context to get the output path
-    ctx = context.TestContext('test_no_rar', 'test_v5', 'empty_zip', '')
+    ctx = context.TestContext(test_dir, 'test_no_rar', 'test_v5', 'empty_zip', '')
     # The file we pretend to compress
     ctx.create_dummy_out_file('Test.txt')
     # We will patch subprocess.check_output to make rar fail
     with monkeypatch.context() as m:
         m.setattr("subprocess.check_output", mocked_check_output)
         pytest_wrapped_e = run_compress(ctx)
+        pytest_wrapped_e2 = run_compress(ctx, test_import_fail=True)
     # Check we exited because rar isn't installed
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == WRONG_INSTALL
     assert "Failed to invoke rar command, error 10" in caplog.text
     # Not in the docker image ... pytest issue?
     # assert "THE_ERROR" in caplog.text
+    # Check we exited because the import failed
+    assert pytest_wrapped_e2.type == SystemExit
+    assert pytest_wrapped_e2.value.code == WRONG_INSTALL
+    assert "Unable to import plug-ins:" in caplog.text
 
 
 class NoGetTargets(BaseOutput):

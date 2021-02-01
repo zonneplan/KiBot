@@ -1,7 +1,7 @@
 # -*- coding: utf-8; -*-
-'''Fix missing `ctx` attributes and source location info in an AST.'''
+"""Fix `ctx` attributes and source location info in an AST."""
 
-__all__ = ['fix_missing_ctx', 'fix_missing_locations']
+__all__ = ["fix_ctx", "fix_locations"]
 
 from ast import (Load, Store, Del,
                  Assign, AnnAssign, AugAssign,
@@ -11,8 +11,9 @@ from ast import (Load, Store, Del,
                  withitem,
                  Delete,
                  iter_child_nodes)
+from copy import copy
 
-from .walker import Walker
+from . import walkers
 
 try:  # Python 3.8+
     from ast import NamedExpr
@@ -22,22 +23,35 @@ except ImportError:
     NamedExpr = _NoSuchNodeType
 
 
-class _CtxFixer(Walker):
-    def __init__(self):
+class _CtxFixer(walkers.ASTTransformer):
+    def __init__(self, *, copy_seen_nodes):
         super().__init__(ctxclass=Load)
+        self.copy_seen_nodes = copy_seen_nodes
+
+    def reset(self, **bindings):
+        super().reset(**bindings)
+        self._seen = set()
 
     def transform(self, tree):
-        self._fix_one(tree)
+        tree = self._fix_one(tree)
         self._setup_subtree_contexts(tree)
         return self.generic_visit(tree)
 
     def _fix_one(self, tree):
-        '''Fix one missing `ctx` attribute, using the currently active ctx class.'''
-        if ("ctx" in type(tree)._fields and (not hasattr(tree, "ctx") or tree.ctx is None)):
+        """Fix one `ctx` attribute, using the currently active ctx class."""
+        if "ctx" in type(tree)._fields:
+            if self.copy_seen_nodes:
+                # Shallow-copy `tree` if already seen. This mode is used in the
+                # global postprocess pass. Note only nodes whose `ctx` we have
+                # already updated are considered seen.
+                if id(tree) in self._seen:
+                    tree = copy(tree)
             tree.ctx = self.state.ctxclass()
+            self._seen.add(id(tree))
+        return tree
 
     def _setup_subtree_contexts(self, tree):
-        '''Autoselect correct `ctx` class for subtrees of `tree`.'''
+        """Autoselect correct `ctx` class for subtrees of `tree`."""
         # The default ctx class is `Load`. We set up any `Store` and `Del`, as
         # well as any `Load` for trees that may appear inside others that are
         # set up as `Store` or `Del` (that mainly concerns expressions).
@@ -84,29 +98,36 @@ class _CtxFixer(Walker):
             self.withstate(tree.targets, ctxclass=Del)
 
 
-def fix_missing_ctx(tree):
-    '''Fix any missing `ctx` attributes in `tree`.
+def fix_ctx(tree, *, copy_seen_nodes):
+    """Fix `ctx` attributes in `tree`.
+
+    If `copy_seen_nodes=True`, then, if the same AST node instance appears
+    multiple times, and the node requires a `ctx`, shallow-copy it the second
+    and further times it is encountered. This prevents problems if the same
+    node instance has been spliced into two or more positions that require
+    different `ctx`.
 
     Modifies `tree` in-place. For convenience, returns the modified `tree`.
-    '''
-    return _CtxFixer().visit(tree)
+    """
+    return _CtxFixer(copy_seen_nodes=copy_seen_nodes).visit(tree)
 
 
-def fix_missing_locations(tree, reference_node, *, mode):
-    '''Like `ast.fix_missing_locations`, but customized for a macro expander.
+def fix_locations(tree, reference_node, *, mode):
+    """Like `ast.fix_missing_locations`, but customized for a macro expander.
 
     Differences:
 
-      - If `reference_node` has no location info, return immediately (no-op).
+      - If `reference_node` has source no location info, return immediately (no-op).
       - If `tree is None`, return immediately (no-op).
       - If `tree` is a `list` of AST nodes, loop over it.
 
     The `mode` parameter:
 
       - If `mode="reference"`, populate any missing location info by
-        copying it from `reference_node`. Always use the same values.
+        copying it from `reference_node`. Always use the same reference info.
 
-        Good for a macro expander.
+        Good when expanding a macro invocation, to set the source location
+        of any macro-generated nodes to that of the macro invocation node.
 
       - If `mode="update"`, behave exactly like `ast.fix_missing_locations`,
         except that at the top level of `tree`, initialize `lineno` and
@@ -123,10 +144,10 @@ def fix_missing_locations(tree, reference_node, *, mode):
 
         Good when `tree` is a code template that comes from another file,
         so that any line numbers already in the AST would be misleading
-        at the use site.
+        at the use site (because they point to lines in that other file).
 
     Modifies `tree` in-place. For convenience, returns the modified `tree`.
-    '''
+    """
     if not (hasattr(reference_node, "lineno") and hasattr(reference_node, "col_offset")):
         return tree
     def _fix(tree, lineno, col_offset):
@@ -136,19 +157,19 @@ def fix_missing_locations(tree, reference_node, *, mode):
             for elt in tree:
                 _fix(elt, lineno, col_offset)
             return
-        if 'lineno' in tree._attributes:
+        if "lineno" in tree._attributes:
             if mode == "overwrite":
                 tree.lineno = lineno
             else:
-                if not hasattr(tree, 'lineno'):
+                if not hasattr(tree, "lineno"):
                     tree.lineno = lineno
                 elif mode == "update":
                     lineno = tree.lineno
-        if 'col_offset' in tree._attributes:
+        if "col_offset" in tree._attributes:
             if mode == "overwrite":
                 tree.col_offset = col_offset
             else:
-                if not hasattr(tree, 'col_offset'):
+                if not hasattr(tree, "col_offset"):
                     tree.col_offset = col_offset
                 elif mode == "update":
                     col_offset = tree.col_offset

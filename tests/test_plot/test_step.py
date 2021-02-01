@@ -22,9 +22,9 @@ STEP_DIR = '3D'
 # STEP_FILE = 'bom.step'
 
 
-def test_step_1():
+def test_step_1(test_dir):
     prj = 'bom'
-    ctx = context.TestContext('STEP_1', prj, 'step_simple', STEP_DIR)
+    ctx = context.TestContext(test_dir, 'STEP_1', prj, 'step_simple', STEP_DIR)
     ctx.run()
     # Check all outputs are there
     name = os.path.join(STEP_DIR, prj+'-3D.step')
@@ -34,27 +34,27 @@ def test_step_1():
     ctx.clean_up()
 
 
-def test_step_2():
+def test_step_2(test_dir):
     prj = 'bom'
-    ctx = context.TestContext('STEP_2', prj, 'step_simple_2', STEP_DIR)
+    ctx = context.TestContext(test_dir, 'STEP_2', prj, 'step_simple_2', STEP_DIR)
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(os.path.join(STEP_DIR, prj+'-3D.step'))
     ctx.clean_up()
 
 
-def test_step_3():
+def test_step_3(test_dir):
     prj = 'bom'
-    ctx = context.TestContext('STEP_3', prj, 'step_simple_3', STEP_DIR)
+    ctx = context.TestContext(test_dir, 'STEP_3', prj, 'step_simple_3', STEP_DIR)
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(os.path.join(STEP_DIR, prj+'.step'))
     ctx.clean_up()
 
 
-def test_step_variant_1():
+def test_step_variant_1(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContext('test_step_variant_1', prj, 'step_variant_1', '')
+    ctx = context.TestContext(test_dir, 'test_step_variant_1', prj, 'step_variant_1', '')
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-3D.step')

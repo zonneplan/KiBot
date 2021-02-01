@@ -5,11 +5,13 @@
 macros may use them to work together.
 """
 
-__all__ = ["ASTMarker", "get_markers", "delete_markers"]
+__all__ = ["ASTMarker", "get_markers", "delete_markers", "check_no_markers_remaining"]
 
 import ast
 
-from .walker import Walker
+from . import core
+from . import utils
+from . import walkers
 
 
 class ASTMarker(ast.AST):
@@ -42,14 +44,15 @@ class ASTMarker(ast.AST):
 
 def get_markers(tree, cls=ASTMarker):
     """Return a `list` of any `cls` instances found in `tree`. For output validation."""
-    class ASTMarkerCollector(Walker):
-        def transform(self, tree):
+    class ASTMarkerCollector(walkers.ASTVisitor):
+        def examine(self, tree):
             if isinstance(tree, cls):
                 self.collect(tree)
-            return self.generic_visit(tree)
+            self.generic_visit(tree)
     w = ASTMarkerCollector()
     w.visit(tree)
     return w.collected
+
 
 def delete_markers(tree, cls=ASTMarker):
     """Delete any `cls` ASTMarker instances found in `tree`.
@@ -57,9 +60,31 @@ def delete_markers(tree, cls=ASTMarker):
     The deletion takes place by replacing each marker node with
     the actual AST node stored in its `body` attribute.
     """
-    class ASTMarkerDeleter(Walker):
+    class ASTMarkerDeleter(walkers.ASTTransformer):
         def transform(self, tree):
             if isinstance(tree, cls):
                 tree = tree.body
             return self.generic_visit(tree)
     return ASTMarkerDeleter().visit(tree)
+
+
+def check_no_markers_remaining(tree, *, filename, cls=None):
+    """Check that `tree` has no AST markers remaining.
+
+    If a class `cls` is provided, only check for markers that `isinstance(cls)`.
+
+    If there are any, raise `MacroExpansionError`.
+    No return value.
+
+    `filename` is the full path to the `.py` file, for error reporting.
+
+    Convenience function.
+
+    """
+    cls = cls or ASTMarker
+    remaining_markers = get_markers(tree, cls)
+    if remaining_markers:
+        codes = [utils.format_context(node, n=5) for node in remaining_markers]
+        locations = [utils.format_location(filename, node, code) for node, code in zip(remaining_markers, codes)]
+        report = "\n\n".join(locations)
+        raise core.MacroExpansionError(f"{filename}: AST markers remaining after expansion:\n{report}")
