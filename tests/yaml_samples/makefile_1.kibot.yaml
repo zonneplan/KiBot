@@ -56,6 +56,8 @@ outputs:
   - name: 'pcb_render'
     comment: 'Top layer in SVG'
     type: pcbdraw
+    options:
+      output: '%f-%i$.%x'
 
   - name: 'archive'
     comment: 'Compressed files'
