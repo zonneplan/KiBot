@@ -176,7 +176,7 @@ def load_sch():
     GS.check_sch()
     # We can't yet load the new format
     if GS.sch_file[-9:] == 'kicad_sch':
-        return
+        return  # pragma: no cover (Ki6)
     GS.sch = Schematic()
     load_any_sch(GS.sch, GS.sch_file, GS.sch_basename)
 
@@ -205,7 +205,7 @@ def get_board_comps_data(comps):
                 c.virtual = True
             else:
                 c.tht = True
-        else:
+        else:  # pragma: no cover (Ki6)
             # KiCad 6
             if attrs & MOD_SMD:
                 c.smd = True
