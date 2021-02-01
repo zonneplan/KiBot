@@ -165,7 +165,8 @@ def test_3Rs_position_unified_th_csv(test_dir):
 
 def test_3Rs_position_inches_csv(test_dir):
     """ Also test a compressed configuration YAML file """
-    ctx = context.TestContext(test_dir, '3Rs_position_inches_csv', '3Rs', 'simple_position_inches_csv', POS_DIR, yaml_compressed=True)
+    ctx = context.TestContext(test_dir, '3Rs_position_inches_csv', '3Rs', 'simple_position_inches_csv', POS_DIR,
+                              yaml_compressed=True)
     ctx.run()
     pos_top = ctx.get_pos_top_csv_filename()
     pos_bot = ctx.get_pos_bot_csv_filename()

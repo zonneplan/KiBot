@@ -53,7 +53,7 @@ def run_compress(ctx, test_import_fail=False):
     # Run the compression and catch the error
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         if test_import_fail:
-            _import('out_bogus', os.path.abspath(os.path.join(os.path.dirname(__file__),'fake_plugin/out_bogus.py')))
+            _import('out_bogus', os.path.abspath(os.path.join(os.path.dirname(__file__), 'fake_plugin/out_bogus.py')))
         else:
             out.run('')
     # Stop coverage

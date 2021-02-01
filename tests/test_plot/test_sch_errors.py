@@ -68,9 +68,9 @@ def test_sch_errors_l3(test_dir):
 
 def test_sch_errors_l5(test_dir):
     setup_ctx(test_dir, 'l5', ['Unknown poligon definition', 'Expected 6 coordinates and got 8 in poligon',
-                     'Unknown square definition', 'Unknown circle definition', 'Unknown arc definition',
-                     'Unknown text definition', 'Unknown pin definition', 'Failed to load component definition',
-                     'Unknown draw element'])
+                               'Unknown square definition', 'Unknown circle definition', 'Unknown arc definition',
+                               'Unknown text definition', 'Unknown pin definition', 'Failed to load component definition',
+                               'Unknown draw element'])
 
 
 def test_sch_errors_l6(test_dir):
@@ -99,8 +99,8 @@ def test_sch_errors_field_name(test_dir):
 
 def test_sch_errors_ar(test_dir):
     setup_ctx(test_dir, 'ar', ['Unknown AR field .?Bogus.?', 'Alternative Reference without path',
-                     'Alternative Reference without reference', 'Component `U1` without the basic fields',
-                     'Footprint with more than one colon'])
+                               'Alternative Reference without reference', 'Component `U1` without the basic fields',
+                               'Footprint with more than one colon'])
 
 
 def test_sch_errors_miss_label(test_dir):

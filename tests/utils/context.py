@@ -5,7 +5,6 @@ import tempfile
 import logging
 import subprocess
 import re
-import pytest
 import csv
 from glob import glob
 from pty import openpty
