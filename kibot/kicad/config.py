@@ -186,7 +186,10 @@ class KiConf(object):
             io_buf = StringIO('[Default]\n'+buf)
             cf = ConfigParser.RawConfigParser(allow_no_value=True)
             cf.optionxform = str
-            cf.readfp(io_buf, cfg)
+            if sys.version_info.major >= 3:
+                cf.read_file(io_buf, cfg)
+            else:  # pragma: no cover (Py2)
+                cf.readfp(io_buf, cfg)
             if 'EnvironmentVariables' not in cf.sections():
                 logger.warning(W_NOKIENV + 'KiCad config without EnvironmentVariables section')
             else:
