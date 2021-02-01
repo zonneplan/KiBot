@@ -69,8 +69,8 @@ def expect_position(ctx, file, comp, no_comp=[], inches=False, csv=False, neg_x=
     ctx.search_not_in_file(file, texts)
 
 
-def test_3Rs_position_1():
-    ctx = context.TestContext('3Rs_position_1', '3Rs', 'simple_position', POS_DIR)
+def test_3Rs_position_1(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs_position_1', '3Rs', 'simple_position', POS_DIR)
     ctx.run()
     pos_top = ctx.get_pos_top_filename()
     pos_bot = ctx.get_pos_bot_filename()
@@ -81,8 +81,8 @@ def test_3Rs_position_1():
     ctx.clean_up()
 
 
-def test_3Rs_position_neg_x():
-    ctx = context.TestContext('3Rs_position_neg_x', '3Rs', 'simple_position_neg_x', POS_DIR)
+def test_3Rs_position_neg_x(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs_position_neg_x', '3Rs', 'simple_position_neg_x', POS_DIR)
     ctx.run()
     pos_top = ctx.get_pos_top_filename()
     pos_bot = ctx.get_pos_bot_filename()
@@ -93,22 +93,22 @@ def test_3Rs_position_neg_x():
     ctx.clean_up()
 
 
-def test_3Rs_position_unified():
-    ctx = context.TestContext('3Rs_position_unified', '3Rs', 'simple_position_unified', POS_DIR)
+def test_3Rs_position_unified(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs_position_unified', '3Rs', 'simple_position_unified', POS_DIR)
     ctx.run()
     expect_position(ctx, ctx.get_pos_both_filename(), ['R1', 'R2'], ['R3'])
     ctx.clean_up()
 
 
-def test_3Rs_position_unified_th():
-    ctx = context.TestContext('3Rs_position_unified_th', '3Rs', 'simple_position_unified_th', POS_DIR)
+def test_3Rs_position_unified_th(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs_position_unified_th', '3Rs', 'simple_position_unified_th', POS_DIR)
     ctx.run()
     expect_position(ctx, os.path.join(POS_DIR, ctx.board_name+'-position.pos'), ['R1', 'R2', 'R3'])
     ctx.clean_up()
 
 
-def test_3Rs_position_inches():
-    ctx = context.TestContext('3Rs_position_inches', '3Rs', 'simple_position_inches', POS_DIR)
+def test_3Rs_position_inches(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs_position_inches', '3Rs', 'simple_position_inches', POS_DIR)
     ctx.run()
     pos_top = ctx.get_pos_top_filename()
     pos_bot = ctx.get_pos_bot_filename()
@@ -119,9 +119,9 @@ def test_3Rs_position_inches():
     ctx.clean_up()
 
 
-def test_3Rs_position_csv():
+def test_3Rs_position_csv(test_dir):
     """ Also test a case without comment and color logs """
-    ctx = context.TestContext('3Rs_position_csv', '3Rs', 'simple_position_csv', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs_position_csv', '3Rs', 'simple_position_csv', POS_DIR)
     ctx.run(use_a_tty=True)
     pos_top = ctx.get_pos_top_csv_filename()
     pos_bot = ctx.get_pos_bot_csv_filename()
@@ -133,8 +133,8 @@ def test_3Rs_position_csv():
     ctx.clean_up()
 
 
-def test_position_csv_cols():
-    ctx = context.TestContext('test_position_csv_cols', '3Rs', 'simple_position_csv_cols', POS_DIR)
+def test_position_csv_cols(test_dir):
+    ctx = context.TestContext(test_dir, 'test_position_csv_cols', '3Rs', 'simple_position_csv_cols', POS_DIR)
     ctx.run()
     pos_top = ctx.get_pos_top_csv_filename()
     pos_bot = ctx.get_pos_bot_csv_filename()
@@ -144,28 +144,28 @@ def test_position_csv_cols():
     ctx.clean_up()
 
 
-def test_3Rs_position_unified_csv():
+def test_3Rs_position_unified_csv(test_dir):
     """ Also test the quiet mode """
-    ctx = context.TestContext('3Rs_position_unified_csv', '3Rs', 'simple_position_unified_csv', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs_position_unified_csv', '3Rs', 'simple_position_unified_csv', POS_DIR)
     ctx.run(no_verbose=True, extra=['-q'])
     expect_position(ctx, ctx.get_pos_both_csv_filename(), ['R1', 'R2'], ['R3'], csv=True)
     size = os.path.getsize(ctx.get_out_path('error.txt'))
-    # Bug in KiCad: `../src/common/stdpbase.cpp(62): assert "traits" failed in Get(): create wxApp before calling this`
+    # Bug in KiCad: `../src/common/stdpbase.cpp(62): assert "traits" failed in Get(test_dir): create wxApp before calling this`
     # KiCad 5.1.8
     assert size == 0 or size == 98
     ctx.clean_up()
 
 
-def test_3Rs_position_unified_th_csv():
-    ctx = context.TestContext('3Rs_position_unified_th_csv', '3Rs', 'simple_position_unified_th_csv', POS_DIR)
+def test_3Rs_position_unified_th_csv(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs_position_unified_th_csv', '3Rs', 'simple_position_unified_th_csv', POS_DIR)
     ctx.run()
     expect_position(ctx, os.path.join(POS_DIR, 'Test_3Rs-both_pos_OK.csv'), ['R1', 'R2', 'R3'], csv=True)
     ctx.clean_up()
 
 
-def test_3Rs_position_inches_csv():
+def test_3Rs_position_inches_csv(test_dir):
     """ Also test a compressed configuration YAML file """
-    ctx = context.TestContext('3Rs_position_inches_csv', '3Rs', 'simple_position_inches_csv', POS_DIR, yaml_compressed=True)
+    ctx = context.TestContext(test_dir, '3Rs_position_inches_csv', '3Rs', 'simple_position_inches_csv', POS_DIR, yaml_compressed=True)
     ctx.run()
     pos_top = ctx.get_pos_top_csv_filename()
     pos_bot = ctx.get_pos_bot_csv_filename()
@@ -184,9 +184,9 @@ def check_comps(rows, comps):
     logging.debug('Components list {} OK'.format(comps))
 
 
-def test_position_variant_t2i():
+def test_position_variant_t2i(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContext('test_position_variant_t2i', prj, 'simple_position_t2i', POS_DIR)
+    ctx = context.TestContext(test_dir, 'test_position_variant_t2i', prj, 'simple_position_t2i', POS_DIR)
     ctx.run()
     files = ['-both_pos.csv', '-both_pos_[2].csv', '-both_pos_(production).csv', '-both_pos_(test).csv']
     files = [prj+f for f in files]
@@ -203,9 +203,9 @@ def test_position_variant_t2i():
     ctx.clean_up(keep_project=True)
 
 
-def test_position_rot_1():
+def test_position_rot_1(test_dir):
     prj = 'light_control'
-    ctx = context.TestContext('test_position_rot_1', prj, 'simple_position_rot_1', POS_DIR)
+    ctx = context.TestContext(test_dir, 'test_position_rot_1', prj, 'simple_position_rot_1', POS_DIR)
     ctx.run()
     output = prj+'_cpl_jlc.csv'
     ctx.expect_out_file(output)
@@ -214,9 +214,9 @@ def test_position_rot_1():
     ctx.clean_up()
 
 
-def test_position_rot_2():
+def test_position_rot_2(test_dir):
     prj = 'light_control'
-    ctx = context.TestContext('test_position_rot_2', prj, 'simple_position_rot_2', POS_DIR)
+    ctx = context.TestContext(test_dir, 'test_position_rot_2', prj, 'simple_position_rot_2', POS_DIR)
     ctx.run(extra_debug=True)
     output = prj+'_cpl_jlc.csv'
     ctx.expect_out_file(output)

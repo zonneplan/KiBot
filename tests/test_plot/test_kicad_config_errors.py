@@ -36,11 +36,11 @@ cov = coverage.Coverage()
 _real_posix_prefix = None
 
 
-def test_kicad_conf_bad_sym_lib_table():
+def test_kicad_conf_bad_sym_lib_table(test_dir):
     """ Check various problems in the sym-lib-table file """
     sch = 'sym-lib-table_errors/kibom-test'
     test = 'test_kicad_conf_bad_sym_lib_table'
-    ctx = context.TestContextSCH(test, sch, 'int_bom_simple_csv', None)
+    ctx = context.TestContextSCH(test_dir, test, sch, 'int_bom_simple_csv', None)
     ctx.run(EXIT_BAD_CONFIG, extra_debug=True)
     ctx.search_err('Malformed lib entry')
     ctx.search_err(r'Unable to expand .?BOGUS.? in')

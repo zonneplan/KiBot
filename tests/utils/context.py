@@ -74,7 +74,7 @@ def usable_cmd(cmd):
 
 class TestContext(object):
 
-    def __init__(self, test_name, board_name, yaml_name, sub_dir, yaml_compressed=False, add_cfg_kmajor=False):
+    def __init__(self, test_dir, test_name, board_name, yaml_name, sub_dir, yaml_compressed=False, add_cfg_kmajor=False):
         self.kicad_version = kicad_version
         if add_cfg_kmajor:
             major = kicad_major
@@ -94,7 +94,7 @@ class TestContext(object):
         # The YAML file we'll use
         self._get_yaml_name(yaml_name, yaml_compressed)
         # The actual output dir for this run
-        self._set_up_output_dir(pytest.config.getoption('test_dir'))
+        self._set_up_output_dir(test_dir)
         # Where are we expecting to get the outputs (inside test_name)
         self.sub_dir = sub_dir
         # stdout and stderr from the run
@@ -681,6 +681,6 @@ class TestContext(object):
 
 class TestContextSCH(TestContext):
 
-    def __init__(self, test_name, board_name, yaml_name, sub_dir):
+    def __init__(self, test_dir, test_name, board_name, yaml_name, sub_dir):
         self.mode = MODE_SCH
-        super().__init__(test_name, board_name, yaml_name, sub_dir)
+        super().__init__(test_dir, test_name, board_name, yaml_name, sub_dir)

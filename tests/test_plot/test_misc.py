@@ -49,9 +49,9 @@ POS_DIR = 'positiondir'
 MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render']
 
 
-def test_skip_pre_and_outputs():
+def test_skip_pre_and_outputs(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext('SkipPreAndPos', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'SkipPreAndPos', prj, 'pre_and_position', POS_DIR)
     ctx.run(extra=['-s', 'all', '-i'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -61,9 +61,9 @@ def test_skip_pre_and_outputs():
     ctx.clean_up()
 
 
-def test_skip_pre_and_outputs_2():
+def test_skip_pre_and_outputs_2(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext('SkipPreAndPos2', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'SkipPreAndPos2', prj, 'pre_and_position', POS_DIR)
     ctx.run(extra=['-s', 'run_erc,update_xml,run_drc', '-i'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -75,9 +75,9 @@ def test_skip_pre_and_outputs_2():
     ctx.clean_up()
 
 
-def test_skip_pre_and_outputs_3():
+def test_skip_pre_and_outputs_3(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext('SkipPreAndPos3', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'SkipPreAndPos3', prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'all,run_drc'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -86,9 +86,9 @@ def test_skip_pre_and_outputs_3():
     ctx.clean_up()
 
 
-def test_skip_pre_and_outputs_4():
+def test_skip_pre_and_outputs_4(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext('SkipPreAndPos4', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'SkipPreAndPos4', prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'bogus'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -97,17 +97,17 @@ def test_skip_pre_and_outputs_4():
     ctx.clean_up()
 
 
-def test_skip_pre_and_outputs_5():
+def test_skip_pre_and_outputs_5(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext('SkipPreAndPos4', prj, 'pre_skip', POS_DIR)
+    ctx = context.TestContext(test_dir, 'SkipPreAndPos4', prj, 'pre_skip', POS_DIR)
     ctx.run(extra=['-s', 'run_erc,run_drc'])
     assert ctx.search_err('no need to skip')
     ctx.clean_up()
 
 
-def test_unknown_out():
+def test_unknown_out(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext('UnknownOut', prj, 'unknown_out', POS_DIR)
+    ctx = context.TestContext(test_dir, 'UnknownOut', prj, 'unknown_out', POS_DIR)
     ctx.run(EXIT_BAD_CONFIG)
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -116,9 +116,9 @@ def test_unknown_out():
     ctx.clean_up()
 
 
-def test_select_output():
+def test_select_output(test_dir):
     prj = '3Rs'
-    ctx = context.TestContext('DoASCIISkipCSV', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'DoASCIISkipCSV', prj, 'pre_and_position', POS_DIR)
     ctx.run(extra=['-s', 'all', 'pos_ascii'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -128,9 +128,9 @@ def test_select_output():
     ctx.clean_up()
 
 
-def test_miss_sch():
+def test_miss_sch(test_dir):
     prj = 'fail-project'
-    ctx = context.TestContext('MissingSCH', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'MissingSCH', prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['pos_ascii'])
 
     assert ctx.search_err('No SCH file found')
@@ -138,9 +138,9 @@ def test_miss_sch():
     ctx.clean_up()
 
 
-def test_miss_sch_2():
+def test_miss_sch_2(test_dir):
     prj = 'fail-project'
-    ctx = context.TestContext('MissingSCH_2', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'MissingSCH_2', prj, 'pre_and_position', POS_DIR)
     ctx.run(NO_SCH_FILE, no_board_file=True, extra=['-e', 'bogus', 'pos_ascii'])
 
     assert ctx.search_err('Schematic file not found')
@@ -148,9 +148,9 @@ def test_miss_sch_2():
     ctx.clean_up()
 
 
-def test_miss_pcb():
+def test_miss_pcb(test_dir):
     prj = '3Rs'
-    ctx = context.TestContext('MissingPCB', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'MissingPCB', prj, 'pre_and_position', POS_DIR)
     ctx.board_file = 'bogus'
     ctx.run(NO_PCB_FILE, extra=['-s', 'run_erc,update_xml', 'pos_ascii'])
 
@@ -159,8 +159,8 @@ def test_miss_pcb():
     ctx.clean_up()
 
 
-def test_miss_pcb_2():
-    ctx = context.TestContext('MissingPCB_2', '3Rs', 'pre_and_position', POS_DIR)
+def test_miss_pcb_2(test_dir):
+    ctx = context.TestContext(test_dir, 'MissingPCB_2', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, no_board_file=True, extra=['-s', 'run_erc,update_xml', 'pos_ascii'])
 
     assert ctx.search_err('No PCB file found')
@@ -168,9 +168,9 @@ def test_miss_pcb_2():
     ctx.clean_up()
 
 
-def test_miss_yaml():
+def test_miss_yaml(test_dir):
     prj = 'bom'
-    ctx = context.TestContext('MissingYaml', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'MissingYaml', prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, no_yaml_file=True)
 
     assert ctx.search_err('No config file')
@@ -178,9 +178,9 @@ def test_miss_yaml():
     ctx.clean_up()
 
 
-def test_miss_yaml_2():
+def test_miss_yaml_2(test_dir):
     prj = '3Rs'
-    ctx = context.TestContext('MissingYaml_wrong', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'MissingYaml_wrong', prj, 'pre_and_position', POS_DIR)
     ctx.yaml_file = 'bogus'
     ctx.run(EXIT_BAD_ARGS)
 
@@ -189,11 +189,11 @@ def test_miss_yaml_2():
     ctx.clean_up()
 
 
-def test_auto_pcb_and_cfg():
+def test_auto_pcb_and_cfg(test_dir):
     """ Test guessing the PCB and config file.
         Only one them is there. """
     prj = '3Rs'
-    ctx = context.TestContext('GuessPCB_cfg', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'GuessPCB_cfg', prj, 'pre_and_position', POS_DIR)
 
     board_file = os.path.basename(ctx.board_file)
     shutil.copy2(ctx.board_file, ctx.get_out_path(board_file))
@@ -210,11 +210,11 @@ def test_auto_pcb_and_cfg():
     ctx.clean_up()
 
 
-def test_auto_pcb_and_cfg_2():
+def test_auto_pcb_and_cfg_2(test_dir):
     """ Test guessing the PCB and config file.
         Two of them are there. """
     prj = '3Rs'
-    ctx = context.TestContext('GuessPCB_cfg_rep', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'GuessPCB_cfg_rep', prj, 'pre_and_position', POS_DIR)
 
     board_file = os.path.basename(ctx.board_file)
     shutil.copy2(ctx.board_file, ctx.get_out_path(board_file))
@@ -237,11 +237,11 @@ def test_auto_pcb_and_cfg_2():
     ctx.clean_up()
 
 
-def test_auto_pcb_and_cfg_3():
+def test_auto_pcb_and_cfg_3(test_dir):
     """ Test guessing the SCH and config file.
         Only one them is there. """
     prj = '3Rs'
-    ctx = context.TestContext('GuessSCH_cfg', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'GuessSCH_cfg', prj, 'pre_and_position', POS_DIR)
 
     sch = os.path.basename(ctx.sch_file)
     shutil.copy2(ctx.sch_file, ctx.get_out_path(sch))
@@ -256,12 +256,12 @@ def test_auto_pcb_and_cfg_3():
     ctx.clean_up()
 
 
-def test_auto_pcb_and_cfg_4():
+def test_auto_pcb_and_cfg_4(test_dir):
     """ Test guessing the SCH and config file.
         Two SCHs and one PCB.
         The SCH with same name as the PCB should be selected. """
     prj = '3Rs'
-    ctx = context.TestContext('GuessSCH_cfg_2', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'GuessSCH_cfg_2', prj, 'pre_and_position', POS_DIR)
 
     sch = os.path.basename(ctx.sch_file)
     shutil.copy2(ctx.sch_file, ctx.get_out_path(sch))
@@ -279,11 +279,11 @@ def test_auto_pcb_and_cfg_4():
     ctx.clean_up()
 
 
-def test_auto_pcb_and_cfg_5():
+def test_auto_pcb_and_cfg_5(test_dir):
     """ Test guessing the SCH and config file.
         Two SCHs. """
     prj = '3Rs'
-    ctx = context.TestContext('GuessSCH_cfg_3', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, 'GuessSCH_cfg_3', prj, 'pre_and_position', POS_DIR)
 
     sch = os.path.basename(ctx.sch_file)
     shutil.copy2(ctx.sch_file, ctx.get_out_path(sch))
@@ -299,8 +299,8 @@ def test_auto_pcb_and_cfg_5():
     ctx.clean_up()
 
 
-def test_list():
-    ctx = context.TestContext('List', '3Rs', 'pre_and_position', POS_DIR)
+def test_list(test_dir):
+    ctx = context.TestContext(test_dir, 'List', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--list'], no_verbose=True, no_out_dir=True, no_board_file=True)
 
     assert ctx.search_out('run_erc: True')
@@ -312,8 +312,8 @@ def test_list():
     ctx.clean_up()
 
 
-def test_help():
-    ctx = context.TestContext('Help', '3Rs', 'pre_and_position', POS_DIR)
+def test_help(test_dir):
+    ctx = context.TestContext(test_dir, 'Help', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help'], no_verbose=True, no_out_dir=True, no_yaml_file=True)
     assert ctx.search_out('Usage:')
     assert ctx.search_out('Arguments:')
@@ -321,39 +321,39 @@ def test_help():
     ctx.clean_up()
 
 
-def test_help_list_outputs():
-    ctx = context.TestContext('HelpListOutputs', '3Rs', 'pre_and_position', POS_DIR)
+def test_help_list_outputs(test_dir):
+    ctx = context.TestContext(test_dir, 'HelpListOutputs', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-list-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Supported outputs:')
     assert ctx.search_out('Gerber format')
     ctx.clean_up()
 
 
-def test_help_output():
-    ctx = context.TestContext('HelpOutput', '3Rs', 'pre_and_position', POS_DIR)
+def test_help_output(test_dir):
+    ctx = context.TestContext(test_dir, 'HelpOutput', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-output', 'gerber'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Gerber format')
     assert ctx.search_out('Type: .?gerber.?')
     ctx.clean_up()
 
 
-def test_help_output_unk():
-    ctx = context.TestContext('HelpOutputUnk', '3Rs', 'pre_and_position', POS_DIR)
+def test_help_output_unk(test_dir):
+    ctx = context.TestContext(test_dir, 'HelpOutputUnk', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['--help-output', 'bogus'], no_verbose=True, no_out_dir=True, no_yaml_file=True,
             no_board_file=True)
     assert ctx.search_err('Unknown output type')
     ctx.clean_up()
 
 
-def test_help_filters():
-    ctx = context.TestContext('test_help_filters', '3Rs', 'pre_and_position', POS_DIR)
+def test_help_filters(test_dir):
+    ctx = context.TestContext(test_dir, 'test_help_filters', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-filters'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Generic filter')
     ctx.clean_up()
 
 
-def test_help_output_plugin_1():
-    ctx = context.TestContext('test_help_output_plugin_1', '3Rs', 'pre_and_position', POS_DIR)
+def test_help_output_plugin_1(test_dir):
+    ctx = context.TestContext(test_dir, 'test_help_output_plugin_1', '3Rs', 'pre_and_position', POS_DIR)
     home = os.environ['HOME']
     os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '../..')
     logging.debug('HOME='+os.environ['HOME'])
@@ -368,8 +368,8 @@ def test_help_output_plugin_1():
     ctx.clean_up()
 
 
-def test_help_output_plugin_2():
-    ctx = context.TestContext('test_help_output_plugin_2', '3Rs', 'pre_and_position', POS_DIR)
+def test_help_output_plugin_2(test_dir):
+    ctx = context.TestContext(test_dir, 'test_help_output_plugin_2', '3Rs', 'pre_and_position', POS_DIR)
     home = os.environ['HOME']
     os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '../..')
     logging.debug('HOME='+os.environ['HOME'])
@@ -384,50 +384,50 @@ def test_help_output_plugin_2():
     ctx.clean_up()
 
 
-def test_help_outputs():
-    ctx = context.TestContext('HelpOutputs', '3Rs', 'pre_and_position', POS_DIR)
+def test_help_outputs(test_dir):
+    ctx = context.TestContext(test_dir, 'HelpOutputs', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Gerber format')
     assert ctx.search_out('Type: .?gerber.?')
     ctx.clean_up()
 
 
-def test_help_preflights():
-    ctx = context.TestContext('HelpPreflights', '3Rs', 'pre_and_position', POS_DIR)
+def test_help_preflights(test_dir):
+    ctx = context.TestContext(test_dir, 'HelpPreflights', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Supported preflight options')
     ctx.clean_up()
 
 
-def test_example_1():
+def test_example_1(test_dir):
     """ Example without board """
-    ctx = context.TestContext('Example1', '3Rs', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'Example1', '3Rs', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True, no_board_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.clean_up()
 
 
-def test_example_2():
+def test_example_2(test_dir):
     """ Example with board """
-    ctx = context.TestContext('Example2', 'good-project', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'Example2', 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.search_in_file(EXAMPLE_CFG, ['layers: all'])
     ctx.clean_up()
 
 
-def test_example_3():
+def test_example_3(test_dir):
     """ Overwrite error """
-    ctx = context.TestContext('Example3', 'good-project', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'Example3', 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.run(WONT_OVERWRITE, extra=['--example'], no_verbose=True, no_yaml_file=True)
     ctx.clean_up()
 
 
-def test_example_4():
+def test_example_4(test_dir):
     """ Expand copied layers """
-    ctx = context.TestContext('Example4', 'good-project', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'Example4', 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example', '-P'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.search_in_file(EXAMPLE_CFG, ['GND.Cu', 'pen_width: 35.0'])
@@ -435,9 +435,9 @@ def test_example_4():
     ctx.clean_up()
 
 
-def test_example_5():
+def test_example_5(test_dir):
     """ Copy setting from PCB """
-    ctx = context.TestContext('Example5', 'good-project', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'Example5', 'good-project', 'pre_and_position', '')
     output_dir = os.path.join(ctx.output_dir, 'pp')
     ctx.run(extra=['--example', '-p', '-d', output_dir], no_verbose=True, no_yaml_file=True, no_out_dir=True)
     file = os.path.join('pp', EXAMPLE_CFG)
@@ -446,25 +446,25 @@ def test_example_5():
     ctx.clean_up()
 
 
-def test_example_6():
+def test_example_6(test_dir):
     """ Copy setting but no PCB """
-    ctx = context.TestContext('Example6', 'good-project', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'Example6', 'good-project', 'pre_and_position', '')
     ctx.run(EXIT_BAD_ARGS, extra=['--example', '-p'], no_verbose=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_err('no PCB specified')
     ctx.clean_up()
 
 
-def test_corrupted_pcb():
+def test_corrupted_pcb(test_dir):
     prj = 'bom_no_xml'
-    ctx = context.TestContext('Corrupted', prj, 'print_pcb', '')
+    ctx = context.TestContext(test_dir, 'Corrupted', prj, 'print_pcb', '')
     ctx.run(CORRUPTED_PCB)
     assert ctx.search_err('Error loading PCB file')
     ctx.clean_up()
 
 
-def test_pcbdraw_fail():
+def test_pcbdraw_fail(test_dir):
     prj = 'bom'
-    ctx = context.TestContext('PcbDrawFail', prj, 'pcbdraw_fail', '')
+    ctx = context.TestContext(test_dir, 'PcbDrawFail', prj, 'pcbdraw_fail', '')
     ctx.run(PCBDRAW_ERR)
     assert ctx.search_err('Failed to run')
     ctx.clean_up()
@@ -472,8 +472,8 @@ def test_pcbdraw_fail():
 
 # This test was designed for `mcpy`.
 # `mcpyrate` can pass it using Python 3.8.6, but seems to have problems on the docker image.
-# def test_import_fail():
-#     ctx = context.TestContext('test_import_fail', '3Rs', 'pre_and_position', POS_DIR)
+# def test_import_fail(test_dir):
+#     ctx = context.TestContext(test_dir, 'test_import_fail', '3Rs', 'pre_and_position', POS_DIR)
 #     # Create a read only cache entry that we should delete
 #     call(['py3compile', 'kibot/out_any_layer.py'])
 #     cache_dir = os.path.join('kibot', '__pycache__')
@@ -497,8 +497,8 @@ def test_pcbdraw_fail():
 #     ctx.clean_up()
 #
 #
-# def test_import_no_fail():
-#     ctx = context.TestContext('test_import_no_fail', '3Rs', 'pre_and_position', POS_DIR)
+# def test_import_no_fail(test_dir):
+#     ctx = context.TestContext(test_dir, 'test_import_no_fail', '3Rs', 'pre_and_position', POS_DIR)
 #     # Create a cache entry that we should delete
 #     call(['py3compile', 'kibot/out_any_layer.py'])
 #     cache_dir = os.path.join('kibot', '__pycache__')
@@ -515,37 +515,37 @@ def test_pcbdraw_fail():
 #     ctx.clean_up()
 
 
-def test_wrong_global_redef():
-    ctx = context.TestContext('test_wrong_global_redef', '3Rs', 'pre_and_position', POS_DIR)
+def test_wrong_global_redef(test_dir):
+    ctx = context.TestContext(test_dir, 'test_wrong_global_redef', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['--global-redef', 'bogus'])
     assert ctx.search_err('Malformed global-redef option')
     ctx.clean_up()
 
 
-def test_no_pcbnew():
-    ctx = context.TestContext('test_no_pcbnew', 'bom', 'bom', '')
+def test_no_pcbnew(test_dir):
+    ctx = context.TestContext(test_dir, 'test_no_pcbnew', 'bom', 'bom', '')
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_pcbnew_error.py')]
     ctx.do_run(cmd, NO_PCBNEW_MODULE)
     ctx.search_err('Failed to import pcbnew Python module.')
     ctx.search_err('PYTHONPATH')
 
 
-def test_old_pcbnew():
-    ctx = context.TestContext('test_old_pcbnew', 'bom', 'bom', '')
+def test_old_pcbnew(test_dir):
+    ctx = context.TestContext(test_dir, 'test_old_pcbnew', 'bom', 'bom', '')
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_pcbnew_error.py'), 'fake']
     ctx.do_run(cmd)
     ctx.search_err('Unknown KiCad version, please install KiCad 5.1.6 or newer')
 
 
-def test_no_yaml():
-    ctx = context.TestContext('test_no_yaml', 'bom', 'bom', '')
+def test_no_yaml(test_dir):
+    ctx = context.TestContext(test_dir, 'test_no_yaml', 'bom', 'bom', '')
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_yaml_error.py')]
     ctx.do_run(cmd, NO_YAML_MODULE)
     ctx.search_err('No yaml module for Python, install python3-yaml')
 
 
-def test_no_colorama():
-    ctx = context.TestContext('test_no_colorama', 'bom', 'bom', '')
+def test_no_colorama(test_dir):
+    ctx = context.TestContext(test_dir, 'test_no_colorama', 'bom', 'bom', '')
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_colorama_error.py')]
     ctx.do_run(cmd, use_a_tty=True)
     ctx.search_err(r'\[31m.\[1mERROR:Testing 1 2 3')
@@ -561,9 +561,9 @@ def check_test_v5_sch_deps(ctx, deps, extra=[]):
         assert f in deps
 
 
-def test_makefile_1():
+def test_makefile_1(test_dir):
     prj = 'test_v5'
-    ctx = context.TestContext('test_makefile_1', prj, 'makefile_1', '')
+    ctx = context.TestContext(test_dir, 'test_makefile_1', prj, 'makefile_1', '')
     mkfile = ctx.get_out_path('Makefile')
     ctx.run(extra=['-s', 'all', 'archive'])
     ctx.run(extra=['-m', mkfile])
@@ -647,9 +647,9 @@ def test_makefile_1():
     ctx.clean_up()
 
 
-def test_empty_zip():
+def test_empty_zip(test_dir):
     prj = 'test_v5'
-    ctx = context.TestContext('test_empty_zip', prj, 'empty_zip', '')
+    ctx = context.TestContext(test_dir, 'test_empty_zip', prj, 'empty_zip', '')
     ctx.run()
     ctx.expect_out_file(prj+'-result.zip')
     ctx.search_err('No files provided, creating an empty archive')

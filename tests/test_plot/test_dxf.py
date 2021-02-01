@@ -18,9 +18,9 @@ from utils import context
 PS_DIR = 'DXF'
 
 
-def test_dxf():
+def test_dxf(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext('test_dxf', prj, 'dxf', PS_DIR)
+    ctx = context.TestContext(test_dir, 'test_dxf', prj, 'dxf', PS_DIR)
     ctx.run()
 
     f_cu = ctx.get_gerber_filename('F_Cu', '.dxf')

@@ -241,16 +241,16 @@ def kibom_verif(rows, header, skip_head=False, qty_name=STATUS_COLUMN_NAME, ref_
     check_dnc(rows, 'R7', ref_column, status_column)
 
 
-def kibom_setup(test, ext='csv'):
+def kibom_setup(test_dir, test, ext='csv'):
     prj = 'kibom-test'
-    ctx = context.TestContextSCH('test_'+test, prj, test, BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_'+test, prj, test, BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     return ctx, out
 
 
-def test_int_bom_simple_csv():
-    ctx, out = kibom_setup('int_bom_simple_csv')
+def test_int_bom_simple_csv(test_dir):
+    ctx, out = kibom_setup(test_dir, 'int_bom_simple_csv')
     rows, header, info = ctx.load_csv(out)
     check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
     kibom_verif(rows, header)
@@ -259,9 +259,9 @@ def test_int_bom_simple_csv():
     ctx.clean_up()
 
 
-def test_int_bom_csv_no_info():
+def test_int_bom_csv_no_info(test_dir):
     """ No PCB info """
-    ctx, out = kibom_setup('int_bom_csv_no_info')
+    ctx, out = kibom_setup(test_dir, 'int_bom_csv_no_info')
     rows, header, info = ctx.load_csv(out)
     check_csv_info(info, None, KIBOM_STATS)
     kibom_verif(rows, header)
@@ -270,9 +270,9 @@ def test_int_bom_csv_no_info():
     ctx.clean_up()
 
 
-def test_int_bom_csv_no_stats():
+def test_int_bom_csv_no_stats(test_dir):
     """ No Stats """
-    ctx, out = kibom_setup('int_bom_csv_no_stats')
+    ctx, out = kibom_setup(test_dir, 'int_bom_csv_no_stats')
     rows, header, info = ctx.load_csv(out)
     check_csv_info(info, KIBOM_PRJ_INFO, None)
     kibom_verif(rows, header)
@@ -281,9 +281,9 @@ def test_int_bom_csv_no_stats():
     ctx.clean_up()
 
 
-def test_int_bom_csv_no_extra():
+def test_int_bom_csv_no_extra(test_dir):
     """ No Stats, no info """
-    ctx, out = kibom_setup('int_bom_csv_no_extra')
+    ctx, out = kibom_setup(test_dir, 'int_bom_csv_no_extra')
     rows, header, info = ctx.load_csv(out)
     assert len(info) == 0
     kibom_verif(rows, header)
@@ -292,8 +292,8 @@ def test_int_bom_csv_no_extra():
     ctx.clean_up()
 
 
-def test_int_bom_refuse_no_sep():
-    ctx, out = kibom_setup('int_bom_refuse_no_sep')
+def test_int_bom_refuse_no_sep(test_dir):
+    ctx, out = kibom_setup(test_dir, 'int_bom_refuse_no_sep')
     rows, header, info = ctx.load_csv(out)
     kibom_verif(rows, header)
     # Check not quoted and comma as delimiter
@@ -301,8 +301,8 @@ def test_int_bom_refuse_no_sep():
     ctx.clean_up()
 
 
-def test_int_bom_simple_txt():
-    ctx, out = kibom_setup('int_bom_simple_txt', 'txt')
+def test_int_bom_simple_txt(test_dir):
+    ctx, out = kibom_setup(test_dir, 'int_bom_simple_txt', 'txt')
     rows, header, info = ctx.load_csv(out, delimiter='\t')
     kibom_verif(rows, header)
     check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
@@ -336,10 +336,10 @@ def simple_html_test(ctx, rows, headers, sh_head, prj, do_title=True, do_logo=Tr
     ctx.clean_up()
 
 
-def simple_html_setup(name, ret_val=0):
+def simple_html_setup(test_dir, name, ret_val=0):
     prj = 'kibom-test'
     ext = 'html'
-    ctx = context.TestContextSCH('test_'+name, prj, name, BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_'+name, prj, name, BOM_DIR)
     ctx.run(ret_val)
     out = prj + '-bom.' + ext
     if ret_val == 0:
@@ -348,50 +348,50 @@ def simple_html_setup(name, ret_val=0):
         return (None, None, None), prj, ctx
 
 
-def test_int_bom_simple_html_1():
-    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_1')
+def test_int_bom_simple_html_1(test_dir):
+    (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_1')
     simple_html_test(ctx, rows, headers, sh_head, prj)
 
 
-def test_int_bom_simple_html_2():
+def test_int_bom_simple_html_2(test_dir):
     """ No title """
-    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_2')
+    (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_2')
     simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False)
 
 
-def test_int_bom_simple_html_3():
+def test_int_bom_simple_html_3(test_dir):
     """ No logo """
-    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_3')
+    (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_3')
     simple_html_test(ctx, rows, headers, sh_head, prj, do_logo=False)
 
 
-def test_int_bom_simple_html_4():
+def test_int_bom_simple_html_4(test_dir):
     """ No title, no logo """
-    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_4')
+    (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_4')
     simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=False)
 
 
-def test_int_bom_simple_html_5():
+def test_int_bom_simple_html_5(test_dir):
     """ No title, no logo, no info """
-    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_5')
+    (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_5')
     simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=False, do_info=False)
 
 
-def test_int_bom_simple_html_6():
+def test_int_bom_simple_html_6(test_dir):
     """ No title, no logo, no info, no stats """
-    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_6')
+    (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_6')
     simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=False, do_info=False, do_stats=False)
 
 
-def test_int_bom_simple_html_7():
+def test_int_bom_simple_html_7(test_dir):
     """ No title, bogus logo, no info, no stats """
-    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_7', EXIT_BAD_CONFIG)
+    (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_7', EXIT_BAD_CONFIG)
     ctx.search_err(r'Missing logo file')
 
 
-def test_int_bom_simple_html_8():
+def test_int_bom_simple_html_8(test_dir):
     """ No title, custom logo, no info, no stats """
-    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_8')
+    (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_8')
     simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=True, do_info=False, do_stats=False)
     logo = sh_head['logo']
     assert logo.startswith('data:image/png;base64,')
@@ -402,9 +402,9 @@ def test_int_bom_simple_html_8():
     logging.debug('Image content OK')
 
 
-def test_int_bom_simple_html_9():
+def test_int_bom_simple_html_9(test_dir):
     """ No title, no logo, no info, no stats, custom style """
-    (rows, headers, sh_head), prj, ctx = simple_html_setup('int_bom_simple_html_9')
+    (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_9')
     style = ctx.load_html_style('kibom-test-bom.html')
     with open('tests/data/html_style.css', 'rt') as f:
         ref = f.read()
@@ -420,8 +420,8 @@ def adapt_xml(h):
     return h
 
 
-def test_int_bom_simple_xml():
-    ctx, out = kibom_setup('int_bom_simple_xml', 'xml')
+def test_int_bom_simple_xml(test_dir):
+    ctx, out = kibom_setup(test_dir, 'int_bom_simple_xml', 'xml')
     rows, header = ctx.load_xml(out)
     # Columns get sorted by name, so we need to take care of it
     for c in KIBOM_TEST_HEAD:
@@ -449,9 +449,9 @@ def simple_xlsx_verify(ctx, prj, dnf=True):
     ctx.clean_up()
 
 
-def test_int_bom_simple_xlsx_1():
+def test_int_bom_simple_xlsx_1(test_dir):
     prj = 'kibom-test'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx', prj, 'int_bom_simple_xlsx', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx', prj, 'int_bom_simple_xlsx', BOM_DIR)
     simple_xlsx_verify(ctx, prj)
 
 
@@ -465,10 +465,10 @@ def get_column(rows, col, split=True):
     return components
 
 
-def int_bom_sort(locale, dp):
+def int_bom_sort(test_dir, locale, dp):
     prj = 'RLC_sort'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_sort_'+locale, prj, 'int_bom_sort_1', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_sort_'+locale, prj, 'int_bom_sort_1', BOM_DIR)
     ctx.run(do_locale=locale)
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -498,22 +498,22 @@ def int_bom_sort(locale, dp):
     ctx.clean_up()
 
 
-def test_int_bom_sort_1():
-    int_bom_sort('es_AR.UTF-8', ',')
+def test_int_bom_sort_1(test_dir):
+    int_bom_sort(test_dir, 'es_AR.UTF-8', ',')
 
 
-def test_int_bom_sort_2():
-    int_bom_sort('en_US.UTF-8', '.')
+def test_int_bom_sort_2(test_dir):
+    int_bom_sort(test_dir, 'en_US.UTF-8', '.')
 
 
-def test_int_bom_sort_3():
-    int_bom_sort('xx_XX.UTF-8', '.')
+def test_int_bom_sort_3(test_dir):
+    int_bom_sort(test_dir, 'xx_XX.UTF-8', '.')
 
 
-def test_int_bom_datasheet_link():
+def test_int_bom_datasheet_link(test_dir):
     prj = 'links'
     ext = 'html'
-    ctx = context.TestContextSCH('test_int_bom_datasheet_link', prj, 'int_bom_datasheet_link', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_datasheet_link', prj, 'int_bom_datasheet_link', BOM_DIR)
     ctx.run()
     out = prj + '.' + ext
     rows, headers, sh_head = ctx.load_html(out)
@@ -539,10 +539,10 @@ def test_int_bom_datasheet_link():
     ctx.clean_up()
 
 
-def test_int_bom_digikey_link():
+def test_int_bom_digikey_link(test_dir):
     prj = 'links'
     ext = 'html'
-    ctx = context.TestContextSCH('test_int_bom_digikey_link', prj, 'int_bom_digikey_link', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_digikey_link', prj, 'int_bom_digikey_link', BOM_DIR)
     ctx.run()
     out = prj + '.' + ext
     rows, headers, sh_head = ctx.load_html(out)
@@ -568,10 +568,10 @@ def test_int_bom_digikey_link():
     ctx.clean_up()
 
 
-def test_int_bom_digikey_links():
+def test_int_bom_digikey_links(test_dir):
     prj = 'links'
     ext = 'html'
-    ctx = context.TestContextSCH('test_int_bom_digikey_links', prj, 'int_bom_digikey_links', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_digikey_links', prj, 'int_bom_digikey_links', BOM_DIR)
     ctx.run()
     out = prj + '.' + ext
     rows, headers, sh_head = ctx.load_html(out)
@@ -603,10 +603,10 @@ def test_int_bom_digikey_links():
     ctx.clean_up()
 
 
-def test_int_bom_join_1():
+def test_int_bom_join_1(test_dir):
     prj = 'join'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_join_1', prj, 'int_bom_join_1', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_join_1', prj, 'int_bom_join_1', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -627,11 +627,11 @@ def test_int_bom_join_1():
     ctx.clean_up()
 
 
-def test_int_include_dnf():
+def test_int_include_dnf(test_dir):
     """ ignore_dnf: false """
     prj = 'kibom-test'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_include_dnf', prj, 'int_bom_include_dnf', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_include_dnf', prj, 'int_bom_include_dnf', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -643,11 +643,11 @@ def test_int_include_dnf():
     ctx.clean_up()
 
 
-def test_int_bom_html_generate_dnf():
+def test_int_bom_html_generate_dnf(test_dir):
     """ html_generate_dnf: false """
     prj = 'kibom-test'
     ext = 'html'
-    ctx = context.TestContextSCH('test_int_bom_html_generate_dnf', prj, 'int_bom_html_generate_dnf', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_html_generate_dnf', prj, 'int_bom_html_generate_dnf', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, headers, sh_head = ctx.load_html(out)
@@ -664,11 +664,11 @@ def test_int_bom_html_generate_dnf():
     ctx.clean_up()
 
 
-def test_int_bom_use_alt():
+def test_int_bom_use_alt(test_dir):
     """ use_alt: true """
     prj = 'kibom-test'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_use_alt', prj, 'int_bom_use_alt', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_use_alt', prj, 'int_bom_use_alt', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -680,11 +680,11 @@ def test_int_bom_use_alt():
     ctx.clean_up()
 
 
-def test_int_bom_use_alt_2():
+def test_int_bom_use_alt_2(test_dir):
     """ use_alt: true and not merge blank fields, non contiguous """
     prj = 'kibom-test-2'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_use_alt_2', prj, 'int_bom_use_alt_2', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_use_alt_2', prj, 'int_bom_use_alt_2', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -698,11 +698,11 @@ def test_int_bom_use_alt_2():
     ctx.clean_up()
 
 
-def test_int_bom_no_number_rows():
+def test_int_bom_no_number_rows(test_dir):
     """ Was number_rows: false, now is different """
     prj = 'kibom-test'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_no_number_rows', prj, 'int_bom_no_number_rows', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_no_number_rows', prj, 'int_bom_no_number_rows', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -714,10 +714,10 @@ def test_int_bom_no_number_rows():
     ctx.clean_up()
 
 
-def test_int_bom_column_rename_csv():
+def test_int_bom_column_rename_csv(test_dir):
     prj = 'links'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_column_rename_csv', prj, 'int_bom_column_rename_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_column_rename_csv', prj, 'int_bom_column_rename_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -727,10 +727,10 @@ def test_int_bom_column_rename_csv():
     ctx.clean_up()
 
 
-def test_int_bom_column_rename_html():
+def test_int_bom_column_rename_html(test_dir):
     prj = 'links'
     ext = 'html'
-    ctx = context.TestContextSCH('test_int_bom_column_rename_html', prj, 'int_bom_column_rename_html', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_column_rename_html', prj, 'int_bom_column_rename_html', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, headers, sh_head = ctx.load_html(out)
@@ -740,10 +740,10 @@ def test_int_bom_column_rename_html():
     ctx.clean_up()
 
 
-def test_int_bom_column_rename_xml():
+def test_int_bom_column_rename_xml(test_dir):
     prj = 'links'
     ext = 'xml'
-    ctx = context.TestContextSCH('test_int_bom_column_rename_xml', prj, 'int_bom_column_rename_xml', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_column_rename_xml', prj, 'int_bom_column_rename_xml', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header = ctx.load_xml(out)
@@ -755,10 +755,10 @@ def test_int_bom_column_rename_xml():
     ctx.clean_up()
 
 
-def test_int_bom_column_rename_xlsx():
+def test_int_bom_column_rename_xlsx(test_dir):
     prj = 'links'
     ext = 'xlsx'
-    ctx = context.TestContextSCH('test_int_bom_column_rename_xlsx', prj, 'int_bom_column_rename_xlsx', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_column_rename_xlsx', prj, 'int_bom_column_rename_xlsx', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
@@ -768,11 +768,11 @@ def test_int_bom_column_rename_xlsx():
     ctx.clean_up()
 
 
-def test_int_bom_group_connectors():
+def test_int_bom_group_connectors(test_dir):
     """ Default behavior, ignore the 'Value' for connectors """
     prj = 'connectors'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_group_connectors', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_group_connectors', prj, 'int_bom_simple_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -782,11 +782,11 @@ def test_int_bom_group_connectors():
     ctx.clean_up()
 
 
-def test_int_bom_no_group_connectors():
+def test_int_bom_no_group_connectors(test_dir):
     """ group_connectors: false """
     prj = 'connectors'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_no_group_connectors', prj, 'int_bom_no_group_connectors', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_no_group_connectors', prj, 'int_bom_no_group_connectors', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -796,11 +796,11 @@ def test_int_bom_no_group_connectors():
     ctx.clean_up()
 
 
-def test_int_bom_column_sensitive():
+def test_int_bom_column_sensitive(test_dir):
     """ Test if the columns list can contain columns in lowercase """
     prj = 'links'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_column_sensitive', prj, 'int_bom_column_sensitive', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_column_sensitive', prj, 'int_bom_column_sensitive', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -810,11 +810,11 @@ def test_int_bom_column_sensitive():
     ctx.clean_up()
 
 
-def test_int_bom_alias_csv():
+def test_int_bom_alias_csv(test_dir):
     """ Component aliases and merge blank fields """
     prj = 'kibom-test-2'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_alias_csv', prj, 'int_bom_alias_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_alias_csv', prj, 'int_bom_alias_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -826,11 +826,11 @@ def test_int_bom_alias_csv():
     ctx.clean_up()
 
 
-def test_int_bom_alias_nm_csv():
+def test_int_bom_alias_nm_csv(test_dir):
     """ Component aliases and not merge blank fields """
     prj = 'kibom-test-2'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_alias_nm_csv', prj, 'int_bom_alias_nm_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_alias_nm_csv', prj, 'int_bom_alias_nm_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -843,11 +843,11 @@ def test_int_bom_alias_nm_csv():
     ctx.clean_up()
 
 
-def test_int_bom_no_group_csv():
+def test_int_bom_no_group_csv(test_dir):
     """ Don't group components """
     prj = 'kibom-test'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_no_group_csv', prj, 'int_bom_no_group_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_no_group_csv', prj, 'int_bom_no_group_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -860,12 +860,12 @@ def test_int_bom_no_group_csv():
     ctx.clean_up()
 
 
-def test_int_bom_repeat_csv():
+def test_int_bom_repeat_csv(test_dir):
     """ Multipart component (not repeated)
         Also DNC in value + Config. """
     prj = 'kibom-test-rep'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_repeat_csv', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_repeat_csv', prj, 'int_bom_simple_csv', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -877,11 +877,11 @@ def test_int_bom_repeat_csv():
     ctx.clean_up()
 
 
-def test_int_bom_collision():
+def test_int_bom_collision(test_dir):
     """ Field collision and exclude_any """
     prj = 'kibom-test-3'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_collision', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_collision', prj, 'int_bom_simple_csv', BOM_DIR)
     ctx.run(extra_debug=True)
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -894,11 +894,11 @@ def test_int_bom_collision():
     ctx.clean_up()
 
 
-def test_int_bom_exclude_any():
+def test_int_bom_exclude_any(test_dir):
     """ Field collision and exclude_any """
     prj = 'kibom-test-3'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_exclude_any', prj, 'int_bom_exclude_any', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_exclude_any', prj, 'int_bom_exclude_any', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -911,11 +911,11 @@ def test_int_bom_exclude_any():
     ctx.clean_up()
 
 
-def test_int_bom_include_only():
+def test_int_bom_include_only(test_dir):
     """ Include only (0805 components) """
     prj = 'kibom-test'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_include_only', prj, 'int_bom_include_only', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_include_only', prj, 'int_bom_include_only', BOM_DIR)
     ctx.run(extra_debug=True)
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -927,10 +927,10 @@ def test_int_bom_include_only():
     ctx.clean_up()
 
 
-# def test_int_bom_no_test_regex():
+# def test_int_bom_no_test_regex(test_dir):
 #     prj = 'kibom-test'
 #     ext = 'csv'
-#     ctx = context.TestContextSCH('test_int_bom_simple_csv', prj, 'int_bom_no_include_only', BOM_DIR)
+#     ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_csv', prj, 'int_bom_no_include_only', BOM_DIR)
 #     ctx.run()
 #     out = prj + '-bom.' + ext
 #     rows, header, info = ctx.load_csv(out)
@@ -942,13 +942,13 @@ def test_int_bom_include_only():
 #     ctx.clean_up()
 
 
-def test_int_bom_sub_sheet_alt():
+def test_int_bom_sub_sheet_alt(test_dir):
     """ Test for 2 sub sheets used twice.
         Also stress the v5 loader.
         Also tests sheet path and no grouping with multi-part components """
     prj = 'test_v5'
     ext = 'csv'
-    ctx = context.TestContextSCH('test_int_bom_sub_sheet_alt', prj, 'int_bom_sheet_path', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_sub_sheet_alt', prj, 'int_bom_sheet_path', BOM_DIR)
     ctx.run(extra_debug=True)
     out = prj + '-bom.' + ext
     rows, header, info = ctx.load_csv(out)
@@ -963,11 +963,11 @@ def test_int_bom_sub_sheet_alt():
     ctx.clean_up()
 
 
-def test_int_bom_simple_xlsx_2():
+def test_int_bom_simple_xlsx_2(test_dir):
     """ No title """
     prj = 'kibom-test'
     ext = 'xlsx'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_2', prj, 'int_bom_simple_xlsx_2', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx_2', prj, 'int_bom_simple_xlsx_2', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
@@ -980,18 +980,18 @@ def test_int_bom_simple_xlsx_2():
     ctx.clean_up()
 
 
-def test_int_bom_simple_xlsx_3():
+def test_int_bom_simple_xlsx_3(test_dir):
     """ No logo """
     prj = 'kibom-test'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_3', prj, 'int_bom_simple_xlsx_3', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx_3', prj, 'int_bom_simple_xlsx_3', BOM_DIR)
     simple_xlsx_verify(ctx, prj)
 
 
-def test_int_bom_simple_xlsx_4():
+def test_int_bom_simple_xlsx_4(test_dir):
     """ No title, no logo """
     prj = 'kibom-test'
     ext = 'xlsx'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_4', prj, 'int_bom_simple_xlsx_4', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx_4', prj, 'int_bom_simple_xlsx_4', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
@@ -1004,11 +1004,11 @@ def test_int_bom_simple_xlsx_4():
     ctx.clean_up()
 
 
-def test_int_bom_simple_xlsx_5():
+def test_int_bom_simple_xlsx_5(test_dir):
     """ No title, no logo, no info """
     prj = 'kibom-test'
     ext = 'xlsx'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_5', prj, 'int_bom_simple_xlsx_5', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx_5', prj, 'int_bom_simple_xlsx_5', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
@@ -1021,11 +1021,11 @@ def test_int_bom_simple_xlsx_5():
     ctx.clean_up()
 
 
-def test_int_bom_simple_xlsx_6():
+def test_int_bom_simple_xlsx_6(test_dir):
     """ No title, no logo, no info, no stats """
     prj = 'kibom-test'
     ext = 'xlsx'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_6', prj, 'int_bom_simple_xlsx_6', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx_6', prj, 'int_bom_simple_xlsx_6', BOM_DIR)
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
@@ -1038,38 +1038,38 @@ def test_int_bom_simple_xlsx_6():
     ctx.clean_up()
 
 
-def test_int_bom_simple_xlsx_7():
+def test_int_bom_simple_xlsx_7(test_dir):
     """ Logo from file, no colors (no real test for the style) """
     prj = 'kibom-test'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_7', prj, 'int_bom_simple_xlsx_7', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx_7', prj, 'int_bom_simple_xlsx_7', BOM_DIR)
     simple_xlsx_verify(ctx, prj)
 
 
-def test_int_bom_simple_xlsx_8():
+def test_int_bom_simple_xlsx_8(test_dir):
     """ Style green (no real test for the style) """
     prj = 'kibom-test'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_8', prj, 'int_bom_simple_xlsx_8', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx_8', prj, 'int_bom_simple_xlsx_8', BOM_DIR)
     simple_xlsx_verify(ctx, prj)
 
 
-def test_int_bom_simple_xlsx_9():
+def test_int_bom_simple_xlsx_9(test_dir):
     """ Style red (no real test for the style) """
     prj = 'kibom-test'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_9', prj, 'int_bom_simple_xlsx_9', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx_9', prj, 'int_bom_simple_xlsx_9', BOM_DIR)
     simple_xlsx_verify(ctx, prj)
 
 
-def test_int_bom_simple_xlsx_a():
+def test_int_bom_simple_xlsx_a(test_dir):
     """ No DNF """
     prj = 'kibom-test'
-    ctx = context.TestContextSCH('test_int_bom_simple_xlsx_a', prj, 'int_bom_simple_xlsx_a', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx_a', prj, 'int_bom_simple_xlsx_a', BOM_DIR)
     simple_xlsx_verify(ctx, prj, False)
 
 
-def test_int_bom_datasheet_link_xlsx():
+def test_int_bom_datasheet_link_xlsx(test_dir):
     prj = 'links'
     ext = 'xlsx'
-    ctx = context.TestContextSCH('test_int_bom_datasheet_link_xlsx', prj, 'int_bom_datasheet_link_xlsx', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_datasheet_link_xlsx', prj, 'int_bom_datasheet_link_xlsx', BOM_DIR)
     ctx.run()
     out = prj + '.' + ext
     rows, headers, sh_head = ctx.load_xlsx(out)
@@ -1092,10 +1092,10 @@ def test_int_bom_datasheet_link_xlsx():
     ctx.clean_up()
 
 
-def test_int_bom_digikey_link_xlsx():
+def test_int_bom_digikey_link_xlsx(test_dir):
     prj = 'links'
     ext = 'xlsx'
-    ctx = context.TestContextSCH('test_int_bom_digikey_link_xlsx', prj, 'int_bom_digikey_link_xlsx', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_digikey_link_xlsx', prj, 'int_bom_digikey_link_xlsx', BOM_DIR)
     ctx.run()
     out = prj + '.' + ext
     rows, headers, sh_head = ctx.load_xlsx(out)
@@ -1118,10 +1118,10 @@ def test_int_bom_digikey_link_xlsx():
     ctx.clean_up()
 
 
-def test_int_bom_digikey_links_xlsx():
+def test_int_bom_digikey_links_xlsx(test_dir):
     prj = 'links'
     ext = 'xlsx'
-    ctx = context.TestContextSCH('test_int_bom_digikey_links_xlsx', prj, 'int_bom_digikey_links_xlsx', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_digikey_links_xlsx', prj, 'int_bom_digikey_links_xlsx', BOM_DIR)
     ctx.run()
     out = prj + '.' + ext
     rows, headers, sh_head = ctx.load_xlsx(out)
@@ -1150,17 +1150,17 @@ def test_int_bom_digikey_links_xlsx():
     ctx.clean_up()
 
 
-def test_int_bom_no_xlsx_support():
-    ctx = context.TestContextSCH('test_int_bom_no_xlsx_support', 'links', 'int_bom_digikey_links_xlsx', BOM_DIR)
+def test_int_bom_no_xlsx_support(test_dir):
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_no_xlsx_support', 'links', 'int_bom_digikey_links_xlsx', BOM_DIR)
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_xlsx_error.py')]
     ctx.do_run(cmd)
     ctx.search_err('Python xlsxwriter module not installed')
     ctx.search_err('writing XLSX output')
 
 
-def test_int_bom_missing_lib():
+def test_int_bom_missing_lib(test_dir):
     prj = 'v5_errors/kibom-test'
-    ctx = context.TestContextSCH('test_int_bom_missing_lib', prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_missing_lib', prj, 'int_bom_simple_csv', BOM_DIR)
     ctx.run()
     out = 'kibom-test-bom.csv'
     rows, header, info = ctx.load_csv(out)
@@ -1171,9 +1171,9 @@ def test_int_bom_missing_lib():
     ctx.clean_up()
 
 
-def test_int_bom_variant_t1():
+def test_int_bom_variant_t1(test_dir):
     prj = 'kibom-variante'
-    ctx = context.TestContextSCH('test_int_bom_variant_t1', prj, 'int_bom_var_t1_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t1', prj, 'int_bom_var_t1_csv', BOM_DIR)
     ctx.run()
     # No variant
     logging.debug("* No variant")
@@ -1220,9 +1220,9 @@ def check_value(rows, r_col, ref, v_col, val):
     assert False, "Failed to find "+ref
 
 
-def test_int_bom_variant_t2b():
+def test_int_bom_variant_t2b(test_dir):
     prj = 'kibom-variant_2'
-    ctx = context.TestContextSCH('test_int_bom_variant_t2b', prj, 'int_bom_var_t2_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t2b', prj, 'int_bom_var_t2_csv', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1238,9 +1238,9 @@ def test_int_bom_variant_t2b():
     ctx.clean_up()
 
 
-def test_int_bom_variant_t2c():
+def test_int_bom_variant_t2c(test_dir):
     prj = 'kibom-variant_2'
-    ctx = context.TestContextSCH('test_int_bom_variant_t2c', prj, 'int_bom_var_t2c_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t2c', prj, 'int_bom_var_t2c_csv', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1250,9 +1250,9 @@ def test_int_bom_variant_t2c():
     ctx.clean_up()
 
 
-def test_int_bom_variant_rename_1():
+def test_int_bom_variant_rename_1(test_dir):
     prj = 'f_rename_1'
-    ctx = context.TestContextSCH('test_int_bom_variant_rename_1', prj, 'int_bom_var_rename_1_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_rename_1', prj, 'int_bom_var_rename_1_csv', BOM_DIR)
     ctx.run(extra_debug=True)
     rows, header, info = ctx.load_csv(prj+'-bom_(PROD).csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1262,9 +1262,9 @@ def test_int_bom_variant_rename_1():
     ctx.clean_up()
 
 
-def test_int_bom_variant_t2s():
+def test_int_bom_variant_t2s(test_dir):
     prj = 'kibom-variant_2'
-    ctx = context.TestContextSCH('test_int_bom_variant_t2s', prj, 'int_bom_var_t2s_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t2s', prj, 'int_bom_var_t2s_csv', BOM_DIR)
     ctx.run(extra_debug=True)
     rows, header, info = ctx.load_csv(prj+'-bom_(dummy).csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1274,9 +1274,9 @@ def test_int_bom_variant_t2s():
     ctx.clean_up()
 
 
-def test_int_bom_variant_t2if():
+def test_int_bom_variant_t2if(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContextSCH('test_int_bom_variant_t2if', prj, 'int_bom_var_t2i_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t2if', prj, 'int_bom_var_t2i_csv', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1290,9 +1290,9 @@ def test_int_bom_variant_t2if():
     ctx.clean_up(keep_project=True)
 
 
-def test_int_bom_variant_t2is():
+def test_int_bom_variant_t2is(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContextSCH('test_int_bom_variant_t2is', prj, 'int_bom_var_t2is_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t2is', prj, 'int_bom_var_t2is_csv', BOM_DIR)
     ctx.run(extra_debug=True)
     rows, header, info = ctx.load_csv('filter_R1.csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1300,16 +1300,16 @@ def test_int_bom_variant_t2is():
     ctx.clean_up(keep_project=True)
 
 
-def test_int_bom_wrong_variant():
-    ctx = context.TestContextSCH('test_int_bom_wrong_variant', 'links', 'int_bom_wrong_variant', '')
+def test_int_bom_wrong_variant(test_dir):
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_wrong_variant', 'links', 'int_bom_wrong_variant', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown variant name")
     ctx.clean_up()
 
 
-def test_int_bom_fil_dummy():
+def test_int_bom_fil_dummy(test_dir):
     prj = 'kibom-test-4'
-    ctx = context.TestContextSCH('test_int_bom_fil_dummy', prj, 'int_bom_fil_dummy', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_fil_dummy', prj, 'int_bom_fil_dummy', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1318,9 +1318,9 @@ def test_int_bom_fil_dummy():
     ctx.clean_up()
 
 
-def test_int_bom_fil_1():
+def test_int_bom_fil_1(test_dir):
     prj = 'kibom-test-4'
-    ctx = context.TestContextSCH('test_int_bom_fil_1', prj, 'int_bom_fil_1', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_fil_1', prj, 'int_bom_fil_1', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv('empty_val.csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1339,9 +1339,9 @@ def test_int_bom_fil_1():
     ctx.clean_up()
 
 
-def test_int_bom_fil_2():
+def test_int_bom_fil_2(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContextSCH('test_int_bom_fil_2', prj, 'int_bom_fil_2', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_fil_2', prj, 'int_bom_fil_2', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv('smd.csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1355,11 +1355,11 @@ def test_int_bom_fil_2():
     ctx.clean_up(keep_project=True)
 
 
-def test_int_bom_variant_t3():
+def test_int_bom_variant_t3(test_dir):
     """ Test if we can move the filters to the variant.
         Also test the '!' filter (always false) """
     prj = 'kibom-variante'
-    ctx = context.TestContextSCH('test_int_bom_variant_t3', prj, 'int_bom_var_t3_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t3', prj, 'int_bom_var_t3_csv', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom_(V1).csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1375,10 +1375,10 @@ def test_int_bom_variant_t3():
     ctx.clean_up()
 
 
-def test_int_bom_variant_cli():
+def test_int_bom_variant_cli(test_dir):
     """ Assing t1_v1 to default from cli. Make sure t1_v3 isn't affected """
     prj = 'kibom-variante'
-    ctx = context.TestContextSCH('test_int_bom_variant_cli', prj, 'int_bom_var_t1_cli', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_cli', prj, 'int_bom_var_t1_cli', BOM_DIR)
     ctx.run(extra=['--global-redef', 'variant=t1_v1'])
     # No variant -> t1_v1
     logging.debug("* No variant -> t1_v1")
@@ -1396,10 +1396,10 @@ def test_int_bom_variant_cli():
     ctx.clean_up()
 
 
-def test_int_bom_variant_glb():
+def test_int_bom_variant_glb(test_dir):
     """ Assing t1_v1 to default from global. Make sure t1_v3 isn't affected """
     prj = 'kibom-variante'
-    ctx = context.TestContextSCH('test_int_bom_variant_glb', prj, 'int_bom_var_t1_glb', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_glb', prj, 'int_bom_var_t1_glb', BOM_DIR)
     ctx.run()
     # No variant -> t1_v1
     logging.debug("* No variant -> t1_v1")
@@ -1416,12 +1416,12 @@ def test_int_bom_variant_glb():
     check_csv_info(info, VARIANTE_PRJ_INFO, [3, 20, 2, 1, 2])
 
 
-def test_int_bom_variant_cl_gl():
+def test_int_bom_variant_cl_gl(test_dir):
     """ Assing t1_v1 to default from global.
         Overwrite it from cli to t1_v2.
         Make sure t1_v3 isn't affected """
     prj = 'kibom-variante'
-    ctx = context.TestContextSCH('test_int_bom_variant_cl_gl', prj, 'int_bom_var_t1_glb', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_cl_gl', prj, 'int_bom_var_t1_glb', BOM_DIR)
     ctx.run(extra=['--global-redef', 'variant=t1_v2'])
     ctx.search_out(r'Using command line value .?t1_v2.? for global option .?variant.?')
     # No variant -> t1_v2
@@ -1440,17 +1440,17 @@ def test_int_bom_variant_cl_gl():
     ctx.clean_up()
 
 
-def test_int_bom_ref_separator():
-    ctx, out = kibom_setup('int_bom_ref_separator')
+def test_int_bom_ref_separator(test_dir):
+    ctx, out = kibom_setup(test_dir, 'int_bom_ref_separator')
     rows, header, info = ctx.load_csv(out)
     check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
     kibom_verif(rows, header, ref_sep=',')
     ctx.clean_up()
 
 
-def test_int_bom_variant_5():
+def test_int_bom_variant_5(test_dir):
     prj = 'kibom-variant_5'
-    ctx = context.TestContextSCH('test_int_bom_variant_5', prj, 'int_bom_var_5_csv', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_5', prj, 'int_bom_var_5_csv', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1458,9 +1458,9 @@ def test_int_bom_variant_5():
     ctx.clean_up()
 
 
-def test_int_bom_merge_csv_1():
+def test_int_bom_merge_csv_1(test_dir):
     prj = 'merge_1'
-    ctx = context.TestContextSCH('test_int_bom_merge_csv_1', prj, 'int_bom_merge_csv_1', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_csv_1', prj, 'int_bom_merge_csv_1', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1470,9 +1470,9 @@ def test_int_bom_merge_csv_1():
     ctx.clean_up()
 
 
-def test_int_bom_merge_html_1():
+def test_int_bom_merge_html_1(test_dir):
     prj = 'merge_1'
-    ctx = context.TestContextSCH('test_int_bom_merge_html_1', prj, 'int_bom_merge_html_1', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_html_1', prj, 'int_bom_merge_html_1', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_html(prj+'-bom.html')
     logging.debug(rows[0])
@@ -1483,9 +1483,9 @@ def test_int_bom_merge_html_1():
     ctx.clean_up()
 
 
-def test_int_bom_merge_xlsx_1():
+def test_int_bom_merge_xlsx_1(test_dir):
     prj = 'merge_1'
-    ctx = context.TestContextSCH('test_int_bom_merge_xlsx_1', prj, 'int_bom_merge_xlsx_1', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_xlsx_1', prj, 'int_bom_merge_xlsx_1', BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_xlsx(prj+'-bom.xlsx')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1495,9 +1495,9 @@ def test_int_bom_merge_xlsx_1():
     ctx.clean_up()
 
 
-def test_int_bom_merge_xml_1():
+def test_int_bom_merge_xml_1(test_dir):
     prj = 'merge_1'
-    ctx = context.TestContextSCH('test_int_bom_merge_xml_1', prj, 'int_bom_merge_xml_1', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_xml_1', prj, 'int_bom_merge_xml_1', BOM_DIR)
     ctx.run()
     rows, header = ctx.load_xml(prj+'-bom.xml')
     ref_column = header.index(REF_COLUMN_NAME)

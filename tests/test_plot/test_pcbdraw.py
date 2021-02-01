@@ -26,18 +26,18 @@ OUT_DIR = 'PcbDraw'
 cov = coverage.Coverage()
 
 
-def test_pcbdraw_3Rs():
+def test_pcbdraw_3Rs(test_dir):
     prj = '3Rs'
-    ctx = context.TestContext(OUT_DIR, prj, 'pcbdraw', OUT_DIR)
+    ctx = context.TestContext(test_dir, OUT_DIR, prj, 'pcbdraw', OUT_DIR)
     ctx.run()
     ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-top.svg'))
     ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-bottom.svg'))
     ctx.clean_up()
 
 
-def test_pcbdraw_simple():
+def test_pcbdraw_simple(test_dir):
     prj = 'bom'
-    ctx = context.TestContext(OUT_DIR+'_simple', prj, 'pcbdraw_simple', OUT_DIR)
+    ctx = context.TestContext(test_dir, OUT_DIR+'_simple', prj, 'pcbdraw_simple', OUT_DIR)
     ctx.run()
     ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-top.png'))
     ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-bottom.jpg'))
@@ -98,9 +98,9 @@ def test_pcbdraw_miss_convert(caplog, monkeypatch):
         assert 'imagemagick' in caplog.text, caplog.text
 
 
-def test_pcbdraw_variant_1():
+def test_pcbdraw_variant_1(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContext('test_pcbdraw_variant_1', prj, 'pcbdraw_variant_1', '')
+    ctx = context.TestContext(test_dir, 'test_pcbdraw_variant_1', prj, 'pcbdraw_variant_1', '')
     ctx.run()
     # Check all outputs are there
     fname = prj+'-top.png'
@@ -113,9 +113,9 @@ def test_pcbdraw_variant_1():
     ctx.clean_up(keep_project=True)
 
 
-def test_pcbdraw_variant_2():
+def test_pcbdraw_variant_2(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContext('test_pcbdraw_variant_2', prj, 'pcbdraw_variant_2', '')
+    ctx = context.TestContext(test_dir, 'test_pcbdraw_variant_2', prj, 'pcbdraw_variant_2', '')
     ctx.run()
     # Check all outputs are there
     fname = prj+'-top-C1.png'
@@ -125,9 +125,9 @@ def test_pcbdraw_variant_2():
     ctx.clean_up(keep_project=True)
 
 
-def test_pcbdraw_variant_3():
+def test_pcbdraw_variant_3(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContext('test_pcbdraw_variant_1', prj, 'pcbdraw_variant_3', '')
+    ctx = context.TestContext(test_dir, 'test_pcbdraw_variant_1', prj, 'pcbdraw_variant_3', '')
     ctx.run()
     # Check all outputs are there
     fname = prj+'-top.png'

@@ -73,9 +73,9 @@ INNER_EXTS = ['g2',
               ]
 
 
-def test_gerber_2layer():
+def test_gerber_2layer(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext('Simple_2_layer', prj, prj, GERBER_DIR)
+    ctx = context.TestContext(test_dir, 'Simple_2_layer', prj, prj, GERBER_DIR)
     ctx.run()
 
     f_cu = ctx.get_gerber_filename('F_Cu')
@@ -93,9 +93,9 @@ def test_gerber_2layer():
     ctx.clean_up()
 
 
-def test_gerber_inner_ok():
+def test_gerber_inner_ok(test_dir):
     prj = 'good-project'
-    ctx = context.TestContext('Gerber_Inner', prj, 'gerber_inner', GERBER_DIR)
+    ctx = context.TestContext(test_dir, 'Gerber_Inner', prj, 'gerber_inner', GERBER_DIR)
     rarfile = prj+'-result.rar'
     ctx.create_dummy_out_file(rarfile)
     ctx.run()
@@ -107,9 +107,9 @@ def test_gerber_inner_ok():
     ctx.clean_up()
 
 
-def test_gerber_inner_wrong():
+def test_gerber_inner_wrong(test_dir):
     prj = 'good-project'
-    ctx = context.TestContext('Gerber_InnerWrong', prj, 'gerber_inner_wrong', GERBER_DIR)
+    ctx = context.TestContext(test_dir, 'Gerber_InnerWrong', prj, 'gerber_inner_wrong', GERBER_DIR)
     ctx.run(PLOT_ERROR)
     assert ctx.search_err('is not valid for this board')
     ctx.clean_up()
@@ -134,9 +134,9 @@ def check_components(ctx, dir, prefix, layers, suffix, exclude, include):
         ctx.search_not_in_file(fname, exc)
 
 
-def test_gerber_variant_1():
+def test_gerber_variant_1(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContext('test_gerber_variant_1', prj, 'gerber_variant_1', GERBER_DIR)
+    ctx = context.TestContext(test_dir, 'test_gerber_variant_1', prj, 'gerber_variant_1', GERBER_DIR)
     ctx.run()
     # R3 is a component added to the PCB, included in all cases
     # variant: default     directory: gerber      components: R1, R2 and R3
@@ -151,9 +151,9 @@ def test_gerber_variant_1():
     ctx.clean_up(keep_project=True)
 
 
-def test_gerber_protel_1():
+def test_gerber_protel_1(test_dir):
     prj = 'good-project'
-    ctx = context.TestContext('test_gerber_protel_1', prj, 'gerber_inner_protel_1', GERBER_DIR)
+    ctx = context.TestContext(test_dir, 'test_gerber_protel_1', prj, 'gerber_inner_protel_1', GERBER_DIR)
     ctx.run()
     exts = ALL_EXTS+INNER_EXTS
     for n, suf in enumerate(ALL_LAYERS+INNER_LAYERS):
@@ -161,9 +161,9 @@ def test_gerber_protel_1():
     ctx.clean_up()
 
 
-def test_gerber_protel_2():
+def test_gerber_protel_2(test_dir):
     prj = 'good-project'
-    ctx = context.TestContext('test_gerber_protel_2', prj, 'gerber_inner_protel_2', GERBER_DIR)
+    ctx = context.TestContext(test_dir, 'test_gerber_protel_2', prj, 'gerber_inner_protel_2', GERBER_DIR)
     ctx.run(extra_debug=True)
     inner = ['gin'+str(int(layer[-1])-1) for layer in INNER_EXTS]
     exts = ALL_EXTS+inner
