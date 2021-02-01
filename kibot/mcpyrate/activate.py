@@ -1,8 +1,8 @@
 # -*- coding: utf-8; -*-
-'''Install mcpyrate hooks to preprocess source files.
+"""Install mcpyrate hooks to preprocess source files.
 
-Actually, we monkey-patch ``SourceFileLoader` and `FileFinder`, to compile the
-code in a different way, macroexpanding the AST before compiling into bytecode.
+Actually, we monkey-patch `SourceFileLoader`, to compile the code in a
+different way, macroexpanding the AST before compiling into bytecode.
 
 We also change `.pyc` cache invalidation, so that updating a macro definition
 causes any source files that import that macro definition file to be re-expanded
@@ -23,26 +23,40 @@ the `PYTHONDONTWRITEBYTECODE` environment variable, and the attribute
     https://docs.python.org/3/using/cmdline.html#envvar-PYTHONDONTWRITEBYTECODE
     https://docs.python.org/3/library/sys.html#sys.dont_write_bytecode
     https://www.python.org/dev/peps/pep-0552/
-'''
+"""
 
-from importlib.machinery import SourceFileLoader, FileFinder
-from .importer import source_to_xcode, path_xstats, invalidate_xcaches
+__all__ = ["activate", "deactivate"]
+
+from importlib.machinery import SourceFileLoader
+from .importer import source_to_xcode, path_xstats
 
 
 def activate():
+    """Activate `mcpyrate`.
+
+    Called automatically once, when the module's top-level code executes.
+    This typically happens when `mcpyrate.activate` is imported for the
+    first time in the current process.
+
+    The function is available so that if you call `deactivate`, it is possible
+    to call `activate` to re-activate the macro expander.
+    """
     SourceFileLoader.source_to_code = source_to_xcode
-    # we could replace SourceFileLoader.set_data with a no-op to force-disable pyc caching.
+    # Bytecode caching (`.pyc`) support. If you need to force-disable `.pyc`
+    # caching, replace `SourceFileLoader.set_data` with a no-op, like `mcpy` does.
     SourceFileLoader.path_stats = path_xstats
-    FileFinder.invalidate_caches = invalidate_xcaches
 
 
-def de_activate():
-    SourceFileLoader.source_to_code = old_source_to_code
-    SourceFileLoader.path_stats = old_path_stats
-    FileFinder.invalidate_caches = old_invalidate_caches
+def deactivate():
+    """Deactivate `mcpyrate`.
+
+    This can be useful if you want the macro expander to be enabled only for
+    some part of your codebase.
+    """
+    SourceFileLoader.source_to_code = stdlib_source_to_code
+    SourceFileLoader.path_stats = stdlib_path_stats
 
 
-old_source_to_code = SourceFileLoader.source_to_code
-old_path_stats = SourceFileLoader.path_stats
-old_invalidate_caches = FileFinder.invalidate_caches
+stdlib_source_to_code = SourceFileLoader.source_to_code
+stdlib_path_stats = SourceFileLoader.path_stats
 activate()

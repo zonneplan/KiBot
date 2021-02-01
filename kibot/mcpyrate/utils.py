@@ -1,15 +1,18 @@
 # -*- coding: utf-8; -*-
-'''General utilities. Can be useful for writing both macros as well as macro expanders.'''
+"""General utilities. Can be useful for writing both macros as well as macro expanders."""
 
-__all__ = ['gensym', 'flatten_suite', 'rename',
-           'format_location', 'format_macrofunction',
-           'NestingLevelTracker']
+__all__ = ["gensym", "scrub_uuid", "flatten", "rename", "extract_bindings", "getdocstring",
+           "format_location", "format_macrofunction", "format_context",
+           "NestingLevelTracker"]
 
 import ast
 from contextlib import contextmanager
 import uuid
 
-from . import walker
+from .colorizer import colorize, ColorScheme
+from . import markers
+from . import unparser
+from . import walkers
 
 
 _previous_gensyms = set()
@@ -20,11 +23,25 @@ def gensym(basename=None):
 
     Can also be used for globally unique string keys, in which case `basename`
     does not need to be a valid identifier.
+
+    Examples::
+
+        gensym()         # --> 'gensym_e010a36f9cd64ad2b14041751ef40a6e'
+        gensym("kitty")  # --> 'kitty_65cc5638659d46209af11e1133698462'
+        gensym("")       # --> '7cf67f3eb02c4fdaa1a13e7f55bca908' (bare uuid only)
     """
-    basename = basename or "gensym"
+    if basename and not isinstance(basename, str):
+        raise TypeError(f"`basename` must be str, got {type(basename)} with value {repr(basename)}")
+
+    if basename is None:
+        basename = "gensym_"
+    elif len(basename):
+        basename = basename + "_"
+    # else basename = ""
+
     def generate():
-        unique = str(uuid.uuid4()).replace('-', '')
-        return f"{basename}_{unique}"
+        unique = str(uuid.uuid4()).replace("-", "")
+        return f"{basename}{unique}"
     sym = generate()
     # The uuid spec does not guarantee no collisions, only a vanishingly small chance.
     while sym in _previous_gensyms:
@@ -33,21 +50,34 @@ def gensym(basename=None):
     return sym
 
 
-def flatten_suite(lst):
-    """Flatten a statement suite (by one level).
+def scrub_uuid(string):
+    """Scrub any existing `"_uuid"` suffix from `string`."""
+    idx = string.rfind("_")
+    if idx != -1:
+        maybe_uuid = string[(idx + 1):]
+        if len(maybe_uuid) == 32:
+            try:
+                _ = int(maybe_uuid, base=16)
+            except ValueError:
+                pass
+            else:  # yes, it was an uuid
+                return string[:idx]
+    return string
 
-    `lst` may contain both individual items and `list`s. Any item that
-    `is None` is omitted. If the final result is empty, then instead of
-    an empty list, return `None`. (This matches the AST representation
-    of statement suites.)
+
+def flatten(lst, *, recursive=True):
+    """Flatten a nested list.
+
+    Useful for splicing in transformations of statement suites.
     """
     out = []
     for elt in lst:
         if isinstance(elt, list):
-            out.extend(elt)
+            sublst = flatten(elt) if recursive else elt
+            out.extend(sublst)
         elif elt is not None:
             out.append(elt)
-    return out if out else None
+    return out
 
 
 def rename(oldname, newname, tree):
@@ -70,8 +100,10 @@ def rename(oldname, newname, tree):
 
         tree = q[lambda _: ...]
         tree = rename("_", gensym(), tree)
+
+    The tree is modified in-place. For convenience, we return `tree`.
     """
-    class Renamer(walker.Walker):
+    class Renamer(walkers.ASTTransformer):
         def transform(self, tree):
             T = type(tree)
             if T is ast.Name:
@@ -91,6 +123,9 @@ def rename(oldname, newname, tree):
             elif T is ast.keyword:  # in function call, argument passed by name
                 if tree.arg == oldname:
                     tree.arg = newname
+            elif T is ast.ImportFrom:
+                if tree.module == oldname:
+                    tree.module = newname
             elif T is ast.alias:  # in ast.Import, ast.ImportFrom
                 if tree.name == oldname:
                     tree.name = newname
@@ -102,30 +137,97 @@ def rename(oldname, newname, tree):
             return self.generic_visit(tree)
     return Renamer().visit(tree)
 
+
+def extract_bindings(bindings, *functions, global_only=False):
+    """Scan `bindings` for given macro functions.
+
+    Return all matching bindings as a dictionary of macro name/function pairs,
+    which can be used to instantiate a new expander (that recognizes only those
+    bindings).
+
+    Note functions, not names. This is convenient as a helper when expanding
+    macros inside-out, but only those in a given set, accounting for any renames
+    due to as-imports.
+
+    Useful input values for `bindings` include `expander.bindings` (in a macro;
+    will see both local and global bindings), `mcpyrate.core.global_bindings`
+    (for global bindings only), and the run-time output of the name macro
+    `mcpyrate.metatools.macro_bindings`.
+
+    Typical usage::
+
+        bindings = extract_bindings(expander.bindings, mymacro1, mymacro2, mymacro3)
+        tree = MacroExpander(bindings, expander.filename).visit(tree)
+    """
+    functions = set(functions)
+    return {name: function for name, function in bindings.items() if function in functions}
+
+
+def getdocstring(body):
+    """Extract docstring from `body` if it has one.
+
+    Only static strings (no f-strings or string arithmetic) are recognized as docstrings.
+
+    `body` must be a `list` of statement AST nodes. (As a special case, if `body is None`,
+    we return `None`, allowing the caller to emit some boilerplate checks.)
+
+    Return value is either the docstring (as an `str`), or `None`.
+    """
+    if not body:
+        return None
+    if not isinstance(body, list):
+        raise TypeError(f"`body` must be a `list`, got {type(body)} with value {repr(body)}")
+    if type(body[0]) is ast.Expr and type(body[0].value) in (ast.Constant, ast.Str):
+        docstring_node = body[0].value  # Expr -> Expr.value
+        if type(docstring_node) is ast.Constant:
+            return docstring_node.value
+        # TODO: remove ast.Str once we bump minimum language version to Python 3.8
+        else:  # ast.Str
+            return docstring_node.s
+    return None
+
 # --------------------------------------------------------------------------------
 
 def format_location(filename, tree, sourcecode):
-    '''Format a source code location in a standard way, for error messages.
+    """Format a source code location in a standard way, for error messages.
 
     `filename`: full path to `.py` file.
-    `tree`: AST node to get source line number from.
+    `tree`: AST node to get source line number from. (Looks inside AST markers.)
     `sourcecode`: source code (typically, to get this, `unparse(tree)`
                   before expanding it), or `None` to omit it.
-    '''
-    lineno = tree.lineno if hasattr(tree, 'lineno') else None
+    """
+    lineno = None
+    if hasattr(tree, "lineno"):
+        lineno = tree.lineno
+    elif isinstance(tree, markers.ASTMarker) and hasattr(tree, "body"):
+        if hasattr(tree.body, "lineno"):
+            lineno = tree.body.lineno
+        elif isinstance(tree.body, list) and tree.body and hasattr(tree.body[0], "lineno"):  # e.g. `SpliceNodes`
+            lineno = tree.body[0].lineno
+
     if sourcecode:
         sep = " " if "\n" not in sourcecode else "\n"
         source_with_sep = f"{sep}{sourcecode}"
     else:
         source_with_sep = ""
-    return f'{filename}:{lineno}:{source_with_sep}'
+
+    return f'{colorize(filename, ColorScheme.SOURCEFILENAME)}:{lineno}:{source_with_sep}'
 
 
 def format_macrofunction(function):
-    '''Format the fully qualified name of a macro function, for error messages.'''
+    """Format the fully qualified name of a macro function, for error messages."""
     if not function.__module__:  # Macros defined in the REPL have `__module__=None`.
         return function.__qualname__
     return f"{function.__module__}.{function.__qualname__}"
+
+
+def format_context(tree, *, n=5):
+    """Format up to the first `n` lines of source code of `tree`."""
+    code_lines = unparser.unparse_with_fallbacks(tree, debug=True, color=True).split("\n")
+    code = "\n".join(code_lines[:n])
+    if len(code_lines) > n:
+        code += "\n" + colorize("...", ColorScheme.GREYEDOUT)
+    return code
 
 # --------------------------------------------------------------------------------
 

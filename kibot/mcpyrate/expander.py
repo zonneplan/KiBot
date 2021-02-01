@@ -1,5 +1,5 @@
 # -*- coding: utf-8; -*-
-'''Find and expand macros.
+"""Find and expand macros.
 
 This layer provides the actual macro expander, defining:
 
@@ -12,7 +12,7 @@ This layer provides the actual macro expander, defining:
                 `with macroname[arg0, ...]:`, `with macroname[arg0, ...] as result:`
    - decorator: `@macroname`, `@macroname[arg0, ...]`
    - name:      `macroname`
-'''
+"""
 
 # We use bracket syntax for sending macro arguments, because parentheses evoke
 # the idea of full function-call syntax. This includes keyword arguments, and
@@ -46,13 +46,13 @@ This layer provides the actual macro expander, defining:
 # lesser evil. This is one reason why we require parametric macros to be
 # explicitly declared - avoid that ambiguity when not needed.
 
-__all__ = ['namemacro', 'isnamemacro',
-           'parametricmacro', 'isparametricmacro',
-           'MacroExpander', 'MacroCollector',
-           'expand_macros', 'find_macros']
+__all__ = ["namemacro", "isnamemacro",
+           "parametricmacro", "isparametricmacro",
+           "MacroExpander", "MacroCollector",
+           "expand_macros", "find_macros"]
 
 from ast import (Name, Subscript, Tuple, Import, alias, AST, Assign, Store, Constant,
-                 copy_location, iter_fields, NodeVisitor)
+                 Lambda, arguments, Call, copy_location, iter_fields, NodeVisitor)
 from copy import copy
 from warnings import warn_explicit
 
@@ -63,39 +63,39 @@ from .utils import format_macrofunction
 
 
 def namemacro(function):
-    '''Decorator. Declare a macro function as an identifier macro.
+    """Decorator. Declare a macro function as an identifier macro.
 
     Identifier macros are a rarely needed feature. Hence, the expander invokes
     as identifier macros only macros that are declared as such.
 
     This (or `@parametricmacro`, if used too) must be the outermost decorator.
-    '''
+    """
     function._isnamemacro = True
     return function
 
 def isnamemacro(function):
-    '''Return whether the macro function `function` has been declared as an identifier macro.'''
-    return hasattr(function, '_isnamemacro')
+    """Return whether the macro function `function` has been declared as an identifier macro."""
+    return hasattr(function, "_isnamemacro")
 
 def parametricmacro(function):
-    '''Decorator. Declare a macro function as taking macro arguments.
+    """Decorator. Declare a macro function as taking macro arguments.
 
     Macro arguments are a rarely needed feature. Hence, the expander interprets
     macro argument syntax only for macros that are declared as parametric.
 
     This (or `@namemacro`, if used too) must be the outermost decorator.
-    '''
+    """
     function._isparametricmacro = True
     return function
 
 def isparametricmacro(function):
-    '''Return whether the macro function `function` has been declared as taking macro arguments.'''
-    return hasattr(function, '_isparametricmacro')
+    """Return whether the macro function `function` has been declared as taking macro arguments."""
+    return hasattr(function, "_isparametricmacro")
 
 # --------------------------------------------------------------------------------
 
 def destructure_candidate(tree):
-    '''Destructure a macro call candidate AST, `macroname` or `macroname[arg0, ...]`.'''
+    """Destructure a macro call candidate AST, `macroname` or `macroname[arg0, ...]`."""
     if type(tree) is Name:
         return tree.id, []
     elif type(tree) is Subscript and type(tree.value) is Name:
@@ -109,14 +109,14 @@ def destructure_candidate(tree):
 
 
 class MacroExpander(BaseMacroExpander):
-    '''The actual macro expander.'''
+    """The actual macro expander."""
 
     def ismacrocall(self, macroname, macroargs, syntax):
-        '''Shorthand to check `destructure_candidate` output.
+        """Shorthand to check `destructure_candidate` output.
 
         Return whether that output is a macro call to a macro (of invocation
         type `syntax`) bound in this expander.
-        '''
+        """
         if not (macroname and self.isbound(macroname)):
             return False
         if syntax == 'name':
@@ -124,7 +124,7 @@ class MacroExpander(BaseMacroExpander):
         return not macroargs or isparametricmacro(self.bindings[macroname])
 
     def visit_Subscript(self, subscript):
-        '''Detect an expression (expr) macro invocation.
+        """Detect an expression (expr) macro invocation.
 
         Detected syntax::
 
@@ -133,24 +133,28 @@ class MacroExpander(BaseMacroExpander):
 
         Replace the `Subscript` node with the AST returned by the macro.
         The core controls whether to expand again in the result.
-        '''
+        """
         # We must silently ignore when a non-parametric expr macro is invoked with macro args,
         # because things like `(some_expr_macro[tree])[subscript_expression]` are valid. This
         # is actually exploited by `h`, as in `q[h[target_macro][tree_for_target_macro]]`.
         candidate = subscript.value
         macroname, macroargs = destructure_candidate(candidate)
-        if self.ismacrocall(macroname, macroargs, 'expr'):
-            kw = {'args': macroargs}
+        if self.ismacrocall(macroname, macroargs, "expr"):
+            kw = {"args": macroargs}
             tree = subscript.slice.value
-            sourcecode = unparse_with_fallbacks(subscript)
-            new_tree = self.expand('expr', subscript,
-                                   macroname, tree, sourcecode=sourcecode, kw=kw)
+            sourcecode = unparse_with_fallbacks(subscript, debug=True, color=True, expander=self)
+            new_tree = self.expand("expr", subscript, macroname, tree, sourcecode=sourcecode, kw=kw)
+            if new_tree is None:
+                # Expression slots in the AST cannot be empty, but we can make
+                # something that evaluates to `None` at run-time, and get
+                # correct coverage while at it.
+                new_tree = _make_coverage_dummy_expr(subscript)
         else:
             new_tree = self.generic_visit(subscript)
         return new_tree
 
     def visit_With(self, withstmt):
-        '''Detect a block macro invocation.
+        """Detect a block macro invocation.
 
         Detected syntax::
 
@@ -165,7 +169,7 @@ class MacroExpander(BaseMacroExpander):
 
         Replace the `With` node with the AST returned by the macro.
 
-        The `result` part is sent to the macro as `kw['optional_vars']`; it's a
+        The `result` part is sent to the macro as `kw["optional_vars"]`; it's a
         `Name`, `Tuple` or `List` node. What to do with it is up to the macro;
         the typical meaning is to assign something to the name(s).
             https://greentreesnakes.readthedocs.io/en/latest/nodes.html#withitem
@@ -186,7 +190,7 @@ class MacroExpander(BaseMacroExpander):
         do anything it wants to its input tree. Any remaining block macro
         invocations are attached to the `With` node, so if that is removed,
         they will be skipped.
-        '''
+        """
         macros, others = self._detect_macro_items(withstmt.items, "block")
         if not macros:
             return self.generic_visit(withstmt)
@@ -195,17 +199,16 @@ class MacroExpander(BaseMacroExpander):
         macroname, macroargs = destructure_candidate(candidate)
 
         # let the source code and `invocation` see also the withitem we pop away
-        sourcecode = unparse_with_fallbacks(withstmt)
+        sourcecode = unparse_with_fallbacks(withstmt, debug=True, color=True, expander=self)
         original_withstmt = copy(withstmt)
         original_withstmt.items = copy(withstmt.items)
 
         withstmt.items.remove(with_item)
-        kw = {'args': macroargs}
-        kw.update({'optional_vars': with_item.optional_vars})
+        kw = {"args": macroargs}
+        kw.update({"optional_vars": with_item.optional_vars})
         tree = withstmt.body if not withstmt.items else [withstmt]
-        new_tree = self.expand('block', original_withstmt,
-                               macroname, tree, sourcecode=sourcecode, kw=kw)
-        new_tree = _add_coverage_dummy_node(new_tree, withstmt, macroname)
+        new_tree = self.expand("block", original_withstmt, macroname, tree, sourcecode=sourcecode, kw=kw)
+        new_tree = _insert_coverage_dummy_stmt(new_tree, withstmt, macroname, self.filename)
         return new_tree
 
     def visit_ClassDef(self, classdef):
@@ -215,7 +218,7 @@ class MacroExpander(BaseMacroExpander):
         return self._visit_Decorated(functiondef)
 
     def _visit_Decorated(self, decorated):
-        '''Detect a decorator macro invocation.
+        """Detect a decorator macro invocation.
 
         Detected syntax::
 
@@ -242,7 +245,7 @@ class MacroExpander(BaseMacroExpander):
         decorated node, so if that is removed, they will be skipped.
 
         The body is expanded after the whole decorator list has been processed.
-        '''
+        """
         macros, others = self._detect_macro_items(decorated.decorator_list, "decorator")
         if not macros:
             return self.generic_visit(decorated)
@@ -250,24 +253,23 @@ class MacroExpander(BaseMacroExpander):
         macroname, macroargs = destructure_candidate(innermost_macro)
 
         # let the source code and `invocation` see also the decorator we pop away
-        sourcecode = unparse_with_fallbacks(decorated)
+        sourcecode = unparse_with_fallbacks(decorated, debug=True, color=True, expander=self)
         original_decorated = copy(decorated)
         original_decorated.decorator_list = copy(decorated.decorator_list)
 
         decorated.decorator_list.remove(innermost_macro)
-        kw = {'args': macroargs}
-        new_tree = self.expand('decorator', original_decorated,
-                               macroname, decorated, sourcecode=sourcecode, kw=kw)
-        new_tree = _add_coverage_dummy_node(new_tree, innermost_macro, macroname)
+        kw = {"args": macroargs}
+        new_tree = self.expand("decorator", original_decorated, macroname, decorated, sourcecode=sourcecode, kw=kw)
+        new_tree = _insert_coverage_dummy_stmt(new_tree, innermost_macro, macroname, self.filename)
         return new_tree
 
     def _detect_macro_items(self, items, syntax):
-        '''Split a list `items` into `(macros, others)`.
+        """Split a list `items` into `(macros, others)`.
 
         `syntax`: str, "block" or "decorator"
             "block": `items` is a `With.items`
             "decorator": `items` is a `decorator_list`
-        '''
+        """
         assert syntax in ("block", "decorator")
         context = "in `with` header" if syntax == "block" else "as decorator"
 
@@ -294,7 +296,7 @@ class MacroExpander(BaseMacroExpander):
         return macros, others
 
     def visit_Name(self, name):
-        '''Detect an identifier (name) macro invocation.
+        """Detect an identifier (name) macro invocation.
 
         Detected syntax::
 
@@ -306,18 +308,23 @@ class MacroExpander(BaseMacroExpander):
         Otherwise the core controls whether to expand again in the
         result, but we stop if the macro returns the original `tree`,
         telling the expander to use the name as a regular run-time name.
-        '''
+        """
         # We must silently ignore when a non-name macro is invoked as a name macro,
         # because things like `q[h[some_expr_macro][...]]` are valid.
-        if self.ismacrocall(name.id, None, 'name'):
+        if self.ismacrocall(name.id, None, "name"):
             macroname = name.id
             def ismodified(tree):
                 return not (type(tree) is Name and tree.id == macroname)
             with self._recursive_mode(False):
-                kw = {'args': None}
-                sourcecode = unparse_with_fallbacks(name)
-                new_tree = self.expand('name', name, macroname, name, sourcecode=sourcecode, kw=kw)
-            if new_tree is not None:
+                kw = {"args": None}
+                sourcecode = unparse_with_fallbacks(name, debug=True, color=True, expander=self)
+                new_tree = self.expand("name", name, macroname, name, sourcecode=sourcecode, kw=kw)
+            if new_tree is None:
+                # Expression slots in the AST cannot be empty, but we can make
+                # something that evaluates to `None` at run-time, and get
+                # correct coverage while at it.
+                new_tree = _make_coverage_dummy_expr(name)
+            else:
                 if not ismodified(new_tree):
                     new_tree = Done(new_tree)
                 elif self.recursive:  # and modified
@@ -328,7 +335,7 @@ class MacroExpander(BaseMacroExpander):
 
 
 class MacroCollector(NodeVisitor):
-    '''Scan `tree` for macro invocations, with respect to given `expander`.
+    """Scan `tree` for macro invocations, with respect to given `expander`.
 
     Collect a list of `(macroname, syntax)`. Usage::
 
@@ -341,9 +348,9 @@ class MacroCollector(NodeVisitor):
         print(mc.collected)
 
     Sister class of the actual `MacroExpander`, mirroring its syntax detection.
-    '''
+    """
     def __init__(self, expander):
-        '''`expander`: a `MacroExpander` instance to query macro bindings from.'''
+        """`expander`: a `MacroExpander` instance to query macro bindings from."""
         self.expander = expander
         self.clear()
 
@@ -352,14 +359,14 @@ class MacroCollector(NodeVisitor):
         self.collected = []
 
     def visit(self, tree):
-        '''Scan `tree` for macro invocations.
+        """Scan `tree` for macro invocations.
 
         No-op if `self.expander` has no macro bindings, or if `tree` is marked
         as `Done`.
 
         Treat `visit(stmt_suite)` as a loop for individual elements.
         No-op if `tree is None`.
-        '''
+        """
         if not self.expander.bindings or isinstance(tree, Done):
             return
         if tree is None:
@@ -373,8 +380,8 @@ class MacroCollector(NodeVisitor):
     def visit_Subscript(self, subscript):
         candidate = subscript.value
         macroname, macroargs = destructure_candidate(candidate)
-        if self.expander.ismacrocall(macroname, macroargs, 'expr'):
-            key = (macroname, 'expr')
+        if self.expander.ismacrocall(macroname, macroargs, "expr"):
+            key = (macroname, "expr")
             if key not in self._seen:
                 self.collected.append(key)
                 self._seen.add(key)
@@ -391,7 +398,7 @@ class MacroCollector(NodeVisitor):
             for with_item in macros:
                 candidate = with_item.context_expr
                 macroname, macroargs = destructure_candidate(candidate)
-                key = (macroname, 'block')
+                key = (macroname, "block")
                 if key not in self._seen:
                     self.collected.append(key)
                     self._seen.add(key)
@@ -413,7 +420,7 @@ class MacroCollector(NodeVisitor):
         if macros:
             for macro in macros:
                 macroname, macroargs = destructure_candidate(macro)
-                key = (macroname, 'decorator')
+                key = (macroname, "decorator")
                 if key not in self._seen:
                     self.collected.append(key)
                     self._seen.add(key)
@@ -429,24 +436,24 @@ class MacroCollector(NodeVisitor):
 
     def visit_Name(self, name):
         macroname = name.id
-        if self.expander.ismacrocall(macroname, None, 'name'):
-            key = (macroname, 'name')
+        if self.expander.ismacrocall(macroname, None, "name"):
+            key = (macroname, "name")
             if key not in self._seen:
                 self.collected.append(key)
                 self._seen.add(key)
 
 
-def _add_coverage_dummy_node(tree, macronode, macroname):
-    '''Force `macronode` to be reported as covered by coverage tools.
+def _insert_coverage_dummy_stmt(tree, macronode, macroname, filename):
+    """Force statement `macronode` to be reported as covered by coverage tools.
 
-    The dummy node will be injected to `tree`. The `tree` must appear in a
-    position where `ast.NodeTransformer.visit` may return a list of nodes.
+    A dummy node will be injected to `tree`. The `tree` must appear in a
+    statement position, so `ast.NodeTransformer.visit` may return a list of nodes.
 
     `macronode` is the macro invocation node to copy source location info from.
-    `macroname` is included in the dummy node, to ease debugging.
-    '''
+    `macroname` and `filename` are included in the dummy node, to ease debugging.
+    """
     # `macronode` itself might be macro-generated. In that case don't bother.
-    if not hasattr(macronode, 'lineno') and not hasattr(macronode, 'col_offset'):
+    if not hasattr(macronode, "lineno") and not hasattr(macronode, "col_offset"):
         return tree
     if tree is None:
         tree = []
@@ -455,7 +462,7 @@ def _add_coverage_dummy_node(tree, macronode, macroname):
     # The dummy node must actually run to get coverage, so an `ast.Pass` won't do.
     # It must *do* something, or CPython optimizes it away, so an `ast.Expr` won't do.
     # We must set location info manually, because we run after `expand`.
-    v = copy_location(Constant(value=f"source line {macronode.lineno} invoked macro {macroname}"),
+    v = copy_location(Constant(value=f"{filename}:{macronode.lineno} invoked macro '{macroname}'"),
                       macronode)
     t = copy_location(Name(id="_mcpyrate_coverage", ctx=Store()),
                       macronode)
@@ -463,10 +470,38 @@ def _add_coverage_dummy_node(tree, macronode, macroname):
     tree.insert(0, Done(dummy))  # mark as Done so any expansions further out won't mess this up.
     return tree
 
+
+def _make_coverage_dummy_expr(macronode):
+    """Force expression `macronode` to be reported as covered by coverage tools.
+
+    This facilitates "deleting" expression nodes by `return None` from a macro.
+    Since an expression slot in the AST cannot be empty, we inject a dummy node
+    that evaluates to `None`.
+
+    `macronode` is the macro invocation node to copy source location info from.
+    """
+    # TODO: inject the macro name for human-readability
+    # We inject a lambda and an immediate call to it, because a constant `None`,
+    # if it appears alone in an `ast.Expr`, is optimized away by CPython.
+    # We must set location info manually, because we run after `expand`.
+    non = copy_location(Constant(value=None), macronode)
+    lam = copy_location(Lambda(args=arguments(posonlyargs=[], args=[], vararg=None,
+                                              kwonlyargs=[], kw_defaults=[], kwarg=None,
+                                              defaults=[]),
+                               body=non),
+                        macronode)
+    call = copy_location(Call(func=lam, args=[], keywords=[]), macronode)
+    return Done(call)
+
+
 # --------------------------------------------------------------------------------
 
 def expand_macros(tree, bindings, *, filename):
-    '''Expand `tree` with macro bindings `bindings`. Top-level entrypoint.
+    """Expand `tree` with macro bindings `bindings`. Top-level entry point.
+
+    Note that while this is a top-level entry point for the **macro** expander,
+    expanding macros is only a part of the full import algorithm. See the function
+    `mcpyrate.compiler.expand` for the 30,000ft (9,144m) view.
 
     Primarily meant to be called with `tree` the AST of a module that uses
     macros, but works with any `tree` (even inside a macro, if you need an
@@ -476,39 +511,82 @@ def expand_macros(tree, bindings, *, filename):
 
     `filename`: str, full path to the `.py` being macroexpanded, for error reporting.
                 In interactive use, can be an arbitrary label.
-    '''
+    """
     expansion = MacroExpander(bindings, filename).visit(tree)
     expansion = global_postprocess(expansion)
     return expansion
 
 
-def find_macros(tree, *, filename, reload=False):
-    '''Establish macro bindings from `tree`. Top-level entrypoint.
+def find_macros(tree, *, filename, reload=False, self_module=None, transform=True):
+    """Establish macro bindings from `tree`. Top-level entry point.
+
+    Note that while this is a top-level entry point for the **macro** expander,
+    expanding macros is only a part of the full import algorithm. See the function
+    `mcpyrate.compiler.expand` for the 30,000ft (9,144m) view.
 
     Collect bindings from each macro-import statement (`from ... import macros, ...`)
-    at the top level of `tree.body`. Transform each macro-import into `import ...`,
-    where `...` is the absolute module name the macros are being imported from.
-    As a side effect, import the macro definition modules.
+    at the top level of `tree.body`.
+
+    As a side effect, import the macro definition modules. (We must do this in order
+    to load the macro function definitions, so that we can bind to them.)
 
     Primarily meant to be called with `tree` the AST of a module that
-    uses macros, but works with any `tree` that has a `body` attribute.
+    uses macros, but works with any `tree` that has a `body` attribute,
+    where that `body` is a `list` of statement AST nodes.
 
     `filename`: str, full path to the `.py` being macroexpanded, for resolving
                 relative macro-imports and for error reporting. In interactive
                 use, can be an arbitrary label.
 
-    `reload`:   enable only if implementing a REPL. Will refresh modules, causing
-                different uses of the same macros to point to different function objects.
+    `reload`:   If enabled, refresh modules, causing different uses of the same macros
+                to point to different function objects. Enable only if implementing a REPL.
+
+    `self_module`: str, optional, absolute dotted module name of the module being
+                   expanded. Used for supporting `from __self__ import macros, ...`
+                   for multi-phase compilation (a.k.a. staging).
+
+    `transform`: If enabled, transform each macro-import into `import ...`,
+                 where `...` is the absolute module name the macros are being
+                 imported from. Usually this is the Right Thing to do, to honor
+                 the unhygienic expose API guarantee.
+
+                 The notable exception is multi-phase compilation, which needs
+                 to produce two versions of the code: one to run immediately
+                 (to produce the temporary module for the current phase), and
+                 another to be lifted into the next phase. The code for the
+                 next phase needs to have the original macro-imports so we can
+                 establish the same bindings again in that phase; but in the code
+                 to run immediately, macro-imports should be transformed away so
+                 that the temporary module works as expected.
 
     Return value is a dict `{macroname: function, ...}` with all collected bindings.
-    '''
+    """
+    stmts_to_delete = []
     bindings = {}
     for index, statement in enumerate(tree.body):
         if ismacroimport(statement):
-            module_absname, more_bindings = get_macros(statement, filename=filename, reload=reload)
+            module_absname, more_bindings = get_macros(statement, filename=filename, reload=reload, self_module=self_module)
             bindings.update(more_bindings)
-            # Remove all names to prevent macros being used as regular run-time objects.
-            # Always use an absolute import, for the unhygienic expose API guarantee.
-            tree.body[index] = copy_location(Import(names=[alias(name=module_absname, asname=None)]),
-                                             statement)
+            if transform:
+                if self_module and statement.module == "__self__":
+                    # Remove self-macro-imports after establishing bindings.
+                    # No need to import a module at run time; the importer lifts all
+                    # the higher-phase code also into the code of the current phase.
+                    #
+                    # `statement` usually has location info, in which case we can replace the
+                    # self-macro-import with a coverage dummy node. But it might not, if we are
+                    # dealing with a dynamically generated module that's being multi-phase compiled.
+                    # In that case it's best to just delete the statement now that it's done its job.
+                    dummies = _insert_coverage_dummy_stmt(None, statement, "<self-macro-import>", filename)
+                    if dummies is not None:  # had location info?
+                        tree.body[index] = dummies[0]
+                    else:
+                        stmts_to_delete.append(index)
+                else:
+                    # Remove all names to prevent macros being used as regular run-time objects.
+                    # Always use an absolute import, for the unhygienic expose API guarantee.
+                    tree.body[index] = copy_location(Import(names=[alias(name=module_absname, asname=None)]),
+                                                     statement)
+    for index in reversed(stmts_to_delete):
+        tree.body.pop(index)
     return bindings

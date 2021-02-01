@@ -1,51 +1,67 @@
 # -*- coding: utf-8; -*-
-'''Importer (finder/loader) customizations, to inject the macro expander.'''
+"""Importer (finder/loader) customizations, to inject the dialect and macro expanders."""
 
-__all__ = ['source_to_xcode', 'path_xstats', 'invalidate_xcaches']
+__all__ = ["source_to_xcode", "path_xstats", "path_stats"]
 
 import ast
+import distutils.sysconfig
+from importlib.machinery import SourceFileLoader
 import importlib.util
-from importlib.machinery import FileFinder, SourceFileLoader
-import tokenize
 import os
 import pickle
 import sys
+import tokenize
 
-from .core import MacroExpansionError
-from .dialects import expand_dialects
-from .expander import find_macros, expand_macros
+from . import compiler
 from .coreutils import resolve_package, ismacroimport
-from .markers import get_markers
+from .multiphase import iswithphase
 from .unparser import unparse_with_fallbacks
 from .utils import format_location
 
 
 def source_to_xcode(self, data, path, *, _optimize=-1):
-    '''[mcpyrate] Expand dialects, then expand macros, then compile.
+    """[mcpyrate] Import hook for the source to bytecode transformation.
 
-    Intercepts the source to bytecode transformation.
-    '''
-    tree = expand_dialects(data, filename=path)
-
-    module_macro_bindings = find_macros(tree, filename=path)
-    expansion = expand_macros(tree, bindings=module_macro_bindings, filename=path)
-
-    remaining_markers = get_markers(expansion)
-    if remaining_markers:
-        raise MacroExpansionError("{path}: AST markers remaining after expansion: {remaining_markers}")
-
-    return compile(expansion, path, 'exec', dont_inherit=True, optimize=_optimize)
+    This function is monkey-patched into `importlib.machinery.SourceFileLoader`.
+    """
+    # `self.name` is absolute dotted module name, see `importlib.machinery.FileLoader`.
+    return compiler.compile(data, filename=path, self_module=self.name)
 
 
 # TODO: Support PEP552 (Deterministic pycs). Need to intercept source file hashing, too.
 # TODO: https://www.python.org/dev/peps/pep-0552/
-_path_stats = SourceFileLoader.path_stats
-_xstats_cache = {}
+#
+# Note about caching. Look at:
+#   https://github.com/python/cpython/blob/master/Lib/importlib/__init__.py
+#   https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap.py
+#   https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap_external.py
+#
+# As of Python 3.9:
+#   - The function `importlib.reload` (from `__init__.py`) eventually calls `_bootstrap._exec`.
+#   - `_bootstrap._exec` takes the loader from the spec, and calls its `exec_module` method.
+#   - `SourceFileLoader` defaults to the implementation of `_bootstrap_external._LoaderBasics.exec_module`,
+#     which calls the `get_code` method of the actual loader class.
+#   - `SourceFileLoader` inherits its `get_code` method from `SourceLoader`, which inherits from `_LoaderBasics`.
+#   - `SourceLoader.get_code` calls `path_stats` (hence our `path_xstats`,
+#     which replaces that), which returns the relevant timestamp; it then
+#     validates the bytecode cache against that timestamp (if in timestamp mode).
+#
+# The conclusion is, the timestamp we return from `path_xstats` determines
+# whether `reload` even attempts to actually reload the module!
+#
+# To compute the relevant timestamp, we must examine not only the target file,
+# but also its macro-dependencies (recursively). The easy thing to do - to
+# facilitate reloading for REPL use - is to not keep a global timestamp cache,
+# but only cache the timestamps during a single call of `path_xstats`, so if
+# the same dependency appears again at another place in the graph, we can get
+# its timestamp from the timestamp cache.
+#
+_stdlib_path_stats = SourceFileLoader.path_stats
 def path_xstats(self, path):
-    '''[mcpyrate] Compute a `.py` source file's mtime, accounting for macro-imports.
+    """[mcpyrate] Import hook to compute mtime, accounting for macro-imports.
 
-    Beside the source file `path` itself, we look at any macro definition files
-    the source file imports macros from, recursively, in a `make`-like fashion.
+    This function is monkey-patched into `importlib.machinery.SourceFileLoader`.
+    For direct use as an API function, use `mcpyrate.importer.path_stats`.
 
     The mtime is the latest of those of `path` and its macro-dependencies,
     considered recursively, so that if any macro definition anywhere in the
@@ -53,13 +69,48 @@ def path_xstats(self, path):
     file `path` as "changed", thus re-expanding and recompiling `path` (hence,
     updating the corresponding `.pyc`).
 
-    If `path` does not end in `.py`, delegate to the standard implementation
-    of `SourceFileLoader.path_stats`.
-    '''
-    if not path.endswith(".py"):
-        return _path_stats(path)
-    if path in _xstats_cache:
-        return _xstats_cache[path]
+    If `path` does not end in `.py`, or alternatively, if it points to a `.py` file that
+    is part of Python's standard library, we delegate to the standard implementation of
+    `SourceFileLoader.path_stats`.
+    """
+    # Ignore stdlib, it's big and doesn't use macros. Allows faster error
+    # exits, because an uncaught exception causes Python to load a ton of
+    # .py based stdlib modules. Also makes `macropython -i` start faster.
+    if path in _stdlib_sourcefile_paths or not path.endswith(".py"):
+        return _stdlib_path_stats(self, path)
+    return path_stats(path)
+
+
+def _detect_stdlib_sourcefile_paths():
+    """Return a set of full paths of `.py` files that are part of Python's standard library."""
+    # Adapted from StackOverflow answer by Adam Spiers, https://stackoverflow.com/a/8992937
+    # Note we don't want to get module names, but full paths to `.py` files.
+    stdlib_dir = distutils.sysconfig.get_python_lib(standard_lib=True)
+    paths = set()
+    for root, dirs, files in os.walk(stdlib_dir):
+        for filename in files:
+            if filename[-3:] == ".py":
+                paths.add(os.path.join(root, filename))
+    return paths
+_stdlib_sourcefile_paths = _detect_stdlib_sourcefile_paths()
+
+
+def path_stats(path, _stats_cache=None):
+    """[mcpyrate] Compute a `.py` source file's mtime, accounting for macro-imports.
+
+    This is a public API function for direct use, if you have a `.py` file and
+    you want to know its macro-enabled mtime.
+
+    Beside the source file `path` itself, we look at any macro definition files
+    the source file imports macros from, recursively, in a `make`-like fashion.
+
+    `_stats_cache` is used internally to speed up the computation, in case the
+    dependency graph hits the same source file multiple times.
+    """
+    if _stats_cache is None:
+        _stats_cache = {}
+    if path in _stats_cache:
+        return _stats_cache[path]
 
     stat_result = os.stat(path)
 
@@ -67,11 +118,11 @@ def path_xstats(self, path):
     #
     # This is a single node in the dependency graph; the result depends only
     # on the content of the source file `path` itself. So we invalidate the
-    # macro-import statement cache for `path` based on the mtime of `path` only.
+    # macro-import statement cache file for `path` based on the mtime of `path` only.
     #
     # For a given source file `path`, the `.pyc` sometimes becomes newer than
-    # the macro-dependency cache. This is normal. Unlike the bytecode, the
-    # macro-dependency cache only needs to be refreshed when the text of the
+    # the macro-import statement cache. This is normal. Unlike the bytecode, the
+    # macro-import statement cache only needs to be refreshed when the text of the
     # source file `path` changes.
     #
     # So if some of the macro-dependency source files have changed (so `path`
@@ -79,32 +130,44 @@ def path_xstats(self, path):
     # of the source file `path` will still have the same macro-imports it did
     # last time.
     #
-    pycpath = importlib.util.cache_from_source(path)
-    if pycpath.endswith(".pyc"):
-        pycpath = pycpath[:-4]
-    importcachepath = pycpath + ".mcpyrate.pickle"
+    pyc_path = importlib.util.cache_from_source(path)
+    if pyc_path.endswith(".pyc"):
+        pyc_path = pyc_path[:-4]
+    macroimport_cache_path = pyc_path + ".mcpyrate.pickle"
     try:
-        cache_valid = False
-        with open(importcachepath, "rb") as importcachefile:
+        macroimport_cache_valid = False
+        with open(macroimport_cache_path, "rb") as importcachefile:
             data = pickle.load(importcachefile)
         if data["st_mtime_ns"] == stat_result.st_mtime_ns:
-            cache_valid = True
+            macroimport_cache_valid = True
     except Exception:
         pass
 
-    if cache_valid:
+    if macroimport_cache_valid:
         macro_and_dialect_imports = data["macroimports"] + data["dialectimports"]
         has_relative_macroimports = data["has_relative_macroimports"]
     else:
         # This can be slow, the point of `.pyc` is to avoid the parse-and-compile cost.
         # We do save the macro-expansion cost, though, and that's likely much more expensive.
         #
-        # TODO: Dialects may inject imports in the template that the dialect transformer itself
+        # TODO: Dialects may inject macro-imports in the template that the dialect transformer itself
         # TODO: doesn't need. How to detect those? Regex-search the source text?
+        # TODO: Or just document it, that the dialect definition module *must* macro-import those macros
+        # TODO: even if it just injects them in the template?
         with tokenize.open(path) as sourcefile:
             tree = ast.parse(sourcefile.read())
-        macroimports = [stmt for stmt in tree.body if ismacroimport(stmt)]
-        dialectimports = [stmt for stmt in tree.body if ismacroimport(stmt, magicname="dialects")]
+
+        macroimports = []
+        dialectimports = []
+        def scan(tree):
+            for stmt in tree.body:
+                if ismacroimport(stmt):
+                    macroimports.append(stmt)
+                elif ismacroimport(stmt, magicname="dialects"):
+                    dialectimports.append(stmt)
+                elif iswithphase(stmt):  # for multi-phase compilation: scan also inside top-level `with phase`
+                    scan(stmt)
+        scan(tree)
 
         macro_and_dialect_imports = macroimports + dialectimports
         has_relative_macroimports = any(macroimport.level for macroimport in macro_and_dialect_imports)
@@ -116,7 +179,7 @@ def path_xstats(self, path):
                     "dialectimports": dialectimports,
                     "has_relative_macroimports": has_relative_macroimports}
             try:
-                with open(importcachepath, "wb") as importcachefile:
+                with open(macroimport_cache_path, "wb") as importcachefile:
                     pickle.dump(data, importcachefile)
             except Exception:
                 pass
@@ -135,21 +198,22 @@ def path_xstats(self, path):
     mtimes = []
     for macroimport in macro_and_dialect_imports:
         if macroimport.module is None:
-            approx_sourcecode = unparse_with_fallbacks(macroimport)
+            approx_sourcecode = unparse_with_fallbacks(macroimport, debug=True, color=True)
             loc = format_location(path, macroimport, approx_sourcecode)
             raise SyntaxError(f"{loc}\nmissing module name in macro-import")
         module_absname = importlib.util.resolve_name('.' * macroimport.level + macroimport.module, package_absname)
 
         spec = importlib.util.find_spec(module_absname)
-        origin = spec.origin
-        stats = path_xstats(self, origin)
-        mtimes.append(stats['mtime'])
+        if spec:  # self-macro-imports have no `spec`, and that's fine.
+            origin = spec.origin
+            stats = path_stats(origin, _stats_cache)
+            mtimes.append(stats["mtime"])
 
     mtime = stat_result.st_mtime_ns * 1e-9
     # size = stat_result.st_size
     mtimes.append(mtime)
 
-    result = {'mtime': max(mtimes)}  # and sum(sizes)? OTOH, as of Python 3.8, only 'mtime' is mandatory.
+    result = {"mtime": max(mtimes)}  # and sum(sizes)? OTOH, as of Python 3.8, only 'mtime' is mandatory.
     if sys.version_info >= (3, 7, 0):
         # Docs say `size` is optional, and this is correct in 3.6 (and in PyPy3 7.3.0):
         # https://docs.python.org/3/library/importlib.html#importlib.abc.SourceLoader.path_stats
@@ -157,16 +221,6 @@ def path_xstats(self, path):
         # but in 3.7 and later, the implementation is expecting at least a `None` there,
         # if the `size` is not used. See `get_code` in:
         # https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap_external.py
-        result['size'] = None
-    _xstats_cache[path] = result
+        result["size"] = None
+    _stats_cache[path] = result
     return result
-
-
-_invalidate_caches = FileFinder.invalidate_caches
-def invalidate_xcaches(self):
-    '''[mcpyrate] Clear the macro dependency tree cache.
-
-    Then delegate to the standard implementation of `FileFinder.invalidate_caches`.
-    '''
-    _xstats_cache.clear()
-    return _invalidate_caches(self)
