@@ -39,6 +39,9 @@ def mocked_check_output(cmd, stderr=None):
 
 
 def run_compress(ctx, test_import_fail=False):
+    # Start coverage
+    cov.load()
+    cov.start()
     # Load the plug-ins
     load_actions()
     # Create a compress object with the dummy file as source
@@ -47,9 +50,6 @@ def run_compress(ctx, test_import_fail=False):
     out.config()
     # Setup the GS output dir, needed for the output path
     GS.out_dir = '.'
-    # Start coverage
-    cov.load()
-    cov.start()
     # Run the compression and catch the error
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         if test_import_fail:
