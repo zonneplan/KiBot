@@ -46,7 +46,8 @@ from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE
 
 
 POS_DIR = 'positiondir'
-MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render']
+MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render',
+              'print_front']
 
 
 def test_skip_pre_and_outputs(test_dir):
@@ -596,6 +597,12 @@ def test_makefile_1(test_dir):
     assert ctx.get_out_path(prj+'-top$.svg') in deps
     assert os.path.abspath(targets[targets['pcb_render']]) == ctx.board_file
     logging.debug('- Target `pcb_render` OK')
+    # print_front target
+    deps = targets['print_front'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(prj+'-F_Cu+F_SilkS.pdf') in deps
+    assert os.path.abspath(targets[targets['print_front']]) == ctx.board_file
+    logging.debug('- Target `print_front` OK')
     # drill target
     deps = targets['drill'].split(' ')
     assert len(deps) == 3, deps

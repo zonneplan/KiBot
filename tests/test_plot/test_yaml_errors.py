@@ -445,8 +445,15 @@ def test_error_gerber_precision(test_dir):
     ctx.clean_up()
 
 
-def test_error_wrong_drill_marks(test_dir):
-    ctx = context.TestContext(test_dir, 'WrongDrillMarks', PRJ, 'error_wrong_drill_marks', '')
+def test_error_wrong_drill_marks_1(test_dir):
+    ctx = context.TestContext(test_dir, 'test_error_wrong_drill_marks_1', PRJ, 'error_wrong_drill_marks', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Unknown drill mark type: bogus")
+    ctx.clean_up()
+
+
+def test_error_wrong_drill_marks_2(test_dir):
+    ctx = context.TestContext(test_dir, 'test_error_wrong_drill_marks_2', PRJ, 'error_wrong_drill_marks_2', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown drill mark type: bogus")
     ctx.clean_up()
