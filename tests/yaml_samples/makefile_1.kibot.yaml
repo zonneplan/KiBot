@@ -20,6 +20,15 @@ outputs:
     comment: 'Interactive assembly guide'
     type: ibom
     dir: ibom
+    options:
+      netlist_file: 'tests/board_samples/kicad_5/bom.xml'
+
+  - name: 'ibom_external'
+    comment: 'Interactive assembly guide w/external name'
+    type: ibom
+    dir: ibom
+    options:
+      output: ''
 
   - name: '3D'
     comment: 'STEP 3D model'

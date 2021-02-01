@@ -17,11 +17,12 @@ from kibot.out_base import BaseOutput
 from kibot.gs import GS
 from kibot.kiplot import load_actions, _import
 from kibot.registrable import RegOutput
-from kibot.misc import (MISSING_TOOL, WRONG_INSTALL)
+from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR)
 
 
 cov = coverage.Coverage()
 mocked_check_output_FNF = True
+mocked_check_output_retOK = ''
 
 
 # Important note:
@@ -33,6 +34,8 @@ def mocked_check_output(cmd, stderr=None):
     if mocked_check_output_FNF:
         raise FileNotFoundError()
     else:
+        if mocked_check_output_retOK:
+            return mocked_check_output_retOK
         e = CalledProcessError(10, 'rar')
         e.output = b'THE_ERROR'
         raise e
@@ -127,3 +130,34 @@ def test_no_get_targets(caplog):
     cov.save()
     assert "Output 'Fake' (dummy) [none] doesn't implement get_targets(), plese report it" in caplog.text
     assert files == [GS.sch_file]
+
+
+def test_ibom_parse_fail(test_dir, caplog, monkeypatch):
+    global mocked_check_output_FNF
+    mocked_check_output_FNF = False
+    global mocked_check_output_retOK
+    mocked_check_output_retOK = b'ERROR Parsing failed'
+    # We will patch subprocess.check_output to make ibom fail
+    with monkeypatch.context() as m:
+        m.setattr("subprocess.check_output", mocked_check_output)
+        # Start coverage
+        cov.load()
+        cov.start()
+        # Load the plug-ins
+        load_actions()
+        # Create an ibom object
+        out = RegOutput.get_class_for('ibom')()
+        out.set_tree({})
+        out.config()
+        # Setup the GS output dir, needed for the output path
+        #GS.out_dir = '.'
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            out.run('')
+        # Stop coverage
+        cov.stop()
+        cov.save()
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == BOM_ERROR
+    # logging.debug(caplog.text)
+    assert "Failed to create BoM" in caplog.text
+    mocked_check_output_retOK = ''
