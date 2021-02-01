@@ -77,9 +77,10 @@ def load_actions():
         dir = os.path.join(home, '.config', 'kibot', 'plugins')
         if os.path.isdir(dir):
             _load_actions(dir)
-    if 'de_activate' in activate.__dict__:
+    # de_activate in old mcpy
+    if 'deactivate' in activate.__dict__:
         logger.debug('Deactivating macros')
-        activate.de_activate()
+        activate.deactivate()
 
 
 def check_version(command, version):
