@@ -252,7 +252,7 @@ def print_output_options(name, cl, indent):
         else:
             entry = '  - `{}`: '
         if help is None:
-            help = 'Undocumented'  # pragma: no cover
+            help = 'Undocumented'  # pragma: no cover (Internal)
         lines = help.split('\n')
         preface = ind_str+entry.format(k)
         clines = len(lines)
@@ -278,7 +278,7 @@ def print_output_options(name, cl, indent):
 def print_one_out_help(details, n, o):
     lines = trim(o.__doc__)
     if len(lines) == 0:
-        lines = ['Undocumented', 'No description']  # pragma: no cover
+        lines = ['Undocumented', 'No description']  # pragma: no cover (Internal)
     if details:
         print('* '+lines[0])
         print('  * Type: `{}`'.format(n))
@@ -314,7 +314,7 @@ def print_preflights_help():
     for n, o in OrderedDict(sorted(pres.items())).items():
         help, options = o.get_doc()
         if help is None:
-            help = 'Undocumented'  # pragma: no cover
+            help = 'Undocumented'  # pragma: no cover (Internal)
         print('- {}: {}.'.format(n, help.strip()))
         if options:
             print_output_options(n, options, 2)
@@ -327,7 +327,7 @@ def print_filters_help():
     for n, o in OrderedDict(sorted(fils.items())).items():
         help = o.__doc__
         if help is None:
-            help = 'Undocumented'  # pragma: no cover
+            help = 'Undocumented'  # pragma: no cover (Internal)
         print('- {}: {}.'.format(n, help.strip()))
         print_output_options(n, o, 2)
 
@@ -425,7 +425,7 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         for n, cls in OrderedDict(sorted(outs.items())).items():
             lines = trim(cls.__doc__)
             if len(lines) == 0:
-                lines = ['Undocumented', 'No description']  # pragma: no cover
+                lines = ['Undocumented', 'No description']  # pragma: no cover (Internal)
             f.write('  # '+lines[0].rstrip()+':\n')
             for ln in range(2, len(lines)):
                 f.write('  # '+lines[ln].rstrip()+'\n')

@@ -34,7 +34,7 @@ class KiBoMRegex(Optionable):
             self.field = None
             """ {column} """
             self.regexp = None
-            """ {regex} """  # pragma: no cover
+            """ {regex} """
 
     def __str__(self):
         return self.column+'\t'+self.regex
@@ -51,7 +51,7 @@ class KiBoMColumns(Optionable):
             self.name = ''
             """ Name to display in the header. The field is used when empty """
             self.join = Optionable
-            """ [list(string)|string=''] List of fields to join to this column """  # pragma: no cover
+            """ [list(string)|string=''] List of fields to join to this column """
         self._field_example = 'Row'
         self._name_example = 'Line'
 
@@ -160,7 +160,7 @@ class KiBoMConfig(Optionable):
                 ..regex: 'fiducial' """
             self.columns = KiBoMColumns
             """ [list(dict)|list(string)] List of columns to display.
-                Can be just the name of the field """  # pragma: no cover
+                Can be just the name of the field """
 
     @staticmethod
     def _create_minimal_ini():

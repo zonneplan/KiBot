@@ -31,7 +31,7 @@ class DrillMarks(AnyLayerOptions):
         super().__init__()
         with document:
             self._drill_marks = 'full'
-            """ what to use to indicate the drill places, can be none, small or full (for real scale) """  # pragma: no cover
+            """ what to use to indicate the drill places, can be none, small or full (for real scale) """
 
     @property
     def drill_marks(self):

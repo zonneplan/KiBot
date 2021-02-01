@@ -15,7 +15,7 @@ from io import StringIO
 no_colorama = False
 try:
     from colorama import init as colorama_init, Fore, Back, Style
-except ImportError:  # pragma: no cover
+except ImportError:
     no_colorama = True
 # If colorama isn't installed use an ANSI basic replacement
 if no_colorama:

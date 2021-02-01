@@ -33,7 +33,7 @@ def document(sentences, **kw):
             value = prev.value
             # Extract its name
             # variables and attributes are supported
-            if isinstance(target, Name):  # pragma: no cover
+            if isinstance(target, Name):  # pragma: no cover (Internal)
                 # Note: The support for variables isn't currently used
                 name = target.id
                 is_attr = False
@@ -42,7 +42,7 @@ def document(sentences, **kw):
                 is_attr = True
             else:
                 # Just in case we put anything other than an attr/var assignment
-                continue  # pragma: no cover
+                continue  # pragma: no cover (Internal)
             # Remove starting underscore
             if name[0] == '_':
                 name = name[1:]
@@ -65,17 +65,17 @@ def document(sentences, **kw):
                 val = eval(unparse(value))
                 if isinstance(val, bool):
                     # Not used yet
-                    type_hint = '[boolean={}]'.format(str(val).lower())  # pragma: no cover
+                    type_hint = '[boolean={}]'.format(str(val).lower())  # pragma: no cover (Internal)
                 elif isinstance(val, (int, float)):
                     # Not used yet
-                    type_hint = '[number={}]'.format(val)  # pragma: no cover
+                    type_hint = '[number={}]'.format(val)  # pragma: no cover (Internal)
                 elif isinstance(val, str):
                     type_hint = "[string='{}']".format(val)
                 post_hint += '. Affected by global options'
             # Transform the string into an assign for _help_ID
             if is_attr:
                 target = Attribute(value=Name(id='self', ctx=Load()), attr=doc_id, ctx=Store())
-            else:  # pragma: no cover
+            else:  # pragma: no cover (Internal)
                 target = Name(id=doc_id, ctx=Store())
             # Reuse the s.value Str
             help_str = s.value
@@ -102,7 +102,7 @@ def _do_wrap_class_register(tree, mod, base_class):
         do_import = ImportFrom(module=mod, names=[alias(name=base_class, asname=None)], level=1)
         return [do_import, tree, do_register]
     # Just in case somebody applies it to anything other than a class
-    return tree  # pragma: no cover
+    return tree  # pragma: no cover (Internal)
 
 
 def output_class(tree, **kw):

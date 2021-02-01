@@ -1479,7 +1479,7 @@ class Schematic(object):
         """ A list of all the components. """
         if exclude_power:
             components = [c for c in self.components if not c.is_power]
-        else:  # pragma: no cover
+        else:  # pragma: no cover (Internal)
             # Currently unused
             components = [c for c in self.components]
         for sch in self.sheets:

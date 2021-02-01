@@ -31,7 +31,7 @@ class BaseOutput(RegOutput):
             self.dir = '.'
             """ Output directory for the generated files """
             self.comment = ''
-            """ A comment for documentation purposes """  # pragma: no cover
+            """ A comment for documentation purposes """
         self._sch_related = False
         self._unkown_is_error = True
         self._done = False

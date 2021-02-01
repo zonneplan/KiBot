@@ -28,7 +28,7 @@ from ..misc import W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB
 # Check python version to determine which version of ConfirParser to import
 if sys.version_info.major >= 3:
     import configparser as ConfigParser
-else:  # pragma: no cover
+else:  # pragma: no cover (Py2)
     # For future Python 2 support
     import ConfigParser
 
@@ -151,7 +151,7 @@ class KiConf(object):
                 dir = os.path.join(sysconfig.get_path('data', 'posix_prefix'), share)
                 if os.path.isdir(dir):
                     return dir
-        elif system == 'Darwin':  # pragma: no cover
+        elif system == 'Darwin':  # pragma: no cover (Darwin)
             app_data = os.path.join('Library', 'Application Support', 'kicad', 'library')
             home = os.environ.get('HOME')
             if home:
@@ -161,7 +161,7 @@ class KiConf(object):
             dir = os.path.join('/', app_data)
             if os.path.isdir(dir):
                 return dir
-        elif system == 'Windows':  # pragma: no cover
+        elif system == 'Windows':  # pragma: no cover (Windows)
             dir = os.path.join('C:', 'Program Files', 'KiCad', share)
             if os.path.isdir(dir):
                 return dir

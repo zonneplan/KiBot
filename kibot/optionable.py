@@ -133,7 +133,7 @@ class Optionable(object):
                     if isinstance(v, (int, float)) and not isinstance(v, bool):
                         # Note: booleans are also instance of int
                         # Not used yet
-                        Optionable._check_num(k, v, cur_doc)  # pragma: no cover
+                        Optionable._check_num(k, v, cur_doc)  # pragma: no cover (Internal)
                     elif isinstance(v, str):
                         Optionable._check_str(k, v, cur_doc)
                     elif isinstance(v, dict):

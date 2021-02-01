@@ -156,7 +156,7 @@ class AnyLayerOptions(VariantOptions):
             logger.debug("Opening plot file for layer `{}` format `{}`".format(la, self._plot_format))
             if not plot_ctrl.OpenPlotfile(suffix, self._plot_format, desc):
                 # Shouldn't happen
-                raise PlotError("OpenPlotfile failed!")  # pragma: no cover
+                raise PlotError("OpenPlotfile failed!")  # pragma: no cover (Internal)
             # Compute the current file name and the one we want
             k_filename = plot_ctrl.GetPlotFileName()
             filename = self.compute_name(k_filename, output_dir, self.output, id, suffix)

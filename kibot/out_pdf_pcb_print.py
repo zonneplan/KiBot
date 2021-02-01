@@ -123,7 +123,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             os.remove(board_name)
             if proj_name:
                 os.remove(proj_name)
-        if ret:  # pragma: no cover
+        if ret:  # pragma: no cover (Internal)
             # We check all the arguments, we even load the PCB
             # A fail here isn't easy to reproduce
             logger.error(CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)
