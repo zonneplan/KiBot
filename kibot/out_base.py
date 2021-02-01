@@ -6,7 +6,7 @@
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
 from .misc import Rect, KICAD_VERSION_5_99, W_WRONGPASTE
-if GS.kicad_version_n >= KICAD_VERSION_5_99:
+if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
     # New name, no alias ...
     from pcbnew import FP_SHAPE, wxPoint, LSET
 else:
@@ -128,7 +128,7 @@ class VariantOptions(BaseOptions):
     @staticmethod
     def create_module_element(m):
         if GS.kicad_version_n >= KICAD_VERSION_5_99:
-            return FP_SHAPE(m)
+            return FP_SHAPE(m)  # pragma: no cover (Ki6)
         return EDGE_MODULE(m)
 
     @staticmethod

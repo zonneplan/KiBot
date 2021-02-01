@@ -93,6 +93,7 @@ docker_shell:
 
 single_test:
 	rm -rf pp
+	-$(PY_COV) run -a src/kibot --help-list-outputs > /dev/null
 	-$(PYTEST) --log-cli-level debug -k "$(SINGLE_TEST)" --test_dir pp
 	@echo "********************" Output
 	@cat pp/*/output.txt

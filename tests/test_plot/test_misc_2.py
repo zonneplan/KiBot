@@ -114,9 +114,16 @@ class NoGetTargets(BaseOutput):
 
 def test_no_get_targets(caplog):
     test = NoGetTargets()
-    test.get_targets('')
-    assert "Output 'Fake' (dummy) [none] doesn't implement get_targets(), plese report it" in caplog.text
     # Also check the dependencies fallback
     GS.sch = None
     GS.sch_file = 'fake'
-    assert test.get_dependencies() == [GS.sch_file]
+    # Start coverage
+    cov.load()
+    cov.start()
+    test.get_targets('')
+    files = test.get_dependencies()
+    # Stop coverage
+    cov.stop()
+    cov.save()
+    assert "Output 'Fake' (dummy) [none] doesn't implement get_targets(), plese report it" in caplog.text
+    assert files == [GS.sch_file]
