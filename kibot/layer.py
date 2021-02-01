@@ -181,7 +181,7 @@ class Layer(Optionable):
                     elif layer in Layer._pcb_layers:
                         ext = [Layer.create_layer(layer)]
                     # Give compatibility for the KiCad 5 default names (automagically renamed by KiCad 6)
-                    elif GS.kicad_version_n >= KICAD_VERSION_5_99 and layer in Layer.KICAD6_RENAME:
+                    elif GS.kicad_version_n >= KICAD_VERSION_5_99 and layer in Layer.KICAD6_RENAME:  # pragma: no cover (Ki6)
                         ext = [Layer.create_layer(Layer.KICAD6_RENAME[layer])]
                     elif layer in Layer.DEFAULT_LAYER_NAMES:
                         ext = [Layer.create_layer(layer)]

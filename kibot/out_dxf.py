@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from pcbnew import PLOT_FORMAT_DXF, SKETCH, FILLED
@@ -9,7 +9,7 @@ from .drill_marks import DrillMarks
 from .gs import GS
 from .misc import KICAD_VERSION_5_99
 from .macros import macros, document, output_class  # noqa: F401
-if GS.kicad_version_n >= KICAD_VERSION_5_99:
+if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
     from pcbnew import DXF_UNITS_MILLIMETERS, DXF_UNITS_INCHES
 else:
     DXF_UNITS_MILLIMETERS = 1
