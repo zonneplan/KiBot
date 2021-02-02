@@ -55,12 +55,13 @@ class MyLogger(logging.Logger):
     def warning(self, msg, *args, **kwargs):
         MyLogger.warn_tcnt += 1
         # Get the message applying optional C style expansions
-        if isinstance(msg, str) and len(args):
-            buf = StringIO()
-            buf.write(msg % args)
-            buf = buf.getvalue()
-        else:
-            buf = str(msg)
+        # No longer used:
+        # if isinstance(msg, str) and len(args):
+        #     buf = StringIO()
+        #     buf.write(msg % args)
+        #     buf = buf.getvalue()
+        # else:
+        buf = str(msg)
         # Avoid repeated warnings
         if buf in MyLogger.warn_hash:
             MyLogger.warn_hash[buf] += 1
@@ -77,7 +78,7 @@ class MyLogger(logging.Logger):
         MyLogger.warn_cnt += 1
         MyLogger.warn_hash[buf] = 1
         if sys.version_info.major > 3 or (sys.version_info.major == 3 and sys.version_info.minor >= 8):
-            super().warning(buf, stacklevel=2, **kwargs)
+            super().warning(buf, stacklevel=2, **kwargs)  # pragma: no cover (Py38)
         else:
             super().warning(buf, **kwargs)
 
