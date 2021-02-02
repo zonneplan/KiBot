@@ -47,7 +47,7 @@ from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE
 
 POS_DIR = 'positiondir'
 MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render',
-              'print_front', 'svg_sch_def', 'svg_sch_int', 'pdf_sch_def', 'pdf_sch_int', 'fake_sch']
+              'print_front', 'svg_sch_def', 'svg_sch_int', 'pdf_sch_def', 'pdf_sch_int', 'fake_sch', 'update_xml']
 
 
 def test_skip_pre_and_outputs(test_dir):
@@ -662,6 +662,12 @@ def test_makefile_1(test_dir):
     assert os.path.relpath(ctx.board_file) in deps
     # We can't check the WRL because it isn't included in the docker image
     logging.debug('- Target `3D` OK')
+    # update_xml target
+    deps = targets['update_xml'].split(' ')
+    assert len(deps) == 1, deps
+    assert os.path.abspath(deps[0]) == ctx.board_file.replace('kicad_pcb', 'xml')
+    check_test_v5_sch_deps(ctx, targets[targets['update_xml']].split(' '))
+    logging.debug('- Target `update_xml` OK')
     # kibom_internal target
     deps = targets['kibom_internal'].split(' ')
     assert len(deps) == 1, deps

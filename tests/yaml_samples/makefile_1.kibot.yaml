@@ -4,6 +4,7 @@ kibot:
 preflight:
   run_erc: true
   check_zone_fills: true
+  update_xml: true
 
 outputs:
   - name: 'position'
