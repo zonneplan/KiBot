@@ -5,7 +5,8 @@ kibot:
 filters:
   - name: 'Variant rename'
     type: var_rename
-    separator: ':'
+    # Empty will default to :
+    separator: ''
     variant_to_value: true
 
 variants:
