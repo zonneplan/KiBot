@@ -82,6 +82,26 @@ outputs:
       - layer: F.Cu
       - layer: F.SilkS
 
+  - name: 'svg_sch_def'
+    comment: "Print schematic, default name (SVG)"
+    type: svg_sch_print
+    options:
+      output: ''
+
+  - name: 'svg_sch_int'
+    comment: "Print schematic, internal name (SVG)"
+    type: svg_sch_print
+
+  - name: 'pdf_sch_def'
+    comment: "Print schematic, default name (PDF)"
+    type: pdf_sch_print
+    options:
+      output: ''
+
+  - name: 'pdf_sch_int'
+    comment: "Print schematic, internal name (PDF)"
+    type: pdf_sch_print
+
   - name: 'archive'
     comment: 'Compressed files'
     type: compress

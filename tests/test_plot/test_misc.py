@@ -47,7 +47,7 @@ from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE
 
 POS_DIR = 'positiondir'
 MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render',
-              'print_front']
+              'print_front', 'svg_sch_def', 'svg_sch_int', 'pdf_sch_def', 'pdf_sch_int']
 
 
 def test_skip_pre_and_outputs(test_dir):
@@ -614,6 +614,30 @@ def test_makefile_1(test_dir):
     assert ctx.get_out_path(os.path.join('gerbers', prj+'-drill_map.pdf')) in deps
     assert os.path.abspath(targets[targets['drill']]) == ctx.board_file
     logging.debug('- Target `drill` OK')
+    # svg_sch_def
+    deps = targets['svg_sch_def'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(prj+'.svg') in deps
+    check_test_v5_sch_deps(ctx, targets[targets['svg_sch_def']].split(' '))
+    logging.debug('- Target `svg_sch_def` OK')
+    # svg_sch_int
+    deps = targets['svg_sch_int'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(prj+'-schematic.svg') in deps
+    check_test_v5_sch_deps(ctx, targets[targets['svg_sch_int']].split(' '))
+    logging.debug('- Target `svg_sch_int` OK')
+    # pdf_sch_def
+    deps = targets['pdf_sch_def'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(prj+'.pdf') in deps
+    check_test_v5_sch_deps(ctx, targets[targets['pdf_sch_def']].split(' '))
+    logging.debug('- Target `pdf_sch_def` OK')
+    # pdf_sch_int
+    deps = targets['pdf_sch_int'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(prj+'-schematic.pdf') in deps
+    check_test_v5_sch_deps(ctx, targets[targets['pdf_sch_int']].split(' '))
+    logging.debug('- Target `pdf_sch_int` OK')
     # run_erc target
     deps = targets['run_erc'].split(' ')
     assert len(deps) == 1, deps
