@@ -1469,11 +1469,12 @@ class Schematic(object):
                 self.sub_sheets.append(sch.load_sheet(project, fname, sheet_path, sheet_path_h, libs, fields, fields_lc))
 
     def get_files(self):
-        """ A list of the names for all the sheets, including this one. """
-        files = [self.fname]
+        """ A list of the names for all the sheets, including this one.
+            We avoid repeating the same file. """
+        files = {self.fname}
         for sch in self.sheets:
-            files.extend(sch.sheet.get_files())
-        return files
+            files.update(sch.sheet.get_files())
+        return list(files)
 
     def get_components(self, exclude_power=True):
         """ A list of all the components. """
@@ -1624,9 +1625,10 @@ class Schematic(object):
         """ Returns a list of file names created by save_variant() """
         fnames = [os.path.join(dest_dir, 'y.lib'),
                   os.path.join(dest_dir, 'n.lib'),
-                  os.path.join(dest_dir, os.path.basename(self.fname)),
                   os.path.join(dest_dir, 'sym-lib-table')]
         # Sub-sheets
-        for sch in self.sheets:
-            fnames.append(os.path.join(dest_dir, sch.file.replace('/', '_')))
+        sub_sheets = self.get_files()
+        for sch in sub_sheets:
+            sch = os.path.basename(sch)
+            fnames.append(os.path.join(dest_dir, sch.replace('/', '_')))
         return fnames
