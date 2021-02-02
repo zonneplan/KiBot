@@ -633,3 +633,10 @@ def test_error_makefile_wrong_out(test_dir):
     ctx.run(WRONG_ARGUMENTS)
     assert ctx.search_err("Unknown output `position` selected in")
     ctx.clean_up()
+
+
+def test_error_no_column_id(test_dir):
+    ctx = context.TestContext(test_dir, 'test_error_no_column_id', 'bom', 'error_no_column_id', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Missing or empty `id` in columns list")
+    ctx.clean_up()

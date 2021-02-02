@@ -1,0 +1,26 @@
+kibot:
+  version: 1
+
+outputs:
+  - name: 'position'
+    comment: "Pick and place file, JLC style"
+    type: position
+    options:
+      variant: default
+      output: '%f_cpl_jlc.%x'
+      format: CSV
+      units: millimeters
+      separate_files_for_front_and_back: false
+      only_smd: true
+      columns:
+        - name: Designator
+        - Val
+        - Package
+        - id: PosX
+          name: "Mid X"
+        - id: PosY
+          name: "Mid Y"
+        - id: Rot
+          name: Rotation
+        - id: Side
+          name: Layer

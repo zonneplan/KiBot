@@ -184,7 +184,7 @@ class PositionOptions(VariantOptions):
 
     @staticmethod
     def is_pure_smd_6(m):
-        return m.GetAttributes() & (MOD_THROUGH_HOLE | MOD_SMD) == MOD_SMD
+        return m.GetAttributes() & (MOD_THROUGH_HOLE | MOD_SMD) == MOD_SMD  # pragma: no cover (Ki6)
 
     @staticmethod
     def is_not_virtual_5(m):
@@ -192,13 +192,13 @@ class PositionOptions(VariantOptions):
 
     @staticmethod
     def is_not_virtual_6(m):
-        return not (m.GetAttributes() & MOD_EXCLUDE_FROM_POS_FILES)
+        return not (m.GetAttributes() & MOD_EXCLUDE_FROM_POS_FILES)  # pragma: no cover (Ki6)
 
     @staticmethod
     def get_attr_tests():
         if GS.kicad_version_n < KICAD_VERSION_5_99:
             return PositionOptions.is_pure_smd_5, PositionOptions.is_not_virtual_5
-        return PositionOptions.is_pure_smd_6, PositionOptions.is_not_virtual_6
+        return PositionOptions.is_pure_smd_6, PositionOptions.is_not_virtual_6  # pragma: no cover (Ki6)
 
     def get_targets(self, parent, out_dir):
         ext = 'pos' if self.format == 'ASCII' else 'csv'
