@@ -7,7 +7,7 @@ Sheet 1 1
 Title ""
 Date ""
 Rev ""
-Comp ""
+Comp "Test company"
 Comment1 ""
 Comment2 ""
 Comment3 ""
