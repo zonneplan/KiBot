@@ -29,7 +29,10 @@ if prev_dir not in sys.path:
 from utils import context
 
 POS_DIR = 'positiondir'
-positions = {'R1': (105, 35, 'top'), 'R2': (110, 35, 'bottom'), 'R3': (110, 45, 'top')}
+positions = {'R1': (105, 35, 'top', 90),
+             'R2': (110, 35, 'bottom', 270),
+             'R3': (110, 45, 'top', 0),
+             'U1': (100, 100, 'bottom', 90)}
 CSV_EXPR = r'^"%s",[^,]+,[^,]+,([-\d\.]+),([-\d\.]+),([-\d\.]+),(\S+)$'
 ASCII_EXPR = r'^%s\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$'
 
@@ -47,7 +50,7 @@ def expect_position(ctx, file, comp, no_comp=[], inches=False, csv=False, neg_x=
             texts.append(ASCII_EXPR % k)
     res = ctx.search_in_file(file, texts)
     for k in comp:
-        x, y, side = positions[k]
+        x, y, side, angle = positions[k]
         if inches:
             x = x/25.4
             y = y/25.4
@@ -56,6 +59,7 @@ def expect_position(ctx, file, comp, no_comp=[], inches=False, csv=False, neg_x=
         matches = res.pop(0)
         assert(abs(float(x) - float(matches[0])) < 0.001)
         assert(abs(float(y) + float(matches[1])) < 0.001)
+        assert(angle == float(matches[2]))
         assert(side == matches[3])
 
     # Components that must not be found
@@ -223,4 +227,13 @@ def test_position_rot_2(test_dir):
     ctx.expect_out_file(output)
     ctx.compare_txt(output)
     ctx.compare_txt(prj+'_bom_jlc.csv')
+    ctx.clean_up()
+
+
+def test_rot_bottom(test_dir):
+    ctx = context.TestContext(test_dir, 'test_rot_bottom', 'comp_bottom', 'simple_position_rot_bottom', POS_DIR)
+    ctx.run()
+    pos_bot = ctx.get_pos_both_filename()
+    ctx.expect_out_file(pos_bot)
+    expect_position(ctx, pos_bot, ['U1'], neg_x=True)
     ctx.clean_up()
