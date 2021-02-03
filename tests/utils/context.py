@@ -6,6 +6,7 @@ import logging
 import subprocess
 import re
 import csv
+from contextlib import contextmanager
 from glob import glob
 from pty import openpty
 import xml.etree.ElementTree as ET
@@ -69,6 +70,17 @@ def quote(s):
 
 def usable_cmd(cmd):
     return ' '.join(cmd)
+
+
+@contextmanager
+def cover_it(cov):
+    # Start coverage
+    cov.load()
+    cov.start()
+    yield
+    # Stop coverage
+    cov.stop()
+    cov.save()
 
 
 class TestContext(object):
