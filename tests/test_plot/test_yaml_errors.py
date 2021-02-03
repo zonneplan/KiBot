@@ -223,7 +223,14 @@ def test_wrong_layer_8(test_dir):
 
 
 def test_no_name(test_dir):
-    ctx = context.TestContext(test_dir, 'ErrorNoName', '3Rs', 'error_no_name', None)
+    ctx = context.TestContext(test_dir, 'test_no_name', '3Rs', 'error_no_name', None)
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Output needs a name")
+    ctx.clean_up()
+
+
+def test_empty_name(test_dir):
+    ctx = context.TestContext(test_dir, 'test_empty_name', '3Rs', 'error_empty_name', None)
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Output needs a name")
     ctx.clean_up()
@@ -560,6 +567,13 @@ def test_error_var_wrong_type(test_dir):
 
 def test_error_var_no_type(test_dir):
     ctx = context.TestContextSCH(test_dir, 'test_error_var_no_type', 'links', 'error_var_no_type', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Variant (.*) needs a type")
+    ctx.clean_up()
+
+
+def test_error_var_empty_type(test_dir):
+    ctx = context.TestContextSCH(test_dir, 'test_error_var_empty_type', 'links', 'error_var_empty_type', '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Variant (.*) needs a type")
     ctx.clean_up()

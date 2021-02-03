@@ -1,0 +1,7 @@
+kibot:
+  version: 1
+
+variants:
+  - name: ok
+    type: ''
+
