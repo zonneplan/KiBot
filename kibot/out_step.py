@@ -72,8 +72,6 @@ class STEPOptions(VariantOptions):
 
     def undo_3d_models_rename(self):
         """ Restores the file name for any renamed 3D module """
-        if not self.undo_3d_models:
-            return
         for m in GS.board.GetModules():
             # Get the model references
             models = m.Models()
