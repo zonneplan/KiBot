@@ -1461,12 +1461,13 @@ def test_int_bom_variant_5(test_dir):
 def test_int_bom_merge_csv_1(test_dir):
     prj = 'merge_1'
     ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_csv_1', prj, 'int_bom_merge_csv_1', BOM_DIR)
-    ctx.run()
+    ctx.run(extra_debug=True)
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 4, None, MERGED_COMPS)
     src_column = header.index(SOURCE_BOM_COLUMN_NAME)
     check_source(rows, 'A:R1', ref_column, src_column, MERGED_R1_SRC)
+    ctx.search_err(r'Stats for')
     ctx.clean_up()
 
 
