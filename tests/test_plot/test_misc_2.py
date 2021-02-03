@@ -25,6 +25,7 @@ from kibot.bom.columnlist import ColumnList
 cov = coverage.Coverage()
 mocked_check_output_FNF = True
 mocked_check_output_retOK = ''
+mocked_call_enabled = False
 
 
 # Important note:
@@ -45,8 +46,10 @@ def mocked_check_output(cmd, stderr=None):
 
 
 def mocked_call(cmd):
-    logging.debug('Forcing fail on '+str(cmd))
-    return 5
+    if mocked_call_enabled:
+        logging.debug('Forcing fail on '+str(cmd))
+        return 5
+    return subprocess.call(cmd)
 
 
 def patch_functions(m):
@@ -159,8 +162,6 @@ def test_ibom_parse_fail(test_dir, caplog, monkeypatch):
             out = RegOutput.get_class_for('ibom')()
             out.set_tree({})
             out.config()
-            # Setup the GS output dir, needed for the output path
-            #GS.out_dir = '.'
             with pytest.raises(SystemExit) as pytest_wrapped_e:
                 out.run('')
     assert pytest_wrapped_e.type == SystemExit
@@ -198,6 +199,8 @@ def test_bom_no_sch():
 
 def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
     ctx = context.TestContext(test_dir, 'test_pre_xrc_fail', 'test_v5', 'empty_zip', '')
+    global mocked_call_enabled
+    mocked_call_enabled = True
     with monkeypatch.context() as m:
         patch_functions(m)
         with context.cover_it(cov):
@@ -217,3 +220,4 @@ def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
     assert e2.type == SystemExit
     assert e2.value.code == ERC_ERROR
     ctx.clean_up()
+    mocked_call_enabled = False

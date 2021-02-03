@@ -15,6 +15,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.misc import (MISSING_TOOL, CMD_EESCHEMA_DO)
 from kibot.kiplot import (check_script, check_version)
+import kibot.kiplot
 
 
 cov = coverage.Coverage()
@@ -45,6 +46,8 @@ def test_check_version_1(caplog):
 
 
 def test_check_version_2(caplog):
+    # Avoid interaction with other tests: reset the versions cache
+    kibot.kiplot.script_versions = {}
     cov.load()
     cov.start()
     with pytest.raises(SystemExit) as pytest_wrapped_e:
