@@ -47,7 +47,8 @@ from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE
 
 POS_DIR = 'positiondir'
 MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render',
-              'print_front', 'svg_sch_def', 'svg_sch_int', 'pdf_sch_def', 'pdf_sch_int', 'fake_sch', 'update_xml']
+              'print_front', 'svg_sch_def', 'svg_sch_int', 'pdf_sch_def', 'pdf_sch_int', 'fake_sch', 'update_xml',
+              'run_drc']
 
 
 def test_skip_pre_and_outputs(test_dir):
@@ -647,13 +648,19 @@ def test_makefile_1(test_dir):
     assert ctx.get_out_path(prj+'-erc.txt') in deps
     check_test_v5_sch_deps(ctx, targets[targets['run_erc']].split(' '))
     logging.debug('- Target `run_erc` OK')
+    # run_drc target
+    deps = targets['run_drc'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(prj+'-drc.txt') in deps
+    assert os.path.abspath(targets[targets['run_drc']]) == ctx.board_file
+    logging.debug('- Target `run_drc` OK')
     # fake_sch target
     deps = targets['fake_sch'].split(' ')
     assert len(deps) == 6, deps
     check_test_v5_sch_deps(ctx, deps, extra=[ctx.get_out_path('n.lib'), ctx.get_out_path('y.lib'),
                                              ctx.get_out_path('sym-lib-table')], in_output=True)
     check_test_v5_sch_deps(ctx, targets[targets['fake_sch']].split(' '))
-    logging.debug('- Target `run_erc` OK')
+    logging.debug('- Target `fake_sch` OK')
     # 3D target
     deps = targets['3D'].split(' ')
     assert len(deps) == 1, deps

@@ -14,6 +14,7 @@ prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.out_base import BaseOutput
+from kibot.pre_base import BasePreFlight
 from kibot.gs import GS
 from kibot.kiplot import load_actions, _import
 from kibot.registrable import RegOutput
@@ -115,8 +116,15 @@ class NoGetTargets(BaseOutput):
         self._sch_related = True
 
 
+class DummyPre(BasePreFlight):
+    def __init__(self):
+        super().__init__('dummy', True)
+        self._sch_related = True
+
+
 def test_no_get_targets(caplog):
     test = NoGetTargets()
+    test_pre = DummyPre()
     # Also check the dependencies fallback
     GS.sch = None
     GS.sch_file = 'fake'
@@ -125,11 +133,13 @@ def test_no_get_targets(caplog):
     cov.start()
     test.get_targets('')
     files = test.get_dependencies()
+    files_pre = test_pre.get_dependencies()
     # Stop coverage
     cov.stop()
     cov.save()
     assert "Output 'Fake' (dummy) [none] doesn't implement get_targets(), plese report it" in caplog.text
     assert files == [GS.sch_file]
+    assert files_pre == [GS.sch_file]
 
 
 def test_ibom_parse_fail(test_dir, caplog, monkeypatch):

@@ -3,6 +3,7 @@ kibot:
 
 preflight:
   run_erc: true
+  run_drc: true
   check_zone_fills: true
   update_xml: true
 
