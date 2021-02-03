@@ -197,9 +197,13 @@ def test_bom_no_sch():
     # Load the plug-ins
     load_actions()
     # Create an ibom object
-    out = RegOutput.get_class_for('bom')()
     GS.sch = None
+    out = RegOutput.get_class_for('bom')()
     columns = out.options._get_columns()
+    assert columns == ColumnList.COLUMNS_DEFAULT
+    out = RegOutput.get_class_for('kibom')()
+    options = out.options()
+    columns = options.conf._get_columns()
     assert columns == ColumnList.COLUMNS_DEFAULT
     # Stop coverage
     cov.stop()
