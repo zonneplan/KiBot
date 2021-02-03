@@ -17,7 +17,7 @@ from kibot.out_base import BaseOutput
 from kibot.pre_base import BasePreFlight
 from kibot.gs import GS
 from kibot.kiplot import load_actions, _import
-from kibot.registrable import RegOutput
+from kibot.registrable import RegOutput, RegFilter
 from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR)
 
 
@@ -171,3 +171,19 @@ def test_ibom_parse_fail(test_dir, caplog, monkeypatch):
     # logging.debug(caplog.text)
     assert "Failed to create BoM" in caplog.text
     mocked_check_output_retOK = ''
+
+
+def test_var_rename_no_variant():
+    # Start coverage
+    cov.load()
+    cov.start()
+    # Load the plug-ins
+    load_actions()
+    # Create an ibom object
+    filter = RegFilter.get_class_for('var_rename')()
+    GS.variant = None
+    # Should just return
+    filter.filter(None)
+    # Stop coverage
+    cov.stop()
+    cov.save()
