@@ -640,3 +640,17 @@ def test_error_no_column_id(test_dir):
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Missing or empty `id` in columns list")
     ctx.clean_up()
+
+
+def test_error_aggregate_no_file(test_dir):
+    ctx = context.TestContext(test_dir, 'test_error_aggregate_no_file', 'bom', 'error_aggregate_no_file', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Missing or empty `file` in aggregate list")
+    ctx.clean_up()
+
+
+def test_error_aggregate_miss_file(test_dir):
+    ctx = context.TestContext(test_dir, 'test_error_aggregate_miss_file', 'bom', 'error_aggregate_miss_file', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err("Missing `dummy`")
+    ctx.clean_up()

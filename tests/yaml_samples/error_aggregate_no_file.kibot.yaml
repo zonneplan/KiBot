@@ -1,0 +1,22 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_csv'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      format: CSV
+      ref_id: 'A:'
+      source_by_id: true
+      use_alt: true
+      aggregate:
+        - name: 2nd project
+          ref_id: 'B:'
+          number: 2
+        - file: tests/board_samples/kicad_5/merge_3.sch
+          ref_id: 'C:'
+          number: 4
+

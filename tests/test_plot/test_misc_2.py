@@ -19,6 +19,7 @@ from kibot.gs import GS
 from kibot.kiplot import load_actions, _import
 from kibot.registrable import RegOutput, RegFilter
 from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR)
+from kibot.bom.columnlist import ColumnList
 
 
 cov = coverage.Coverage()
@@ -184,6 +185,22 @@ def test_var_rename_no_variant():
     GS.variant = None
     # Should just return
     filter.filter(None)
+    # Stop coverage
+    cov.stop()
+    cov.save()
+
+
+def test_bom_no_sch():
+    # Start coverage
+    cov.load()
+    cov.start()
+    # Load the plug-ins
+    load_actions()
+    # Create an ibom object
+    out = RegOutput.get_class_for('bom')()
+    GS.sch = None
+    columns = out.options._get_columns()
+    assert columns == ColumnList.COLUMNS_DEFAULT
     # Stop coverage
     cov.stop()
     cov.save()
