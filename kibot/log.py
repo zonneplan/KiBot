@@ -11,7 +11,6 @@ Handles logging initialization and formating.
 """
 import sys
 import logging
-from io import StringIO
 no_colorama = False
 try:
     from colorama import init as colorama_init, Fore, Back, Style
