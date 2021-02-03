@@ -667,6 +667,7 @@ def test_makefile_1(test_dir):
     assert ctx.get_out_path(os.path.join('3D', prj+'-3D.step')) in deps
     deps = targets[targets['3D']].split(' ')
     assert os.path.relpath(ctx.board_file) in deps
+    assert 'tests/data/R_0805_2012Metric.wrl' in deps
     # We can't check the WRL because it isn't included in the docker image
     logging.debug('- Target `3D` OK')
     # update_xml target
