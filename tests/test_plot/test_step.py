@@ -37,7 +37,7 @@ def test_step_1(test_dir):
 
 
 def test_step_2(test_dir):
-    prj = 'bom'
+    prj = 'bom_fake_models'
     ctx = context.TestContext(test_dir, 'STEP_2', prj, 'step_simple_2', STEP_DIR)
     ctx.run()
     # Check all outputs are there
