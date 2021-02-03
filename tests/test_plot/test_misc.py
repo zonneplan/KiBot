@@ -602,7 +602,10 @@ def test_makefile_1(test_dir):
     deps = targets['pcb_render'].split(' ')
     assert len(deps) == 1, deps
     assert ctx.get_out_path(prj+'-top$.svg') in deps
-    assert os.path.abspath(targets[targets['pcb_render']]) == ctx.board_file
+    deps = targets[targets['pcb_render']].split(' ')
+    assert len(deps) == 2
+    assert os.path.relpath(ctx.board_file) in deps
+    assert 'tests/data/html_style.css' in deps
     logging.debug('- Target `pcb_render` OK')
     # print_front target
     deps = targets['print_front'].split(' ')

@@ -306,6 +306,6 @@ class PcbDraw(BaseOutput):  # noqa: F821
 
     def get_dependencies(self):
         files = super().get_dependencies()
-        if isinstance(self.options.style, str):
+        if isinstance(self.options.style, str) and os.path.isfile(self.options.style):
             files.append(self.options.style)
         return files

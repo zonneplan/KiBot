@@ -69,6 +69,7 @@ outputs:
     type: pcbdraw
     options:
       output: '%f-%i$.%x'
+      style: 'tests/data/html_style.css'
 
   - name: 'print_front'
     comment: "Print F.Cu+F.SilkS"
