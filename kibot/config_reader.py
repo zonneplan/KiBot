@@ -316,7 +316,7 @@ def print_preflights_help():
     for n, o in OrderedDict(sorted(pres.items())).items():
         help, options = o.get_doc()
         if help is None:
-            help = 'Undocumented'  # pragma: no cover (Internal)
+            help = 'Undocumented'
         print('- {}: {}.'.format(n, help.strip()))
         if options:
             print_output_options(n, options, 2)
