@@ -40,9 +40,6 @@ def document(sentences, **kw):
             elif isinstance(target, Attribute):
                 name = target.attr
                 is_attr = True
-            else:
-                # Just in case we put anything other than an attr/var assignment
-                continue  # pragma: no cover (Internal)
             # Remove starting underscore
             if name[0] == '_':
                 name = name[1:]
