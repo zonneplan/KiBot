@@ -364,6 +364,7 @@ def test_help_output_plugin_1(test_dir, monkeypatch):
     assert ctx.search_out('Type: .?test.?')
     assert ctx.search_out('nothing')
     assert ctx.search_out('chocolate')
+    assert ctx.search_out('`not_documented`: Undocumented')
     ctx.clean_up()
 
 

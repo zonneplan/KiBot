@@ -252,7 +252,7 @@ def print_output_options(name, cl, indent):
         else:
             entry = '  - `{}`: '
         if help is None:
-            help = 'Undocumented'  # pragma: no cover (Internal)
+            help = 'Undocumented'
         lines = help.split('\n')
         preface = ind_str+entry.format(k)
         clines = len(lines)

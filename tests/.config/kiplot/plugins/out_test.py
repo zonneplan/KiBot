@@ -11,6 +11,7 @@ class TestOptions(BaseOptions):
         with document:
             self.foo = True
             """ chocolate """
+            self.not_documented = 1
             self.bar = 'nope'
             """ nothing """  # pragma: no cover
 
