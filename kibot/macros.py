@@ -33,7 +33,7 @@ def document(sentences, **kw):
             value = prev.value
             # Extract its name
             # variables and attributes are supported
-            if isinstance(target, Name):  # pragma: no cover (Internal)
+            if isinstance(target, Name):
                 # Note: The support for variables isn't currently used
                 name = target.id
                 is_attr = False
@@ -65,17 +65,17 @@ def document(sentences, **kw):
                 val = eval(unparse(value))
                 if isinstance(val, bool):
                     # Not used yet
-                    type_hint = '[boolean={}]'.format(str(val).lower())  # pragma: no cover (Internal)
+                    type_hint = '[boolean={}]'.format(str(val).lower())
                 elif isinstance(val, (int, float)):
                     # Not used yet
-                    type_hint = '[number={}]'.format(val)  # pragma: no cover (Internal)
+                    type_hint = '[number={}]'.format(val)
                 elif isinstance(val, str):
                     type_hint = "[string='{}']".format(val)
                 post_hint += '. Affected by global options'
             # Transform the string into an assign for _help_ID
             if is_attr:
                 target = Attribute(value=Name(id='self', ctx=Load()), attr=doc_id, ctx=Store())
-            else:  # pragma: no cover (Internal)
+            else:
                 target = Name(id=doc_id, ctx=Store())
             # Reuse the s.value Str
             help_str = s.value
@@ -102,7 +102,7 @@ def _do_wrap_class_register(tree, mod, base_class):
         do_import = ImportFrom(module=mod, names=[alias(name=base_class, asname=None)], level=1)
         return [do_import, tree, do_register]
     # Just in case somebody applies it to anything other than a class
-    return tree  # pragma: no cover (Internal)
+    return tree
 
 
 def output_class(tree, **kw):

@@ -13,14 +13,14 @@ from utils import context
 prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
-from kibot.out_base import BaseOutput
+from kibot.layer import Layer
 from kibot.pre_base import BasePreFlight
+from kibot.out_base import BaseOutput
 from kibot.gs import GS
 from kibot.kiplot import load_actions, _import
 from kibot.registrable import RegOutput, RegFilter
 from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR)
 from kibot.bom.columnlist import ColumnList
-from kibot.layer import Layer
 
 
 cov = coverage.Coverage()

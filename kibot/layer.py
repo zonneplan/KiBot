@@ -189,7 +189,7 @@ class Layer(Optionable):
                         raise KiPlotConfigurationError("Unknown layer spec: `{}`".format(layer))
                     new_vals.extend(ext)
             return new_vals
-        assert False, "Unimplemented layer type "+str(type(values))  # pragma: no cover (Internal)
+        assert False, "Unimplemented layer type "+str(type(values))
 
     @staticmethod
     def _get_copper():
