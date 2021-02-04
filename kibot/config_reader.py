@@ -211,6 +211,8 @@ class CfgYamlReader(object):
 
 def trim(docstring):
     """ PEP 257 recommended trim for __doc__ """
+    if docstring is None:
+        return []
     # Convert tabs to spaces (following the normal Python rules)
     # and split into a list of lines:
     lines = docstring.expandtabs().splitlines()
@@ -278,7 +280,7 @@ def print_output_options(name, cl, indent):
 def print_one_out_help(details, n, o):
     lines = trim(o.__doc__)
     if len(lines) == 0:
-        lines = ['Undocumented', 'No description']  # pragma: no cover (Internal)
+        lines = ['Undocumented', 'No description']
     if details:
         print('* '+lines[0])
         print('  * Type: `{}`'.format(n))
