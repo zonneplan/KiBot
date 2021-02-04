@@ -225,7 +225,8 @@ def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
 
 
 def test_unimplemented_layer(caplog):
-    with pytest.raises(AssertionError) as e:
-        Layer.solve(1)
+    with context.cover_it(cov):
+        with pytest.raises(AssertionError) as e:
+            Layer.solve(1)
     assert e.type == AssertionError
     assert e.value.args[0] == "Unimplemented layer type <class 'int'>"
