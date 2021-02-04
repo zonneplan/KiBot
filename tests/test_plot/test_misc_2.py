@@ -17,10 +17,13 @@ from kibot.layer import Layer
 from kibot.pre_base import BasePreFlight
 from kibot.out_base import BaseOutput
 from kibot.gs import GS
-from kibot.kiplot import load_actions, _import
+from kibot.kiplot import load_actions, _import, load_board
 from kibot.registrable import RegOutput, RegFilter
-from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR)
+from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, CMD_PCBNEW_PRINT_LAYERS,
+                        KICAD2STEP_ERR)
 from kibot.bom.columnlist import ColumnList
+from kibot.__main__ import detect_kicad
+from kibot.kicad.config import KiConf
 
 
 cov = coverage.Coverage()
@@ -211,15 +214,23 @@ def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
             GS.set_sch(sch.replace('.kicad_pcb', '.sch'))
             GS.out_dir = test_dir
             pre_drc = BasePreFlight.get_class_for('run_drc')('run_drc', True)
-            pre_erc = BasePreFlight.get_class_for('run_erc')('run_erc', True)
             with pytest.raises(SystemExit) as e1:
                 pre_drc.run()
+            pre_erc = BasePreFlight.get_class_for('run_erc')('run_erc', True)
             with pytest.raises(SystemExit) as e2:
                 pre_erc.run()
+            out = RegOutput.get_class_for('pdf_pcb_print')()
+            out.set_tree({'layers': 'all'})
+            out.config()
+            with pytest.raises(SystemExit) as e3:
+                out.run('')
     assert e1.type == SystemExit
     assert e1.value.code == DRC_ERROR
     assert e2.type == SystemExit
     assert e2.value.code == ERC_ERROR
+    assert e3.type == SystemExit
+    assert e3.value.code == PDF_PCB_PRINT
+    assert CMD_PCBNEW_PRINT_LAYERS+' returned 5' in caplog.text
     ctx.clean_up()
     mocked_call_enabled = False
 
@@ -230,3 +241,30 @@ def test_unimplemented_layer(caplog):
             Layer.solve(1)
     assert e.type == AssertionError
     assert e.value.args[0] == "Unimplemented layer type <class 'int'>"
+
+
+def test_step_fail(test_dir, caplog, monkeypatch):
+    global mocked_check_output_FNF
+    mocked_check_output_FNF = False
+    # Create a silly context to get the output path
+    ctx = context.TestContext(test_dir, 'test_step_fail', 'test_v5', 'empty_zip', '')
+    # We will patch subprocess.check_output to make rar fail
+    with monkeypatch.context() as m:
+        patch_functions(m)
+        detect_kicad()
+        load_actions()
+        GS.set_pcb(ctx.board_file)
+        GS.board = None
+        KiConf.loaded = False
+        load_board()
+        # Create a compress object with the dummy file as source
+        out = RegOutput.get_class_for('step')()
+        out.set_tree({})
+        out.config()
+        with pytest.raises(SystemExit) as e:
+            with context.cover_it(cov):
+                out.run('')
+    # Check we exited because rar isn't installed
+    assert e.type == SystemExit
+    assert e.value.code == KICAD2STEP_ERR
+    assert "Failed to create Step file, error 10" in caplog.text

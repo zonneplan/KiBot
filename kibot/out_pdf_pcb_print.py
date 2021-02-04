@@ -123,9 +123,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             os.remove(board_name)
             if proj_name:
                 os.remove(proj_name)
-        if ret:  # pragma: no cover (Internal)
-            # We check all the arguments, we even load the PCB
-            # A fail here isn't easy to reproduce
+        if ret:
             logger.error(CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)
             exit(PDF_PCB_PRINT)
 
@@ -155,4 +153,5 @@ class PDF_Pcb_Print(BaseOutput):  # noqa: F821
         return self.options.get_targets(out_dir, self.layers)
 
     def run(self, output_dir):
+        logger.error(self.layers)
         self.options.run(output_dir, self.layers)
