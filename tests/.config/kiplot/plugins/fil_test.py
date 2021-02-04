@@ -9,8 +9,9 @@ with document:
     """ Documentation """
     bvar = True
     """ Other doc """
-assert _help_avar == '[number=1] Documentation', _help_avar
-assert _help_bvar == '[boolean=true] Other doc', _help_bvar
+assert _help_avar == '[number=1] Documentation', _help_avar  # noqa: F821
+assert _help_bvar == '[boolean=true] Other doc', _help_bvar  # noqa: F821
+
 
 @filter_class
 def pp():

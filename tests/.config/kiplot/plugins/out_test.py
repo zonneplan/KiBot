@@ -33,4 +33,3 @@ class Test(BaseOutput):  # noqa: F821
 
     def get_dependencies(self):
         return ['dummy']
-
