@@ -1476,9 +1476,12 @@ class Schematic(object):
             files.update(sch.sheet.get_files())
         return list(files)
 
-    def get_components(self):
-        """ A list of all the components. Power excluded. """
-        components = [c for c in self.components if not c.is_power]
+    def get_components(self, exclude_power=True):
+        """ A list of all the components. """
+        if exclude_power:
+            components = [c for c in self.components if not c.is_power]
+        else:
+            components = [c for c in self.components]
         for sch in self.sheets:
             components.extend(sch.sheet.get_components(exclude_power))
         components.sort(key=lambda g: g.ref)
