@@ -329,7 +329,7 @@ def print_filters_help():
     for n, o in OrderedDict(sorted(fils.items())).items():
         help = o.__doc__
         if help is None:
-            help = 'Undocumented'  # pragma: no cover (Internal)
+            help = 'Undocumented'
         print('- {}: {}.'.format(n, help.strip()))
         print_output_options(n, o, 2)
 

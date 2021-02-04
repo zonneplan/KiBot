@@ -392,6 +392,16 @@ def test_help_output_plugin_3(test_dir, monkeypatch):
     ctx.clean_up()
 
 
+def test_help_output_plugin_4(test_dir, monkeypatch):
+    ctx = context.TestContext(test_dir, 'test_help_output_plugin_4', '3Rs', 'pre_and_position', POS_DIR)
+    with monkeypatch.context() as m:
+        m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
+        logging.debug('HOME='+os.environ['HOME'])
+        ctx.run(extra=['--help-filters'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('- filter_test: Undocumented')
+    ctx.clean_up()
+
+
 def test_help_outputs(test_dir):
     ctx = context.TestContext(test_dir, 'HelpOutputs', '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
