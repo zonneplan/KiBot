@@ -20,6 +20,7 @@ from kibot.kiplot import load_actions, _import
 from kibot.registrable import RegOutput, RegFilter
 from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR)
 from kibot.bom.columnlist import ColumnList
+from kibot.layer import Layer
 
 
 cov = coverage.Coverage()
@@ -221,3 +222,10 @@ def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
     assert e2.value.code == ERC_ERROR
     ctx.clean_up()
     mocked_call_enabled = False
+
+
+def test_unimplemented_layer(caplog):
+    with pytest.raises(AssertionError) as e:
+        Layer.solve(1)
+    assert e.type == AssertionError
+    assert e.value.args[0] == "Unimplemented layer type <class 'int'>"
