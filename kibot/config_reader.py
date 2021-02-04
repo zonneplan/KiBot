@@ -427,7 +427,7 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         for n, cls in OrderedDict(sorted(outs.items())).items():
             lines = trim(cls.__doc__)
             if len(lines) == 0:
-                lines = ['Undocumented', 'No description']  # pragma: no cover (Internal)
+                lines = ['Undocumented', 'No description']
             f.write('  # '+lines[0].rstrip()+':\n')
             for ln in range(2, len(lines)):
                 f.write('  # '+lines[ln].rstrip()+'\n')

@@ -472,6 +472,17 @@ def test_example_6(test_dir):
     ctx.clean_up()
 
 
+def test_example_7(test_dir, monkeypatch):
+    """ With dummy plug-ins """
+    ctx = context.TestContext(test_dir, 'Example7', '3Rs', 'pre_and_position', '')
+    with monkeypatch.context() as m:
+        m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
+        ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.expect_out_file(EXAMPLE_CFG)
+    ctx.search_in_file(EXAMPLE_CFG, ['# Undocumented:', "comment: 'No description'"])
+    ctx.clean_up()
+
+
 def test_corrupted_pcb(test_dir):
     prj = 'bom_no_xml'
     ctx = context.TestContext(test_dir, 'Corrupted', prj, 'print_pcb', '')
