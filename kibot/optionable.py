@@ -66,7 +66,10 @@ class Optionable(object):
             raise KiPlotConfigurationError("Option `{}` must be true/false".format(key))
 
     def get_doc(self, name):
-        doc = getattr(self, '_help_'+name).strip()
+        try:
+            doc = getattr(self, '_help_'+name).strip()
+        except AttributeError:
+            return None, name, False
         if doc[0] == '{':
             alias = doc[1:-1]
             return getattr(self, '_help_'+alias).strip(), alias, True
