@@ -22,6 +22,7 @@ from kibot.registrable import RegOutput, RegFilter
 from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, CMD_PCBNEW_PRINT_LAYERS,
                         KICAD2STEP_ERR)
 from kibot.bom.columnlist import ColumnList
+from kibot.bom.units import get_prefix
 from kibot.__main__ import detect_kicad
 from kibot.kicad.config import KiConf
 
@@ -268,3 +269,9 @@ def test_step_fail(test_dir, caplog, monkeypatch):
     assert e.type == SystemExit
     assert e.value.code == KICAD2STEP_ERR
     assert "Failed to create Step file, error 10" in caplog.text
+
+
+def test_unknown_prefix(caplog):
+    with context.cover_it(cov):
+        get_prefix('y')
+    assert 'Unknown prefix, please report' in caplog.text

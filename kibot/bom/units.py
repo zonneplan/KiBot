@@ -86,8 +86,8 @@ def get_prefix(prefix):
     # Unknown, we shouldn't get here because the regex matched
     # BUT: I found that sometimes unexpected things happend, like mu matching micro and then we reaching this code
     #      Now is fixed, but I can't be sure some bizarre case is overlooked
-    logger.error('Unknown prefix, please report')  # pragma: no cover (Internal)
-    return 1, ''  # pragma: no cover (Internal)
+    logger.error('Unknown prefix, please report')
+    return 1, ''
 
 
 def group_string(group):  # Return a reg-ex string for a list of values
