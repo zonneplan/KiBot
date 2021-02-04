@@ -1,0 +1,17 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'do_test'
+    comment: "Test plug-in, dummy"
+    type: test
+    dir: Test
+
+  - name: result
+    comment: "Test compress fail"
+    type: compress
+    options:
+      files:
+        - from_output: 'do_test'
+

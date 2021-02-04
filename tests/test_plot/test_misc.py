@@ -42,7 +42,7 @@ prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE, CORRUPTED_PCB,
-                        PCBDRAW_ERR, NO_PCBNEW_MODULE, NO_YAML_MODULE)
+                        PCBDRAW_ERR, NO_PCBNEW_MODULE, NO_YAML_MODULE, INTERNAL_ERROR)
 
 
 POS_DIR = 'positiondir'
@@ -354,15 +354,12 @@ def test_help_filters(test_dir):
     ctx.clean_up()
 
 
-def test_help_output_plugin_1(test_dir):
+def test_help_output_plugin_1(test_dir, monkeypatch):
     ctx = context.TestContext(test_dir, 'test_help_output_plugin_1', '3Rs', 'pre_and_position', POS_DIR)
-    home = os.environ['HOME']
-    os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '../..')
-    logging.debug('HOME='+os.environ['HOME'])
-    try:
+    with monkeypatch.context() as m:
+        m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
+        logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-output', 'test'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    finally:
-        os.environ['HOME'] = home
     assert ctx.search_out('Test for plugin')
     assert ctx.search_out('Type: .?test.?')
     assert ctx.search_out('nothing')
@@ -370,15 +367,12 @@ def test_help_output_plugin_1(test_dir):
     ctx.clean_up()
 
 
-def test_help_output_plugin_2(test_dir):
+def test_help_output_plugin_2(test_dir, monkeypatch):
     ctx = context.TestContext(test_dir, 'test_help_output_plugin_2', '3Rs', 'pre_and_position', POS_DIR)
-    home = os.environ['HOME']
-    os.environ['HOME'] = os.path.join(ctx.get_board_dir(), '../..')
-    logging.debug('HOME='+os.environ['HOME'])
-    try:
+    with monkeypatch.context() as m:
+        m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
+        logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-output', 'test2'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    finally:
-        os.environ['HOME'] = home
     assert ctx.search_out('Test for plugin')
     assert ctx.search_out('Type: .?test2.?')
     assert ctx.search_out('todo')
@@ -716,4 +710,13 @@ def test_empty_zip(test_dir):
     ctx.run()
     ctx.expect_out_file(prj+'-result.zip')
     ctx.search_err('No files provided, creating an empty archive')
+    ctx.clean_up()
+
+
+def test_compress_fail_deps(test_dir, monkeypatch):
+    ctx = context.TestContext(test_dir, 'test_compress_fail_deps', '3Rs', 'compress_fail_deps', 'Test')
+    with monkeypatch.context() as m:
+        m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
+        ctx.run(INTERNAL_ERROR)
+    ctx.search_err(r"Unable to generate `dummy` from 'Test plug-in, dummy' \(do_test\) \[test\]")
     ctx.clean_up()

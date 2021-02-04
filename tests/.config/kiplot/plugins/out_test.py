@@ -14,6 +14,9 @@ class TestOptions(BaseOptions):
             self.bar = 'nope'
             """ nothing """  # pragma: no cover
 
+    def get_targets(self, parent, out_dir):
+        return ['dummy']
+
 
 @output_class
 class Test(BaseOutput):  # noqa: F821
@@ -26,3 +29,10 @@ class Test(BaseOutput):  # noqa: F821
         with document:
             self.options = TestOptions
             """ [dict] Options for the `test` output """  # pragma: no cover
+
+    def run(self, output_dir):
+        logger.debug("Running test plug-in with "+output_dir)
+
+    def get_dependencies(self):
+        return ['dummy']
+
