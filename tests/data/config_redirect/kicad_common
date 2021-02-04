@@ -1,0 +1,22 @@
+UseIconsInMenus=1
+IconScale=-1
+MousewheelPAN=0
+ZoomNoCenter=0
+AutoPAN=1
+OpenGLAntialiasingMode=2
+CairoAntialiasingMode=0
+ShowEnvVarWarningDialog=1
+AutoSaveInterval=600
+FileHistorySize=9
+CanvasScale=0
+Editor=/usr/bin/setedit
+PdfBrowserName=
+UseSystemBrowser=1
+[EnvironmentVariables]
+# This shouldn't be here, but KiCad 5 doesn't complain:
+KICAD_CONFIG_HOME=/usr/share/kicad/template
+KICAD_SYMBOL_DIR=/usr/share/kicad/library
+KICAD_TEMPLATE_DIR=/usr/share/kicad/template
+KISYS3DMOD=/usr/share/kicad/modules/packages3d/
+KISYSMOD=/usr/share/kicad/modules
+

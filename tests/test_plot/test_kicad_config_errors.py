@@ -50,12 +50,9 @@ def test_kicad_conf_bad_sym_lib_table(test_dir):
 
 def test_kicad_conf_no_instance():
     """ Check we can't create a KiConf instance """
-    cov.load()
-    cov.start()
-    with pytest.raises(AssertionError) as pytest_wrapped_e:
-        o = KiConf()  # noqa: F841
-    cov.stop()
-    cov.save()
+    with context.cover_it(cov):
+        with pytest.raises(AssertionError) as pytest_wrapped_e:
+            o = KiConf()  # noqa: F841
     assert pytest_wrapped_e.type == AssertionError
     assert str(pytest_wrapped_e.value) == 'KiConf is fully static, no instances allowed'
 
@@ -74,18 +71,15 @@ def check_load_conf(caplog, dir='kicad', fail=False, catch_conf_error=False, no_
     kiconf_de_init()
     import pcbnew
     GS.kicad_conf_path = None if no_conf_path else pcbnew.GetKicadConfigPath()
-    cov.load()
-    cov.start()
-    if catch_conf_error:
-        with pytest.raises(KiConfError) as err:
+    with context.cover_it(cov):
+        if catch_conf_error:
+            with pytest.raises(KiConfError) as err:
+                KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
+        else:
             KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
-    else:
-        KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
-        # Check we can call it again and nothing is done
-        KiConf.init('bogus')
-        err = None
-    cov.stop()
-    cov.save()
+            # Check we can call it again and nothing is done
+            KiConf.init('bogus')
+            err = None
     ref = 'Reading KiCad config from `tests/data/'+dir+'/kicad_common`'
     if fail:
         ref = 'Unable to find KiCad configuration file'
@@ -164,11 +158,8 @@ def test_kicad_conf_local_conf(caplog, monkeypatch):
     _real_posix_prefix = sysconfig.get_path('data', 'posix_prefix')
     with monkeypatch.context() as m:
         m.setattr("sysconfig.get_path", mocked_get_path_1)
-        cov.load()
-        cov.start()
-        assert KiConf.guess_symbol_dir() == '/usr/share/kicad/library'
-        cov.stop()
-        cov.save()
+        with context.cover_it(cov):
+            assert KiConf.guess_symbol_dir() == '/usr/share/kicad/library'
 
 
 def test_kicad_conf_no_conf(caplog, monkeypatch):
@@ -177,3 +168,12 @@ def test_kicad_conf_no_conf(caplog, monkeypatch):
         m.setattr("sysconfig.get_path", lambda a, b: '')
         check_load_conf(caplog, fail=True, no_conf_path=True)
     assert 'Unable to find KiCad libraries' in caplog.text, caplog.text
+
+
+def test_config_redirect(caplog, monkeypatch):
+    """ Test bizarre KICAD_CONFIG_HOME inside kicad_common """
+    with monkeypatch.context() as m:
+        m.setenv("KICAD_CONFIG_HOME", 'tests/data/config_redirect')
+        check_load_conf(caplog, dir='config_redirect')
+    assert 'Reading KiCad config from `tests/data/config_redirect/kicad_common`' in caplog.text, caplog.text
+    assert 'Redirecting symbols lib table to /usr/share/kicad/template' in caplog.text, caplog.text
