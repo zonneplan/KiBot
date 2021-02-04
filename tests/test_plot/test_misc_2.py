@@ -252,18 +252,18 @@ def test_step_fail(test_dir, caplog, monkeypatch):
     # We will patch subprocess.check_output to make rar fail
     with monkeypatch.context() as m:
         patch_functions(m)
-        detect_kicad()
-        load_actions()
-        GS.set_pcb(ctx.board_file)
-        GS.board = None
-        KiConf.loaded = False
-        load_board()
-        # Create a compress object with the dummy file as source
-        out = RegOutput.get_class_for('step')()
-        out.set_tree({})
-        out.config()
-        with pytest.raises(SystemExit) as e:
-            with context.cover_it(cov):
+        with context.cover_it(cov):
+            detect_kicad()
+            load_actions()
+            GS.set_pcb(ctx.board_file)
+            GS.board = None
+            KiConf.loaded = False
+            load_board()
+            # Create a compress object with the dummy file as source
+            out = RegOutput.get_class_for('step')()
+            out.set_tree({})
+            out.config()
+            with pytest.raises(SystemExit) as e:
                 out.run('')
     # Check we exited because rar isn't installed
     assert e.type == SystemExit
