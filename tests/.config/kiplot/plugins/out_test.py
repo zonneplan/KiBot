@@ -21,9 +21,6 @@ class TestOptions(BaseOptions):
 
 @output_class
 class Test(BaseOutput):  # noqa: F821
-    """ Test for plugin
-        A loadable output.
-        Nothing useful, just a test. """
     def __init__(self):
         super().__init__()
         logger.debug('Creating a test')
