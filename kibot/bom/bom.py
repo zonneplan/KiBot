@@ -154,7 +154,7 @@ class ComponentGroup(object):
 
     def contains_component(self, c):
         """ Test if a given component is already contained in this group """
-        return c.ref in self.refs
+        return c.ref+c.project in self.refs
 
     def add_component(self, c):
         """ Add a component to the group.
@@ -162,12 +162,12 @@ class ComponentGroup(object):
             Note: repeated components happend when a component contains more than one unit """
         if not self.components:
             self.components.append(c)
-            self.refs[c.ref] = c
+            self.refs[c.ref+c.project] = c
         elif self.contains_component(c):
             return
         elif self.match_component(c):
             self.components.append(c)
-            self.refs[c.ref] = c
+            self.refs[c.ref+c.project] = c
 
     def get_count(self, project=None):
         if project is None:
