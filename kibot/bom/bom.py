@@ -229,10 +229,16 @@ class ComponentGroup(object):
 
     def get_alt_refs(self):
         """ Alternative list of references using ranges """
-        S = Joiner()
-        for n in self.components:
-            S.add(n.ref_id+n.ref_prefix, _suffix_to_num(n.ref_suffix))
-        return S.flush(self.cfg.ref_separator)
+        refs = ''
+        for sch in self.cfg.aggregate:
+            S = Joiner()
+            for n in self.components:
+                if n.project == sch.name:
+                    S.add(n.ref_id+n.ref_prefix, _suffix_to_num(n.ref_suffix))
+            if refs:
+                refs += self.cfg.ref_separator
+            refs += S.flush(self.cfg.ref_separator)
+        return refs
 
     def update_field(self, field, value, ref=None):
         """ Update a given field, concatenates existing values and informs a collision """
