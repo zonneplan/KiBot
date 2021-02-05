@@ -634,46 +634,48 @@ The `test_merge_consolidate/BoM/merge_1-bom.csv` file will be generated containi
 |                    |                                   |      |                |       |           |                  |                |        |           |                                  |
 |                    |                                   |      |                |       |           |                  |                |        |           |                                  |
 |                    |                                   |      |                |       |           |                  |                |        |           |                                  |
-| Project info:      |                                   |      |                |       |           |                  |                |        |           |                                  |
-| Variant:           | default                           |      |                |       |           |                  |                |        |           |                                  |
-| KiCad Version:     | 5.1.9-73d0e3b20d~88~ubuntu21.04.1 |      |                |       |           |                  |                |        |           |                                  |
-| Global statistics: |                                   |      |                |       |           |                  |                |        |           |                                  |
-| Component Groups:  | 4                                 |      |                |       |           |                  |                |        |           |                                  |
-| Component Count:   | 16                                |      |                |       |           |                  |                |        |           |                                  |
-| Fitted Components: | 16                                |      |                |       |           |                  |                |        |           |                                  |
-| Number of PCBs:    | 60                                |      |                |       |           |                  |                |        |           |                                  |
-| Total Components:  | 320                               |      |                |       |           |                  |                |        |           |                                  |
-| Project info:      | merge_1                           |      |                |       |           |                  |                |        |           |                                  |
-| Schematic:         | merge_1                           |      |                |       |           |                  |                |        |           |                                  |
-| Revision:          |                                   |      |                |       |           |                  |                |        |           |                                  |
-| Date:              | 2021-02-02_12-12-27               |      |                |       |           |                  |                |        |           |                                  |
-| Company:           | Test company                      |      |                |       |           |                  |                |        |           |                                  |
-| Statistics:        | merge_1                           |      |                |       |           |                  |                |        |           |                                  |
-| Component Groups:  | 3                                 |      |                |       |           |                  |                |        |           |                                  |
-| Component Count:   | 5                                 |      |                |       |           |                  |                |        |           |                                  |
-| Fitted Components: | 5                                 |      |                |       |           |                  |                |        |           |                                  |
-| Number of PCBs:    | 10                                |      |                |       |           |                  |                |        |           |                                  |
-| Total Components:  | 50                                |      |                |       |           |                  |                |        |           |                                  |
-| Project info:      | merge_2                           |      |                |       |           |                  |                |        |           |                                  |
-| Schematic:         | merge_2                           |      |                |       |           |                  |                |        |           |                                  |
-| Revision:          |                                   |      |                |       |           |                  |                |        |           |                                  |
-| Date:              | 2021-01-27_10-19-46               |      |                |       |           |                  |                |        |           |                                  |
-| Statistics:        | merge_2                           |      |                |       |           |                  |                |        |           |                                  |
-| Component Groups:  | 4                                 |      |                |       |           |                  |                |        |           |                                  |
-| Component Count:   | 6                                 |      |                |       |           |                  |                |        |           |                                  |
-| Fitted Components: | 6                                 |      |                |       |           |                  |                |        |           |                                  |
-| Number of PCBs:    | 20                                |      |                |       |           |                  |                |        |           |                                  |
-| Total Components:  | 120                               |      |                |       |           |                  |                |        |           |                                  |
-| Project info:      | merge_3                           |      |                |       |           |                  |                |        |           |                                  |
-| Schematic:         | merge_3                           |      |                |       |           |                  |                |        |           |                                  |
-| Revision:          |                                   |      |                |       |           |                  |                |        |           |                                  |
-| Date:              | 2021-01-27_10-21-29               |      |                |       |           |                  |                |        |           |                                  |
-| Statistics:        | merge_3                           |      |                |       |           |                  |                |        |           |                                  |
-| Component Groups:  | 2                                 |      |                |       |           |                  |                |        |           |                                  |
-| Component Count:   | 5                                 |      |                |       |           |                  |                |        |           |                                  |
-| Fitted Components: | 5                                 |      |                |       |           |                  |                |        |           |                                  |
-| Number of PCBs:    | 30                                |      |                |       |           |                  |                |        |           |                                  |
-| Total Components:  | 150                               |      |                |       |           |                  |                |        |           |                                  |
+
+| Project info:      |                                   |
+|--------------------|-----------------------------------|
+| Variant:           | default                           |
+| KiCad Version:     | 5.1.9-73d0e3b20d~88~ubuntu21.04.1 |
+| Global statistics: |                                   |
+| Component Groups:  | 4                                 |
+| Component Count:   | 16                                |
+| Fitted Components: | 16                                |
+| Number of PCBs:    | 60                                |
+| Total Components:  | 320                               |
+| Project info:      | merge_1                           |
+| Schematic:         | merge_1                           |
+| Revision:          |                                   |
+| Date:              | 2021-02-02_12-12-27               |
+| Company:           | Test company                      |
+| Statistics:        | merge_1                           |
+| Component Groups:  | 3                                 |
+| Component Count:   | 5                                 |
+| Fitted Components: | 5                                 |
+| Number of PCBs:    | 10                                |
+| Total Components:  | 50                                |
+| Project info:      | merge_2                           |
+| Schematic:         | merge_2                           |
+| Revision:          |                                   |
+| Date:              | 2021-01-27_10-19-46               |
+| Statistics:        | merge_2                           |
+| Component Groups:  | 4                                 |
+| Component Count:   | 6                                 |
+| Fitted Components: | 6                                 |
+| Number of PCBs:    | 20                                |
+| Total Components:  | 120                               |
+| Project info:      | merge_3                           |
+| Schematic:         | merge_3                           |
+| Revision:          |                                   |
+| Date:              | 2021-01-27_10-21-29               |
+| Statistics:        | merge_3                           |
+| Component Groups:  | 2                                 |
+| Component Count:   | 5                                 |
+| Fitted Components: | 5                                 |
+| Number of PCBs:    | 30                                |
+| Total Components:  | 150                               |
 
 You can see that now we have much more stats. They say we have four different types, thirteen for board sets, a total of 60 boards and 250 components.
 Then we have individual stats for each project.
