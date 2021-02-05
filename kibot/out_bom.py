@@ -428,10 +428,11 @@ class BoMOptions(BaseOptions):
             prj.sch = Schematic()
             load_any_sch(prj.sch, prj.file, prj.name)
             new_comps = prj.sch.get_components()
-            if prj.ref_id:
-                for c in new_comps:
-                    c.ref = prj.ref_id+c.ref
-                    c.ref_id = prj.ref_id
+            if prj.ref_id is None:
+                prj.ref_id = ''
+            for c in new_comps:
+                c.ref = prj.ref_id+c.ref
+                c.ref_id = prj.ref_id
             comps.extend(new_comps)
             prj.source = os.path.basename(prj.file)
 
