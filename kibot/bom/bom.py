@@ -235,9 +235,11 @@ class ComponentGroup(object):
             for n in self.components:
                 if n.project == sch.name:
                     S.add(n.ref_id+n.ref_prefix, _suffix_to_num(n.ref_suffix))
-            if refs:
-                refs += self.cfg.ref_separator
-            refs += S.flush(self.cfg.ref_separator)
+            result = S.flush(self.cfg.ref_separator)
+            if result:
+                if refs:
+                    refs += self.cfg.ref_separator
+                refs += result
         return refs
 
     def update_field(self, field, value, ref=None):
