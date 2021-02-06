@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Extra data about drill marks in gerber files.
+- Problems using internal names for drill maps in gerb_drill output (#47).
 
 
 ## [0.9.0] - 2021-01-04

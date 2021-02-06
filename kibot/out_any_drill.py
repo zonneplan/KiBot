@@ -111,10 +111,9 @@ class AnyDrill(BaseOptions):
         for d in files:
             kicad_id = '-'+d if d else d
             kibot_id = self.solve_id(d)
-            if self._ext == 'drl':
-                k_file = self.expand_filename(output_dir, '%f'+kicad_id+'.%x', '', self._ext)
-            else:  # gbr
-                k_file = self.expand_filename(output_dir, '%f'+kicad_id+'-drl.%x', '', self._ext)
+            if self._ext == 'gbr':
+                kicad_id += '-drl'
+            k_file = self.expand_filename(output_dir, '%f'+kicad_id+'.%x', '', self._ext)
             file = ''
             if self.output:
                 file = self.expand_filename(output_dir, self.output, kibot_id, self._ext)
