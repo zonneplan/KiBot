@@ -9,7 +9,7 @@ from tempfile import NamedTemporaryFile
 from .pre_base import BasePreFlight
 from .error import (KiPlotConfigurationError)
 from .gs import (GS)
-from .kiplot import check_script, exec_with_retry
+from .kiplot import check_script, exec_with_retry, add_time_out_options
 from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, KICAD_VERSION_5_99)
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
@@ -114,6 +114,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         if GS.debug_enabled:
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
+        cmd = add_time_out_options(cmd)
         # Add the layers
         cmd.extend([la.layer for la in layers])
         # Execute it

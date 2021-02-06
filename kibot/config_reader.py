@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -184,6 +184,8 @@ class CfgYamlReader(object):
         # Transfer command line global overwrites
         GS.global_output = GS.global_from_cli.get('output', None)
         GS.global_variant = GS.global_from_cli.get('variant', None)
+        GS.global_kiauto_wait_start = GS.global_from_cli.get('kiauto_wait_start', None)
+        GS.global_kiauto_time_out_scale = GS.global_from_cli.get('kiauto_time_out_scale', None)
         # List of outputs
         outputs = []
         version = None

@@ -130,6 +130,16 @@ def exec_with_retry(cmd):
             return ret
 
 
+def add_time_out_options(cmd):
+    if GS.global_kiauto_time_out_scale:
+        cmd.insert(1, str(GS.global_kiauto_time_out_scale))
+        cmd.insert(1, '--time_out_scale')
+    if GS.global_kiauto_wait_start:
+        cmd.insert(1, str(GS.global_kiauto_wait_start))
+        cmd.insert(1, '--wait_start')
+    return cmd
+
+
 def load_board(pcb_file=None):
     if GS.board is not None:
         # Already loaded

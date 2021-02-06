@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
@@ -18,6 +18,10 @@ class Globals(FiltersOptions):
             """ Default pattern for output file names """
             self.variant = ''
             """ Default variant to apply to all outputs """
+            self.kiauto_wait_start = 0
+            """ Time to wait for KiCad in KiAuto operations """
+            self.kiauto_time_out_scale = 0.0
+            """ Time-out multiplier for KiAuto operations """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self._unkown_is_error = True
@@ -36,6 +40,9 @@ class Globals(FiltersOptions):
         super().config()
         GS.global_output = self.set_global(GS.global_output, self.output, 'output')
         GS.global_variant = self.set_global(GS.global_variant, self.variant, 'variant')
+        GS.global_kiauto_wait_start = self.set_global(GS.global_kiauto_wait_start, self.kiauto_wait_start, 'kiauto_wait_start')
+        GS.global_kiauto_time_out_scale = self.set_global(GS.global_kiauto_time_out_scale, self.kiauto_time_out_scale,
+                                                          'kiauto_time_out_scale')
         set_filters(self.unparsed)
 
 

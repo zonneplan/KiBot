@@ -8,7 +8,7 @@ import os
 from tempfile import mkdtemp
 from shutil import rmtree
 from .gs import (GS)
-from .kiplot import check_eeschema_do, exec_with_retry
+from .kiplot import check_eeschema_do, exec_with_retry, add_time_out_options
 from .misc import (CMD_EESCHEMA_DO, SVG_SCH_PRINT)
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
@@ -47,6 +47,7 @@ class SVG_Sch_PrintOptions(VariantOptions):
         if GS.debug_enabled:
             cmd.insert(1, '-vv')
             cmd.insert(1, '-r')
+        cmd = add_time_out_options(cmd)
         ret = exec_with_retry(cmd)
         if ret:
             logger.error(CMD_EESCHEMA_DO+' returned %d', ret)
