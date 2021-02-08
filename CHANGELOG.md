@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0-3] - 2021-02-08
+### Fixed
+- Support for only kicad-nightly installed.
+
 ## [0.9.0-2] - 2021-02-08
 ### Changed
-- Accept debian-nightly as dependency, not just kicad.
+- Accept kicad-nightly as dependency, not just kicad.
 
 ## [0.9.0] - 2021-01-04
 ### Added

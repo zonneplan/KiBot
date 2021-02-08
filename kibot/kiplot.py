@@ -36,6 +36,9 @@ script_versions = {}
 if os.environ.get('KIAUS_USE_NIGHTLY'):
     # Path to the Python module
     sys_path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
+else:
+    # Add it as low priority
+    sys_path.append('/usr/lib/kicad-nightly/lib/python3/dist-packages')
 try:
     import pcbnew
 except ImportError:

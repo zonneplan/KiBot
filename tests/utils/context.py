@@ -26,6 +26,9 @@ ng_ver = os.environ.get('KIAUS_USE_NIGHTLY')
 if ng_ver:
     # Path to the Python module
     sys.path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
+else:
+    # Add it as low priority
+    sys_path.append('/usr/lib/kicad-nightly/lib/python3/dist-packages')
 import pcbnew
 m = re.search(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
 logging.debug(pcbnew.GetBuildVersion())

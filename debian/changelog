@@ -1,6 +1,12 @@
+kibot (0.9.0-3) stable; urgency=medium
+
+  * Support for only kicad-nightly installed.
+
+ -- Salvador E. Tropea <salvador@galadriel.inti.gob.ar>  Mon, 08 Feb 2021 19:56:48 -0300
+
 kibot (0.9.0-2) stable; urgency=medium
 
-  * Accept debian-nightly as dependency, not just kicad.
+  * Accept kicad-nightly as dependency, not just kicad.
 
  -- Salvador E. Tropea <salvador@inti.gob.ar>  Mon, 08 Feb 2021 19:42:44 -0300
 
