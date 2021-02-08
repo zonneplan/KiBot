@@ -161,6 +161,7 @@ def test_ibom_parse_fail(test_dir, caplog, monkeypatch):
     with monkeypatch.context() as m:
         patch_functions(m)
         with context.cover_it(cov):
+            detect_kicad()
             # Load the plug-ins
             load_actions()
             # Create an ibom object

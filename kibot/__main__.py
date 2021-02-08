@@ -225,6 +225,10 @@ def detect_kicad():
     GS.kicad_version_n = GS.kicad_version_major*1000000+GS.kicad_version_minor*1000+GS.kicad_version_patch
     logger.debug('Detected KiCad v{}.{}.{} ({} {})'.format(GS.kicad_version_major, GS.kicad_version_minor,
                  GS.kicad_version_patch, GS.kicad_version, GS.kicad_version_n))
+    # Used to look for plug-ins.
+    # KICAD_PATH isn't good on my system.
+    # The kicad-nightly package overwrites the regular package!!
+    GS.kicad_share_path = '/usr/share/kicad'
     if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
         GS.kicad_conf_path = pcbnew.GetSettingsManager().GetUserSettingsPath()
         if nightly:
@@ -232,9 +236,24 @@ def detect_kicad():
             # This script defines KICAD_CONFIG_HOME="$HOME/.config/kicadnightly"
             # So we just patch it, as we patch the name of the binaries
             GS.kicad_conf_path = GS.kicad_conf_path.replace('/kicad/', '/kicadnightly/')
+            GS.kicad_share_path = GS.kicad_share_path.replace('/kicad/', '/kicadnightly/')
     else:
         logger.debug('Ignore the next message about creating a wxApp, is a KiCad 5 bug (6989)')
         GS.kicad_conf_path = pcbnew.GetKicadConfigPath()
+    # Dirs to look for plugins
+    GS.kicad_plugins_dirs = []
+    # /usr/share/kicad/*
+    GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_share_path, 'scripting'))
+    GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_share_path, 'scripting', 'plugins'))
+    # ~/.config/kicad/*
+    GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_conf_path, 'scripting'))
+    GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_conf_path, 'scripting', 'plugins'))
+    # ~/.kicad_plugins and ~/.kicad
+    if 'HOME' in os.environ:
+        home = os.environ['HOME']
+        GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad_plugins'))
+        GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad','scripting'))
+        GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad','scripting','plugins'))
     if GS.debug_level > 1:
         logger.debug('KiCad config path {}'.format(GS.kicad_conf_path))
 

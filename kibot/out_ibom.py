@@ -7,7 +7,7 @@ import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR, W_EXTNAME)
 from .gs import (GS)
-from .kiplot import check_script
+from .kiplot import check_script, search_as_plugin
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -110,11 +110,12 @@ class IBoMOptions(VariantOptions):
 
     def run(self, output_dir):
         super().run(output_dir)
-        check_script(CMD_IBOM, URL_IBOM)
+        tool = search_as_plugin(CMD_IBOM, ['InteractiveHtmlBom', 'InteractiveHtmlBom/InteractiveHtmlBom'])
+        check_script(tool, URL_IBOM)
         logger.debug('Doing Interactive BoM')
         # Tell ibom we don't want to use the screen
         os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = ''
-        cmd = [CMD_IBOM, GS.pcb_file, '--dest-dir', output_dir, '--no-browser', ]
+        cmd = [tool, GS.pcb_file, '--dest-dir', output_dir, '--no-browser', ]
         # Solve the output name
         output = None
         if self.output:
