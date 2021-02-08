@@ -1,0 +1,12 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  kiauto_wait_start: 0.1
+  kiauto_time_out_scale: 0.01
+
+preflight:
+  run_drc: true
+
+
