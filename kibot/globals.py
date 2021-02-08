@@ -7,6 +7,7 @@ from .gs import GS
 from .macros import macros, document  # noqa: F401
 from .pre_filters import FiltersOptions
 from .log import get_logger, set_filters
+from .misc import W_MUSTBEINT
 
 
 class Globals(FiltersOptions):
@@ -41,6 +42,9 @@ class Globals(FiltersOptions):
         GS.global_output = self.set_global(GS.global_output, self.output, 'output')
         GS.global_variant = self.set_global(GS.global_variant, self.variant, 'variant')
         GS.global_kiauto_wait_start = self.set_global(GS.global_kiauto_wait_start, self.kiauto_wait_start, 'kiauto_wait_start')
+        if GS.global_kiauto_wait_start and int(GS.global_kiauto_wait_start) != GS.global_kiauto_wait_start:
+            GS.global_kiauto_wait_start = int(GS.global_kiauto_wait_start)
+            logger.warning(W_MUSTBEINT+'kiauto_wait_start must be integer, truncating to '+str(GS.global_kiauto_wait_start))
         GS.global_kiauto_time_out_scale = self.set_global(GS.global_kiauto_time_out_scale, self.kiauto_time_out_scale,
                                                           'kiauto_time_out_scale')
         set_filters(self.unparsed)

@@ -168,6 +168,8 @@ W_EMPTYZIP = '(W050) '
 W_WRONGCHAR = '(W051) '
 W_NOKIVER = '(W052) '
 W_EXTNAME = '(W053) '
+W_TIMEOUT = '(W054) '
+W_MUSTBEINT = '(W055) '
 
 
 class Rect(object):
