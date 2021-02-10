@@ -401,22 +401,34 @@ def generate_makefile(makefile, cfg_file, outputs):
         f.write('#\n# Default target\n#\n')
         f.write('all: '+' '.join(targets.keys())+'\n\n')
         extra_targets = ['all']
+        # PCB/SCH specific targets
+        f.write('#\n# SCH/PCB targets\n#\n')
         if pre_sch_targets:
             f.write('pre_sch: {}\n\n'.format(pre_sch_targets))
             extra_targets.append('pre_sch')
         if pre_pcb_targets:
             f.write('pre_pcb: {}\n\n'.format(pre_pcb_targets))
             extra_targets.append('pre_pcb')
+        if out_sch_targets:
+            f.write('out_sch: {}\n\n'.format(out_sch_targets))
+            extra_targets.append('out_sch')
+        if out_pcb_targets:
+            f.write('out_pcb: {}\n\n'.format(out_pcb_targets))
+            extra_targets.append('out_pcb')
         if pre_sch_targets or out_sch_targets:
-            tg = out_sch_targets
+            tg = ''
             if pre_sch_targets:
-                tg = pre_sch_targets+tg
+                tg = ' pre_sch'
+            if out_sch_targets:
+                tg += ' out_sch'
             f.write('all_sch: {}\n\n'.format(tg))
             extra_targets.append('all_sch')
         if pre_pcb_targets or out_pcb_targets:
-            tg = out_pcb_targets
+            tg = ''
             if pre_pcb_targets:
-                tg = pre_pcb_targets+tg
+                tg = ' pre_pcb'
+            if out_pcb_targets:
+                tg += ' out_pcb'
             f.write('all_pcb: {}\n\n'.format(tg))
             extra_targets.append('all_pcb')
         # Generate the output targets
