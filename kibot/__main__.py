@@ -73,7 +73,7 @@ logger = log.init()
 from .docopt import docopt
 from .gs import (GS)
 from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, NO_PCBNEW_MODULE,
-                   KICAD_VERSION_5_99, W_NOKIVER)
+                   KICAD_VERSION_5_99, W_NOKIVER, hide_stderr)
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help)
@@ -239,7 +239,12 @@ def detect_kicad():
             GS.kicad_share_path = GS.kicad_share_path.replace('/kicad/', '/kicadnightly/')
     else:
         logger.debug('Ignore the next message about creating a wxApp, is a KiCad 5 bug (6989)')
-        GS.kicad_conf_path = pcbnew.GetKicadConfigPath()
+        # Bug in KiCad, prints to stderr:
+        # `../src/common/stdpbase.cpp(62): assert "traits" failed in Get(test_dir): create wxApp before calling this`
+        # Found in KiCad 5.1.8, 5.1.9
+        # So we temporarily supress stderr
+        with hide_stderr():
+            GS.kicad_conf_path = pcbnew.GetKicadConfigPath()
     # Dirs to look for plugins
     GS.kicad_plugins_dirs = []
     # /usr/share/kicad/*
@@ -252,8 +257,8 @@ def detect_kicad():
     if 'HOME' in os.environ:
         home = os.environ['HOME']
         GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad_plugins'))
-        GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad','scripting'))
-        GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad','scripting','plugins'))
+        GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting'))
+        GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting', 'plugins'))
     if GS.debug_level > 1:
         logger.debug('KiCad config path {}'.format(GS.kicad_conf_path))
 

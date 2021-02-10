@@ -6,6 +6,10 @@
 """ Miscellaneous definitions """
 
 import re
+import os
+import sys
+from contextlib import contextmanager
+
 
 # Error levels
 INTERNAL_ERROR = 1    # Unhandled exceptions
@@ -196,3 +200,14 @@ class Rect(object):
 
 def name2make(name):
     return re.sub(r'[ \$\.\\\/]', '_', name)
+
+
+@contextmanager
+def hide_stderr():
+    """ Low level stderr supression, used to hide KiCad bugs. """
+    newstderr = os.dup(2)
+    devnull = os.open('/dev/null', os.O_WRONLY)
+    os.dup2(devnull, 2)
+    os.close(devnull)
+    yield
+    sys.stderr = os.fdopen(newstderr, 'w')
