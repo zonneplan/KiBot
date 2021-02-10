@@ -7,7 +7,6 @@
 
 import re
 import os
-import sys
 from contextlib import contextmanager
 
 
@@ -210,4 +209,4 @@ def hide_stderr():
     os.dup2(devnull, 2)
     os.close(devnull)
     yield
-    sys.stderr = os.fdopen(newstderr, 'w')
+    os.dup2(newstderr, 2)
