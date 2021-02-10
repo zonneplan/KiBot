@@ -440,6 +440,7 @@ def generate_makefile(makefile, cfg_file, outputs):
         for name, dep in dependencies.items():
             if name in comments:
                 f.write('# '+comments[name]+'\n')
+            dep.append(cfg_file)
             f.write(' '.join(targets[name])+': '+' '.join(dep)+'\n')
             if name in is_pre:
                 skip = filter(lambda n: n != name, is_pre)
