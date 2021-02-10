@@ -366,6 +366,8 @@ def generate_makefile(makefile, cfg_file, outputs):
         comments = {}
         ori_names = {}
         is_pre = set()
+        pre_pcb_targets = pre_sch_targets = ''
+        out_pcb_targets = out_sch_targets = ''
         # Preflights
         pres = BasePreFlight.get_in_use_objs()
         for pre in pres:
@@ -376,6 +378,10 @@ def generate_makefile(makefile, cfg_file, outputs):
             targets[name] = [adapt_file_name(fn) for fn in tg]
             dependencies[name] = [adapt_file_name(fn) for fn in pre.get_dependencies()]
             is_pre.add(name)
+            if pre.is_sch():
+                pre_sch_targets += ' '+name
+            if pre.is_pcb():
+                pre_pcb_targets += ' '+name
         # Outputs
         for out in outputs:
             name = name2make(out.name)
@@ -387,9 +393,32 @@ def generate_makefile(makefile, cfg_file, outputs):
             dependencies[name] = [adapt_file_name(fn) for fn in out.get_dependencies()]
             if out.comment:
                 comments[name] = out.comment
+            if out.is_sch():
+                out_sch_targets += ' '+name
+            if out.is_pcb():
+                out_pcb_targets += ' '+name
         # all target
         f.write('#\n# Default target\n#\n')
         f.write('all: '+' '.join(targets.keys())+'\n\n')
+        extra_targets = ['all']
+        if pre_sch_targets:
+            f.write('pre_sch: {}\n\n'.format(pre_sch_targets))
+            extra_targets.append('pre_sch')
+        if pre_pcb_targets:
+            f.write('pre_pcb: {}\n\n'.format(pre_pcb_targets))
+            extra_targets.append('pre_pcb')
+        if pre_sch_targets or out_sch_targets:
+            tg = out_sch_targets
+            if pre_sch_targets:
+                tg = pre_sch_targets+tg
+            f.write('all_sch: {}\n\n'.format(tg))
+            extra_targets.append('all_sch')
+        if pre_pcb_targets or out_pcb_targets:
+            tg = out_pcb_targets
+            if pre_pcb_targets:
+                tg = pre_pcb_targets+tg
+            f.write('all_pcb: {}\n\n'.format(tg))
+            extra_targets.append('all_pcb')
         # Generate the output targets
         f.write('#\n# Available targets (outputs)\n#\n')
         for name, target in targets.items():
@@ -406,4 +435,4 @@ def generate_makefile(makefile, cfg_file, outputs):
             else:
                 f.write('\t@$(KIBOT_CMD) -s all {} 2>> $(LOGFILE)\n\n'.format(ori_names[name]))
         # Mark all outputs as PHONY
-        f.write('.PHONY: '+' '.join(targets.keys())+'\n')
+        f.write('.PHONY: '+' '.join(extra_targets+list(targets.keys()))+'\n')
