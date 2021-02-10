@@ -238,8 +238,7 @@ def detect_kicad():
             GS.kicad_conf_path = GS.kicad_conf_path.replace('/kicad/', '/kicadnightly/')
             GS.kicad_share_path = GS.kicad_share_path.replace('/kicad/', '/kicadnightly/')
     else:
-        logger.debug('Ignore the next message about creating a wxApp, is a KiCad 5 bug (6989)')
-        # Bug in KiCad, prints to stderr:
+        # Bug in KiCad (#6989), prints to stderr:
         # `../src/common/stdpbase.cpp(62): assert "traits" failed in Get(test_dir): create wxApp before calling this`
         # Found in KiCad 5.1.8, 5.1.9
         # So we temporarily supress stderr
