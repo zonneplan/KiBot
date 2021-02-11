@@ -108,7 +108,7 @@ class CompressOptions(BaseOptions):
             ext += '.'+sub_ext
         return ext
 
-    def get_files(self, output, parent):
+    def get_files(self, output, parent, no_out_run=False):
         output_real = os.path.realpath(output)
         files = OrderedDict()
         for f in self.files:
@@ -123,6 +123,8 @@ class CompressOptions(BaseOptions):
                 if files_list is None:
                     logger.error('Unknown output `{}` selected in {}'.format(f.from_output, parent))
                     exit(WRONG_ARGUMENTS)
+                if no_out_run:
+                    continue
                 for file in files_list:
                     if not os.path.isfile(file):
                         # The target doesn't exist
@@ -155,7 +157,7 @@ class CompressOptions(BaseOptions):
 
     def get_dependencies(self, parent):
         output = self.get_targets(parent, GS.out_dir)[0]
-        files = self.get_files(output, parent)
+        files = self.get_files(output, parent, no_out_run=True)
         return files.keys()
 
     def run(self, output_dir, parent):
