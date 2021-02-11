@@ -31,6 +31,7 @@ To learn more about KiBot variants visit the [example repo](https://inti-cmnb.gi
     * [Specifying the layers](#specifying-the-layers)
     * [Supported outputs](#supported-outputs)
     * [Consolidating BoMs](#consolidating-boms)
+    * [Importing outputs from another file](#importing-outputs-from another-file)
 * [Usage](#usage)
 * [Installation](#installation)
 * [Usage for CI/CD](#usage-for-cicd)
@@ -738,6 +739,24 @@ And we'll get:
 | 2   | Unpolarized capacitor | C    | A:C2 B:C1                | 10nF  |           | 2                | 30             |        | ~         | A:(1) B:(1)       |
 | 3   | Resistor              | R    | A:R1-A:R3 B:R2-B:R4 C:R5 | 1k    |           | 7                | 120            |        | ~         | A:(3) B:(3) C:(1) |
 | 4   | Resistor              | R    | B:R1 C:R1-C:R4           | 10k   |           | 5                | 140            |        | ~         | B:(1) C:(4)       |
+
+
+#### Importing outputs from another file
+
+In some cases you may want to reuse configuration files. An example of this are the example files that generate gerbers and drill files for various manufacturers ([see](https://github.com/INTI-CMNB/KiBot/tree/master/docs/samples)).
+
+In this case you can create a section named `import` containing a list of configuration files. Here is an example:
+
+```yaml
+import:
+  - configs/Elecrow.kibot.yaml
+  - configs/FusionPCB.kibot.yaml
+  - configs/JLCPCB.kibot.yaml
+  - configs/P-Ban.kibot.yaml
+  - configs/PCBWay.kibot.yaml
+```
+
+This will import all the outputs from the listed files.
 
 ## Usage
 
