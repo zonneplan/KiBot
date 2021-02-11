@@ -50,7 +50,7 @@ class CfgYamlReader(object):
 
     def _parse_output(self, o_tree):
         try:
-            name = o_tree['name']
+            name = str(o_tree['name'])
             if not name:
                 raise KeyError
         except KeyError:
@@ -98,7 +98,7 @@ class CfgYamlReader(object):
     def _parse_variant(self, o_tree, kind, reg_class):
         kind_f = kind[0].upper()+kind[1:]
         try:
-            name = o_tree['name']
+            name = str(o_tree['name'])
             if not name:
                 raise KeyError
         except KeyError:
