@@ -31,7 +31,7 @@ To learn more about KiBot variants visit the [example repo](https://inti-cmnb.gi
     * [Specifying the layers](#specifying-the-layers)
     * [Supported outputs](#supported-outputs)
     * [Consolidating BoMs](#consolidating-boms)
-    * [Importing outputs from another file](#importing-outputs-from another-file)
+    * [Importing outputs from another file](#importing-outputs-from-another-file)
 * [Usage](#usage)
 * [Installation](#installation)
 * [Usage for CI/CD](#usage-for-cicd)
