@@ -154,5 +154,4 @@ class PDF_Pcb_Print(BaseOutput):  # noqa: F821
         return self.options.get_targets(out_dir, self.layers)
 
     def run(self, output_dir):
-        logger.error(self.layers)
         self.options.run(output_dir, self.layers)
