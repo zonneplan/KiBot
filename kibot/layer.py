@@ -6,7 +6,7 @@
 import pcbnew
 from .optionable import Optionable
 from .gs import GS
-from .misc import KICAD_VERSION_5_99
+from .misc import KICAD_VERSION_5_99, W_NOTASCII
 from re import match
 from .error import (PlotError, KiPlotConfigurationError)
 from .macros import macros, document, output_class  # noqa: F401
@@ -116,6 +116,14 @@ class Layer(Optionable):
                 self.description = 'No description'
         if not self.suffix:
             self.suffix = self.layer.replace('.', '_')
+        self.clean_suffix()
+
+    def clean_suffix(self):
+        filtered_suffix = ''.join(char for char in self.suffix if ord(char) < 128)
+        if filtered_suffix != self.suffix:
+            logger.warning(W_NOTASCII+'Only ASCII chars are allowed for layer suffixes ({}), using {}'.
+                           format(self, filtered_suffix))
+            self.suffix = filtered_suffix
 
     @property
     def id(self):
@@ -215,6 +223,7 @@ class Layer(Optionable):
         layer.description = Layer.DEFAULT_LAYER_DESC.get(name)
         layer._get_layer_id_from_name()
         layer.fix_protel_ext()
+        layer.clean_suffix()
         return layer
 
     @staticmethod
@@ -257,7 +266,9 @@ class Layer(Optionable):
         return self._id
 
     def __str__(self):
-        return "{} ({} '{}' {})".format(self.layer, self._id, self.description, self.suffix)
+        if hasattr(self, '_id'):
+            return "{} ({} '{}' {})".format(self.layer, self._id, self.description, self.suffix)
+        return "{} ('{}' {})".format(self.layer, self.description, self.suffix)
 
 
 for i in range(1, 30):

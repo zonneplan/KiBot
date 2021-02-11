@@ -174,6 +174,7 @@ W_EXTNAME = '(W053) '
 W_TIMEOUT = '(W054) '
 W_MUSTBEINT = '(W055) '
 W_NOOUTPUTS = '(W056) '
+W_NOTASCII = '(W057) '
 
 
 class Rect(object):
