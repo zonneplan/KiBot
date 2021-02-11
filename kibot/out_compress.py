@@ -123,18 +123,17 @@ class CompressOptions(BaseOptions):
                 if files_list is None:
                     logger.error('Unknown output `{}` selected in {}'.format(f.from_output, parent))
                     exit(WRONG_ARGUMENTS)
-                if no_out_run:
-                    continue
-                for file in files_list:
-                    if not os.path.isfile(file):
-                        # The target doesn't exist
-                        if not out._done:
-                            # The output wasn't created in this run, try running it
-                            run_output(out)
+                if not no_out_run:
+                    for file in files_list:
                         if not os.path.isfile(file):
-                            # Still missing, something is wrong
-                            logger.error('Unable to generate `{}` from {}'.format(file, out))
-                            exit(INTERNAL_ERROR)
+                            # The target doesn't exist
+                            if not out._done:
+                                # The output wasn't created in this run, try running it
+                                run_output(out)
+                            if not os.path.isfile(file):
+                                # Still missing, something is wrong
+                                logger.error('Unable to generate `{}` from {}'.format(file, out))
+                                exit(INTERNAL_ERROR)
             else:
                 files_list = glob.iglob(os.path.join(GS.out_dir, f.source), recursive=True)
             # Filter and adapt them
