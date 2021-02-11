@@ -581,7 +581,10 @@ def test_no_colorama(test_dir):
 
 
 def check_test_v5_sch_deps(ctx, deps, extra=[], in_output=False):
-    assert len(deps) == 3+len(extra), deps
+    ndeps = 4
+    if in_output:
+        ndeps -= 1
+    assert len(deps) == ndeps+len(extra), deps
     dir = os.path.dirname(ctx.board_file)
     deps_abs = [os.path.abspath(f) for f in deps]
     for sch in ['test_v5.sch', 'sub-sheet.sch', 'deeper.sch']:
@@ -591,6 +594,8 @@ def check_test_v5_sch_deps(ctx, deps, extra=[], in_output=False):
             assert os.path.abspath(os.path.join(dir, sch)) in deps_abs
     for f in extra:
         assert f in deps
+    if not in_output:
+        assert os.path.relpath(ctx.yaml_file) in deps
 
 
 def test_makefile_1(test_dir):
@@ -609,20 +614,26 @@ def test_makefile_1(test_dir):
         assert target in targets
         logging.debug('- Target `'+target+'` in all, .PHONY and itself OK')
     assert 'kibom_external' not in targets
+    yaml = os.path.relpath(ctx.yaml_file)
+    board_file = os.path.relpath(ctx.board_file)
     # position target
     deps = targets['position'].split(' ')
     assert len(deps) == 2, deps
     assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-top_pos.csv')) in deps
     assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-bottom_pos.csv')) in deps
-    assert os.path.abspath(targets[targets['position']]) == ctx.board_file
+    deps = targets[targets['position']].split(' ')
+    assert len(deps) == 2
+    assert board_file in deps
+    assert yaml in deps
     logging.debug('- Target `position` OK')
     # interactive_bom target
     deps = targets['interactive_bom'].split(' ')
     assert len(deps) == 1, deps
     assert ctx.get_out_path(os.path.join('ibom', prj+'-ibom.html')) in deps
     deps = targets[targets['interactive_bom']].split(' ')
-    assert len(deps) == 2
-    assert os.path.relpath(ctx.board_file) in deps
+    assert len(deps) == 3
+    assert board_file in deps
+    assert yaml in deps
     assert 'tests/board_samples/kicad_5/bom.xml' in deps
     logging.debug('- Target `interactive_bom` OK')
     # pcb_render target
@@ -630,15 +641,19 @@ def test_makefile_1(test_dir):
     assert len(deps) == 1, deps
     assert ctx.get_out_path(prj+'-top$.svg') in deps
     deps = targets[targets['pcb_render']].split(' ')
-    assert len(deps) == 2
-    assert os.path.relpath(ctx.board_file) in deps
+    assert len(deps) == 3
+    assert board_file in deps
+    assert yaml in deps
     assert 'tests/data/html_style.css' in deps
     logging.debug('- Target `pcb_render` OK')
     # print_front target
     deps = targets['print_front'].split(' ')
     assert len(deps) == 1, deps
     assert ctx.get_out_path(prj+'-F_Cu+F_SilkS.pdf') in deps
-    assert os.path.abspath(targets[targets['print_front']]) == ctx.board_file
+    deps = targets[targets['print_front']].split(' ')
+    assert len(deps) == 2
+    assert board_file in deps
+    assert yaml in deps
     logging.debug('- Target `print_front` OK')
     # drill target
     deps = targets['drill'].split(' ')
@@ -646,7 +661,10 @@ def test_makefile_1(test_dir):
     assert ctx.get_out_path(os.path.join('gerbers', prj+'-drill.drl')) in deps
     assert ctx.get_out_path(os.path.join('gerbers', prj+'-drill_report.txt')) in deps
     assert ctx.get_out_path(os.path.join('gerbers', prj+'-drill_map.pdf')) in deps
-    assert os.path.abspath(targets[targets['drill']]) == ctx.board_file
+    deps = targets[targets['drill']].split(' ')
+    assert len(deps) == 2
+    assert board_file in deps
+    assert yaml in deps
     logging.debug('- Target `drill` OK')
     # svg_sch_def
     deps = targets['svg_sch_def'].split(' ')
@@ -682,7 +700,10 @@ def test_makefile_1(test_dir):
     deps = targets['run_drc'].split(' ')
     assert len(deps) == 1, deps
     assert ctx.get_out_path(prj+'-drc.txt') in deps
-    assert os.path.abspath(targets[targets['run_drc']]) == ctx.board_file
+    deps = targets[targets['run_drc']].split(' ')
+    assert len(deps) == 2
+    assert board_file in deps
+    assert yaml in deps
     logging.debug('- Target `run_drc` OK')
     # fake_sch target
     deps = targets['fake_sch'].split(' ')
@@ -698,6 +719,7 @@ def test_makefile_1(test_dir):
     deps = targets[targets['3D']].split(' ')
     assert os.path.relpath(ctx.board_file) in deps
     assert 'tests/data/R_0805_2012Metric.wrl' in deps
+    assert yaml in deps
     # We can't check the WRL because it isn't included in the docker image
     logging.debug('- Target `3D` OK')
     # update_xml target
@@ -717,11 +739,19 @@ def test_makefile_1(test_dir):
     assert len(deps) == 1, deps
     assert ctx.get_out_path(prj+'-archive.zip') in deps
     deps = targets[targets['archive']].split(' ')
-    assert len(deps) == 12, deps
-    assert 'position' in deps
-    assert 'interactive_bom' in deps
-    assert '3D' in deps
-    assert 'drill' in deps
+    assert len(deps) == 16, deps
+    # - position
+    assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-top_pos.csv')) in deps
+    assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-bottom_pos.csv')) in deps
+    # - interactive_bom
+    assert ctx.get_out_path(os.path.join('ibom', prj+'-ibom.html')) in deps
+    # - 3D
+    assert ctx.get_out_path(os.path.join('3D', prj+'-3D.step')) in deps
+    # - drill
+    assert ctx.get_out_path(os.path.join('gerbers', prj+'-drill.drl')) in deps
+    assert ctx.get_out_path(os.path.join('gerbers', prj+'-drill_report.txt')) in deps
+    assert ctx.get_out_path(os.path.join('gerbers', prj+'-drill_map.pdf')) in deps
+    # - Other files
     assert ctx.get_out_path('error.txt') in deps
     assert ctx.get_out_path('output.txt') in deps
     assert ctx.get_out_path('Makefile') in deps
@@ -730,6 +760,8 @@ def test_makefile_1(test_dir):
     assert ctx.get_out_path('ibom') in deps
     assert ctx.get_out_path('3D') in deps
     assert ctx.get_out_path('gerbers') in deps
+    # - Config
+    assert yaml in deps
     logging.debug('- Target `archive` OK')
     ctx.search_err(r'\(kibom_external\) \[kibom\] uses a name generated by the external tool')
     ctx.search_err(r'\(ibom_external\) \[ibom\] uses a name generated by the external tool')
