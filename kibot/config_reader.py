@@ -15,7 +15,7 @@ from collections import OrderedDict
 
 from .error import (KiPlotConfigurationError, config_error)
 from .kiplot import (load_board)
-from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE)
+from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter
 from .pre_base import BasePreFlight
@@ -162,7 +162,7 @@ class CfgYamlReader(object):
         """ Get global options """
         logger.debug("Parsing global options: {}".format(gb))
         if not isinstance(gb, dict):
-            config_error("Incorrect `global` section")
+            config_error("Incorrect `global` section (must be a dict)")
         # Parse all keys inside it
         glb = GS.global_opts_class()
         glb.set_tree(gb)
@@ -171,16 +171,44 @@ class CfgYamlReader(object):
         except KiPlotConfigurationError as e:
             config_error("In `global` section: "+str(e))
 
+    def _parse_import(self, imp, name):
+        """ Get imports """
+        logger.debug("Parsing imports: {}".format(imp))
+        if not isinstance(imp, list):
+            config_error("Incorrect `import` section (must be a list)")
+        # Import the files
+        dir = os.path.dirname(os.path.abspath(name))
+        outputs = []
+        for fn in imp:
+            if not isinstance(fn, str):
+                config_error("`import` items must be strings ({})".format(str(fn)))
+            if not os.path.isabs(fn):
+                fn = os.path.join(dir, fn)
+            if not os.path.isfile(fn):
+                config_error("missing import file `{}`".format(fn))
+            data = self.load_yaml(open(fn))
+            if 'outputs' in data:
+                outs = self._parse_outputs(data['outputs'])
+                outputs.extend(outs)
+                logger.debug('Outputs loaded from `{}`: {}'.format(os.path.relpath(fn), list(map(lambda c: c.name, outs))))
+            else:
+                logger.warning(W_NOOUTPUTS+" No outputs found in `{}`".format(fn))
+        return outputs
+
+    def load_yaml(self, fstream):
+        try:
+            data = yaml.safe_load(fstream)
+        except yaml.YAMLError as e:
+            config_error("Error loading YAML "+str(e))
+        return data
+
     def read(self, fstream):
         """
         Read a file object into a config object
 
         :param fstream: file stream of a config YAML file
         """
-        try:
-            data = yaml.safe_load(fstream)
-        except yaml.YAMLError as e:
-            config_error("Error loading YAML "+str(e))
+        data = self.load_yaml(fstream)
         # Transfer command line global overwrites
         GS.global_output = GS.global_from_cli.get('output', None)
         GS.global_variant = GS.global_from_cli.get('variant', None)
@@ -198,12 +226,14 @@ class CfgYamlReader(object):
                 self._parse_preflight(v)
             elif k == 'global':
                 self._parse_global(v)
+            elif k == 'import':
+                outputs.extend(self._parse_import(v, fstream.name))
             elif k == 'variants':
                 RegOutput.set_variants(self._parse_variants(v))
             elif k == 'filters':
                 RegOutput.set_filters(self._parse_filters(v))
             elif k == 'outputs':
-                outputs = self._parse_outputs(v)
+                outputs.extend(self._parse_outputs(v))
             else:
                 config_error('Unknown section `{}` in config.'.format(k))
         if version is None:

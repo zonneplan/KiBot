@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for ZIP/TAR/RAR generation.
 - Makefile generation.
 - KiAuto time-out control.
+- Now you can import outputs from another config file.
 
 ### Changed
 - Now the default output name applies to the DRC and ERC report names.
