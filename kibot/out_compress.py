@@ -108,14 +108,10 @@ class CompressOptions(BaseOptions):
             ext += '.'+sub_ext
         return ext
 
-    def get_files(self, output, parent, no_out_expand=False):
+    def get_files(self, output, parent):
         output_real = os.path.realpath(output)
         files = OrderedDict()
         for f in self.files:
-            if f.from_output and no_out_expand:
-                # Just the name of the output
-                files[f.from_output] = 1
-                continue
             # Get the list of candidates
             files_list = None
             if f.from_output:
@@ -159,7 +155,7 @@ class CompressOptions(BaseOptions):
 
     def get_dependencies(self, parent):
         output = self.get_targets(parent, GS.out_dir)[0]
-        files = self.get_files(output, parent, no_out_expand=True)
+        files = self.get_files(output, parent)
         return files.keys()
 
     def run(self, output_dir, parent):
