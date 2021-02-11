@@ -370,7 +370,10 @@ def generate_makefile(makefile, cfg_file, outputs):
         if not os.path.isfile(fname):
             fname = 'kibot'
         f.write('KIBOT={}\n'.format(fname))
-        f.write('DEBUG=\n')
+        dbg = ''
+        if GS.debug_level > 0:
+            dbg = '-'+'v'*GS.debug_level
+        f.write('DEBUG={}\n'.format(dbg))
         f.write('CONFIG={}\n'.format(cfg_file))
         f.write('SCH={}\n'.format(os.path.relpath(GS.sch_file)))
         f.write('PCB={}\n'.format(os.path.relpath(GS.pcb_file)))
@@ -433,6 +436,12 @@ def generate_makefile(makefile, cfg_file, outputs):
             f.write(name+': '+' '.join(target)+'\n\n')
         # Generate the output dependencies
         f.write('#\n# Rules and dependencies\n#\n')
+        if GS.debug_enabled:
+            kibot_cmd = '\t$(KIBOT_CMD)'
+            log_action = ''
+        else:
+            kibot_cmd = '\t@$(KIBOT_CMD)'
+            log_action = ' 2>> $(LOGFILE)'
         for name, dep in dependencies.items():
             if name in comments:
                 f.write('# '+comments[name]+'\n')
@@ -440,8 +449,8 @@ def generate_makefile(makefile, cfg_file, outputs):
             f.write(' '.join(targets[name])+': '+' '.join(dep)+'\n')
             if name in is_pre:
                 skip = filter(lambda n: n != name, is_pre)
-                f.write('\t@$(KIBOT_CMD) -s {} -i 2>> $(LOGFILE)\n\n'.format(','.join(skip)))
+                f.write('{} -s {} -i{}\n\n'.format(kibot_cmd, ','.join(skip), log_action))
             else:
-                f.write('\t@$(KIBOT_CMD) -s all {} 2>> $(LOGFILE)\n\n'.format(ori_names[name]))
+                f.write('{} -s all {}{}\n\n'.format(kibot_cmd, ori_names[name], log_action))
         # Mark all outputs as PHONY
         f.write('.PHONY: '+' '.join(extra_targets+list(targets.keys()))+'\n')
