@@ -5,8 +5,8 @@ kibot:
   version: 1
 
 outputs:
-  - name: gerbers
-    comment: Gerbers with names compatible with KiCad
+  - name: Elecrow_gerbers
+    comment: Gerbers compatible with Elecrow
     type: gerber
     dir: Elecrow
     options: &gerber_options
@@ -39,8 +39,8 @@ outputs:
       - B.Paste
       - Edge.Cuts
 
-  - name: drill
-    comment: Drill files
+  - name: Elecrow_drill
+    comment: Drill files compatible with Elecrow
     type: excellon
     dir: Elecrow
     options:
@@ -55,8 +55,8 @@ outputs:
     dir: Elecrow
     options:
       files:
-        - from_output: gerbers
+        - from_output: Elecrow_gerbers
           dest: /
-        - from_output: drill
+        - from_output: Elecrow_drill
           dest: /
 

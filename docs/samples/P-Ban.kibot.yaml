@@ -5,8 +5,8 @@ kibot:
   version: 1
 
 outputs:
-  - name: gerbers
-    comment: Gerbers with names compatible with KiCad
+  - name: P-Ban_gerbers
+    comment: Gerbers compatible with P-Ban
     type: gerber
     dir: P-Ban
     options: &gerber_options
@@ -45,8 +45,8 @@ outputs:
       - B.Mask
       - Edge.Cuts
 
-  - name: drill
-    comment: Drill files
+  - name: P-Ban_drill
+    comment: Drill files compatible with P-Ban
     type: excellon
     dir: P-Ban
     options:
@@ -66,8 +66,8 @@ outputs:
     dir: P-Ban
     options:
       files:
-        - from_output: gerbers
+        - from_output: P-Ban_gerbers
           dest: /
-        - from_output: drill
+        - from_output: P-Ban_drill
           dest: /
 

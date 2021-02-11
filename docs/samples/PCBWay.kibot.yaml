@@ -5,8 +5,8 @@ kibot:
   version: 1
 
 outputs:
-  - name: gerbers
-    comment: Gerbers with names compatible with KiCad
+  - name: PCBWay_gerbers
+    comment: Gerbers compatible with PCBWay
     type: gerber
     dir: PCBWay
     options: &gerber_options
@@ -37,8 +37,8 @@ outputs:
       - B.Paste
       - Edge.Cuts
 
-  - name: drill
-    comment: Drill files
+  - name: PCBWay_drill
+    comment: Drill files compatible with PCBWay
     type: excellon
     dir: PCBWay
     options:
@@ -59,8 +59,8 @@ outputs:
     options:
       format: ZIP
       files:
-        - from_output: gerbers
+        - from_output: PCBWay_gerbers
           dest: /
-        - from_output: drill
+        - from_output: PCBWay_drill
           dest: /
 

@@ -5,8 +5,8 @@ kibot:
   version: 1
 
 outputs:
-  - name: gerbers
-    comment: Gerbers with names compatible with KiCad
+  - name: FusionPCB_gerbers
+    comment: Gerbers compatible with FusionPCB
     type: gerber
     dir: FusionPCB
     options: &gerber_options
@@ -38,8 +38,8 @@ outputs:
       - B.Mask
       - Edge.Cuts
 
-  - name: drill
-    comment: Drill files
+  - name: FusionPCB_drill
+    comment: Drill files compatible with FusionPCB
     type: excellon
     dir: FusionPCB
     options:
@@ -53,8 +53,8 @@ outputs:
     dir: FusionPCB
     options:
       files:
-        - from_output: gerbers
+        - from_output: FusionPCB_gerbers
           dest: /
-        - from_output: drill
+        - from_output: FusionPCB_drill
           dest: /
 
