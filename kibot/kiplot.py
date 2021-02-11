@@ -338,6 +338,28 @@ def adapt_file_name(name):
     return name
 
 
+def gen_global_targets(f, pre_targets, out_targets, type):
+    extra_targets = []
+    pre = 'pre_'+type
+    out = 'out_'+type
+    all = 'all_'+type
+    if pre_targets:
+        f.write('{}:{}\n\n'.format(pre, pre_targets))
+        extra_targets.append(pre)
+    if out_targets:
+        f.write('{}:{}\n\n'.format(out, out_targets))
+        extra_targets.append(out)
+    if pre_targets or out_targets:
+        tg = ''
+        if pre_targets:
+            tg = ' '+pre
+        if out_targets:
+            tg += ' '+out
+        f.write('{}:{}\n\n'.format(all, tg))
+        extra_targets.append(all)
+    return extra_targets
+
+
 def generate_makefile(makefile, cfg_file, outputs):
     cfg_file = os.path.relpath(cfg_file)
     logger.info('- Creating makefile `{}` from `{}`'.format(makefile, cfg_file))
@@ -403,34 +425,8 @@ def generate_makefile(makefile, cfg_file, outputs):
         extra_targets = ['all']
         # PCB/SCH specific targets
         f.write('#\n# SCH/PCB targets\n#\n')
-        if pre_sch_targets:
-            f.write('pre_sch: {}\n\n'.format(pre_sch_targets))
-            extra_targets.append('pre_sch')
-        if pre_pcb_targets:
-            f.write('pre_pcb: {}\n\n'.format(pre_pcb_targets))
-            extra_targets.append('pre_pcb')
-        if out_sch_targets:
-            f.write('out_sch: {}\n\n'.format(out_sch_targets))
-            extra_targets.append('out_sch')
-        if out_pcb_targets:
-            f.write('out_pcb: {}\n\n'.format(out_pcb_targets))
-            extra_targets.append('out_pcb')
-        if pre_sch_targets or out_sch_targets:
-            tg = ''
-            if pre_sch_targets:
-                tg = ' pre_sch'
-            if out_sch_targets:
-                tg += ' out_sch'
-            f.write('all_sch: {}\n\n'.format(tg))
-            extra_targets.append('all_sch')
-        if pre_pcb_targets or out_pcb_targets:
-            tg = ''
-            if pre_pcb_targets:
-                tg = ' pre_pcb'
-            if out_pcb_targets:
-                tg += ' out_pcb'
-            f.write('all_pcb: {}\n\n'.format(tg))
-            extra_targets.append('all_pcb')
+        extra_targets.extend(gen_global_targets(f, pre_sch_targets, out_sch_targets, 'sch'))
+        extra_targets.extend(gen_global_targets(f, pre_pcb_targets, out_pcb_targets, 'pcb'))
         # Generate the output targets
         f.write('#\n# Available targets (outputs)\n#\n')
         for name, target in targets.items():
