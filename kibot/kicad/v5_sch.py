@@ -1010,11 +1010,11 @@ class SchematicComponent(object):
         # Redundant pos
         if not line.startswith('\t'+str(comp.unit)):
             raise SchFileError('Missing component redundant position', line, f)
-        res = _split_space(line[2:])
-        if len(res) != 2:
+        res = _split_space(line[1:])
+        if len(res) != 3:
             raise SchFileError('Malformed component redundant position', line, f)
-        xr = int(res[0])
-        yr = int(res[1])
+        xr = int(res[1])
+        yr = int(res[2])
         if comp.x != xr or comp.y != yr:
             logger.warning(W_INCPOS + 'Inconsistent position for component {} ({},{} vs {},{})'.
                            format(comp.f_ref, comp.x, comp.y, xr, yr))
