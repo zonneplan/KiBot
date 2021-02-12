@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extra data about drill marks in gerber files.
 - Problems using internal names for drill maps in gerb_drill output (#47).
 - Problems using layer suffixes containing non-ASCII chars (i.e. UTF-8).
+- Problems when using components with more than 10 subparts.
 
 
 ## [0.9.0] - 2021-01-04
