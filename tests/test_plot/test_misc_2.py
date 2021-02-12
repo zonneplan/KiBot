@@ -18,7 +18,7 @@ from kibot.layer import Layer
 from kibot.pre_base import BasePreFlight
 from kibot.out_base import BaseOutput
 from kibot.gs import GS
-from kibot.kiplot import load_actions, _import, load_board, search_as_plugin
+from kibot.kiplot import load_actions, _import, load_board, search_as_plugin, generate_makefile
 from kibot.registrable import RegOutput, RegFilter
 from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, CMD_PCBNEW_PRINT_LAYERS,
                         KICAD2STEP_ERR)
@@ -317,3 +317,14 @@ def test_layer_no_id():
         la.description = 'Top'
         la.suffix = 'F_Cu'
         assert str(la) == "F.Cu ('Top' F_Cu)"
+
+
+def test_makefile_kibot_sys(test_dir):
+    ctx = context.TestContext(test_dir, 'test_makefile_kibot_sys', 'test_v5', 'empty_zip', '')
+    GS.sch_file = 'foo.sch'
+    GS.pcb_file = 'bar.kicad_pcb'
+    GS.out_dir = ctx.get_out_path('')
+    with context.cover_it(cov):
+        generate_makefile(ctx.get_out_path('Makefile'), 'pp', [], kibot_sys=True)
+    ctx.search_in_file('Makefile', ['KIBOT=kibot'])
+    ctx.clean_up()
