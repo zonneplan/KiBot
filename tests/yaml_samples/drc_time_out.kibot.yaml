@@ -3,7 +3,7 @@ kibot:
   version: 1
 
 global:
-  kiauto_wait_start: 0.1
+  kiauto_wait_start: 60.1
   kiauto_time_out_scale: 0.01
 
 preflight:
