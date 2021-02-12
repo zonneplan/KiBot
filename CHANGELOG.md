@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [0.10.0] - 2021-02-12
 ### Added
 - The multipart id to references of multipart components others than part 1.
 - Internal BoM:
