@@ -25,7 +25,7 @@ outputs:
       pen_width: 0.5
     layers:
       - layer: F.Cu
-        suffix: F_Cu
+        suffix: F_Cuá
       - layer: B.SilkS
         suffix: B_Silks
 

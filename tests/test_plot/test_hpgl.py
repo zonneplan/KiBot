@@ -36,11 +36,10 @@ def test_hpgl_auto(test_dir):
     prj = 'simple_2layer'
     ctx = context.TestContext(test_dir, 'HPGLAuto', prj, 'hpgl_auto', PS_DIR)
     ctx.run()
-
     f_cu = ctx.get_gerber_filename('F_Cu', '.plt')
     f_silk = ctx.get_gerber_filename('B_Silks', '.plt')
     ctx.expect_out_file(f_cu)
     ctx.expect_out_file(f_silk)
     ctx.dont_expect_out_file(ctx.get_gerber_job_filename())
-
+    ctx.search_err(r'Only ASCII chars are allowed for layer suffixes')
     ctx.clean_up()
