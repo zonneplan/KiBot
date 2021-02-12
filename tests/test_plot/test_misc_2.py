@@ -115,7 +115,7 @@ def test_rar_fail(test_dir, caplog, monkeypatch):
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == WRONG_INSTALL
     assert "Failed to invoke rar command, error 10" in caplog.text
-    # Not in the docker image ... pytest issue?
+    # Not in the docker image ... pytest issue? (TODO)
     # assert "THE_ERROR" in caplog.text
     # Check we exited because the import failed
     assert pytest_wrapped_e2.type == SystemExit
@@ -291,6 +291,10 @@ def test_search_as_plugin_ok(test_dir, caplog):
         logging.debug('fname: '+fname)
         with open(ctx.get_out_path('error.txt'), 'wt') as f:
             f.write(caplog.text)
+        # Fails to collect caplog on docker image (TODO)
+        # This is a bizarre case, the test alone works, all tests in test_misc* together work.
+        # But when running all the tests this one fails to get caplog.
+        # The test_rar_fail has a similar problem.
         # assert re.search(r"Using `(.*)data/fake_plugin/fake` for `fake` \(fake_plugin\)", caplog.text) is not None
         assert re.search(r"(.*)data/fake_plugin/fake", fname) is not None
     ctx.clean_up()
