@@ -63,6 +63,8 @@ KiBot lets you do this. The following picture depicts the data flow:
 
 ![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Esquema.png)
 
+If you want to see this concept applied to a real world project visit the [Spora CI/CD](https://github.com/INTI-CMNB/kicad-ci-test-spora) example.
+
 **New on 0.10.0**:
 - Makefile generation (for local use, avoiding to redo unneeded stuff)
 - Compressed files generation (to gather deliverables)
