@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import pytest
 import coverage
 import logging
@@ -17,7 +18,7 @@ from kibot.layer import Layer
 from kibot.pre_base import BasePreFlight
 from kibot.out_base import BaseOutput
 from kibot.gs import GS
-from kibot.kiplot import load_actions, _import, load_board
+from kibot.kiplot import load_actions, _import, load_board, search_as_plugin
 from kibot.registrable import RegOutput, RegFilter
 from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, CMD_PCBNEW_PRINT_LAYERS,
                         KICAD2STEP_ERR)
@@ -276,3 +277,24 @@ def test_unknown_prefix(caplog):
     with context.cover_it(cov):
         get_prefix('y')
     assert 'Unknown prefix, please report' in caplog.text
+
+
+def test_search_as_plugin_ok(test_dir, caplog):
+    with context.cover_it(cov):
+        detect_kicad()
+        load_actions()
+        dir_fake = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
+        GS.kicad_plugins_dirs.append(dir_fake)
+        fname = search_as_plugin('fake', ['fake_plugin'])
+        assert re.search(r"Using `(.*)data/fake_plugin/fake` for `fake` \(fake_plugin\)", caplog.text) is not None
+        assert re.search(r"(.*)data/fake_plugin/fake", fname) is not None
+
+
+def test_search_as_plugin_fail(test_dir, caplog):
+    with context.cover_it(cov):
+        detect_kicad()
+        load_actions()
+        dir_fake = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
+        GS.kicad_plugins_dirs.append(dir_fake)
+        fname = search_as_plugin('fake', [''])
+        assert fname == 'fake'
