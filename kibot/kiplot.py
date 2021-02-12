@@ -128,7 +128,6 @@ def search_as_plugin(cmd, names):
             if os.path.isfile(fname):
                 logger.debug('Using `{}` for `{}` ({})'.format(fname, cmd, name))
                 return fname
-            logger.debug(fname+' not found')
     return cmd
 
 
