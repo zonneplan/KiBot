@@ -38,7 +38,8 @@ jobs:
         python3-coverage erase
         # Create the caches with macros
         python3-coverage run -a src/kibot --help-outputs > /dev/null
-        pytest-3 --test_dir output
+        #pytest-3 --test_dir output
+        pytest-3 --log-cli-level debug -k "test_search_as_plugin_ok" --test_dir output
         python3-coverage report
         python3-coverage html -d output/htmlcov
         coveralls

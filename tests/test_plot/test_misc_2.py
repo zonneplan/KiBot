@@ -280,14 +280,20 @@ def test_unknown_prefix(caplog):
 
 
 def test_search_as_plugin_ok(test_dir, caplog):
+    ctx = context.TestContext(test_dir, 'test_search_as_plugin_ok', 'test_v5', 'empty_zip', '')
     with context.cover_it(cov):
         detect_kicad()
         load_actions()
         dir_fake = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
         GS.kicad_plugins_dirs.append(dir_fake)
+        logging.debug('GS.kicad_plugins_dirs: '+str(GS.kicad_plugins_dirs))
         fname = search_as_plugin('fake', ['fake_plugin'])
+        logging.debug('fname: '+fname)
+        with open(ctx.get_out_path('error.txt'), 'wt') as f:
+            f.write(caplog.text)
         assert re.search(r"Using `(.*)data/fake_plugin/fake` for `fake` \(fake_plugin\)", caplog.text) is not None
         assert re.search(r"(.*)data/fake_plugin/fake", fname) is not None
+    ctx.clean_up()
 
 
 def test_search_as_plugin_fail(test_dir, caplog):
