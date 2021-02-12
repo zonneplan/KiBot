@@ -785,3 +785,12 @@ def test_compress_fail_deps(test_dir, monkeypatch):
         ctx.run(INTERNAL_ERROR)
     ctx.search_err(r"Unable to generate `dummy` from 'Test plug-in, dummy' \(do_test\) \[test\]")
     ctx.clean_up()
+
+
+def test_import_1(test_dir):
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, 'test_import_1', prj, 'import_test_1', '')
+    ctx.run(extra=['-i'])
+    ctx.search_err(r'Outputs loaded from `tests/yaml_samples/gerber_inner.kibot.yaml`: \[\'gerbers\', \'result\'\]')
+    ctx.search_err(r'Outputs loaded from `tests/yaml_samples/ibom.kibot.yaml`: \[\'interactive_bom\'\]')
+    ctx.clean_up()

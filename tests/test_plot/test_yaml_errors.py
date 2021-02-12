@@ -668,3 +668,31 @@ def test_error_aggregate_miss_file(test_dir):
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Missing `dummy`")
     ctx.clean_up()
+
+
+def test_error_wrong_import_type(test_dir):
+    ctx = context.TestContext(test_dir, 'test_error_wrong_import_type', PRJ, 'error_wrong_import_type', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Incorrect `import` section \(must be a list\)")
+    ctx.clean_up()
+
+
+def test_error_import_not_str(test_dir):
+    ctx = context.TestContext(test_dir, 'test_error_import_not_str', PRJ, 'error_import_not_str', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`import` items must be strings")
+    ctx.clean_up()
+
+
+def test_error_import_miss_file(test_dir):
+    ctx = context.TestContext(test_dir, 'test_error_import_miss_file', PRJ, 'error_import_miss_file', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"missing import file")
+    ctx.clean_up()
+
+
+def test_error_import_no_outputs(test_dir):
+    ctx = context.TestContext(test_dir, 'test_error_import_no_outputs', PRJ, 'error_import_no_outputs', '')
+    ctx.run()
+    assert ctx.search_err(r"No outputs found in `(.*)drc.kibot.yaml`")
+    ctx.clean_up()

@@ -192,7 +192,7 @@ class CfgYamlReader(object):
                 outputs.extend(outs)
                 logger.debug('Outputs loaded from `{}`: {}'.format(os.path.relpath(fn), list(map(lambda c: c.name, outs))))
             else:
-                logger.warning(W_NOOUTPUTS+" No outputs found in `{}`".format(fn))
+                logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn))
         return outputs
 
     def load_yaml(self, fstream):
