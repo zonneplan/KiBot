@@ -1772,6 +1772,7 @@ Options:
 - For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
 - For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw). Also install the convert (from imagemagick) and rsvg-convert (from librsvg2-bin) tools.
 - To create RAR files install the rar tool.
+- The `distutils` module. This is part of Python, but on debian systems this is in a separated package: `python3-distutils`
 
 ### Installation on Ubuntu/Debian
 

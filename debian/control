@@ -10,7 +10,7 @@ X-Python3-Version: >= 3.6
 Package: kibot
 Architecture: all
 Multi-Arch: foreign
-Depends: ${misc:Depends}, ${python3:Depends}, python3-yaml, kicad (>= 5.1.6), python3-wxgtk4.0
+Depends: ${misc:Depends}, ${python3:Depends}, python3-distutils, python3-yaml, kicad (>= 5.1.6), python3-wxgtk4.0
 Recommends: kibom.inti-cmnb (>= 1.8.0), interactivehtmlbom.inti-cmnb, pcbdraw, imagemagick, librsvg2-bin, python3-xlsxwriter, rar
 Description: KiCad Bot
  KiBot is a program which helps you to automate the generation of KiCad
