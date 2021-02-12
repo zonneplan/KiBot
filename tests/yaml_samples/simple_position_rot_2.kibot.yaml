@@ -6,14 +6,14 @@ filters:
     comment: 'Only parts with JLC code'
     type: generic
     include_only:
-      - column: Field4
+      - column: 'LCSC#'
         regex: '^C\d+'
 
 variants:
-  - name: default
+  - name: rotated
     comment: 'Just a place holder for the rotation filter'
     type: kibom
-    variant: default
+    variant: rotated
     pre_transform: _rot_footprint
 
 outputs:
@@ -21,7 +21,7 @@ outputs:
     comment: "Pick and place file, JLC style"
     type: position
     options:
-      variant: default
+      variant: rotated
       output: '%f_cpl_jlc.%x'
       format: CSV
       units: millimeters
@@ -54,7 +54,7 @@ outputs:
         - field: References
           name: Designator
         - Footprint
-        - field: Field4
+        - field: 'LCSC#'
           name: 'LCSC Part #'
       csv:
         hide_pcb_info: true

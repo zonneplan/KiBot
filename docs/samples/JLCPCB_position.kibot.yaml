@@ -2,12 +2,8 @@ kibot:
   version: 1
 
 filters:
-  - name: fix_rotation
-    comment: 'Adjust rotation for JLC'
-    type: rot_footprint
-
   - name: only_jlc_parts
-    comment: 'Only parts with JLC code'
+    comment: 'Only parts with JLC (LCSC) code'
     type: generic
     include_only:
       - column: 'LCSC#'
@@ -18,11 +14,11 @@ variants:
     comment: 'Just a place holder for the rotation filter'
     type: kibom
     variant: rotated
-    pre_transform: fix_rotation
+    pre_transform: _rot_footprint
 
 outputs:
-  - name: 'position'
-    comment: "Pick and place file, JLC style"
+  - name: 'JLCPCB_position'
+    comment: "Pick and place file, JLCPCB style"
     type: position
     options:
       variant: rotated
@@ -45,8 +41,8 @@ outputs:
         - id: Side
           name: Layer
 
-  - name: 'bom'
-    comment: "BoM for JLC"
+  - name: 'JLCPCB_bom'
+    comment: "BoM for JLCPCB"
     type: bom
     options:
       output: '%f_%i_jlc.%x'

@@ -1027,14 +1027,14 @@ filters:
     comment: 'Only parts with JLC code'
     type: generic
     include_only:
-      - column: Field4
+      - column: 'LCSC#'
         regex: '^C\d+'
 
 variants:
-  - name: default
+  - name: rotated
     comment: 'Just a place holder for the rotation filter'
     type: kibom
-    variant: default
+    variant: rotated
     pre_transform: _rot_footprint
 
 outputs:
@@ -1042,7 +1042,7 @@ outputs:
     comment: "Pick and place file, JLC style"
     type: position
     options:
-      variant: default
+      variant: rotated
       output: '%f_cpl_jlc.%x'
       format: CSV
       units: millimeters
@@ -1075,7 +1075,7 @@ outputs:
         - field: References
           name: Designator
         - Footprint
-        - field: Field4
+        - field: 'LCSC#'
           name: 'LCSC Part #'
       csv:
         hide_pcb_info: true
@@ -1083,10 +1083,11 @@ outputs:
         quote_all: true
 ```
 
-The `only_jlc_parts` filter is used to generate the BoM and assumes you put the JLC component code in a field named `Field4`.
-This is what the blog author does, but I suggest using a more descriptive name, like `JLC#` or `LCSC#`.
+The `only_jlc_parts` filter is used to generate the BoM and assumes you put the JLC component code in a field named `LCSC#` (JLC uses [LCSC](https://lcsc.com/) as supplier).
+Note that the author of the blog simply used `Field4` for this and his script searches for any field containing the `^C\d+` pattern.
+I think this isn't a good idea and I suggest using a defined name, like in this example.
 
-The `default` variant is used only to apply the `_rot_footprint` transformation filter. This filter is an internal filter of type `rot_footprint`.
+The `rotated` variant is used only to apply the `_rot_footprint` transformation filter. This filter is an internal filter of type `rot_footprint`.
 Here is the same configuration file making explicit use of the rotation filter:
 
 ```yaml
@@ -1102,14 +1103,14 @@ filters:
     comment: 'Only parts with JLC code'
     type: generic
     include_only:
-      - column: Field4
+      - column: 'LCSC#'
         regex: '^C\d+'
 
 variants:
-  - name: default
+  - name: rotated
     comment: 'Just a place holder for the rotation filter'
     type: kibom
-    variant: default
+    variant: rotated
     pre_transform: fix_rotation
 
 outputs:
@@ -1117,7 +1118,7 @@ outputs:
     comment: "Pick and place file, JLC style"
     type: position
     options:
-      variant: default
+      variant: rotated
       output: '%f_cpl_jlc.%x'
       format: CSV
       units: millimeters
@@ -1150,7 +1151,7 @@ outputs:
         - field: References
           name: Designator
         - Footprint
-        - field: Field4
+        - field: 'LCSC#'
           name: 'LCSC Part #'
       csv:
         hide_pcb_info: true
