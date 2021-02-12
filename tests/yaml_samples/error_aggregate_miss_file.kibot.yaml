@@ -13,11 +13,10 @@ outputs:
       source_by_id: true
       use_alt: true
       aggregate:
+        - file: tests/board_samples/kicad_5/merge_3.sch
+          number: 4
         - file: dummy
           name: 2nd project
           ref_id: 'B:'
           number: 2
-        - file: tests/board_samples/kicad_5/merge_3.sch
-          ref_id: 'C:'
-          number: 4
 
