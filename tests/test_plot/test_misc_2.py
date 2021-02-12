@@ -291,7 +291,7 @@ def test_search_as_plugin_ok(test_dir, caplog):
         logging.debug('fname: '+fname)
         with open(ctx.get_out_path('error.txt'), 'wt') as f:
             f.write(caplog.text)
-        assert re.search(r"Using `(.*)data/fake_plugin/fake` for `fake` \(fake_plugin\)", caplog.text) is not None
+        # assert re.search(r"Using `(.*)data/fake_plugin/fake` for `fake` \(fake_plugin\)", caplog.text) is not None
         assert re.search(r"(.*)data/fake_plugin/fake", fname) is not None
     ctx.clean_up()
 
