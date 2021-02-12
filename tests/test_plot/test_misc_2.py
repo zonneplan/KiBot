@@ -308,3 +308,12 @@ def test_search_as_plugin_fail(test_dir, caplog):
         GS.kicad_plugins_dirs.append(dir_fake)
         fname = search_as_plugin('fake', [''])
         assert fname == 'fake'
+
+
+def test_layer_no_id():
+    with context.cover_it(cov):
+        la = Layer()
+        la.layer = 'F.Cu'
+        la.description = 'Top'
+        la.suffix = 'F_Cu'
+        assert str(la) == "F.Cu ('Top' F_Cu)"
