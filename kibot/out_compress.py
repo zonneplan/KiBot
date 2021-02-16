@@ -6,6 +6,7 @@
 import re
 import os
 import glob
+import sys
 from sys import exit
 from subprocess import check_output, STDOUT, CalledProcessError
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED, ZIP_BZIP2, ZIP_LZMA
@@ -68,7 +69,11 @@ class CompressOptions(BaseOptions):
             logger.warning(W_EMPTYZIP+'No files provided, creating an empty archive')
 
     def create_zip(self, output, files):
-        with ZipFile(output, 'w', compression=self.ZIP_ALGORITHMS[self.compression], compresslevel=9) as zip:
+        extra = {}
+        extra['compression'] = self.ZIP_ALGORITHMS[self.compression]
+        if sys.version_info.major > 3 or (sys.version_info.major == 3 and sys.version_info.minor >= 7):
+            extra['compresslevel'] = 9
+        with ZipFile(output, 'w', **extra) as zip:
             for fname, dest in files.items():
                 logger.debug('Adding '+fname+' as '+dest)
                 zip.write(fname, dest)

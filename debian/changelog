@@ -1,3 +1,10 @@
+kibot (0.10.0-4) stable; urgency=medium
+
+  * Fixed problem using Python 3.6
+    (ZipFile's compresslevel argument introduced in 3.7)
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Tue, 16 Feb 2021 12:51:24 -0300
+
 kibot (0.10.0-3) stable; urgency=medium
 
   * Fixed problem using Python 3.6 (#52)
