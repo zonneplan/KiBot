@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0-3] - 2021-02-16
+### Fixed
+- Problem using Python 3.6 (StreamHandler.setStream introduced in 3.7)
+
 ## [0.10.0-2] - 2021-02-12
 ### Fixed
 - Missing python3-distutils dependency on Debian package.

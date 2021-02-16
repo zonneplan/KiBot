@@ -122,8 +122,7 @@ def init():
     logger.addHandler(ch)
     # Handler for t info.
     # Outputs to stdout
-    ch = logging.StreamHandler()
-    ch.setStream(sys.stdout)
+    ch = logging.StreamHandler(sys.stdout)
     ch.addFilter(FilterOnlyInfo())
     ch.setFormatter(CustomFormatter(sys.stdout))
     logger.addHandler(ch)
