@@ -8,7 +8,7 @@ from .macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
 from .gs import (GS)
 from .optionable import Optionable
-from .kiplot import check_script, exec_with_retry, load_board, add_time_out_options
+from .kiplot import check_script, exec_with_retry, load_board, add_extra_options
 from .misc import (CMD_PCBNEW_RUN_DRC, URL_PCBNEW_RUN_DRC, DRC_ERROR)
 from .log import (get_logger)
 
@@ -43,10 +43,7 @@ class Run_DRC(BasePreFlight):  # noqa: F821
             cmd.append('-i')
         cmd.extend([GS.pcb_file, GS.out_dir])
         # If we are in verbose mode enable debug in the child
-        if GS.debug_enabled:
-            cmd.insert(1, '-vv')
-            cmd.insert(1, '-r')
-        cmd = add_time_out_options(cmd)
+        cmd = add_extra_options(cmd)
         logger.info('- Running the DRC')
         ret = exec_with_retry(cmd)
         if ret:

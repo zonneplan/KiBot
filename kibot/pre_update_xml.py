@@ -7,7 +7,7 @@ from sys import (exit)
 from .macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
 from .gs import (GS)
-from .kiplot import check_eeschema_do, exec_with_retry, add_time_out_options
+from .kiplot import check_eeschema_do, exec_with_retry, add_extra_options
 from .misc import (CMD_EESCHEMA_DO, BOM_ERROR)
 from .log import (get_logger)
 
@@ -34,10 +34,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
         check_eeschema_do()
         cmd = [CMD_EESCHEMA_DO, 'bom_xml', GS.sch_file, GS.out_dir]
         # If we are in verbose mode enable debug in the child
-        if GS.debug_enabled:
-            cmd.insert(1, '-vv')
-            cmd.insert(1, '-r')
-        cmd = add_time_out_options(cmd)
+        cmd = add_extra_options(cmd)
         logger.info('- Updating BoM in XML format')
         ret = exec_with_retry(cmd)
         if ret:
