@@ -47,7 +47,7 @@ class PDF_Sch_PrintOptions(VariantOptions):
             sch_dir = None
             sch_file = GS.sch_file
         cmd = [CMD_EESCHEMA_DO, 'export', '--all_pages', '--file_format', 'pdf', sch_file, output_dir]
-        cmd = add_extra_options(cmd)
+        cmd, video_remove = add_extra_options(cmd)
         ret = exec_with_retry(cmd)
         if ret:
             logger.error(CMD_EESCHEMA_DO+' returned %d', ret)
@@ -63,6 +63,10 @@ class PDF_Sch_PrintOptions(VariantOptions):
         if sch_dir:
             logger.debug('Removing temporal variant dir `{}`'.format(sch_dir))
             rmtree(sch_dir)
+        if video_remove:
+            video_name = os.path.join(GS.out_dir, 'export_eeschema_screencast.ogv')
+            if os.path.isfile(video_name):
+                os.remove(video_name)
 
 
 @output_class

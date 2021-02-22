@@ -3,6 +3,7 @@
 # Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+import os
 from sys import (exit)
 from .macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
@@ -43,9 +44,13 @@ class Run_DRC(BasePreFlight):  # noqa: F821
             cmd.append('-i')
         cmd.extend([GS.pcb_file, GS.out_dir])
         # If we are in verbose mode enable debug in the child
-        cmd = add_extra_options(cmd)
+        cmd, video_remove = add_extra_options(cmd)
         logger.info('- Running the DRC')
         ret = exec_with_retry(cmd)
+        if video_remove:
+            video_name = os.path.join(GS.out_dir, 'pcbnew_run_drc_screencast.ogv')
+            if os.path.isfile(video_name):
+                os.remove(video_name)
         if ret:
             if ret > 127:
                 ret = -(256-ret)

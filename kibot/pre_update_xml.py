@@ -3,6 +3,7 @@
 # Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+import os
 from sys import (exit)
 from .macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
@@ -34,9 +35,13 @@ class Update_XML(BasePreFlight):  # noqa: F821
         check_eeschema_do()
         cmd = [CMD_EESCHEMA_DO, 'bom_xml', GS.sch_file, GS.out_dir]
         # If we are in verbose mode enable debug in the child
-        cmd = add_extra_options(cmd)
+        cmd, video_remove = add_extra_options(cmd)
         logger.info('- Updating BoM in XML format')
         ret = exec_with_retry(cmd)
         if ret:
             logger.error('Failed to update the BoM, error %d', ret)
             exit(BOM_ERROR)
+        if video_remove:
+            video_name = os.path.join(GS.out_dir, 'bom_xml_eeschema_screencast.ogv')
+            if os.path.isfile(video_name):
+                os.remove(video_name)

@@ -153,9 +153,11 @@ def exec_with_retry(cmd):
 
 
 def add_extra_options(cmd):
+    is_gitlab_ci = 'GITLAB_CI' in os.environ
+    video_remove = (not GS.debug_enabled) and is_gitlab_ci
     if GS.debug_enabled:
         cmd.insert(1, '-'+'v'*GS.debug_level)
-    if GS.debug_enabled or 'GITLAB_CI' in os.environ:
+    if GS.debug_enabled or is_gitlab_ci:
         # Forcing record on GitLab CI/CD (black magic)
         cmd.insert(1, '-r')
     if GS.global_kiauto_time_out_scale:
@@ -164,7 +166,7 @@ def add_extra_options(cmd):
     if GS.global_kiauto_wait_start:
         cmd.insert(1, str(GS.global_kiauto_wait_start))
         cmd.insert(1, '--wait_start')
-    return cmd
+    return cmd, video_remove
 
 
 def load_board(pcb_file=None):

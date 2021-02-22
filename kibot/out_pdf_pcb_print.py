@@ -111,7 +111,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             cmd.append('--mirror')
         board_name, proj_name = self.filter_components(GS.board)
         cmd.extend([board_name, output_dir])
-        cmd = add_extra_options(cmd)
+        cmd, video_remove = add_extra_options(cmd)
         # Add the layers
         cmd.extend([la.layer for la in layers])
         # Execute it
@@ -124,6 +124,10 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         if ret:
             logger.error(CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)
             exit(PDF_PCB_PRINT)
+        if video_remove:
+            video_name = os.path.join(GS.out_dir, 'pcbnew_export_screencast.ogv')
+            if os.path.isfile(video_name):
+                os.remove(video_name)
 
 
 @output_class
