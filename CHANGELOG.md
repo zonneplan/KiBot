@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.1] - 2021-02-22
+### Added
+- GitLab CI workaround
+- Verbosity level is now passed to KiAuto
+
 ## [0.10.0-4] - 2021-02-16
 ### Fixed
 - Problem using Python 3.6 (ZipFile's compresslevel arg needs 3.7)
