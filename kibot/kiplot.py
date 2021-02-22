@@ -155,7 +155,9 @@ def exec_with_retry(cmd):
 def add_extra_options(cmd):
     if GS.debug_enabled:
         cmd.insert(1, '-'+'v'*GS.debug_level)
-        # cmd.insert(1, '-r')
+    if GS.debug_enabled or 'GITLAB_CI' in os.environ:
+        # Forcing record on GitLab CI/CD (black magic)
+        cmd.insert(1, '-r')
     if GS.global_kiauto_time_out_scale:
         cmd.insert(1, str(GS.global_kiauto_time_out_scale))
         cmd.insert(1, '--time_out_scale')
