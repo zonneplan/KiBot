@@ -78,3 +78,9 @@ jobs:
           args: |
             package/${{needs.build.outputs.deb_name}}
 
+      - name: Trigger docker
+        env:
+          DOCKER_TRIGGER: ${{ secrets.DOCKER_TRIGGER }}
+        run: |
+          curl -X POST $DOCKER_TRIGGER
+
