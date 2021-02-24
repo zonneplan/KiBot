@@ -22,7 +22,8 @@ from collections import OrderedDict
 from .gs import GS
 from .misc import (PLOT_ERROR, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
                    EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, KICAD_VERSION_5_99,
-                   MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT)
+                   MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT,
+                   W_KIAUTO)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .pre_base import BasePreFlight
 from .kicad.v5_sch import Schematic, SchFileError
@@ -131,6 +132,34 @@ def search_as_plugin(cmd, names):
     return cmd
 
 
+def extract_errors(text):
+    in_error = in_warning = False
+    msg = ''
+    for line in text.split('\n'):
+        line += '\n'
+        if line[0] == ' ' and (in_error or in_warning):
+            msg += line
+        else:
+            if in_error:
+                in_error = False
+                logger.error(msg.rstrip())
+            elif in_warning:
+                in_warning = False
+                logger.warning(W_KIAUTO+msg.rstrip())
+        if line.startswith('ERROR:'):
+            in_error = True
+            msg = line[6:]
+        elif line.startswith('WARNING:'):
+            in_warning = True
+            msg = line[8:]
+    if in_error:
+        in_error = False
+        logger.error(msg.rstrip())
+    elif in_warning:
+        in_warning = False
+        logger.warning(W_KIAUTO+msg.rstrip())
+
+
 def exec_with_retry(cmd):
     logger.debug('Executing: '+str(cmd))
     retry = 2
@@ -141,11 +170,9 @@ def exec_with_retry(cmd):
         if ret > 0 and ret < 128 and retry:
             logger.debug('Failed with error {}, retrying ...'.format(ret))
         else:
+            extract_errors(result.stderr)
             err = '> '+result.stderr.replace('\n', '\n> ')
-            if ret:
-                logger.error('Output from command:\n'+err)
-            else:
-                logger.debug('Output from command:\n'+err)
+            logger.debug('Output from command:\n'+err)
             if 'Timed out' in err:
                 logger.warning(W_TIMEOUT+'Time out detected, on slow machines or complex projects try:')
                 logger.warning(W_TIMEOUT+'`kiauto_time_out_scale` and/or `kiauto_wait_start` global options')

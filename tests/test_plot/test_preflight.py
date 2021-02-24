@@ -60,6 +60,7 @@ def test_erc_warning_1(test_dir):
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt')
+    ctx.search_err(r"WARNING:\(W058\) 1 ERC warnings detected")
     ctx.clean_up()
 
 
@@ -70,6 +71,7 @@ def test_erc_warning_2(test_dir):
     ctx.run(ERC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt')
+    ctx.search_err(r"ERROR:1 ERC errors detected")
     ctx.clean_up()
 
 
