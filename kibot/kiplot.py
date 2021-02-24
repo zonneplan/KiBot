@@ -394,6 +394,49 @@ def gen_global_targets(f, pre_targets, out_targets, type):
     return extra_targets
 
 
+def get_pre_targets(targets, dependencies, is_pre):
+    pcb_targets = sch_targets = ''
+    pres = BasePreFlight.get_in_use_objs()
+    try:
+        for pre in pres:
+            tg = pre.get_targets()
+            if not tg:
+                continue
+            name = pre._name
+            targets[name] = [adapt_file_name(fn) for fn in tg]
+            dependencies[name] = [adapt_file_name(fn) for fn in pre.get_dependencies()]
+            is_pre.add(name)
+            if pre.is_sch():
+                sch_targets += ' '+name
+            if pre.is_pcb():
+                pcb_targets += ' '+name
+    except KiPlotConfigurationError as e:
+        config_error("In preflight '"+name+"': "+str(e))
+    return pcb_targets, sch_targets
+
+
+def get_out_targets(outputs, ori_names, targets, dependencies, comments):
+    pcb_targets = sch_targets = ''
+    try:
+        for out in outputs:
+            name = name2make(out.name)
+            ori_names[name] = out.name
+            tg = out.get_targets(os.path.join(GS.out_dir, out.dir))
+            if not tg:
+                continue
+            targets[name] = [adapt_file_name(fn) for fn in tg]
+            dependencies[name] = [adapt_file_name(fn) for fn in out.get_dependencies()]
+            if out.comment:
+                comments[name] = out.comment
+            if out.is_sch():
+                sch_targets += ' '+name
+            if out.is_pcb():
+                pcb_targets += ' '+name
+    except KiPlotConfigurationError as e:
+        config_error("In output '"+name+"': "+str(e))
+    return pcb_targets, sch_targets
+
+
 def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
     cfg_file = os.path.relpath(cfg_file)
     logger.info('- Creating makefile `{}` from `{}`'.format(makefile, cfg_file))
@@ -425,37 +468,10 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
         comments = {}
         ori_names = {}
         is_pre = set()
-        pre_pcb_targets = pre_sch_targets = ''
-        out_pcb_targets = out_sch_targets = ''
         # Preflights
-        pres = BasePreFlight.get_in_use_objs()
-        for pre in pres:
-            tg = pre.get_targets()
-            if not tg:
-                continue
-            name = pre._name
-            targets[name] = [adapt_file_name(fn) for fn in tg]
-            dependencies[name] = [adapt_file_name(fn) for fn in pre.get_dependencies()]
-            is_pre.add(name)
-            if pre.is_sch():
-                pre_sch_targets += ' '+name
-            if pre.is_pcb():
-                pre_pcb_targets += ' '+name
+        pre_pcb_targets, pre_sch_targets = get_pre_targets(targets, dependencies, is_pre)
         # Outputs
-        for out in outputs:
-            name = name2make(out.name)
-            ori_names[name] = out.name
-            tg = out.get_targets(os.path.join(GS.out_dir, out.dir))
-            if not tg:
-                continue
-            targets[name] = [adapt_file_name(fn) for fn in tg]
-            dependencies[name] = [adapt_file_name(fn) for fn in out.get_dependencies()]
-            if out.comment:
-                comments[name] = out.comment
-            if out.is_sch():
-                out_sch_targets += ' '+name
-            if out.is_pcb():
-                out_pcb_targets += ' '+name
+        out_pcb_targets = out_sch_targets = get_out_targets(outputs, ori_names, targets, dependencies, comments)
         # all target
         f.write('#\n# Default target\n#\n')
         f.write('all: '+' '.join(targets.keys())+'\n\n')
