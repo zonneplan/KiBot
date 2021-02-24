@@ -308,12 +308,12 @@ def preflight_checks(skip_pre):
     BasePreFlight.run_enabled()
 
 
-def get_output_dir(o_dir):
+def get_output_dir(o_dir, dry=False):
     # outdir is a combination of the config and output
     outdir = os.path.abspath(os.path.join(GS.out_dir, o_dir))
     # Create directory if needed
     logger.debug("Output destination: {}".format(outdir))
-    if not os.path.exists(outdir):
+    if not dry and not os.path.exists(outdir):
         os.makedirs(outdir)
     return outdir
 

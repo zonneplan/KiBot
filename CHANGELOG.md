@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Problem when using E/DRC filters and the output dir didn't exist.
 - Not all errors during makefile generation were catched (got a stack trace).
+- Output dirs created when generating a makefile for a compress target.
 
 ## [0.10.1] - 2021-02-22
 ### Added
