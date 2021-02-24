@@ -53,6 +53,26 @@ def test_erc_fail_2(test_dir):
     ctx.clean_up()
 
 
+def test_erc_warning_1(test_dir):
+    """ Using an SCH with ERC warnings """
+    prj = 'warning-project'
+    ctx = context.TestContextSCH(test_dir, 'test_erc_warning_1', 'erc_warning/'+prj, 'erc', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.txt')
+    ctx.clean_up()
+
+
+def test_erc_warning_2(test_dir):
+    """ Using an SCH with ERC warnings as errors """
+    prj = 'warning-project'
+    ctx = context.TestContextSCH(test_dir, 'test_erc_warning_1', 'erc_warning/'+prj, 'erc_no_w', '')
+    ctx.run(ERC_ERROR)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.txt')
+    ctx.clean_up()
+
+
 def test_drc_1(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, 'DRC', prj, 'drc', '')

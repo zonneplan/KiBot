@@ -40,6 +40,8 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         output = self.get_targets()[0]
         logger.debug('ERC report: '+output)
         cmd = [CMD_EESCHEMA_DO, 'run_erc', '-o', output]
+        if BasePreFlight.get_option('erc_warnings'):  # noqa: F821
+            cmd.append('-w')
         if GS.filter_file:
             cmd.extend(['-f', GS.filter_file])
         cmd.extend([GS.sch_file, GS.out_dir])
