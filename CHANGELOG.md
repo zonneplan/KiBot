@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `erc_warnings` pre-flight option to consider ERC warnings as errors.
 
+### Fixed
+- Problem when using E/DRC filters and the output dir didn't exist.
+
 ## [0.10.1] - 2021-02-22
 ### Added
 - GitLab CI workaround

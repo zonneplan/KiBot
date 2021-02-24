@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Contributors: Leandro Heck (@leoheck)
@@ -9,6 +9,7 @@ import re
 from .gs import GS
 from .error import KiPlotConfigurationError
 from .optionable import Optionable
+from .kiplot import get_output_dir
 from .macros import macros, document, pre_class  # noqa: F401
 from .log import get_logger
 
@@ -95,6 +96,7 @@ class Filters(BasePreFlight):  # noqa: F821
     def apply(self):
         # Create the filters file
         if self._value:
-            GS.filter_file = os.path.join(GS.out_dir, 'kibot_errors.filter')
+            o_dir = get_output_dir('')
+            GS.filter_file = os.path.join(o_dir, 'kibot_errors.filter')
             with open(GS.filter_file, 'w') as f:
                 f.write(self._value)
