@@ -100,6 +100,7 @@ This section is used to specify tasks that will be executed before generating an
 #### Supported preflight options:
 
 - check_zone_fills: [boolean=false] Zones are filled before doing any operation involving PCB layers.
+- erc_warnings: [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
 - filters: [list(dict)] A list of entries to filter out ERC/DRC messages.
   * Valid keys:
     - `error`: [string=''] Error id we want to exclude. A name for KiCad 6 or a number for KiCad 5, but always a string.

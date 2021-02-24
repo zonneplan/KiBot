@@ -8,6 +8,8 @@ kibot:
 preflight:
   # [boolean=false] Zones are filled before doing any operation involving PCB layers.
   check_zone_fills: true
+  # [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
+  erc_warnings: false
   # [list(dict)] A list of entries to filter out ERC/DRC messages.
   filters: 
     - filter: 'Filter description'
