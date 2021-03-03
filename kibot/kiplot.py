@@ -446,17 +446,17 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
         fname = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src', 'kibot'))
         if kibot_sys or not os.path.isfile(fname):
             fname = 'kibot'
-        f.write('KIBOT={}\n'.format(fname))
+        f.write('KIBOT?={}\n'.format(fname))
         dbg = ''
         if GS.debug_level > 0:
             dbg = '-'+'v'*GS.debug_level
-        f.write('DEBUG={}\n'.format(dbg))
+        f.write('DEBUG?={}\n'.format(dbg))
         f.write('CONFIG={}\n'.format(cfg_file))
         f.write('SCH={}\n'.format(os.path.relpath(GS.sch_file)))
         f.write('PCB={}\n'.format(os.path.relpath(GS.pcb_file)))
         f.write('DEST={}\n'.format(os.path.relpath(GS.out_dir)))
         f.write('KIBOT_CMD=$(KIBOT) $(DEBUG) -c $(CONFIG) -e $(SCH) -b $(PCB) -d $(DEST)\n')
-        f.write('LOGFILE=kibot_error.log\n')
+        f.write('LOGFILE?=kibot_error.log\n')
         f.write('\n')
         # Configure all outputs
         GS.outputs = outputs
