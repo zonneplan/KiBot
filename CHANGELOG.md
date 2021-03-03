@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Errors and warnings from KiAuto now are printed as errors and warnings.
+- Schematic dependencies are sorted in the generated Makefiles
 
 ### Fixed
 - Problem when using E/DRC filters and the output dir didn't exist.

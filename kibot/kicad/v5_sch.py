@@ -1474,7 +1474,7 @@ class Schematic(object):
         files = {self.fname}
         for sch in self.sheets:
             files.update(sch.sheet.get_files())
-        return list(files)
+        return sorted(files)
 
     def get_components(self, exclude_power=True):
         """ A list of all the components. """
