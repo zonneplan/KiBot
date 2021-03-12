@@ -471,7 +471,7 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
         # Preflights
         pre_pcb_targets, pre_sch_targets = get_pre_targets(targets, dependencies, is_pre)
         # Outputs
-        out_pcb_targets = out_sch_targets = get_out_targets(outputs, ori_names, targets, dependencies, comments)
+        out_pcb_targets, out_sch_targets = get_out_targets(outputs, ori_names, targets, dependencies, comments)
         # all target
         f.write('#\n# Default target\n#\n')
         f.write('all: '+' '.join(targets.keys())+'\n\n')
