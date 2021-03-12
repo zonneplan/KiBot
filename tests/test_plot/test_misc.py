@@ -600,7 +600,7 @@ def check_test_v5_sch_deps(ctx, deps, extra=[], in_output=False):
 
 def check_makefile(ctx, mkfile, prj, dbg, txt):
     ctx.expect_out_file('Makefile')
-    res = ctx.search_in_file('Makefile', ['DEBUG=(.*)', txt])
+    res = ctx.search_in_file('Makefile', [r'DEBUG\?=(.*)', txt])
     assert res[0][0] == dbg, res
     targets = ctx.read_mk_targets(mkfile)
     all = targets['all']

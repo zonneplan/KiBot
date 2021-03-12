@@ -326,5 +326,5 @@ def test_makefile_kibot_sys(test_dir):
     GS.out_dir = ctx.get_out_path('')
     with context.cover_it(cov):
         generate_makefile(ctx.get_out_path('Makefile'), 'pp', [], kibot_sys=True)
-    ctx.search_in_file('Makefile', ['KIBOT=kibot'])
+    ctx.search_in_file('Makefile', [r'KIBOT\?=kibot'])
     ctx.clean_up()
