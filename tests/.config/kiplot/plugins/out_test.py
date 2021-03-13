@@ -15,7 +15,7 @@ class TestOptions(BaseOptions):
             self.bar = 'nope'
             """ nothing """  # pragma: no cover
 
-    def get_targets(self, parent, out_dir):
+    def get_targets(self, out_dir):
         return ['dummy']
 
 

@@ -43,6 +43,8 @@ class STEPOptions(VariantOptions):
         # Temporal dir used to store the downloaded files
         self._tmp_dir = None
         super().__init__()
+        self._expand_id = '3D'
+        self._expand_ext = 'step'
 
     @property
     def origin(self):
@@ -197,13 +199,11 @@ class STEPOptions(VariantOptions):
                     models.push_front(model)
         return fname
 
-    def get_targets(self, parent, out_dir):
-        return [self.expand_filename(out_dir, self.output, '3D', 'step')]
+    def get_targets(self, out_dir):
+        return [self._parent.expand_filename(out_dir, self.output)]
 
-    def run(self, output_dir):
-        super().run(output_dir)
-        # Output file name
-        output = self.get_targets(None, output_dir)[0]
+    def run(self, output):
+        super().run(output)
         # Make units explicit
         if self.metric_units:
             units = 'mm'

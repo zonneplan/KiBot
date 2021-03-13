@@ -3,6 +3,7 @@
 # Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+import os
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
 from .misc import Rect, KICAD_VERSION_5_99, W_WRONGPASTE
@@ -53,7 +54,7 @@ class BaseOutput(RegOutput):
         if not (hasattr(self, "options") and hasattr(self.options, "get_targets")):
             logger.error("Output {} doesn't implement get_targets(), plese report it".format(self))
             return []
-        return self.options.get_targets(self, out_dir)
+        return self.options.get_targets(out_dir)
 
     def get_dependencies(self):
         """ Returns a list of files needed to create this output """
@@ -63,16 +64,28 @@ class BaseOutput(RegOutput):
             return [GS.sch_file]
         return [GS.pcb_file]
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if getattr(self, 'options', None) and isinstance(self.options, type):
             # No options, get the defaults
             self.options = self.options()
             # Configure them using an empty tree
-            self.options.config()
+            self.options.config(self)
+
+    def expand_dirname(self, out_dir):
+        if self._sch_related:
+            return self.options.expand_filename_sch(out_dir)
+        return self.options.expand_filename_pcb(out_dir)
+
+    def expand_filename(self, out_dir, name):
+        if self._sch_related:
+            name = self.options.expand_filename_sch(name)
+        else:
+            name = self.options.expand_filename_pcb(name)
+        return os.path.abspath(os.path.join(out_dir, name))
 
     def run(self, output_dir):
-        self.options.run(output_dir)
+        self.options.run(self.expand_filename(output_dir, self.options.output))
 
 
 class BoMRegex(Optionable):
@@ -103,8 +116,8 @@ class VariantOptions(BaseOptions):
         super().__init__()
         self._comps = None
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         self.variant = RegOutput.check_variant(self.variant)
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
 

@@ -72,8 +72,8 @@ class AnyLayerOptions(VariantOptions):
             """ [list(dict)] A list of customized reports for the manufacturer """
         super().__init__()
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if isinstance(self.custom_reports, type):
             self.custom_reports = []
 
@@ -243,8 +243,8 @@ class AnyLayer(BaseOutput):
             """ [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         # We need layers
         if isinstance(self.layers, type):
             raise KiPlotConfigurationError("Missing `layers` list")

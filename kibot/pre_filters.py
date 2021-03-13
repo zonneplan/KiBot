@@ -47,8 +47,8 @@ class FiltersOptions(Optionable):
             """ [list(dict)] DRC/ERC errors to be ignored """
         self._filter_what = 'DRC/ERC errors'
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         parsed = None
         self.unparsed = None
         if not isinstance(self.filters, type):
@@ -82,7 +82,7 @@ class Filters(BasePreFlight):  # noqa: F821
     def __init__(self, name, value):
         f = FiltersOptions()
         f.set_tree({'filters': value})
-        f.config()
+        f.config(self)
         super().__init__(name, f.filters)
 
     def get_example():

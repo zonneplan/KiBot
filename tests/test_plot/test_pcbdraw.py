@@ -69,7 +69,7 @@ def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
         o.style = ''
         o.remap = None
         o.format = 'jpg'
-        o.config()
+        o.config(None)
         cov.load()
         cov.start()
         o.run('')
@@ -88,7 +88,7 @@ def test_pcbdraw_miss_convert(caplog, monkeypatch):
         o.style = ''
         o.remap = None
         o.format = 'jpg'
-        o.config()
+        o.config(None)
         cov.load()
         cov.start()
         o.run('')

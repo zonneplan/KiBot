@@ -50,8 +50,8 @@ class BoMColumns(Optionable):
         self._field_example = 'Row'
         self._name_example = 'Line'
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if not self.field:
             raise KiPlotConfigurationError("Missing or empty `field` in columns list ({})".format(str(self._tree)))
         # Ensure this is None or a list
@@ -92,8 +92,8 @@ class BoMLinkable(Optionable):
             self.title = 'KiBot Bill of Materials'
             """ BoM title """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         # digikey_link
         if isinstance(self.digikey_link, type):
             self.digikey_link = []
@@ -121,8 +121,8 @@ class BoMHTML(BoMLinkable):
             """ Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
                 Or you can provide a CSS file name. Please use .css as file extension. """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         # Style
         if not self.style:
             self.style = 'modern-blue'
@@ -157,8 +157,8 @@ class BoMXLSX(BoMLinkable):
             self.style = 'modern-blue'
             """ Head style: modern-blue, modern-green, modern-red and classic. """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         # Style
         if not self.style:
             self.style = 'modern-blue'
@@ -200,8 +200,8 @@ class Aggregate(Optionable):
             self.number = 1
             """ Number of boards to build (components multiplier). Use negative to substract """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if not self.file:
             raise KiPlotConfigurationError("Missing or empty `file` in aggregate list ({})".format(str(self._tree)))
         if not self.name:
@@ -323,26 +323,28 @@ class BoMOptions(BaseOptions):
             # Delegate any filter to the variant
             self.variant.set_def_filters(self.exclude_filter, self.dnf_filter, self.dnc_filter)
             self.exclude_filter = self.dnf_filter = self.dnc_filter = None
-            self.variant.config()  # Fill or adjust any detail
+            self.variant.config(self)  # Fill or adjust any detail
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         self.format = self._guess_format()
+        self._expand_id = 'bom'
+        self._expand_ext = self.format.lower()
         # HTML options
         if self.format == 'html' and isinstance(self.html, type):
             # If no options get the defaults
             self.html = BoMHTML()
-            self.html.config()
+            self.html.config(self)
         # CSV options
         if self.format in ['csv', 'tsv', 'txt'] and isinstance(self.csv, type):
             # If no options get the defaults
             self.csv = BoMCSV()
-            self.csv.config()
+            self.csv.config(self)
         # XLSX options
         if self.format == 'xlsx' and isinstance(self.xlsx, type):
             # If no options get the defaults
             self.xlsx = BoMXLSX()
-            self.xlsx.config()
+            self.xlsx.config(self)
         # group_fields
         if isinstance(self.group_fields, type):
             self.group_fields = ColumnList.DEFAULT_GROUPING
@@ -434,9 +436,8 @@ class BoMOptions(BaseOptions):
             comps.extend(new_comps)
             prj.source = os.path.basename(prj.file)
 
-    def run(self, output_dir):
+    def run(self, output):
         format = self.format.lower()
-        output = self.expand_filename_sch(output_dir, self.output, 'bom', format)
         # Add some info needed for the output to the config object.
         # So all the configuration is contained in one object.
         self.source = GS.sch_basename
@@ -482,8 +483,8 @@ class BoMOptions(BaseOptions):
                 c.ref = c.ref[l_id:]
                 c.ref_id = ''
 
-    def get_targets(self, parent, out_dir):
-        return [self.expand_filename_sch(out_dir, self.output, 'bom', self.format.lower())]
+    def get_targets(self, out_dir):
+        return [self._parent.expand_filename(out_dir, self.output)]
 
 
 @output_class

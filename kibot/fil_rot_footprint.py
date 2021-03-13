@@ -64,8 +64,8 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             """ [list(list(string))] A list of pairs regular expression/rotation.
                 Components matching the regular expression will be rotated the indicated angle """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         self._rot = []
         if isinstance(self.rotations, list):
             for r in self.rotations:

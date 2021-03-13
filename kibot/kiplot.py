@@ -326,7 +326,7 @@ def config_output(out, dry=False):
         if out.is_sch():
             load_sch()
     try:
-        out.config()
+        out.config(None)
     except KiPlotConfigurationError as e:
         config_error("In section '"+out.name+"' ("+out.type+"): "+str(e))
 
@@ -334,7 +334,8 @@ def config_output(out, dry=False):
 def run_output(out):
     GS.current_output = out.name
     try:
-        out.run(get_output_dir(out.dir))
+        out_dir = out.expand_dirname(out.dir)
+        out.run(get_output_dir(out_dir))
         out._done = True
     except PlotError as e:
         logger.error("In output `"+str(out)+"`: "+str(e))

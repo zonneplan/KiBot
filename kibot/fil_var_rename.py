@@ -25,8 +25,8 @@ class Var_Rename(BaseFilter):  # noqa: F821
             self.variant_to_value = False
             """ Rename fields matching the variant to the value of the component """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if not self.separator:
             self.separator = ':'
 

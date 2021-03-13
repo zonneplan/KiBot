@@ -37,8 +37,8 @@ class Globals(FiltersOptions):
             return new_val
         return current
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         GS.global_output = self.set_global(GS.global_output, self.output, 'output')
         GS.global_variant = self.set_global(GS.global_variant, self.variant, 'variant')
         GS.global_kiauto_wait_start = self.set_global(GS.global_kiauto_wait_start, self.kiauto_wait_start, 'kiauto_wait_start')

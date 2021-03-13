@@ -70,7 +70,7 @@ def run_compress(ctx, test_import_fail=False):
         # Create a compress object with the dummy file as source
         out = RegOutput.get_class_for('compress')()
         out.set_tree({'options': {'format': 'RAR', 'files': [{'source': ctx.get_out_path('*')}]}})
-        out.config()
+        out.config(None)
         # Setup the GS output dir, needed for the output path
         GS.out_dir = '.'
         # Run the compression and catch the error
@@ -168,7 +168,7 @@ def test_ibom_parse_fail(test_dir, caplog, monkeypatch):
             # Create an ibom object
             out = RegOutput.get_class_for('ibom')()
             out.set_tree({})
-            out.config()
+            out.config(None)
             with pytest.raises(SystemExit) as pytest_wrapped_e:
                 out.run('')
     assert pytest_wrapped_e.type == SystemExit
@@ -224,7 +224,7 @@ def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
                 pre_erc.run()
             out = RegOutput.get_class_for('pdf_pcb_print')()
             out.set_tree({'layers': 'all'})
-            out.config()
+            out.config(None)
             with pytest.raises(SystemExit) as e3:
                 out.run('')
     assert e1.type == SystemExit
@@ -264,7 +264,7 @@ def test_step_fail(test_dir, caplog, monkeypatch):
             # Create a compress object with the dummy file as source
             out = RegOutput.get_class_for('step')()
             out.set_tree({})
-            out.config()
+            out.config(None)
             with pytest.raises(SystemExit) as e:
                 out.run('')
     # Check we exited because rar isn't installed

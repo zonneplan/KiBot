@@ -73,8 +73,8 @@ class AnyDrill(BaseOptions):
         self._map_ext = {'hpgl': 'plt', 'ps': 'ps', 'gerber': 'gbr', 'dxf': 'dxf', 'svg': 'svg', 'pdf': 'pdf'}
         self._unified_output = False
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         # Solve the map for both cases
         if isinstance(self.map, str):
             self.map_ext = self._map_ext[self.map]
@@ -91,6 +91,8 @@ class AnyDrill(BaseOptions):
             self.report = self.report.filename
         elif not isinstance(self.report, str):
             self.report = None
+        self._expand_id = 'drill'
+        self._expand_ext = self._ext
 
     def solve_id(self, d):
         if not d:
@@ -127,6 +129,8 @@ class AnyDrill(BaseOptions):
         return filenames
 
     def run(self, output_dir):
+        if self.output:
+            output_dir = os.path.dirname(output_dir)
         # dialog_gendrill.cpp:357
         if self.use_aux_axis_as_origin:
             offset = get_aux_origin(GS.board)
@@ -145,6 +149,7 @@ class AnyDrill(BaseOptions):
         files = self.get_file_names(output_dir)
         for k_f, f in files.items():
             if f:
+                logger.debug("Renaming {} -> {}".format(k_f, f))
                 os.rename(k_f, f)
         # Generate the report
         if self.report:
@@ -152,7 +157,7 @@ class AnyDrill(BaseOptions):
             logger.debug("Generating drill report: "+drill_report_file)
             drill_writer.GenDrillReportFile(drill_report_file)
 
-    def get_targets(self, parent, out_dir):
+    def get_targets(self, out_dir):
         targets = []
         files = self.get_file_names(out_dir)
         for k_f, f in files.items():

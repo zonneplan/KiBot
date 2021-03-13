@@ -5,6 +5,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot/pull/10
+import os
 from re import compile
 from datetime import datetime
 from pcbnew import IU_PER_MM, IU_PER_MILS
@@ -44,8 +45,8 @@ class PosColumns(Optionable):
         self._id_example = 'Ref'
         self._name_example = 'Reference'
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if not self.id:
             raise KiPlotConfigurationError("Missing or empty `id` in columns list ({})".format(str(self._tree)))
 
@@ -68,9 +69,10 @@ class PositionOptions(VariantOptions):
             self.bottom_negative_x = False
             """ Use negative X coordinates for footprints on bottom layer """
         super().__init__()
+        self._expand_id = 'position'
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if isinstance(self.columns, type):
             # Default list of columns
             self.columns = OrderedDict([('Ref', 'Ref'), ('Val', 'Val'), ('Package', 'Package'), ('PosX', 'PosX'),
@@ -86,6 +88,7 @@ class PositionOptions(VariantOptions):
                     new_name = col.name if col.name else new_col
                 new_columns[new_col] = new_name
             self.columns = new_columns
+        self._expand_ext = 'pos' if self.format == 'ASCII' else 'csv'
 
     def _do_position_plot_ascii(self, output_dir, columns, modulesStr, maxSizes):
         topf = None
@@ -200,15 +203,16 @@ class PositionOptions(VariantOptions):
             return PositionOptions.is_pure_smd_5, PositionOptions.is_not_virtual_5
         return PositionOptions.is_pure_smd_6, PositionOptions.is_not_virtual_6  # pragma: no cover (Ki6)
 
-    def get_targets(self, parent, out_dir):
-        ext = 'pos' if self.format == 'ASCII' else 'csv'
+    def get_targets(self, out_dir):
+        ext = self._expand_ext
         if self.separate_files_for_front_and_back:
             return [self.expand_filename(out_dir, self.output, 'top_pos', ext),
                     self.expand_filename(out_dir, self.output, 'bottom_pos', ext)]
         return [self.expand_filename(out_dir, self.output, 'both_pos', ext)]
 
-    def run(self, output_dir):
-        super().run(output_dir)
+    def run(self, fname):
+        super().run(fname)
+        output_dir = os.path.dirname(fname)
         columns = self.columns.values()
         # Note: the parser already checked the units are milimeters or inches
         conv = 1.0
@@ -223,11 +227,13 @@ class PositionOptions(VariantOptions):
         quote_char = '"' if self.format == 'CSV' else ''
         for m in sorted(GS.board.GetModules(), key=lambda c: _ref_key(c.GetReference())):
             ref = m.GetReference()
+            logger.debug('P&P ref: {}'.format(ref))
             value = None
             # Apply any filter or variant data
             if comps_hash:
                 c = comps_hash.get(ref, None)
                 if c:
+                    logger.debug('fit: {} include: {}'.format(c.fitted, c.included))
                     if not c.fitted or not c.included:
                         continue
                     value = c.value

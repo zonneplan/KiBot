@@ -7,7 +7,7 @@ outputs:
   - name: 'position'
     comment: "Pick and place file"
     type: position
-    dir: positiondir
+    dir: positiondir/%i
     options:
       format: ASCII   # CSV or ASCII format
       units: millimeters  # millimeters or inches

@@ -88,6 +88,7 @@ def test_3Rs_position_1(test_dir):
 def test_3Rs_position_neg_x(test_dir):
     ctx = context.TestContext(test_dir, '3Rs_position_neg_x', '3Rs', 'simple_position_neg_x', POS_DIR)
     ctx.run()
+    ctx.sub_dir = os.path.join(ctx.sub_dir, 'position')
     pos_top = ctx.get_pos_top_filename()
     pos_bot = ctx.get_pos_bot_filename()
     ctx.expect_out_file(pos_top)

@@ -46,8 +46,8 @@ class IBoM(BaseVariant):  # noqa: F821
                 val = []
         return val
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', IFILT_MECHANICAL)
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')

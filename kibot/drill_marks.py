@@ -43,8 +43,8 @@ class DrillMarks(AnyLayerOptions):
             raise KiPlotConfigurationError("Unknown drill mark type: {}".format(val))
         self._drill_marks = val
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         self._drill_marks = DrillMarks._drill_marks_map[self._drill_marks]
 
     def _configure_plot_ctrl(self, po, output_dir):

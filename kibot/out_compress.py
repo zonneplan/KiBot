@@ -62,11 +62,13 @@ class CompressOptions(BaseOptions):
             """ [list(dict)] Which files will be included """
         super().__init__()
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if isinstance(self.files, type):
             self.files = []
             logger.warning(W_EMPTYZIP+'No files provided, creating an empty archive')
+        self._expand_id = parent.name
+        self._expand_ext = self.solve_extension()
 
     def create_zip(self, output, files):
         extra = {}
@@ -113,7 +115,7 @@ class CompressOptions(BaseOptions):
             ext += '.'+sub_ext
         return ext
 
-    def get_files(self, output, parent, no_out_run=False):
+    def get_files(self, output, no_out_run=False):
         output_real = os.path.realpath(output)
         files = OrderedDict()
         for f in self.files:
@@ -126,7 +128,7 @@ class CompressOptions(BaseOptions):
                         files_list = out.get_targets(get_output_dir(out.dir, dry=True))
                         break
                 if files_list is None:
-                    logger.error('Unknown output `{}` selected in {}'.format(f.from_output, parent))
+                    logger.error('Unknown output `{}` selected in {}'.format(f.from_output, self._parent))
                     exit(WRONG_ARGUMENTS)
                 if not no_out_run:
                     for file in files_list:
@@ -156,20 +158,19 @@ class CompressOptions(BaseOptions):
                 files[fname_real] = dest
         return files
 
-    def get_targets(self, parent, out_dir):
-        return [self.expand_filename(out_dir, self.output, parent.name, self.solve_extension())]
+    def get_targets(self, out_dir):
+        return [self._parent.expand_filename(out_dir, self.output)]
 
-    def get_dependencies(self, parent):
-        output = self.get_targets(parent, GS.out_dir)[0]
-        files = self.get_files(output, parent, no_out_run=True)
+    def get_dependencies(self):
+        output = self.get_targets(GS.out_dir)[0]
+        files = self.get_files(output, no_out_run=True)
         return files.keys()
 
-    def run(self, output_dir, parent):
+    def run(self, output):
         # Output file name
-        output = self.get_targets(parent, output_dir)[0]
         logger.debug('Collecting files')
         # Collect the files
-        files = self.get_files(output, parent)
+        files = self.get_files(output)
         logger.debug('Generating `{}` archive'.format(output))
         if self.format == 'ZIP':
             self.create_zip(output, files)
@@ -191,7 +192,4 @@ class Compress(BaseOutput):  # noqa: F821
             """ [dict] Options for the `compress` output """
 
     def get_dependencies(self):
-        return self.options.get_dependencies(self)
-
-    def run(self, output_dir):
-        self.options.run(output_dir, self)
+        return self.options.get_dependencies()

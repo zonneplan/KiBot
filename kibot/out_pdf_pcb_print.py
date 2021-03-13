@@ -42,6 +42,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             self.mirror = False
             """ Print mirrored (X axis inverted). ONLY for KiCad 6 """
         super().__init__()
+        self._expand_ext = 'pdf'
 
     @property
     def drill_marks(self):
@@ -53,8 +54,8 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             raise KiPlotConfigurationError("Unknown drill mark type: {}".format(val))
         self._drill_marks = val
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         self._drill_marks = PDF_Pcb_PrintOptions._drill_marks_map[self._drill_marks]
 
     @staticmethod
@@ -85,18 +86,13 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         self.restore_paste_and_glue(board, comps_hash)
         return fname, fproj
 
-    def get_targets(self, out_dir, layers):
-        layers = Layer.solve(layers)
-        id = '+'.join([la.suffix for la in layers])
-        return [self.expand_filename(out_dir, self.output, id, 'pdf')]
+    def get_targets(self, out_dir):
+        return [self._parent.expand_filename(out_dir, self.output)]
 
-    def run(self, output_dir, layers):
-        super().run(layers)
+    def run(self, output):
+        super().run(self._layers)
         check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.5.2')
-        layers = Layer.solve(layers)
         # Output file name
-        id = '+'.join([la.suffix for la in layers])
-        output = self.expand_filename(output_dir, self.output, id, 'pdf')
         cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):
             cmd.append('-f')
@@ -110,10 +106,10 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         if self.mirror:
             cmd.append('--mirror')
         board_name, proj_name = self.filter_components(GS.board)
-        cmd.extend([board_name, output_dir])
+        cmd.extend([board_name, os.path.dirname(output)])
         cmd, video_remove = add_extra_options(cmd)
         # Add the layers
-        cmd.extend([la.layer for la in layers])
+        cmd.extend([la.layer for la in self._layers])
         # Execute it
         ret = exec_with_retry(cmd)
         # Remove the temporal PCB
@@ -128,6 +124,11 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             video_name = os.path.join(GS.out_dir, 'pcbnew_export_screencast.ogv')
             if os.path.isfile(video_name):
                 os.remove(video_name)
+
+    def set_layers(self, layers):
+        layers = Layer.solve(layers)
+        self._layers = layers
+        self._expand_id = '+'.join([la.suffix for la in layers])
 
 
 @output_class
@@ -145,14 +146,9 @@ class PDF_Pcb_Print(BaseOutput):  # noqa: F821
             """ [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to include in the PDF """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         # We need layers
         if isinstance(self.layers, type):
             raise KiPlotConfigurationError("Missing `layers` list")
-
-    def get_targets(self, out_dir):
-        return self.options.get_targets(out_dir, self.layers)
-
-    def run(self, output_dir):
-        self.options.run(output_dir, self.layers)
+        self.options.set_layers(self.layers)

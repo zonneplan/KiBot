@@ -105,8 +105,8 @@ class Layer(Optionable):
         self._unkown_is_error = True
         self._protel_extension = None
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if not self.layer:
             raise KiPlotConfigurationError("Missing or empty `layer` attribute for layer entry ({})".format(self._tree))
         if not self.description:

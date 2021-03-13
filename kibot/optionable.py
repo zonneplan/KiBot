@@ -31,6 +31,9 @@ class Optionable(object):
         self._error_context = ''
         self._tree = {}
         self._configured = False
+        # File/directory pattern expansion
+        self._expand_id = ''
+        self._expand_ext = ''
         super().__init__()
         if GS.global_output is not None and getattr(self, 'output', None):
             setattr(self, 'output', GS.global_output)
@@ -146,7 +149,7 @@ class Optionable(object):
                         v = cur_val()
                         # Delegate the validation to the object
                         v.set_tree(new_val)
-                        v.config()
+                        v.config(self)
                     elif isinstance(v, list):
                         new_val = []
                         for element in v:
@@ -157,7 +160,7 @@ class Optionable(object):
                             if isinstance(element, dict):
                                 nv = cur_val()
                                 nv.set_tree(element)
-                                nv.config()
+                                nv.config(self)
                                 new_val.append(nv)
                             else:
                                 new_val.append(element)
@@ -168,7 +171,8 @@ class Optionable(object):
     def set_tree(self, tree):
         self._tree = tree
 
-    def config(self):
+    def config(self, parent):
+        self._parent = parent
         if self._tree and not self._configured:
             self._perform_config_mapping()
             self._configured = True
@@ -189,7 +193,7 @@ class Optionable(object):
             return self.variant.file_id
         return ''
 
-    def expand_filename(self, out_dir, name, id='', ext=''):
+    def expand_filename_pcb(self, name):
         """ Expands %* values in filenames.
             Uses data from the PCB. """
         if GS.board:
@@ -200,18 +204,18 @@ class Optionable(object):
             name = name.replace('%D', GS.today)
             name = name.replace('%F', GS.pcb_no_ext)
             name = name.replace('%f', GS.pcb_basename)
-            name = name.replace('%i', id)
+            name = name.replace('%i', self._expand_id)
             name = name.replace('%p', GS.pcb_title)
             name = name.replace('%r', GS.pcb_rev)
             name = name.replace('%T', GS.time)
             name = name.replace('%v', self._find_variant() if self else '')
-            name = name.replace('%x', ext)
+            name = name.replace('%x', self._expand_ext)
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')
             name = re.sub(r'[?%*:|"<>]', '_', name)
-        return os.path.abspath(os.path.join(out_dir, name))
+        return name
 
-    def expand_filename_sch(self, out_dir, name, id='', ext=''):
+    def expand_filename_sch(self, name):
         """ Expands %* values in filenames.
             Uses data from the SCH. """
         if GS.sch_file:
@@ -222,16 +226,16 @@ class Optionable(object):
             name = name.replace('%D', GS.today)
             name = name.replace('%F', GS.sch_no_ext)
             name = name.replace('%f', GS.sch_basename)
-            name = name.replace('%i', id)
+            name = name.replace('%i', self._expand_id)
             name = name.replace('%p', GS.sch_title)
             name = name.replace('%r', GS.sch_rev)
             name = name.replace('%T', GS.time)
             name = name.replace('%v', self._find_variant() if self else '')
-            name = name.replace('%x', ext)
+            name = name.replace('%x', self._expand_ext)
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')
             name = re.sub(r'[?%*:|"<>]', '_', name)
-        return os.path.abspath(os.path.join(out_dir, name))
+        return name
 
 
 class BaseOptions(Optionable):
@@ -243,3 +247,17 @@ class BaseOptions(Optionable):
     def read_vals_from_po(self, po):
         """ Set attributes from a PCB_PLOT_PARAMS (plot options) """
         return
+
+    def expand_filename(self, dir, name, id, ext):
+        cur_id = self._expand_id
+        cur_ext = self._expand_ext
+        self._expand_id = id
+        self._expand_ext = ext
+        if self._parent._sch_related:
+            name = self.expand_filename_sch(name)
+        else:
+            name = self.expand_filename_pcb(name)
+        res = os.path.abspath(os.path.join(dir, name))
+        self._expand_id = cur_id
+        self._expand_ext = cur_ext
+        return res

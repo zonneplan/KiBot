@@ -24,16 +24,17 @@ class SVG_Sch_PrintOptions(VariantOptions):
             """ Filename for the output SVG (%i=schematic %x=svg) """
         super().__init__()
         self.add_to_doc('variant', "Not fitted components are crossed")
+        self._expand_id = 'schematic'
+        self._expand_ext = 'svg'
 
-    def get_targets(self, parent, out_dir):
-        id = 'schematic'
-        ext = 'svg'
+    def get_targets(self, out_dir):
         if self.output:
-            return [self.expand_filename_sch(out_dir, self.output, id, ext)]
-        return [self.expand_filename_sch(out_dir, '%f.%x', id, ext)]
+            return [self._parent.expand_filename(out_dir, self.output)]
+        return [self._parent.expand_filename(out_dir, '%f.%x')]
 
-    def run(self, output_dir):
-        super().run(output_dir)
+    def run(self, name):
+        super().run(name)
+        output_dir = os.path.dirname(name)
         check_eeschema_do()
         if self._comps:
             # Save it to a temporal dir
@@ -50,18 +51,15 @@ class SVG_Sch_PrintOptions(VariantOptions):
             logger.error(CMD_EESCHEMA_DO+' returned %d', ret)
             exit(SVG_SCH_PRINT)
         if self.output:
-            id = 'schematic'
-            ext = 'svg'
-            cur = self.expand_filename_sch(output_dir, '%f.%x', id, ext)
-            new = self.expand_filename_sch(output_dir, self.output, id, ext)
-            logger.debug('Moving '+cur+' -> '+new)
-            os.rename(cur, new)
+            cur = self._parent.expand_filename(output_dir, '%f.%x')
+            logger.debug('Moving '+cur+' -> '+name)
+            os.rename(cur, name)
         # Remove the temporal dir if needed
         if sch_dir:
             logger.debug('Removing temporal variant dir `{}`'.format(sch_dir))
             rmtree(sch_dir)
         if video_remove:
-            video_name = os.path.join(GS.out_dir, 'export_eeschema_screencast.ogv')
+            video_name = os.path.join(output_dir, 'export_eeschema_screencast.ogv')
             if os.path.isfile(video_name):
                 os.remove(video_name)
 

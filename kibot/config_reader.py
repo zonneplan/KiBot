@@ -118,7 +118,7 @@ class CfgYamlReader(object):
         o_var = reg_class.get_class_for(otype)()
         o_var.set_tree(o_tree)
         try:
-            o_var.config()
+            o_var.config(None)
         except KiPlotConfigurationError as e:
             config_error("In section `"+name_type+"`: "+str(e))
         return o_var
@@ -167,7 +167,7 @@ class CfgYamlReader(object):
         glb = GS.global_opts_class()
         glb.set_tree(gb)
         try:
-            glb.config()
+            glb.config(None)
         except KiPlotConfigurationError as e:
             config_error("In `global` section: "+str(e))
 

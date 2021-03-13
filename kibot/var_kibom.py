@@ -39,9 +39,9 @@ class KiBoM(BaseVariant):  # noqa: F821
         self._def_dnf_filter = dnf_filter
         self._def_dnc_filter = dnc_filter
 
-    def config(self):
+    def config(self, parent):
         # Now we can let the parent initialize the filters
-        super().config()
+        super().config(parent)
         # Variants, ensure a list
         if isinstance(self.variant, type):
             self.variant = []

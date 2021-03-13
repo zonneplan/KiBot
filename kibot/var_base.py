@@ -36,8 +36,8 @@ class BaseVariant(RegVariant):
             """ [string|list(string)=''] Name of the filter to mark components as 'Do Not Change'.
                 Use '_kibom_dnc' for the default KiBoM behavior """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform')
 
     def filter(self, comps):

@@ -55,8 +55,8 @@ class PcbDrawStyle(Optionable):
         if not self._color_re.match(color):
             raise KiPlotConfigurationError('Invalid color for `{}` use `#rrggbb` with hex digits'.format(name))
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         self.validate_color('board')
         self.validate_color('copper')
         self.validate_color('board')
@@ -78,7 +78,7 @@ class PcbDrawRemap(Optionable):
     def __init__(self):
         super().__init__()
 
-    def config(self):
+    def config(self, parent):
         pass
 
 
@@ -139,8 +139,8 @@ class PcbDrawOptions(VariantOptions):
             """ Name for the generated file """
         super().__init__()
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         # Libs
         if isinstance(self.libs, type):
             self.libs = None
@@ -174,6 +174,8 @@ class PcbDrawOptions(VariantOptions):
             self.style = None
         elif isinstance(self.style, PcbDrawStyle):
             self.style = self.style.to_dict()
+        self._expand_id = 'bottom' if self.bottom else 'top'
+        self._expand_ext = self.format
 
     def _create_remap(self):
         with NamedTemporaryFile(mode='w', delete=False) as f:
@@ -227,14 +229,12 @@ class PcbDrawOptions(VariantOptions):
                 cmd.append(svg)
         return svg
 
-    def get_targets(self, parent, out_dir):
-        return [self.expand_filename(out_dir, self.output, 'bottom' if self.bottom else 'top', self.format)]
+    def get_targets(self, out_dir):
+        return [self._parent.expand_filename(out_dir, self.output)]
 
-    def run(self, output_dir):
-        super().run(output_dir)
+    def run(self, name):
+        super().run(name)
         check_script(PCBDRAW, URL_PCBDRAW, '0.6.0')
-        # Output file name
-        output = self.expand_filename(output_dir, self.output, 'bottom' if self.bottom else 'top', self.format)
         # Base command with overwrite
         cmd = [PCBDRAW]
         # Add user options
@@ -278,7 +278,7 @@ class PcbDrawOptions(VariantOptions):
             tmp_remap = None
         # The board & output
         cmd.append(GS.pcb_file)
-        svg = self._append_output(cmd, output)
+        svg = self._append_output(cmd, name)
         # Execute and inform is successful
         _run_command(cmd, tmp_remap, tmp_style)
         if svg is not None:
@@ -288,7 +288,7 @@ class PcbDrawOptions(VariantOptions):
             cmd = [CONVERT, '-trim', png]
             if self.format == 'jpg':
                 cmd += ['-quality', '85%']
-            cmd.append(output)
+            cmd.append(name)
             _run_command(cmd, png)
 
 

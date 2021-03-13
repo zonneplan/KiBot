@@ -83,8 +83,8 @@ class Generic(BaseFilter):  # noqa: F821
             col = col[:-1]
         return col
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         # include_only
         if isinstance(self.include_only, type):
             self.include_only = None

@@ -12,7 +12,7 @@ class Sch_Variant_Options(VariantOptions):
     def __init__(self):
         super().__init__()
 
-    def get_targets(self, parent, out_dir):
+    def get_targets(self, out_dir):
         return GS.sch.file_names_variant(out_dir)
 
     def run(self, output_dir):
@@ -33,3 +33,7 @@ class Sch_Variant(BaseOutput):  # noqa: F821
             self.options = Sch_Variant_Options
             """ [dict] Options for the `sch_variant` output """
         self._sch_related = True
+
+    def run(self, output_dir):
+        # No output member, just a dir
+        self.options.run(output_dir)

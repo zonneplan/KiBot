@@ -118,8 +118,8 @@ class BaseFilter(RegFilter):
             self.comment = ''
             """ A comment for documentation purposes """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if self.name[0] == '_' and not self._internal:
             raise KiPlotConfigurationError('Filter names starting with `_` are reserved ({})'.format(self.name))
 
@@ -184,7 +184,7 @@ class BaseFilter(RegFilter):
         filter = RegFilter.get_class_for(tree['type'])()
         filter._internal = True
         filter.set_tree(tree)
-        filter.config()
+        filter.config(None)
         RegOutput.add_filter(filter)
         return filter
 
