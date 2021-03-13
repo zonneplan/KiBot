@@ -69,7 +69,7 @@ class LibLineReader(LineReader):
     def get_line(self):
         res = self.f.readline()
         while res and res[0] == '#':
-            if res.startswith('#End Library'):
+            if res.startswith('#End Library') or res.startswith('# End Library'):
                 return res.rstrip()
             self.line += 1
             res = self.f.readline()
@@ -635,7 +635,7 @@ class SymLib(object):
             if not line.startswith('EESchema-LIBRARY'):
                 raise SchLibError('Missing library signature', line, f)
             line = f.get_line()
-            while not line.startswith('#End Library'):
+            while not (line.startswith('#End Library') or line.startswith('# End Library')):
                 if line.startswith('DEF'):
                     o = LibComponent(line, f, file)
                     if o.name:
