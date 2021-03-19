@@ -329,6 +329,24 @@ Currently the only type available is `generic`.
     - `negative_bottom`: [boolean=true] Rotation for bottom components is computed substracting.
     - `rotations`: [list(list(string))] A list of pairs regular expression/rotation.
                    Components matching the regular expression will be rotated the indicated angle.
+- subparts: Subparts
+        This filter implements the KiCost subparts mechanism.
+  * Valid keys:
+    - `check_multiplier`: [list(string)] List of fields to include for multiplier computation.
+                          If empty all fields in `split_fields` and `manf_pn_field` are used.
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `manf_field`: [string='manf'] Field for the manufacturer name.
+    - `manf_pn_field`: [string='manf#'] Field for the manufacturer part number.
+    - `modify_first_value`: [boolean=true] Modify even the value for the first component in the list (KiCost behavior).
+    - `modify_value`: [boolean=true] Add '- p N/M' to the value.
+    - `mult_separators`: [string=':'] Separators used for the multiplier. Each character in this string is a valid separator.
+    - `multiplier`: [boolean=true] Enables the subpart multiplier mechanism.
+    - `name`: [string=''] Used to identify this particular filter definition.
+    - `ref_sep`: [string='#'] Separator used in the reference (i.e. R10#1).
+    - `separators`: [string=';,'] Separators used between subparts. Each character in this string is a valid separator.
+    - `split_fields`: [list(string)] List of fields to split, usually the distributors part numbers.
+    - `split_fields_expand`: [boolean=false] When `true` the fields in `split_fields` are added to the internal names.
+    - `use_ref_sep_for_first`: [boolean=true] Force the reference separator use even for the first component in the list (KiCost behavior).
 - var_rename: Var_Rename
         This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
   * Valid keys:
@@ -615,6 +633,8 @@ Next time you need this list just use an alias, like this:
                           Components which match (comparing *all* fields) will be grouped together.
                           Field names are case-insensitive.
                           If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used.
+        - `group_fields_fallbacks`: [list(string)] List of fields to be used when the fields in `group_fields` are empty.
+                                    The first field in this list is the fallback for the first in `group_fields`, and so on.
         - `html`: [dict] Options for the HTML format.
           * Valid keys:
             - `col_colors`: [boolean=true] Use colors to show the field type.
@@ -629,6 +649,7 @@ Next time you need this list just use an alias, like this:
                        Or you can provide a CSS file name. Please use .css as file extension..
             - `title`: [string='KiBot Bill of Materials'] BoM title.
         - `ignore_dnf`: [boolean=true] Exclude DNF (Do Not Fit) components.
+        - `int_qtys`: [boolean=true] Component quantities are always expressed as integers. Using the ceil() function.
         - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
         - `no_conflict`: [list(string)] List of fields where we tolerate conflicts.
                          Use it to avoid undesired warnings.

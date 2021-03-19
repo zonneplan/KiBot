@@ -102,6 +102,9 @@ outputs:
       # Field names are case-insensitive.
       # If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used
       group_fields: ['part', 'part lib', 'value', 'footprint', 'footprint lib']
+      # [list(string)] List of fields to be used when the fields in `group_fields` are empty.
+      # The first field in this list is the fallback for the first in `group_fields`, and so on
+      group_fields_fallbacks:
       # [dict] Options for the HTML format
       html:
         # [boolean=true] Use colors to show the field type
@@ -127,6 +130,8 @@ outputs:
         title: 'KiBot Bill of Materials'
       # [boolean=true] Exclude DNF (Do Not Fit) components
       ignore_dnf: true
+      # [boolean=true] Component quantities are always expressed as integers. Using the ceil() function
+      int_qtys: true
       # [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible
       merge_blank_fields: true
       # [list(string)] List of fields where we tolerate conflicts.
