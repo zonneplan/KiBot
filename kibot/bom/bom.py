@@ -11,6 +11,7 @@ All the logic to convert a list of components into the rows and columns used to 
 """
 import locale
 from copy import deepcopy
+from math import ceil
 from .units import compare_values, comp_match
 from .bom_writer import write_bom
 from .columnlist import ColumnList
@@ -185,9 +186,11 @@ class ComponentGroup(object):
     def get_count(self, project=None):
         if project is None:
             # Total components
-            return len(self.components)
-        # Only for the specified project
-        return sum(map(lambda c: c.project == project, self.components))
+            c = sum(map(lambda c: c.qty, self.components))
+        else:
+            # Only for the specified project
+            c = sum(map(lambda c: c.qty if c.project == project else 0, self.components))
+        return int(ceil(c))
 
     def get_build_count(self):
         if not self.is_fitted():
@@ -195,9 +198,11 @@ class ComponentGroup(object):
             return 0
         if len(self.cfg.aggregate) == 1:
             # Just one project
-            return len(self.components)*self.cfg.number
-        # Multiple projects, count them using the number of board for each project
-        return sum(map(lambda c: self.cfg.qtys[c.project], self.components))
+            c = sum(map(lambda c: c.qty, self.components))*self.cfg.number
+        else:
+            # Multiple projects, count them using the number of board for each project
+            c = sum(map(lambda c: self.cfg.qtys[c.project]*c.qty, self.components))
+        return int(ceil(c))
 
     def get_sources(self):
         sources = {}

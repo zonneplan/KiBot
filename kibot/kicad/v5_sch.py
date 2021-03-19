@@ -798,6 +798,8 @@ class SchematicComponent(object):
                   - BoM DNF: only if True (and fitted is False)
         - fixed: means you can't change it by a replacement without authorization
                  Is just a flag and doesn't affect much.
+        - footprint_rot: angle to rotate the part in the pick & place.
+        - qty: ammount of this part used.
         """
     ref_re = re.compile(r'([^\d]+)([\?\d]+)')
 
@@ -818,6 +820,7 @@ class SchematicComponent(object):
         self.fixed = False
         self.bottom = False
         self.footprint_rot = 0.0
+        self.qty = 1
         # KiCad 5 PCB flags (mutually exclusive)
         self.smd = False
         self.virtual = False
