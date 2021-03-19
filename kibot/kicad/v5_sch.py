@@ -746,6 +746,9 @@ class SchematicField(object):
             f.write(' "{}"'.format(self.name))
         f.write('\n')
 
+    def __str__(self):
+        return self.name+'='+self.value
+
 
 class SchematicAltRef():
     def __init__(self):
@@ -842,8 +845,9 @@ class SchematicComponent(object):
 
     def set_field(self, field, value):
         """ Change the value for an existing field """
-        if field in self.dfields:
-            target = self.dfields[field]
+        field_lc = field.lower()
+        if field_lc in self.dfields:
+            target = self.dfields[field_lc]
             target.value = value
             # Adjust special fields
             if target.number < 4:

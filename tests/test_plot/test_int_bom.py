@@ -1506,3 +1506,13 @@ def test_int_bom_merge_xml_1(test_dir):
     src_column = header.index(SOURCE_BOM_COLUMN_NAME.replace(' ', '_'))
     check_source(rows, 'A:R1', ref_column, src_column, MERGED_R1_SRC)
     ctx.clean_up()
+
+
+def test_int_bom_subparts_1(test_dir):
+    prj = 'subparts'
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_subparts_1', prj, 'int_bom_subparts_1', '')
+    ctx.run(extra_debug=True)
+    output = prj+'-bom.csv'
+    ctx.expect_out_file(output)
+    ctx.compare_txt(output)
+    ctx.clean_up()

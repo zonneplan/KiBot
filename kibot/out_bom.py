@@ -474,7 +474,7 @@ class BoMOptions(BaseOptions):
         apply_fitted_filter(comps, self.dnf_filter)
         apply_fixed_filter(comps, self.dnc_filter)
         # Apply the variant
-        self.variant.filter(comps)
+        comps = self.variant.filter(comps)
         # We add the main project to the aggregate list so do_bom sees a complete list
         base_sch = Aggregate()
         base_sch.file = GS.sch_file

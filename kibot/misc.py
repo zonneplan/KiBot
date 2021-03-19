@@ -176,6 +176,8 @@ W_MUSTBEINT = '(W055) '
 W_NOOUTPUTS = '(W056) '
 W_NOTASCII = '(W057) '
 W_KIAUTO = '(W058) '
+W_NUMSUBPARTS = '(W059) '
+W_PARTMULT = '(W060) '
 
 
 class Rect(object):
