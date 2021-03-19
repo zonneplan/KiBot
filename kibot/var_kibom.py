@@ -95,7 +95,7 @@ class KiBoM(BaseVariant):  # noqa: F821
 
     def filter(self, comps):
         GS.variant = self.variant
-        super().filter(comps)
+        comps = super().filter(comps)
         logger.debug("Applying KiBoM style variants `{}`".format(self.name))
         for c in comps:
             if not (c.fitted and c.included):
@@ -107,3 +107,4 @@ class KiBoM(BaseVariant):  # noqa: F821
             if not c.fitted and GS.debug_level > 2:
                 logger.debug('ref: {} value: {} config: {} variant: {} -> False'.
                              format(c.ref, value, config, self.variant))
+        return comps

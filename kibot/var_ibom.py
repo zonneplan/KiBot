@@ -68,7 +68,7 @@ class IBoM(BaseVariant):  # noqa: F821
 
     def filter(self, comps):
         GS.variant = self.variants_whitelist
-        super().filter(comps)
+        comps = super().filter(comps)
         logger.debug("Applying IBoM style variants `{}`".format(self.name))
         # Make black/white lists case insensitive
         self.variants_whitelist = [v.lower() for v in self.variants_whitelist]
@@ -82,3 +82,4 @@ class IBoM(BaseVariant):  # noqa: F821
             c.fitted = not self.skip_component(c)
             if not c.fitted and GS.debug_level > 2:
                 logger.debug('ref: {} value: {} -> False'.format(c.ref, c.value))
+        return comps

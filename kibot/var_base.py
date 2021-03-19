@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegVariant
@@ -38,11 +38,12 @@ class BaseVariant(RegVariant):
 
     def config(self, parent):
         super().config(parent)
-        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform')
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
 
     def filter(self, comps):
         # Apply all the filters
-        apply_pre_transform(comps, self.pre_transform)
+        comps = apply_pre_transform(comps, self.pre_transform)
         apply_exclude_filter(comps, self.exclude_filter)
         apply_fitted_filter(comps, self.dnf_filter)
         apply_fixed_filter(comps, self.dnc_filter)
+        return comps

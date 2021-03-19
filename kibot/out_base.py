@@ -296,5 +296,5 @@ class VariantOptions(BaseOptions):
         # Apply the variant
         if self.variant:
             # Apply the variant
-            self.variant.filter(comps)
+            comps = self.variant.filter(comps)
         self._comps = comps

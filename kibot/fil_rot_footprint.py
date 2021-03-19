@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -54,6 +54,7 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         Some manufacturers use a different rotation than KiCad. """
     def __init__(self):
         super().__init__()
+        self._is_transform = True
         with document:
             self.extend = True
             """ Extends the internal list of rotations with the one provided.

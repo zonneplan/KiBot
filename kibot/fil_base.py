@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegFilter, Registrable, RegOutput
@@ -30,6 +30,7 @@ class DummyFilter(Registrable):
         self.name = 'Dummy'
         self.type = 'dummy'
         self.comment = 'A filter that does nothing'
+        self._is_transform = False
 
     def filter(self, comp):
         return True
@@ -38,18 +39,48 @@ class DummyFilter(Registrable):
 class MultiFilter(Registrable):
     """ A filter containing a list of filters.
         They are applied in sequence. """
-    def __init__(self, filters):
+    def __init__(self, filters, is_transform):
         super().__init__()
         self.name = ','.join([f.name for f in filters])
         self.type = ','.join([f.type for f in filters])
         self.comment = 'Multi-filter'
         self.filters = filters
+        self._is_transform = is_transform
 
     def filter(self, comp):
+        comps = [comp]
+        # We support logic and transform filters mixed
+        # Apply all the filters
         for f in self.filters:
-            if not f.filter(comp):
-                return False
-        return True
+            if f._is_transform:
+                # A transform filter, doesn't affect the logic, but can affect the list of components
+                new_comps = []
+                for c in comps:
+                    ret = f.filter(c)
+                    if ret is None:
+                        # None means the component remains in the list
+                        new_comps.append(c)
+                    else:
+                        # Replace the original by the list (could be empty)
+                        new_comps.extend(ret)
+                comps = new_comps
+            else:
+                if self._is_transform:
+                    # Interpret the logic filter as a transformation
+                    comps = list(filter(lambda c: f.filter(c), comps))
+                else:
+                    # Logic filter used for logic
+                    for c in comps:
+                        if not f.filter(c):
+                            return False
+        if not self._is_transform:
+            # A logic filter that passed all tests
+            return True
+        # A transform filter
+        if len(comps) == 1 and comps[0] == comp:
+            # No changes to the list
+            return None
+        return comps
 
 
 class NotFilter(Registrable):
@@ -60,6 +91,7 @@ class NotFilter(Registrable):
         self.type = '!'+filter.type
         self.comment = filter.comment
         self._filter = filter
+        self._is_transform = False
 
     def filter(self, comp):
         return not self._filter.filter(comp)
@@ -68,8 +100,15 @@ class NotFilter(Registrable):
 def apply_pre_transform(comps, filter):
     if filter:
         logger.debug('Applying transform filter `{}`'.format(filter.name))
+        new_comps = []
         for c in comps:
-            filter.filter(c)
+            ret = filter.filter(c)
+            if ret is None:
+                new_comps.append(c)
+            else:
+                new_comps.extend(ret)
+        return new_comps
+    return comps
 
 
 def apply_exclude_filter(comps, filter):
@@ -110,6 +149,12 @@ class BaseFilter(RegFilter):
         super().__init__()
         self._unkown_is_error = True
         self._internal = False
+        # Two type of filters:
+        # Transform: can change the component. Returns
+        #            - None, the component remains
+        #            - A list of components: the component is replaced by this list
+        # Logic: can't change the component. Return True/False indicating if the component pass the test.
+        self._is_transform = False
         with document:
             self.name = ''
             """ Used to identify this particular filter definition """
@@ -189,13 +234,11 @@ class BaseFilter(RegFilter):
         return filter
 
     @staticmethod
-    def solve_filter(names, target_name, default=None):
+    def solve_filter(names, target_name, default=None, is_transform=False):
         """ Name can be:
             - A class, meaning we have to use a default.
             - A string, the name of a filter.
-            - A list of strings, the name of 1 or more filters.
-            If any of the names matches def_key we call creator asking to create the filter.
-            If def_real is not None we pass this name to creator. """
+            - A list of strings, the name of 1 or more filters. """
         if isinstance(names, type):
             # Nothing specified, use the default
             if default is None:
@@ -226,18 +269,24 @@ class BaseFilter(RegFilter):
                 invert = False
             # Is already defined?
             if RegOutput.is_filter(name):
-                filter = RegOutput.get_filter(name)
+                fil = RegOutput.get_filter(name)
             else:  # Nope, can be created?
-                filter = BaseFilter._create_internal_filter(name)
-                if filter is None:
+                fil = BaseFilter._create_internal_filter(name)
+                if fil is None:
                     raise KiPlotConfigurationError("Unknown filter `{}` used for `{}`".format(name, target_name))
             if invert:
-                filters.append(NotFilter(filter))
+                if fil._is_transform:
+                    raise KiPlotConfigurationError("Transform filter `{}` can't be inverted, used for `{}`"
+                                                   .format(name, target_name))
+                filters.append(NotFilter(fil))
             else:
-                filters.append(filter)
+                filters.append(fil)
         # Finished collecting filters
         if not filters:
             return DummyFilter()
+        # If we need a `Logic` filter ensure that at least one in the list is `Logic`
+        if not is_transform and not next(filter(lambda x: not x._is_transform, filters), False):
+            raise KiPlotConfigurationError("At least one logic filter is needed for `{}`".format(target_name))
         if len(filters) == 1:
             return filters[0]
-        return MultiFilter(filters)
+        return MultiFilter(filters, is_transform)
