@@ -263,6 +263,9 @@ class BoMOptions(BaseOptions):
                 Components which match (comparing *all* fields) will be grouped together.
                 Field names are case-insensitive.
                 If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used """
+            self.group_fields_fallbacks = Optionable
+            """ [list(string)] List of fields to be used when the fields in `group_fields` are empty.
+                The first field in this list is the fallback for the first in `group_fields`, and so on """
             self.component_aliases = ComponentAliases
             """ [list(list(string))] A series of values which are considered to be equivalent for the part name.
                 Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
@@ -351,6 +354,15 @@ class BoMOptions(BaseOptions):
         else:
             # Make the grouping fields lowercase
             self.group_fields = [f.lower() for f in self.group_fields]
+        # group_fields_fallbacks
+        if isinstance(self.group_fields_fallbacks, type):
+            self.group_fields_fallbacks = []
+        else:
+            # Make the grouping fields lowercase
+            self.group_fields_fallbacks = [f.lower() for f in self.group_fields_fallbacks]
+        # Fill with None if needed
+        if len(self.group_fields_fallbacks) < len(self.group_fields):
+            self.group_fields_fallbacks.extend([None]*(len(self.group_fields)-len(self.group_fields_fallbacks)))
         # component_aliases
         if isinstance(self.component_aliases, type):
             self.component_aliases = DEFAULT_ALIASES

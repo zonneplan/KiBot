@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -64,12 +64,12 @@ def compare_part_name(c1, c2, cfg):
 
 
 def compare_field(c1, c2, field, cfg):
-    c1_field = c1.get_field_value(field).lower()
-    c2_field = c2.get_field_value(field).lower()
+    c1_value = c1.get_field_value(field).lower()
+    c2_value = c2.get_field_value(field).lower()
     # If blank comparisons are allowed
-    if (c1_field == "" or c2_field == "") and cfg.merge_blank_fields:
+    if (c1_value == "" or c2_value == "") and cfg.merge_blank_fields:
         return True
-    return c1_field == c2_field
+    return c1_value == c2_value
 
 
 def compare_components(c1, c2, cfg):
@@ -84,17 +84,30 @@ def compare_components(c1, c2, cfg):
     if len(cfg.group_fields) == 0:
         return c1.ref == c2.ref
     # Check if the grouping fields match
-    for c in cfg.group_fields:
+    for i, field in enumerate(cfg.group_fields):
+        # Check if we have a fallback
+        field_alt = cfg.group_fields_fallbacks[i]
+        if field_alt is not None:
+            # Check if we have an empty field
+            c1_value = c1.get_field_value(field)
+            c2_value = c2.get_field_value(field)
+            if c1_value == "" or c2_value == "":
+                # Try with the fallback field
+                c1_value = c1.get_field_value(field_alt)
+                c2_value = c2.get_field_value(field_alt)
+                if c1_value != "" and c2_value != "":
+                    # Compare using the fallback
+                    field = field_alt
         # Perform special matches
-        if c == ColumnList.COL_VALUE_L:
+        if field == ColumnList.COL_VALUE_L:
             if not compare_value(c1, c2, cfg):
                 return False
         # Match part name
-        elif c == ColumnList.COL_PART_L:
+        elif field == ColumnList.COL_PART_L:
             if not compare_part_name(c1, c2, cfg):
                 return False
         # Generic match
-        elif not compare_field(c1, c2, c, cfg):
+        elif not compare_field(c1, c2, field, cfg):
             return False
     return True
 
