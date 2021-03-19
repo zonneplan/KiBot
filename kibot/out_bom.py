@@ -287,6 +287,8 @@ class BoMOptions(BaseOptions):
             """ A prefix to add to all the references from this project. Used for multiple projects """
             self.source_by_id = False
             """ Generate the `Source BoM` column using the reference ID instead of the project name """
+            self.int_qtys = True
+            """ Component quantities are always expressed as integers. Using the ceil() function """
         self._format_example = 'CSV'
         super().__init__()
 

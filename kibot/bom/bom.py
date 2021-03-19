@@ -183,14 +183,20 @@ class ComponentGroup(object):
             self.components.append(c)
             self.refs[c.ref+c.project] = c
 
+    def round_qty(self, qty):
+        if self.cfg.int_qtys:
+            return int(ceil(qty))
+        int_qty = int(qty)
+        return int_qty if int_qty == qty else qty
+
     def get_count(self, project=None):
         if project is None:
             # Total components
-            c = sum(map(lambda c: c.qty, self.components))
+            qty = sum(map(lambda c: c.qty, self.components))
         else:
             # Only for the specified project
-            c = sum(map(lambda c: c.qty if c.project == project else 0, self.components))
-        return int(ceil(c))
+            qty = sum(map(lambda c: c.qty if c.project == project else 0, self.components))
+        return self.round_qty(qty)
 
     def get_build_count(self):
         if not self.is_fitted():
@@ -198,11 +204,11 @@ class ComponentGroup(object):
             return 0
         if len(self.cfg.aggregate) == 1:
             # Just one project
-            c = sum(map(lambda c: c.qty, self.components))*self.cfg.number
+            qty = sum(map(lambda c: c.qty, self.components))*self.cfg.number
         else:
             # Multiple projects, count them using the number of board for each project
-            c = sum(map(lambda c: self.cfg.qtys[c.project]*c.qty, self.components))
-        return int(ceil(c))
+            qty = sum(map(lambda c: self.cfg.qtys[c.project]*c.qty, self.components))
+        return self.round_qty(qty)
 
     def get_sources(self):
         sources = {}
