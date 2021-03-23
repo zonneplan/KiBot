@@ -12,13 +12,12 @@ import re
 from copy import deepcopy
 from .gs import GS
 from .optionable import Optionable
-from .misc import W_NUMSUBPARTS, W_PARTMULT
+from .misc import W_NUMSUBPARTS, W_PARTMULT, DISTRIBUTORS
 from .macros import macros, document, filter_class  # noqa: F401
 from . import log
 
 
 logger = log.get_logger(__name__)
-DISTRIBUTORS = ['digikey#', 'farnell#', 'mouser#', 'newark#', 'rs#', 'arrow#', 'tme#', 'lcsc#']
 
 
 class DistributorsList(Optionable):

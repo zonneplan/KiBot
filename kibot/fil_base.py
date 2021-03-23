@@ -4,7 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegFilter, Registrable, RegOutput
-from .misc import IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT
+from .misc import IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT, IFILT_KICOST_RENAME, DISTRIBUTORS
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
 from .macros import macros, document  # noqa: F401
@@ -21,6 +21,41 @@ DEFAULT_EXCLUDE = [{'column': ColumnList.COL_REFERENCE, 'regex': '^TP[0-9]*'},
                    {'column': ColumnList.COL_FP, 'regex': 'mount.*hole'},
                    {'column': ColumnList.COL_FP, 'regex': 'fiducial'},
                    ]
+KICOST_NAME_TRANSLATIONS = {
+    # Manufacturer part number
+    'mpn': 'manf#',
+    'pn': 'manf#',
+    'manf_num': 'manf#',
+    'manf-num': 'manf#',
+    'mfg_num': 'manf#',
+    'mfg-num': 'manf#',
+    'mfg#': 'manf#',
+    'mfg part#': 'manf#',
+    'man_num': 'manf#',
+    'man-num': 'manf#',
+    'man#': 'manf#',
+    'mnf_num': 'manf#',
+    'mnf-num': 'manf#',
+    'mnf#': 'manf#',
+    'mfr_num': 'manf#',
+    'mfr-num': 'manf#',
+    'mfr#': 'manf#',
+    'part-num': 'manf#',
+    'part_num': 'manf#',
+    'p#': 'manf#',
+    'part#': 'manf#',
+    # Manufacturer
+    'manufacturer': 'manf',
+    'mnf': 'manf',
+    'man': 'manf',
+    'mfg': 'manf',
+    'mfr': 'manf',
+    # Various
+    'version': 'variant',
+    'nopop': 'dnp',
+    'description': 'desc',
+    'pdf': 'datasheet',
+}
 
 
 class DummyFilter(Registrable):
@@ -215,6 +250,25 @@ class BaseFilter(RegFilter):
         return o_tree
 
     @staticmethod
+    def _create_kicost_rename(name):
+        o_tree = {'name': name}
+        o_tree['type'] = 'field_rename'
+        o_tree['comment'] = 'Internal filter to emulate KiCost field aliases'
+        rename = []
+        for k, v in KICOST_NAME_TRANSLATIONS.items():
+            rename.append({'field': k, 'name': v})
+        for stub in ['part#', '#', 'p#', 'pn', 'vendor#', 'vp#', 'vpn', 'num']:
+            for dist in DISTRIBUTORS:
+                base = dist[:-1]
+                if stub != '#':
+                    rename.append({'field': base + stub, 'name': dist})
+                rename.append({'field': base + '_' + stub, 'name': dist})
+                rename.append({'field': base + '-' + stub, 'name': dist})
+        o_tree['rename'] = rename
+        logger.debug('Creating internal filter: '+str(o_tree))
+        return o_tree
+
+    @staticmethod
     def _create_internal_filter(name):
         if name == IFILT_MECHANICAL:
             tree = BaseFilter._create_mechanical(name)
@@ -224,6 +278,8 @@ class BaseFilter(RegFilter):
             tree = BaseFilter._create_var_rename(name)
         elif name == IFILT_ROT_FOOTPRINT:
             tree = BaseFilter._create_rot_footprint(name)
+        elif name == IFILT_KICOST_RENAME:
+            tree = BaseFilter._create_kicost_rename(name)
         else:
             return None
         filter = RegFilter.get_class_for(tree['type'])()

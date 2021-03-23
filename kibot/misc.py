@@ -80,6 +80,7 @@ KICAD_VERSION_5_99 = 5099000
 IFILT_MECHANICAL = '_mechanical'
 IFILT_VAR_RENAME = '_var_rename'
 IFILT_ROT_FOOTPRINT = '_rot_footprint'
+IFILT_KICOST_RENAME = '_kicost_rename'
 # KiCad 5 GUI values for the attribute
 UI_THT = 0       # 1 for KiCad 6
 UI_SMD = 1       # 2 for KiCad 6
@@ -117,6 +118,9 @@ DNC = {
     "no change",
     "fixed",
 }
+# KiCost distributors
+DISTRIBUTORS = ['digikey#', 'farnell#', 'mouser#', 'newark#', 'rs#', 'arrow#', 'tme#', 'lcsc#']
+
 
 W_VARCFG = '(W001) '
 W_VARPCB = '(W002) '
@@ -178,6 +182,8 @@ W_NOTASCII = '(W057) '
 W_KIAUTO = '(W058) '
 W_NUMSUBPARTS = '(W059) '
 W_PARTMULT = '(W060) '
+W_EMPTYREN = '(W061) '
+W_BADFIELD = '(W062) '
 
 
 class Rect(object):

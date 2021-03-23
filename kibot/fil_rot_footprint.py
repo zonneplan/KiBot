@@ -51,7 +51,8 @@ DEFAULT_ROTATIONS = [["^R_Array_Convex_", 90.0],
 class Rot_Footprint(BaseFilter):  # noqa: F821
     """ Rot_Footprint
         This filter can rotate footprints, used for the positions file generation.
-        Some manufacturers use a different rotation than KiCad. """
+        Some manufacturers use a different rotation than KiCad.
+        The internal `_rot_footprint` filter implements the simplest case """
     def __init__(self):
         super().__init__()
         self._is_transform = True

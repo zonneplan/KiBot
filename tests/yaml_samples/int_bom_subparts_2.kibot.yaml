@@ -1,0 +1,142 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+  - name: 'Subparts splitter'
+    type: subparts
+    # We want to also split the `Description` field
+    split_fields: ['Description']
+    split_fields_expand: true
+    # We only use the multiplier in `manf#`
+    check_multiplier: ['manf#', 'digikey#']
+
+  - name: 'Field rename'
+    type: field_rename
+    rename:
+      # KiCost manf# variants
+      - field: 'mpn'
+        name: 'manf#'
+      - field: 'pn'
+        name: 'manf#'
+      - field: 'manf_num'
+        name: 'manf#'
+      - field: 'manf-num'
+        name: 'manf#'
+      - field: 'mfg_num'
+        name: 'manf#'
+      - field: 'mfg-num'
+        name: 'manf#'
+      - field: 'mfg#'
+        name: 'manf#'
+      - field: 'mfg part#'
+        name: 'manf#'
+      - field: 'man_num'
+        name: 'manf#'
+      - field: 'man-num'
+        name: 'manf#'
+      - field: 'man#'
+        name: 'manf#'
+      - field: 'mnf_num'
+        name: 'manf#'
+      - field: 'mnf-num'
+        name: 'manf#'
+      - field: 'mnf#'
+        name: 'manf#'
+      - field: 'mfr_num'
+        name: 'manf#'
+      - field: 'mfr-num'
+        name: 'manf#'
+      - field: 'mfr#'
+        name: 'manf#'
+      - field: 'part-num'
+        name: 'manf#'
+      - field: 'part_num'
+        name: 'manf#'
+      - field: 'p#'
+        name: 'manf#'
+      - field: 'part#'
+        name: 'manf#'
+      # KiCost manf variants
+      - field: 'manufacturer'
+        name: 'manf'
+      - field: 'mnf'
+        name: 'manf'
+      - field: 'man'
+        name: 'manf'
+      - field: 'mfg'
+        name: 'manf'
+      - field: 'mfr'
+        name: 'manf'
+      # Some KiCost digikey# variants
+      - field: 'digikey_part#'
+        name: 'digikey#'
+      - field: 'digikey_p#'
+        name: 'digikey#'
+      - field: 'digikey_pn'
+        name: 'digikey#'
+      - field: 'digikey_vendor#'
+        name: 'digikey#'
+      - field: 'digikey_vpn'
+        name: 'digikey#'
+      - field: 'digikey_num'
+        name: 'digikey#'
+      - field: 'digikey-p#'
+        name: 'digikey#'
+      - field: 'digikeyvp#'
+        name: 'digikey#'
+
+
+variants:
+  - name: place_holder
+    comment: 'Just a place holder for the subparts splitter'
+    type: kibom
+    pre_transform:
+      - 'Field rename'
+      - 'Subparts splitter'
+
+outputs:
+  - name: 'bom_internal_subparts'
+    comment: "Bill of Materials in CSV format, subparts splitted"
+    type: bom
+    dir: .
+    options: &bom_options
+      variant: place_holder
+      number: 100
+      group_fields: ['manf#']
+      group_fields_fallbacks: ['value']
+      # int_qtys: false
+      columns:
+        - Row
+        - References
+        - Value
+        - Description
+        - manf
+        - manf#
+        - digikey#
+        - 'Quantity Per PCB'
+        - 'Build Quantity'
+      csv:
+        hide_pcb_info: true
+
+  - name: 'bom_html'
+    comment: "Bill of Materials in HTML format"
+    type: bom
+    dir: .
+    options:
+      <<: *bom_options
+      html:
+        digikey_link: 'digikey#'
+        highlight_empty: false
+
+
+  - name: 'bom_xlsx'
+    comment: "Bill of Materials in XLSX format"
+    type: bom
+    dir: .
+    options:
+      <<: *bom_options
+      xlsx:
+        digikey_link: 'digikey#'
+        highlight_empty: false
+

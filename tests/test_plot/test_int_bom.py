@@ -1516,3 +1516,23 @@ def test_int_bom_subparts_1(test_dir):
     ctx.expect_out_file(output)
     ctx.compare_txt(output)
     ctx.clean_up()
+
+
+def test_int_bom_subparts_2(test_dir):
+    prj = 'subparts_rename'
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_subparts_2', prj, 'int_bom_subparts_2', '')
+    ctx.run(extra_debug=True)
+    output = prj+'-bom.csv'
+    ctx.expect_out_file(output)
+    ctx.compare_txt(output, 'subparts-bom.csv')
+    ctx.clean_up()
+
+
+def test_int_bom_subparts_3(test_dir):
+    prj = 'subparts_rename'
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_subparts_3', prj, 'int_bom_subparts_3', '')
+    ctx.run(extra_debug=True)
+    output = prj+'-bom.csv'
+    ctx.expect_out_file(output)
+    ctx.compare_txt(output, 'subparts-bom.csv')
+    ctx.clean_up()

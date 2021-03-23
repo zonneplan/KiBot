@@ -9,6 +9,7 @@ This is somehow compatible with KiBoM.
 """
 import os
 from .gs import GS
+from .misc import W_BADFIELD
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
@@ -428,7 +429,9 @@ class BoMOptions(BaseOptions):
                         self.join.append(col.join)
                 # Check this is a valid column
                 if new_col.lower() not in valid_columns_l:
-                    raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
+                    # The Field_Rename filter can change this situation:
+                    # raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
+                    logger.warning(W_BADFIELD+'Invalid column name `{}`'.format(new_col))
                 columns.append(new_col)
             # This is the ordered list with the case style defined by the user
             self.columns = columns

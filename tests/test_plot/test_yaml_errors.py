@@ -532,7 +532,7 @@ def test_error_int_bom_unknown_style(test_dir):
 
 def test_error_int_bom_invalid_col(test_dir):
     ctx = context.TestContextSCH(test_dir, 'test_error_int_bom_invalid_col', 'links', 'error_int_bom_invalid_col', '')
-    ctx.run(EXIT_BAD_CONFIG)
+    ctx.run()
     assert ctx.search_err("Invalid column name")
     ctx.clean_up()
 

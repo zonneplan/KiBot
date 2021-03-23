@@ -276,6 +276,16 @@ Currently the only type available is `generic`.
 
 #### Supported filters:
 
+- field_rename: Field_Rename
+        This filter implements a field renamer.
+        The internal `_kicost_rename` filter emulates the KiCost behavior.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `name`: [string=''] Used to identify this particular filter definition.
+    - `rename`: [list(dict)] Fields to rename.
+      * Valid keys:
+        - `field`: [string=''] Name of the field to rename.
+        - `name`: [string=''] New name.
 - generic: Generic filter
         This filter is based on regular expressions.
         It also provides some shortcuts for common situations.
@@ -320,7 +330,8 @@ Currently the only type available is `generic`.
     - `name`: [string=''] Used to identify this particular filter definition.
 - rot_footprint: Rot_Footprint
         This filter can rotate footprints, used for the positions file generation.
-        Some manufacturers use a different rotation than KiCad..
+        Some manufacturers use a different rotation than KiCad.
+        The internal `_rot_footprint` filter implements the simplest case.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `extend`: [boolean=true] Extends the internal list of rotations with the one provided.
@@ -347,6 +358,7 @@ Currently the only type available is `generic`.
     - `split_fields`: [list(string)] List of fields to split, usually the distributors part numbers.
     - `split_fields_expand`: [boolean=false] When `true` the fields in `split_fields` are added to the internal names.
     - `use_ref_sep_for_first`: [boolean=true] Force the reference separator use even for the first component in the list (KiCost behavior).
+    - `value_alt_field`: [string='value_subparts'] Field containing replacements for the `Value` field. So we get real values for splitted parts.
 - var_rename: Var_Rename
         This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
   * Valid keys:

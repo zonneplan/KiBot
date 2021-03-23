@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `erc_warnings` pre-flight option to consider ERC warnings as errors.
 - Pattern expansion in the `dir` option for outputs (#58)
 - New filter type `suparts`. Adds support for KiCost's subparts feature.
+- New filter type `field_rename`. Used to rename schematic fields.
 
 ### Changed
 - Errors and warnings from KiAuto now are printed as errors and warnings.

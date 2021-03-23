@@ -859,8 +859,9 @@ class SchematicComponent(object):
             f.number = self.get_free_field_number()
             self.add_field(f)
 
-    # def get_field_names(self):
-    #     return [f.name for f in self.fields]
+    def get_field_names(self):
+        """ List of all the available field names for this component """
+        return self.dfields.keys()
 
     def get_user_fields(self):
         """ Returns a list of tuples with the user defined fields (name, value) """
@@ -869,6 +870,13 @@ class SchematicComponent(object):
     def add_field(self, field):
         self.fields.append(field)
         self.dfields[field.name.lower()] = field
+
+    def rename_field(self, old_name, new_name):
+        old_name = old_name.lower()
+        field = self.dfields[old_name]
+        field.name = new_name
+        del self.dfields[old_name]
+        self.dfields[new_name.lower()] = field
 
     def back_up_fields(self):
         """ First call makes a back-up of the fields.
