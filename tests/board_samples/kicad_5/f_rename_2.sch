@@ -1,0 +1,172 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Device:R_US R1
+U 1 1 5FDD0409
+P 4850 3100
+F 0 "R1" V 4950 3125 50  0000 C CNN
+F 1 "RES-000007-00" H 4850 2650 50  0001 C CNN
+F 2 "Resistors:R0402" H 4850 2350 50  0001 C CNN
+F 3 "" H 4850 2750 50  0001 C CNN
+F 4 "Stackpole Electronics Inc" H 4850 2550 50  0001 C CNN "Manufacturer"
+F 5 "RMCF0402FT4K70" H 4850 2450 50  0001 C CNN "Manufacturer Part Number"
+F 6 "4.7K" V 4700 3125 50  0000 C CNN "Resistance (Ohms)"
+F 7 "±1%" H 5000 3000 50  0001 L CNN "Tolerance (%)"
+F 8 "0402" V 4775 3125 50  0000 C CNN "Package Type"
+F 9 "1/16W" H 4850 2800 50  0001 C CNN "Power (Watts)"
+F 10 "RES-000045-00" H 4850 3100 50  0001 C CNN "kicost.DEV:Value"
+F 11 "Yageo" H 4850 3100 50  0001 C CNN "kicost.DEV:Manufacturer"
+F 12 "RC0402FR-071KL" H 4850 3100 50  0001 C CNN "kicost.DEV:Manufacturer Part Number"
+F 13 "RES SMD 1K OHM 1% 1/16W 0402" H 4850 3100 50  0001 C CNN "kicost.DEV:Description"
+	1    4850 3100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:LED_ALT D1
+U 1 1 5FDD1589
+P 5400 3100
+F 0 "D1" H 5400 3410 50  0000 C CNN
+F 1 "DIO-000062-00" H 5400 2600 50  0001 C CNN
+F 2 "Diodes:LED0603-YELLOW" H 5400 2300 50  0001 C CNN
+F 3 "" H 5400 2700 50  0001 C CNN
+F 4 "Würth Elektronik" H 5400 2500 50  0001 C CNN "Manufacturer"
+F 5 "150060YS75000" H 5400 2400 50  0001 C CNN "Manufacturer Part Number"
+F 6 "150060YS75000" H 5400 2700 50  0001 C CNN "Part Number"
+F 7 "2V" H 5400 3319 50  0000 C CNN "Forward Voltage (Volt)"
+F 8 "Yellow" H 5400 3228 50  0000 C CNN "LED Color"
+	1    5400 3100
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:+3.3V #PWR0101
+U 1 1 5FDD2CE3
+P 4500 3000
+F 0 "#PWR0101" H 4500 2850 50  0001 C CNN
+F 1 "+3.3V" H 4500 3173 50  0000 C CNN
+F 2 "" H 4500 3000 60  0000 C CNN
+F 3 "" H 4500 3000 60  0000 C CNN
+	1    4500 3000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0102
+U 1 1 5FDD32E7
+P 5750 3200
+F 0 "#PWR0102" H 5750 3030 50  0001 C CNN
+F 1 "GND" H 5750 3050 50  0000 C CNN
+F 2 "" H 5750 3300 60  0000 C CNN
+F 3 "" H 5730 3110 60  0000 C CNN
+	1    5750 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4500 3000 4500 3100
+Wire Wire Line
+	4500 3100 4700 3100
+Wire Wire Line
+	5000 3100 5250 3100
+Wire Wire Line
+	5550 3100 5750 3100
+Wire Wire Line
+	5750 3100 5750 3200
+$Comp
+L Device:R_US R2
+U 1 1 5FDD4C1B
+P 6500 3100
+F 0 "R2" V 6600 3100 50  0000 C CNN
+F 1 "RES-000007-00" H 6500 2650 50  0001 C CNN
+F 2 "Resistors:R0402" H 6500 2350 50  0001 C CNN
+F 3 "" H 6500 2750 50  0001 C CNN
+F 4 "Stackpole Electronics Inc" H 6500 2550 50  0001 C CNN "Manufacturer"
+F 5 "RMCF0402FT4K70" H 6500 2450 50  0001 C CNN "Manufacturer Part Number"
+F 6 "4.7K" V 6325 3100 50  0000 C CNN "Resistance (Ohms)"
+F 7 "±1%" H 6650 3000 50  0001 L CNN "Tolerance (%)"
+F 8 "0402" V 6400 3100 50  0000 C CNN "Package Type"
+F 9 "1/16W" H 6500 2800 50  0001 C CNN "Power (Watts)"
+F 10 "dnp" H 6500 3100 50  0001 C CNN "kicost.PROD"
+	1    6500 3100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:LED_ALT D2
+U 1 1 5FDD4C26
+P 7050 3100
+F 0 "D2" H 7050 3410 50  0000 C CNN
+F 1 "DIO-000062-00" H 7050 2600 50  0001 C CNN
+F 2 "Diodes:LED0603-YELLOW" H 7050 2300 50  0001 C CNN
+F 3 "" H 7050 2700 50  0001 C CNN
+F 4 "Würth Elektronik" H 7050 2500 50  0001 C CNN "Manufacturer"
+F 5 "150060YS75000" H 7050 2400 50  0001 C CNN "Manufacturer Part Number"
+F 6 "150060YS75000" H 7050 2700 50  0001 C CNN "Part Number"
+F 7 "2V" H 7050 3319 50  0000 C CNN "Forward Voltage (Volt)"
+F 8 "Yellow" H 7050 3228 50  0000 C CNN "LED Color"
+F 9 "dnp" H 7050 3100 50  0001 C CNN "kicost.PROD"
+	1    7050 3100
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:+3.3V #PWR0103
+U 1 1 5FDD4C2C
+P 6150 3000
+F 0 "#PWR0103" H 6150 2850 50  0001 C CNN
+F 1 "+3.3V" H 6150 3173 50  0000 C CNN
+F 2 "" H 6150 3000 60  0000 C CNN
+F 3 "" H 6150 3000 60  0000 C CNN
+	1    6150 3000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0104
+U 1 1 5FDD4C32
+P 7400 3200
+F 0 "#PWR0104" H 7400 3030 50  0001 C CNN
+F 1 "GND" H 7400 3050 50  0000 C CNN
+F 2 "" H 7400 3300 60  0000 C CNN
+F 3 "" H 7380 3110 60  0000 C CNN
+	1    7400 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6150 3000 6150 3100
+Wire Wire Line
+	6150 3100 6350 3100
+Wire Wire Line
+	6650 3100 6900 3100
+Wire Wire Line
+	7200 3100 7400 3100
+Wire Wire Line
+	7400 3100 7400 3200
+Wire Notes Line
+	4350 2700 5900 2700
+Wire Notes Line
+	5900 2700 5900 3500
+Wire Notes Line
+	5900 3500 4350 3500
+Wire Notes Line
+	4350 3500 4350 2700
+Wire Notes Line
+	6000 2700 7550 2700
+Wire Notes Line
+	7550 2700 7550 3500
+Wire Notes Line
+	7550 3500 6000 3500
+Wire Notes Line
+	6000 3500 6000 2700
+Text Notes 4350 2700 0    50   ~ 0
+[Prod] R1=4.7K / [Dev] R1=1K
+Text Notes 6000 2700 0    50   ~ 0
+[Prod] R2, D2=dnp
+$EndSCHEMATC

@@ -366,6 +366,17 @@ Currently the only type available is `generic`.
     - `name`: [string=''] Used to identify this particular filter definition.
     - `separator`: [string=':'] Separator used between the variant and the field name.
     - `variant_to_value`: [boolean=false] Rename fields matching the variant to the value of the component.
+- var_rename_kicost: Var_Rename_KiCost
+        This filter implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
+        It applies the KiCost concept of variants (a regex to match the VARIANT).
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `name`: [string=''] Used to identify this particular filter definition.
+    - `prefix`: [string='kicost.'] A mandatory prefix. Is not case sensitive.
+    - `separator`: [string=':'] Separator used between the variant and the field name.
+    - `variant`: [string=''] Variant regex to match the VARIANT part.
+                 When empty the currently selected variant is used.
+    - `variant_to_value`: [boolean=false] Rename fields matching the variant to the value of the component.
 
 
 

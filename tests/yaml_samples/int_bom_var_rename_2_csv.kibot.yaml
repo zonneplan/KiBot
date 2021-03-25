@@ -1,0 +1,56 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+  - name: 'Variant rename'
+    comment: 'Variant rename KiCost style'
+    type: var_rename_kicost
+    # Empty will default to :
+    separator: ''
+    variant_to_value: true
+
+variants:
+  - name: 'production'
+    comment: 'Production variant'
+    type: kibom
+    file_id: '_(PROD)'
+    variant: PROD
+    pre_transform: 'Variant rename'
+
+  - name: 'development'
+    comment: 'Development variant'
+    type: kibom
+    file_id: '_(DEV)'
+    variant: DEV
+    pre_transform: 'Variant rename'
+
+outputs:
+  - name: 'bom_internal_production'
+    comment: "Bill of Materials in CSV format for production"
+    type: bom
+    dir: BoM
+    options:
+      variant: production
+      columns:
+        - Row
+        - References
+        - Value
+        - Description
+        - Manufacturer
+        - Manufacturer Part Number
+
+  - name: 'bom_internal_test'
+    comment: "Bill of Materials in CSV format for development"
+    type: bom
+    dir: BoM
+    options:
+      variant: development
+      columns:
+        - Row
+        - References
+        - Value
+        - Description
+        - Manufacturer
+        - Manufacturer Part Number
+
