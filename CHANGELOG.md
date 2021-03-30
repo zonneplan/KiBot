@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `suparts`: Adds support for KiCost's subparts feature.
   - `field_rename`: Used to rename schematic fields.
   - `var_rename_kicost`: Like `var_rename` but using KiCost mechanism.
+- New KiCost variant style.
+- `skip_if_no_field` and `invert` options to the regex used in the generic
+  filter.
 
 ### Changed
 - Errors and warnings from KiAuto now are printed as errors and warnings.

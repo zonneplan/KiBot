@@ -1,0 +1,43 @@
+# KiCost variants test
+kibot:
+  version: 1
+
+variants:
+  - name: 'production'
+    comment: 'Production variant'
+    type: kicost
+    file_id: '_(production)'
+    variant: production
+
+  - name: 'test'
+    comment: 'Test variant'
+    type: kicost
+    file_id: '_(test)'
+    variant: 't.*'
+
+  - name: 'default'
+    comment: 'Default variant'
+    type: kicost
+    variant: default
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      variant: default
+
+  - name: 'bom_internal_production'
+    comment: "Bill of Materials in CSV format for production"
+    type: bom
+    dir: BoM
+    options:
+      variant: production
+
+  - name: 'bom_internal_test'
+    comment: "Bill of Materials in CSV format for test"
+    type: bom
+    dir: BoM
+    options:
+      variant: test

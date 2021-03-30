@@ -835,6 +835,9 @@ class SchematicComponent(object):
             return self.dfields[field].value
         return ''
 
+    def is_field(self, field):
+        return field in self.dfields
+
     def get_free_field_number(self):
         """ Looks for a field number that isn't currently in use """
         max_num = -1

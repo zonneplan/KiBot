@@ -51,6 +51,7 @@ class KiBoM(BaseVariant):  # noqa: F821
             else:
                 self.variant = []
         self.variant = [v.lower() for v in self.variant]
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         # Filters priority:
         # 1) Defined here
         # 2) Delegated from the output format

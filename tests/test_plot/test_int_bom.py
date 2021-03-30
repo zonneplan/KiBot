@@ -34,6 +34,15 @@ Missing:
 - number_boards
 - XLSX/HTML colors (for real)
 
+KiBoM Variants:
+- kibom-variant_2.sch
+- kibom-variant_5.sch
+
+IBoM Variants:
+- test_int_bom_variant_t2if + kibom-variant_3.sch + int_bom_var_t2i_csv
+- test_int_bom_variant_t2is + kibom-variant_3.sch + int_bom_var_t2is_csv
+- kibom-variant_4.sch
+
 For debug information use:
 pytest-3 --log-cli-level debug
 
@@ -1239,6 +1248,7 @@ def test_int_bom_variant_t2b(test_dir):
 
 
 def test_int_bom_variant_t2c(test_dir):
+    """ Test KiBoM variant and field rename filter, R1 must be changed to 3k3 """
     prj = 'kibom-variant_2'
     ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t2c', prj, 'int_bom_var_t2c_csv', BOM_DIR)
     ctx.run()
@@ -1287,6 +1297,7 @@ def test_int_bom_variant_t2s(test_dir):
 
 
 def test_int_bom_variant_t2if(test_dir):
+    """ IBoM variants test full """
     prj = 'kibom-variant_3'
     ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t2if', prj, 'int_bom_var_t2i_csv', BOM_DIR)
     ctx.run()
@@ -1303,6 +1314,7 @@ def test_int_bom_variant_t2if(test_dir):
 
 
 def test_int_bom_variant_t2is(test_dir):
+    """ IBoM variants test simple """
     prj = 'kibom-variant_3'
     ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t2is', prj, 'int_bom_var_t2is_csv', BOM_DIR)
     ctx.run(extra_debug=True)
@@ -1310,6 +1322,26 @@ def test_int_bom_variant_t2is(test_dir):
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R1'], ['C1', 'C2'])
     ctx.clean_up(keep_project=True)
+
+
+def test_int_bom_variant_t2kf(test_dir):
+    """ KiCost variants test full.
+        R1 must be changed to 3k3.
+        We also test the DNP mechanism. """
+    prj = 'kibom-variant_kicost'
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_t2kf', prj, 'int_bom_var_t2k_csv', BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    rows, header, info = ctx.load_csv(prj+'-bom_(production).csv')
+    check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
+    val_column = header.index(VALUE_COLUMN_NAME)
+    check_value(rows, ref_column, 'R1', val_column, '1k')
+    rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
+    check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+    check_value(rows, ref_column, 'R1', val_column, '3k3')
+    ctx.clean_up()
 
 
 def test_int_bom_wrong_variant(test_dir):

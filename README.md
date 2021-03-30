@@ -290,6 +290,8 @@ Currently the only type available is `generic`.
         This filter is based on regular expressions.
         It also provides some shortcuts for common situations.
         Note that matches aren't case sensitive and spaces at the beggining and the end are removed.
+        The internal `_mechanical` filter emulates the KiBoM behavior for default exclusions.
+        The internal `_kicost_dnp` filter emulates KiCost's `dnp` field.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `config_field`: [string='Config'] Name of the field used to clasify components.
@@ -301,8 +303,10 @@ Currently the only type available is `generic`.
       * Valid keys:
         - `column`: [string=''] Name of the column to apply the regular expression.
         - *field*: Alias for column.
+        - `invert`: [boolean=false] Invert the regex match result.
         - `regex`: [string=''] Regular expression to match.
         - *regexp*: Alias for regex.
+        - `skip_if_no_field`: [boolean=false] Skip this test if the field doesn't exist.
     - `exclude_config`: [boolean=false] Exclude components containing a key value in the config field.
                         Separators are applied.
     - `exclude_empty_val`: [boolean=false] Exclude components with empty 'Value'.
@@ -320,8 +324,10 @@ Currently the only type available is `generic`.
       * Valid keys:
         - `column`: [string=''] Name of the column to apply the regular expression.
         - *field*: Alias for column.
+        - `invert`: [boolean=false] Invert the regex match result.
         - `regex`: [string=''] Regular expression to match.
         - *regexp*: Alias for regex.
+        - `skip_if_no_field`: [boolean=false] Skip this test if the field doesn't exist.
     - `invert`: [boolean=false] Invert the result of the filter.
     - `keys`: [string|list(string)=dnf_list] [dnc_list,dnf_list] List of keys to match.
               The `dnf_list` and `dnc_list` internal lists can be specified as strings.
@@ -369,6 +375,7 @@ Currently the only type available is `generic`.
 - var_rename_kicost: Var_Rename_KiCost
         This filter implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
         It applies the KiCost concept of variants (a regex to match the VARIANT).
+        The internal `_var_rename_kicost` filter emulates the KiCost behavior.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `name`: [string=''] Used to identify this particular filter definition.

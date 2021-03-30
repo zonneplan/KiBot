@@ -4,7 +4,8 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegFilter, Registrable, RegOutput
-from .misc import IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT, IFILT_KICOST_RENAME, DISTRIBUTORS
+from .misc import (IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT, IFILT_KICOST_RENAME, DISTRIBUTORS,
+                   IFILT_VAR_RENAME_KICOST, IFILT_KICOST_DNP)
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
 from .macros import macros, document  # noqa: F401
@@ -223,6 +224,14 @@ class BaseFilter(RegFilter):
         return o_tree
 
     @staticmethod
+    def _create_var_rename_kicost(name):
+        o_tree = {'name': name}
+        o_tree['type'] = 'var_rename_kicost'
+        o_tree['comment'] = 'Internal default variant field renamer filter (KiCost style)'
+        logger.debug('Creating internal filter: '+str(o_tree))
+        return o_tree
+
+    @staticmethod
     def _create_rot_footprint(name):
         o_tree = {'name': name}
         o_tree['type'] = 'rot_footprint'
@@ -269,6 +278,15 @@ class BaseFilter(RegFilter):
         return o_tree
 
     @staticmethod
+    def _create_kicost_dnp(name):
+        o_tree = {'name': name}
+        o_tree['type'] = 'generic'
+        o_tree['comment'] = 'Internal filter for KiCost `dnp` field'
+        # dnp = 0 is included, other dnp values are excluded
+        o_tree['exclude_any'] = [{'column': 'dnp', 'regex': r'^\s*0(\.0*)?\s*$', 'invert': True, 'skip_if_no_field': True}]
+        return o_tree
+
+    @staticmethod
     def _create_internal_filter(name):
         if name == IFILT_MECHANICAL:
             tree = BaseFilter._create_mechanical(name)
@@ -280,6 +298,10 @@ class BaseFilter(RegFilter):
             tree = BaseFilter._create_rot_footprint(name)
         elif name == IFILT_KICOST_RENAME:
             tree = BaseFilter._create_kicost_rename(name)
+        elif name == IFILT_VAR_RENAME_KICOST:
+            tree = BaseFilter._create_var_rename_kicost(name)
+        elif name == IFILT_KICOST_DNP:
+            tree = BaseFilter._create_kicost_dnp(name)
         else:
             return None
         filter = RegFilter.get_class_for(tree['type'])()
@@ -299,7 +321,10 @@ class BaseFilter(RegFilter):
             # Nothing specified, use the default
             if default is None:
                 return None
-            names = [default]
+            if isinstance(default, list):
+                names = default
+            else:
+                names = [default]
         elif isinstance(names, str):
             # User provided, but only one, make a list
             if names == '_none':

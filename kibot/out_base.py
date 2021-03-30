@@ -102,6 +102,10 @@ class BoMRegex(Optionable):
             """ {column} """
             self.regexp = None
             """ {regex} """
+            self.skip_if_no_field = False
+            """ Skip this test if the field doesn't exist """
+            self.invert = False
+            """ Invert the regex match result """
 
 
 class VariantOptions(BaseOptions):
