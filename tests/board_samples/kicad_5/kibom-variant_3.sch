@@ -60,6 +60,7 @@ F 1 "1000" H 2570 1655 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 2430 1700 50  0001 C CNN
 F 3 "~" H 2500 1700 50  0001 C CNN
 F 4 "T1" H 2500 1700 50  0001 C CNN "Config"
+F 5 "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_2010_5025Metric.wrl" H 2500 1700 50  0001 C CNN "default:_3D_model"
 	1    2500 1700
 	1    0    0    -1  
 $EndComp

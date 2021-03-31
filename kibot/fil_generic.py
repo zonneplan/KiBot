@@ -30,7 +30,9 @@ class Generic(BaseFilter):  # noqa: F821
     """ Generic filter
         This filter is based on regular expressions.
         It also provides some shortcuts for common situations.
-        Note that matches aren't case sensitive and spaces at the beggining and the end are removed """
+        Note that matches aren't case sensitive and spaces at the beggining and the end are removed.
+        The internal `_mechanical` filter emulates the KiBoM behavior for default exclusions.
+        The internal `_kicost_dnp` filter emulates KiCost's `dnp` field """
     def __init__(self):
         super().__init__()
         with document:
@@ -119,8 +121,14 @@ class Generic(BaseFilter):  # noqa: F821
         if not self.include_only:  # Nothing to match against, means include all
             return True
         for reg in self.include_only:
+            if reg.skip_if_no_field and not c.is_field(reg.column):
+                # Skip the check if the field doesn't exist
+                continue
             field_value = c.get_field_value(reg.column)
-            if reg.regex.search(field_value):
+            res = reg.regex.search(field_value)
+            if reg.invert:
+                res = not res
+            if res:
                 if GS.debug_level > 1:
                     logger.debug("Including '{ref}': Field '{field}' ({value}) matched '{re}'".format(
                                  ref=c.ref, field=reg.column, value=field_value, re=reg.regex))
@@ -134,8 +142,14 @@ class Generic(BaseFilter):  # noqa: F821
         if not self.exclude_any:  # Nothing to match against, means don't exclude any
             return False
         for reg in self.exclude_any:
+            if reg.skip_if_no_field and not c.is_field(reg.column):
+                # Skip the check if the field doesn't exist
+                continue
             field_value = c.get_field_value(reg.column)
-            if reg.regex.search(field_value):
+            res = reg.regex.search(field_value)
+            if reg.invert:
+                res = not res
+            if res:
                 if GS.debug_level > 1:
                     logger.debug("Excluding '{ref}': Field '{field}' ({value}) matched '{re}'".format(
                                  ref=c.ref, field=reg.column, value=field_value, re=reg.regex))

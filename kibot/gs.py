@@ -74,6 +74,7 @@ class GS(object):
     global_kiauto_wait_start = None
     global_kiauto_time_out_scale = None
     global_opts_class = None
+    global_3D_model_field = '_3D_model'
     test_boolean = True
 
     @staticmethod

@@ -32,27 +32,14 @@ class IBoM(BaseVariant):  # noqa: F821
             self.variants_whitelist = Optionable
             """ [string|list(string)=''] List of board variants to include in the BOM """
 
-    @staticmethod
-    def _force_list(val):
-        if isinstance(val, type):
-            # Not used
-            val = []
-        elif isinstance(val, str):
-            # A string
-            if val:
-                val = [v.strip() for v in val.split(',')]
-            else:
-                # Empty string
-                val = []
-        return val
-
     def config(self, parent):
         super().config(parent)
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', IFILT_MECHANICAL)
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
-        self.variants_blacklist = self._force_list(self.variants_blacklist)
-        self.variants_whitelist = self._force_list(self.variants_whitelist)
+        self.variants_blacklist = self.force_list(self.variants_blacklist)
+        self.variants_whitelist = self.force_list(self.variants_whitelist)
 
     def skip_component(self, c):
         """ Skip components that doesn't belong to this variant. """

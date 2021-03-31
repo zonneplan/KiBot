@@ -69,6 +69,8 @@ CMD_KIBOM = 'KiBOM_CLI.py'
 URL_KIBOM = 'https://github.com/INTI-CMNB/KiBoM'
 CMD_IBOM = 'generate_interactive_bom.py'
 URL_IBOM = 'https://github.com/INTI-CMNB/InteractiveHtmlBom'
+CMD_KICOST = 'kicost'
+URL_KICOST = 'https://github.com/INTI-CMNB/KiCost'
 KICAD2STEP = 'kicad2step'
 PCBDRAW = 'pcbdraw'
 URL_PCBDRAW = 'https://github.com/INTI-CMNB/pcbdraw'
@@ -79,8 +81,10 @@ KICAD_VERSION_5_99 = 5099000
 # Internal filter names
 IFILT_MECHANICAL = '_mechanical'
 IFILT_VAR_RENAME = '_var_rename'
+IFILT_VAR_RENAME_KICOST = '_var_rename_kicost'
 IFILT_ROT_FOOTPRINT = '_rot_footprint'
 IFILT_KICOST_RENAME = '_kicost_rename'
+IFILT_KICOST_DNP = '_kicost_dnp'
 # KiCad 5 GUI values for the attribute
 UI_THT = 0       # 1 for KiCad 6
 UI_SMD = 1       # 2 for KiCad 6
@@ -119,8 +123,13 @@ DNC = {
     "fixed",
 }
 # KiCost distributors
-DISTRIBUTORS = ['digikey#', 'farnell#', 'mouser#', 'newark#', 'rs#', 'arrow#', 'tme#', 'lcsc#']
-
+DISTRIBUTORS = ['digikey', 'farnell', 'mouser', 'newark', 'rs', 'arrow', 'tme', 'lcsc']
+DISTRIBUTORS_F = [d+'#' for d in DISTRIBUTORS]
+# ISO ISO4217 currency codes
+# Not all, but the ones we get from the European Central Bank (march 2021)
+ISO_CURRENCIES = set(['EUR', 'USD', 'JPY', 'BGN', 'CZK', 'DKK', 'GBP', 'HUF', 'PLN', 'RON', 'SEK', 'CHF', 'ISK', 'NOK', 'HRK',
+                      'RUB', 'TRY', 'AUD', 'BRL', 'CAD', 'CNY', 'HKD', 'IDR', 'ILS', 'INR', 'KRW', 'MXN', 'MYR', 'NZD', 'PHP',
+                      'SGD', 'THB', 'ZAR'])
 
 W_VARCFG = '(W001) '
 W_VARPCB = '(W002) '
@@ -184,6 +193,8 @@ W_NUMSUBPARTS = '(W059) '
 W_PARTMULT = '(W060) '
 W_EMPTYREN = '(W061) '
 W_BADFIELD = '(W062) '
+W_UNKDIST = '(W063) '
+W_UNKCUR = '(W064) '
 
 
 class Rect(object):

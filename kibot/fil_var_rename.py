@@ -25,6 +25,8 @@ class Var_Rename(BaseFilter):  # noqa: F821
             """ Separator used between the variant and the field name """
             self.variant_to_value = False
             """ Rename fields matching the variant to the value of the component """
+            self.force_variant = ''
+            """ Use this variant instead of the current variant. Usefull for IBoM variants """
 
     def config(self, parent):
         super().config(parent)
@@ -33,10 +35,14 @@ class Var_Rename(BaseFilter):  # noqa: F821
 
     def filter(self, comp):
         """ Look for fields containing VARIANT:FIELD used to change fields according to the variant """
-        if not GS.variant:
-            # No variant in use, nothing to do
-            return
-        for variant in GS.variant:
+        if self.force_variant:
+            variants = [self.force_variant]
+        else:
+            variants = GS.variant
+            if not variants:
+                # No variant in use, nothing to do
+                return
+        for variant in variants:
             for name, value in comp.get_user_fields():
                 res = name.strip().split(self.separator)
                 if len(res) == 2:

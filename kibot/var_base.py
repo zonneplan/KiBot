@@ -5,7 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegVariant
 from .optionable import Optionable
-from .fil_base import apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, BaseFilter, apply_pre_transform
+from .fil_base import apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, apply_pre_transform
 from .macros import macros, document  # noqa: F401
 
 
@@ -25,20 +25,19 @@ class BaseVariant(RegVariant):
             # * Filters
             self.pre_transform = Optionable
             """ [string|list(string)=''] Name of the filter to transform fields before applying other filters.
-                Use '_var_rename' to transform VARIANT:FIELD fields """
+                Use '_var_rename' to transform VARIANT:FIELD fields.
+                Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
+                Use '_kicost_rename' to apply KiCost field rename rules """
             self.exclude_filter = Optionable
             """ [string|list(string)=''] Name of the filter to exclude components from BoM processing.
                 Use '_mechanical' for the default KiBoM behavior """
             self.dnf_filter = Optionable
             """ [string|list(string)=''] Name of the filter to mark components as 'Do Not Fit'.
-                Use '_kibom_dnf' for the default KiBoM behavior """
+                Use '_kibom_dnf' for the default KiBoM behavior.
+                Use '_kicost_dnp'' for the default KiCost behavior """
             self.dnc_filter = Optionable
             """ [string|list(string)=''] Name of the filter to mark components as 'Do Not Change'.
                 Use '_kibom_dnc' for the default KiBoM behavior """
-
-    def config(self, parent):
-        super().config(parent)
-        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
 
     def filter(self, comps):
         # Apply all the filters

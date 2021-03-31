@@ -42,15 +42,9 @@ class KiBoM(BaseVariant):  # noqa: F821
     def config(self, parent):
         # Now we can let the parent initialize the filters
         super().config(parent)
-        # Variants, ensure a list
-        if isinstance(self.variant, type):
-            self.variant = []
-        elif isinstance(self.variant, str):
-            if self.variant:
-                self.variant = [self.variant]
-            else:
-                self.variant = []
-        self.variant = [v.lower() for v in self.variant]
+        # Variants, ensure a lowercase list
+        self.variant = [v.lower() for v in self.force_list(self.variant)]
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         # Filters priority:
         # 1) Defined here
         # 2) Delegated from the output format

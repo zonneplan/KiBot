@@ -1,0 +1,40 @@
+# KiCost basic test
+kibot:
+  version: 1
+
+outputs:
+  - name: 'Costs'
+    comment: "Components costs spreadsheet"
+    type: kicost
+    dir: KiCost
+    options:
+      output: 'simple'
+      no_price: true
+      no_collapse: true
+
+  - name: 'Costs (default)'
+    comment: "Components costs spreadsheet default variant"
+    type: kicost
+    dir: KiCost
+    options:
+      output: 'simple_default'
+      no_price: true
+      kicost_variant: default
+
+  - name: 'Costs (production)'
+    comment: "Components costs spreadsheet production variant"
+    type: kicost
+    dir: KiCost
+    options:
+      output: 'simple_production'
+      no_price: true
+      kicost_variant: production
+
+  - name: 'Costs (test)'
+    comment: "Components costs spreadsheet test variant"
+    type: kicost
+    dir: KiCost
+    options:
+      output: 'simple_test'
+      no_price: true
+      kicost_variant: test

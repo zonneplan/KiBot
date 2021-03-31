@@ -237,6 +237,22 @@ class Optionable(object):
             name = re.sub(r'[?%*:|"<>]', '_', name)
         return name
 
+    @staticmethod
+    def force_list(val):
+        """ Used for values that accept a string or a list of strings.
+            The string can be a comma separated list """
+        if isinstance(val, type):
+            # Not used
+            val = []
+        elif isinstance(val, str):
+            # A string
+            if val:
+                val = [v.strip() for v in val.split(',')]
+            else:
+                # Empty string
+                val = []
+        return val
+
 
 class BaseOptions(Optionable):
     """ A class to validate and hold output options.

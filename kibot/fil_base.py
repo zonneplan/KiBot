@@ -4,7 +4,9 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegFilter, Registrable, RegOutput
-from .misc import IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT, IFILT_KICOST_RENAME, DISTRIBUTORS
+from .optionable import Optionable
+from .misc import (IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT, IFILT_KICOST_RENAME, DISTRIBUTORS,
+                   IFILT_VAR_RENAME_KICOST, IFILT_KICOST_DNP)
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
 from .macros import macros, document  # noqa: F401
@@ -223,6 +225,14 @@ class BaseFilter(RegFilter):
         return o_tree
 
     @staticmethod
+    def _create_var_rename_kicost(name):
+        o_tree = {'name': name}
+        o_tree['type'] = 'var_rename_kicost'
+        o_tree['comment'] = 'Internal default variant field renamer filter (KiCost style)'
+        logger.debug('Creating internal filter: '+str(o_tree))
+        return o_tree
+
+    @staticmethod
     def _create_rot_footprint(name):
         o_tree = {'name': name}
         o_tree['type'] = 'rot_footprint'
@@ -259,13 +269,23 @@ class BaseFilter(RegFilter):
             rename.append({'field': k, 'name': v})
         for stub in ['part#', '#', 'p#', 'pn', 'vendor#', 'vp#', 'vpn', 'num']:
             for dist in DISTRIBUTORS:
-                base = dist[:-1]
+                base = dist
+                dist += '#'
                 if stub != '#':
                     rename.append({'field': base + stub, 'name': dist})
                 rename.append({'field': base + '_' + stub, 'name': dist})
                 rename.append({'field': base + '-' + stub, 'name': dist})
         o_tree['rename'] = rename
         logger.debug('Creating internal filter: '+str(o_tree))
+        return o_tree
+
+    @staticmethod
+    def _create_kicost_dnp(name):
+        o_tree = {'name': name}
+        o_tree['type'] = 'generic'
+        o_tree['comment'] = 'Internal filter for KiCost `dnp` field'
+        # dnp = 0 is included, other dnp values are excluded
+        o_tree['exclude_any'] = [{'column': 'dnp', 'regex': r'^\s*0(\.0*)?\s*$', 'invert': True, 'skip_if_no_field': True}]
         return o_tree
 
     @staticmethod
@@ -280,6 +300,10 @@ class BaseFilter(RegFilter):
             tree = BaseFilter._create_rot_footprint(name)
         elif name == IFILT_KICOST_RENAME:
             tree = BaseFilter._create_kicost_rename(name)
+        elif name == IFILT_VAR_RENAME_KICOST:
+            tree = BaseFilter._create_var_rename_kicost(name)
+        elif name == IFILT_KICOST_DNP:
+            tree = BaseFilter._create_kicost_dnp(name)
         else:
             return None
         filter = RegFilter.get_class_for(tree['type'])()
@@ -299,7 +323,10 @@ class BaseFilter(RegFilter):
             # Nothing specified, use the default
             if default is None:
                 return None
-            names = [default]
+            if isinstance(default, list):
+                names = default
+            else:
+                names = [default]
         elif isinstance(names, str):
             # User provided, but only one, make a list
             if names == '_none':
@@ -346,3 +373,25 @@ class BaseFilter(RegFilter):
         if len(filters) == 1:
             return filters[0]
         return MultiFilter(filters, is_transform)
+
+
+class FieldRename(Optionable):
+    """ Field translation """
+    def __init__(self):
+        super().__init__()
+        self._unkown_is_error = True
+        with document:
+            self.field = ''
+            """ Name of the field to rename """
+            self.name = ''
+            """ New name """
+        self._field_example = 'mpn'
+        self._name_example = 'manf#'
+
+    def config(self, parent):
+        super().config(parent)
+        if not self.field:
+            raise KiPlotConfigurationError("Missing or empty `field` in rename list ({})".format(str(self._tree)))
+        if not self.name:
+            raise KiPlotConfigurationError("Missing or empty `name` in rename list ({})".format(str(self._tree)))
+        self.field = self.field.lower()

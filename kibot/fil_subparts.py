@@ -12,7 +12,7 @@ import re
 from copy import deepcopy
 from .gs import GS
 from .optionable import Optionable
-from .misc import W_NUMSUBPARTS, W_PARTMULT, DISTRIBUTORS
+from .misc import W_NUMSUBPARTS, W_PARTMULT, DISTRIBUTORS_F
 from .macros import macros, document, filter_class  # noqa: F401
 from . import log
 
@@ -21,7 +21,7 @@ logger = log.get_logger(__name__)
 
 
 class DistributorsList(Optionable):
-    _default = DISTRIBUTORS
+    _default = DISTRIBUTORS_F
 
 
 @filter_class
@@ -69,10 +69,10 @@ class Subparts(BaseFilter):  # noqa: F821
         if not self.ref_sep:
             self.ref_sep = '#'
         if isinstance(self.split_fields, type):
-            self.split_fields = DISTRIBUTORS
+            self.split_fields = DISTRIBUTORS_F
         else:
             if self.split_fields_expand:
-                self.split_fields.extend(DISTRIBUTORS)
+                self.split_fields.extend(DISTRIBUTORS_F)
         # (?<!\\) is used to skip \;
         self._part_sep = re.compile(r'(?<!\\)\s*['+self.separators+r']\s*')
         self._qty_sep = re.compile(r'(?<!\\)\s*['+self.mult_separators+r']\s*')
