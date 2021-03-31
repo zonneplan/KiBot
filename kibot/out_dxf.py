@@ -21,7 +21,7 @@ class DXFOptions(DrillMarks):
         super().__init__()
         with document:
             self.use_aux_axis_as_origin = False
-            """ Use the auxiliar axis as origin for coordinates """
+            """ Use the auxiliary axis as origin for coordinates """
             self.polygon_mode = True
             """ Plot using the contour, instead of the center line """
             self.metric_units = False

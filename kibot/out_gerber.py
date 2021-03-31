@@ -17,7 +17,7 @@ class GerberOptions(AnyLayerOptions):
     def __init__(self):
         with document:
             self.use_aux_axis_as_origin = False
-            """ Use the auxiliar axis as origin for coordinates """
+            """ Use the auxiliary axis as origin for coordinates """
             self.line_width = 0.1
             """ [0.02,2] Line_width for objects without width [mm] (KiCad 5) """
             self.subtract_mask_from_silk = False

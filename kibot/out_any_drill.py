@@ -48,7 +48,7 @@ class AnyDrill(BaseOptions):
         # Options
         with document:
             self.use_aux_axis_as_origin = False
-            """ Use the auxiliar axis as origin for coordinates """
+            """ Use the auxiliary axis as origin for coordinates """
             self.map = DrillMap
             """ [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                 Not generated unless a format is specified """
