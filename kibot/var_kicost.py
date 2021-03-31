@@ -3,6 +3,7 @@
 # Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+# The algorithm is from KiCost project (https://github.com/xesscorp/KiCost)
 """
 Implements the KiCost variants mechanism.
 """

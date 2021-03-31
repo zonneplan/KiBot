@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New KiCost variant style.
 - `skip_if_no_field` and `invert` options to the regex used in the generic
   filter.
+- Basic KiCost support.
 
 ### Changed
 - Errors and warnings from KiAuto now are printed as errors and warnings.

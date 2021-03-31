@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegFilter, Registrable, RegOutput
+from .optionable import Optionable
 from .misc import (IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT, IFILT_KICOST_RENAME, DISTRIBUTORS,
                    IFILT_VAR_RENAME_KICOST, IFILT_KICOST_DNP)
 from .error import KiPlotConfigurationError
@@ -268,7 +269,8 @@ class BaseFilter(RegFilter):
             rename.append({'field': k, 'name': v})
         for stub in ['part#', '#', 'p#', 'pn', 'vendor#', 'vp#', 'vpn', 'num']:
             for dist in DISTRIBUTORS:
-                base = dist[:-1]
+                base = dist
+                dist += '#'
                 if stub != '#':
                     rename.append({'field': base + stub, 'name': dist})
                 rename.append({'field': base + '_' + stub, 'name': dist})
@@ -371,3 +373,25 @@ class BaseFilter(RegFilter):
         if len(filters) == 1:
             return filters[0]
         return MultiFilter(filters, is_transform)
+
+
+class FieldRename(Optionable):
+    """ Field translation """
+    def __init__(self):
+        super().__init__()
+        self._unkown_is_error = True
+        with document:
+            self.field = ''
+            """ Name of the field to rename """
+            self.name = ''
+            """ New name """
+        self._field_example = 'mpn'
+        self._name_example = 'manf#'
+
+    def config(self, parent):
+        super().config(parent)
+        if not self.field:
+            raise KiPlotConfigurationError("Missing or empty `field` in rename list ({})".format(str(self._tree)))
+        if not self.name:
+            raise KiPlotConfigurationError("Missing or empty `name` in rename list ({})".format(str(self._tree)))
+        self.field = self.field.lower()

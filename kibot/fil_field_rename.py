@@ -6,36 +6,13 @@
 """
 Implements a field renamer
 """
-from .optionable import Optionable
-from .error import KiPlotConfigurationError
 from .gs import GS
 from .misc import W_EMPTYREN
 from .macros import macros, document, filter_class  # noqa: F401
+from .fil_base import FieldRename
 from . import log
 
 logger = log.get_logger(__name__)
-
-
-class FieldRename(Optionable):
-    """ Field translation """
-    def __init__(self):
-        super().__init__()
-        self._unkown_is_error = True
-        with document:
-            self.field = ''
-            """ Name of the field to rename """
-            self.name = ''
-            """ New name """
-        self._field_example = 'mpn'
-        self._name_example = 'manf#'
-
-    def config(self, parent):
-        super().config(parent)
-        if not self.field:
-            raise KiPlotConfigurationError("Missing or empty `field` in rename list ({})".format(str(self._tree)))
-        if not self.name:
-            raise KiPlotConfigurationError("Missing or empty `name` in rename list ({})".format(str(self._tree)))
-        self.field = self.field.lower()
 
 
 @filter_class

@@ -3,6 +3,7 @@
 # Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+# The algorithm is from KiCost project (https://github.com/xesscorp/KiCost)
 """
 Implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
 It applies the KiCost concept of variants (a regex to match the VARIANT)
