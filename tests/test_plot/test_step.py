@@ -57,7 +57,7 @@ def test_step_3(test_dir):
 def test_step_variant_1(test_dir):
     prj = 'kibom-variant_3'
     ctx = context.TestContext(test_dir, 'test_step_variant_1', prj, 'step_variant_1', '')
-    ctx.run()
+    ctx.run(extra_debug=True)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-3D.step')
     ctx.clean_up(keep_project=True)

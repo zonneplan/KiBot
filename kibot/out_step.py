@@ -81,12 +81,42 @@ class STEPOptions(VariantOptions):
             while not models.empty():
                 models_l.append(models.pop())
             # Fix any changed path
-            for m3d in models_l:
+            replaced = self.undo_3d_models_rep.get(m.GetReference())
+            for i, m3d in enumerate(models_l):
                 if m3d.m_Filename in self.undo_3d_models:
                     m3d.m_Filename = self.undo_3d_models[m3d.m_Filename]
+                if replaced:
+                    m3d.m_Filename = replaced[i]
             # Push the models back
             for model in models_l:
                 models.push_front(model)
+
+    def replace_models(self, models, new_model, c):
+        """ Changes the 3D model using a provided model """
+        logger.debug('Changing 3D models for '+c.ref)
+        # Get the model references
+        models_l = []
+        while not models.empty():
+            models_l.append(models.pop())
+        # Check if we have more than one model
+        c_models = len(models_l)
+        if c_models > 1:
+            new_model = new_model.split(',')
+            c_replace = len(new_model)
+            if c_models != c_replace:
+                raise KiPlotConfigurationError('Found {} models in component {}, but {} replacements provided'.
+                                               format(c_models, c, c_replace))
+        else:
+            new_model = [new_model]
+        # Change the models
+        replaced = []
+        for i, m3d in enumerate(models_l):
+            replaced.append(m3d.m_Filename)
+            m3d.m_Filename = new_model[i]
+        self.undo_3d_models_rep[c.ref] = replaced
+        # Push the models back
+        for model in models_l:
+            models.push_front(model)
 
     def download_models(self):
         """ Check we have the 3D models.
@@ -165,6 +195,7 @@ class STEPOptions(VariantOptions):
 
     def filter_components(self, dir):
         if not self._comps:
+            # No variant/filter to apply
             if self.download_models():
                 # Some missing components found and we downloaded them
                 # Save the fixed board
@@ -176,15 +207,25 @@ class STEPOptions(VariantOptions):
         comps_hash = self.get_refs_hash()
         # Remove the 3D models for not fitted components
         rem_models = []
+        self.undo_3d_models_rep = {}
         for m in GS.board.GetModules():
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
-            if c and c.included and not c.fitted:
+            if c:
+                # The filter/variant knows about this component
                 models = m.Models()
-                rem_m_models = []
-                while not models.empty():
-                    rem_m_models.append(models.pop())
-                rem_models.append(rem_m_models)
+                if c.included and not c.fitted:
+                    # Not fitted, remove the 3D model
+                    rem_m_models = []
+                    while not models.empty():
+                        rem_m_models.append(models.pop())
+                    rem_models.append(rem_m_models)
+                else:
+                    # Fitted
+                    new_model = c.get_field_value(GS.global_3D_model_field)
+                    if new_model:
+                        # We will change the 3D model
+                        self.replace_models(models, new_model, c)
         self.download_models()
         fname = self.save_board(dir)
         self.undo_3d_models_rename()
