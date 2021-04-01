@@ -257,7 +257,7 @@ outputs:
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
       uppercase_extensions: false
-      # [boolean=false] Use the auxiliar axis as origin for coordinates
+      # [boolean=false] Use the auxiliary axis as origin for coordinates
       use_aux_axis_as_origin: false
       # [string=''] Board variant to apply
       variant: ''
@@ -301,7 +301,7 @@ outputs:
         filename: ''
       # [number=0] number of digits for mantissa part of coordinates (0 is auto)
       right_digits: 0
-      # [boolean=false] Use the auxiliar axis as origin for coordinates
+      # [boolean=false] Use the auxiliary axis as origin for coordinates
       use_aux_axis_as_origin: false
       # [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros
       zeros_format: 'DECIMAL_FORMAT'
@@ -332,7 +332,7 @@ outputs:
         # [string=''] Name of the drill report. Not generated unless a name is specified.
         # (%i='drill_report' %x='txt')
         filename: ''
-      # [boolean=false] Use the auxiliar axis as origin for coordinates
+      # [boolean=false] Use the auxiliary axis as origin for coordinates
       use_aux_axis_as_origin: false
 
   # Gerber format:
@@ -389,7 +389,7 @@ outputs:
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
       uppercase_extensions: false
-      # [boolean=false] Use the auxiliar axis as origin for coordinates
+      # [boolean=false] Use the auxiliary axis as origin for coordinates
       use_aux_axis_as_origin: false
       # [boolean=true] Include netlist metadata
       use_gerber_net_attributes: true
@@ -1011,7 +1011,7 @@ outputs:
       # [boolean=false] Used to exclude 3D models for components with 'virtual' attribute
       no_virtual: false
       # [string='grid'] Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
-      # The drill option uses the auxiliar reference defined by the user.
+      # The drill option uses the auxiliary reference defined by the user.
       # You can define any other origin using the format 'X,Y', i.e. '3.2,-10'
       origin: 'grid'
       # [string='%f-%i%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options
