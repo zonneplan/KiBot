@@ -94,7 +94,7 @@ def list_pre_and_outs(logger, outputs):
             logger.info('- '+str(o))
 
 
-def solve_schematic(a_schematic, a_board_file):
+def solve_schematic(a_schematic, a_board_file, config):
     schematic = a_schematic
     if not schematic and a_board_file:
         base = os.path.splitext(a_board_file)[0]
@@ -111,15 +111,26 @@ def solve_schematic(a_schematic, a_board_file):
             schematic = schematics[0]
             logger.info('Using SCH file: '+schematic)
         elif len(schematics) > 1:
-            # Look for a schematic with a PCB
-            boards = glob('*.kicad_pcb')
-            boards_schs = [x[:-9]+'sch' for x in boards]
-            for sch in schematics:
-                if sch in boards_schs:
+            # Look for a schematic with the same name as the config
+            while '.' in config:
+                config = os.path.splitext(config)[0]
+            sch = config+'.sch'
+            if os.path.isfile(sch):
+                schematic = sch
+            else:
+                sch = config+'.kicad_sch'
+                if os.path.isfile(sch):
                     schematic = sch
-                    break
-            if schematic is None:
-                schematic = schematics[0]
+                else:
+                    # Look for a schematic with a PCB and/or project
+                    for sch in schematics:
+                        base = os.path.splitext(sch)[0]
+                        if os.path.isfile(base+'.pro') or os.path.isfile(base+'.kicad_pro') or \
+                           os.path.isfile(base+'.kicad_pcb'):
+                            schematic = sch
+                            break
+                    else:
+                        schematic = schematics[0]
             logger.warning(W_VARSCH + 'More than one SCH file found in current directory.\n'
                            '  Using '+schematic+' if you want to use another use -e option.')
     if schematic and not os.path.isfile(schematic):
@@ -329,7 +340,7 @@ def main():
         sys.exit(0)
 
     # Determine the SCH file
-    GS.set_sch(solve_schematic(args.schematic, args.board_file))
+    GS.set_sch(solve_schematic(args.schematic, args.board_file, plot_config))
     # Determine the PCB file
     GS.set_pcb(solve_board_file(GS.sch_file, args.board_file))
     if args.makefile:
