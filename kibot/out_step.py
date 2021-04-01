@@ -194,6 +194,7 @@ class STEPOptions(VariantOptions):
         return fname
 
     def filter_components(self, dir):
+        self.undo_3d_models_rep = {}
         if not self._comps:
             # No variant/filter to apply
             if self.download_models():
@@ -207,7 +208,6 @@ class STEPOptions(VariantOptions):
         comps_hash = self.get_refs_hash()
         # Remove the 3D models for not fitted components
         rem_models = []
-        self.undo_3d_models_rep = {}
         for m in GS.board.GetModules():
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
