@@ -147,7 +147,7 @@ def solve_schematic(a_schematic, a_board_file, config):
 def solve_config(a_plot_config):
     plot_config = a_plot_config
     if not plot_config:
-        plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')
+        plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')+glob('*.kibot.yaml.gz')
         if len(plot_configs) == 1:
             plot_config = plot_configs[0]
             logger.info('Using config file: '+plot_config)
