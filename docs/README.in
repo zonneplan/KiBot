@@ -1235,6 +1235,12 @@ The internal list of rotations is:
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout
+  - **Plug-in loader fix**: Stavros Korokithakis (@skorokithakis)
+  - **SCH loader fix**: @Sabolik
+  - **SCH library loader fix**: Bernhard B. (@bbernhard)
+  - **GitHub Actions fix**: @TheSlowGrowth
+  - **Easier README navigation**: Robin Vobruba (@hoijui)
+  - **Typos corrections**: Seth Kaz (@sethkaz)
 - **Sources of inspiration and good ideas**:
   - **JLC Kicad Tools**: Matthew Lai @matthewlai
   - **KiCad Gerber Zipper**: @g200kg
