@@ -28,7 +28,7 @@ class STEPOptions(VariantOptions):
             """ Use metric units instead of inches """
             self._origin = 'grid'
             """ Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
-                The drill option uses the auxiliar reference defined by the user.
+                The drill option uses the auxiliary reference defined by the user.
                 You can define any other origin using the format 'X,Y', i.e. '3.2,-10' """
             self.no_virtual = False
             """ Used to exclude 3D models for components with 'virtual' attribute """

@@ -134,7 +134,7 @@ preflight:
 #### Filtering DRC and ERC errors
 
 Sometimes KiCad reports DRC or ERC errors that you can't get rid off.
-This could be just because you are part of a team including lazzy people that doesn't want to take the extra effort to solve
+This could be just because you are part of a team including lazy people that doesn't want to take the extra effort to solve
 some errors that aren't in fact errors, just small violations made on purpose. In this case you could exclude some known errors.
 
 For this you must declare `filters` entry in the `preflight` section. Then you can add as many `filter` entries as you want.
@@ -772,7 +772,7 @@ Next time you need this list just use an alias, like this:
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
-        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliar axis as origin for coordinates.
+        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `variant`: [string=''] Board variant to apply.
 
 * Excellon drill format
@@ -804,7 +804,7 @@ Next time you need this list just use an alias, like this:
             - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
         - `right_digits`: [number=0] number of digits for mantissa part of coordinates (0 is auto).
-        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliar axis as origin for coordinates.
+        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `zeros_format`: [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
 
 * Gerber drill format
@@ -830,7 +830,7 @@ Next time you need this list just use an alias, like this:
           * Valid keys:
             - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
-        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliar axis as origin for coordinates.
+        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
 
 * Gerber format
   * Type: `gerber`
@@ -875,7 +875,7 @@ Next time you need this list just use an alias, like this:
         - `subtract_mask_from_silk`: [boolean=false] Substract the solder mask from the silk screen.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
-        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliar axis as origin for coordinates.
+        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `use_gerber_net_attributes`: [boolean=true] Include netlist metadata.
         - `use_gerber_x2_attributes`: [boolean=true] Use the extended X2 format (otherwise use X1 formerly RS-274X).
         - `use_protel_extensions`: [boolean=false] Use legacy Protel file extensions.
@@ -1377,7 +1377,7 @@ Next time you need this list just use an alias, like this:
         - `min_distance`: [number=-1] The minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
         - `no_virtual`: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
         - `origin`: [string='grid'] Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
-                    The drill option uses the auxiliar reference defined by the user.
+                    The drill option uses the auxiliary reference defined by the user.
                     You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
         - `output`: [string='%f-%i%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
         - `variant`: [string=''] Board variant to apply.

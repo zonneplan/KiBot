@@ -113,7 +113,7 @@ preflight:
 #### Filtering DRC and ERC errors
 
 Sometimes KiCad reports DRC or ERC errors that you can't get rid off.
-This could be just because you are part of a team including lazzy people that doesn't want to take the extra effort to solve
+This could be just because you are part of a team including lazy people that doesn't want to take the extra effort to solve
 some errors that aren't in fact errors, just small violations made on purpose. In this case you could exclude some known errors.
 
 For this you must declare `filters` entry in the `preflight` section. Then you can add as many `filter` entries as you want.
