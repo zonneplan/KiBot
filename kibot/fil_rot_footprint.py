@@ -92,7 +92,8 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
     def filter(self, comp):
         """ Apply the rotation """
         for regex, angle in self._rot:
-            if regex.search(comp.footprint):
+            side = "_bottom" if comp.bottom else "_top"
+            if regex.search(comp.footprint) or regex.search(side):
                 old_angle = comp.footprint_rot
                 if self.negative_bottom and comp.bottom:
                     comp.footprint_rot -= angle
