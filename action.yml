@@ -19,6 +19,10 @@ inputs:
     required: false
 # TODO: fix default 'first *.sch file found'
 #    default: '$(ls *.sch | head -n1)'
+  verbose:
+    description: 'Verbosity level [default: 0]'
+    required: false
+    default: '0'
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -27,6 +31,7 @@ runs:
     -  -d ${{ inputs.dir }}
     -  -b ${{ inputs.board }}
     -  -e ${{ inputs.schema }}
+    -  -v ${{ inputs.verbose }}
 branding:
   icon: 'cpu'
   color: 'green'

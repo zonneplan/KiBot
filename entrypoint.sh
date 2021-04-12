@@ -121,8 +121,18 @@ function args_process {
            -s | --skip) shift
                SKIP="-s $1"
                ;;
-           -v | --verbose ) 
-               VERBOSE="-v"
+           -v | --verbose) shift
+               if [ "$1" == "0" ]; then
+                   VERBOSE=""
+               elif [ "$1" == "1" ]; then
+                   VERBOSE="-v"
+               elif [ "$1" == "2" ]; then
+                   VERBOSE="-vv"
+               elif [ "$1" == "3" ]; then
+                   VERBOSE="-vvv"
+               else
+                   VERBOSE="-vvvv"
+               fi
                ;;
            -h  | --help )
                help
