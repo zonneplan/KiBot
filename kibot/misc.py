@@ -195,6 +195,7 @@ W_EMPTYREN = '(W061) '
 W_BADFIELD = '(W062) '
 W_UNKDIST = '(W063) '
 W_UNKCUR = '(W064) '
+W_NONETLIST = '(W065) '
 
 
 class Rect(object):

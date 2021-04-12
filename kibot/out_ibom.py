@@ -5,7 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
-from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR, W_EXTNAME)
+from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR, W_EXTNAME, W_NONETLIST)
 from .gs import (GS)
 from .kiplot import check_script, search_as_plugin
 from .out_base import VariantOptions
@@ -93,9 +93,22 @@ class IBoMOptions(VariantOptions):
         self._expand_id = 'ibom'
         self._expand_ext = 'html'
 
+    def need_extra_fields(self):
+        return (self.extra_fields or
+                self.variants_whitelist or
+                self.variants_blacklist or
+                self.variant_field or
+                self.dnp_field or
+                self.variant)
+
     def config(self, parent):
         super().config(parent)
-        self.netlist_file = self.expand_filename('', self.netlist_file, 'ibom', 'xml')
+        self._netlist_file_guess = False
+        if not self.netlist_file and self.need_extra_fields():
+            self.netlist_file = '%F.xml'
+            self._netlist_file_guess = True
+        if self.netlist_file:
+            self.netlist_file = self.expand_filename('', self.netlist_file, 'ibom', 'xml')
 
     def get_targets(self, out_dir):
         if self.output:
@@ -106,7 +119,7 @@ class IBoMOptions(VariantOptions):
 
     def get_dependencies(self):
         files = [GS.pcb_file]
-        if os.path.isfile(self.netlist_file):
+        if self.netlist_file and os.path.isfile(self.netlist_file):
             files.append(self.netlist_file)
         return files
 
@@ -127,6 +140,15 @@ class IBoMOptions(VariantOptions):
         else:
             output_dir = name
         cmd = [tool, GS.pcb_file, '--dest-dir', output_dir, '--no-browser', ]
+        # Check if the user wants extra_fields but there is no data about them (#68)
+        if self.need_extra_fields() and not os.path.isfile(self.netlist_file):
+            logger.warning(W_NONETLIST+'iBoM needs information about user defined fields and no netlist provided')
+            if self._netlist_file_guess:
+                logger.warning(W_NONETLIST+'Create a BoM in XML format or use the `update_xml` preflight')
+                # If the name of the netlist is just a guess remove it from the options
+                self.netlist_file = ''
+            else:
+                logger.warning(W_NONETLIST+"The file name used in `netlist_file` doesn't exist")
         # Apply variants/filters
         to_remove = ','.join(self.get_not_fitted_refs())
         if self.blacklist and to_remove:
