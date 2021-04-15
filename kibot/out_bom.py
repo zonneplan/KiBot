@@ -156,7 +156,9 @@ class BoMXLSX(BoMLinkable):
             self.max_col_width = 60
             """ [20,999] Maximum column width (characters) """
             self.style = 'modern-blue'
-            """ Head style: modern-blue, modern-green, modern-red and classic. """
+            """ Head style: modern-blue, modern-green, modern-red and classic """
+            self.kicost = False
+            """ Enable KiCost worksheet creation """
 
     def config(self, parent):
         super().config(parent)

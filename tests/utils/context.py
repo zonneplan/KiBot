@@ -21,6 +21,8 @@ KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_5_1_7 = 5001007
 MODE_SCH = 1
 MODE_PCB = 0
+# Defined as True to collect real world queries
+ADD_QUERY_TO_KNOWN = False
 
 ng_ver = os.environ.get('KIAUS_USE_NIGHTLY')
 if ng_ver:
@@ -280,7 +282,7 @@ class TestContext(object):
             self.err = self.err.decode()
 
     def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None, no_out_dir=False, no_board_file=False,
-            no_yaml_file=False, chdir_out=False, no_verbose=False, extra_debug=False, do_locale=False):
+            no_yaml_file=False, chdir_out=False, no_verbose=False, extra_debug=False, do_locale=False, kicost=False):
         logging.debug('Running '+self.test_name)
         # Change the command to be local and add the board and output arguments
         cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/../../src/kibot')]
@@ -311,7 +313,29 @@ class TestContext(object):
             os.environ['LANG'] = do_locale
             logging.debug('LOCPATH='+os.environ['LOCPATH'])
             logging.debug('LANG='+os.environ['LANG'])
-        self.do_run(cmd, ret_val, use_a_tty, chdir_out)
+        # KiCost fake environment setup
+        if kicost:
+            # Always fake the currency rates
+            os.environ['KICOST_CURRENCY_RATES'] = 'tests/data/currency_rates.xml'
+            if ADD_QUERY_TO_KNOWN:
+                queries_file = 'tests/data/kitspace_queries.txt'
+                os.environ['KICOST_LOG_HTTP'] = queries_file
+                with open(queries_file, 'at') as f:
+                    f.write('# ' + self.board_name + '\n')
+                server = None
+            else:
+                os.environ['KICOST_KITSPACE_URL'] = 'http://localhost:8000'
+                fo = open(self.get_out_path('server_stdout.txt'), 'at')
+                fe = open(self.get_out_path('server_stderr.txt'), 'at')
+                server = subprocess.Popen('./tests/utils/dummy-web-server.py', stdout=fo, stderr=fe)
+        try:
+            self.do_run(cmd, ret_val, use_a_tty, chdir_out)
+        finally:
+            # Always kill the fake web server
+            if kicost and server is not None:
+                server.terminate()
+                fo.close()
+                fe.close()
         # Do we need to restore the locale?
         if do_locale:
             if old_LOCPATH:
@@ -688,6 +712,16 @@ class TestContext(object):
                 if len(parts) == 2:
                     targets[parts[0].strip()] = parts[1].strip()
         return targets
+
+    def home_local_link(self):
+        """ Make sure that ./tests can be used as a replacement for HOME.
+            Currently just links ~/.local """
+        home = os.environ.get('HOME')
+        if home is not None:
+            local = os.path.join(home, '.local')
+            fake_local = os.path.join('tests', '.local')
+            if os.path.isdir(local) and not os.path.isdir(fake_local):
+                os.symlink(local, fake_local)
 
 
 class TestContextSCH(TestContext):

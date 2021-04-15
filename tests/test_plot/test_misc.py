@@ -356,6 +356,7 @@ def test_help_filters(test_dir):
 
 def test_help_output_plugin_1(test_dir, monkeypatch):
     ctx = context.TestContext(test_dir, 'test_help_output_plugin_1', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
@@ -371,6 +372,7 @@ def test_help_output_plugin_1(test_dir, monkeypatch):
 
 def test_help_output_plugin_2(test_dir, monkeypatch):
     ctx = context.TestContext(test_dir, 'test_help_output_plugin_2', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
@@ -384,6 +386,7 @@ def test_help_output_plugin_2(test_dir, monkeypatch):
 
 def test_help_output_plugin_3(test_dir, monkeypatch):
     ctx = context.TestContext(test_dir, 'test_help_output_plugin_3', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
@@ -394,6 +397,7 @@ def test_help_output_plugin_3(test_dir, monkeypatch):
 
 def test_help_output_plugin_4(test_dir, monkeypatch):
     ctx = context.TestContext(test_dir, 'test_help_output_plugin_4', '3Rs', 'pre_and_position', POS_DIR)
+    ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
@@ -475,6 +479,7 @@ def test_example_6(test_dir):
 def test_example_7(test_dir, monkeypatch):
     """ With dummy plug-ins """
     ctx = context.TestContext(test_dir, 'Example7', '3Rs', 'pre_and_position', '')
+    ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True, no_board_file=True)
@@ -796,6 +801,7 @@ def test_empty_zip(test_dir):
 
 def test_compress_fail_deps(test_dir, monkeypatch):
     ctx = context.TestContext(test_dir, 'test_compress_fail_deps', '3Rs', 'compress_fail_deps', 'Test')
+    ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         ctx.run(INTERNAL_ERROR)

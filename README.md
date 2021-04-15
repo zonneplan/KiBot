@@ -705,9 +705,10 @@ Next time you need this list just use an alias, like this:
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
+            - `kicost`: [boolean=false] Enable KiCost worksheet creation.
             - `logo`: [string|boolean=''] PNG file to use as logo, use false to remove.
             - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
-            - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic..
+            - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
             - `title`: [string='KiBot Bill of Materials'] BoM title.
 
 * Archiver (files compressor)

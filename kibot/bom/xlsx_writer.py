@@ -9,11 +9,13 @@
 XLSX Writer: Generates an XLSX BoM file.
 """
 import io
+import pprint
 from textwrap import wrap
 from base64 import b64decode
 from .columnlist import ColumnList
 from .kibot_logo import KIBOT_LOGO
 from .. import log
+from ..misc import W_NOKICOST
 try:
     from xlsxwriter import Workbook
     XLSX_SUPPORT = True
@@ -22,6 +24,13 @@ except ModuleNotFoundError:
 
     class Workbook():
         pass
+try:
+    from kicost.kicost import query_part_info
+    from kicost.spreadsheet import create_worksheet, Spreadsheet
+    import kicost.global_vars as kvar
+    KICOST_SUPPORT = True
+except ModuleNotFoundError:
+    KICOST_SUPPORT = False
 
 logger = log.get_logger(__name__)
 BG_GEN = "#E6FFEE"
@@ -274,6 +283,50 @@ def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", prj.comp_build)
 
 
+class Part(object):
+    def __init__(self):
+        super().__init__()
+
+
+def create_kicost_sheet(workbook, groups, cfg):
+    if not KICOST_SUPPORT:
+        logger.warning(W_NOKICOST, 'KiCost sheet requested but failed to load KiCost support')
+    if cfg.debug_level > 2:
+        logger.debug("Groups exported to KiCost:")
+        for g in groups:
+            logger.debug(pprint.pformat(g.__dict__))
+            logger.debug("-- Components")
+            for c in g.components:
+                logger.debug(pprint.pformat(c.__dict__))
+    # Force KiCost to use our logger
+    kvar.logger = logger
+    # Create the projects information structure
+    prj_info = [{'title': p.name, 'company': p.sch.company, 'date': p.sch.date} for p in cfg.aggregate]
+    # Create the worksheets
+    ws_names = ['Costs', 'Costs (DNF)']
+    for ws in range(2):
+        # Second pass is DNF
+        dnf = ws == 1
+        # Should we generate the DNF?
+        if dnf and (not cfg.xlsx.generate_dnf or cfg.n_total == cfg.n_fitted):
+            break
+        # Create the parts structure from the groups
+        parts = []
+        for g in groups:
+            if (cfg.ignore_dnf and not g.is_fitted()) != dnf:
+                continue
+            part = Part()
+            part.refs = [c.ref for c in g.components]
+            part.fields = g.fields
+            parts.append(part)
+        # Get the prices
+        query_part_info(parts)
+        # Create a class to hold the spreadsheet parameters
+        ss = Spreadsheet(workbook, ws_names[ws])
+        # Add a worksheet with costs to the spreadsheet
+        create_worksheet(ss, logger, parts, prj_info)
+
+
 def write_xlsx(filename, groups, col_fields, head_names, cfg):
     """
     Write BoM out to a XLSX file
@@ -395,6 +448,10 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
 
     # Add a sheet for the color references
     create_color_ref(workbook, cfg.xlsx.col_colors, hl_empty, fmt_cols)
+    # Optionally add KiCost information
+    if cfg.xlsx.kicost:
+        create_kicost_sheet(workbook, groups, cfg)
+
     workbook.close()
 
     return True
