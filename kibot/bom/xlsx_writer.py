@@ -323,6 +323,9 @@ def create_kicost_sheet(workbook, groups, cfg):
         query_part_info(parts)
         # Create a class to hold the spreadsheet parameters
         ss = Spreadsheet(workbook, ws_names[ws])
+        if hasattr(ss, 'ADJUST_ROW_AND_COL_SIZE'):
+            ss.ADJUST_ROW_AND_COL_SIZE = True
+            ss.MAX_COL_WIDTH = cfg.xlsx.max_col_width
         # Add a worksheet with costs to the spreadsheet
         create_worksheet(ss, logger, parts, prj_info)
 
