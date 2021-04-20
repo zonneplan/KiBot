@@ -1,0 +1,8 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'Board View Test'
+    comment: "Example of board view export"
+    type: boardview

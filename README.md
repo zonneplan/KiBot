@@ -54,7 +54,7 @@ For example, it's common that you might want for each board rev:
 
 * Check ERC/DRC one last time (using [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/))
 * Gerbers, drills and drill maps for a fab in their favourite format
-* Fab docs for the assembler, including the BoM (Bill of Materials) and costs spreadsheet
+* Fab docs for the assembler, including the BoM (Bill of Materials), costs spreadsheet and board view
 * Pick and place files
 * PCB 3D model in STEP format
 
@@ -607,6 +607,19 @@ Next time you need this list just use an alias, like this:
 ```
 
 #### Supported outputs:
+
+* BoardView
+  * Type: `boardview`
+  * Description: Exports the PCB in board view format.
+                 This format allows simple pads and connections navigation, mainly for circuit debug.
+                 The output can be loaded using Open Board View (https://openboardview.org/)
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='.'] Output directory for the generated files.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `boardview` output.
+      * Valid keys:
+        - `output`: [string='%f-%i%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options.
 
 * BoM (Bill of Materials)
   * Type: `bom`
@@ -2239,6 +2252,7 @@ The internal list of rotations is:
 - **Interactive HTML BoM**: @qu1ck
 - **PcbDraw**: Jan Mrázek (@yaqwsx)
 - **KiCost**: Dave Vandenbout (@devbisme) and Hildo Guillardi Júnior (@hildogjr)
+- **KiCAD to Boardview exporter**: @whitequark
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout

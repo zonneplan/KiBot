@@ -29,6 +29,17 @@ preflight:
   update_xml: true
 
 outputs:
+  # BoardView:
+  # This format allows simple pads and connections navigation, mainly for circuit debug.
+  # The output can be loaded using Open Board View (https://openboardview.org/)
+  - name: 'boardview_example'
+    comment: 'Exports the PCB in board view format.'
+    type: 'boardview'
+    dir: 'Example/boardview_dir'
+    options:
+      # [string='%f-%i%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options
+      output: '%f-%i%v.%x'
+
   # BoM (Bill of Materials):
   # Is compatible with KiBoM, but doesn't need to update the XML netlist because the components
   # are loaded from the schematic.

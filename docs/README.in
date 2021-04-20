@@ -54,7 +54,7 @@ For example, it's common that you might want for each board rev:
 
 * Check ERC/DRC one last time (using [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/))
 * Gerbers, drills and drill maps for a fab in their favourite format
-* Fab docs for the assembler, including the BoM (Bill of Materials) and costs spreadsheet
+* Fab docs for the assembler, including the BoM (Bill of Materials), costs spreadsheet and board view
 * Pick and place files
 * PCB 3D model in STEP format
 
@@ -1232,6 +1232,7 @@ The internal list of rotations is:
 - **Interactive HTML BoM**: @qu1ck
 - **PcbDraw**: Jan Mrázek (@yaqwsx)
 - **KiCost**: Dave Vandenbout (@devbisme) and Hildo Guillardi Júnior (@hildogjr)
+- **KiCAD to Boardview exporter**: @whitequark
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout
