@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic KiCost support (experimental).
 - Basic internal BoM and KiCost integration (experimental)
 - Experimental mechanism to change 3D models according to the variant.
+- Support for width, style and color in "wire notes" (#70)
 
 ### Changed
 - Errors and warnings from KiAuto now are printed as errors and warnings.

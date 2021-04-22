@@ -1999,4 +1999,36 @@ F 3 "" H 2750 3450 50  0001 C CNN
 	1    2750 3450
 	1    0    0    -1  
 $EndComp
+Wire Notes Line width 20
+	990  5000 1490 5000
+Wire Notes Line width 20
+	1490 5000 1490 5500
+Wire Notes Line width 20
+	1490 5500 990  5500
+Wire Notes Line width 20
+	990  5500 990  5000
+Wire Notes Line rgb(255, 0, 0)
+	2000 5000 2500 5000
+Wire Notes Line rgb(255, 0, 0)
+	2500 5000 2500 5500
+Wire Notes Line rgb(255, 0, 0)
+	2500 5500 2000 5500
+Wire Notes Line rgb(255, 0, 0)
+	2000 5500 2000 5000
+Wire Notes Line style solid
+	3000 5000 3500 5000
+Wire Notes Line style solid
+	3500 5000 3500 5500
+Wire Notes Line style solid
+	3500 5500 3000 5500
+Wire Notes Line style solid
+	3000 5500 3000 5000
+Wire Notes Line width 30 style dash_dot rgb(0, 255, 0)
+	2010 5700 2510 5700
+Wire Notes Line width 20 style dotted
+	2510 5700 2510 6200
+Wire Notes Line style solid rgb(255, 0, 255)
+	2510 6200 2010 6200
+Wire Notes Line width 20
+	2010 6200 2010 5700
 $EndSCHEMATC

@@ -1166,15 +1166,34 @@ class SchematicWire(object):
     ENTRIES = {'Wire': ENTRY_WIRE, 'Bus': ENTRY_BUS}
     NAMES = ['Wire Wire Line', 'Wire Bus Line', 'Wire Notes Line', 'Entry Wire Line', 'Entry Bus Bus']
 
-    def __init__(self):
+    def __init__(self, width=None, style=None, rgb=None):
         super().__init__()
+        self.width = width
+        self.rgb = rgb
+        self.style = style
 
     @staticmethod
     def load(f, line):
         res = _split_space(line)
-        if len(res) != 3:
+        res_l = len(res)
+        width = style = rgb = None
+        if res_l > 3 and res[0] == 'Wire' and res[1] == 'Notes' and res[2] == 'Line':
+            offset = 3
+            while offset < res_l:
+                if res[offset] == 'width' and res_l > offset+1:
+                    width = res[offset+1]
+                    offset += 2
+                elif res[offset] == 'style' and res_l > offset+1:
+                    style = res[offset+1]
+                    offset += 2
+                elif res[offset].startswith('rgb(') and res_l > offset+2:
+                    rgb = res[offset]+' '+res[offset+1]+' '+res[offset+2]
+                    offset += 3
+                else:
+                    raise SchFileError('Malformed wire note', line, f)
+        elif res_l != 3:
             raise SchFileError('Malformed wire', line, f)
-        wire = SchematicWire()
+        wire = SchematicWire(width, style, rgb)
         if res[0] == 'Wire':
             # Wire Wire Line
             # Wire Bus Line
@@ -1201,7 +1220,14 @@ class SchematicWire(object):
         return wire
 
     def write(self, f):
-        f.write(SchematicWire.NAMES[self.type])
+        extra = ''
+        if self.width is not None:
+            extra += ' width '+self.width
+        if self.style is not None:
+            extra += ' style '+self.style
+        if self.rgb is not None:
+            extra += ' '+self.rgb
+        f.write(SchematicWire.NAMES[self.type]+extra)
         f.write('\n\t{} {} {} {}\n'.format(self.x, self.y, self.ex, self.ey))
 
 
