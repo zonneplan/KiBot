@@ -3,12 +3,15 @@
 ,,,,Variant:,default,,,,Unit Cost:,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,Revision:,A,,,,Total Cost:,0,,,,0,0,,,,0,0,,,,0,0,,,,0,0,,,,0,0,,,,0,0,,,,0,0,,,,0,0,,,,0,0
 ,,,,Date:,2021-04-06,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,KiCad Version:,5.1.9+dfsg1-1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,KiCad Version:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 Global Part Info,,,,,,,,,,,Arrow,,,,,Digi-Key,,,,,Farnell,,,,,LCSC,,,,,Mouser,,,,,Newark,,,,,RS Components,,,,,TME,,,,,test,,,,
 References,Value,Real value,Tolerancia,Voltage,Footprint,Manufacturer,Manufacturer P/N,Build Quantity,Unit$,Ext$,Avail,Purch,Unit$,Ext$,Cat#,Avail,Purch,Unit$,Ext$,Cat#,Avail,Purch,Unit$,Ext$,Cat#,Avail,Purch,Unit$,Ext$,Cat#,Avail,Purch,Unit$,Ext$,Cat#,Avail,Purch,Unit$,Ext$,Cat#,Avail,Purch,Unit$,Ext$,Cat#,Avail,Purch,Unit$,Ext$,Cat#,Avail,Purch,Unit$,Ext$,Cat#
 C1 C2,1nF, 1000pF,20%,50 V 100 V,,Samsung,CL10B102KC8NNNC,100,0,0,,,,,,NonStk,,0,0,1276-1131-1-ND,3860,,0,0,3013404,542250,,0,0,C153291,NonStk,,0,0,187CL10B102KC8NNNC,19600,,0,0,82AC9311,NonStk,,0,0,7665480,5789,,0,0,CL10B102KC8NNNC,,,,,
 
+,Used currency rates:,,,,,,,,Total Purchase:,0,Buy here,0,,0,,Buy here,0,,0,,Buy here,0,,0,,Buy here,0,,0,,Buy here,0,,0,,Buy here,0,,0,,Buy here,0,,0,,Buy here,0,,0,,,0,,0,
 ,USD($)/EUR(€):,1.1873,,,,,,,Purchase description:,,,0,,,,,0,,,,,0,,,,,0,,,,,0,,,,,0,,,,,0,,,,,0,,,,,0,,,
 ,USD($)/GBP(£):,1.375941592305018,,,,,,,,,,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
+Created:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+KiCost,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

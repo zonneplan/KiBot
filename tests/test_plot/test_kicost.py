@@ -7,6 +7,7 @@ pytest-3 --log-cli-level debug
 
 import os.path as op
 import sys
+import re
 # Look for the 'utils' module from where the script is running
 prev_dir = op.dirname(op.dirname(op.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -29,10 +30,16 @@ def convert2csv(xlsx, skip_empty=False, sheet=None):
     if sheet:
         cmd.extend(['-n', sheet])
     cmd.append(xlsx)
-    p1 = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    with open(csv, 'w') as f:
-        p2 = subprocess.Popen(['egrep', '-i', '-v', r'(\$ date|created|kicost|Total purchase)'], stdin=p1.stdout, stdout=f)
-        p2.communicate()[0]
+    cmd.append(csv)
+    subprocess.check_output(cmd)
+    with open(csv, 'rt') as f:
+        content = f.read()
+    content = re.sub(r'\$ date:,[^,]+', '$ date:,', content, 1)
+    content = re.sub(r'KiCost[^,]+', 'KiCost', content, 1)
+    content = re.sub(r'KiCad Version:,[^,]+', 'KiCad Version:,', content)
+    content = re.sub(r'Created:,[^,]+', 'Created:,', content, 1)
+    with open(csv, 'wt') as f:
+        f.write(content)
 
 
 def check_simple(ctx, variant):
