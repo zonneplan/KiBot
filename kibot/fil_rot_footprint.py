@@ -68,6 +68,10 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             self.rotations = Optionable
             """ [list(list(string))] A list of pairs regular expression/rotation.
                 Components matching the regular expression will be rotated the indicated angle """
+            self.skip_bottom = False
+            """ Do not rotate components on the bottom """
+            self.skip_top = False
+            """ Do not rotate components on the top """
 
     def config(self, parent):
         super().config(parent)
@@ -92,6 +96,9 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
 
     def filter(self, comp):
         """ Apply the rotation """
+        if (self.skip_top and not comp.bottom) or (self.skip_bottom and comp.bottom):
+            # Component should be excluded
+            return
         for regex, angle in self._rot:
             if regex.search(comp.footprint):
                 old_angle = comp.footprint_rot

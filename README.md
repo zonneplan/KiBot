@@ -348,6 +348,8 @@ Currently the only type available is `generic`.
     - `negative_bottom`: [boolean=true] Rotation for bottom components is computed via subtraction as `(component rot - angle)`.
     - `rotations`: [list(list(string))] A list of pairs regular expression/rotation.
                    Components matching the regular expression will be rotated the indicated angle.
+    - `skip_bottom`: [boolean=false] Do not rotate components on the bottom.
+    - `skip_top`: [boolean=false] Do not rotate components on the top.
 - subparts: Subparts
         This filter implements the KiCost subparts mechanism.
   * Valid keys:
