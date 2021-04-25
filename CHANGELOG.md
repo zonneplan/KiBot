@@ -17,10 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `skip_if_no_field` and `invert` options to the regex used in the generic
   filter.
 - Board view file format export (#69)
-- Basic KiCost support (experimental).
-- Basic internal BoM and KiCost integration (experimental)
 - Experimental mechanism to change 3D models according to the variant.
 - Support for width, style and color in "wire notes" (#70)
+- Level and comment to columns in the XLSX BoM output.
+- Basic KiCost support (**experimental**).
+- Basic internal BoM and KiCost integration (**experimental**).
 
 ### Changed
 - Errors and warnings from KiAuto now are printed as errors and warnings.

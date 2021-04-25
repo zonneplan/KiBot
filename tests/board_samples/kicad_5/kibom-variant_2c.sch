@@ -29,6 +29,9 @@ F 4 "-production,+test" H 1000 1700 50  0001 C CNN "Config"
 F 5 "Samsung" H 1000 1700 50  0001 C CNN "manf"
 F 6 "CL10B102KC8NNNC" H 1000 1700 50  0001 C CNN "manf#"
 F 7 "1276-1131-1-ND" H 1000 1700 50  0001 C CNN "digikey#"
+F 8 "20%" H 1000 1700 50  0001 C CNN "tolerance"
+F 9 "50 V" H 1000 1700 50  0001 C CNN "voltage"
+F 10 "1000pF" H 1000 1700 50  0001 C CNN "capacitance"
 	1    1000 1700
 	1    0    0    -1  
 $EndComp
@@ -44,6 +47,8 @@ F 4 "+production,+test" H 1450 1700 50  0001 C CNN "Config"
 F 5 "Samsung" H 1000 1700 50  0001 C CNN "manf"
 F 6 "CL10B102KC8NNNC" H 1000 1700 50  0001 C CNN "manf#"
 F 7 "1276-1131-1-ND" H 1000 1700 50  0001 C CNN "digikey#"
+F 8 "100 V" H 1450 1700 50  0001 C CNN "voltage"
+F 9 "1000pF" H 1450 1700 50  0001 C CNN "capacitance"
 	1    1450 1700
 	1    0    0    -1  
 $EndComp
@@ -59,8 +64,10 @@ F 4 "3k3" H 2100 1700 50  0001 C CNN "test:Value"
 F 5 "Bourns" H 1000 1700 50  0001 C CNN "manf"
 F 6 "CR0603-JW-102ELF" H 1000 1700 50  0001 C CNN "manf#"
 F 7 "CR0603-JW-102ELFCT-ND" H 1000 1700 50  0001 C CNN "digikey#"
-F 9 "CR0603-JW-332ELF" H 1000 1700 50  0001 C CNN "test:manf#"
-F 10 "CR0603-JW-332ELFCT-ND" H 1000 1700 50  0001 C CNN "test:digikey#"
+F 8 "CR0603-JW-332ELF" H 1000 1700 50  0001 C CNN "test:manf#"
+F 9 "CR0603-JW-332ELFCT-ND" H 1000 1700 50  0001 C CNN "test:digikey#"
+F 10 "1%" H 2100 1700 50  0001 C CNN "tolerance"
+F 11 "1000" H 2100 1700 50  0001 C CNN "Resistance"
 	1    2100 1700
 	1    0    0    -1  
 $EndComp
@@ -76,6 +83,7 @@ F 4 "-test" H 2500 1700 50  0001 C CNN "Config"
 F 5 "Bourns" H 1000 1700 50  0001 C CNN "manf"
 F 6 "CR0603-JW-102ELF" H 1000 1700 50  0001 C CNN "manf#"
 F 7 "CR0603-JW-102ELFCT-ND" H 1000 1700 50  0001 C CNN "digikey#"
+F 8 "1000" H 2500 1700 50  0001 C CNN "Resistance"
 	1    2500 1700
 	1    0    0    -1  
 $EndComp

@@ -645,8 +645,10 @@ Next time you need this list just use an alias, like this:
         - `columns`: [list(dict)|list(string)] List of columns to display.
                      Can be just the name of the field.
           * Valid keys:
+            - `comment`: [string=''] Used as explanation for this column. The XLSX output uses it.
             - `field`: [string=''] Name of the field to use for this column.
             - `join`: [list(string)|string=''] List of fields to join to this column.
+            - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
             - `name`: [string=''] Name to display in the header. The field is used when empty.
         - `component_aliases`: [list(list(string))] A series of values which are considered to be equivalent for the part name.
                                Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
@@ -658,6 +660,14 @@ Next time you need this list just use an alias, like this:
                                - ['sw', 'switch']
                                - ['zener', 'zenersmall']
                                - ['d', 'diode', 'd_small'].
+        - `cost_extra_columns`: [list(dict)|list(string)] List of columns to add to the global section of the cost.
+                                Can be just the name of the field.
+          * Valid keys:
+            - `comment`: [string=''] Used as explanation for this column. The XLSX output uses it.
+            - `field`: [string=''] Name of the field to use for this column.
+            - `join`: [list(string)|string=''] List of fields to join to this column.
+            - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
+            - `name`: [string=''] Name to display in the header. The field is used when empty.
         - `csv`: [dict] Options for the CSV, TXT and TSV formats.
           * Valid keys:
             - `hide_pcb_info`: [boolean=false] Hide project information.

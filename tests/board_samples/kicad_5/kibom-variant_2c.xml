@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <export version="D">
   <design>
-    <source>/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_5/1/kibom-variant_2c.sch</source>
-    <date>mar 06 abr 2021 14:20:00</date>
+    <source>/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_5/kibom-variant_2c.sch</source>
+    <date>sáb 24 abr 2021 15:39:02</date>
     <tool>Eeschema 5.1.9+dfsg1-1</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
@@ -24,9 +24,12 @@
       <datasheet>~</datasheet>
       <fields>
         <field name="Config">-production,+test</field>
+        <field name="capacitance">1000pF</field>
         <field name="digikey#">1276-1131-1-ND</field>
         <field name="manf">Samsung</field>
         <field name="manf#">CL10B102KC8NNNC</field>
+        <field name="tolerance">20%</field>
+        <field name="voltage">50 V</field>
       </fields>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -37,9 +40,11 @@
       <datasheet>~</datasheet>
       <fields>
         <field name="Config">+production,+test</field>
+        <field name="capacitance">1000pF</field>
         <field name="digikey#">1276-1131-1-ND</field>
         <field name="manf">Samsung</field>
         <field name="manf#">CL10B102KC8NNNC</field>
+        <field name="voltage">100 V</field>
       </fields>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -49,12 +54,14 @@
       <value>1k</value>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Resistance">1000</field>
         <field name="digikey#">CR0603-JW-102ELFCT-ND</field>
         <field name="manf">Bourns</field>
         <field name="manf#">CR0603-JW-102ELF</field>
         <field name="test:Value">3k3</field>
         <field name="test:digikey#">CR0603-JW-332ELFCT-ND</field>
         <field name="test:manf#">CR0603-JW-332ELF</field>
+        <field name="tolerance">1%</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -65,6 +72,7 @@
       <datasheet>~</datasheet>
       <fields>
         <field name="Config">-test</field>
+        <field name="Resistance">1000</field>
         <field name="digikey#">CR0603-JW-102ELFCT-ND</field>
         <field name="manf">Bourns</field>
         <field name="manf#">CR0603-JW-102ELF</field>

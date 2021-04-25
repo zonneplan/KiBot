@@ -8,5 +8,30 @@ outputs:
     type: bom
     dir: KiCost
     options:
+      use_alt: true
+      number: 50
+      columns:
+        - References
+        - Part
+        - Value
+        - Quantity Per PCB
+        - field: manf
+          name: Manufacturer
+        - field: manf#
+          name: Manufacturer P/N
+        - field: digikey#
+          level: 1
+          comment: 'Code used to buy the part at Digi-Key'
+      cost_extra_columns:
+         - field: 'Resistance'
+           name: 'Real value'
+           comment: 'Verdadero valor'
+           join: 'Capacitance'
+           level: 1
+         - field: 'Tolerance'
+           name: Tolerancia
+           comment: 'La tolerancia'
+           level: 1
+         - 'Voltage'
       xlsx:
         kicost: true

@@ -81,8 +81,8 @@ KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor
 CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Status',
              DATASHEET_COLUMN_NAME]
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
-KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R5']
-KIBOM_TEST_COMPONENTS_ALT2 = ['C1-C4', 'R9-R10', 'R7', 'R8', 'R1-R2', 'R4-R5', 'R3']
+KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9', 'R10', 'R7', 'R8', 'R1-R5']
+KIBOM_TEST_COMPONENTS_ALT2 = ['C1-C4', 'R9', 'R10', 'R7', 'R8', 'R1', 'R2', 'R4', 'R5', 'R3']
 KIBOM_TEST_EXCLUDE = ['R6']
 KIBOM_TEST_GROUPS = 5
 KIBOM_PRJ_INFO = ['kibom-test', 'default', 'A', '2020-03-12', None]
@@ -673,7 +673,7 @@ def test_int_bom_html_generate_dnf(test_dir):
     ctx.clean_up()
 
 
-def test_int_bom_use_alt(test_dir):
+def test_int_bom_use_alt_1(test_dir):
     """ use_alt: true """
     prj = 'kibom-test'
     ext = 'csv'
@@ -1357,7 +1357,7 @@ def test_int_bom_fil_dummy(test_dir):
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, 4, None, ['R1-R2', 'R3-R4', 'R5-R6', 'C1-C2'])
+    check_kibom_test_netlist(rows, ref_column, 4, None, ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'C1', 'C2'])
     ctx.search_err('Field conflict', invert=True)
     ctx.clean_up()
 
@@ -1368,17 +1368,17 @@ def test_int_bom_fil_1(test_dir):
     ctx.run()
     rows, header, info = ctx.load_csv('empty_val.csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, 3, None, ['R3-R4', 'R5-R6', 'C1-C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, None, ['R3', 'R4', 'R5', 'R6', 'C1', 'C2'])
     rows, header, info = ctx.load_csv('by_prefix.csv')
-    check_kibom_test_netlist(rows, ref_column, 3, None, ['R2', 'R3-R4', 'R5-R6'])
+    check_kibom_test_netlist(rows, ref_column, 3, None, ['R2', 'R3', 'R4', 'R5', 'R6'])
     rows, header, info = ctx.load_csv('no_kk.csv')
-    check_kibom_test_netlist(rows, ref_column, 3, None, ['R1-R2', 'R5-R6', 'C1-C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, None, ['R1', 'R2', 'R5', 'R6', 'C1', 'C2'])
     rows, header, info = ctx.load_csv('no_conf_kk.csv')
-    check_kibom_test_netlist(rows, ref_column, 3, None, ['R1-R2', 'R3-R4', 'C1-C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, None, ['R1', 'R2', 'R3', 'R4', 'C1', 'C2'])
     rows, header, info = ctx.load_csv('no_by_prefix.csv')
-    check_kibom_test_netlist(rows, ref_column, 2, None, ['R1', 'C1-C2'])
+    check_kibom_test_netlist(rows, ref_column, 2, None, ['R1', 'C1', 'C2'])
     rows, header, info = ctx.load_csv('multi.csv')
-    check_kibom_test_netlist(rows, ref_column, 1, None, ['C1-C2'])
+    check_kibom_test_netlist(rows, ref_column, 1, None, ['C1', 'C2'])
     ctx.search_err('Field conflict')
     ctx.clean_up()
 
@@ -1393,7 +1393,7 @@ def test_int_bom_fil_2(test_dir):
     rows, header, info = ctx.load_csv('tht.csv')
     check_kibom_test_netlist(rows, ref_column, 3, None, ['R1', 'C1', 'FID1'])
     rows, header, info = ctx.load_csv('virtual.csv')
-    check_kibom_test_netlist(rows, ref_column, 2, None, ['R1-R2', 'C1-C2'])
+    check_kibom_test_netlist(rows, ref_column, 2, None, ['R1', 'R2', 'C1', 'C2'])
     ctx.search_err(r".?R3.? component in board, but not in schematic")
     ctx.test_compress(prj+'-result.zip', ['BoM/smd.csv', 'BoM/tht.csv', 'BoM/virtual.csv'])
     ctx.clean_up(keep_project=True)

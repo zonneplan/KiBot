@@ -10,12 +10,15 @@ XLSX Writer: Generates an XLSX BoM file.
 """
 import io
 import pprint
+import os.path as op
+import sys
 from textwrap import wrap
 from base64 import b64decode
 from .columnlist import ColumnList
 from .kibot_logo import KIBOT_LOGO
 from .. import log
 from ..misc import W_NOKICOST
+from ..__main__ import __version__
 try:
     from xlsxwriter import Workbook
     XLSX_SUPPORT = True
@@ -24,7 +27,14 @@ except ModuleNotFoundError:
 
     class Workbook():
         pass
+# KiCost support
 try:
+    # Give priority to submodules
+    rel_path = '../../submodules/KiCost/'
+    if op.isfile(op.join(op.dirname(__file__), rel_path+'kicost/__init__.py')):
+        rel_path = op.abspath(op.join(op.dirname(__file__), rel_path))
+        if rel_path not in sys.path:
+            sys.path.insert(0, rel_path)
     from kicost.kicost import query_part_info
     from kicost.spreadsheet import create_worksheet, Spreadsheet
     import kicost.global_vars as kvar
@@ -33,9 +43,9 @@ except ModuleNotFoundError:
     KICOST_SUPPORT = False
 
 logger = log.get_logger(__name__)
-BG_GEN = "#E6FFEE"
-BG_KICAD = "#FFE6B3"
-BG_USER = "#E6F9FF"
+BG_GEN = "#E6FFEE"  # "#C6DFCE"
+BG_KICAD = "#FFE6B3"  # "#DFC693"
+BG_USER = "#E6F9FF"  # "#C6D9DF"
 BG_EMPTY = "#FF8080"
 BG_GEN_L = "#F0FFF4"
 BG_KICAD_L = "#FFF0BD"
@@ -48,6 +58,9 @@ HEAD_COLOR_R = "#982020"
 HEAD_COLOR_G = "#009879"
 HEAD_COLOR_B = "#0e4e8e"
 DEFAULT_FMT = {'text_wrap': True, 'align': 'center_across', 'valign': 'vjustify'}
+KICOST_COLUMNS = {'refs': ColumnList.COL_REFERENCE,
+                  'desc': ColumnList.COL_DESCRIPTION,
+                  'qty': ColumnList.COL_GRP_BUILD_QUANTITY}
 
 
 def bg_color(col):
@@ -89,9 +102,8 @@ def compute_head_size(cfg):
     return head_size
 
 
-def create_fmt_head(workbook, style_name):
-    fmt_head = workbook.add_format(DEFAULT_FMT)
-    fmt_head.set_bold()
+def get_bg_color(style_name):
+    head_color = None
     if style_name.startswith('modern-'):
         if style_name.endswith('green'):
             head_color = HEAD_COLOR_G
@@ -99,7 +111,14 @@ def create_fmt_head(workbook, style_name):
             head_color = HEAD_COLOR_B
         else:
             head_color = HEAD_COLOR_R
-        fmt_head.set_bg_color(head_color)
+    return head_color
+
+
+def create_fmt_head(workbook, style_name):
+    fmt_head = workbook.add_format(DEFAULT_FMT)
+    fmt_head.set_bold()
+    if style_name.startswith('modern-'):
+        fmt_head.set_bg_color(get_bg_color(style_name))
         fmt_head.set_font_color("#ffffff")
     return fmt_head
 
@@ -188,27 +207,41 @@ def insert_logo(worksheet, image_data):
     if image_data:
         # Note: OpenOffice doesn't support using images in the header for XLSXs
         # worksheet.set_header('&L&[Picture]', {'image_left': 'logo.png', 'image_data_left': image_data})
-        worksheet.insert_image('A1', 'logo.png', {'image_data': io.BytesIO(image_data), 'x_scale': 2, 'y_scale': 2})
+        options = {'image_data': io.BytesIO(image_data),
+                   'x_scale': 2,
+                   'y_scale': 2,
+                   'object_position': 1,
+                   'decorative': True}
+        worksheet.insert_image('A1', 'logo.png', options)
         return 2
     return 0
 
 
-def create_color_ref(workbook, col_colors, hl_empty, fmt_cols):
+def create_color_ref(workbook, col_colors, hl_empty, fmt_cols, do_kicost, kicost_colors):
+    if not (col_colors or do_kicost):
+        return
+    row = 0
+    worksheet = workbook.add_worksheet('Colors')
+    worksheet.set_column(0, 0, 50)
     if col_colors:
-        worksheet = workbook.add_worksheet('Colors')
-        worksheet.write_string(0, 0, 'KiCad Fields (default)', fmt_cols[0][0])
-        worksheet.write_string(1, 0, 'Generated Fields', fmt_cols[1][0])
+        worksheet.write_string(0, 0, 'KiCad Fields (default)', fmt_cols[1][0])
+        worksheet.write_string(1, 0, 'Generated Fields', fmt_cols[0][0])
         worksheet.write_string(2, 0, 'User Fields', fmt_cols[2][0])
         if hl_empty:
             worksheet.write_string(3, 0, 'Empty Fields', fmt_cols[3][0])
-        worksheet.set_column(0, 0, 50)
+        row = 5
+    if do_kicost:
+        worksheet.write_string(row, 0, 'Costs sheet')
+        for label, format in kicost_colors.items():
+            row += 1
+            worksheet.write_string(row, 0, label, format)
 
 
-def adjust_widths(worksheet, column_widths, max_width):
+def adjust_widths(worksheet, column_widths, max_width, levels):
     for i, width in enumerate(column_widths):
         if width > max_width:
             width = max_width
-        worksheet.set_column(i, i, width)
+        worksheet.set_column(i, i, width, None, {'level': levels[i]})
 
 
 def adjust_heights(worksheet, rows, max_width, head_size):
@@ -288,7 +321,47 @@ class Part(object):
         super().__init__()
 
 
-def create_kicost_sheet(workbook, groups, cfg):
+def adapt_extra_cost_columns(cfg):
+    if not cfg.columns_ce:
+        return
+    user_fields = []
+    for i, col in enumerate(cfg.columns_ce):
+        data = {'field': col}
+        comment = cfg.column_comments_ce[i]
+        if comment:
+            data['comment'] = comment
+        level = cfg.column_levels_ce[i]
+        if level:
+            data['level'] = level
+        col = col.lower()
+        if col in cfg.column_rename_ce:
+            data['label'] = cfg.column_rename_ce[col]
+        user_fields.append(data)
+    Spreadsheet.USER_FIELDS = user_fields
+
+
+def apply_join_requests(join, adapted, original):
+    if not join:
+        return
+    for key, val in original.items():
+        append = ''
+        for join_l in join:
+            # Each list is "target, source..." so we need at least 2 elements
+            elements = len(join_l)
+            target = join_l[0]
+            if elements > 1 and target == key:
+                # Append data from the other fields
+                for source in join_l[1:]:
+                    v = original.get(source)
+                    if v:
+                        append += ' ' + v
+        if append:
+            if val is None:
+                val = ''
+            adapted[key] = val + append
+
+
+def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, cfg):
     if not KICOST_SUPPORT:
         logger.warning(W_NOKICOST, 'KiCost sheet requested but failed to load KiCost support')
     if cfg.debug_level > 2:
@@ -304,6 +377,49 @@ def create_kicost_sheet(workbook, groups, cfg):
     prj_info = [{'title': p.name, 'company': p.sch.company, 'date': p.sch.date} for p in cfg.aggregate]
     # Create the worksheets
     ws_names = ['Costs', 'Costs (DNF)']
+    Spreadsheet.PRJ_INFO_ROWS = 5
+    Spreadsheet.PRJ_INFO_START = 1
+    Spreadsheet.ADJUST_ROW_AND_COL_SIZE = True
+    Spreadsheet.MAX_COL_WIDTH = cfg.xlsx.max_col_width
+    Spreadsheet.PART_NSEQ_SEPRTR = cfg.ref_separator
+    # Make the version less intrusive
+    Spreadsheet.WRK_FORMATS['about_msg']['font_size'] = 8
+    # Don 't add project info, we add our own data
+    Spreadsheet.INCLUDE_PRJ_INFO = False
+    # Move the date to the bottom, and make it less relevant
+    Spreadsheet.ADD_DATE_TOP = False
+    Spreadsheet.ADD_DATE_BOTTOM = True
+    Spreadsheet.WRK_FORMATS['proj_info_field']['font_size'] = 11
+    Spreadsheet.WRK_FORMATS['proj_info']['font_size'] = 11
+    Spreadsheet.DATE_FIELD_LABEL = 'Created:'
+    # Set the color for the global section (using the selected theme)
+    bg_color = get_bg_color(cfg.xlsx.style)
+    if bg_color:
+        Spreadsheet.WRK_FORMATS['global']['bg_color'] = bg_color
+        Spreadsheet.WRK_FORMATS['header']['bg_color'] = bg_color
+        Spreadsheet.WRK_FORMATS['header']['font_color'] = 'white'
+    Spreadsheet.WRK_FORMATS['global']['font_size'] = 12
+    Spreadsheet.WRK_FORMATS['header']['font_size'] = 11
+    # Avoid the use of the same color twice
+    Spreadsheet.WRK_FORMATS['order_too_much']['bg_color'] = '#FF4040'
+    Spreadsheet.WRK_FORMATS['order_min_qty']['bg_color'] = '#FFFF40'
+    # Project quantity as the default quantity
+    Spreadsheet.DEFAULT_BUILD_QTY = cfg.number
+    # Add version information
+    Spreadsheet.ABOUT_MSG += ' + KiBot v'+__version__
+    # References using ranges
+    Spreadsheet.COLLAPSE_REFS = cfg.use_alt
+    # Pass any extra column
+    adapt_extra_cost_columns(cfg)
+    # Adapt the column names
+    for id, v in Spreadsheet.GLOBAL_COLUMNS.items():
+        if id in KICOST_COLUMNS:
+            # We use another name
+            new_id = KICOST_COLUMNS[id]
+            v['label'] = new_id
+            id = new_id.lower()
+        if id in cfg.column_rename:
+            v['label'] = cfg.column_rename[id]
     for ws in range(2):
         # Second pass is DNF
         dnf = ws == 1
@@ -319,15 +435,45 @@ def create_kicost_sheet(workbook, groups, cfg):
             part.refs = [c.ref for c in g.components]
             part.fields = g.fields
             parts.append(part)
+            # Process any "join" request
+            apply_join_requests(cfg.join_ce, part.fields, g.fields)
         # Get the prices
         query_part_info(parts)
         # Create a class to hold the spreadsheet parameters
-        ss = Spreadsheet(workbook, ws_names[ws])
-        if hasattr(ss, 'ADJUST_ROW_AND_COL_SIZE'):
-            ss.ADJUST_ROW_AND_COL_SIZE = True
-            ss.MAX_COL_WIDTH = cfg.xlsx.max_col_width
+        ss = Spreadsheet(workbook, ws_names[ws], prj_info)
+        wks = ss.wks
+        # Page head
+        # Logo
+        col1 = insert_logo(wks, image_data)
+        if col1:
+            col1 += 2
+        # PCB & Stats Info
+        if not (cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info):
+            r_info_start = 1 if cfg.xlsx.title else 0
+            column_widths = [col1+2]*10
+            old_stats = cfg.xlsx.hide_stats_info
+            cfg.xlsx.hide_stats_info = True
+            write_info(cfg, r_info_start, wks, column_widths, col1, fmt_info, fmt_subtitle)
+            cfg.xlsx.hide_stats_info = old_stats
+            ss.col_widths[col1] = column_widths[col1]
+            ss.col_widths[col1+1] = column_widths[col1+1]
         # Add a worksheet with costs to the spreadsheet
-        create_worksheet(ss, logger, parts, prj_info)
+        create_worksheet(ss, logger, parts)
+        # Title
+        if cfg.xlsx.title:
+            wks.set_row(0, 32)
+            wks.merge_range(0, col1, 0, ss.globals_width, cfg.xlsx.title, fmt_title)
+    colors = {}
+    colors['Best price'] = ss.wrk_formats['best_price']
+    colors['No manufacturer or distributor code'] = ss.wrk_formats['not_manf_codes']
+    colors['Not available'] = ss.wrk_formats['not_available']
+    colors['Purchase quantity is more than what is available'] = ss.wrk_formats['order_too_much']
+    colors['Minimum order quantity not respected'] = ss.wrk_formats['order_min_qty']
+    colors['Total available part quantity is less than needed'] = ss.wrk_formats['too_few_available']
+    colors['Total purchased part quantity is less than needed'] = ss.wrk_formats['too_few_purchased']
+    colors['This part is obsolete'] = ss.wrk_formats['part_format_obsolete']
+    colors['This part is listed but is not normally stocked'] = ss.wrk_formats['not_stocked']
+    return colors
 
 
 def write_xlsx(filename, groups, col_fields, head_names, cfg):
@@ -399,6 +545,8 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
             # Title for this column
             column_widths[i] = len(row_headings[i]) + 10
             worksheet.write_string(row_count, i, row_headings[i], fmt_head)
+            if cfg.column_comments[i]:
+                worksheet.write_comment(row_count, i, cfg.column_comments[i])
 
         # Body
         row_count += 1
@@ -442,18 +590,18 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
             write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_subtitle)
 
         # Adjust cols and rows
-        adjust_widths(worksheet, column_widths, max_width)
+        adjust_widths(worksheet, column_widths, max_width, cfg.column_levels)
         adjust_heights(worksheet, rows, max_width, head_size)
 
         worksheet.freeze_panes(head_size+1, 0)
         worksheet.repeat_rows(head_size+1)
         worksheet.set_landscape()
 
-    # Add a sheet for the color references
-    create_color_ref(workbook, cfg.xlsx.col_colors, hl_empty, fmt_cols)
     # Optionally add KiCost information
     if cfg.xlsx.kicost:
-        create_kicost_sheet(workbook, groups, cfg)
+        kicost_colors = create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, cfg)
+    # Add a sheet for the color references
+    create_color_ref(workbook, cfg.xlsx.col_colors, hl_empty, fmt_cols, cfg.xlsx.kicost and KICOST_SUPPORT, kicost_colors)
 
     workbook.close()
 

@@ -65,10 +65,14 @@ outputs:
       # [list(dict)|list(string)] List of columns to display.
       # Can be just the name of the field
       columns:
-        # [string=''] Name of the field to use for this column
-        - field: 'Row'
+        # [string=''] Used as explanation for this column. The XLSX output uses it
+        - comment: ''
+          # [string=''] Name of the field to use for this column
+          field: 'Row'
           # [list(string)|string=''] List of fields to join to this column
           join: ''
+          # [number=0] Used to group columns. The XLSX output uses it to collapse columns
+          level: 0
           # [string=''] Name to display in the header. The field is used when empty
           name: 'Line'
       # [list(list(string))] A series of values which are considered to be equivalent for the part name.
@@ -82,6 +86,19 @@ outputs:
       # - ['zener', 'zenersmall']
       # - ['d', 'diode', 'd_small']
       component_aliases: [['r', 'r_small', 'res', 'resistor'], ['l', 'l_small', 'inductor'], ['c', 'c_small', 'cap', 'capacitor'], ['sw', 'switch'], ['zener', 'zenersmall'], ['d', 'diode', 'd_small']]
+      # [list(dict)|list(string)] List of columns to add to the global section of the cost.
+      # Can be just the name of the field
+      cost_extra_columns:
+        # [string=''] Used as explanation for this column. The XLSX output uses it
+        - comment: ''
+          # [string=''] Name of the field to use for this column
+          field: 'Row'
+          # [list(string)|string=''] List of fields to join to this column
+          join: ''
+          # [number=0] Used to group columns. The XLSX output uses it to collapse columns
+          level: 0
+          # [string=''] Name to display in the header. The field is used when empty
+          name: 'Line'
       # [dict] Options for the CSV, TXT and TSV formats
       csv:
         # [boolean=false] Hide project information

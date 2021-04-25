@@ -31,7 +31,7 @@ def convert2csv(xlsx, skip_empty=False, sheet=None):
     cmd.append(xlsx)
     p1 = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     with open(csv, 'w') as f:
-        p2 = subprocess.Popen(['egrep', '-i', '-v', r'( date|kicost|Total purchase)'], stdin=p1.stdout, stdout=f)
+        p2 = subprocess.Popen(['egrep', '-i', '-v', r'(created|kicost|Total purchase)'], stdin=p1.stdout, stdout=f)
         p2.communicate()[0]
 
 
