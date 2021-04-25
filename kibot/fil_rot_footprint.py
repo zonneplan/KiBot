@@ -61,7 +61,9 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             """ Extends the internal list of rotations with the one provided.
                 Otherwise just use the provided list """
             self.negative_bottom = True
-            """ Rotation for bottom components is computed substracting """
+            """ Rotation for bottom components is computed via substracting """
+            self.invert_bottom = False
+            """ Rotation for bottom components is negated """
             self.rotations = Optionable
             """ [list(list(string))] A list of pairs regular expression/rotation.
                 Components matching the regular expression will be rotated the indicated angle """
@@ -90,12 +92,16 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
     def filter(self, comp):
         """ Apply the rotation """
         for regex, angle in self._rot:
-            if regex.search(comp.footprint):
+            side = "_bottom" if comp.bottom else "_top"
+            match_string = comp.footprint + side
+            if regex.search(match_string):
                 old_angle = comp.footprint_rot
                 if self.negative_bottom and comp.bottom:
                     comp.footprint_rot -= angle
                 else:
                     comp.footprint_rot += angle
+                if self.invert_bottom and comp.bottom:
+                    comp.footprint_rot = -comp.footprint_rot
                 comp.footprint_rot = comp.footprint_rot % 360
                 if GS.debug_level > 2:
                     logger.debug('Rotating ref: {} {}: {} -> {}'.
