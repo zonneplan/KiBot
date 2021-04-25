@@ -83,6 +83,7 @@ class ColumnList:
     # These columns are 'immutable'
     COLUMNS_PROTECTED_L = {
         COL_REFERENCE_L[:-1],  # The column is References and the field Reference
+        COL_REFERENCE_L,  # The column is References and the field Reference
         COL_GRP_QUANTITY_L,
         COL_VALUE_L,
         COL_PART_L,
