@@ -342,11 +342,12 @@ Currently the only type available is `generic`.
     - `comment`: [string=''] A comment for documentation purposes.
     - `extend`: [boolean=true] Extends the internal list of rotations with the one provided.
                 Otherwise just use the provided list.
+    - `invert_bottom`: [boolean=false] Rotation for bottom components is negated, resulting in either: `(- component rot - angle)`
+                       or when combined with `negative_bottom`, `(angle - component rot)`.
     - `name`: [string=''] Used to identify this particular filter definition.
     - `negative_bottom`: [boolean=true] Rotation for bottom components is computed via subtraction as `(component rot - angle)`.
-    - `invert_bottom`: [boolean=false] Rotation for bottom components is negated.
     - `rotations`: [list(list(string))] A list of pairs regular expression/rotation.
-                   Components matching the regular expression will be rotated the indicated angle. Special names `_top` and `_bottom` will match all components on that side of the board.
+                   Components matching the regular expression will be rotated the indicated angle.
 - subparts: Subparts
         This filter implements the KiCost subparts mechanism.
   * Valid keys:
@@ -2207,7 +2208,7 @@ The filter supports the following options:
 
 - `extend`: [boolean=true] Extends the internal list of rotations with the one provided. Otherwise just use the provided list.
 - `negative_bottom`: [boolean=true] Rotation for bottom components is computed via subtraction as `(component rot - angle)`. Note that this should be coherent with the `bottom_negative_x` of the position output.
-- `invert_bottom`: [boolean=false] Rotation for bottom components is negated, resulting in either : `(- component rot - angle)` or when combined with `negative_bottom`, `(angle - component rot)`.
+- `invert_bottom`: [boolean=false] Rotation for bottom components is negated, resulting in either: `(- component rot - angle)` or when combined with `negative_bottom`, `(angle - component rot)`.
 - `rotations`: [list(list(string))] A list of pairs regular expression/rotation. Components matching the regular expression will be rotated the indicated angle. Special names `_top` and `_bottom` will match all components on that side of the board.
 
 In order to add a new rotation or just change an existing one you just need to use the `rotations` option.
