@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Errors and warnings from KiAuto now are printed as errors and warnings.
 - Schematic dependencies are sorted in the generated Makefiles.
 - Makefile variables KIBOT, DEBUG and LOGFILE can be defined from outside.
+- Reference ranges of two elements no longer represented as ranges.
+  Examples: "R1-R2" is now "R1 R2", "R1-R3" remains unchanged.
 
 ### Fixed
 - Problem when using E/DRC filters and the output dir didn't exist.

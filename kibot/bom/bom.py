@@ -137,12 +137,17 @@ class Joiner:
                 if c != 0:
                     refstr += sep
                 S, E = Q
+                refstr += S[0]+str(S[1])
                 if S == E:
-                    refstr += "%s%d" % S
+                    # Only one element
                     c += 1
+                elif S[1]+1 == E[1]:
+                    # Two elements, I think this is better than pretending this is a real range
+                    refstr += sep+E[0]+str(E[1])
+                    c += 2
                 else:
-                    # Do we have space?
-                    refstr += "%s%d%s%s%d" % (S[0], S[1], dash, E[0], E[1])
+                    # A range
+                    refstr += dash+E[0]+str(E[1])
                     c += 2
         return refstr
 
