@@ -1,0 +1,3 @@
+[submodule "submodules/KiCost"]
+	path = submodules/KiCost
+	url = https://github.com/INTI-CMNB/KiCost.git
