@@ -598,6 +598,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         worksheet.set_landscape()
 
     # Optionally add KiCost information
+    kicost_colors = None
     if cfg.xlsx.kicost:
         kicost_colors = create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, cfg)
     # Add a sheet for the color references
