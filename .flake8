@@ -5,3 +5,4 @@ max-complexity = 20
 exclude = experiments/kicad/v6/
           experiments/JLC/
           kibot/mcpyrate/
+          submodules/
