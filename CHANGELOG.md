@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Options to better control the rotation filter (#60 and #67):
+  - invert_bottom: bottom angles are inverted.
+  - skip_top: top components aren't rotated.
+  - skip_bottom: bottom components aren't rotated.
 
 ## [0.11.0] - 2021-04-25
 ### Added

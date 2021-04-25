@@ -342,10 +342,14 @@ Currently the only type available is `generic`.
     - `comment`: [string=''] A comment for documentation purposes.
     - `extend`: [boolean=true] Extends the internal list of rotations with the one provided.
                 Otherwise just use the provided list.
+    - `invert_bottom`: [boolean=false] Rotation for bottom components is negated, resulting in either: `(- component rot - angle)`
+                       or when combined with `negative_bottom`, `(angle - component rot)`.
     - `name`: [string=''] Used to identify this particular filter definition.
-    - `negative_bottom`: [boolean=true] Rotation for bottom components is computed substracting.
+    - `negative_bottom`: [boolean=true] Rotation for bottom components is computed via subtraction as `(component rot - angle)`.
     - `rotations`: [list(list(string))] A list of pairs regular expression/rotation.
                    Components matching the regular expression will be rotated the indicated angle.
+    - `skip_bottom`: [boolean=false] Do not rotate components on the bottom.
+    - `skip_top`: [boolean=false] Do not rotate components on the top.
 - subparts: Subparts
         This filter implements the KiCost subparts mechanism.
   * Valid keys:
@@ -2205,8 +2209,9 @@ Using it, instead of the internal filter named `_rot_footprint`, is the same her
 The filter supports the following options:
 
 - `extend`: [boolean=true] Extends the internal list of rotations with the one provided. Otherwise just use the provided list.
-- `negative_bottom`: [boolean=true] Rotation for bottom components is computed substracting. Note that this should be coherent with the `bottom_negative_x` of the position output.
-- `rotations`: [list(list(string))] A list of pairs regular expression/rotation. Components matching the regular expression will be rotated the indicated angle.
+- `negative_bottom`: [boolean=true] Rotation for bottom components is computed via subtraction as `(component rot - angle)`. Note that this should be coherent with the `bottom_negative_x` of the position output.
+- `invert_bottom`: [boolean=false] Rotation for bottom components is negated, resulting in either: `(- component rot - angle)` or when combined with `negative_bottom`, `(angle - component rot)`.
+- `rotations`: [list(list(string))] A list of pairs regular expression/rotation. Components matching the regular expression will be rotated the indicated angle. Special names `_top` and `_bottom` will match all components on that side of the board.
 
 In order to add a new rotation or just change an existing one you just need to use the `rotations` option.
 As an example: the internal list of rotations rotates QFN packages by 270 degrees, no suppose you want to rotate them just 90 degrees.
