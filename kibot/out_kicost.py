@@ -3,9 +3,9 @@
 # Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from os.path import isfile
+from os.path import isfile, abspath, join, dirname
 from subprocess import check_output, STDOUT, CalledProcessError
-from .misc import CMD_KICOST, URL_KICOST, BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR
+from .misc import CMD_KICOST, URL_KICOST, BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE
 from .error import KiPlotConfigurationError
 from .optionable import Optionable
 from .gs import GS
@@ -137,9 +137,12 @@ class KiCostOptions(VariantOptions):
             logger.error('You can generate it using the `update_xml` pre-flight')
             exit(BOM_ERROR)
         # Check KiCost is available
-        check_script(CMD_KICOST, URL_KICOST)
+        cmd_kicost = abspath(join(dirname(__file__), KICOST_SUBMODULE))
+        if not isfile(cmd_kicost):
+            check_script(CMD_KICOST, URL_KICOST)
+            cmd_kicost = CMD_KICOST
         # Construct the command
-        cmd = [CMD_KICOST, '-w', '-o', name, '-i', netlist]
+        cmd = [cmd_kicost, '-w', '-o', name, '-i', netlist]
         # Add the rest of input files and their variants
         if self.aggregate:
             # More than one project
