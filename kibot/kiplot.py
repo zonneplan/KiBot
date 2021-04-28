@@ -12,6 +12,7 @@ Main KiBot code
 import os
 import re
 from sys import exit
+from sys import path as sys_path
 from shutil import which
 from subprocess import run, PIPE
 from glob import glob
@@ -46,6 +47,7 @@ def _import(name, path):
         trace_dump()
         logger.error('Unable to import plug-ins: '+str(e))
         logger.error('Make sure you used `--no-compile` if you used pip for installation')
+        logger.error('Python path: '+str(sys_path))
         exit(WRONG_INSTALL)
 
 

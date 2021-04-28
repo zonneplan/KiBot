@@ -678,6 +678,7 @@ Next time you need this list just use an alias, like this:
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `quote_all`: [boolean=false] Enclose all values using double quotes.
             - `separator`: [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
+        - `distributors`: [string|list(string)] Include this distributors list. Default is all the available.
         - `dnc_filter`: [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
                         The default filter marks components with a DNC value or DNC in the Config field.
         - `dnf_filter`: [string|list(string)='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
@@ -713,6 +714,7 @@ Next time you need this list just use an alias, like this:
         - `no_conflict`: [list(string)] List of fields where we tolerate conflicts.
                          Use it to avoid undesired warnings.
                          By default the field indicated in `fit_field` and the field `part` are excluded.
+        - `no_distributors`: [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`.
         - `normalize_locale`: [boolean=false] When normalizing values use the locale decimal point.
         - `normalize_values`: [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.
         - `number`: [number=1] Number of boards to build (components multiplier).
@@ -1123,8 +1125,7 @@ Next time you need this list just use an alias, like this:
             - `file`: [string=''] Name of the XML to aggregate.
             - `variant`: [string=' '] Variant for this project.
         - `currency`: [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR).
-        - `distributors`: [string|list(string)] Use only this distributors list. Default is all the available.
-                          Not compatible with `no_distributors` option.
+        - `distributors`: [string|list(string)] Include this distributors list. Default is all the available.
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
                         Internal variants and filters are currently ignored.
@@ -1134,8 +1135,7 @@ Next time you need this list just use an alias, like this:
         - `ignore_fields`: [string|list(string)] List of fields to be ignored.
         - `kicost_variant`: [string=''] Regular expression to match the variant field (KiCost option, not internal variants).
         - `no_collapse`: [boolean=false] Do not collapse the part references (collapse=R1-R4).
-        - `no_distributors`: [string|list(string)] Use all but this distributors list. Default is use all the available.
-                             Not compatible with `distributors` option.
+        - `no_distributors`: [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`.
         - `no_price`: [boolean=false] Do not look for components price. For testing purposes.
         - `output`: [string='%f-%i%v.%x'] Filename for the output (%i=kicost, %x=xlsx). Affected by global options.
         - `show_cat_url`: [boolean=false] Include the catalogue links in the catalogue code.

@@ -1,0 +1,14 @@
+,,,,KiBot Bill of Materials,,,,,,,,,,,,,,,,
+,,,,Schematic:,kibom-variant_2c,,,,Board Qty:,50,,,,,,,,,,
+,,,,Variant:,default,,,,Unit Cost:,0,,,,,,,,,,
+,,,,Revision:,A,,,,Total Cost:,0,,,,0,0,,,,0,0
+,,,,Date:,2021-04-06,,,,,,,,,,,,,,,
+,,,,KiCad Version:,,,,,,,,,,,,,,,,
+
+Global Part Info,,,,,,,,,,,Mouser,,,,,Digi-Key,,,,
+References,Value,Real value,Tolerancia,Voltage,Footprint,Manufacturer,Manufacturer P/N,Build Quantity,Unit$,Ext$,Avail,Purch,Unit$,Ext$,Cat#,Avail,Purch,Unit$,Ext$,Cat#
+C1 C2,1nF, 1000pF,20%,50 V 100 V,,Samsung,CL10B102KC8NNNC,100,0,0,NonStk,,0,0,187CL10B102KC8NNNC,NonStk,,0,0,1276-1131-1-ND
+
+,,,,,,,,,Total Purchase:,0,Buy here,0,,0,,Buy here,0,,0,
+Created:,,,,,,,,,Purchase description:,,,0,,,,,0,,,
+KiCost,,,,,,,,,,,,,,,,,,,,

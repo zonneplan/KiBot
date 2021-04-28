@@ -17,7 +17,7 @@ from base64 import b64decode
 from .columnlist import ColumnList
 from .kibot_logo import KIBOT_LOGO
 from .. import log
-from ..misc import W_NOKICOST
+from ..misc import W_NOKICOST, W_UNKDIST
 from ..__main__ import __version__
 try:
     from xlsxwriter import Workbook
@@ -37,6 +37,7 @@ try:
             sys.path.insert(0, rel_path)
     from kicost.kicost import query_part_info
     from kicost.spreadsheet import create_worksheet, Spreadsheet
+    from kicost.distributors import init_distributor_dict, set_distributors_logger, get_distributors_list
     import kicost.global_vars as kvar
     KICOST_SUPPORT = True
 except ModuleNotFoundError:
@@ -319,6 +320,8 @@ def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_
 class Part(object):
     def __init__(self):
         super().__init__()
+        self.datasheet = None
+        self.lifecycle = None
 
 
 def adapt_extra_cost_columns(cfg):
@@ -361,9 +364,44 @@ def apply_join_requests(join, adapted, original):
             adapted[key] = val + append
 
 
+def remove_unknown_distributors(distributors, available, silent):
+    new_distributors = []
+    for d in distributors:
+        d = d.lower()
+        if d not in available:
+            if not silent:
+                logger.warning(W_UNKDIST+'Unknown distributor `{}`'.format(d))
+        else:
+            new_distributors.append(d)
+    return new_distributors
+
+
+def solve_distributors(cfg, silent=True):
+    # List of distributors to scrape
+    available = get_distributors_list()
+    include = remove_unknown_distributors(cfg.distributors, available, silent)
+    exclude = remove_unknown_distributors(cfg.no_distributors, available, silent)
+    # Default is to sort the entries
+    Spreadsheet.SORT_DISTRIBUTORS = True
+    if not include:
+        # All by default
+        dist_list = available
+    else:
+        # Requested to be included
+        dist_list = include
+        # Keep user sorting
+        Spreadsheet.SORT_DISTRIBUTORS = False
+    # Requested to be excluded
+    for d in exclude:
+        dist_list.remove(d)
+    Spreadsheet.DISTRIBUTORS = dist_list
+    return dist_list
+
+
 def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, cfg):
     if not KICOST_SUPPORT:
         logger.warning(W_NOKICOST, 'KiCost sheet requested but failed to load KiCost support')
+        return
     if cfg.debug_level > 2:
         logger.debug("Groups exported to KiCost:")
         for g in groups:
@@ -373,6 +411,9 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
                 logger.debug(pprint.pformat(c.__dict__))
     # Force KiCost to use our logger
     kvar.logger = logger
+    set_distributors_logger(logger)
+    # Start with a clean list of available distributors
+    init_distributor_dict()
     # Create the projects information structure
     prj_info = [{'title': p.name, 'company': p.sch.company, 'date': p.sch.date} for p in cfg.aggregate]
     # Create the worksheets
@@ -437,8 +478,12 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
             parts.append(part)
             # Process any "join" request
             apply_join_requests(cfg.join_ce, part.fields, g.fields)
+        # Distributors
+        dist_list = solve_distributors(cfg)
         # Get the prices
-        query_part_info(parts)
+        query_part_info(parts, dist_list)
+        # Distributors again. During `query_part_info` user defined distributors could be added
+        solve_distributors(cfg, silent=False)
         # Create a class to hold the spreadsheet parameters
         ss = Spreadsheet(workbook, ws_names[ws], prj_info)
         wks = ss.wks

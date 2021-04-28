@@ -46,11 +46,9 @@ class KiCostOptions(VariantOptions):
             self.show_cat_url = False
             """ Include the catalogue links in the catalogue code """
             self.distributors = Optionable
-            """ [string|list(string)] Use only this distributors list. Default is all the available.
-                Not compatible with `no_distributors` option """
+            """ [string|list(string)] Include this distributors list. Default is all the available """
             self.no_distributors = Optionable
-            """ [string|list(string)] Use all but this distributors list. Default is use all the available.
-                Not compatible with `distributors` option """
+            """ [string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
             self.currency = Optionable
             """ [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR) """
             self.group_fields = Optionable
@@ -95,8 +93,6 @@ class KiCostOptions(VariantOptions):
             self.output = '%f.%x'
         self.distributors = self._validate_dis(self.distributors)
         self.no_distributors = self._validate_dis(self.no_distributors)
-        if self.distributors and self.no_distributors:
-            raise KiPlotConfigurationError('`distributors` and `no_distributors` are incompatible, choose one')
         self.currency = self._validate_cur(self.currency)
         self.group_fields = Optionable.force_list(self.group_fields)
         self.ignore_fields = Optionable.force_list(self.ignore_fields)

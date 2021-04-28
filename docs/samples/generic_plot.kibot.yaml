@@ -109,6 +109,8 @@ outputs:
         quote_all: false
         # [string=','] CSV Separator. TXT and TSV always use tab as delimiter
         separator: ','
+      # [string|list(string)] Include this distributors list. Default is all the available
+      distributors:
       # [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
       # The default filter marks components with a DNC value or DNC in the Config field
       dnc_filter: '_kibom_dnc'
@@ -166,6 +168,8 @@ outputs:
       # Use it to avoid undesired warnings.
       # By default the field indicated in `fit_field` and the field `part` are excluded
       no_conflict: ['Config', 'Part']
+      # [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`
+      no_distributors:
       # [boolean=false] When normalizing values use the locale decimal point
       normalize_locale: false
       # [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes
@@ -707,8 +711,7 @@ outputs:
           variant: ' '
       # [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR)
       currency: USD
-      # [string|list(string)] Use only this distributors list. Default is all the available.
-      # Not compatible with `no_distributors` option
+      # [string|list(string)] Include this distributors list. Default is all the available
       distributors:
       # [string|list(string)=''] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill.
@@ -725,8 +728,7 @@ outputs:
       kicost_variant: ''
       # [boolean=false] Do not collapse the part references (collapse=R1-R4)
       no_collapse: false
-      # [string|list(string)] Use all but this distributors list. Default is use all the available.
-      # Not compatible with `distributors` option
+      # [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`
       no_distributors:
       # [boolean=false] Do not look for components price. For testing purposes
       no_price: false

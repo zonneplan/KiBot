@@ -124,7 +124,7 @@ DNC = {
     "fixed",
 }
 # KiCost distributors
-DISTRIBUTORS = ['digikey', 'farnell', 'mouser', 'newark', 'rs', 'arrow', 'tme', 'lcsc']
+DISTRIBUTORS = ['arrow', 'digikey', 'farnell', 'lcsc', 'mouser', 'newark', 'rs', 'tme']
 DISTRIBUTORS_F = [d+'#' for d in DISTRIBUTORS]
 # ISO ISO4217 currency codes
 # Not all, but the ones we get from the European Central Bank (march 2021)

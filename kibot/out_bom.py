@@ -299,6 +299,10 @@ class BoMOptions(BaseOptions):
             """ Generate the `Source BoM` column using the reference ID instead of the project name """
             self.int_qtys = True
             """ Component quantities are always expressed as integers. Using the ceil() function """
+            self.distributors = Optionable
+            """ [string|list(string)] Include this distributors list. Default is all the available """
+            self.no_distributors = Optionable
+            """ [string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
         self._format_example = 'CSV'
         super().__init__()
 
@@ -455,6 +459,9 @@ class BoMOptions(BaseOptions):
         # Make sure aggregate is a list
         if isinstance(self.aggregate, type):
             self.aggregate = []
+        # List of distributors
+        self.distributors = Optionable.force_list(self.distributors)
+        self.no_distributors = Optionable.force_list(self.no_distributors)
         # Columns
         valid_columns = self._get_columns()
         (self.columns, self.column_levels, self.column_comments, self.column_rename,
