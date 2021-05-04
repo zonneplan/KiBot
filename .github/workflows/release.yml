@@ -2,8 +2,11 @@ name: release
 
 on:
   push:
-    tags:
-      - "v*"
+    tags-ignore:
+      - "v1"
+      - "v2"
+      - "v3"
+      - "v4"
 
 jobs:
   check:
