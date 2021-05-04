@@ -1993,6 +1993,8 @@ jobs:
         path: output
 ```
 
+A working example applied to a repo can be found [here](https://github.com/INTI-CMNB/kicad-ci-test-spora/tree/test_gh_action).
+
 ## Notes about Gerber format
 
 I found this topic poorly documented and quite complex. So here is what I know, feel free to send me any corrections.
