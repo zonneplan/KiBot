@@ -1976,7 +1976,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: INTI-CMNB/KiBot@v0.7.0
+    - uses: INTI-CMNB/KiBot@v1
       with:
       # Required - kibot config file
         config: config.kibot.yaml
