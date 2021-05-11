@@ -31,6 +31,8 @@ def get_logger(name=None):
        provided"""
     # print('get_logger '+str(name))
     if name:
+        if name.startswith(domain):
+            return logging.getLogger(name)
         return logging.getLogger(domain+'.'+name)
     return logging.getLogger(domain)
 
