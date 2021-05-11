@@ -35,6 +35,6 @@ outputs:
          - 'Voltage'
       distributors:
          - Mouser
-         - digikey
+         - Digi-Key
       xlsx:
         kicost: true
