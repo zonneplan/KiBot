@@ -53,6 +53,7 @@ def check_simple(ctx, variant):
 
 
 def test_kicost_simple(test_dir):
+    ''' External KiCost using variants, very simple case '''
     prj = 'kibom-variant_kicost'
     ctx = context.TestContextSCH(test_dir, 'test_kicost_simple', prj, 'kicost_simple', OUT_DIR)
     ctx.run()
@@ -64,6 +65,7 @@ def test_kicost_simple(test_dir):
 
 
 def test_kicost_bom_simple(test_dir):
+    ''' Internal BoM + KiCost, very simple case. With DNF sheet. '''
     prj = 'kibom-variant_2c'
     ctx = context.TestContextSCH(test_dir, 'test_kicost_bom_simple', prj, 'int_bom_kicost_simple_xlsx', OUT_DIR)
     ctx.run(kicost=True)  # , extra_debug=True
@@ -78,6 +80,7 @@ def test_kicost_bom_simple(test_dir):
 
 
 def test_kicost_bom_sel_dist_1(test_dir):
+    ''' Internal BoM + KiCost, select distributors (Mouser+Digi-Key). With DNF sheet. '''
     prj = 'kibom-variant_2c'
     ctx = context.TestContextSCH(test_dir, 'test_kicost_bom_sel_dist_1', prj, 'int_bom_kicost_sel_dist_1_xlsx', OUT_DIR)
     ctx.run(kicost=True)  # , extra_debug=True
