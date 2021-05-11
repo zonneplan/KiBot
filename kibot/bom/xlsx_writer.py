@@ -35,15 +35,23 @@ try:
         rel_path = op.abspath(op.join(op.dirname(__file__), rel_path))
         if rel_path not in sys.path:
             sys.path.insert(0, rel_path)
+    # Init the logger first
+    logger = log.get_logger(__name__)
+    from kicost.global_vars import set_logger
+    set_logger(logger)
+    from kicost import PartGroup
     from kicost.kicost import query_part_info
     from kicost.spreadsheet import create_worksheet, Spreadsheet
-    from kicost.distributors import init_distributor_dict, set_distributors_logger, get_distributors_list
-    import kicost.global_vars as kvar
+    from kicost.distributors import (init_distributor_dict, set_distributors_logger, get_distributors_list, get_dist_name_from_label,
+                                     set_distributors_progress)
+    from kicost.edas import set_edas_logger
+    # Progress mechanism: use the one declared in __main__ (TQDM)
+    from kicost.__main__ import ProgressConsole
+    set_distributors_progress(ProgressConsole)
     KICOST_SUPPORT = True
 except ModuleNotFoundError:
     KICOST_SUPPORT = False
 
-logger = log.get_logger(__name__)
 BG_GEN = "#E6FFEE"  # "#C6DFCE"
 BG_KICAD = "#FFE6B3"  # "#DFC693"
 BG_USER = "#E6F9FF"  # "#C6D9DF"
@@ -317,13 +325,6 @@ def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", prj.comp_build)
 
 
-class Part(object):
-    def __init__(self):
-        super().__init__()
-        self.datasheet = None
-        self.lifecycle = None
-
-
 def adapt_extra_cost_columns(cfg):
     if not cfg.columns_ce:
         return
@@ -369,6 +370,9 @@ def remove_unknown_distributors(distributors, available, silent):
     for d in distributors:
         d = d.lower()
         if d not in available:
+            # Is the label of the column?
+            d = get_dist_name_from_label(d)
+        if d not in available:
             if not silent:
                 logger.warning(W_UNKDIST+'Unknown distributor `{}`'.format(d))
         else:
@@ -410,8 +414,8 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
             for c in g.components:
                 logger.debug(pprint.pformat(c.__dict__))
     # Force KiCost to use our logger
-    kvar.logger = logger
     set_distributors_logger(logger)
+    set_edas_logger(logger)
     # Start with a clean list of available distributors
     init_distributor_dict()
     # Create the projects information structure
@@ -472,7 +476,7 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
         for g in groups:
             if (cfg.ignore_dnf and not g.is_fitted()) != dnf:
                 continue
-            part = Part()
+            part = PartGroup()
             part.refs = [c.ref for c in g.components]
             part.fields = g.fields
             parts.append(part)
