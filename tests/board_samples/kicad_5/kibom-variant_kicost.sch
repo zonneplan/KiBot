@@ -27,7 +27,7 @@ F 2 "" H 1038 1550 50  0001 C CNN
 F 3 "~" H 1000 1700 50  0001 C CNN
 F 4 "1" H 1000 1700 50  0001 C CNN "kicost.default:dnp"
 F 5 "0.0" H 1000 1700 50  0001 C CNN "kicost.test:dnp"
-F 6 " " H 1000 1700 50  0001 C CNN "kicost.production:nopop"
+F 6 "a" H 1000 1700 50  0001 C CNN "kicost.production:nopop"
 	1    1000 1700
 	1    0    0    -1  
 $EndComp
