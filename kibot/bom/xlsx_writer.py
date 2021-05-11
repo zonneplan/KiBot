@@ -42,8 +42,8 @@ try:
     from kicost import PartGroup
     from kicost.kicost import query_part_info
     from kicost.spreadsheet import create_worksheet, Spreadsheet
-    from kicost.distributors import (init_distributor_dict, set_distributors_logger, get_distributors_list, get_dist_name_from_label,
-                                     set_distributors_progress)
+    from kicost.distributors import (init_distributor_dict, set_distributors_logger, get_distributors_list,
+                                     get_dist_name_from_label, set_distributors_progress)
     from kicost.edas import set_edas_logger
     # Progress mechanism: use the one declared in __main__ (TQDM)
     from kicost.__main__ import ProgressConsole
