@@ -229,6 +229,13 @@ def detect_kicad():
         logger.warning(W_NOKIVER+"Unknown KiCad version, please install KiCad 5.1.6 or newer")
         # Assume the best case
         GS.kicad_version = '5.1.5'
+    try:
+        # Debian sid may 2021 mess:
+        really_index = GS.kicad_version.index('really')
+        GS.kicad_version = GS.kicad_version[really_index+6:]
+    except ValueError:
+        pass
+
     m = re.search(r'(\d+)\.(\d+)\.(\d+)', GS.kicad_version)
     GS.kicad_version_major = int(m.group(1))
     GS.kicad_version_minor = int(m.group(2))
