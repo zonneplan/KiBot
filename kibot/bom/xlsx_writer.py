@@ -247,10 +247,12 @@ def create_color_ref(workbook, col_colors, hl_empty, fmt_cols, do_kicost, kicost
 
 
 def adjust_widths(worksheet, column_widths, max_width, levels):
+    c_levels = len(levels)
     for i, width in enumerate(column_widths):
         if width > max_width:
             width = max_width
-        worksheet.set_column(i, i, width, None, {'level': levels[i]})
+        if i < c_levels:
+            worksheet.set_column(i, i, width, None, {'level': levels[i]})
 
 
 def adjust_heights(worksheet, rows, max_width, head_size):
@@ -264,7 +266,7 @@ def adjust_heights(worksheet, rows, max_width, head_size):
             worksheet.set_row(head_size+rn, 15.0*max_h)
 
 
-def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_subtitle):
+def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_subtitle, compact=False):
     if len(cfg.aggregate) == 1:
         # Only one project
         rc = r_info_start
@@ -300,8 +302,9 @@ def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", cfg.number)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", cfg.n_build)
         # Individual stats
+        # No need to waste space for a column with no data
+        r_info_start += 3 if cfg.xlsx.hide_stats_info and compact else 5
         for prj in cfg.aggregate:
-            r_info_start += 5
             col1 = old_col1
             worksheet.set_row(r_info_start, 24)
             worksheet.merge_range(r_info_start, col1, r_info_start, len(column_widths)-1, prj.sch.title, fmt_subtitle)
@@ -323,6 +326,7 @@ def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", prj.comp_fitted)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", prj.number)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", prj.comp_build)
+            r_info_start += 5
 
 
 def adapt_extra_cost_columns(cfg):
@@ -402,6 +406,12 @@ def solve_distributors(cfg, silent=True):
     return dist_list
 
 
+def compute_qtys(cfg, g):
+    if len(cfg.aggregate) == 1:
+        return str(g.get_count())
+    return [str(g.get_count(sch.name)) for sch in cfg.aggregate]
+
+
 def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, cfg):
     if not KICOST_SUPPORT:
         logger.warning(W_NOKICOST, 'KiCost sheet requested but failed to load KiCost support')
@@ -419,11 +429,11 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
     # Start with a clean list of available distributors
     init_distributor_dict()
     # Create the projects information structure
-    prj_info = [{'title': p.name, 'company': p.sch.company, 'date': p.sch.date} for p in cfg.aggregate]
+    prj_info = [{'title': p.name, 'company': p.sch.company, 'date': p.sch.date, 'qty': p.number} for p in cfg.aggregate]
     # Create the worksheets
     ws_names = ['Costs', 'Costs (DNF)']
-    Spreadsheet.PRJ_INFO_ROWS = 5
-    Spreadsheet.PRJ_INFO_START = 1
+    Spreadsheet.PRJ_INFO_ROWS = 5 if len(cfg.aggregate) == 1 else 6
+    Spreadsheet.PRJ_INFO_START = 1 if len(cfg.aggregate) == 1 else 4
     Spreadsheet.ADJUST_ROW_AND_COL_SIZE = True
     Spreadsheet.MAX_COL_WIDTH = cfg.xlsx.max_col_width
     Spreadsheet.PART_NSEQ_SEPRTR = cfg.ref_separator
@@ -447,7 +457,7 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
     Spreadsheet.WRK_FORMATS['header']['font_size'] = 11
     # Avoid the use of the same color twice
     Spreadsheet.WRK_FORMATS['order_too_much']['bg_color'] = '#FF4040'
-    Spreadsheet.WRK_FORMATS['order_min_qty']['bg_color'] = '#FFFF40'
+    Spreadsheet.WRK_FORMATS['order_min_qty']['bg_color'] = '#FF6060'
     # Project quantity as the default quantity
     Spreadsheet.DEFAULT_BUILD_QTY = cfg.number
     # Add version information
@@ -479,6 +489,7 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
             part = PartGroup()
             part.refs = [c.ref for c in g.components]
             part.fields = g.fields
+            part.fields['manf#_qty'] = compute_qtys(cfg, g)
             parts.append(part)
             # Process any "join" request
             apply_join_requests(cfg.join_ce, part.fields, g.fields)
@@ -495,14 +506,14 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
         # Logo
         col1 = insert_logo(wks, image_data)
         if col1:
-            col1 += 2
+            col1 += 1
         # PCB & Stats Info
         if not (cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info):
             r_info_start = 1 if cfg.xlsx.title else 0
-            column_widths = [col1+2]*10
+            column_widths = [0]*5  # Column 1 to 5
             old_stats = cfg.xlsx.hide_stats_info
             cfg.xlsx.hide_stats_info = True
-            write_info(cfg, r_info_start, wks, column_widths, col1, fmt_info, fmt_subtitle)
+            write_info(cfg, r_info_start, wks, column_widths, col1, fmt_info, fmt_subtitle, compact=True)
             cfg.xlsx.hide_stats_info = old_stats
             ss.col_widths[col1] = column_widths[col1]
             ss.col_widths[col1+1] = column_widths[col1+1]
@@ -588,7 +599,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
 
         # Headings
         # Create the head titles
-        column_widths = [0]*len(col_fields)
+        column_widths = [0]*max(len(col_fields), 6)
         rows = [row_headings]
         for i in range(len(row_headings)):
             # Title for this column

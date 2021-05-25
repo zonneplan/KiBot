@@ -222,9 +222,9 @@ class ComponentGroup(object):
             if self.cfg.source_by_id:
                 prj = self.cfg.source_to_id[prj]
             if prj in sources:
-                sources[prj] += 1
+                sources[prj] += c.qty
             else:
-                sources[prj] = 1
+                sources[prj] = c.qty
         field = ''
         for prj in sorted(sources.keys()):
             n = sources[prj]

@@ -92,3 +92,15 @@ def test_kicost_bom_sel_dist_1(test_dir):
     convert2csv(ctx.get_out_path(output), sheet='Costs (DNF)')
     ctx.compare_txt(csv, output[:-5]+'_dk_mou_dnf.csv')
     ctx.clean_up()
+
+
+def test_kicost_bom_merge_1(test_dir):
+    ''' Internal BoM + KiCost, merging 3 projects. '''
+    prj = 'merge_1'
+    ctx = context.TestContextSCH(test_dir, 'test_kicost_bom_merge_1', prj, 'int_bom_kicost_merge_xlsx', OUT_DIR)
+    ctx.run(kicost=True)  # , extra_debug=True
+    output = op.join(OUT_DIR, prj+'-bom.xlsx')
+    ctx.expect_out_file(output)
+    convert2csv(ctx.get_out_path(output), sheet='Costs')
+    csv = output[:-4]+'csv'
+    ctx.compare_txt(csv)

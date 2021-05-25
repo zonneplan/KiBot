@@ -344,10 +344,12 @@ class BoMOptions(BaseOptions):
             self.exclude_filter = self.dnf_filter = self.dnc_filter = None
             self.variant.config(self)  # Fill or adjust any detail
 
-    def process_columns_config(self, cols, valid_columns):
+    def process_columns_config(self, cols, valid_columns, add_all=True):
         column_rename = {}
         join = []
         if isinstance(cols, type):
+            if not add_all:
+                return ([], [], [], column_rename, join)
             # If none specified make a list with all the possible columns.
             # Here are some exceptions:
             # Ignore the part and footprint library, also sheetpath and the Reference in singular
@@ -467,7 +469,7 @@ class BoMOptions(BaseOptions):
         (self.columns, self.column_levels, self.column_comments, self.column_rename,
          self.join) = self.process_columns_config(self.columns, valid_columns)
         (self.columns_ce, self.column_levels_ce, self.column_comments_ce, self.column_rename_ce,
-         self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns)
+         self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, add_all=False)
 
     def aggregate_comps(self, comps):
         self.qtys = {GS.sch_basename: self.number}

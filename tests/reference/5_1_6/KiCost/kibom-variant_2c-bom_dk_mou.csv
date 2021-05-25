@@ -1,14 +1,15 @@
-,,,,KiBot Bill of Materials,,,,,,,,,,,,,,,,
-,,,,Schematic:,kibom-variant_2c,,,,Board Qty:,50,,,,,,,,,,
-,,,,Variant:,default,,,,Unit Cost:,0,,,,,,,,,,
-,,,,Revision:,A,,,,Total Cost:,0,,,,0,0,,,,0,0
-,,,,Date:,2021-04-06,,,,,,,,,,,,,,,
-,,,,KiCad Version:,,,,,,,,,,,,,,,,
+,,,KiBot Bill of Materials,,,,,,,,,,,,,,,,,
+,,,Schematic:,kibom-variant_2c,,,,,Board Qty:,50,,,,,,,,,,
+,,,Variant:,default,,,,,Unit Cost:,0,,,,,,,,,,
+,,,Revision:,A,,,,,Total Cost:,0,,,,0,0,,,,0,0
+,,,Date:,2021-04-06,,,,,,,,,,,,,,,,
+,,,KiCad Version:,,,,,,,,,,,,,,,,,
 
 Global Part Info,,,,,,,,,,,Mouser,,,,,Digi-Key,,,,
 References,Value,Real value,Tolerancia,Voltage,Footprint,Manufacturer,Manufacturer P/N,Build Quantity,Unit$,Ext$,Avail,Purch,Unit$,Ext$,Cat#,Avail,Purch,Unit$,Ext$,Cat#
 R1 R2,1k,1000,1%,,,Bourns,CR0603-JW-102ELF,100,0,0,110042,,0,0,652CR0603JW102ELF,38625,,0,0,CR0603-JW-102ELFCT-ND
 
-,,,,,,,,,Total Purchase:,0,Buy here,0,,0,,Buy here,0,,0,
-Created:,,,,,,,,,Purchase description:,,,0,,,,,0,,,
+,,,,,,,,,Total Purchase:,0,Buy here,,,0,,Buy here,,,0,
+Created:,,,,,,,,,Purchase description:,,,,,,,,,,,
 KiCost,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,

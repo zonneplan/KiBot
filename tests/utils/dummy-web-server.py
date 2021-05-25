@@ -75,11 +75,11 @@ class S(BaseHTTPRequestHandler):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length).decode('utf8')
         self._set_headers()
-        if post_data in queries:
-            self.wfile.write(queries[post_data].encode("utf8"))
-            print("Known query "+comments[post_data])
+        data = unquote(post_data.replace('+', ' '))
+        if data in queries:
+            self.wfile.write(queries[data].encode("utf8"))
+            print("Known query "+comments[data])
         else:
-            data = unquote(post_data.replace('+', ' '))
             print('Unknown query, len={}\n{}\n{}'.format(content_length, post_data, data))
             content = "<html><body><h1>POST!</h1><pre>{}</pre></body></html>".format(post_data)
             self.wfile.write(content.encode("utf8"))
@@ -101,7 +101,6 @@ def load_queries(file):
                 query = line
                 is_query = False
             else:
-                # print(query)
                 # print(len(query))
                 queries[query] = line
                 comments[query] = '{} ({})'.format(last_comment, id)
