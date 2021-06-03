@@ -4,8 +4,8 @@ Prj date:,mar 30 mar 2021 09:46:24,,,,Total Cost:,0
 $ date:,,,,,,
 Global Part Info,,,,,,
 Refs,Value,Footprint,Manf#,Qty,Unit$,Ext$
-C1,1nF,,,100,,0
-R1,1k,,,100,,0
+C1,1nF,,,100,,
+R1,1k,,,100,,
 
 
 KiCost,,,,,,
