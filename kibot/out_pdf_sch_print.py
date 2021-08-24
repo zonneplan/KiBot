@@ -5,7 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 import os
 from tempfile import mkdtemp
-from shutil import rmtree
+from shutil import rmtree, copy2
 from .gs import (GS)
 from .kiplot import check_eeschema_do, exec_with_retry, add_extra_options
 from .misc import (CMD_EESCHEMA_DO, PDF_SCH_PRINT)
@@ -14,6 +14,19 @@ from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
+
+
+def copy_project(sch_dir):
+    """ Copy the project file to the temporal dir """
+    ext = '.pro'
+    source = GS.sch_no_ext+ext
+    prj_file = os.path.join(sch_dir, GS.sch_basename+ext)
+    if os.path.isfile(source):
+        copy2(source, prj_file)
+    else:
+        # Create a dummy project file to avoid warnings
+        f = open(prj_file, 'wt')
+        f.close()
 
 
 class PDF_Sch_PrintOptions(VariantOptions):
@@ -38,11 +51,8 @@ class PDF_Sch_PrintOptions(VariantOptions):
         if self._comps:
             # Save it to a temporal dir
             sch_dir = mkdtemp(prefix='tmp-kibot-pdf_sch_print-')
+            copy_project(sch_dir)
             fname = GS.sch.save_variant(sch_dir)
-            # Create a dummy project file to avoid warnings
-            prj_file = os.path.join(sch_dir, GS.sch_basename+'.pro')
-            f = open(prj_file, 'wt')
-            f.close()
             sch_file = os.path.join(sch_dir, fname)
         else:
             sch_dir = None
