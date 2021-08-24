@@ -614,7 +614,13 @@ class SymLib(object):
         self.alias = {}
 
     @staticmethod
-    def _check_add(o, id, lib, needed):
+    def _check_add(o, id, lib, needed, translate):
+        if lib is None:
+            # From a cache
+            if id in translate:
+                needed[translate[id]] = o
+                return True
+            return False
         name = lib+':'+id
         if name in needed:
             needed[name] = o
@@ -635,16 +641,17 @@ class SymLib(object):
             if not line.startswith('EESchema-LIBRARY'):
                 raise SchLibError('Missing library signature', line, f)
             line = f.get_line()
+            translate = {k.replace(':', '_'): k for k, v in needed.items() if v is None} if lib_alias is None else None
             while not (line.startswith('#End Library') or line.startswith('# End Library')):
                 if line.startswith('DEF'):
                     o = LibComponent(line, f, file)
                     if o.name:
                         # Only add components we need
-                        if self._check_add(o, o.name, lib_alias, needed):
+                        if self._check_add(o, o.name, lib_alias, needed, translate):
                             self.comps[o.name] = o
-                        if o.alias:
+                        if o.alias and lib_alias is not None:
                             for a in o.alias:
-                                if self._check_add(o, a, lib_alias, needed):
+                                if self._check_add(o, a, lib_alias, needed, translate):
                                     self.alias[a] = o
                 else:
                     raise SchLibError('Unknown library entry', line, f)
@@ -1598,6 +1605,13 @@ class Schematic(object):
                 # Mark as None if we don't know the file
                 self.lib_comps[k] = None
                 self.dcms[k] = None
+        # Do we have all the components?
+        if next((k for k, v in self.comps_data.items() if v is None), None) is not None:
+            cache_name = fname.replace('.sch', '-cache.lib')
+            if os.path.isfile(cache_name):
+                logger.debug("Loading missing components from cache "+cache_name)
+                o = SymLib()
+                o.load(cache_name, None, self.comps_data)
         if GS.debug_level > 1:
             logger.debug("Components after loading: "+str(self.comps_data))
         # Join the descriptions with the components
