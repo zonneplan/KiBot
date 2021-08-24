@@ -71,7 +71,11 @@ class MyLogger(logging.Logger):
         if filters and buf.startswith('(W'):
             pos_end = buf.find(')')
             if pos_end > 0:
-                number = int(buf[2:pos_end])
+                num_str = buf[2:pos_end]
+                if num_str[0] == 'C':
+                    number = int(buf[3:pos_end])+1000
+                else:
+                    number = int(num_str)
                 for f in filters:
                     if f.number == number and f.regex.search(buf):
                         MyLogger.n_filtered += 1
