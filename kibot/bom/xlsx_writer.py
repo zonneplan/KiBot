@@ -211,14 +211,14 @@ def create_fmt_info(workbook, cfg):
     return [fmt_name, fmt_data]
 
 
-def insert_logo(worksheet, image_data):
+def insert_logo(worksheet, image_data, scale):
     """ Inserts the logo, returns how many columns we used """
     if image_data:
         # Note: OpenOffice doesn't support using images in the header for XLSXs
         # worksheet.set_header('&L&[Picture]', {'image_left': 'logo.png', 'image_data_left': image_data})
         options = {'image_data': io.BytesIO(image_data),
-                   'x_scale': 2,
-                   'y_scale': 2,
+                   'x_scale': scale,
+                   'y_scale': scale,
                    'object_position': 1,
                    'decorative': True}
         worksheet.insert_image('A1', 'logo.png', options)
@@ -504,7 +504,7 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
         wks = ss.wks
         # Page head
         # Logo
-        col1 = insert_logo(wks, image_data)
+        col1 = insert_logo(wks, image_data, cfg.xlsx.logo_scale)
         if col1:
             col1 += 1
         # PCB & Stats Info
@@ -640,7 +640,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
 
         # Page head
         # Logo
-        col1 = insert_logo(worksheet, image_data)
+        col1 = insert_logo(worksheet, image_data, cfg.xlsx.logo_scale)
         # Title
         if cfg.xlsx.title:
             worksheet.set_row(0, 32)

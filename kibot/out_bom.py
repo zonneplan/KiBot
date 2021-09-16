@@ -163,6 +163,8 @@ class BoMXLSX(BoMLinkable):
             """ Head style: modern-blue, modern-green, modern-red and classic """
             self.kicost = False
             """ Enable KiCost worksheet creation """
+            self.logo_scale = 2
+            """ Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software """
 
     def config(self, parent):
         super().config(parent)

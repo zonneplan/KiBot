@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - invert_bottom: bottom angles are inverted.
   - skip_top: top components aren't rotated.
   - skip_bottom: bottom components aren't rotated.
+- XLSX BoM: option to control the logo scale (#84)
 
 ## [0.11.0] - 2021-04-25
 ### Added
