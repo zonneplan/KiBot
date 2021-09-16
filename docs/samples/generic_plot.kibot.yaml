@@ -209,6 +209,8 @@ outputs:
         kicost: false
         # [string|boolean=''] PNG file to use as logo, use false to remove
         logo: ''
+        # [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software
+        logo_scale: 2
         # [number=60] [20,999] Maximum column width (characters)
         max_col_width: 60
         # [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic
