@@ -831,6 +831,7 @@ class SchematicComponent(object):
         self.bottom = False
         self.footprint_rot = 0.0
         self.qty = 1
+        self.annotation_error = False
         # KiCad 5 PCB flags (mutually exclusive)
         self.smd = False
         self.virtual = False
@@ -1060,6 +1061,7 @@ class SchematicComponent(object):
         comp.is_power = comp.ref.startswith('#PWR') or comp.ref.startswith('#FLG')
         if comp.ref[-1] == '?':
             logger.warning(W_NOANNO + 'Component {} is not annotated'.format(comp))
+            comp.annotation_error = True
         # Separate the reference in its components
         m = SchematicComponent.ref_re.match(comp.ref)
         if not m:
@@ -1327,6 +1329,7 @@ class SchematicSheet(object):
         super().__init__()
         self.sheet = None
         self.id = ''
+        self.annotation_error = False
 
     def load_sheet(self, project, parent, sheet_path, sheet_path_h, libs, fields, fields_lc):
         assert self.name
@@ -1404,6 +1407,7 @@ class Schematic(object):
         super().__init__()
         self.dcms = {}
         self.lib_comps = {}
+        self.annotation_error = False
 
     def _get_title_block(self, f):
         line = f.get_line()
@@ -1491,6 +1495,8 @@ class Schematic(object):
             while not line.startswith('$EndSCHEMATC'):
                 if line.startswith('$Comp'):
                     obj = SchematicComponent.load(f, project, sheet_path, sheet_path_h, libs, fields, fields_lc)
+                    if obj.annotation_error:
+                        self.annotation_error = True
                     self.components.append(obj)
                 elif line.startswith('NoConn'):
                     obj = SchematicConnection.parse(False, line[7:], f)
@@ -1517,7 +1523,10 @@ class Schematic(object):
             # Load sub-sheets
             self.sub_sheets = []
             for sch in self.sheets:
-                self.sub_sheets.append(sch.load_sheet(project, fname, sheet_path, sheet_path_h, libs, fields, fields_lc))
+                sheet = sch.load_sheet(project, fname, sheet_path, sheet_path_h, libs, fields, fields_lc)
+                if sheet.annotation_error:
+                    self.annotation_error = True
+                self.sub_sheets.append(sheet)
 
     def get_files(self):
         """ A list of the names for all the sheets, including this one.

@@ -63,4 +63,6 @@ class Run_ERC(BasePreFlight):  # noqa: F821
                 logger.error('ERC errors: %d', -ret)
             else:
                 logger.error('ERC returned %d', ret)
+                if GS.sch.annotation_error:
+                    logger.error('Make sure your schematic is fully annotated')
             exit(ERC_ERROR)
