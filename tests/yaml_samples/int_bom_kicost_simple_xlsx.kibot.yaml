@@ -10,6 +10,7 @@ outputs:
     options:
       use_alt: true
       number: 50
+      group_fields: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib']
       columns:
         - References
         - Part
