@@ -68,6 +68,8 @@ class PositionOptions(VariantOptions):
             """ [list(dict)|list(string)] Which columns are included in the output """
             self.bottom_negative_x = False
             """ Use negative X coordinates for footprints on bottom layer """
+            self.use_aux_axis_as_origin = True
+            """ Use the auxiliary axis as origin for coordinates (KiCad default)"""
         super().__init__()
         self._expand_id = 'position'
 
@@ -225,6 +227,11 @@ class PositionOptions(VariantOptions):
         modules = []
         is_pure_smd, is_not_virtual = self.get_attr_tests()
         quote_char = '"' if self.format == 'CSV' else ''
+        x_origin = 0.0
+        y_origin = 0.0
+        if self.use_aux_axis_as_origin:
+            (x_origin, y_origin) = GS.board.GetAuxOrigin()
+            logger.debug('Using auxiliar origin: x={} y={}'.format(x_origin, y_origin))
         for m in sorted(GS.board.GetModules(), key=lambda c: _ref_key(c.GetReference())):
             ref = m.GetReference()
             logger.debug('P&P ref: {}'.format(ref))
@@ -258,12 +265,12 @@ class PositionOptions(VariantOptions):
                     elif k == 'Package':
                         row.append(quote_char+footprint+quote_char)
                     elif k == 'PosX':
-                        pos_x = center.x * conv
+                        pos_x = (center.x - x_origin) * conv
                         if self.bottom_negative_x and is_bottom:
                             pos_x = -pos_x
                         row.append("{:.4f}".format(pos_x))
                     elif k == 'PosY':
-                        row.append("{:.4f}".format(-center.y * conv))
+                        row.append("{:.4f}".format(-(center.y - y_origin) * conv))
                     elif k == 'Rot':
                         row.append("{:.4f}".format(rotation))
                     elif k == 'Side':

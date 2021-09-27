@@ -2,10 +2,6 @@ kibot:
   version: 1
 
 filters:
-  - name: fix_rotation
-    comment: 'Adjust rotation for JLC'
-    type: rot_footprint
-
   - name: only_jlc_parts
     comment: 'Only parts with JLC code'
     type: generic
@@ -18,7 +14,7 @@ variants:
     comment: 'Just a place holder for the rotation filter'
     type: kibom
     variant: rotated
-    pre_transform: fix_rotation
+    pre_transform: _rot_footprint
 
 outputs:
   - name: 'position'
@@ -26,10 +22,9 @@ outputs:
     type: position
     options:
       variant: rotated
-      output: '%f_cpl_jlc.%x'
+      output: '%f_cpl_jlc_aux.%x'
       format: CSV
       units: millimeters
-      use_aux_axis_as_origin: false
       separate_files_for_front_and_back: false
       only_smd: true
       columns:
@@ -45,23 +40,3 @@ outputs:
           name: Rotation
         - id: Side
           name: Layer
-
-  - name: 'bom'
-    comment: "BoM for JLC"
-    type: bom
-    options:
-      output: '%f_%i_jlc.%x'
-      exclude_filter: 'only_jlc_parts'
-      ref_separator: ','
-      columns:
-        - field: Value
-          name: Comment
-        - field: References
-          name: Designator
-        - Footprint
-        - field: 'LCSC#'
-          name: 'LCSC Part #'
-      csv:
-        hide_pcb_info: true
-        hide_stats_info: true
-        quote_all: true

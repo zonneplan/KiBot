@@ -25,6 +25,7 @@ outputs:
       output: '%f_cpl_jlc.%x'
       format: CSV
       units: millimeters
+      use_aux_axis_as_origin: false
       separate_files_for_front_and_back: false
       only_smd: true
       columns:

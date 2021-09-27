@@ -229,6 +229,16 @@ def test_position_rot_2(test_dir):
     ctx.clean_up()
 
 
+def test_position_rot_3(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, 'test_position_rot_3', prj, 'simple_position_rot_3', POS_DIR)
+    ctx.run(extra_debug=True)
+    output = prj+'_cpl_jlc_aux.csv'
+    ctx.expect_out_file(output)
+    ctx.compare_txt(output)
+    ctx.clean_up()
+
+
 def test_rot_bottom(test_dir):
     ctx = context.TestContext(test_dir, 'test_rot_bottom', 'comp_bottom', 'simple_position_rot_bottom', POS_DIR)
     ctx.run()

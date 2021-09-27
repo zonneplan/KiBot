@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - skip_bottom: bottom components aren't rotated.
 - XLSX BoM: option to control the logo scale (#84)
 
+### Fixed
+- Position files now defaults to use the auxiliar origin as KiCad.
+  Can be disabled to use absolute coordinates. (#87)
+
 ## [0.11.0] - 2021-04-25
 ### Added
 - `erc_warnings` pre-flight option to consider ERC warnings as errors.
