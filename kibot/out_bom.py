@@ -183,7 +183,7 @@ class ComponentAliases(Optionable):
 
 
 class GroupFields(Optionable):
-    _default = ColumnList.DEFAULT_GROUPING
+    _default = ColumnList.DEFAULT_GROUPING + ['voltage', 'tolerance', 'current', 'power']
 
     def __init__(self):
         super().__init__()
@@ -274,7 +274,8 @@ class BoMOptions(BaseOptions):
             """ [list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
                 Field names are case-insensitive.
-                If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used """
+                If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
+                .          'Voltage', 'Tolerance', 'Current', 'Power'] is used """
             self.group_fields_fallbacks = Optionable
             """ [list(string)] List of fields to be used when the fields in `group_fields` are empty.
                 The first field in this list is the fallback for the first in `group_fields`, and so on """
@@ -427,7 +428,7 @@ class BoMOptions(BaseOptions):
             self.xlsx.config(self)
         # group_fields
         if isinstance(self.group_fields, type):
-            self.group_fields = ColumnList.DEFAULT_GROUPING
+            self.group_fields = GroupFields.get_default()
         else:
             # Make the grouping fields lowercase
             self.group_fields = [f.lower() for f in self.group_fields]

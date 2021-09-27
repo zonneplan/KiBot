@@ -32,4 +32,4 @@ outputs:
     dir: BoM
     options:
       exclude_filter: 'exclude_any'
-
+      group_fields: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib']

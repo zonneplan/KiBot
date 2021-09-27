@@ -130,8 +130,9 @@ outputs:
       # [list(string)] List of fields used for sorting individual components into groups.
       # Components which match (comparing *all* fields) will be grouped together.
       # Field names are case-insensitive.
-      # If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used
-      group_fields: ['part', 'part lib', 'value', 'footprint', 'footprint lib']
+      # If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
+      #            'Voltage', 'Tolerance', 'Current', 'Power'] is used
+      group_fields: ['part', 'part lib', 'value', 'footprint', 'footprint lib', 'voltage', 'tolerance', 'current', 'power']
       # [list(string)] List of fields to be used when the fields in `group_fields` are empty.
       # The first field in this list is the fallback for the first in `group_fields`, and so on
       group_fields_fallbacks:

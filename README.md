@@ -692,7 +692,8 @@ Next time you need this list just use an alias, like this:
         - `group_fields`: [list(string)] List of fields used for sorting individual components into groups.
                           Components which match (comparing *all* fields) will be grouped together.
                           Field names are case-insensitive.
-                          If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used.
+                          If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
+                                     'Voltage', 'Tolerance', 'Current', 'Power'] is used.
         - `group_fields_fallbacks`: [list(string)] List of fields to be used when the fields in `group_fields` are empty.
                                     The first field in this list is the fallback for the first in `group_fields`, and so on.
         - `html`: [dict] Options for the HTML format.

@@ -25,6 +25,7 @@ class Optionable(object):
         Is configured from a dict and the collected values are stored in its attributes. """
     _str_values_re = compile(r"string=.*\] \[([^\]]+)\]")
     _num_range_re = compile(r"number=.*\] \[(-?\d+),(-?\d+)\]")
+    _default = None
 
     def __init__(self):
         self._unkown_is_error = False
@@ -252,6 +253,10 @@ class Optionable(object):
                 # Empty string
                 val = []
         return val
+
+    @classmethod
+    def get_default(cls):
+        return cls._default
 
 
 class BaseOptions(Optionable):
