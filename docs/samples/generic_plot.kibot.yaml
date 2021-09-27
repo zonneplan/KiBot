@@ -940,6 +940,8 @@ outputs:
       separate_files_for_front_and_back: true
       # [string='millimeters'] [millimeters,inches] Units used for the positions
       units: 'millimeters'
+      # [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default)
+      use_aux_axis_as_origin: true
       # [string=''] Board variant to apply
       variant: ''
 

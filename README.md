@@ -1321,6 +1321,7 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
         - `separate_files_for_front_and_back`: [boolean=true] Generate two separated files, one for the top and another for the bottom.
         - `units`: [string='millimeters'] [millimeters,inches] Units used for the positions.
+        - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
         - `variant`: [string=''] Board variant to apply.
 
 * PS (Postscript)
