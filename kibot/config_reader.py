@@ -210,23 +210,32 @@ class CfgYamlReader(object):
                 outs = None
                 fils = []
                 vars = []
+                explicit_outs = True
+                explicit_fils = False
+                explicit_vars = False
             elif isinstance(entry, dict):
-                fname = outs = fils = vars = None
+                fn = outs = fils = vars = None
+                explicit_outs = explicit_fils = explicit_vars = False
                 for k, v in entry.items():
                     if k == 'file':
                         if not isinstance(v, str):
                             config_error("`import.file` must be a string ({})".format(str(v)))
                         fn = v
                     elif k == 'outputs':
-                        outs = self._parse_import_items('outputs', fname, v)
+                        outs = self._parse_import_items('outputs', fn, v)
+                        explicit_outs = True
                     elif k == 'filters':
-                        fils = self._parse_import_items('filters', fname, v)
+                        fils = self._parse_import_items('filters', fn, v)
+                        explicit_fils = True
                     elif k == 'variants':
-                        vars = self._parse_import_items('variants', fname, v)
+                        vars = self._parse_import_items('variants', fn, v)
+                        explicit_vars = True
                     else:
                         self._config_error_import(fname, "unknown import entry `{}`".format(str(v)))
+                if fn is None:
+                    config_error("`import` entry without `file` ({})".format(str(entry)))
             else:
-                config_error("`import` items must be strings or dicts ({})".format(str(fn)))
+                config_error("`import` items must be strings or dicts ({})".format(str(entry)))
             if not os.path.isabs(fn):
                 fn = os.path.join(dir, fn)
             if not os.path.isfile(fn):
@@ -251,8 +260,10 @@ class CfgYamlReader(object):
                 else:
                     outputs.extend(sel_outs)
                 logger.debug('Outputs loaded from `{}`: {}'.format(fn_rel, list(map(lambda c: c.name, sel_outs))))
+            if outs is None and explicit_outs and 'outputs' not in data:
+                logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
             # Filters
-            if fils is None or len(fils) > 0 and 'filters' in data:
+            if (fils is None or len(fils) > 0) and 'filters' in data:
                 i_fils = self._parse_filters(data['filters'])
                 if fils is not None:
                     sel_fils = {}
@@ -268,8 +279,10 @@ class CfgYamlReader(object):
                 else:
                     RegOutput.add_filters(sel_fils)
                     logger.debug('Filters loaded from `{}`: {}'.format(fn_rel, sel_fils.keys()))
+            if fils is None and explicit_fils and 'filters' not in data:
+                logger.warning(W_NOOUTPUTS+"No filters found in `{}`".format(fn_rel))
             # Variants
-            if vars is None or len(vars) > 0 and 'variants' in data:
+            if (vars is None or len(vars) > 0) and 'variants' in data:
                 i_vars = self._parse_variants(data['variants'])
                 if vars is not None:
                     sel_vars = {}
@@ -285,6 +298,8 @@ class CfgYamlReader(object):
                 else:
                     RegOutput.add_variants(sel_vars)
                     logger.debug('Variants loaded from `{}`: {}'.format(fn_rel, sel_vars.keys()))
+            if vars is None and explicit_vars and 'variants' not in data:
+                logger.warning(W_NOOUTPUTS+"No variants found in `{}`".format(fn_rel))
         return outputs
 
     def load_yaml(self, fstream):
