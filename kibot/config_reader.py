@@ -15,7 +15,8 @@ from collections import OrderedDict
 
 from .error import (KiPlotConfigurationError, config_error)
 from .kiplot import (load_board)
-from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS)
+from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
+                   W_NOVARIANTS)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter
 from .pre_base import BasePreFlight
@@ -217,11 +218,11 @@ class CfgYamlReader(object):
                             config_error("`import.file` must be a string ({})".format(str(v)))
                         fn = v
                     elif k == 'outputs':
-                        outs = _parse_import_items('outputs', fname, v)
+                        outs = self._parse_import_items('outputs', fname, v)
                     elif k == 'filters':
-                        fils = _parse_import_items('filters', fname, v)
+                        fils = self._parse_import_items('filters', fname, v)
                     elif k == 'variants':
-                        vars = _parse_import_items('variants', fname, v)
+                        vars = self._parse_import_items('variants', fname, v)
                     else:
                         self._config_error_import(fname, "unknown import entry `{}`".format(str(v)))
             else:
