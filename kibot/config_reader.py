@@ -196,6 +196,67 @@ class CfgYamlReader(object):
             return values
         CfgYamlReader._config_error_import(fname, '`{}` must be a string or a list ({})'.format(kind, str(v)))
 
+    def _parse_import_outputs(self, outs, explicit_outs, fn_rel, data, outputs):
+        if (outs is None or len(outs) > 0) and 'outputs' in data:
+            i_outs = self._parse_outputs(data['outputs'])
+            if outs is not None:
+                sel_outs = []
+                for o in i_outs:
+                    if o.name in outs:
+                        sel_outs.append(o)
+                        outs.remove(o)
+                for o in outs:
+                    logger.warning(W_UNKOUT+"can't import `{}` output from `{}` (missing)".format(o, fn_rel))
+            else:
+                sel_outs = i_outs
+            if len(sel_outs) == 0:
+                logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
+            else:
+                outputs.extend(sel_outs)
+            logger.debug('Outputs loaded from `{}`: {}'.format(fn_rel, list(map(lambda c: c.name, sel_outs))))
+        if outs is None and explicit_outs and 'outputs' not in data:
+            logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
+
+    def _parse_import_filters(self, fils, explicit_fils, fn_rel, data):
+        if (fils is None or len(fils) > 0) and 'filters' in data:
+            i_fils = self._parse_filters(data['filters'])
+            if fils is not None:
+                sel_fils = {}
+                for f in fils:
+                    if f in i_fils:
+                        sel_fils[f] = i_fils[f]
+                    else:
+                        logger.warning(W_UNKOUT+"can't import `{}` filter from `{}` (missing)".format(f, fn_rel))
+            else:
+                sel_fils = i_fils
+            if len(sel_fils) == 0:
+                logger.warning(W_NOFILTERS+"No filters found in `{}`".format(fn_rel))
+            else:
+                RegOutput.add_filters(sel_fils)
+                logger.debug('Filters loaded from `{}`: {}'.format(fn_rel, sel_fils.keys()))
+        if fils is None and explicit_fils and 'filters' not in data:
+            logger.warning(W_NOOUTPUTS+"No filters found in `{}`".format(fn_rel))
+
+    def _parse_import_variants(self, vars, explicit_vars, fn_rel, data):
+        if (vars is None or len(vars) > 0) and 'variants' in data:
+            i_vars = self._parse_variants(data['variants'])
+            if vars is not None:
+                sel_vars = {}
+                for f in vars:
+                    if f in i_vars:
+                        sel_vars[f] = i_vars[f]
+                    else:
+                        logger.warning(W_UNKOUT+"can't import `{}` variant from `{}` (missing)".format(f, fn_rel))
+            else:
+                sel_vars = i_vars
+            if len(sel_vars) == 0:
+                logger.warning(W_NOVARIANTS+"No variants found in `{}`".format(fn_rel))
+            else:
+                RegOutput.add_variants(sel_vars)
+                logger.debug('Variants loaded from `{}`: {}'.format(fn_rel, sel_vars.keys()))
+        if vars is None and explicit_vars and 'variants' not in data:
+            logger.warning(W_NOOUTPUTS+"No variants found in `{}`".format(fn_rel))
+
     def _parse_import(self, imp, name):
         """ Get imports """
         logger.debug("Parsing imports: {}".format(imp))
@@ -231,7 +292,7 @@ class CfgYamlReader(object):
                         vars = self._parse_import_items('variants', fn, v)
                         explicit_vars = True
                     else:
-                        self._config_error_import(fname, "unknown import entry `{}`".format(str(v)))
+                        self._config_error_import(fn, "unknown import entry `{}`".format(str(v)))
                 if fn is None:
                     config_error("`import` entry without `file` ({})".format(str(entry)))
             else:
@@ -243,63 +304,11 @@ class CfgYamlReader(object):
             fn_rel = os.path.relpath(fn)
             data = self.load_yaml(open(fn))
             # Outputs
-            if (outs is None or len(outs) > 0) and 'outputs' in data:
-                i_outs = self._parse_outputs(data['outputs'])
-                if outs is not None:
-                    sel_outs = []
-                    for o in i_outs:
-                        if o.name in outs:
-                            sel_outs.append(o)
-                            outs.remove(o)
-                    for o in outs:
-                        logger.warning(W_UNKOUT+"can't import `{}` output from `{}` (missing)".format(o, fn_rel))
-                else:
-                    sel_outs = i_outs
-                if len(sel_outs) == 0:
-                    logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
-                else:
-                    outputs.extend(sel_outs)
-                logger.debug('Outputs loaded from `{}`: {}'.format(fn_rel, list(map(lambda c: c.name, sel_outs))))
-            if outs is None and explicit_outs and 'outputs' not in data:
-                logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
+            self._parse_import_outputs(outs, explicit_outs, fn_rel, data, outputs)
             # Filters
-            if (fils is None or len(fils) > 0) and 'filters' in data:
-                i_fils = self._parse_filters(data['filters'])
-                if fils is not None:
-                    sel_fils = {}
-                    for f in fils:
-                        if f in i_fils:
-                            sel_fils[f] = i_fils[f]
-                        else:
-                            logger.warning(W_UNKOUT+"can't import `{}` filter from `{}` (missing)".format(f, fn_rel))
-                else:
-                    sel_fils = i_fils
-                if len(sel_fils) == 0:
-                    logger.warning(W_NOFILTERS+"No filters found in `{}`".format(fn_rel))
-                else:
-                    RegOutput.add_filters(sel_fils)
-                    logger.debug('Filters loaded from `{}`: {}'.format(fn_rel, sel_fils.keys()))
-            if fils is None and explicit_fils and 'filters' not in data:
-                logger.warning(W_NOOUTPUTS+"No filters found in `{}`".format(fn_rel))
+            self._parse_import_filters(fils, explicit_fils, fn_rel, data)
             # Variants
-            if (vars is None or len(vars) > 0) and 'variants' in data:
-                i_vars = self._parse_variants(data['variants'])
-                if vars is not None:
-                    sel_vars = {}
-                    for f in vars:
-                        if f in i_vars:
-                            sel_vars[f] = i_vars[f]
-                        else:
-                            logger.warning(W_UNKOUT+"can't import `{}` variant from `{}` (missing)".format(f, fn_rel))
-                else:
-                    sel_vars = i_vars
-                if len(sel_vars) == 0:
-                    logger.warning(W_NOVARIANTS+"No variants found in `{}`".format(fn_rel))
-                else:
-                    RegOutput.add_variants(sel_vars)
-                    logger.debug('Variants loaded from `{}`: {}'.format(fn_rel, sel_vars.keys()))
-            if vars is None and explicit_vars and 'variants' not in data:
-                logger.warning(W_NOOUTPUTS+"No variants found in `{}`".format(fn_rel))
+            self._parse_import_variants(vars, explicit_vars, fn_rel, data)
         return outputs
 
     def load_yaml(self, fstream):
