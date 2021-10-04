@@ -198,6 +198,9 @@ W_UNKDIST = '(W063) '
 W_UNKCUR = '(W064) '
 W_NONETLIST = '(W065) '
 W_NOKICOST = '(W066) '
+W_UNKOUT = '(W067) '
+W_NOFILTERS = '(W068) '
+W_NOVARIANTS = '(W069) '
 
 
 class Rect(object):

@@ -50,6 +50,10 @@ class RegOutput(Optionable, Registrable):
         RegOutput._def_variants = variants
 
     @staticmethod
+    def add_variants(variants):
+        RegOutput._def_variants.update(variants)
+
+    @staticmethod
     def is_variant(name):
         return name in RegOutput._def_variants
 
@@ -60,6 +64,10 @@ class RegOutput(Optionable, Registrable):
     @staticmethod
     def set_filters(filters):
         RegOutput._def_filters = filters
+
+    @staticmethod
+    def add_filters(filters):
+        RegOutput._def_filters.update(filters)
 
     @staticmethod
     def is_filter(name):

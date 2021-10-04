@@ -171,6 +171,30 @@ class CfgYamlReader(object):
         except KiPlotConfigurationError as e:
             config_error("In `global` section: "+str(e))
 
+    @staticmethod
+    def _config_error_import(fname, error):
+        if fname is None:
+            fname = '*unnamed*'
+        config_error('{} in {} import'.format(error, fname))
+
+    @staticmethod
+    def _parse_import_items(kind, fname, value):
+        if isinstance(value, str):
+            if value == 'all':
+                return None
+            elif value == 'none':
+                return []
+            return [value]
+        if isinstance(value, list):
+            values = []
+            for v in value:
+                if isinstance(v, str):
+                    values.append(v)
+                else:
+                    CfgYamlReader._config_error_import(fname, '`{}` items must be strings ({})'.format(kind, str(v)))
+            return values
+        CfgYamlReader._config_error_import(fname, '`{}` must be a string or a list ({})'.format(kind, str(v)))
+
     def _parse_import(self, imp, name):
         """ Get imports """
         logger.debug("Parsing imports: {}".format(imp))
@@ -179,20 +203,87 @@ class CfgYamlReader(object):
         # Import the files
         dir = os.path.dirname(os.path.abspath(name))
         outputs = []
-        for fn in imp:
-            if not isinstance(fn, str):
-                config_error("`import` items must be strings ({})".format(str(fn)))
+        for entry in imp:
+            if isinstance(entry, str):
+                fn = entry
+                outs = None
+                fils = []
+                vars = []
+            elif isinstance(entry, dict):
+                fname = outs = fils = vars = None
+                for k, v in entry.items():
+                    if k == 'file':
+                        if not isinstance(v, str):
+                            config_error("`import.file` must be a string ({})".format(str(v)))
+                        fn = v
+                    elif k == 'outputs':
+                        outs = _parse_import_items('outputs', fname, v)
+                    elif k == 'filters':
+                        fils = _parse_import_items('filters', fname, v)
+                    elif k == 'variants':
+                        vars = _parse_import_items('variants', fname, v)
+                    else:
+                        self._config_error_import(fname, "unknown import entry `{}`".format(str(v)))
+            else:
+                config_error("`import` items must be strings or dicts ({})".format(str(fn)))
             if not os.path.isabs(fn):
                 fn = os.path.join(dir, fn)
             if not os.path.isfile(fn):
                 config_error("missing import file `{}`".format(fn))
+            fn_rel = os.path.relpath(fn)
             data = self.load_yaml(open(fn))
-            if 'outputs' in data:
-                outs = self._parse_outputs(data['outputs'])
-                outputs.extend(outs)
-                logger.debug('Outputs loaded from `{}`: {}'.format(os.path.relpath(fn), list(map(lambda c: c.name, outs))))
-            else:
-                logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn))
+            # Outputs
+            if (outs is None or len(outs) > 0) and 'outputs' in data:
+                i_outs = self._parse_outputs(data['outputs'])
+                if outs is not None:
+                    sel_outs = []
+                    for o in i_outs:
+                        if o.name in outs:
+                            sel_outs.append(o)
+                            outs.remove(o)
+                    for o in outs:
+                        logger.warning(W_UNKOUT+"can't import `{}` output from `{}` (missing)".format(o, fn_rel))
+                else:
+                    sel_outs = i_outs
+                if len(sel_outs) == 0:
+                    logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
+                else:
+                    outputs.extend(sel_outs)
+                logger.debug('Outputs loaded from `{}`: {}'.format(fn_rel, list(map(lambda c: c.name, sel_outs))))
+            # Filters
+            if fils is None or len(fils) > 0 and 'filters' in data:
+                i_fils = self._parse_filters(data['filters'])
+                if fils is not None:
+                    sel_fils = {}
+                    for f in fils:
+                        if f in i_fils:
+                            sel_fils[f] = i_fils[f]
+                        else:
+                            logger.warning(W_UNKOUT+"can't import `{}` filter from `{}` (missing)".format(f, fn_rel))
+                else:
+                    sel_fils = i_fils
+                if len(sel_fils) == 0:
+                    logger.warning(W_NOFILTERS+"No filters found in `{}`".format(fn_rel))
+                else:
+                    RegOutput.add_filters(sel_fils)
+                    logger.debug('Filters loaded from `{}`: {}'.format(fn_rel, sel_fils.keys()))
+            # Variants
+            if vars is None or len(vars) > 0 and 'variants' in data:
+                i_vars = self._parse_variants(data['variants'])
+                if vars is not None:
+                    sel_vars = {}
+                    for f in vars:
+                        if f in i_vars:
+                            sel_vars[f] = i_vars[f]
+                        else:
+                            logger.warning(W_UNKOUT+"can't import `{}` variant from `{}` (missing)".format(f, fn_rel))
+                else:
+                    sel_vars = i_vars
+                if len(sel_vars) == 0:
+                    logger.warning(W_NOVARIANTS+"No variants found in `{}`".format(fn_rel))
+                else:
+                    RegOutput.add_variants(sel_vars)
+                    logger.debug('Variants loaded from `{}`: {}'.format(fn_rel, sel_vars.keys()))
         return outputs
 
     def load_yaml(self, fstream):

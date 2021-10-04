@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - skip_top: top components aren't rotated.
   - skip_bottom: bottom components aren't rotated.
 - XLSX BoM: option to control the logo scale (#84)
+- Import mechanism for filters and variants (#88)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current
