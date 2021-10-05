@@ -12,7 +12,7 @@ RUN     sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list  && \
 	curl -s https://api.github.com/repos/INTI-CMNB/PcbDraw/releases/latest | grep "browser_download_url.*deb" | cut -d : -f 2,3 | tr -d \" | wget -i - && \
 	curl -s https://api.github.com/repos/INTI-CMNB/KiCost/releases/latest | grep "browser_download_url.*deb" | cut -d : -f 2,3 | tr -d \" | wget -i - && \
 	apt -y install --no-install-recommends ./*.deb && \
-	pip3 install git+https://github.com/INTI-CMNB/KiBot.git  \
+	pip3 install git+https://github.com/INTI-CMNB/KiBot.git && \
 	apt-get -y remove curl wget python3-pip && \
 	apt-get -y autoremove && \
 	rm /*.deb && \
