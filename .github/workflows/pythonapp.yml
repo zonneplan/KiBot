@@ -10,12 +10,14 @@ on:
     - 'src/kibot'
     - 'tests/**'
     - '.github/workflows/pythonapp.yml'
+    - 'tools/dev_image/Dockerfile'
   pull_request:
     paths:
     - '**.py'
     - 'src/kibot'
     - 'tests/**'
     - '.github/workflows/pythonapp.yml'
+    - 'tools/dev_image/Dockerfile'
 
 jobs:
   test:
