@@ -20,7 +20,7 @@ setup(name='kibot',
       # Packages are marked using __init__.py
       packages=find_packages(),
       scripts=['src/kibot', 'src/kiplot'],
-      install_requires=['kiauto', 'pyyaml', 'xlsxwriter', 'colorama', 'requests', 'distutils'],
+      install_requires=['kiauto', 'pyyaml', 'xlsxwriter', 'colorama', 'requests'],
       classifiers=['Development Status :: 5 - Production/Stable',
                    'Environment :: Console',
                    'Intended Audience :: Developers',
