@@ -15,7 +15,7 @@ RUN     sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list  && \
 	apt -y install --no-install-recommends ./*.deb && \
 	curl https://codeload.github.com/INTI-CMNB/KiBot/zip/refs/heads/master --output pp.zip && \
 	unzip pp.zip && \
-	cd KiBot-master ; pip3 install --prefix /usr . ; cd .. && \
+	pip3 install KiBot-master/ && \
 	rm -rf KiBot-master pp.zip && \
 	apt-get -y remove curl wget python3-pip unzip && \
 	apt-get -y autoremove && \
