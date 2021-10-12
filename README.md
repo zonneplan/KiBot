@@ -1995,6 +1995,8 @@ Examples of how to do it can be found [here for GitHub](https://github.com/INTI-
 
 In order to run KiBot on these environments you need a lot of software installed. The usual mechanism to achieve this is using [docker](https://www.docker.com/). Docker images containing KiBot, all the supporting scripts and a corresponding KiCad can be found at [Docker Hub](https://hub.docker.com/) as [setsoft/kicad_auto:latest](https://hub.docker.com/repository/docker/setsoft/kicad_auto). This image is based on [setsoft/kicad_debian:latest](https://hub.docker.com/repository/docker/setsoft/kicad_debian), containing KiCad on Debian GNU/Linux.
 
+If you need to run the current development version of KiBot you can use the following docker image: [setsoft/kicad_auto:dev](https://hub.docker.com/repository/docker/setsoft/kicad_auto).
+
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
 
