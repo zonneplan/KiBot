@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Position files now defaults to use the auxiliar origin as KiCad.
   Can be disabled to use absolute coordinates. (#87)
+- Board View: flipped output. (#89)
+- Board View: problems with netnames using spaces. (#90)
 
 ## [0.11.0] - 2021-04-25
 ### Added
