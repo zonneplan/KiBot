@@ -79,7 +79,7 @@ def convert(pcb, brd):
     for net_item in net_items:
         brd.write("{code} {name}\n"
                   .format(code=net_item.GetNet(),
-                          name=net_item.GetNetname()))
+                          name=net_item.GetNetname().replace(" ", u"\u00A0")))
     brd.write("\n")
 
     # Parts
