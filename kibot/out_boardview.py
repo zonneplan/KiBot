@@ -33,9 +33,9 @@ def coord(nanometers):
 
 def y_coord(obj, maxy, y):
     if obj.IsFlipped():
-        return coord(maxy - y)
-    else:
         return coord(y)
+    else:
+        return coord(maxy - y)
 
 
 def pad_sort_key(name):
