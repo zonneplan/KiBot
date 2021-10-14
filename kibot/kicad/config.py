@@ -213,6 +213,8 @@ class KiConf(object):
                 logger.debug('Detected KICAD_SYMBOL_DIR="{}"'.format(sym_dir))
             else:
                 logger.warning(W_NOLIBS + 'Unable to find KiCad libraries')
+        # If we couldn't get KISYS3DMOD from configuration and KISYS3DMOD isn't defined in the environment
+        # OR the 3D config dir is missing.
         if (('KISYS3DMOD' not in KiConf.kicad_env and 'KISYS3DMOD' not in os.environ) or
            (cfg is not None and not os.path.isdir(cfg.replace(KICAD_COMMON, '3d')))):
             ki_sys_3d_mod = None
