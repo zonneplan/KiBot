@@ -2,6 +2,11 @@
 kibot:
   version: 1
 
+global:
+  filters:
+    - number: 10
+      regex: '3D'
+
 filters:
   - name: 'no_inductor'
     comment: 'Inductors removed'

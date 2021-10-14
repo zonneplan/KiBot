@@ -6,6 +6,8 @@ global:
   filters:
     - number: 43
       regex: FooBar
+    - number: 10
+      regex: '3D'
 
 filters:
   - name: 'no_inductor'
