@@ -131,14 +131,14 @@ class KiConf(object):
         logger.warning(W_NOCONFIG + 'Unable to find KiCad configuration file ({})'.format(cfg))
         return None
 
-    def guess_symbol_dir():
+    def guess_kicad_data_dir(data_dir, env_var):
         """ Tries to figure out where libraries are.
             Only used if we failed to find the kicad_common file. """
-        dir = os.environ.get('KICAD_SYMBOL_DIR')
+        dir = os.environ.get(env_var)
         if dir and os.path.isdir(dir):
             return dir
         system = platform.system()
-        share = os.path.join('share', 'kicad', 'library')
+        share = os.path.join('share', 'kicad', data_dir)
         if system == 'Linux':
             scheme_names = sysconfig.get_scheme_names()
             # Try in local dir
@@ -152,7 +152,7 @@ class KiConf(object):
                 if os.path.isdir(dir):
                     return dir
         elif system == 'Darwin':  # pragma: no cover (Darwin)
-            app_data = os.path.join('Library', 'Application Support', 'kicad', 'library')
+            app_data = os.path.join('Library', 'Application Support', 'kicad', data_dir)
             home = os.environ.get('HOME')
             if home:
                 dir = os.path.join(home, app_data)
@@ -169,10 +169,16 @@ class KiConf(object):
             if os.path.isdir(dir):
                 return dir
             username = os.environ.get('username')
-            dir = os.path.join('C:', 'Users', username, 'Documents', 'KiCad', 'library')
+            dir = os.path.join('C:', 'Users', username, 'Documents', 'KiCad', data_dir)
             if os.path.isdir(dir):
                 return dir
         return None
+
+    def guess_symbol_dir():
+        return KiConf.guess_kicad_data_dir('library', 'KICAD_SYMBOL_DIR')
+
+    def guess_3d_dir():
+        return KiConf.guess_kicad_data_dir(os.path.join('modules', 'packages3d'), 'KISYS3DMOD')
 
     def load_kicad_common():
         # Try to figure out KiCad configuration file
@@ -207,6 +213,19 @@ class KiConf(object):
                 logger.debug('Detected KICAD_SYMBOL_DIR="{}"'.format(sym_dir))
             else:
                 logger.warning(W_NOLIBS + 'Unable to find KiCad libraries')
+        if (('KISYS3DMOD' not in KiConf.kicad_env and 'KISYS3DMOD' not in os.environ) or
+           (cfg is not None and not os.path.isdir(cfg.replace(KICAD_COMMON, '3d')))):
+            ki_sys_3d_mod = None
+            try:
+                ki_sys_3d_mod = KiConf.kicad_env['KISYS3DMOD']
+            except KeyError:
+                ki_sys_3d_mod = KiConf.guess_3d_dir()
+            if ki_sys_3d_mod is not None:
+                os.environ['KISYS3DMOD'] = ki_sys_3d_mod
+                KiConf.kicad_env['KISYS3DMOD'] = ki_sys_3d_mod
+                logger.debug('Exporting KISYS3DMOD="{}"'.format(ki_sys_3d_mod))
+            else:
+                logger.warning(W_NOLIBS + 'Unable to find KiCad 3D modules')
 
     def load_lib_aliases(fname):
         if not os.path.isfile(fname):
