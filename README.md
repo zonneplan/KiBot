@@ -717,6 +717,7 @@ Next time you need this list just use an alias, like this:
         - `ignore_dnf`: [boolean=true] Exclude DNF (Do Not Fit) components.
         - `int_qtys`: [boolean=true] Component quantities are always expressed as integers. Using the ceil() function.
         - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
+        - `merge_both_blank`: [boolean=true] When creating groups two components with empty/missing field will be interpreted as with the same value.
         - `no_conflict`: [list(string)] List of fields where we tolerate conflicts.
                          Use it to avoid undesired warnings.
                          By default the field indicated in `fit_field` and the field `part` are excluded.
