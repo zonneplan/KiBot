@@ -386,6 +386,8 @@ class BoMOptions(BaseOptions):
             """ Show the stats about how many of the components are SMD/THT. You must provide the PCB """
             self.units = 'millimeters'
             """ [millimeters,inches] Units used for the positions ('Footprint X' and 'Footprint Y' columns) """
+            self.sort_style = 'type_value'
+            """ [type_value,type_value_ref,ref] Sorting criteria """
         self._format_example = 'CSV'
         super().__init__()
 
