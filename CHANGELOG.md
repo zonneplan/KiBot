@@ -21,11 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and it contain at least one space, now we try to use the text before the
   space. This helps for cases like "10K 1%".
 - Generic filter: options to match if a field is/isn't defined.
+- Excellon drill: added `route_mode_for_oval_holes` option.
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current
   and/or Power fields aren't grouped together.
   These fields are now part of the default `group_fields`. (#79)
+- JLCPCB example, to match current recommendations
+  (g200kg/kicad-gerberzipper#11)
 
 ### Fixed
 - Position files now defaults to use the auxiliar origin as KiCad.

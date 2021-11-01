@@ -31,11 +31,13 @@ class ExcellonOptions(AnyDrill):
             """ number of digits for integer part of coordinates (0 is auto) """
             self.right_digits = 0
             """ number of digits for mantissa part of coordinates (0 is auto) """
+            self.route_mode_for_oval_holes = True
         self._ext = 'drl'
 
     def _configure_writer(self, board, offset):
         drill_writer = EXCELLON_WRITER(board)
         drill_writer.SetOptions(self.mirror_y_axis, self.minimal_header, offset, self.pth_and_npth_single_file)
+        drill_writer.SetRouteModeForOvalHoles(self.route_mode_for_oval_holes)
         drill_writer.SetFormat(self.metric_units, ZF[self.zeros_format], self.left_digits, self.right_digits)
         self._unified_output = self.pth_and_npth_single_file
         return drill_writer

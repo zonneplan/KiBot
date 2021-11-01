@@ -17,7 +17,7 @@ outputs:
       plot_footprint_values: false
       force_plot_invisible_refs_vals: false
       tent_vias: true
-      use_protel_extensions: false
+      use_protel_extensions: true
       create_gerber_job_file: false
       disable_aperture_macros: true
       gerber_precision: 4.6
@@ -25,6 +25,7 @@ outputs:
       use_gerber_net_attributes: false
       line_width: 0.1
       subtract_mask_from_silk: true
+      inner_extension_pattern: '.gp%n'
     layers:
       - copper
       - F.SilkS
@@ -43,7 +44,9 @@ outputs:
       pth_and_npth_single_file: false
       pth_id: '-PTH'
       npth_id: '-NPTH'
-      metric_units: false
+      metric_units: true
+      map: gerber
+      route_mode_for_oval_holes: false
       output: "%f%i.%x"
 
   - name: JLCPCB
