@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   These fields are now part of the default `group_fields`. (#79)
 - JLCPCB example, to match current recommendations
   (g200kg/kicad-gerberzipper#11)
+- Internal BoM: the field used for variants doesn't produce conflicts. (#100)
 
 ### Fixed
 - Position files now defaults to use the auxiliar origin as KiCad.
