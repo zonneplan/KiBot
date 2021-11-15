@@ -30,9 +30,11 @@ class BaseOutput(RegOutput):
             self.type = ''
             """ Type of output """
             self.dir = '.'
-            """ Output directory for the generated files """
+            """ Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir """
             self.comment = ''
             """ A comment for documentation purposes """
+        if GS.global_dir:
+            self.dir = GS.global_dir
         self._sch_related = False
         self._unkown_is_error = True
         self._done = False
@@ -66,6 +68,8 @@ class BaseOutput(RegOutput):
 
     def config(self, parent):
         super().config(parent)
+        if self.dir[0] == '+':
+            self.dir = (GS.global_dir if GS.global_dir is not None else '.') + self.dir[1:]
         if getattr(self, 'options', None) and isinstance(self.options, type):
             # No options, get the defaults
             self.options = self.options()

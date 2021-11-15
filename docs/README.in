@@ -168,7 +168,7 @@ KiCad 6 uses strings to differentiate errors, use them for the `error` field. To
 ### Default global options
 
 The section `global` contains default global options that affects all the outputs.
-Currently only one option is supported.
+Currently only a few option are supported.
 
 #### Default *output* option
 
@@ -196,6 +196,15 @@ If you want to include the revision you could add the following definition:
 global:
   output: '%f_rev_%r-%i.%x'
 ```
+
+#### Default *dir* option
+
+The default `dir` value for any output is `.`. You can change it here.
+
+Expansion patterns are allowed.
+
+Note that you can use this value as a base for output's `dir` options. In this case the value defined in the `output` must start with `+`.
+In this case the `+` is replaced by the default `dir` value defined here.
 
 #### Default *variant* option
 

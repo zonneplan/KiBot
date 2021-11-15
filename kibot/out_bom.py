@@ -295,7 +295,8 @@ class BoMOptions(BaseOptions):
             self.no_conflict = NoConflict
             """ [list(string)] List of fields where we tolerate conflicts.
                 Use it to avoid undesired warnings.
-                By default the field indicated in `fit_field`, the field used for variants and the field `part` are excluded """
+                By default the field indicated in `fit_field`, the field used for variants and
+                the field `part` are excluded """
             self.aggregate = Aggregate
             """ [list(dict)] Add components from other projects """
             self.ref_id = ''

@@ -169,7 +169,8 @@ outputs:
       merge_both_blank: true
       # [list(string)] List of fields where we tolerate conflicts.
       # Use it to avoid undesired warnings.
-      # By default the field indicated in `fit_field`, the field used for variants and the field `part` are excluded
+      # By default the field indicated in `fit_field`, the field used for variants and
+      # the field `part` are excluded
       no_conflict: ['Config', 'Part']
       # [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`
       no_distributors:
@@ -340,6 +341,7 @@ outputs:
         filename: ''
       # [number=0] number of digits for mantissa part of coordinates (0 is auto)
       right_digits: 0
+      route_mode_for_oval_holes: true
       # [boolean=false] Use the auxiliary axis as origin for coordinates
       use_aux_axis_as_origin: false
       # [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros

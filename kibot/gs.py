@@ -70,6 +70,7 @@ class GS(object):
     #  after defining its own options to allow Optionable do the overwrite.
     global_from_cli = {}
     global_output = None
+    global_dir = None
     global_variant = None
     global_kiauto_wait_start = None
     global_kiauto_time_out_scale = None

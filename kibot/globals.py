@@ -17,6 +17,8 @@ class Globals(FiltersOptions):
         with document:
             self.output = ''
             """ Default pattern for output file names """
+            self.dir = ''
+            """ Default pattern for the output directories """
             self.variant = ''
             """ Default variant to apply to all outputs """
             self.kiauto_wait_start = 0
@@ -40,6 +42,7 @@ class Globals(FiltersOptions):
     def config(self, parent):
         super().config(parent)
         GS.global_output = self.set_global(GS.global_output, self.output, 'output')
+        GS.global_dir = self.set_global(GS.global_dir, self.dir, 'dir')
         GS.global_variant = self.set_global(GS.global_variant, self.variant, 'variant')
         GS.global_kiauto_wait_start = self.set_global(GS.global_kiauto_wait_start, self.kiauto_wait_start, 'kiauto_wait_start')
         if GS.global_kiauto_wait_start and int(GS.global_kiauto_wait_start) != GS.global_kiauto_wait_start:

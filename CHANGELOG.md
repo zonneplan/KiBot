@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   space. This helps for cases like "10K 1%".
 - Generic filter: options to match if a field is/isn't defined.
 - Excellon drill: added `route_mode_for_oval_holes` option.
+- Default global `dir` option.
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current
