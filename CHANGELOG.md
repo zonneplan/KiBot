@@ -42,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (INTI-CMNB/kibot_variants_arduprog#4)
 - Makefile: %VALUE not expanded in the directory targets.
 - KiCost variants: empty DNF fields shouldn't be excluded. (#101)
+- KiCost variants: problems when setting a field in a variant that doesn't
+  exist when no variant is selected. (#105)
 
 
 ## [0.11.0] - 2021-04-25

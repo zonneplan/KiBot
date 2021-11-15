@@ -726,6 +726,15 @@ class SchematicField(object):
 
     def __init__(self):
         super().__init__()
+        self.horizontal = True  # H -> True, V -> False
+        self.x = 0
+        self.y = 0
+        self.size = 50
+        self.flags = '0001'
+        self.hjustify = 'C'
+        self.vjustify = 'C'
+        self.italic = 'N'
+        self.bold = 'N'
 
     @staticmethod
     def parse(line, f):
