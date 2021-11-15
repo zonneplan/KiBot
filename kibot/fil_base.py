@@ -284,8 +284,9 @@ class BaseFilter(RegFilter):
         o_tree = {'name': name}
         o_tree['type'] = 'generic'
         o_tree['comment'] = 'Internal filter for KiCost `dnp` field'
-        # dnp = 0 is included, other dnp values are excluded
-        o_tree['exclude_any'] = [{'column': 'dnp', 'regex': r'^\s*0(\.0*)?\s*$', 'invert': True, 'skip_if_no_field': True}]
+        # dnp = 0 and empty are included, other dnp values are excluded
+        o_tree['exclude_any'] = [{'column': 'dnp', 'regex': r'^((\s*0(\.0*)?\s*)|(\s*))$', 'invert': True,
+                                  'skip_if_no_field': True}]
         return o_tree
 
     @staticmethod
