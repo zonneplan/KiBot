@@ -424,7 +424,7 @@ def get_out_targets(outputs, ori_names, targets, dependencies, comments):
         for out in outputs:
             name = name2make(out.name)
             ori_names[name] = out.name
-            tg = out.get_targets(os.path.join(GS.out_dir, out.dir))
+            tg = out.get_targets(os.path.join(GS.out_dir, out.expand_dirname(out.dir)))
             if not tg:
                 continue
             targets[name] = [adapt_file_name(fn) for fn in tg]

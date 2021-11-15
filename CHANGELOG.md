@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Schematic load: problems with fields containing double quotes. (#98)
 - `--list`: problems with layers and fields specific for the project.
   (INTI-CMNB/kibot_variants_arduprog#4)
+- Makefile: %VALUE not expanded in the directory targets.
 
 
 ## [0.11.0] - 2021-04-25
