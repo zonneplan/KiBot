@@ -29,7 +29,7 @@ class BaseOutput(RegOutput):
             """ Used to identify this particular output definition """
             self.type = ''
             """ Type of output """
-            self.dir = '.'
+            self.dir = './'
             """ Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir """
             self.comment = ''
             """ A comment for documentation purposes """
@@ -69,7 +69,7 @@ class BaseOutput(RegOutput):
     def config(self, parent):
         super().config(parent)
         if self.dir[0] == '+':
-            self.dir = (GS.global_dir if GS.global_dir is not None else '.') + self.dir[1:]
+            self.dir = (GS.global_dir if GS.global_dir is not None else './') + self.dir[1:]
         if getattr(self, 'options', None) and isinstance(self.options, type):
             # No options, get the defaults
             self.options = self.options()

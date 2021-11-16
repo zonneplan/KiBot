@@ -633,7 +633,7 @@ Next time you need this list just use an alias, like this:
                  The output can be loaded using Open Board View (https://openboardview.org/)
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `boardview` output.
       * Valid keys:
@@ -650,7 +650,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `bom` output.
       * Valid keys:
@@ -764,7 +764,7 @@ Next time you need this list just use an alias, like this:
                  This is used to generate groups of files in compressed file format.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `compress` output.
       * Valid keys:
@@ -786,7 +786,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -830,7 +830,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `excellon` output.
       * Valid keys:
@@ -863,7 +863,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `gerb_drill` output.
       * Valid keys:
@@ -887,7 +887,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -936,7 +936,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -982,7 +982,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the InteractiveHtmlBom plug-in (pcbnew).
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `ibom` output.
       * Valid keys:
@@ -1044,7 +1044,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `kibom` output.
       * Valid keys:
@@ -1135,7 +1135,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the KiCost plug-in (eeschema).
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `kicost` output.
       * Valid keys:
@@ -1172,7 +1172,7 @@ Next time you need this list just use an alias, like this:
                  Can also render the components if the 2D models are available
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pcbdraw` output.
       * Valid keys:
@@ -1218,7 +1218,7 @@ Next time you need this list just use an alias, like this:
         - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
                      Use ${filename(LAYER)} for the file corresponding to LAYER.
         - `output`: [string='Custom_report.txt'] File name for the custom report.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                     A short-cut to use for simple cases where a variant is an overkill.
     - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
@@ -1278,7 +1278,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'File/Print' menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to include in the PDF.
       * Valid keys:
@@ -1308,7 +1308,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'File/Print' menu in eeschema.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_sch_print` output.
       * Valid keys:
@@ -1324,7 +1324,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `position` output.
       * Valid keys:
@@ -1349,7 +1349,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1399,7 +1399,7 @@ Next time you need this list just use an alias, like this:
                  Is just a tweaked version of the original where you can look at the results.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `sch_variant` output.
       * Valid keys:
@@ -1414,7 +1414,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'File/Export/STEP' menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `step` output.
       * Valid keys:
@@ -1438,7 +1438,7 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1480,7 +1480,7 @@ Next time you need this list just use an alias, like this:
                  This is a format to document your schematic.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='.'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `svg_sch_print` output.
       * Valid keys:
