@@ -4,8 +4,8 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-from shutil import copy2
-from tempfile import NamedTemporaryFile
+from shutil import copy2, rmtree
+from tempfile import mkdtemp
 from .pre_base import BasePreFlight
 from .error import (KiPlotConfigurationError)
 from .gs import (GS)
@@ -79,9 +79,9 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         self.remove_paste_and_glue(board, comps_hash)
         if self.hide_excluded:
             self.remove_fab(board, comps_hash)
-        # Save the PCB to a temporal file
-        with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
-            fname = f.name
+        # Save the PCB to a temporal dir
+        pcb_dir = mkdtemp(prefix='tmp-kibot-pdf_pcb_print-')
+        fname = os.path.join(pcb_dir, GS.pcb_basename+'.kicad_pcb')
         logger.debug('Storing filtered PCB to `{}`'.format(fname))
         GS.board.Save(fname)
         # Copy the project: avoids warnings, could carry some options
@@ -90,14 +90,14 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         self.restore_paste_and_glue(board, comps_hash)
         if self.hide_excluded:
             self.restore_fab(board, comps_hash)
-        return fname, fproj
+        return fname, pcb_dir
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
 
     def run(self, output):
         super().run(self._layers)
-        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.5.2')
+        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.5.10')
         # Output file name
         cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):
@@ -111,7 +111,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             cmd.append('--separate')
         if self.mirror:
             cmd.append('--mirror')
-        board_name, proj_name = self.filter_components(GS.board)
+        board_name, board_dir = self.filter_components(GS.board)
         cmd.extend([board_name, os.path.dirname(output)])
         cmd, video_remove = add_extra_options(cmd)
         # Add the layers
@@ -119,10 +119,9 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         # Execute it
         ret = exec_with_retry(cmd)
         # Remove the temporal PCB
-        if board_name != GS.pcb_file:
-            os.remove(board_name)
-            if proj_name:
-                os.remove(proj_name)
+        if board_dir:
+            logger.debug('Removing temporal variant dir `{}`'.format(board_dir))
+            rmtree(board_dir)
         if ret:
             logger.error(CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)
             exit(PDF_PCB_PRINT)
