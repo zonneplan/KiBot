@@ -12,6 +12,7 @@ outputs:
     dir: .
     options:
       output_name: PCB_Bot.pdf
+      scaling: 0
     layers:
       - layer: B.Cu
 
