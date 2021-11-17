@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Default global `dir` option.
 - Pattern to expand the variant name: %V
 - PCB PDF Print: mechanism to change the block title. (#102)
+- 3D view render
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

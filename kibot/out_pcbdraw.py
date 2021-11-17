@@ -4,14 +4,12 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-import re
 from tempfile import (NamedTemporaryFile)
 # Here we import the whole module to make monkeypatch work
 import subprocess
 import shutil
 from .misc import PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK
 from .kiplot import check_script
-from .error import KiPlotConfigurationError
 from .gs import (GS)
 from .optionable import Optionable
 from .out_base import VariantOptions
@@ -24,8 +22,6 @@ CONVERT = 'convert'
 
 
 class PcbDrawStyle(Optionable):
-    _color_re = re.compile(r"#[A-Fa-f0-9]{6}$")
-
     def __init__(self):
         super().__init__()
         with document:
@@ -50,21 +46,9 @@ class PcbDrawStyle(Optionable):
             self.highlight_padding = 1.5
             """ [0,1000] how much the highlight extends around the component [mm] """
 
-    def validate_color(self, name):
-        color = getattr(self, name)
-        if not self._color_re.match(color):
-            raise KiPlotConfigurationError('Invalid color for `{}` use `#rrggbb` with hex digits'.format(name))
-
     def config(self, parent):
         super().config(parent)
-        self.validate_color('board')
-        self.validate_color('copper')
-        self.validate_color('board')
-        self.validate_color('silk')
-        self.validate_color('pads')
-        self.validate_color('outline')
-        self.validate_color('clad')
-        self.validate_color('vcut')
+        self.validate_colors(['board', 'copper', 'board', 'silk', 'pads', 'outline', 'clad', 'vcut'])
         # Not implemented but required
         self.highlight_offset = 0
 

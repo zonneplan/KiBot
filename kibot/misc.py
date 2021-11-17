@@ -34,6 +34,7 @@ PCBDRAW_ERR = 20
 SVG_SCH_PRINT = 21
 CORRUPTED_SCH = 22
 WRONG_INSTALL = 23
+RENDER_3D_ERR = 24
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
@@ -58,13 +59,16 @@ error_level_to_name = ['NONE',
                        'SVG_SCH_PRINT',
                        'CORRUPTED_SCH',
                        'WRONG_INSTALL',
+                       'RENDER_3D_ERR',
                        ]
 CMD_EESCHEMA_DO = 'eeschema_do'
-URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/kicad-automation-scripts'
+URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/KiAuto'
 CMD_PCBNEW_RUN_DRC = 'pcbnew_do'
 URL_PCBNEW_RUN_DRC = URL_EESCHEMA_DO
-CMD_PCBNEW_PRINT_LAYERS = 'pcbnew_do'
+CMD_PCBNEW_PRINT_LAYERS = CMD_PCBNEW_RUN_DRC
 URL_PCBNEW_PRINT_LAYERS = URL_EESCHEMA_DO
+CMD_PCBNEW_3D = CMD_PCBNEW_RUN_DRC
+URL_PCBNEW_3D = URL_EESCHEMA_DO
 CMD_KIBOM = 'KiBOM_CLI.py'
 URL_KIBOM = 'https://github.com/INTI-CMNB/KiBoM'
 CMD_IBOM = 'generate_interactive_bom.py'
