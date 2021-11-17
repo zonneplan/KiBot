@@ -179,6 +179,8 @@ class VariantOptions(BaseOptions):
 
     def cross_modules(self, board, comps_hash):
         """ Draw a cross in all 'not fitted' modules using *.Fab layer """
+        if comps_hash is None:
+            return
         # Cross the affected components
         ffab = board.GetLayerID('F.Fab')
         bfab = board.GetLayerID('B.Fab')
@@ -214,6 +216,8 @@ class VariantOptions(BaseOptions):
 
     def uncross_modules(self, board, comps_hash):
         """ Undo the crosses in *.Fab layer """
+        if comps_hash is None:
+            return
         # Undo the drawings
         for m in board.GetModules():
             ref = m.GetReference()
@@ -230,6 +234,8 @@ class VariantOptions(BaseOptions):
 
     def remove_paste_and_glue(self, board, comps_hash):
         """ Remove from solder paste layers the filtered components. """
+        if comps_hash is None:
+            return
         exclude = LSET()
         fpaste = board.GetLayerID('F.Paste')
         bpaste = board.GetLayerID('B.Paste')
@@ -279,6 +285,8 @@ class VariantOptions(BaseOptions):
         return exclude
 
     def restore_paste_and_glue(self, board, comps_hash):
+        if comps_hash is None:
+            return
         for m in board.GetModules():
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
@@ -296,6 +304,8 @@ class VariantOptions(BaseOptions):
 
     def remove_fab(self, board, comps_hash):
         """ Remove from Fab the excluded components. """
+        if comps_hash is None:
+            return
         ffab = board.GetLayerID('F.Fab')
         bfab = board.GetLayerID('B.Fab')
         old_ffab = []
@@ -321,10 +331,27 @@ class VariantOptions(BaseOptions):
         self.bfab = bfab
 
     def restore_fab(self, board, comps_hash):
+        if comps_hash is None:
+            return
         for gi in self.old_ffab:
             gi.SetLayer(self.ffab)
         for gi in self.old_bfab:
             gi.SetLayer(self.bfab)
+
+    def set_title(self, title):
+        self.old_title = None
+        if title:
+            tb = GS.board.GetTitleBlock()
+            self.old_title = tb.GetTitle()
+            text = self.expand_filename_pcb(title)
+            if text[0] == '+':
+                text = self.old_title+text[1:]
+            tb.SetTitle(text)
+
+    def restore_title(self):
+        self.old_title = None
+        if self.old_title is not None:
+            GS.board.GetTitleBlock().SetTitle(self.old_title)
 
     def run(self, output_dir):
         """ Makes the list of components available """

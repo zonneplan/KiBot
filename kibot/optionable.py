@@ -194,6 +194,13 @@ class Optionable(object):
             return self.variant.file_id
         return ''
 
+    def _find_variant_name(self):
+        """ Returns the name for the current variant.
+            If no variant is defined an empty string is returned. """
+        if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'name'):
+            return self.variant.name
+        return ''
+
     def expand_filename_pcb(self, name):
         """ Expands %* values in filenames.
             Uses data from the PCB. """
@@ -210,6 +217,7 @@ class Optionable(object):
             name = name.replace('%r', GS.pcb_rev)
             name = name.replace('%T', GS.time)
             name = name.replace('%v', self._find_variant() if self else '')
+            name = name.replace('%V', self._find_variant_name() if self else '')
             name = name.replace('%x', self._expand_ext)
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')
@@ -232,6 +240,7 @@ class Optionable(object):
             name = name.replace('%r', GS.sch_rev)
             name = name.replace('%T', GS.time)
             name = name.replace('%v', self._find_variant() if self else '')
+            name = name.replace('%V', self._find_variant_name() if self else '')
             name = name.replace('%x', self._expand_ext)
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')

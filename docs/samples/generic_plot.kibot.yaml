@@ -898,6 +898,9 @@ outputs:
       scaling: 1.0
       # [boolean=false] Print layers in separated pages
       separated: false
+      # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+      # If it starts with `+` the text is concatenated
+      title: ''
       # [string=''] Board variant to apply
       variant: ''
     layers: all

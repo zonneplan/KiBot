@@ -107,3 +107,6 @@ class BasePreFlight(Registrable):
 
     def _find_variant(self):
         return ''
+
+    def _find_variant_name(self):
+        return ''

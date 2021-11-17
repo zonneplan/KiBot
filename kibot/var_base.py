@@ -21,7 +21,7 @@ class BaseVariant(RegVariant):
             self.comment = ''
             """ A comment for documentation purposes """
             self.file_id = ''
-            """ Text to use as the """
+            """ Text to use as the replacement for %v expansion """
             # * Filters
             self.pre_transform = Optionable
             """ [string|list(string)=''] Name of the filter to transform fields before applying other filters.

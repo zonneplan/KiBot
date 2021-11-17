@@ -43,6 +43,9 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             """ Print mirrored (X axis inverted). ONLY for KiCad 6 """
             self.hide_excluded = False
             """ Hide components in the Fab layer that are marked as excluded by a variant """
+            self.title = ''
+            """ Text used to replace the sheet title. %VALUE expansions are allowed.
+                If it starts with `+` the text is concatenated """
         super().__init__()
         self._expand_ext = 'pdf'
 
@@ -71,8 +74,8 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         copy2(pro_name, pro_copy)
         return pro_copy
 
-    def filter_components(self, board):
-        if not self._comps:
+    def filter_components(self, board, force_copy):
+        if not self._comps and not force_copy:
             return GS.pcb_file, None
         comps_hash = self.get_refs_hash()
         self.cross_modules(board, comps_hash)
@@ -85,7 +88,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         logger.debug('Storing filtered PCB to `{}`'.format(fname))
         GS.board.Save(fname)
         # Copy the project: avoids warnings, could carry some options
-        fproj = self._copy_project(fname)
+        self._copy_project(fname)
         self.uncross_modules(board, comps_hash)
         self.restore_paste_and_glue(board, comps_hash)
         if self.hide_excluded:
@@ -111,13 +114,15 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             cmd.append('--separate')
         if self.mirror:
             cmd.append('--mirror')
-        board_name, board_dir = self.filter_components(GS.board)
+        self.set_title(self.title)
+        board_name, board_dir = self.filter_components(GS.board, self.title != '')
         cmd.extend([board_name, os.path.dirname(output)])
         cmd, video_remove = add_extra_options(cmd)
         # Add the layers
         cmd.extend([la.layer for la in self._layers])
         # Execute it
         ret = exec_with_retry(cmd)
+        self.restore_title()
         # Remove the temporal PCB
         if board_dir:
             logger.debug('Removing temporal variant dir `{}`'.format(board_dir))

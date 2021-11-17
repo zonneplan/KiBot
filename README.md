@@ -198,16 +198,18 @@ You can always choose the file name for a particular output.
 
 The pattern uses the following expansions:
 
-- **%f** original pcb/sch file name without extension.
-- **%F** original pcb/sch file name without extension. Including the directory part of the name.
-- **%p** pcb/sch title from pcb metadata.
 - **%c** company from pcb/sch metadata.
-- **%r** revision from pcb/sch metadata.
 - **%d** pcb/sch date from metadata if available, file modification date otherwise.
 - **%D** date the script was started.
-- **%T** time the script was started.
+- **%f** original pcb/sch file name without extension.
+- **%F** original pcb/sch file name without extension. Including the directory part of the name.
 - **%i** a contextual ID, depends on the output type.
+- **%p** pcb/sch title from pcb metadata.
+- **%r** revision from pcb/sch metadata.
+- **%T** time the script was started.
 - **%x** a suitable extension for the output type.
+- **%v** the `file_id` of the current variant.
+- **%V** the `name` of the current variant.
 
 They are compatible with the ones used by IBoM.
 The default value for `global.output` is `%f-%i.%x`.
@@ -1299,6 +1301,8 @@ Next time you need this list just use an alias, like this:
         - `plot_sheet_reference`: [boolean=true] Include the title-block.
         - `scaling`: [number=1.0] Scale factor (0 means autoscaling).
         - `separated`: [boolean=false] Print layers in separated pages.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
 
 * PDF Schematic Print (Portable Document Format)
