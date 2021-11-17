@@ -64,6 +64,12 @@ class Render3DOptions(Base3DOptions):
             self.zoom = 0
             """ Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                 Same result as using the mouse wheel in the 3D viewer """
+            self.width = 1280
+            """ Image width (aprox.) """
+            self.height = 720
+            """ Image height (aprox.) """
+            self.orthographic = False
+            """ Enable the orthographic projection mode (top view looks flat) """
         super().__init__()
         self._expand_ext = 'png'
 
@@ -79,7 +85,8 @@ class Render3DOptions(Base3DOptions):
         super().run(output)
         check_script(CMD_PCBNEW_3D, URL_PCBNEW_3D, '1.5.11')
         # Base command with overwrite
-        cmd = [CMD_PCBNEW_3D, '3d_view', '--output_name', output]
+        cmd = [CMD_PCBNEW_3D, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),
+               '3d_view', '--output_name', output]
         # Add user options
         if not self.no_virtual:
             cmd.append('--virtual')
@@ -99,6 +106,8 @@ class Render3DOptions(Base3DOptions):
             cmd.extend(['--wait_rt', str(self.wait_ray_tracing)])
         if self.ray_tracing:
             cmd.append('--ray_tracing')
+        if self.orthographic:
+            cmd.append('--orthographic')
         if self.view != 'z':
             cmd.extend(['--view', self.view])
         # The board
