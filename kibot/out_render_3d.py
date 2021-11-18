@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
+from glob import glob
 from shutil import rmtree
 from .misc import CMD_PCBNEW_3D, URL_PCBNEW_3D, RENDER_3D_ERR
 from .gs import (GS)
@@ -118,7 +119,9 @@ class Render3DOptions(Base3DOptions):
         ret = exec_with_retry(cmd)
         # Remove the temporal PCB
         if board_name != GS.pcb_file:
-            os.remove(board_name)
+            # KiCad likes to create project files ...
+            for f in glob(board_name.replace('.kicad_pcb', '.*')):
+                os.remove(f)
         # Remove the downloaded 3D models
         if self._tmp_dir:
             rmtree(self._tmp_dir)
