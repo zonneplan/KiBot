@@ -71,6 +71,8 @@ class Render3DOptions(Base3DOptions):
             """ Image height (aprox.) """
             self.orthographic = False
             """ Enable the orthographic projection mode (top view looks flat) """
+            self.id_add = ''
+            """ Text to add to the %i expansion content. To differentiate variations of this output """
         super().__init__()
         self._expand_ext = 'png'
 
@@ -80,7 +82,7 @@ class Render3DOptions(Base3DOptions):
         view = self._views.get(self.view, None)
         if view is not None:
             self.view = view
-        self._expand_id += '_'+self._rviews.get(self.view)
+        self._expand_id += '_'+self._rviews.get(self.view)+self.id_add
 
     def run(self, output):
         super().run(output)
