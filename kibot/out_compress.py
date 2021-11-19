@@ -125,7 +125,7 @@ class CompressOptions(BaseOptions):
                 for out in GS.outputs:
                     if out.name == f.from_output:
                         config_output(out)
-                        files_list = out.get_targets(get_output_dir(out.dir, dry=True))
+                        files_list = out.get_targets(get_output_dir(out.expand_dirname(out.dir), dry=True))
                         break
                 if files_list is None:
                     logger.error('Unknown output `{}` selected in {}'.format(f.from_output, self._parent))
@@ -190,6 +190,9 @@ class Compress(BaseOutput):  # noqa: F821
         with document:
             self.options = CompressOptions
             """ [dict] Options for the `compress` output """
+        # We could need to run targets related to the SCH and/or the PCB.
+        # So we need both things loaded.
+        self._both_related = True
 
     def get_dependencies(self):
         return self.options.get_dependencies()
