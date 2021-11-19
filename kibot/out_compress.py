@@ -190,9 +190,6 @@ class Compress(BaseOutput):  # noqa: F821
         with document:
             self.options = CompressOptions
             """ [dict] Options for the `compress` output """
-        # We could need to run targets related to the SCH and/or the PCB.
-        # So we need both things loaded.
-        self._both_related = True
 
     def get_dependencies(self):
         return self.options.get_dependencies()
