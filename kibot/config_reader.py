@@ -355,6 +355,9 @@ class CfgYamlReader(object):
                 config_error('Unknown section `{}` in config.'.format(k))
         if version is None:
             config_error("YAML config needs `kibot.version`.")
+        # Solve the global variant
+        if GS.global_variant:
+            GS.solved_global_variant = RegOutput.check_variant(GS.global_variant)
         return outputs
 
 

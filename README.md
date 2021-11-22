@@ -209,8 +209,8 @@ The pattern uses the following expansions:
 - **%r** revision from pcb/sch metadata.
 - **%T** time the script was started.
 - **%x** a suitable extension for the output type.
-- **%v** the `file_id` of the current variant.
-- **%V** the `name` of the current variant.
+- **%v** the `file_id` of the current variant, or the global variant if outside a variant scope.
+- **%V** the `name` of the current variant, or the global variant if outside a variant scope.
 
 They are compatible with the ones used by IBoM.
 The default value for `global.output` is `%f-%i.%x`.

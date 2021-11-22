@@ -72,6 +72,7 @@ class GS(object):
     global_output = None
     global_dir = None
     global_variant = None
+    solved_global_variant = None
     global_kiauto_wait_start = None
     global_kiauto_time_out_scale = None
     global_opts_class = None

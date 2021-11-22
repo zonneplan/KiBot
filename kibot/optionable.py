@@ -190,21 +190,29 @@ class Optionable(object):
 
     def _find_variant(self):
         """ Returns the text to add for the current variant.
+            Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
         if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'file_id'):
             return self.variant.file_id
+        if GS.solved_global_variant:
+            return GS.solved_global_variant.file_id
         return ''
 
     def _find_variant_name(self):
         """ Returns the name for the current variant.
+            Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
         if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'name'):
             return self.variant.name
+        if GS.solved_global_variant:
+            return GS.solved_global_variant.name
         return ''
 
     def expand_filename_pcb(self, name):
         """ Expands %* values in filenames.
             Uses data from the PCB. """
+        if GS.debug_level > 3:
+            logger.debug('Expanding `{}` in PCB context for {} parent: {}'.format(name, self, self._parent))
         if GS.board:
             GS.load_pcb_title_block()
             # Do the replacements
@@ -223,11 +231,15 @@ class Optionable(object):
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')
             name = re.sub(r'[?%*:|"<>]', '_', name)
+        if GS.debug_level > 3:
+            logger.debug('Expanded `{}`'.format(name))
         return name
 
     def expand_filename_sch(self, name):
         """ Expands %* values in filenames.
             Uses data from the SCH. """
+        if GS.debug_level > 3:
+            logger.debug('Expanding `{}` in sch context for {}'.format(name, self))
         if GS.sch_file:
             GS.load_sch_title_block()
             # Do the replacements
@@ -246,6 +258,8 @@ class Optionable(object):
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')
             name = re.sub(r'[?%*:|"<>]', '_', name)
+        if GS.debug_level > 3:
+            logger.debug('Expanded `{}`'.format(name))
         return name
 
     @staticmethod
