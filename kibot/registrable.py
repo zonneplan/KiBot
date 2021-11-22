@@ -46,10 +46,6 @@ class RegOutput(Optionable, Registrable):
         super().__init__()
 
     @staticmethod
-    def set_variants(variants):
-        RegOutput._def_variants = variants
-
-    @staticmethod
     def add_variants(variants):
         RegOutput._def_variants.update(variants)
 
@@ -60,10 +56,6 @@ class RegOutput(Optionable, Registrable):
     @staticmethod
     def get_variant(name):
         return RegOutput._def_variants[name]
-
-    @staticmethod
-    def set_filters(filters):
-        RegOutput._def_filters = filters
 
     @staticmethod
     def add_filters(filters):

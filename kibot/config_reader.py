@@ -346,9 +346,9 @@ class CfgYamlReader(object):
             elif k == 'import':
                 outputs.extend(self._parse_import(v, fstream.name))
             elif k == 'variants':
-                RegOutput.set_variants(self._parse_variants(v))
+                RegOutput.add_variants(self._parse_variants(v))
             elif k == 'filters':
-                RegOutput.set_filters(self._parse_filters(v))
+                RegOutput.add_filters(self._parse_filters(v))
             elif k == 'outputs':
                 outputs.extend(self._parse_outputs(v))
             else:
