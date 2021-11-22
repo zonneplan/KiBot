@@ -281,8 +281,8 @@ def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_
         rc = r_info_start
         if not cfg.xlsx.hide_stats_info:
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Groups:", cfg.n_groups)
-            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", cfg.n_total)
-            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", cfg.n_fitted)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", cfg.total_str)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", cfg.fitted_str)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", cfg.number)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", cfg.n_build)
     else:
@@ -297,8 +297,8 @@ def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_
         rc = r_info_start
         if not cfg.xlsx.hide_stats_info:
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Groups:", cfg.n_groups)
-            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", cfg.n_total)
-            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", cfg.n_fitted)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", cfg.total_str)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", cfg.fitted_str)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", cfg.number)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", cfg.n_build)
         # Individual stats
@@ -322,8 +322,8 @@ def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_
             rc = r_info_start
             if not cfg.xlsx.hide_stats_info:
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Groups:", prj.comp_groups)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", prj.comp_total)
-                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", prj.comp_fitted)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Component Count:", prj.total_str)
+                rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Fitted Components:", prj.fitted_str)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Number of PCBs:", prj.number)
                 rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Total Components:", prj.comp_build)
             r_info_start += 5

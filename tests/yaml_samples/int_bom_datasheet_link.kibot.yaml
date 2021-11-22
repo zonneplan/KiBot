@@ -11,6 +11,7 @@ outputs:
       html:
         datasheet_as_link: 'Part'
       output: '%f.%x'
+      count_smd_tht: true
       columns:
         - References
         - Part

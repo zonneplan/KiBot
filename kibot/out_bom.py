@@ -9,7 +9,7 @@ This is somehow compatible with KiBoM.
 """
 import os
 from .gs import GS
-from .misc import W_BADFIELD
+from .misc import W_BADFIELD, W_NEEDSPCB
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
@@ -309,6 +309,8 @@ class BoMOptions(BaseOptions):
             """ [string|list(string)] Include this distributors list. Default is all the available """
             self.no_distributors = Optionable
             """ [string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
+            self.count_smd_tht = False
+            """ Show the stats about how many of the components are SMD/THT. You must provide the PCB """
         self._format_example = 'CSV'
         super().__init__()
 
@@ -509,6 +511,9 @@ class BoMOptions(BaseOptions):
         # Get the components list from the schematic
         comps = GS.sch.get_components()
         get_board_comps_data(comps)
+        if self.count_smd_tht and not GS.pcb_file:
+            logger.warning(W_NEEDSPCB+"`count_smd_tht` is enabled, but no PCB provided")
+            self.count_smd_tht = False
         # Apply the reference prefix
         for c in comps:
             c.ref = self.ref_id+c.ref

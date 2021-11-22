@@ -291,8 +291,8 @@ def write_stats(html, cfg):
         html.write(' <td class="cell-stats">\n')
         if not cfg.html.hide_stats_info:
             html.write("   <b>Component Groups</b>: {}<br>\n".format(cfg.n_groups))
-            html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(cfg.n_total))
-            html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(cfg.n_fitted))
+            html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(cfg.total_str))
+            html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(cfg.fitted_str))
             html.write("   <b>Number of PCBs</b>: {}<br>\n".format(cfg.number))
             html.write("   <b>Total Components</b>: {t} (for {n} PCBs)<br>\n".format(n=cfg.number, t=cfg.n_build))
         html.write(' </td>\n')
@@ -309,8 +309,8 @@ def write_stats(html, cfg):
         html.write(' <td class="cell-stats">\n')
         if not cfg.html.hide_stats_info:
             html.write("   <b>Component Groups</b>: {}<br>\n".format(cfg.n_groups))
-            html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(cfg.n_total))
-            html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(cfg.n_fitted))
+            html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(cfg.total_str))
+            html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(cfg.fitted_str))
             html.write("   <b>Number of PCBs</b>: {}<br>\n".format(cfg.number))
             html.write("   <b>Total Components</b>: {t} (for {n} PCBs)<br>\n".format(n=cfg.number, t=cfg.n_build))
         html.write(' </td>\n')
@@ -336,8 +336,8 @@ def write_stats(html, cfg):
             html.write(' <td class="cell-stats">\n')
             if not cfg.html.hide_stats_info:
                 html.write("   <b>Component Groups</b>: {}<br>\n".format(prj.comp_groups))
-                html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(prj.comp_total))
-                html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(prj.comp_fitted))
+                html.write("   <b>Component Count</b>: {} (per PCB)<br>\n\n".format(prj.total_str))
+                html.write("   <b>Fitted Components</b>: {} (per PCB)<br>\n".format(prj.fitted_str))
                 html.write("   <b>Number of PCBs</b>: {}<br>\n".format(prj.number))
                 html.write("   <b>Total Components</b>: {t} (for {n} PCBs)<br>\n".format(n=prj.number, t=prj.comp_build))
             html.write(' </td>\n')

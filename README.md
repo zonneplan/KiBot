@@ -689,6 +689,7 @@ Next time you need this list just use an alias, like this:
             - `join`: [list(string)|string=''] List of fields to join to this column.
             - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
             - `name`: [string=''] Name to display in the header. The field is used when empty.
+        - `count_smd_tht`: [boolean=false] Show the stats about how many of the components are SMD/THT. You must provide the PCB.
         - `csv`: [dict] Options for the CSV, TXT and TSV formats.
           * Valid keys:
             - `hide_pcb_info`: [boolean=false] Hide project information.

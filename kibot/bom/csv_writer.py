@@ -25,8 +25,8 @@ def write_stats(writer, cfg):
         if not cfg.csv.hide_stats_info:
             writer.writerow(["Statistics:"])
             writer.writerow(["Component Groups:", cfg.n_groups])
-            writer.writerow(["Component Count:", cfg.n_total])
-            writer.writerow(["Fitted Components:", cfg.n_fitted])
+            writer.writerow(["Component Count:", cfg.total_str])
+            writer.writerow(["Fitted Components:", cfg.fitted_str])
             writer.writerow(["Number of PCBs:", cfg.number])
             writer.writerow(["Total Components:", cfg.n_build])
     else:
@@ -39,8 +39,8 @@ def write_stats(writer, cfg):
         if not cfg.csv.hide_stats_info:
             writer.writerow(["Global statistics:"])
             writer.writerow(["Component Groups:", cfg.n_groups])
-            writer.writerow(["Component Count:", cfg.n_total])
-            writer.writerow(["Fitted Components:", cfg.n_fitted])
+            writer.writerow(["Component Count:", cfg.total_str])
+            writer.writerow(["Fitted Components:", cfg.fitted_str])
             writer.writerow(["Number of PCBs:", cfg.number])
             writer.writerow(["Total Components:", cfg.n_build])
         # Individual stats
@@ -57,8 +57,8 @@ def write_stats(writer, cfg):
             if not cfg.csv.hide_stats_info:
                 writer.writerow(["Statistics:", prj.sch.title])
                 writer.writerow(["Component Groups:", prj.comp_groups])
-                writer.writerow(["Component Count:", prj.comp_total])
-                writer.writerow(["Fitted Components:", prj.comp_fitted])
+                writer.writerow(["Component Count:", prj.total_str])
+                writer.writerow(["Fitted Components:", prj.fitted_str])
                 writer.writerow(["Number of PCBs:", prj.number])
                 writer.writerow(["Total Components:", prj.comp_build])
 

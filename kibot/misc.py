@@ -206,6 +206,7 @@ W_UNKOUT = '(W067) '
 W_NOFILTERS = '(W068) '
 W_NOVARIANTS = '(W069) '
 W_NOENDLIB = '(W070) '
+W_NEEDSPCB = '(W071) '
 
 
 class Rect(object):

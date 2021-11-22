@@ -26,8 +26,8 @@ def write_xml(filename, groups, headings, head_names, cfg):
     attrib['PCB_Variant'] = cfg.variant.name
     attrib['KiCad_Version'] = cfg.kicad_version
     attrib['Component_Groups'] = str(cfg.n_groups)
-    attrib['Component_Count'] = str(cfg.n_total)
-    attrib['Fitted_Components'] = str(cfg.n_fitted)
+    attrib['Component_Count'] = str(cfg.total_str)
+    attrib['Fitted_Components'] = str(cfg.fitted_str)
     attrib['Number_of_PCBs'] = str(cfg.number)
     attrib['Total_Components'] = str(cfg.n_build)
     if len(cfg.aggregate) == 1:
@@ -42,8 +42,8 @@ def write_xml(filename, groups, headings, head_names, cfg):
             attrib['Schematic{}_Date'.format(n)] = prj.sch.date
             attrib['Schematic{}_ID'.format(n)] = prj.ref_id
             attrib['Component_Groups{}'.format(n)] = str(prj.comp_groups)
-            attrib['Component_Count{}'.format(n)] = str(prj.comp_total)
-            attrib['Fitted_Components{}'.format(n)] = str(prj.comp_fitted)
+            attrib['Component_Count{}'.format(n)] = str(prj.total_str)
+            attrib['Fitted_Components{}'.format(n)] = str(prj.fitted_str)
             attrib['Number_of_PCBs{}'.format(n)] = str(prj.number)
             attrib['Total_Components{}'.format(n)] = str(prj.comp_build)
     xml = ElementTree.Element('KiCad_BOM', attrib=attrib, encoding='utf-8')

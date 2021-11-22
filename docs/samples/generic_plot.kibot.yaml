@@ -99,6 +99,8 @@ outputs:
           level: 0
           # [string=''] Name to display in the header. The field is used when empty
           name: 'Line'
+      # [boolean=false] Show the stats about how many of the components are SMD/THT. You must provide the PCB
+      count_smd_tht: false
       # [dict] Options for the CSV, TXT and TSV formats
       csv:
         # [boolean=false] Hide project information

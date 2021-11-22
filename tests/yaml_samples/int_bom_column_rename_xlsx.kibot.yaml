@@ -9,6 +9,7 @@ outputs:
     dir: BoM
     options:
       format: XLSX
+      count_smd_tht: true
       columns:
         - field: Row
           name: Renglón

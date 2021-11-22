@@ -86,11 +86,13 @@ KIBOM_TEST_COMPONENTS_ALT2 = ['C1-C4', 'R9', 'R10', 'R7', 'R8', 'R1', 'R2', 'R4'
 KIBOM_TEST_EXCLUDE = ['R6']
 KIBOM_TEST_GROUPS = 5
 KIBOM_PRJ_INFO = ['kibom-test', 'default', 'A', '2020-03-12', None]
+LINKS_PRJ_INFO = ['links', 'default', 'A', '2020-03-12', None]
 KIBOM_STATS = [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
                len(KIBOM_TEST_COMPONENTS)+len(KIBOM_TEST_EXCLUDE),
                len(KIBOM_TEST_COMPONENTS),
                1,
                len(KIBOM_TEST_COMPONENTS)]
+LINKS_STATS = [3, '4 (2 SMD/ 2 THT)', '3 (1 SMD/ 2 THT)', 1, 3]
 VARIANTE_PRJ_INFO = ['kibom-variante', 'default', 'A', '2020-03-12', None]
 LINK_HEAD = ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'digikey_alt#', 'manf#']
 LINKS_COMPONENTS = ['J1', 'J2', 'R1']
@@ -774,6 +776,7 @@ def test_int_bom_column_rename_xlsx(test_dir):
     assert header == KIBOM_RENAME_HEAD
     ref_column = header.index(REF_COLUMN_NAME_R)
     check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
+    check_head_xlsx(sh_head, LINKS_PRJ_INFO, LINKS_STATS)
     ctx.clean_up()
 
 

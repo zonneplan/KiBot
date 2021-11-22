@@ -244,6 +244,12 @@ class ComponentGroup(object):
         # compare_components ensures all has the same status
         return self.components[0].fixed
 
+    def is_smd(self):
+        return self.components[0].smd
+
+    def is_tht(self):
+        return self.components[0].tht
+
     def get_field(self, field):
         field = field.lower()
         if field not in self.fields or not self.fields[field]:
@@ -378,8 +384,8 @@ def normalize_value(c, decimal_point):
 
 def compute_multiple_stats(cfg, groups):
     for sch in cfg.aggregate:
-        sch.comp_total = 0
-        sch.comp_fitted = 0
+        sch.comp_total = sch.comp_total_smd = sch.comp_total_tht = 0
+        sch.comp_fitted = sch.comp_fitted_smd = sch.comp_fitted_tht = 0
         sch.comp_build = 0
         sch.comp_groups = 0
         for g in groups:
@@ -387,8 +393,16 @@ def compute_multiple_stats(cfg, groups):
             if g_l:
                 sch.comp_groups = sch.comp_groups+1
             sch.comp_total += g_l
+            if g.is_smd():
+                sch.comp_total_smd += g_l
+            if g.is_tht():
+                sch.comp_total_tht += g_l
             if g.is_fitted():
                 sch.comp_fitted += g_l
+                if g.is_smd():
+                    sch.comp_fitted_smd += g_l
+                if g.is_tht():
+                    sch.comp_fitted_tht += g_l
         sch.comp_build = sch.comp_fitted*sch.number
         if cfg.debug_level > 1:
             logger.debug('Stats for {}: total {} fitted {} build {}'.
@@ -442,8 +456,8 @@ def group_components(cfg, components):
     # First priority is the Type of component (e.g. R?, U?, L?)
     groups = sorted(groups, key=lambda g: [g.components[0].ref_prefix, get_value_sort(g.components[0])])
     # Enumerate the groups and compute stats
-    n_total = 0
-    n_fitted = 0
+    n_total = n_total_smd = n_total_tht = 0
+    n_fitted = n_fitted_smd = n_fitted_tht = 0
     n_build = 0
     c = 1
     dnf = 1
@@ -459,11 +473,19 @@ def group_components(cfg, components):
         # Stats
         g_l = g.get_count()
         n_total += g_l
+        n_total_smd += g_l*g.is_smd()
+        n_total_tht += g_l*g.is_tht()
         if is_fitted:
             n_fitted += g_l
+            n_fitted_smd += g_l*g.is_smd()
+            n_fitted_tht += g_l*g.is_tht()
             n_build += g.total
     cfg.n_total = n_total
+    cfg.n_total_smd = n_total_smd
+    cfg.n_total_tht = n_total_tht
     cfg.n_fitted = n_fitted
+    cfg.n_fitted_smd = n_fitted_smd
+    cfg.n_fitted_tht = n_fitted_tht
     cfg.n_build = n_build
     if cfg.debug_level > 1:
         logger.debug('Global stats: total {} fitted {} build {}'.format(n_total, n_fitted, n_build))
@@ -473,6 +495,12 @@ def group_components(cfg, components):
     return groups
 
 
+def smd_tht(cfg, tot, smd, tht):
+    if cfg.count_smd_tht:
+        return "{} ({} SMD/ {} THT)".format(tot, smd, tht)
+    return tot
+
+
 def do_bom(file_name, ext, comps, cfg):
     # Group components according to group_fields
     groups = group_components(cfg, comps)
@@ -480,5 +508,13 @@ def do_bom(file_name, ext, comps, cfg):
     logger.debug("Saving BOM File: "+file_name)
     number = cfg.number
     cfg.number = sum(map(lambda prj: prj.number, cfg.aggregate))
+    # Pre-format the total and fitted strings
+    cfg.total_str = smd_tht(cfg, cfg.n_total, cfg.n_total_smd, cfg.n_total_tht)
+    cfg.fitted_str = smd_tht(cfg, cfg.n_fitted, cfg.n_fitted_smd, cfg.n_fitted_tht)
+    if len(cfg.aggregate) > 1:
+        for prj in cfg.aggregate:
+            prj.total_str = smd_tht(cfg, prj.comp_total, prj.comp_total_smd, prj.comp_total_tht)
+            prj.fitted_str = smd_tht(cfg, prj.comp_fitted, prj.comp_fitted_smd, prj.comp_fitted_tht)
+    # Create the BoM
     write_bom(file_name, ext, groups, cfg.columns, cfg)
     cfg.number = number

@@ -8,6 +8,7 @@ outputs:
     type: bom
     dir: BoM
     options:
+      count_smd_tht: true
       columns:
         - field: Row
           name: Renglón
