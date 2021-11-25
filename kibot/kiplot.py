@@ -164,6 +164,8 @@ def extract_errors(text):
 
 def exec_with_retry(cmd):
     logger.debug('Executing: '+str(cmd))
+    if GS.debug_level > 2:
+        logger.debug('Command line: '+' '.join(cmd))
     retry = 2
     while retry:
         result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
