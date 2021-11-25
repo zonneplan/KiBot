@@ -212,7 +212,10 @@ class Optionable(object):
         """ Expands %* values in filenames.
             Uses data from the PCB. """
         if GS.debug_level > 3:
-            logger.debug('Expanding `{}` in PCB context for {} parent: {}'.format(name, self, self._parent))
+            parent = None
+            if hasattr(self, '_parent'):
+                parent = self._parent
+            logger.debug('Expanding `{}` in PCB context for {} parent: {}'.format(name, self, parent))
         if GS.board:
             GS.load_pcb_title_block()
             # Do the replacements
