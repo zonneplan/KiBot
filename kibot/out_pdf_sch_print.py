@@ -34,6 +34,10 @@ class PDF_Sch_PrintOptions(VariantOptions):
         with document:
             self.output = GS.def_global_output
             """ Filename for the output PDF (%i=schematic %x=pdf) """
+            self.monochrome = False
+            """ Generate a monochromatic PDF """
+            self.frame = True
+            """ Include the frame and title block """
         super().__init__()
         self.add_to_doc('variant', "Not fitted components are crossed")
         self._expand_id = 'schematic'
@@ -57,7 +61,12 @@ class PDF_Sch_PrintOptions(VariantOptions):
         else:
             sch_dir = None
             sch_file = GS.sch_file
-        cmd = [CMD_EESCHEMA_DO, 'export', '--all_pages', '--file_format', 'pdf', sch_file, output_dir]
+        cmd = [CMD_EESCHEMA_DO, 'export', '--all_pages', '--file_format', 'pdf']
+        if self.monochrome:
+            cmd.append('--monochrome')
+        if not self.frame:
+            cmd.append('--no_frame')
+        cmd.extend([sch_file, output_dir])
         cmd, video_remove = add_extra_options(cmd)
         ret = exec_with_retry(cmd)
         if ret:

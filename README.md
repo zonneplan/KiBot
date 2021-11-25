@@ -1320,6 +1320,8 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
+        - `frame`: [boolean=true] Include the frame and title block.
+        - `monochrome`: [boolean=false] Generate a monochromatic PDF.
         - `output`: [string='%f-%i%v.%x'] Filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.

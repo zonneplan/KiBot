@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PDF PCB Print: option `hide_excluded` to hide components marked by the
   `exclude_filter`.
   https://forum.kicad.info/t/fab-drawing-for-only-through-hole-parts/
+- PCB PDF Print: mechanism to change the block title. (#102)
 - Internal BoM: option to avoid merging components with empty fields.
   Is named `merge_both_blank` and defaults to true.
 - Internal BoM: when a `Value` field can't be interpreted as a `number+unit`,
@@ -25,8 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Excellon drill: added `route_mode_for_oval_holes` option.
 - Default global `dir` option.
 - Pattern to expand the variant name: %V
-- PCB PDF Print: mechanism to change the block title. (#102)
 - 3D view render
+- SCH PDF Print: monochrome and no frame options.
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current
