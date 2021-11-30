@@ -204,6 +204,8 @@ The pattern uses the following expansions:
 - **%D** date the script was started.
 - **%f** original pcb/sch file name without extension.
 - **%F** original pcb/sch file name without extension. Including the directory part of the name.
+- **%g** the `file_id` of the global variant.
+- **%G** the `name` of the global variant.
 - **%i** a contextual ID, depends on the output type.
 - **%p** pcb/sch title from pcb metadata.
 - **%r** revision from pcb/sch metadata.
@@ -220,6 +222,11 @@ If you want to include the revision you could add the following definition:
 global:
   output: '%f_rev_%r-%i.%x'
 ```
+
+Note that the following patterns: **%c**, **%d**, **%f**, **%F**, **%p** and **%r** depends on the context.
+If you use them for an output related to the PCB these values will be obtained from the PCB.
+If you need to force the origin of the data you can use **%bX** for the PCB and **%sX** for the schematic, where
+**X** is the pattern to expand.
 
 #### Default *dir* option
 

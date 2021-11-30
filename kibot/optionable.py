@@ -208,62 +208,93 @@ class Optionable(object):
             return GS.solved_global_variant.name
         return ''
 
-    def expand_filename_pcb(self, name):
+    def expand_filename_common(self, name):
+        """ Expansions common to the PCB and Schematic """
+        # PCB expansions, explicit
+        if GS.board and '%b' in name:
+            name = name.replace('%bc', GS.pcb_comp)
+            name = name.replace('%bd', GS.pcb_date)
+            name = name.replace('%bF', GS.pcb_no_ext)
+            name = name.replace('%bf', GS.pcb_basename)
+            name = name.replace('%bp', GS.pcb_title)
+            name = name.replace('%br', GS.pcb_rev)
+            name = name.replace('%D', GS.today)
+        if GS.solved_global_variant:
+            name = name.replace('%g', GS.solved_global_variant.file_id)
+            name = name.replace('%G', GS.solved_global_variant.name)
+        # Schematic expansions, explicit
+        if GS.sch and '%s' in name:
+            name = name.replace('%sc', GS.sch_comp)
+            name = name.replace('%sd', GS.sch_date)
+            name = name.replace('%sF', GS.sch_no_ext)
+            name = name.replace('%sf', GS.sch_basename)
+            name = name.replace('%sp', GS.sch_title)
+            name = name.replace('%sr', GS.sch_rev)
+        name = name.replace('%T', GS.time)
+        if self:
+            name = name.replace('%i', self._expand_id)
+            name = name.replace('%v', self._find_variant())
+            name = name.replace('%V', self._find_variant_name())
+            name = name.replace('%x', self._expand_ext)
+        return name
+
+    def expand_filename_both(self, name, is_sch=True):
         """ Expands %* values in filenames.
             Uses data from the PCB. """
         if GS.debug_level > 3:
             parent = None
-            if hasattr(self, '_parent'):
+            if self and hasattr(self, '_parent'):
                 parent = self._parent
             logger.debug('Expanding `{}` in PCB context for {} parent: {}'.format(name, self, parent))
-        if GS.board:
+        # Determine if we need to expand SCH and/or PCB related data
+        has_dep_exp = any(map(lambda x: x in name, ['%c', '%d', '%F', '%f', '%p', '%r']))
+        do_sch = is_sch and has_dep_exp
+        # logger.error(name + '  is_sch ' +str(is_sch)+"   "+ str(do_sch))
+        # raise
+        do_pcb = not is_sch and has_dep_exp
+        # Load the needed data
+        if GS.pcb_file and (do_pcb or '%b' in name):
+            if GS.board is None:
+                GS.load_board()
             GS.load_pcb_title_block()
-            # Do the replacements
+        if GS.sch_file and (do_sch or '%s' in name):
+            if GS.sch is None:
+                GS.load_sch()
+            GS.load_sch_title_block()
+        # This member can be called with a preflight object
+        name = Optionable.expand_filename_common(self, name)
+        if GS.board and do_pcb:
             name = name.replace('%c', GS.pcb_comp)
             name = name.replace('%d', GS.pcb_date)
-            name = name.replace('%D', GS.today)
             name = name.replace('%F', GS.pcb_no_ext)
             name = name.replace('%f', GS.pcb_basename)
-            name = name.replace('%i', self._expand_id)
             name = name.replace('%p', GS.pcb_title)
             name = name.replace('%r', GS.pcb_rev)
-            name = name.replace('%T', GS.time)
-            name = name.replace('%v', self._find_variant() if self else '')
-            name = name.replace('%V', self._find_variant_name() if self else '')
-            name = name.replace('%x', self._expand_ext)
-            # sanitize the name to avoid characters illegal in file systems
-            name = name.replace('\\', '/')
-            name = re.sub(r'[?%*:|"<>]', '_', name)
+        if GS.sch and do_sch:
+            name = name.replace('%c', GS.sch_comp)
+            name = name.replace('%d', GS.sch_date)
+            name = name.replace('%F', GS.sch_no_ext)
+            name = name.replace('%f', GS.sch_basename)
+            name = name.replace('%p', GS.sch_title)
+            name = name.replace('%r', GS.sch_rev)
+        # sanitize the name to avoid characters illegal in file systems
+        name = name.replace('\\', '/')
+        name = re.sub(r'[?%*:|"<>]', '_', name)
         if GS.debug_level > 3:
             logger.debug('Expanded `{}`'.format(name))
         return name
 
+    def expand_filename_pcb(self, name):
+        """ Expands %* values in filenames.
+            Uses data from the PCB. """
+        # This member can be called with a preflight object
+        return Optionable.expand_filename_both(self, name, is_sch=False)
+
     def expand_filename_sch(self, name):
         """ Expands %* values in filenames.
             Uses data from the SCH. """
-        if GS.debug_level > 3:
-            logger.debug('Expanding `{}` in sch context for {}'.format(name, self))
-        if GS.sch_file:
-            GS.load_sch_title_block()
-            # Do the replacements
-            name = name.replace('%c', GS.sch_comp)
-            name = name.replace('%d', GS.sch_date)
-            name = name.replace('%D', GS.today)
-            name = name.replace('%F', GS.sch_no_ext)
-            name = name.replace('%f', GS.sch_basename)
-            name = name.replace('%i', self._expand_id)
-            name = name.replace('%p', GS.sch_title)
-            name = name.replace('%r', GS.sch_rev)
-            name = name.replace('%T', GS.time)
-            name = name.replace('%v', self._find_variant() if self else '')
-            name = name.replace('%V', self._find_variant_name() if self else '')
-            name = name.replace('%x', self._expand_ext)
-            # sanitize the name to avoid characters illegal in file systems
-            name = name.replace('\\', '/')
-            name = re.sub(r'[?%*:|"<>]', '_', name)
-        if GS.debug_level > 3:
-            logger.debug('Expanded `{}`'.format(name))
-        return name
+        # This member can be called with a preflight object
+        return Optionable.expand_filename_both(self, name)
 
     @staticmethod
     def force_list(val):
@@ -310,10 +341,7 @@ class BaseOptions(Optionable):
         cur_ext = self._expand_ext
         self._expand_id = id
         self._expand_ext = ext
-        if self._parent._sch_related:
-            name = self.expand_filename_sch(name)
-        else:
-            name = self.expand_filename_pcb(name)
+        name = self.expand_filename_both(name, is_sch=self._parent._sch_related)
         res = os.path.abspath(os.path.join(dir, name))
         self._expand_id = cur_id
         self._expand_ext = cur_ext

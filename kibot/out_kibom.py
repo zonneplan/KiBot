@@ -352,7 +352,7 @@ class KiBoMOptions(BaseOptions):
                 self.conf = 'bom.ini'
         else:
             # A configuration
-            conf = os.path.abspath(os.path.join(GS.out_dir, CONFIG_FILENAME))
+            conf = os.path.abspath(os.path.join(self.expand_filename_sch(GS.out_dir), CONFIG_FILENAME))
             self.conf.save(conf)
             self.conf = conf
         self._expand_ext = self.format.lower()

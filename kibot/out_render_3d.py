@@ -131,7 +131,7 @@ class Render3DOptions(Base3DOptions):
             logger.error(CMD_PCBNEW_3D+' returned %d', ret)
             exit(RENDER_3D_ERR)
         if video_remove:
-            video_name = os.path.join(GS.out_dir, 'pcbnew_3d_view_screencast.ogv')
+            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_3d_view_screencast.ogv')
             if os.path.isfile(video_name):
                 os.remove(video_name)
 

@@ -8,6 +8,7 @@ from sys import (exit)
 from .macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
 from .gs import (GS)
+from .optionable import Optionable
 from .kiplot import check_eeschema_do, exec_with_retry, add_extra_options
 from .misc import (CMD_EESCHEMA_DO, BOM_ERROR)
 from .log import (get_logger)
@@ -33,7 +34,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
 
     def run(self):
         check_eeschema_do()
-        cmd = [CMD_EESCHEMA_DO, 'bom_xml', GS.sch_file, GS.out_dir]
+        cmd = [CMD_EESCHEMA_DO, 'bom_xml', GS.sch_file, Optionable.expand_filename_sch(self, GS.out_dir)]
         # If we are in verbose mode enable debug in the child
         cmd, video_remove = add_extra_options(cmd)
         logger.info('- Updating BoM in XML format')
@@ -42,6 +43,6 @@ class Update_XML(BasePreFlight):  # noqa: F821
             logger.error('Failed to update the BoM, error %d', ret)
             exit(BOM_ERROR)
         if video_remove:
-            video_name = os.path.join(GS.out_dir, 'bom_xml_eeschema_screencast.ogv')
+            video_name = os.path.join(Optionable.expand_filename_sch(self, GS.out_dir), 'bom_xml_eeschema_screencast.ogv')
             if os.path.isfile(video_name):
                 os.remove(video_name)

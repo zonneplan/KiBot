@@ -78,15 +78,10 @@ class BaseOutput(RegOutput):
             self.options.config(self)
 
     def expand_dirname(self, out_dir):
-        if self._sch_related:
-            return self.options.expand_filename_sch(out_dir)
-        return self.options.expand_filename_pcb(out_dir)
+        return self.options.expand_filename_both(out_dir, is_sch=self._sch_related)
 
     def expand_filename(self, out_dir, name):
-        if self._sch_related:
-            name = self.options.expand_filename_sch(name)
-        else:
-            name = self.options.expand_filename_pcb(name)
+        name = self.options.expand_filename_both(name, is_sch=self._sch_related)
         return os.path.abspath(os.path.join(out_dir, name))
 
     def run(self, output_dir):

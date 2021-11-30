@@ -131,7 +131,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             logger.error(CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)
             exit(PDF_PCB_PRINT)
         if video_remove:
-            video_name = os.path.join(GS.out_dir, 'pcbnew_export_screencast.ogv')
+            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_screencast.ogv')
             if os.path.isfile(video_name):
                 os.remove(video_name)
 

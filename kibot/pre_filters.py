@@ -96,7 +96,7 @@ class Filters(BasePreFlight):  # noqa: F821
     def apply(self):
         # Create the filters file
         if self._value:
-            o_dir = get_output_dir('')
+            o_dir = get_output_dir('', self)
             GS.filter_file = os.path.join(o_dir, 'kibot_errors.filter')
             with open(GS.filter_file, 'w') as f:
                 f.write(self._value)

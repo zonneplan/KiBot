@@ -285,6 +285,7 @@ def detect_kicad():
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
+    GS.out_dir_in_cmd_line = '-d' in sys.argv or '--out-dir' in sys.argv
     args = docopt(__doc__, version=ver, options_first=True)
 
     # Set the specified verbosity

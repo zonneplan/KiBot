@@ -29,6 +29,7 @@ class GS(object):
     sch_basename = None  # file
     # Main output dir
     out_dir = None
+    out_dir_in_cmd_line = False
     filter_file = None
     board = None
     sch = None
@@ -142,3 +143,13 @@ class GS(object):
         if not GS.sch_file:
             logger.error('No SCH file found (*.sch), use -e to specify one.')
             exit(EXIT_BAD_ARGS)
+
+    @staticmethod
+    def load_board():
+        """ Will be repplaced by kiplot.py """
+        assert False
+
+    @staticmethod
+    def load_sch():
+        """ Will be repplaced by kiplot.py """
+        assert False

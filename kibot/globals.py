@@ -3,6 +3,7 @@
 # Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+import os
 from .gs import GS
 from .macros import macros, document  # noqa: F401
 from .pre_filters import FiltersOptions
@@ -19,6 +20,8 @@ class Globals(FiltersOptions):
             """ Default pattern for output file names """
             self.dir = ''
             """ Default pattern for the output directories """
+            self.out_dir = ''
+            """ Base output dir, same as command line `--out-dir` """
             self.variant = ''
             """ Default variant to apply to all outputs """
             self.kiauto_wait_start = 0
@@ -50,6 +53,8 @@ class Globals(FiltersOptions):
             logger.warning(W_MUSTBEINT+'kiauto_wait_start must be integer, truncating to '+str(GS.global_kiauto_wait_start))
         GS.global_kiauto_time_out_scale = self.set_global(GS.global_kiauto_time_out_scale, self.kiauto_time_out_scale,
                                                           'kiauto_time_out_scale')
+        if not GS.out_dir_in_cmd_line and self.out_dir:
+            GS.out_dir = os.path.join(os.getcwd(), self.out_dir)
         set_filters(self.unparsed)
 
 

@@ -34,7 +34,7 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         load_sch()
         out_pattern = GS.global_output if GS.global_output is not None else GS.def_global_output
         name = Optionable.expand_filename_sch(self, out_pattern)
-        return [os.path.abspath(os.path.join(GS.out_dir, name))]
+        return [os.path.abspath(os.path.join(Optionable.expand_filename_sch(self, GS.out_dir), name))]
 
     def run(self):
         check_eeschema_do()
@@ -47,13 +47,13 @@ class Run_ERC(BasePreFlight):  # noqa: F821
             cmd.append('-w')
         if GS.filter_file:
             cmd.extend(['-f', GS.filter_file])
-        cmd.extend([GS.sch_file, GS.out_dir])
+        cmd.extend([GS.sch_file, Optionable.expand_filename_sch(self, GS.out_dir)])
         # If we are in verbose mode enable debug in the child
         cmd, video_remove = add_extra_options(cmd)
         logger.info('- Running the ERC')
         ret = exec_with_retry(cmd)
         if video_remove:
-            video_name = os.path.join(GS.out_dir, 'run_erc_eeschema_screencast.ogv')
+            video_name = os.path.join(Optionable.expand_filename_sch(self, GS.out_dir), 'run_erc_eeschema_screencast.ogv')
             if os.path.isfile(video_name):
                 os.remove(video_name)
         if ret:

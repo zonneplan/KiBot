@@ -312,9 +312,9 @@ def preflight_checks(skip_pre):
     BasePreFlight.run_enabled()
 
 
-def get_output_dir(o_dir, dry=False):
+def get_output_dir(o_dir, obj, dry=False):
     # outdir is a combination of the config and output
-    outdir = os.path.abspath(os.path.join(GS.out_dir, o_dir))
+    outdir = os.path.abspath(obj.expand_dirname(os.path.join(GS.out_dir, o_dir)))
     # Create directory if needed
     logger.debug("Output destination: {}".format(outdir))
     if not dry and not os.path.exists(outdir):
@@ -338,8 +338,7 @@ def config_output(out, dry=False):
 def run_output(out):
     GS.current_output = out.name
     try:
-        out_dir = out.expand_dirname(out.dir)
-        out.run(get_output_dir(out_dir))
+        out.run(get_output_dir(out.dir, out))
         out._done = True
     except PlotError as e:
         logger.error("In output `"+str(out)+"`: "+str(e))
@@ -426,7 +425,7 @@ def get_out_targets(outputs, ori_names, targets, dependencies, comments):
         for out in outputs:
             name = name2make(out.name)
             ori_names[name] = out.name
-            tg = out.get_targets(os.path.join(GS.out_dir, out.expand_dirname(out.dir)))
+            tg = out.get_targets(out.expand_dirname(os.path.join(GS.out_dir, out.dir)))
             if not tg:
                 continue
             targets[name] = [adapt_file_name(fn) for fn in tg]
@@ -509,3 +508,8 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
                 f.write('{} -s all {}{}\n\n'.format(kibot_cmd, ori_names[name], log_action))
         # Mark all outputs as PHONY
         f.write('.PHONY: '+' '.join(extra_targets+list(targets.keys()))+'\n')
+
+
+# To avoid circular dependencies: Optionable needs it, but almost everything needs Optionable
+GS.load_board = load_board
+GS.load_sch = load_sch

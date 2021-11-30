@@ -25,9 +25,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generic filter: options to match if a field is/isn't defined.
 - Excellon drill: added `route_mode_for_oval_holes` option.
 - Default global `dir` option.
+- Global option to specify `out_dir` (like -d command line option)
 - Pattern to expand the variant name: %V
 - 3D view render
 - SCH PDF Print: monochrome and no frame options.
+- New expansion patterns:
+  - **%g** the `file_id` of the global variant.
+  - **%G** the `name` of the global variant.
+  - **%bc**, **%bd**, **%bf**, **%bF**, **%bp** and **%br** board data
+  - **%sc**, **%sd**, **%sf**, **%sF**, **%sp** and **%sr** schematic data
+- Now patterns are also expanded in the out_dir name.
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

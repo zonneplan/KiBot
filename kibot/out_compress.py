@@ -118,6 +118,7 @@ class CompressOptions(BaseOptions):
     def get_files(self, output, no_out_run=False):
         output_real = os.path.realpath(output)
         files = OrderedDict()
+        out_dir = self.expand_filename_sch(GS.out_dir)
         for f in self.files:
             # Get the list of candidates
             files_list = None
@@ -125,7 +126,7 @@ class CompressOptions(BaseOptions):
                 for out in GS.outputs:
                     if out.name == f.from_output:
                         config_output(out)
-                        files_list = out.get_targets(get_output_dir(out.expand_dirname(out.dir), dry=True))
+                        files_list = out.get_targets(get_output_dir(out.dir, out, dry=True))
                         break
                 if files_list is None:
                     logger.error('Unknown output `{}` selected in {}'.format(f.from_output, self._parent))
@@ -142,7 +143,7 @@ class CompressOptions(BaseOptions):
                                 logger.error('Unable to generate `{}` from {}'.format(file, out))
                                 exit(INTERNAL_ERROR)
             else:
-                files_list = glob.iglob(os.path.join(GS.out_dir, f.source), recursive=True)
+                files_list = glob.iglob(os.path.join(out_dir, f.source), recursive=True)
             # Filter and adapt them
             for fname in filter(re.compile(f.filter).match, files_list):
                 fname_real = os.path.realpath(fname)
@@ -154,7 +155,7 @@ class CompressOptions(BaseOptions):
                 if f.dest:
                     dest = os.path.join(f.dest, os.path.basename(fname))
                 else:
-                    dest = os.path.relpath(dest, GS.out_dir)
+                    dest = os.path.relpath(dest, out_dir)
                 files[fname_real] = dest
         return files
 
@@ -162,7 +163,7 @@ class CompressOptions(BaseOptions):
         return [self._parent.expand_filename(out_dir, self.output)]
 
     def get_dependencies(self):
-        output = self.get_targets(GS.out_dir)[0]
+        output = self.get_targets(self.expand_filename_sch(GS.out_dir))[0]
         files = self.get_files(output, no_out_run=True)
         return files.keys()
 
