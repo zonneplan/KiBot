@@ -805,7 +805,7 @@ Next time you need this list just use an alias, like this:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
                          Use ${filename(LAYER)} for the file corresponding to LAYER.
             - `output`: [string='Custom_report.txt'] File name for the custom report.
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
@@ -909,7 +909,7 @@ Next time you need this list just use an alias, like this:
                          Use ${filename(LAYER)} for the file corresponding to LAYER.
             - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `disable_aperture_macros`: [boolean=false] Disable aperture macros (workaround for buggy CAM software) (KiCad 6).
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
@@ -955,7 +955,7 @@ Next time you need this list just use an alias, like this:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
                          Use ${filename(LAYER)} for the file corresponding to LAYER.
             - `output`: [string='Custom_report.txt'] File name for the custom report.
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
@@ -998,7 +998,7 @@ Next time you need this list just use an alias, like this:
         - `bom_view`: [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view.
         - `checkboxes`: [string='Sourced,Placed'] Comma separated list of checkbox columns.
         - `dark_mode`: [boolean=false] Default to dark mode.
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
                         Avoid using it in conjunction with with IBoM native filtering options.
         - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status.
@@ -1149,7 +1149,7 @@ Next time you need this list just use an alias, like this:
             - `variant`: [string=' '] Variant for this project.
         - `currency`: [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR).
         - `distributors`: [string|list(string)] Include this distributors list. Default is all the available.
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
                         Internal variants and filters are currently ignored.
         - `fields`: [string|list(string)] List of fields to be added to the global data section.
@@ -1181,7 +1181,7 @@ Next time you need this list just use an alias, like this:
     - `options`: [dict] Options for the `pcbdraw` output.
       * Valid keys:
         - `bottom`: [boolean=false] Render the bottom side of the board (default is top side).
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
         - `format`: [string='svg'] [svg,png,jpg] Output format. Only used if no `output` is specified.
@@ -1223,7 +1223,7 @@ Next time you need this list just use an alias, like this:
                      Use ${filename(LAYER)} for the file corresponding to LAYER.
         - `output`: [string='Custom_report.txt'] File name for the custom report.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+    - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                     A short-cut to use for simple cases where a variant is an overkill.
     - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
     - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
@@ -1247,7 +1247,7 @@ Next time you need this list just use an alias, like this:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
                          Use ${filename(LAYER)} for the file corresponding to LAYER.
             - `output`: [string='Custom_report.txt'] File name for the custom report.
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
@@ -1292,7 +1292,7 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_pcb_print` output.
       * Valid keys:
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
@@ -1318,7 +1318,7 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_sch_print` output.
       * Valid keys:
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `frame`: [boolean=true] Include the frame and title block.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
@@ -1341,7 +1341,7 @@ Next time you need this list just use an alias, like this:
           * Valid keys:
             - `id`: [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name.
             - `name`: [string=''] Name to use in the outut file. The id is used when empty.
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `format`: [string='ASCII'] [ASCII,CSV] Format for the position file.
         - `only_smd`: [boolean=true] Only include the surface mount components.
@@ -1373,7 +1373,7 @@ Next time you need this list just use an alias, like this:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
                          Use ${filename(LAYER)} for the file corresponding to LAYER.
             - `output`: [string='Custom_report.txt'] File name for the custom report.
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
@@ -1413,7 +1413,7 @@ Next time you need this list just use an alias, like this:
         - `background2`: [string='#CCCCE5'] Second color for the background gradient.
         - `board`: [string='#332B16'] Color for the board without copper or solder mask.
         - `copper`: [string='#B29C00'] Color for the copper.
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `download`: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
         - `height`: [number=720] Image height (aprox.).
@@ -1451,7 +1451,7 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `sch_variant` output.
       * Valid keys:
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant to apply.
 
@@ -1466,7 +1466,7 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `step` output.
       * Valid keys:
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `download`: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
@@ -1501,7 +1501,7 @@ Next time you need this list just use an alias, like this:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
                          Use ${filename(LAYER)} for the file corresponding to LAYER.
             - `output`: [string='Custom_report.txt'] File name for the custom report.
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
@@ -1532,7 +1532,7 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `svg_sch_print` output.
       * Valid keys:
-        - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as not fitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `output`: [string='%f-%i%v.%x'] Filename for the output SVG (%i=schematic %x=svg). Affected by global options.
         - `variant`: [string=''] Board variant to apply.

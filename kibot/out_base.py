@@ -124,7 +124,7 @@ class VariantOptions(BaseOptions):
             self.variant = ''
             """ Board variant to apply """
             self.dnf_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to mark components as not fitted.
+            """ [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                 A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
         self._comps = None
