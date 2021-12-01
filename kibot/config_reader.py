@@ -360,7 +360,10 @@ class CfgYamlReader(object):
             config_error("YAML config needs `kibot.version`.")
         # Solve the global variant
         if GS.global_variant:
-            GS.solved_global_variant = RegOutput.check_variant(GS.global_variant)
+            try:
+                GS.solved_global_variant = RegOutput.check_variant(GS.global_variant)
+            except KiPlotConfigurationError as e:
+                config_error("In global section: "+str(e))
         return outputs
 
 
