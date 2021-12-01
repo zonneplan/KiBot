@@ -62,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exist when no variant is selected. (#105)
 - PCB Print: to show the real name of the PCB file. (#102)
 - Compress: not expanding %VALUES in target dirs. (#111)
+- Gerber: job file didn't use the global output pattern. (#116)
 
 
 ## [0.11.0] - 2021-04-25

@@ -39,6 +39,8 @@ class GerberOptions(AnyLayerOptions):
             """ Disable aperture macros (workaround for buggy CAM software) (KiCad 6) """
         super().__init__()
         self._plot_format = PLOT_FORMAT_GERBER
+        if GS.global_output is not None:
+            self.gerber_job_file = GS.global_output
 
     @property
     def gerber_precision(self):
@@ -64,7 +66,7 @@ class GerberOptions(AnyLayerOptions):
             po.SetLineWidth(FromMM(self.line_width))
         else:
             po.SetDisableGerberMacros(self.disable_aperture_macros)  # pragma: no cover (Ki6)
-        setattr(po, 'gerber_job_file', self.gerber_job_file)
+        po.gerber_job_file = self.gerber_job_file
 
     def read_vals_from_po(self, po):
         super().read_vals_from_po(po)
