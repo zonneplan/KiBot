@@ -329,13 +329,13 @@ outputs:
       # [boolean=false] Invert the Y axis
       mirror_y_axis: false
       # [string] Force this replacement for %i when generating NPTH files
-      npth_id: None
+      npth_id: null
       # [string='%f-%i%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options
       output: '%f-%i%v.%x'
       # [boolean=true] Generate one file for both, plated holes and non-plated holes, instead of two separated files
       pth_and_npth_single_file: true
       # [string] Force this replacement for %i when generating PTH and unified files
-      pth_id: None
+      pth_id: null
       # [dict|string] Name of the drill report. Not generated unless a name is specified
       report:
         # [string=''] Name of the drill report. Not generated unless a name is specified.
@@ -365,11 +365,11 @@ outputs:
         # [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map
         type: 'pdf'
       # [string] Force this replacement for %i when generating NPTH files
-      npth_id: None
+      npth_id: null
       # [string='%f-%i%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options
       output: '%f-%i%v.%x'
       # [string] Force this replacement for %i when generating PTH and unified files
-      pth_id: None
+      pth_id: null
       # [dict|string] Name of the drill report. Not generated unless a name is specified
       report:
         # [string=''] Name of the drill report. Not generated unless a name is specified.

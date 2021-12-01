@@ -544,6 +544,8 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
         else:
             if is_list and first:
                 k = '- '+k
+            if val is None:
+                val = 'null'
             f.write(ind_str+'{}: {}\n'.format(k, val))
             if is_list and first:
                 ind_str += '  '
