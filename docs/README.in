@@ -23,7 +23,9 @@
     * [Filtering DRC and ERC errors](#filtering-drc-and-erc-errors)
   * [Default global options](#default-global-options)
     * [Default *output* option](#default-output-option)
+    * [Default *dir* option](#default-dir-option)
     * [Default *variant* option](#default-variant-option)
+    * [Output directory option](#output-directory-option)
     * [Filtering KiBot warnings](#filtering-kibot-warnings)
   * [Filters and variants](#filters-and-variants)
     * [Supported filters](#supported-filters)
@@ -224,6 +226,14 @@ This option controls the default variant applied to all the outputs. Example:
 global:
   variant: 'production'
 ```
+
+#### Output directory option
+
+The `out_dir` option can define the base outut directory. This is the same as the `-d`/`--out-dir` command line option.
+Note that the command line option has precedence over it.
+
+Expansion patterns are applied to this value, but you should avoid using patterns that expand according to the context, i.e. **%c**, **%d**, **%f**, **%F**, **%p** and **%r**.
+The behavior of these patterns isn't fully defined in this case and the results may change in the future.
 
 #### Filtering KiBot warnings
 
