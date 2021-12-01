@@ -26,7 +26,7 @@ from kibot.bom.columnlist import ColumnList
 from kibot.bom.units import get_prefix
 from kibot.__main__ import detect_kicad
 from kibot.kicad.config import KiConf
-
+from kibot.globals import Globals
 
 cov = coverage.Coverage()
 mocked_check_output_FNF = True
@@ -63,10 +63,17 @@ def patch_functions(m):
     m.setattr('kibot.kiplot.exec_with_retry', mocked_call)
 
 
+def init_globals():
+    glb = Globals()
+    glb.set_tree({})
+    glb.config(None)
+
+
 def run_compress(ctx, test_import_fail=False):
     with context.cover_it(cov):
         # Load the plug-ins
         load_actions()
+        init_globals()
         # Create a compress object with the dummy file as source
         out = RegOutput.get_class_for('compress')()
         out.set_tree({'options': {'format': 'RAR', 'files': [{'source': ctx.get_out_path('*')}]}})

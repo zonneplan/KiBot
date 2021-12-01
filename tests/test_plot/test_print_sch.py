@@ -19,6 +19,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.misc import (PDF_SCH_PRINT, SVG_SCH_PRINT)
 from kibot.kicad.v5_sch import Schematic, SchFileError, DrawPoligon, Pin
+from kibot.globals import Globals
 # Utils import
 from utils import context
 
@@ -65,6 +66,9 @@ def check_l1(ctx):
     ctx.run()
     o_name = os.path.join(NI_DIR, 'test_v5.sch')
     ctx.expect_out_file(o_name)
+    glb = Globals()
+    glb.set_tree({})
+    glb.config(None)
     sch = Schematic()
     try:
         sch.load(ctx.get_out_path(o_name), 'no_project')
