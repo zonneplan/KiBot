@@ -337,6 +337,7 @@ class CfgYamlReader(object):
         # List of outputs
         outputs = []
         version = None
+        globals_found = False
         # Analize each section
         for k, v in data.items():
             # logger.debug('{} {}'.format(k, v))
@@ -346,6 +347,7 @@ class CfgYamlReader(object):
                 self._parse_preflight(v)
             elif k == 'global':
                 self._parse_global(v)
+                globals_found = True
             elif k == 'import':
                 outputs.extend(self._parse_import(v, fstream.name))
             elif k == 'variants':
@@ -358,6 +360,9 @@ class CfgYamlReader(object):
                 config_error('Unknown section `{}` in config.'.format(k))
         if version is None:
             config_error("YAML config needs `kibot.version`.")
+        # If no globals defined initialize them with default values
+        if not globals_found:
+            self._parse_global({})
         # Solve the global variant
         if GS.global_variant:
             try:
