@@ -1494,7 +1494,7 @@ class Schematic(object):
             # Fill in some missing info
             if not self.date:
                 file_mtime = os.path.getmtime(fname)
-                self.date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d_%H-%M-%S')
+                self.date = datetime.fromtimestamp(file_mtime).strftime(GS.global_date_time_format)
             if not self.title:
                 self.title = os.path.splitext(os.path.basename(fname))[0]
             logger.debug("SCH title: `{}`".format(self.title))

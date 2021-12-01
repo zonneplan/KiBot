@@ -329,6 +329,9 @@ class CfgYamlReader(object):
         GS.global_output = GS.global_from_cli.get('output', None)
         GS.global_dir = GS.global_from_cli.get('dir', None)
         GS.global_variant = GS.global_from_cli.get('variant', None)
+        GS.global_date_time_format = GS.global_from_cli.get('date_time_format', None)
+        GS.global_date_format = GS.global_from_cli.get('date_format', None)
+        GS.global_time_format = GS.global_from_cli.get('time_format', None)
         GS.global_kiauto_wait_start = GS.global_from_cli.get('kiauto_wait_start', None)
         GS.global_kiauto_time_out_scale = GS.global_from_cli.get('kiauto_time_out_scale', None)
         # List of outputs

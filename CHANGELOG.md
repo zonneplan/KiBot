@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **%bc**, **%bd**, **%bf**, **%bF**, **%bp** and **%br** board data
   - **%sc**, **%sd**, **%sf**, **%sF**, **%sp** and **%sr** schematic data
 - Now patterns are also expanded in the out_dir name.
+- Global options to control the date format.
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

@@ -26,6 +26,7 @@
     * [Default *dir* option](#default-dir-option)
     * [Default *variant* option](#default-variant-option)
     * [Output directory option](#output-directory-option)
+    * [Date format option](#date-format-option)
     * [Filtering KiBot warnings](#filtering-kibot-warnings)
   * [Filters and variants](#filters-and-variants)
     * [Supported filters](#supported-filters)
@@ -255,6 +256,14 @@ Note that the command line option has precedence over it.
 
 Expansion patterns are applied to this value, but you should avoid using patterns that expand according to the context, i.e. **%c**, **%d**, **%f**, **%F**, **%p** and **%r**.
 The behavior of these patterns isn't fully defined in this case and the results may change in the future.
+
+#### Date format option
+
+* The **%d**, **%sd** and **%bd** patterns use the date and time from the PCB and schematic. When abscent they use the file timestamp. The `date_time_format` global option controls the format used.
+* The **%D** format is controlled by the `date_format` global option.
+* The **%T** format is controlled by the `time_format` global option.
+
+In all cases the format is the one used by the `strftime` POSIX function, for more information visit this [site](https://strftime.org/).
 
 #### Filtering KiBot warnings
 

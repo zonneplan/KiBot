@@ -36,8 +36,6 @@ class GS(object):
     debug_enabled = False
     debug_level = 0
     n = datetime.now()
-    today = n.strftime('%Y-%m-%d')
-    time = n.strftime('%H-%M-%S')
     kicad_version = ''
     kicad_conf_path = None
     kicad_share_path = None
@@ -78,6 +76,9 @@ class GS(object):
     global_kiauto_time_out_scale = None
     global_opts_class = None
     global_3D_model_field = '_3D_model'
+    global_date_time_format = None
+    global_date_format = None
+    global_time_format = None
     test_boolean = True
 
     @staticmethod
@@ -121,7 +122,7 @@ class GS(object):
         GS.pcb_date = title_block.GetDate()
         if not GS.pcb_date:
             file_mtime = os.path.getmtime(GS.pcb_file)
-            GS.pcb_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d_%H-%M-%S')
+            GS.pcb_date = datetime.fromtimestamp(file_mtime).strftime(GS.global_date_time_format)
         GS.pcb_title = title_block.GetTitle()
         if not GS.pcb_title:
             GS.pcb_title = GS.pcb_basename

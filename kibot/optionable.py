@@ -218,7 +218,6 @@ class Optionable(object):
             name = name.replace('%bf', GS.pcb_basename)
             name = name.replace('%bp', GS.pcb_title)
             name = name.replace('%br', GS.pcb_rev)
-            name = name.replace('%D', GS.today)
         if GS.solved_global_variant:
             name = name.replace('%g', GS.solved_global_variant.file_id)
             name = name.replace('%G', GS.solved_global_variant.name)
@@ -230,7 +229,8 @@ class Optionable(object):
             name = name.replace('%sf', GS.sch_basename)
             name = name.replace('%sp', GS.sch_title)
             name = name.replace('%sr', GS.sch_rev)
-        name = name.replace('%T', GS.time)
+        name = name.replace('%D', GS.n.strftime(GS.global_date_format))
+        name = name.replace('%T', GS.n.strftime(GS.global_time_format))
         if self:
             name = name.replace('%i', self._expand_id)
             name = name.replace('%v', self._find_variant())

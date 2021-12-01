@@ -28,6 +28,12 @@ class Globals(FiltersOptions):
             """ Time to wait for KiCad in KiAuto operations """
             self.kiauto_time_out_scale = 0.0
             """ Time-out multiplier for KiAuto operations """
+            self.date_time_format = '%Y-%m-%d_%H-%M-%S'
+            """ Format used for the PCB and schematic date when using the file timestamp. Uses the `strftime` format """
+            self.date_format = '%Y-%m-%d'
+            """ Format used for the day we started the script. Uses the `strftime` format """
+            self.time_format = '%H-%M-%S'
+            """ Format used for the time we started the script. Uses the `strftime` format """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self._unkown_is_error = True
@@ -47,6 +53,9 @@ class Globals(FiltersOptions):
         GS.global_output = self.set_global(GS.global_output, self.output, 'output')
         GS.global_dir = self.set_global(GS.global_dir, self.dir, 'dir')
         GS.global_variant = self.set_global(GS.global_variant, self.variant, 'variant')
+        GS.global_date_time_format = self.set_global(GS.global_date_time_format, self.date_time_format, 'date_time_format')
+        GS.global_date_format = self.set_global(GS.global_date_format, self.date_format, 'date_format')
+        GS.global_time_format = self.set_global(GS.global_time_format, self.time_format, 'time_format')
         GS.global_kiauto_wait_start = self.set_global(GS.global_kiauto_wait_start, self.kiauto_wait_start, 'kiauto_wait_start')
         if GS.global_kiauto_wait_start and int(GS.global_kiauto_wait_start) != GS.global_kiauto_wait_start:
             GS.global_kiauto_wait_start = int(GS.global_kiauto_wait_start)
