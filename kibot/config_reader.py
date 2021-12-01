@@ -480,7 +480,7 @@ def print_preflights_help():
         help, options = o.get_doc()
         if help is None:
             help = 'Undocumented'
-        print('- {}: {}.'.format(n, help.strip()))
+        print('- `{}`: {}.'.format(n, help.strip()))
         if options:
             print_output_options(n, options, 2)
 
