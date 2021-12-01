@@ -391,7 +391,7 @@ def test_help_output_plugin_3(test_dir, monkeypatch):
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out('- pre_test: Undocumented')
+    assert ctx.search_out('- `pre_test`: Undocumented')
     ctx.clean_up()
 
 
