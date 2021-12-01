@@ -360,7 +360,7 @@ def apply_join_requests(join, adapted, original):
             if elements > 1 and target == key:
                 # Append data from the other fields
                 for source in join_l[1:]:
-                    v = original.get(source)
+                    v = source.get_text(original.get)
                     if v:
                         append += ' ' + v
         if append:
