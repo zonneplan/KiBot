@@ -36,6 +36,55 @@ DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
                    ]
 
 
+class BoMJoinField(Optionable):
+    """ Fields to join """
+    def __init__(self, field=None):
+        super().__init__()
+        if field:
+            self.field = field.lower()
+            self.text = None
+            self.text_before = ''
+            self.text_after = ''
+            return
+        self._unkown_is_error = True
+        with document:
+            self.field = ''
+            """ Name of the field """
+            self.text = ''
+            """ Text to use instead of a field. This option is incompatible with the `field` option """
+            self.text_before = ''
+            """ Text to add before the field content. Will be added only if the field isn't empty """
+            self.text_after = ''
+            """ Text to add after the field content. Will be added only if the field isn't empty """
+        self._field_example = 'Voltage'
+
+    def config(self, parent):
+        super().config(parent)
+        if not self.field and not self.text:
+            raise KiPlotConfigurationError("Missing or empty `field` and `text` in join list ({})".format(str(self._tree)))
+        if self.field and self.text:
+            raise KiPlotConfigurationError("You can't specify a `field` and a `text` in a join list ({})".
+                                           format(str(self._tree)))
+        self.field = self.field.lower()
+        if self.text_before is None:
+            self.text_before = ''
+        if self.text_after is None:
+            self.text_after = ''
+
+    def get_text(self, field_getter):
+        if self.text:
+            return self.text
+        value = field_getter(self.field)
+        if not value:
+            return None
+        return self.text_before + value + self.text_after
+
+    def __repr__(self):
+        if self.text:
+            return '`{}`'.format(self.text)
+        return '`{}`+{}+`{}`'.format(self.text_before, self.field, self.text_after)
+
+
 class BoMColumns(Optionable):
     """ Information for the BoM columns """
     def __init__(self):
@@ -46,8 +95,8 @@ class BoMColumns(Optionable):
             """ Name of the field to use for this column """
             self.name = ''
             """ Name to display in the header. The field is used when empty """
-            self.join = Optionable
-            """ [list(string)|string=''] List of fields to join to this column """
+            self.join = BoMJoinField
+            """ [list(dict)|list(string)|string=''] List of fields to join to this column """
             self.level = 0
             """ Used to group columns. The XLSX output uses it to collapse columns """
             self.comment = ''
@@ -66,11 +115,17 @@ class BoMColumns(Optionable):
             self.join = None
         elif isinstance(self.join, str):
             if self.join:
-                self.join = [field, self.join.lower()]
+                self.join = [field, BoMJoinField(self.join)]
             else:
                 self.join = None
         else:
-            self.join = [field]+[c.lower() for c in self.join]
+            join = [field]
+            for c in self.join:
+                if isinstance(c, str):
+                    join.append(BoMJoinField(c))
+                else:
+                    join.append(c)
+            self.join = join
 
 
 class BoMLinkable(Optionable):

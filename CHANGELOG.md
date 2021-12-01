@@ -16,12 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `exclude_filter`.
   https://forum.kicad.info/t/fab-drawing-for-only-through-hole-parts/
 - PCB PDF Print: mechanism to change the block title. (#102)
-- Internal BoM: option to avoid merging components with empty fields.
-  Is named `merge_both_blank` and defaults to true.
-- Internal BoM: when a `Value` field can't be interpreted as a `number+unit`,
-  and it contain at least one space, now we try to use the text before the
-  space. This helps for cases like "10K 1%".
-- Internal BoM: `count_smd_tht` option to compute SMD/THT stats. (#113)
+- Internal BoM:
+  - option to avoid merging components with empty fields.
+    Is named `merge_both_blank` and defaults to true.
+  - when a `Value` field can't be interpreted as a `number+unit`,
+    and it contain at least one space, now we try to use the text before the
+    space. This helps for cases like "10K 1%".
+  - `count_smd_tht` option to compute SMD/THT stats. (#113)
+  - option to add text to the `join` list. (#108)
 - Generic filter: options to match if a field is/isn't defined.
 - Excellon drill: added `route_mode_for_oval_holes` option.
 - Default global `dir` option.

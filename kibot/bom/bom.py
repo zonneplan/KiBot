@@ -348,7 +348,7 @@ class ComponentGroup(object):
                 if elements > 1 and target == key:
                     # Append data from the other fields
                     for source in join_l[1:]:
-                        v = self.get_field(source)
+                        v = source.get_text(self.get_field)
                         if v:
                             val = val + ' ' + v
             row.append(val)

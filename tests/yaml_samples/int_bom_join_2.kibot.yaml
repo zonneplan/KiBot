@@ -1,0 +1,27 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      columns:
+        - Row
+        - References
+        - Part
+        - field: Value
+          join:
+            - 'Tolerance'
+            - text: '-'
+            - field: 'Voltage'
+              text_before: '('
+              text_after: ')'
+        - field: manf
+          join: manf#
+        - field: digikey#
+          join: ''
+        - Quantity Per PCB
+

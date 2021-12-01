@@ -638,6 +638,30 @@ def test_int_bom_join_1(test_dir):
     ctx.clean_up()
 
 
+def test_int_bom_join_2(test_dir):
+    prj = 'join'
+    ext = 'csv'
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_join_2', prj, 'int_bom_join_2', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header, info = ctx.load_csv(out)
+    assert header == [COMP_COLUMN_NAME, REF_COLUMN_NAME, 'Part', 'Value', 'manf', 'digikey#', QTY_COLUMN_NAME]
+    ref_column = header.index(REF_COLUMN_NAME)
+    manf_column = header.index('manf')
+    value_column = header.index('Value')
+    check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS+1, [], LINKS_EXCLUDE+LINKS_COMPONENTS)
+    assert rows[0][ref_column] == 'C1'
+    assert rows[0][value_column] == '1nF 10% - (50V)'
+    assert rows[0][manf_column] == 'KEMET C0805C102K5RACTU'
+    assert rows[1][ref_column] == 'J1 J2'
+    assert rows[1][value_column] == 'Molex KK -'
+    assert rows[1][manf_column] == 'Molex 0022232021'
+    assert rows[2][ref_column] == 'R1'
+    assert rows[2][value_column] == '1k 5% -'
+    assert rows[2][manf_column] == 'Bourns CR0805-JW-102ELF'
+    ctx.clean_up()
+
+
 def test_int_include_dnf(test_dir):
     """ ignore_dnf: false """
     prj = 'kibom-test'

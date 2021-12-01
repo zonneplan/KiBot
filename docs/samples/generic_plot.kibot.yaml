@@ -69,8 +69,16 @@ outputs:
         - comment: ''
           # [string=''] Name of the field to use for this column
           field: 'Row'
-          # [list(string)|string=''] List of fields to join to this column
-          join: ''
+          # [list(dict)|list(string)|string=''] List of fields to join to this column
+          join:
+          # [string=''] Name of the field
+          - field: 'Voltage'
+            # [string=''] Text to use instead of a field. This option is incompatible with the `field` option
+            text: ''
+            # [string=''] Text to add after the field content. Will be added only if the field isn't empty
+            text_after: ''
+            # [string=''] Text to add before the field content. Will be added only if the field isn't empty
+            text_before: ''
           # [number=0] Used to group columns. The XLSX output uses it to collapse columns
           level: 0
           # [string=''] Name to display in the header. The field is used when empty
@@ -93,8 +101,16 @@ outputs:
         - comment: ''
           # [string=''] Name of the field to use for this column
           field: 'Row'
-          # [list(string)|string=''] List of fields to join to this column
-          join: ''
+          # [list(dict)|list(string)|string=''] List of fields to join to this column
+          join:
+          # [string=''] Name of the field
+          - field: 'Voltage'
+            # [string=''] Text to use instead of a field. This option is incompatible with the `field` option
+            text: ''
+            # [string=''] Text to add after the field content. Will be added only if the field isn't empty
+            text_after: ''
+            # [string=''] Text to add before the field content. Will be added only if the field isn't empty
+            text_before: ''
           # [number=0] Used to group columns. The XLSX output uses it to collapse columns
           level: 0
           # [string=''] Name to display in the header. The field is used when empty
