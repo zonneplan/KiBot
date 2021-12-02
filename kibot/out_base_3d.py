@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
+import re
 import requests
 import tempfile
 from tempfile import NamedTemporaryFile
@@ -16,6 +17,7 @@ from .macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger(__name__)
+DISABLE_TEXT = '_Disabled_by_KiBot'
 
 
 class Base3DOptions(VariantOptions):
@@ -114,6 +116,9 @@ class Base3DOptions(VariantOptions):
                 models_l.append(models.pop())
             # Look for all the 3D models for this footprint
             for m3d in models_l:
+                if  m3d.m_Filename.endswith(DISABLE_TEXT):
+                    # Skip models we intentionally disabled using a bogus name
+                    continue
                 full_name = KiConf.expand_env(m3d.m_Filename)
                 if not os.path.isfile(full_name):
                     # Missing 3D model
@@ -167,7 +172,52 @@ class Base3DOptions(VariantOptions):
             fname = f.name
         logger.debug('Storing modified PCB to `{}`'.format(fname))
         GS.board.Save(fname)
+        with open(fname.replace('.kicad_pcb', '.pro'), 'wt') as f:
+            pass
         return fname
+
+    def apply_variant_aspect(self, enable=False):
+        """ Disable/Enable the 3D models that aren't for this variant.
+            This mechanism uses the MTEXT attributes. """
+        # The magic text is %variant:slot1,slot2...%
+        field_regex = re.compile(r'\%([^:]+):(.*)\%')
+        if GS.debug_level > 3:
+            logger.debug("{} 3D models that aren't for this variant".format('Enable' if enable else 'Disable'))
+        len_disable = len(DISABLE_TEXT)
+        for m in GS.board.GetModules():
+            if GS.debug_level > 3:
+                logger.debug("Processing module " + m.GetReference())
+            # Look for text objects
+            for gi in m.GraphicalItems():
+                if gi.GetClass() == 'MTEXT':
+                    # Check if the text matches the magic style
+                    text = gi.GetText().strip()
+                    match = field_regex.match(text)
+                    if match:
+                        # Check if this is for the current variant
+                        var = match.group(1)
+                        slots = match.group(2).split(',')
+                        if var == self.variant.name:
+                            # Disable the unused models adding bogus text to the end
+                            slots = [int(v) for v in slots]
+                            models = m.Models()
+                            m_objs = []
+                            # Extract the models, we get a copy
+                            while not models.empty():
+                                m_objs.insert(0, models.pop())
+                            for i, m3d in enumerate(m_objs):
+                                if GS.debug_level > 3:
+                                    logger.debug('- {} {} {}'.format(i+1, i+1 in slots, m3d.m_Filename))
+                                if i+1 not in slots:
+                                    if enable:
+                                        # Revert the added text
+                                        m3d.m_Filename = m3d.m_Filename[:-len_disable]
+                                    else:
+                                        # Not used, add text to make their name invalid
+                                        m3d.m_Filename += DISABLE_TEXT
+                                # Push it back to the module
+                                models.push_back(m3d)
+
 
     def filter_components(self, dir):
         self.undo_3d_models_rep = {}
@@ -182,6 +232,8 @@ class Base3DOptions(VariantOptions):
                 return ret
             return GS.pcb_file
         comps_hash = self.get_refs_hash()
+        # Disable the models that aren't for this variant
+        self.apply_variant_aspect()
         # Remove the 3D models for not fitted components
         rem_models = []
         for m in GS.board.GetModules():
@@ -214,6 +266,8 @@ class Base3DOptions(VariantOptions):
                 restore = rem_models.pop(0)
                 for model in restore:
                     models.push_front(model)
+        # Re-enable the modules that aren't for this variant
+        self.apply_variant_aspect(enable=True)
         return fname
 
     def get_targets(self, out_dir):
