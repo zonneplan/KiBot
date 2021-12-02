@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **%sc**, **%sd**, **%sf**, **%sF**, **%sp** and **%sr** schematic data
 - Now patterns are also expanded in the out_dir name.
 - Global options to control the date format.
-- Outputs can use the options of other outputs as base (extend them).
+- Outputs can use the options of other outputs as base (extend them). (#112)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current
