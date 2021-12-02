@@ -116,7 +116,7 @@ class Base3DOptions(VariantOptions):
                 models_l.append(models.pop())
             # Look for all the 3D models for this footprint
             for m3d in models_l:
-                if  m3d.m_Filename.endswith(DISABLE_TEXT):
+                if m3d.m_Filename.endswith(DISABLE_TEXT):
                     # Skip models we intentionally disabled using a bogus name
                     continue
                 full_name = KiConf.expand_env(m3d.m_Filename)
@@ -217,7 +217,6 @@ class Base3DOptions(VariantOptions):
                                         m3d.m_Filename += DISABLE_TEXT
                                 # Push it back to the module
                                 models.push_back(m3d)
-
 
     def filter_components(self, dir):
         self.undo_3d_models_rep = {}
