@@ -200,7 +200,7 @@ class CfgYamlReader(object):
             return values
         CfgYamlReader._config_error_import(fname, '`{}` must be a string or a list ({})'.format(kind, str(v)))
 
-    def _parse_import_outputs(self, outs, explicit_outs, fn_rel, data, outputs):
+    def _parse_import_outputs(self, outs, explicit_outs, fn_rel, data):
         if (outs is None or len(outs) > 0) and 'outputs' in data:
             i_outs = self._parse_outputs(data['outputs'])
             if outs is not None:
@@ -216,8 +216,11 @@ class CfgYamlReader(object):
             if len(sel_outs) == 0:
                 logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
             else:
-                outputs.extend(sel_outs)
-            logger.debug('Outputs loaded from `{}`: {}'.format(fn_rel, list(map(lambda c: c.name, sel_outs))))
+                try:
+                    RegOutput.add_outputs(sel_outs, fn_rel)
+                except KiPlotConfigurationError as e:
+                    config_error(str(e))
+                logger.debug('Outputs loaded from `{}`: {}'.format(fn_rel, list(map(lambda c: c.name, sel_outs))))
         if outs is None and explicit_outs and 'outputs' not in data:
             logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
 
@@ -290,7 +293,6 @@ class CfgYamlReader(object):
             config_error("Incorrect `import` section (must be a list)")
         # Import the files
         dir = os.path.dirname(os.path.abspath(name))
-        outputs = []
         for entry in imp:
             if isinstance(entry, str):
                 fn = entry
@@ -335,14 +337,13 @@ class CfgYamlReader(object):
             fn_rel = os.path.relpath(fn)
             data = self.load_yaml(open(fn))
             # Outputs
-            self._parse_import_outputs(outs, explicit_outs, fn_rel, data, outputs)
+            self._parse_import_outputs(outs, explicit_outs, fn_rel, data)
             # Filters
             self._parse_import_filters(fils, explicit_fils, fn_rel, data)
             # Variants
             self._parse_import_variants(vars, explicit_vars, fn_rel, data)
             # Globals
             self._parse_import_globals(globals, explicit_globals, fn_rel, data)
-        return outputs
 
     def load_yaml(self, fstream):
         try:
@@ -368,7 +369,6 @@ class CfgYamlReader(object):
         GS.global_kiauto_wait_start = GS.global_from_cli.get('kiauto_wait_start', None)
         GS.global_kiauto_time_out_scale = GS.global_from_cli.get('kiauto_time_out_scale', None)
         # List of outputs
-        outputs = []
         version = None
         globals_found = False
         # Analize each section
@@ -382,13 +382,16 @@ class CfgYamlReader(object):
                 self._parse_global(v)
                 globals_found = True
             elif k == 'import':
-                outputs.extend(self._parse_import(v, fstream.name))
+                self._parse_import(v, fstream.name)
             elif k == 'variants':
                 RegOutput.add_variants(self._parse_variants(v))
             elif k == 'filters':
                 RegOutput.add_filters(self._parse_filters(v))
             elif k == 'outputs':
-                outputs.extend(self._parse_outputs(v))
+                try:
+                    RegOutput.add_outputs(self._parse_outputs(v))
+                except KiPlotConfigurationError as e:
+                    config_error(str(e))
             else:
                 config_error('Unknown section `{}` in config.'.format(k))
         if version is None:
@@ -402,7 +405,7 @@ class CfgYamlReader(object):
                 GS.solved_global_variant = RegOutput.check_variant(GS.global_variant)
             except KiPlotConfigurationError as e:
                 config_error("In global section: "+str(e))
-        return outputs
+        return RegOutput.get_outputs()
 
 
 def trim(docstring):

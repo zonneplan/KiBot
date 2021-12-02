@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+from collections import OrderedDict
 from .optionable import Optionable
 from .error import KiPlotConfigurationError
 
@@ -41,6 +42,8 @@ class RegOutput(Optionable, Registrable):
     _def_filters = {}
     # List of defined variants
     _def_variants = {}
+    # List of defined outputs
+    _def_outputs = OrderedDict()
 
     def __init__(self):
         super().__init__()
@@ -72,6 +75,24 @@ class RegOutput(Optionable, Registrable):
     @staticmethod
     def add_filter(obj):
         RegOutput._def_filters[obj.name] = obj
+
+    @staticmethod
+    def add_output(obj, file=None):
+        if obj.name in RegOutput._def_outputs:
+            msg = "Output name `{}` already defined".format(obj.name)
+            if file:
+                msg += ", while importing from `{}`".format(file)
+            raise KiPlotConfigurationError(msg)
+        RegOutput._def_outputs[obj.name] = obj
+
+    @staticmethod
+    def add_outputs(objs, file=None):
+        for o in objs:
+            RegOutput.add_output(o, file)
+
+    @staticmethod
+    def get_outputs():
+        return RegOutput._def_outputs.values()
 
     @staticmethod
     def check_variant(variant):

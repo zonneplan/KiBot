@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `%v/%V` expansion patterns now expand to the global variant when used in
   a context not related to variants. I.e. when a `compress` target expands
   `%v`.
+- Now you get an error when defining two outputs with the same name.
 
 ### Fixed
 - Position files now defaults to use the auxiliar origin as KiCad.

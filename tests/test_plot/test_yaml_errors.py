@@ -696,3 +696,27 @@ def test_error_import_no_outputs(test_dir):
     ctx.run()
     assert ctx.search_err(r"No outputs found in `(.*)drc.kibot.yaml`")
     ctx.clean_up()
+
+
+def test_same_name_1(test_dir):
+    """ 2 outputs with the same name in the same file """
+    ctx = context.TestContext(test_dir, 'test_same_name_1', PRJ, 'error_same_name_1', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Output name `position` already defined")
+    ctx.clean_up()
+
+
+def test_same_name_2(test_dir):
+    """ Using import, but the 2nd is in the main file """
+    ctx = context.TestContext(test_dir, 'test_same_name_2', PRJ, 'error_same_name_2', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Output name `position` already defined")
+    ctx.clean_up()
+
+
+def test_same_name_3(test_dir):
+    """ Using import and the 2nd is from the import """
+    ctx = context.TestContext(test_dir, 'test_same_name_3', PRJ, 'error_same_name_3', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Output name `position` already defined, while importing from")
+    ctx.clean_up()
