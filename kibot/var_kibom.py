@@ -34,7 +34,7 @@ class KiBoM(BaseVariant):  # noqa: F821
             """ [string|list(string)=''] Board variant(s) """
 
     def get_variant_field(self):
-        ''' Returns the name of the field used to determine if the component belongs to teh variant '''
+        ''' Returns the name of the field used to determine if the component belongs to the variant '''
         return self.config_field
 
     def set_def_filters(self, exclude_filter, dnf_filter, dnc_filter):
