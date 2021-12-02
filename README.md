@@ -38,6 +38,7 @@
     * [Supported outputs](#supported-outputs)
     * [Consolidating BoMs](#consolidating-boms)
     * [Importing outputs from another file](#importing-outputs-from-another-file)
+    * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
     * [Importing filters and variants from another file](#importing-filters-and-variants-from-another-file)
 * [Usage](#usage)
 * [Installation](#installation)
@@ -666,6 +667,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `boardview` output.
       * Valid keys:
@@ -683,6 +685,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `bom` output.
       * Valid keys:
@@ -808,6 +811,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `compress` output.
       * Valid keys:
@@ -830,6 +834,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -874,6 +879,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `excellon` output.
       * Valid keys:
@@ -907,6 +913,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `gerb_drill` output.
       * Valid keys:
@@ -931,6 +938,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -980,6 +988,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1026,6 +1035,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `ibom` output.
       * Valid keys:
@@ -1088,6 +1098,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `kibom` output.
       * Valid keys:
@@ -1179,6 +1190,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `kicost` output.
       * Valid keys:
@@ -1216,6 +1228,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pcbdraw` output.
       * Valid keys:
@@ -1268,6 +1281,7 @@ Next time you need this list just use an alias, like this:
     - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
     - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
     - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                  The replacement pattern can contain %n for the inner layer number and %N for the layer number.
@@ -1322,6 +1336,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to include in the PDF.
       * Valid keys:
@@ -1354,6 +1369,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_sch_print` output.
       * Valid keys:
@@ -1372,6 +1388,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `position` output.
       * Valid keys:
@@ -1397,6 +1414,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1445,6 +1463,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `render_3d` output.
       * Valid keys:
@@ -1487,6 +1506,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `sch_variant` output.
       * Valid keys:
@@ -1502,6 +1522,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `step` output.
       * Valid keys:
@@ -1526,6 +1547,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1568,6 +1590,7 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `svg_sch_print` output.
       * Valid keys:
@@ -1865,6 +1888,18 @@ import:
 ```
 
 This will import all the outputs from the listed files.
+
+
+#### Using other output as base for a new one
+
+If you need to define an output that is similar to another, and you want to avoid copying the options from the former, you can *extend* an output.
+To achieve it just specify the name of the base output in the `extends` value.
+Note that this will use the `options` of the other output as base, not other data as the comment.
+
+Also note that you can use YAML anchors, but this won't work if you are importing the base output from other file.
+
+Additionally you must be aware that extending an output doesn't disable the base output.
+For this reason you could need to deselect the base output from the command line.
 
 #### Importing filters and variants from another file
 

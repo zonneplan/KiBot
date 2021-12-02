@@ -720,3 +720,11 @@ def test_same_name_3(test_dir):
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Output name `position` already defined, while importing from")
     ctx.clean_up()
+
+
+def test_extends_1(test_dir):
+    """ Extend an undefined output """
+    ctx = context.TestContext(test_dir, 'test_extends_1', PRJ, 'error_extends_1', '')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"In section 'position_mine' \(position\): Unknown output `position2` in `extends`")
+    ctx.clean_up()

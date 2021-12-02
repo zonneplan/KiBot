@@ -95,6 +95,10 @@ class RegOutput(Optionable, Registrable):
         return RegOutput._def_outputs.values()
 
     @staticmethod
+    def get_output(name):
+        return RegOutput._def_outputs.get(name, None)
+
+    @staticmethod
     def check_variant(variant):
         if variant:
             if not RegOutput.is_variant(variant):

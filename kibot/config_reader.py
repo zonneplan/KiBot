@@ -85,6 +85,7 @@ class CfgYamlReader(object):
         o_out.name = name
         o_out.type = otype
         o_out.comment = comment
+        o_out.extends = o_tree.get('extends', '')
 
         return o_out
 

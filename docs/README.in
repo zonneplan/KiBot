@@ -38,6 +38,7 @@
     * [Supported outputs](#supported-outputs)
     * [Consolidating BoMs](#consolidating-boms)
     * [Importing outputs from another file](#importing-outputs-from-another-file)
+    * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
     * [Importing filters and variants from another file](#importing-filters-and-variants-from-another-file)
 * [Usage](#usage)
 * [Installation](#installation)
@@ -805,6 +806,18 @@ import:
 ```
 
 This will import all the outputs from the listed files.
+
+
+#### Using other output as base for a new one
+
+If you need to define an output that is similar to another, and you want to avoid copying the options from the former, you can *extend* an output.
+To achieve it just specify the name of the base output in the `extends` value.
+Note that this will use the `options` of the other output as base, not other data as the comment.
+
+Also note that you can use YAML anchors, but this won't work if you are importing the base output from other file.
+
+Additionally you must be aware that extending an output doesn't disable the base output.
+For this reason you could need to deselect the base output from the command line.
 
 #### Importing filters and variants from another file
 

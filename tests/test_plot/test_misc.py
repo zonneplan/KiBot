@@ -810,6 +810,7 @@ def test_compress_fail_deps(test_dir, monkeypatch):
 
 
 def test_import_1(test_dir):
+    """ Import some outputs """
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, 'test_import_1', prj, 'import_test_1', '')
     ctx.run(extra=['-i'])
@@ -819,9 +820,19 @@ def test_import_1(test_dir):
 
 
 def test_import_2(test_dir):
+    """ Import a global option """
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, 'test_import_2', prj, 'import_test_2', '')
-    ctx.run(extra=['-vvv'])
+    ctx.run()
     ctx.expect_out_file(POS_DIR+'/test_v5_(bottom_pos).pos')
     ctx.expect_out_file(POS_DIR+'/test_v5_(top_pos).pos')
+    ctx.clean_up()
+
+
+def test_import_3(test_dir):
+    """ Import an output and change it """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, 'test_import_3', prj, 'import_test_3', '')
+    ctx.run(extra=['position_mine'])
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
     ctx.clean_up()

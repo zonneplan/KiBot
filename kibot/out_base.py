@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
+from copy import deepcopy
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
 from .misc import Rect, KICAD_VERSION_5_99, W_WRONGPASTE
@@ -16,6 +17,7 @@ from .registrable import RegOutput
 from .optionable import Optionable, BaseOptions
 from .fil_base import BaseFilter, apply_fitted_filter, reset_filters
 from .macros import macros, document  # noqa: F401
+from .error import KiPlotConfigurationError
 from . import log
 
 logger = log.get_logger(__name__)
@@ -33,6 +35,8 @@ class BaseOutput(RegOutput):
             """ Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir """
             self.comment = ''
             """ A comment for documentation purposes """
+            self.extends = ''
+            """ Copy the options from the indicated output """
         if GS.global_dir:
             self.dir = GS.global_dir
         self._sch_related = False
@@ -68,6 +72,21 @@ class BaseOutput(RegOutput):
         return [GS.pcb_file]
 
     def config(self, parent):
+        if self._tree and not self._configured and isinstance(self.extends, str) and self.extends:
+            logger.debug("Extending `{}` from `{}`".format(self.name, self.extends))
+            # Copy the data from the base output
+            out = RegOutput.get_output(self.extends)
+            if out is None:
+                raise KiPlotConfigurationError('Unknown output `{}` in `extends`'.format(self.extends))
+            if out._tree:
+                options = out._tree.get('options', None)
+                if options:
+                    old_options = self._tree.get('options', {})
+                    # logger.error("Old options: "+str(old_options))
+                    options = deepcopy(options)
+                    options.update(old_options)
+                    self._tree['options'] = options
+                    # logger.error("New options: "+str(options))
         super().config(parent)
         if self.dir[0] == '+':
             self.dir = (GS.global_dir if GS.global_dir is not None else './') + self.dir[1:]
