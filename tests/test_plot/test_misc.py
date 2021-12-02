@@ -836,3 +836,23 @@ def test_import_3(test_dir):
     ctx.run(extra=['position_mine'])
     ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
     ctx.clean_up()
+
+
+def test_import_4(test_dir):
+    """ Import an output and change it, also disable the original """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, 'test_import_4', prj, 'import_test_4', '')
+    ctx.run(extra=[])
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
+    ctx.dont_expect_out_file(POS_DIR+'/test_v5_(bottom_pos).csv')
+    ctx.clean_up()
+
+
+def test_disable_default_1(test_dir):
+    """ Disable in the same file and out-of-order """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, 'test_disable_default_1', prj, 'disable_default_1', '')
+    ctx.run(extra=[])
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
+    ctx.dont_expect_out_file(POS_DIR+'/test_v5_(bottom_pos).csv')
+    ctx.clean_up()

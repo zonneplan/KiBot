@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Outputs can use the options of other outputs as base (extend them). (#112)
 - Another experimental mechanism to change 3D models according to the variant.
   (#103)
+- A mechanism to avoid running some outputs by default. (#112)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

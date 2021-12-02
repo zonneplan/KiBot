@@ -38,6 +38,7 @@ class CfgYamlReader(object):
     def __init__(self):
         super().__init__()
         self.imported_globals = {}
+        self.no_run_by_default = []
 
     def _check_version(self, v):
         if not isinstance(v, dict):
@@ -86,6 +87,16 @@ class CfgYamlReader(object):
         o_out.type = otype
         o_out.comment = comment
         o_out.extends = o_tree.get('extends', '')
+        # Pre-parse the run_by_default option
+        o_out.run_by_default = o_tree.get('run_by_default', True)
+        if not isinstance(o_out.run_by_default, bool):
+            o_out.run_by_default = True
+        o_out.disable_run_by_default = o_tree.get('disable_run_by_default', '')
+        # Pre-parse the disable_run_by_default option
+        if not isinstance(o_out.disable_run_by_default, str):
+            o_out.disable_run_by_default = ''
+        elif o_out.disable_run_by_default:
+            self.no_run_by_default.append(o_out.disable_run_by_default)
 
         return o_out
 
@@ -406,6 +417,13 @@ class CfgYamlReader(object):
                 GS.solved_global_variant = RegOutput.check_variant(GS.global_variant)
             except KiPlotConfigurationError as e:
                 config_error("In global section: "+str(e))
+        # Ok, now we have all the outputs loaded, so we can apply the disable_run_by_default
+        for name in self.no_run_by_default:
+            o = RegOutput.get_output(name)
+            if o:
+                o.run_by_default = False
+                logger.debug("Disabling the default run for `{}`".format(o))
+
         return RegOutput.get_outputs()
 
 

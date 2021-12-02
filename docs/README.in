@@ -817,7 +817,8 @@ Note that this will use the `options` of the other output as base, not other dat
 Also note that you can use YAML anchors, but this won't work if you are importing the base output from other file.
 
 Additionally you must be aware that extending an output doesn't disable the base output.
-For this reason you could need to deselect the base output from the command line.
+If you need to disable the original output use `disable_run_by_default` option.
+
 
 #### Importing filters and variants from another file
 
@@ -919,6 +920,8 @@ If you want to generate all outputs with some exceptions use:
 ```shell
 kibot --invert-sel OUTPUT_1 OUTPUT_2
 ```
+
+Note that you can use the `run_by_default` option of the output you want to exclude from the default runs.
 
 If you want to skip the DRC and ERC use:
 

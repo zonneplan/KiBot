@@ -1,0 +1,24 @@
+kibot:
+  version: 1
+
+global:
+  output: '%f_(%i).%x'
+
+outputs:
+  - name: 'position_mine'
+    comment: "Pick and place file"
+    type: position
+    dir: positiondir
+    extends: position
+    disable_run_by_default: position
+    options:
+      separate_files_for_front_and_back: false
+
+  - name: 'position'
+    type: position
+    dir: positiondir
+    options:
+      format: CSV   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: true
+      only_smd: true

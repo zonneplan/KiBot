@@ -667,11 +667,14 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `boardview` output.
       * Valid keys:
         - `output`: [string='%f-%i%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * BoM (Bill of Materials)
   * Type: `bom`
@@ -685,6 +688,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `bom` output.
@@ -803,6 +808,7 @@ Next time you need this list just use an alias, like this:
             - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
             - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
             - `title`: [string='KiBot Bill of Materials'] BoM title.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Archiver (files compressor)
   * Type: `compress`
@@ -811,6 +817,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `compress` output.
@@ -826,6 +834,7 @@ Next time you need this list just use an alias, like this:
                         Note this pattern is applied to the output dir specified with -d comman line option.
         - `format`: [string='ZIP'] [ZIP,TAR,RAR] Output file format.
         - `output`: [string='%f-%i%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * DXF (Drawing Exchange Format)
   * Type: `dxf`
@@ -834,6 +843,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
@@ -870,6 +881,7 @@ Next time you need this list just use an alias, like this:
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `variant`: [string=''] Board variant to apply.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Excellon drill format
   * Type: `excellon`
@@ -879,6 +891,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `excellon` output.
@@ -904,6 +918,7 @@ Next time you need this list just use an alias, like this:
         - `route_mode_for_oval_holes`: Undocumented.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `zeros_format`: [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Gerber drill format
   * Type: `gerb_drill`
@@ -913,6 +928,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `gerb_drill` output.
@@ -930,6 +947,7 @@ Next time you need this list just use an alias, like this:
             - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Gerber format
   * Type: `gerber`
@@ -938,6 +956,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
@@ -980,6 +1000,7 @@ Next time you need this list just use an alias, like this:
         - `use_gerber_x2_attributes`: [boolean=true] Use the extended X2 format (otherwise use X1 formerly RS-274X).
         - `use_protel_extensions`: [boolean=false] Use legacy Protel file extensions.
         - `variant`: [string=''] Board variant to apply.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * HPGL (Hewlett & Packard Graphics Language)
   * Type: `hpgl`
@@ -988,6 +1009,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
@@ -1026,6 +1049,7 @@ Next time you need this list just use an alias, like this:
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * IBoM (Interactive HTML BoM)
   * Type: `ibom`
@@ -1035,6 +1059,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `ibom` output.
@@ -1087,6 +1113,7 @@ Next time you need this list just use an alias, like this:
                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * KiBoM (KiCad Bill of Materials)
   * Type: `kibom`
@@ -1098,6 +1125,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `kibom` output.
@@ -1181,6 +1210,7 @@ Next time you need this list just use an alias, like this:
                      with a BOM file exported for each variant, separate
                      variants with the ';' (semicolon) character.
                      This isn't related to the KiBot concept of variants.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * KiCost (KiCad Cost calculator)
   * Type: `kicost`
@@ -1190,6 +1220,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `kicost` output.
@@ -1219,6 +1251,7 @@ Next time you need this list just use an alias, like this:
             - `name`: [string=''] New name.
         - `variant`: [string=''] Board variant to apply.
                      Internal variants and filters are currently ignored.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PcbDraw - Beautiful 2D PCB render
   * Type: `pcbdraw`
@@ -1228,6 +1261,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pcbdraw` output.
@@ -1261,6 +1296,7 @@ Next time you need this list just use an alias, like this:
         - `variant`: [string=''] Board variant to apply.
         - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
         - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PDF (Portable Document Format)
   * Type: `pdf`
@@ -1275,6 +1311,8 @@ Next time you need this list just use an alias, like this:
                      Use ${filename(LAYER)} for the file corresponding to LAYER.
         - `output`: [string='Custom_report.txt'] File name for the custom report.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                     A short-cut to use for simple cases where a variant is an overkill.
     - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
@@ -1324,6 +1362,7 @@ Next time you need this list just use an alias, like this:
     - `plot_footprint_refs`: [boolean=true] Include the footprint references.
     - `plot_footprint_values`: [boolean=true] Include the footprint values.
     - `plot_sheet_reference`: [boolean=false] Currently without effect.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
     - `tent_vias`: [boolean=true] Cover the vias.
     - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
     - `variant`: [string=''] Board variant to apply.
@@ -1336,6 +1375,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to include in the PDF.
@@ -1360,6 +1401,7 @@ Next time you need this list just use an alias, like this:
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PDF Schematic Print (Portable Document Format)
   * Type: `pdf_sch_print`
@@ -1369,6 +1411,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_sch_print` output.
@@ -1380,6 +1424,7 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%v.%x'] Filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Pick & place
   * Type: `position`
@@ -1388,6 +1433,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `position` output.
@@ -1406,6 +1453,7 @@ Next time you need this list just use an alias, like this:
         - `units`: [string='millimeters'] [millimeters,inches] Units used for the positions.
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
         - `variant`: [string=''] Board variant to apply.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PS (Postscript)
   * Type: `ps`
@@ -1414,6 +1462,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
@@ -1456,6 +1506,7 @@ Next time you need this list just use an alias, like this:
         - `variant`: [string=''] Board variant to apply.
         - `width_adjust`: [number=0] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * 3D render of the PCB
   * Type: `render_3d`
@@ -1463,6 +1514,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `render_3d` output.
@@ -1497,6 +1550,7 @@ Next time you need this list just use an alias, like this:
         - `width`: [number=1280] Image width (aprox.).
         - `zoom`: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                   Same result as using the mouse wheel in the 3D viewer.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Schematic with variant generator
   * Type: `sch_variant`
@@ -1506,6 +1560,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `sch_variant` output.
@@ -1513,6 +1569,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant to apply.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
   * Type: `step`
@@ -1522,6 +1579,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `step` output.
@@ -1538,6 +1597,7 @@ Next time you need this list just use an alias, like this:
                     You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
         - `output`: [string='%f-%i%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * SVG (Scalable Vector Graphics)
   * Type: `svg`
@@ -1547,6 +1607,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
@@ -1582,6 +1644,7 @@ Next time you need this list just use an alias, like this:
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * SVG Schematic Print
   * Type: `svg_sch_print`
@@ -1590,6 +1653,8 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original..
     - `extends`: [string=''] Copy the options from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `svg_sch_print` output.
@@ -1599,6 +1664,7 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%v.%x'] Filename for the output SVG (%i=schematic %x=svg). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 
 #### Consolidating BoMs
@@ -1899,7 +1965,8 @@ Note that this will use the `options` of the other output as base, not other dat
 Also note that you can use YAML anchors, but this won't work if you are importing the base output from other file.
 
 Additionally you must be aware that extending an output doesn't disable the base output.
-For this reason you could need to deselect the base output from the command line.
+If you need to disable the original output use `disable_run_by_default` option.
+
 
 #### Importing filters and variants from another file
 
@@ -2001,6 +2068,8 @@ If you want to generate all outputs with some exceptions use:
 ```shell
 kibot --invert-sel OUTPUT_1 OUTPUT_2
 ```
+
+Note that you can use the `run_by_default` option of the output you want to exclude from the default runs.
 
 If you want to skip the DRC and ERC use:
 

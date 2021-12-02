@@ -359,7 +359,9 @@ def generate_outputs(outputs, target, invert, skip_pre):
         return
     # Generate outputs
     for out in outputs:
-        if (n == 0) or ((out.name in target) ^ invert):
+        if (((n == 0 or ((out.name not in target) and invert)) and out.run_by_default) or
+           ((out.name in target) and not invert)):
+            # Exclude
             config_output(out)
             logger.info('- '+str(out))
             run_output(out)

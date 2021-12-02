@@ -37,6 +37,11 @@ class BaseOutput(RegOutput):
             """ A comment for documentation purposes """
             self.extends = ''
             """ Copy the options from the indicated output """
+            self.run_by_default = True
+            """ When enabled this output will be created when no specific outputs are requested """
+            self.disable_run_by_default = ''
+            """ Use it to disable the `run_by_default` status of other output.
+                Useful when this output extends another and you don't want to generate the original. """
         if GS.global_dir:
             self.dir = GS.global_dir
         self._sch_related = False
@@ -88,6 +93,11 @@ class BaseOutput(RegOutput):
                     self._tree['options'] = options
                     # logger.error("New options: "+str(options))
         super().config(parent)
+        to_dis = self.disable_run_by_default
+        if to_dis:
+            out = RegOutput.get_output(to_dis)
+            if out is None:
+                raise KiPlotConfigurationError('Unknown output `{}` in `disable_run_by_default`'.format(to_dis))
         if self.dir[0] == '+':
             self.dir = (GS.global_dir if GS.global_dir is not None else './') + self.dir[1:]
         if getattr(self, 'options', None) and isinstance(self.options, type):
