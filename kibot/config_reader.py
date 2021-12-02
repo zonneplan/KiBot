@@ -301,7 +301,7 @@ class CfgYamlReader(object):
                 explicit_outs = True
                 explicit_fils = False
                 explicit_vars = False
-                explicit_outs = False
+                explicit_globals = False
             elif isinstance(entry, dict):
                 fn = outs = fils = vars = globals = None
                 explicit_outs = explicit_fils = explicit_vars = explicit_globals = False
