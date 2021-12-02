@@ -817,9 +817,10 @@ import:
     outputs: LIST_OF_OUTPUTS
     filters: LIST_OF_FILTERS
     variants: LIST_OF_VARIANTS
+    global: LIST_OF_GLOBALS
 ```
 
-This syntax is flexible. If you don't define which `outputs`, `filters` and/or `variants` all will be imported. So you can just omit them, like this:
+This syntax is flexible. If you don't define which `outputs`, `filters`, `variants` and/or `global` all will be imported. So you can just omit them, like this:
 
 ```yaml
 import:
@@ -844,9 +845,11 @@ import:
     outputs: all
     filters: all
     variants: none
+    global: none
 ```
 
-This will import all outputs and filters, but not variants.
+This will import all outputs and filters, but not variants or globals.
+Also note that imported globals has more precendence than the ones defined in the same file.
 
 ## Usage
 

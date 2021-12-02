@@ -16,7 +16,7 @@ from collections import OrderedDict
 from .error import (KiPlotConfigurationError, config_error)
 from .kiplot import (load_board)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
-                   W_NOVARIANTS)
+                   W_NOVARIANTS, W_NOGLOBALS)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter
 from .pre_base import BasePreFlight
@@ -37,6 +37,7 @@ except ImportError:
 class CfgYamlReader(object):
     def __init__(self):
         super().__init__()
+        self.imported_globals = {}
 
     def _check_version(self, v):
         if not isinstance(v, dict):
@@ -164,6 +165,9 @@ class CfgYamlReader(object):
         logger.debug("Parsing global options: {}".format(gb))
         if not isinstance(gb, dict):
             config_error("Incorrect `global` section (must be a dict)")
+        if self.imported_globals:
+            gb.update(self.imported_globals)
+            logger.debug("Global options + imported: {}".format(gb))
         # Parse all keys inside it
         glb = GS.global_opts_class()
         glb.set_tree(gb)
@@ -235,7 +239,7 @@ class CfgYamlReader(object):
                 RegOutput.add_filters(sel_fils)
                 logger.debug('Filters loaded from `{}`: {}'.format(fn_rel, sel_fils.keys()))
         if fils is None and explicit_fils and 'filters' not in data:
-            logger.warning(W_NOOUTPUTS+"No filters found in `{}`".format(fn_rel))
+            logger.warning(W_NOFILTERS+"No filters found in `{}`".format(fn_rel))
 
     def _parse_import_variants(self, vars, explicit_vars, fn_rel, data):
         if (vars is None or len(vars) > 0) and 'variants' in data:
@@ -255,7 +259,29 @@ class CfgYamlReader(object):
                 RegOutput.add_variants(sel_vars)
                 logger.debug('Variants loaded from `{}`: {}'.format(fn_rel, sel_vars.keys()))
         if vars is None and explicit_vars and 'variants' not in data:
-            logger.warning(W_NOOUTPUTS+"No variants found in `{}`".format(fn_rel))
+            logger.warning(W_NOVARIANTS+"No variants found in `{}`".format(fn_rel))
+
+    def _parse_import_globals(self, globals, explicit_globals, fn_rel, data):
+        if (globals is None or len(globals) > 0) and 'global' in data:
+            i_globals = data['global']
+            if not isinstance(i_globals, dict):
+                config_error("Incorrect `global` section (must be a dict), while importing from {}".format(fn_rel))
+            if globals is not None:
+                sel_globals = {}
+                for f in globals:
+                    if f in i_globals:
+                        sel_globals[f] = i_globals[f]
+                    else:
+                        logger.warning(W_UNKOUT+"can't import `{}` global from `{}` (missing)".format(f, fn_rel))
+            else:
+                sel_globals = i_globals
+            if len(sel_globals) == 0:
+                logger.warning(W_NOGLOBALS+"No globals found in `{}`".format(fn_rel))
+            else:
+                self.imported_globals.update(sel_globals)
+                logger.debug('Globals loaded from `{}`: {}'.format(fn_rel, sel_globals.keys()))
+        if globals is None and explicit_globals and 'global' not in data:
+            logger.warning(W_NOGLOBALS+"No globals found in `{}`".format(fn_rel))
 
     def _parse_import(self, imp, name):
         """ Get imports """
@@ -271,12 +297,14 @@ class CfgYamlReader(object):
                 outs = None
                 fils = []
                 vars = []
+                globals = []
                 explicit_outs = True
                 explicit_fils = False
                 explicit_vars = False
+                explicit_outs = False
             elif isinstance(entry, dict):
-                fn = outs = fils = vars = None
-                explicit_outs = explicit_fils = explicit_vars = False
+                fn = outs = fils = vars = globals = None
+                explicit_outs = explicit_fils = explicit_vars = explicit_globals = False
                 for k, v in entry.items():
                     if k == 'file':
                         if not isinstance(v, str):
@@ -291,6 +319,9 @@ class CfgYamlReader(object):
                     elif k == 'variants':
                         vars = self._parse_import_items('variants', fn, v)
                         explicit_vars = True
+                    elif k == 'global':
+                        globals = self._parse_import_items('global', fn, v)
+                        explicit_globals = True
                     else:
                         self._config_error_import(fn, "unknown import entry `{}`".format(str(v)))
                 if fn is None:
@@ -309,6 +340,8 @@ class CfgYamlReader(object):
             self._parse_import_filters(fils, explicit_fils, fn_rel, data)
             # Variants
             self._parse_import_variants(vars, explicit_vars, fn_rel, data)
+            # Globals
+            self._parse_import_globals(globals, explicit_globals, fn_rel, data)
         return outputs
 
     def load_yaml(self, fstream):

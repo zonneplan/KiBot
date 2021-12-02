@@ -816,3 +816,12 @@ def test_import_1(test_dir):
     ctx.search_err(r'Outputs loaded from `tests/yaml_samples/gerber_inner.kibot.yaml`: \[\'gerbers\', \'result\'\]')
     ctx.search_err(r'Outputs loaded from `tests/yaml_samples/ibom.kibot.yaml`: \[\'interactive_bom\'\]')
     ctx.clean_up()
+
+
+def test_import_2(test_dir):
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, 'test_import_2', prj, 'import_test_2', '')
+    ctx.run(extra=['-vvv'])
+    ctx.expect_out_file(POS_DIR+'/test_v5_(bottom_pos).pos')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(top_pos).pos')
+    ctx.clean_up()
