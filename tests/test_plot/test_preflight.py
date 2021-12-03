@@ -16,7 +16,6 @@ pytest-3 --log-cli-level debug
 
 import os
 import sys
-import shutil
 import logging
 import re
 from subprocess import run, PIPE
