@@ -11,7 +11,7 @@ Comp "Company"
 Comment1 "Comment 1"
 Comment2 "Comment 2"
 Comment3 "Comment 3"
-Comment4 "Comment 4"
+Comment4 "@Comment4@"
 $EndDescr
 Wire Wire Line
 	1000 1000 1500 1000
