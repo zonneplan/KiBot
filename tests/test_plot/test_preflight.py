@@ -203,10 +203,9 @@ def test_pcb_replace_1(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, 'test_pcb_replace_1', prj, 'pcb_replace_1', '')
     ctx.run(extra=[])
-    files = {}
     file = ctx.board_file
     file_back = file + '-bak'
-    assert os.path.isfile(file_back), v
+    assert os.path.isfile(file_back), file_back
     assert os.path.getsize(file_back) > 0
     try:
         logging.debug(file)
