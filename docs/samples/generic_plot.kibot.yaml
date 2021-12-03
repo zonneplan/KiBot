@@ -18,6 +18,7 @@ preflight:
   # [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
   ignore_unconnected: false
   # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+  # This pre-flight modifies the PCB. Even when a back-up is done use it carefully.
   pcb_replace: 
     date_command: "git log -1 --format='%as' -- $KIBOT_PCB_NAME"
     replace_tags:
@@ -33,6 +34,7 @@ preflight:
   # The report file name is controlled by the global output pattern (%i=erc %x=txt).
   run_erc: true
   # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+  # This pre-flight modifies the schematics. Even when a back-up is done use it carefully.
   sch_replace: 
     date_command: "git log -1 --format='%as' -- $KIBOT_SCH_NAME"
     replace_tags:

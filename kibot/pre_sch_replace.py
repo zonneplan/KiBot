@@ -31,7 +31,8 @@ class SCH_ReplaceOptions(Base_ReplaceOptions):
 
 @pre_class
 class SCH_Replace(Base_Replace):  # noqa: F821
-    """ [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date """
+    """ [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+        This pre-flight modifies the schematics. Even when a back-up is done use it carefully """
     _context = 'SCH'
 
     def __init__(self, name, value):

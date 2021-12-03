@@ -20,6 +20,7 @@
   * [The header](#the-header)
   * [The *preflight* section](#the-preflight-section)
     * [Supported *preflight* options](#supported-preflight-options)
+    * [More about *pcb_replace* and *sch_replace*](#more-about-pcb_replace-and-sch_replace)
     * [Filtering DRC and ERC errors](#filtering-drc-and-erc-errors)
   * [Default global options](#default-global-options)
     * [Default *output* option](#default-output-option)
@@ -118,6 +119,7 @@ This section is used to specify tasks that will be executed before generating an
     - *regexp*: Alias for regex.
 - `ignore_unconnected`: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
 - `pcb_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+        This pre-flight modifies the PCB. Even when a back-up is done use it carefully.
   * Valid keys:
     - `date_command`: [string=''] Command to get the date to use in the PCB.\
                       ```git log -1 --format='%as' -- $KIBOT_PCB_NAME```\
@@ -139,6 +141,7 @@ This section is used to specify tasks that will be executed before generating an
 - `run_erc`: [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
         The report file name is controlled by the global output pattern (%i=erc %x=txt).
 - `sch_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+        This pre-flight modifies the schematics. Even when a back-up is done use it carefully.
   * Valid keys:
     - `date_command`: [string=''] Command to get the date to use in the SCH.\
                       ```git log -1 --format='%as' -- $KIBOT_SCH_NAME```\
@@ -171,6 +174,15 @@ preflight:
   check_zone_fills: true
   ignore_unconnected: false
 ```
+
+#### More about *pcb_replace* and *sch_replace*
+
+These options are supposed to be used in a version control environment.
+This is because, unlike other options, they modify the PCB and/or schematic and might damage them.
+In a version control environment you can just roll-back the changes.
+
+Don't be afraid, they make a back-up of the files and also tries to disable dangerous changes.
+But should be used carefully. They are ideal for CI/CD environment where you don't actually commit any changes.
 
 #### Filtering DRC and ERC errors
 

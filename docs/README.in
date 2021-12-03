@@ -20,6 +20,7 @@
   * [The header](#the-header)
   * [The *preflight* section](#the-preflight-section)
     * [Supported *preflight* options](#supported-preflight-options)
+    * [More about *pcb_replace* and *sch_replace*](#more-about-pcb_replace-and-sch_replace)
     * [Filtering DRC and ERC errors](#filtering-drc-and-erc-errors)
   * [Default global options](#default-global-options)
     * [Default *output* option](#default-output-option)
@@ -115,6 +116,15 @@ preflight:
   check_zone_fills: true
   ignore_unconnected: false
 ```
+
+#### More about *pcb_replace* and *sch_replace*
+
+These options are supposed to be used in a version control environment.
+This is because, unlike other options, they modify the PCB and/or schematic and might damage them.
+In a version control environment you can just roll-back the changes.
+
+Don't be afraid, they make a back-up of the files and also tries to disable dangerous changes.
+But should be used carefully. They are ideal for CI/CD environment where you don't actually commit any changes.
 
 #### Filtering DRC and ERC errors
 
