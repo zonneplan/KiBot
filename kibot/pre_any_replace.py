@@ -51,10 +51,10 @@ class Base_ReplaceOptions(Optionable):
         super().__init__()
         with document:
             self.date_command = ''
-            """ Command to get the date to use in the schematic.
-                git log -1 --format='%as' -- $KIBOT_PCB_NAME
+            """ Command to get the date to use in the PCB.
+                ```git log -1 --format='%as' -- $KIBOT_PCB_NAME```
                 Will return the date in YYYY-MM-DD format.
-                date -d @`git log -1 --format='%at' -- $KIBOT_PCB_NAME` +%Y-%m-%d_%H-%M-%S
+                ```date -d @`git log -1 --format='%at' -- $KIBOT_PCB_NAME` +%Y-%m-%d_%H-%M-%S```
                 Will return the date in YYYY-MM-DD_HH-MM-SS format """
             self.replace_tags = TagReplaceBase
             """ [dict|list(dict)] Tag or tags to replace """

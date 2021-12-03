@@ -119,10 +119,10 @@ This section is used to specify tasks that will be executed before generating an
 - `ignore_unconnected`: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
 - `pcb_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
   * Valid keys:
-    - `date_command`: [string=''] Command to get the date to use in the schematic.
-                      git log -1 --format='%as' -- $KIBOT_PCB_NAME
+    - `date_command`: [string=''] Command to get the date to use in the PCB.
+                      ```git log -1 --format='%as' -- $KIBOT_PCB_NAME```
                       Will return the date in YYYY-MM-DD format.
-                      date -d @`git log -1 --format='%at' -- $KIBOT_PCB_NAME` +%Y-%m-%d_%H-%M-%S
+                      ```date -d @`git log -1 --format='%at' -- $KIBOT_PCB_NAME` +%Y-%m-%d_%H-%M-%S```
                       Will return the date in YYYY-MM-DD_HH-MM-SS format.
     - `replace_tags`: [dict|list(dict)] Tag or tags to replace.
       * Valid keys:
@@ -140,10 +140,10 @@ This section is used to specify tasks that will be executed before generating an
         The report file name is controlled by the global output pattern (%i=erc %x=txt).
 - `sch_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
   * Valid keys:
-    - `date_command`: [string=''] Command to get the date to use in the schematic.
-                      git log -1 --format='%as' -- $KIBOT_SCH_NAME
+    - `date_command`: [string=''] Command to get the date to use in the SCH.
+                      ```git log -1 --format='%as' -- $KIBOT_SCH_NAME```
                       Will return the date in YYYY-MM-DD format.
-                      date -d @`git log -1 --format='%at' -- $KIBOT_SCH_NAME` +%Y-%m-%d_%H-%M-%S
+                      ```date -d @`git log -1 --format='%at' -- $KIBOT_SCH_NAME` +%Y-%m-%d_%H-%M-%S```
                       Will return the date in YYYY-MM-DD_HH-MM-SS format.
     - `replace_tags`: [dict|list(dict)] Tag or tags to replace.
       * Valid keys:
