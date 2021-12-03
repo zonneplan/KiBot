@@ -1,0 +1,15 @@
+kibot:
+  version: 1
+
+global:
+  output: '%f_(%sC1)_(%bC2).%x'
+
+outputs:
+  - name: 'position'
+    type: position
+    dir: positiondir
+    options:
+      format: CSV   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: false
+      only_smd: true

@@ -34,8 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New expansion patterns:
   - **%g** the `file_id` of the global variant.
   - **%G** the `name` of the global variant.
-  - **%bc**, **%bd**, **%bf**, **%bF**, **%bp** and **%br** board data
-  - **%sc**, **%sd**, **%sf**, **%sF**, **%sp** and **%sr** schematic data
+  - **%C1**, **%C2**, **%C3** and **%C4** the comments in the sch/pcb title
+    block.
+  - **%bc**, **%bC1**, **%bC2**, **%bC3**, **%bC4**, **%bd**, **%bf**,
+    **%bF**, **%bp** and **%br** board data
+  - **%sc**, **%sC1**, **%sC2**, **%sC3**, **%sC4**, **%sd**, **%sf**,
+    **%sF**, **%sp** and **%sr** schematic data
 - Now patterns are also expanded in the out_dir name.
 - Global options to control the date format.
 - Outputs can use the options of other outputs as base (extend them). (#112)

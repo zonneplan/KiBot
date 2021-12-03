@@ -856,3 +856,12 @@ def test_disable_default_1(test_dir):
     ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
     ctx.dont_expect_out_file(POS_DIR+'/test_v5_(bottom_pos).csv')
     ctx.clean_up()
+
+
+def test_expand_comment_1(test_dir):
+    """ Disable in the same file and out-of-order """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, 'test_expand_comment_1', prj, 'expand_comment_1', '')
+    ctx.run(extra=[])
+    ctx.expect_out_file(POS_DIR+'/test_v5_(Comment 1)_(The_C2).csv')
+    ctx.clean_up()

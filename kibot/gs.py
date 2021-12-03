@@ -50,11 +50,19 @@ class GS(object):
     sch_date = None
     sch_rev = None
     sch_comp = None
+    sch_com1 = None
+    sch_com2 = None
+    sch_com3 = None
+    sch_com4 = None
     # Data from the board title block
     pcb_title = None
     pcb_date = None
     pcb_rev = None
     pcb_comp = None
+    pcb_com1 = None
+    pcb_com2 = None
+    pcb_com3 = None
+    pcb_com4 = None
     # Current variant/s
     variant = None
     # All the outputs
@@ -108,6 +116,10 @@ class GS(object):
         GS.sch_date = GS.sch.date
         GS.sch_rev = GS.sch.revision
         GS.sch_comp = GS.sch.company
+        GS.sch_com1 = GS.sch.comment1
+        GS.sch_com2 = GS.sch.comment2
+        GS.sch_com3 = GS.sch.comment3
+        GS.sch_com4 = GS.sch.comment4
 
     @staticmethod
     def load_pcb_title_block():
@@ -128,10 +140,18 @@ class GS(object):
             GS.pcb_title = GS.pcb_basename
         GS.pcb_rev = title_block.GetRevision()
         GS.pcb_comp = title_block.GetCompany()
+        GS.pcb_com1 = title_block.GetComment1()
+        GS.pcb_com2 = title_block.GetComment2()
+        GS.pcb_com3 = title_block.GetComment3()
+        GS.pcb_com4 = title_block.GetComment4()
         logger.debug("PCB title: `{}`".format(GS.pcb_title))
         logger.debug("PCB date: `{}`".format(GS.pcb_date))
         logger.debug("PCB revision: `{}`".format(GS.pcb_rev))
         logger.debug("PCB company: `{}`".format(GS.pcb_comp))
+        logger.debug("PCB comment 1: `{}`".format(GS.pcb_com1))
+        logger.debug("PCB comment 2: `{}`".format(GS.pcb_com2))
+        logger.debug("PCB comment 3: `{}`".format(GS.pcb_com3))
+        logger.debug("PCB comment 4: `{}`".format(GS.pcb_com4))
 
     @staticmethod
     def check_pcb():

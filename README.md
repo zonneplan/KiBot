@@ -204,6 +204,10 @@ You can always choose the file name for a particular output.
 The pattern uses the following expansions:
 
 - **%c** company from pcb/sch metadata.
+- **%C1** comments line 1 from pcb/sch metadata.
+- **%C2** comments line 2 from pcb/sch metadata.
+- **%C3** comments line 3 from pcb/sch metadata.
+- **%C4** comments line 4 from pcb/sch metadata.
 - **%d** pcb/sch date from metadata if available, file modification date otherwise.
 - **%D** date the script was started.
 - **%f** original pcb/sch file name without extension.
@@ -227,7 +231,7 @@ global:
   output: '%f_rev_%r-%i.%x'
 ```
 
-Note that the following patterns: **%c**, **%d**, **%f**, **%F**, **%p** and **%r** depends on the context.
+Note that the following patterns: **%c**, **%C1**, **%C2**, **%C3**, **%C4**, **%d**, **%f**, **%F**, **%p** and **%r** depends on the context.
 If you use them for an output related to the PCB these values will be obtained from the PCB.
 If you need to force the origin of the data you can use **%bX** for the PCB and **%sX** for the schematic, where
 **X** is the pattern to expand.

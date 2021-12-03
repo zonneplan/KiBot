@@ -218,6 +218,10 @@ class Optionable(object):
             name = name.replace('%bf', GS.pcb_basename)
             name = name.replace('%bp', GS.pcb_title)
             name = name.replace('%br', GS.pcb_rev)
+            name = name.replace('%bC1', GS.pcb_com1)
+            name = name.replace('%bC2', GS.pcb_com2)
+            name = name.replace('%bC3', GS.pcb_com3)
+            name = name.replace('%bC4', GS.pcb_com4)
         if GS.solved_global_variant:
             name = name.replace('%g', GS.solved_global_variant.file_id)
             name = name.replace('%G', GS.solved_global_variant.name)
@@ -229,6 +233,10 @@ class Optionable(object):
             name = name.replace('%sf', GS.sch_basename)
             name = name.replace('%sp', GS.sch_title)
             name = name.replace('%sr', GS.sch_rev)
+            name = name.replace('%sC1', GS.sch_com1)
+            name = name.replace('%sC2', GS.sch_com2)
+            name = name.replace('%sC3', GS.sch_com3)
+            name = name.replace('%sC4', GS.sch_com4)
         name = name.replace('%D', GS.n.strftime(GS.global_date_format))
         name = name.replace('%T', GS.n.strftime(GS.global_time_format))
         if self:
@@ -247,7 +255,7 @@ class Optionable(object):
                 parent = self._parent
             logger.debug('Expanding `{}` in PCB context for {} parent: {}'.format(name, self, parent))
         # Determine if we need to expand SCH and/or PCB related data
-        has_dep_exp = any(map(lambda x: x in name, ['%c', '%d', '%F', '%f', '%p', '%r']))
+        has_dep_exp = any(map(lambda x: x in name, ['%c', '%d', '%F', '%f', '%p', '%r', '%C1', '%C2', '%C3', '%C4']))
         do_sch = is_sch and has_dep_exp
         # logger.error(name + '  is_sch ' +str(is_sch)+"   "+ str(do_sch))
         # raise
@@ -270,6 +278,10 @@ class Optionable(object):
             name = name.replace('%f', GS.pcb_basename)
             name = name.replace('%p', GS.pcb_title)
             name = name.replace('%r', GS.pcb_rev)
+            name = name.replace('%C1', GS.pcb_com1)
+            name = name.replace('%C2', GS.pcb_com2)
+            name = name.replace('%C3', GS.pcb_com3)
+            name = name.replace('%C4', GS.pcb_com4)
         if GS.sch and do_sch:
             name = name.replace('%c', GS.sch_comp)
             name = name.replace('%d', GS.sch_date)
@@ -277,6 +289,10 @@ class Optionable(object):
             name = name.replace('%f', GS.sch_basename)
             name = name.replace('%p', GS.sch_title)
             name = name.replace('%r', GS.sch_rev)
+            name = name.replace('%C1', GS.sch_com1)
+            name = name.replace('%C2', GS.sch_com2)
+            name = name.replace('%C3', GS.sch_com3)
+            name = name.replace('%C4', GS.sch_com4)
         # sanitize the name to avoid characters illegal in file systems
         name = name.replace('\\', '/')
         name = re.sub(r'[?%*:|"<>]', '_', name)

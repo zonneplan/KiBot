@@ -10,6 +10,10 @@
   )
 
   (page A4)
+  (title_block
+    (comment 2 The_C2)
+  )
+
   (layers
     (0 F.Cu signal)
     (31 B.Cu signal)

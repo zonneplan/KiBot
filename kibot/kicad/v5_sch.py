@@ -1440,10 +1440,14 @@ class Schematic(object):
         while True:
             line = f.get_line()
             if line.startswith('$EndDescr'):
-                self.title = self.title_block['Title'] if 'Title' in self.title_block else ''
-                self.date = self.title_block['Date'] if 'Date' in self.title_block else ''
-                self.revision = self.title_block['Rev'] if 'Rev' in self.title_block else ''
-                self.company = self.title_block['Comp'] if 'Comp' in self.title_block else ''
+                self.title = self.title_block.get('Title', '')
+                self.date = self.title_block.get('Date', '')
+                self.revision = self.title_block.get('Rev', '')
+                self.company = self.title_block.get('Comp', '')
+                self.comment1 = self.title_block.get('Comment1', '')
+                self.comment2 = self.title_block.get('Comment2', '')
+                self.comment3 = self.title_block.get('Comment3', '')
+                self.comment4 = self.title_block.get('Comment4', '')
                 return
             elif line.startswith('encoding'):
                 if line[9:14] != 'utf-8':
