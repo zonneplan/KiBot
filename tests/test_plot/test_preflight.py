@@ -189,10 +189,40 @@ def test_sch_replace_1(test_dir):
             if 'test_v5' in k:
                 cmd = ['/bin/bash', '-c', "git log -1 --format='%h' " + k]
                 text = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()
-                m = re.search("Git hash: '(.*)'", c)
+                m = re.search("Git_hash:'(.*)'", c)
                 logging.debug('Hash: ' + text)
                 assert m is not None
                 assert m.group(1) == text
     finally:
         for k, v in files.items():
             os.rename(v, k)
+
+
+def test_pcb_replace_1(test_dir):
+    """ Tags replacements in a PCB """
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, 'test_pcb_replace_1', prj, 'pcb_replace_1', '')
+    ctx.run(extra=[])
+    files = {}
+    file = ctx.board_file
+    file_back = file + '-bak'
+    assert os.path.isfile(file_back), v
+    assert os.path.getsize(file_back) > 0
+    try:
+        logging.debug(file)
+        cmd = ['/bin/bash', '-c', "date -d @`git log -1 --format='%at' -- " + file + "` +%Y-%m-%d_%H-%M-%S"]
+        text = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()
+        with open(file, 'rt') as f:
+            c = f.read()
+        m = re.search(r'^    \(date (\S+|"(?:[^"]|\\")+")\)$', c, re.MULTILINE)
+        logging.debug('Date: ' + text)
+        assert m is not None
+        assert m.group(1) == '"' + text + '"'
+        cmd = ['/bin/bash', '-c', "git log -1 --format='%h' " + file]
+        text = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()
+        m = re.search("Git_hash:'(.*)'", c)
+        logging.debug('Hash: ' + text)
+        assert m is not None
+        assert m.group(1) == text
+    finally:
+        os.rename(file_back, file)

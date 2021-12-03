@@ -117,6 +117,23 @@ This section is used to specify tasks that will be executed before generating an
     - `regex`: [string='None'] Regular expression to match the text for the error we want to exclude.
     - *regexp*: Alias for regex.
 - `ignore_unconnected`: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
+- `pcb_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+  * Valid keys:
+    - `date_command`: [string=''] Command to get the date to use in the schematic.
+                      git log -1 --format='%as' -- $KIBOT_PCB_NAME
+                      Will return the date in YYYY-MM-DD format.
+                      date -d @`git log -1 --format='%at' -- $KIBOT_PCB_NAME` +%Y-%m-%d_%H-%M-%S
+                      Will return the date in YYYY-MM-DD_HH-MM-SS format.
+    - `replace_tags`: [dict|list(dict)] Tag or tags to replace.
+      * Valid keys:
+        - `after`: [string=''] Text to add after the output of `command`.
+        - `before`: [string=''] Text to add before the output of `command`.
+        - `command`: [string=''] Command to execute to get the text, will be used only if `text` is empty.
+                     KIBOT_PCB_NAME variable is the name of the current PCB.
+        - `tag`: [string=''] Name of the tag to replace. Use `version` for a tag named `@version@`.
+        - `tag_delimiter`: [string='@'] Character used to indicate the beginning and the end of a tag.
+                           Don't change it unless you really know about KiCad's file formats.
+        - `text`: [string=''] Text to insert instead of the tag.
 - `run_drc`: [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
         The report file name is controlled by the global output pattern (%i=drc %x=txt).
 - `run_erc`: [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.

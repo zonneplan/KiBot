@@ -211,6 +211,7 @@ W_NOENDLIB = '(W070) '
 W_NEEDSPCB = '(W071) '
 W_NOGLOBALS = '(W072) '
 W_EMPTREP = '(W073) '
+W_BADCHARS = '(W074) '
 
 
 class Rect(object):

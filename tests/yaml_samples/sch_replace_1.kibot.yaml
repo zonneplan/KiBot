@@ -8,5 +8,5 @@ preflight:
     replace_tags:
       - tag: "Comment4"
         command: git log -1 --format="%h" $KIBOT_SCH_NAME
-        before: "Git hash: '"
+        before: "Git_hash:'"
         after: "'"

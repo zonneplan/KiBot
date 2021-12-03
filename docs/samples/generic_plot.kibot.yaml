@@ -17,6 +17,15 @@ preflight:
       regex: 'Regular expression to match'
   # [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
   ignore_unconnected: false
+  # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+  pcb_replace: 
+    date_command: "git log -1 --format='%as' -- $KIBOT_PCB_NAME"
+    replace_tags:
+      - tag: '@git_hash@'
+        command: 'git log -1 --format="%h" $KIBOT_PCB_NAME'
+        before: 'Git hash: <'
+        after: '>'
+
   # [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
   # The report file name is controlled by the global output pattern (%i=drc %x=txt).
   run_drc: true

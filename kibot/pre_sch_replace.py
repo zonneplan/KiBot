@@ -11,7 +11,7 @@ from .gs import GS
 from .error import KiPlotConfigurationError
 from .optionable import Optionable
 from .kiplot import load_sch
-from .misc import W_EMPTREP, FAILED_EXECUTE
+from .misc import W_EMPTREP, FAILED_EXECUTE, W_BADCHARS
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 
@@ -39,6 +39,7 @@ class TagReplace(Optionable):
             """ Text to add before the output of `command` """
             self.after = ''
             """ Text to add after the output of `command` """
+        self._relax_check = False
 
     def config(self, parent):
         super().config(parent)
@@ -110,6 +111,12 @@ class SCH_Replace(BasePreFlight):  # noqa: F821
                     continue
                 text = result.stdout.strip()
             text = r.before + text + r.after
+            if not r._relax_check:
+                new_text = re.sub(r'["\\\\\s]', '_', text)
+                if new_text != text:
+                    logger.warning(W_BADCHARS+"Replace text can't contain double quotes, backslashes or white spaces ({})".
+                                   format(text))
+                    text = new_text
             logger.debug('- ' + r.tag + ' -> ' + text)
             content = re.sub(r.tag, text, content, flags=re.MULTILINE)
         os.rename(file, file + '-bak')
@@ -125,6 +132,7 @@ class SCH_Replace(BasePreFlight):  # noqa: F821
             t.command = o.date_command
             t.before = 'Date "'
             t.after = '"'
+            t._relax_check = True
             o.replace_tags.append(t)
         load_sch()
         os.environ['KIBOT_TOP_SCH_NAME'] = GS.sch_file

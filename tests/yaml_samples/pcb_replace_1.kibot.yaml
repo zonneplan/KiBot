@@ -1,0 +1,12 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  pcb_replace:
+    date_command: date -d @`git log -1 --format='%at' -- $KIBOT_PCB_NAME` +%Y-%m-%d_%H-%M-%S
+    replace_tags:
+      - tag: "Comment4"
+        command: git log -1 --format="%h" $KIBOT_PCB_NAME
+        before: "Git_hash:'"
+        after: "'"
