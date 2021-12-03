@@ -1,0 +1,22 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: result
+    comment: Test tarball compress
+    type: compress
+    options:
+      format: TAR
+      compression: bzip2
+      files:
+        - source: tests/board_samples/kicad_5/test_v5.*
+          from_cwd: true
+          dest: source
+        - source: tests/board_samples/kicad_5/deeper.sch
+          from_cwd: true
+          dest: source
+        - source: tests/board_samples/kicad_5/sub-sheet.sch
+          from_cwd: true
+          dest: source
+

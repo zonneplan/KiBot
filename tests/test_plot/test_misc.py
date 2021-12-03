@@ -865,3 +865,13 @@ def test_expand_comment_1(test_dir):
     ctx.run(extra=[])
     ctx.expect_out_file(POS_DIR+'/test_v5_(Comment 1)_(The_C2).csv')
     ctx.clean_up()
+
+
+def test_compress_sources_1(test_dir):
+    """ Disable in the same file and out-of-order """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, 'test_compress_sources_1', prj, 'compress_sources_1', '')
+    ctx.run()
+    files = ['source/'+prj+'.kicad_pcb', 'source/'+prj+'.sch', 'source/deeper.sch', 'source/sub-sheet.sch']
+    ctx.test_compress(prj + '-result.tar.bz2', files)
+    ctx.clean_up()

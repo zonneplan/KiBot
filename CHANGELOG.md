@@ -47,6 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (#103)
 - A mechanism to avoid running some outputs by default. (#112)
 - New pre-flight commands to replace tags in the schematic and PCB. (#93)
+- Now you can compress files relative to the current working directory.
+  So you can create a compressed file containing the source schematic and
+  PCB files. (#93)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

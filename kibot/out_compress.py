@@ -28,7 +28,10 @@ class FilesList(Optionable):
         with document:
             self.source = '*'
             """ File names to add, wildcards allowed. Use ** for recursive match.
-                Note this pattern is applied to the output dir specified with -d comman line option """
+                By default this pattern is applied to the output dir specified with `-d` command line option.
+                See the `from_cwd` option """
+            self.from_cwd = False
+            """ Use the current working directory instead of the dir specified by `-d` """
             self.from_output = ''
             """ Collect files from the selected output.
                 When used the `source` option is ignored """
@@ -118,7 +121,8 @@ class CompressOptions(BaseOptions):
     def get_files(self, output, no_out_run=False):
         output_real = os.path.realpath(output)
         files = OrderedDict()
-        out_dir = self.expand_filename_sch(GS.out_dir)
+        out_dir_cwd = os.getcwd()
+        out_dir_default = self.expand_filename_sch(GS.out_dir)
         for f in self.files:
             # Get the list of candidates
             files_list = None
@@ -143,6 +147,7 @@ class CompressOptions(BaseOptions):
                                 logger.error('Unable to generate `{}` from {}'.format(file, out))
                                 exit(INTERNAL_ERROR)
             else:
+                out_dir = out_dir_cwd if f.from_cwd else out_dir_default
                 files_list = glob.iglob(os.path.join(out_dir, f.source), recursive=True)
             # Filter and adapt them
             for fname in filter(re.compile(f.filter).match, files_list):
@@ -155,6 +160,7 @@ class CompressOptions(BaseOptions):
                 if f.dest:
                     dest = os.path.join(f.dest, os.path.basename(fname))
                 else:
+                    out_dir = out_dir_cwd if f.from_cwd else out_dir_default
                     dest = os.path.relpath(dest, out_dir)
                 files[fname_real] = dest
         return files
