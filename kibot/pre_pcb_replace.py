@@ -3,9 +3,7 @@
 # Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-import os
 from .gs import GS
-from .kiplot import load_sch
 from .pre_any_replace import TagReplaceBase, Base_ReplaceOptions, Base_Replace
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
@@ -13,51 +11,46 @@ from . import log
 logger = log.get_logger()
 
 
-class TagReplaceSCH(TagReplaceBase):
-    """ Tags to be replaced for an SCH """
+class TagReplacePCB(TagReplaceBase):
+    """ Tags to be replaced for an PCB """
     def __init__(self):
         super().__init__()
-        self._help_command += (".\nKIBOT_SCH_NAME variable is the name of the current sheet."
-                               "\nKIBOT_TOP_SCH_NAME variable is the name of the top sheet")
+        self._help_command += ".\nKIBOT_PCB_NAME variable is the name of the current PCB"
 
 
-class SCH_ReplaceOptions(Base_ReplaceOptions):
-    """ SCH replacement options """
+class PCB_ReplaceOptions(Base_ReplaceOptions):
+    """ PCB replacement options """
     def __init__(self):
         super().__init__()
-        self._help_date_command = self._help_date_command.replace('PCB', 'SCH')
-        self.replace_tags = TagReplaceSCH
+        self.replace_tags = TagReplacePCB
 
 
 @pre_class
-class SCH_Replace(Base_Replace):  # noqa: F821
+class PCB_Replace(Base_Replace):  # noqa: F821
     """ [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date """
-    _context = 'SCH'
+    _context = 'PCB'
 
     def __init__(self, name, value):
-        o = SCH_ReplaceOptions()
+        o = PCB_ReplaceOptions()
         o.set_tree(value)
         o.config(self)
         super().__init__(name, o)
 
     @classmethod
     def get_doc(cls):
-        return cls.__doc__, SCH_ReplaceOptions
+        return cls.__doc__, PCB_ReplaceOptions
 
     def apply(self):
         o = self._value
         if o.date_command:
             # Convert it into another replacement
-            t = TagReplaceSCH()
-            t.tag = '^Date \"(.*)\"$'
+            t = TagReplacePCB()
+            t.tag = r'^    \(date (\S+|"(?:[^"]|\\")+")\)$'
             t.command = o.date_command
-            t.before = 'Date "'
-            t.after = '"'
+            t.before = '    (date "'
+            t.after = '")'
             t._relax_check = True
             o.replace_tags.append(t)
-        load_sch()
-        os.environ['KIBOT_TOP_SCH_NAME'] = GS.sch_file
-        for file in GS.sch.get_files():
-            self.replace(file)
+        self.replace(GS.pcb_file)
         # Force the schematic reload
-        GS.sch = None
+        GS.board = None
