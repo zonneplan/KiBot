@@ -1360,7 +1360,7 @@ class SchematicSheet(object):
         return self.sheet
 
     @staticmethod
-    def load(f):
+    def load(f, parent):
         # Position & Size
         line = f.get_line()
         if line[0] != 'S':
@@ -1397,7 +1397,7 @@ class SchematicSheet(object):
                     raise SchFileError('Malformed sheet file name', line, f)
                 sch.file = m.group(1)
                 sch.file_size = int(m.group(2))
-                if not os.path.isfile(sch.file):
+                if not os.path.isfile(os.path.join(os.path.dirname(parent), sch.file)):
                     raise SchFileError('Missing sub-sheet `{}`'.format(sch.file), line, f)
             else:
                 sch.labels.append(SchematicPort.parse(line[1:], f))
@@ -1537,7 +1537,7 @@ class Schematic(object):
                     obj = SchematicBitmap.load(f)
                     self.bitmaps.append(obj)
                 elif line.startswith('$Sheet'):
-                    obj = SchematicSheet.load(f)
+                    obj = SchematicSheet.load(f, fname)
                     self.sheets.append(obj)
                 else:
                     raise SchFileError('Unknown definition', line, f)
