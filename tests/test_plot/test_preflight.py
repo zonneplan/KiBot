@@ -16,7 +16,10 @@ pytest-3 --log-cli-level debug
 
 import os
 import sys
+import shutil
 import logging
+import re
+from subprocess import run, PIPE
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -156,3 +159,41 @@ def test_update_xml_fail(test_dir):
     ctx = context.TestContext(test_dir, 'Update_XMLFail', prj, 'update_xml', '')
     ctx.run(BOM_ERROR)
     ctx.clean_up()
+
+
+def test_sch_replace_1(test_dir):
+    """ Tags replacements in an schematic """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, 'test_sch_replace_1', prj, 'sch_replace_1', '')
+    ctx.run(extra=[])
+    files = {}
+    file = ctx.sch_file
+    files[file] = file + '-bak'
+    file = ctx.sch_file.replace('test_v5', 'deeper')
+    files[file] = file + '-bak'
+    file = ctx.sch_file.replace('test_v5', 'sub-sheet')
+    files[file] = file + '-bak'
+    for k, v in files.items():
+        assert os.path.isfile(v), v
+        assert os.path.getsize(v) > 0
+    try:
+        for k, v in files.items():
+            logging.debug(k)
+            cmd = ['/bin/bash', '-c', "date -d @`git log -1 --format='%at' -- " + k + "` +%Y-%m-%d_%H-%M-%S"]
+            text = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()
+            with open(k, 'rt') as f:
+                c = f.read()
+            m = re.search('^Date \"(.*)\"$', c, re.MULTILINE)
+            logging.debug('Date: ' + text)
+            assert m is not None
+            assert m.group(1) == text
+            if 'test_v5' in k:
+                cmd = ['/bin/bash', '-c', "git log -1 --format='%h' " + k]
+                text = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()
+                m = re.search("Git hash: '(.*)'", c)
+                logging.debug('Hash: ' + text)
+                assert m is not None
+                assert m.group(1) == text
+    finally:
+        for k, v in files.items():
+            os.rename(v, k)

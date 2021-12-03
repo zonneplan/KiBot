@@ -28,7 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Excellon drill: added `route_mode_for_oval_holes` option.
 - Default global `dir` option.
 - Global option to specify `out_dir` (like -d command line option)
-- Pattern to expand the variant name: %V
 - 3D view render
 - SCH PDF Print: monochrome and no frame options.
 - New expansion patterns:
@@ -40,12 +39,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     **%bF**, **%bp** and **%br** board data
   - **%sc**, **%sC1**, **%sC2**, **%sC3**, **%sC4**, **%sd**, **%sf**,
     **%sF**, **%sp** and **%sr** schematic data
+  - **%V** the variant name
 - Now patterns are also expanded in the out_dir name.
 - Global options to control the date format.
 - Outputs can use the options of other outputs as base (extend them). (#112)
 - Another experimental mechanism to change 3D models according to the variant.
   (#103)
 - A mechanism to avoid running some outputs by default. (#112)
+- New pre-flight command to replace tags in the schematic. (#93)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

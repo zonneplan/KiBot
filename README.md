@@ -121,6 +121,24 @@ This section is used to specify tasks that will be executed before generating an
         The report file name is controlled by the global output pattern (%i=drc %x=txt).
 - `run_erc`: [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
         The report file name is controlled by the global output pattern (%i=erc %x=txt).
+- `sch_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+  * Valid keys:
+    - `date_command`: [string=''] Command to get the date to use in the schematic.
+                      git log -1 --format='%as' -- $KIBOT_SCH_NAME
+                      Will return the date in YYYY-MM-DD format.
+                      date -d @`git log -1 --format='%at' -- $KIBOT_SCH_NAME` +%Y-%m-%d_%H-%M-%S
+                      Will return the date in YYYY-MM-DD_HH-MM-SS format.
+    - `replace_tags`: [dict|list(dict)] Tag or tags to replace.
+      * Valid keys:
+        - `after`: [string=''] Text to add after the output of `command`.
+        - `before`: [string=''] Text to add before the output of `command`.
+        - `command`: [string=''] Command to execute to get the text, will be used only if `text` is empty.
+                     KIBOT_SCH_NAME variable is the name of the current sheet.
+                     KIBOT_TOP_SCH_NAME variable is the name of the top sheet.
+        - `tag`: [string=''] Name of the tag to replace. Use `version` for a tag named `@version@`.
+        - `tag_delimiter`: [string='@'] Character used to indicate the beginning and the end of a tag.
+                           Don't change it unless you really know about KiCad's file formats.
+        - `text`: [string=''] Text to insert instead of the tag.
 - `update_xml`: [boolean=false] Update the XML version of the BoM (Bill of Materials).
         To ensure our generated BoM is up to date.
         Note that this isn't needed when using the internal BoM generator (`bom`).

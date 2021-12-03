@@ -1397,6 +1397,8 @@ class SchematicSheet(object):
                     raise SchFileError('Malformed sheet file name', line, f)
                 sch.file = m.group(1)
                 sch.file_size = int(m.group(2))
+                if not os.path.isfile(sch.file):
+                    raise SchFileError('Missing sub-sheet `{}`'.format(sch.file), line, f)
             else:
                 sch.labels.append(SchematicPort.parse(line[1:], f))
             line = f.get_line()
