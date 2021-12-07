@@ -57,9 +57,11 @@ class Render3DOptions(Base3DOptions):
                 Just like pressing the up arrow in the 3D viewer """
             self.ray_tracing = False
             """ Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt` """
-            self.wait_ray_tracing = 5
+            self.wait_ray_tracing = -600
             """ How many seconds we must wait before capturing the ray tracing render.
-                Lamentably KiCad can save an unfinished image. Enlarge it if your image looks partially rendered """
+                Lamentably KiCad can save an unfinished image. Enlarge it if your image looks partially rendered.
+                Use negative values to enable the auto-detect using CPU load.
+                In this case the value is interpreted as a time-out. """
             self.view = 'top'
             """ [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view """
             self.zoom = 0
@@ -86,7 +88,7 @@ class Render3DOptions(Base3DOptions):
 
     def run(self, output):
         super().run(output)
-        check_script(CMD_PCBNEW_3D, URL_PCBNEW_3D, '1.5.11')
+        check_script(CMD_PCBNEW_3D, URL_PCBNEW_3D, '1.5.14')
         # Base command with overwrite
         cmd = [CMD_PCBNEW_3D, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),
                '3d_view', '--output_name', output]
@@ -106,6 +108,9 @@ class Render3DOptions(Base3DOptions):
         if self.zoom:
             cmd.extend(['--zoom', str(self.zoom)])
         if self.wait_ray_tracing != 5:
+            if self.wait_ray_tracing < 0:
+                self.wait_ray_tracing = -self.wait_ray_tracing
+                cmd.append('--detect_rt')
             cmd.extend(['--wait_rt', str(self.wait_ray_tracing)])
         if self.ray_tracing:
             cmd.append('--ray_tracing')

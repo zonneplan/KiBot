@@ -1598,8 +1598,10 @@ Next time you need this list just use an alias, like this:
         - `solder_paste`: [string='#808080'] Color for the solder paste.
         - `variant`: [string=''] Board variant to apply.
         - `view`: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
-        - `wait_ray_tracing`: [number=5] How many seconds we must wait before capturing the ray tracing render.
+        - `wait_ray_tracing`: [number=-600] How many seconds we must wait before capturing the ray tracing render.
                               Lamentably KiCad can save an unfinished image. Enlarge it if your image looks partially rendered.
+                              Use negative values to enable the auto-detect using CPU load.
+                              In this case the value is interpreted as a time-out..
         - `width`: [number=1280] Image width (aprox.).
         - `zoom`: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                   Same result as using the mouse wheel in the 3D viewer.

@@ -1119,9 +1119,11 @@ outputs:
       variant: ''
       # [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view
       view: 'top'
-      # [number=5] How many seconds we must wait before capturing the ray tracing render.
-      # Lamentably KiCad can save an unfinished image. Enlarge it if your image looks partially rendered
-      wait_ray_tracing: 5
+      # [number=-600] How many seconds we must wait before capturing the ray tracing render.
+      # Lamentably KiCad can save an unfinished image. Enlarge it if your image looks partially rendered.
+      # Use negative values to enable the auto-detect using CPU load.
+      # In this case the value is interpreted as a time-out.
+      wait_ray_tracing: -600
       # [number=1280] Image width (aprox.)
       width: 1280
       # [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
