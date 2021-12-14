@@ -262,6 +262,7 @@ The pattern uses the following expansions:
 - **%g** the `file_id` of the global variant.
 - **%G** the `name` of the global variant.
 - **%i** a contextual ID, depends on the output type.
+- **%I** an ID defined by the user for this output.
 - **%p** pcb/sch title from pcb metadata.
 - **%r** revision from pcb/sch metadata.
 - **%T** time the script was started.
@@ -725,6 +726,7 @@ Next time you need this list just use an alias, like this:
     - `options`: [dict] Options for the `boardview` output.
       * Valid keys:
         - `output`: [string='%f-%i%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * BoM (Bill of Materials)
@@ -859,6 +861,7 @@ Next time you need this list just use an alias, like this:
             - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
             - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
             - `title`: [string='KiBot Bill of Materials'] BoM title.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Archiver (files compressor)
@@ -887,6 +890,7 @@ Next time you need this list just use an alias, like this:
                         See the `from_cwd` option.
         - `format`: [string='ZIP'] [ZIP,TAR,RAR] Output file format.
         - `output`: [string='%f-%i%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * DXF (Drawing Exchange Format)
@@ -934,6 +938,7 @@ Next time you need this list just use an alias, like this:
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `variant`: [string=''] Board variant to apply.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Excellon drill format
@@ -971,6 +976,7 @@ Next time you need this list just use an alias, like this:
         - `route_mode_for_oval_holes`: Undocumented.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `zeros_format`: [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Gerber drill format
@@ -1000,6 +1006,7 @@ Next time you need this list just use an alias, like this:
             - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Gerber format
@@ -1053,6 +1060,7 @@ Next time you need this list just use an alias, like this:
         - `use_gerber_x2_attributes`: [boolean=true] Use the extended X2 format (otherwise use X1 formerly RS-274X).
         - `use_protel_extensions`: [boolean=false] Use legacy Protel file extensions.
         - `variant`: [string=''] Board variant to apply.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * HPGL (Hewlett & Packard Graphics Language)
@@ -1102,6 +1110,7 @@ Next time you need this list just use an alias, like this:
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * IBoM (Interactive HTML BoM)
@@ -1166,6 +1175,7 @@ Next time you need this list just use an alias, like this:
                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * KiBoM (KiCad Bill of Materials)
@@ -1263,6 +1273,7 @@ Next time you need this list just use an alias, like this:
                      with a BOM file exported for each variant, separate
                      variants with the ';' (semicolon) character.
                      This isn't related to the KiBot concept of variants.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * KiCost (KiCad Cost calculator)
@@ -1304,6 +1315,7 @@ Next time you need this list just use an alias, like this:
             - `name`: [string=''] New name.
         - `variant`: [string=''] Board variant to apply.
                      Internal variants and filters are currently ignored.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PcbDraw - Beautiful 2D PCB render
@@ -1349,6 +1361,7 @@ Next time you need this list just use an alias, like this:
         - `variant`: [string=''] Board variant to apply.
         - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
         - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PDF (Portable Document Format)
@@ -1412,6 +1425,7 @@ Next time you need this list just use an alias, like this:
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
     - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `plot_footprint_refs`: [boolean=true] Include the footprint references.
     - `plot_footprint_values`: [boolean=true] Include the footprint values.
     - `plot_sheet_reference`: [boolean=false] Currently without effect.
@@ -1454,6 +1468,7 @@ Next time you need this list just use an alias, like this:
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PDF Schematic Print (Portable Document Format)
@@ -1477,6 +1492,7 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%v.%x'] Filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Pick & place
@@ -1506,6 +1522,7 @@ Next time you need this list just use an alias, like this:
         - `units`: [string='millimeters'] [millimeters,inches] Units used for the positions.
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
         - `variant`: [string=''] Board variant to apply.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PS (Postscript)
@@ -1559,6 +1576,7 @@ Next time you need this list just use an alias, like this:
         - `variant`: [string=''] Board variant to apply.
         - `width_adjust`: [number=0] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * 3D render of the PCB
@@ -1581,7 +1599,6 @@ Next time you need this list just use an alias, like this:
                         A short-cut to use for simple cases where a variant is an overkill.
         - `download`: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
         - `height`: [number=720] Image height (aprox.).
-        - `id_add`: [string=''] Text to add to the %i expansion content. To differentiate variations of this output.
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
         - `move_x`: [number=0] Steps to move in the X axis, positive is to the right.
                     Just like pressing the right arrow in the 3D viewer.
@@ -1605,6 +1622,7 @@ Next time you need this list just use an alias, like this:
         - `width`: [number=1280] Image width (aprox.).
         - `zoom`: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                   Same result as using the mouse wheel in the 3D viewer.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Schematic with variant generator
@@ -1624,6 +1642,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant to apply.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
@@ -1652,6 +1671,7 @@ Next time you need this list just use an alias, like this:
                     You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
         - `output`: [string='%f-%i%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * SVG (Scalable Vector Graphics)
@@ -1699,6 +1719,7 @@ Next time you need this list just use an alias, like this:
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * SVG Schematic Print
@@ -1719,6 +1740,7 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%v.%x'] Filename for the output SVG (%i=schematic %x=svg). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 

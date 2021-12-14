@@ -42,6 +42,8 @@ class BaseOutput(RegOutput):
             self.disable_run_by_default = ''
             """ Use it to disable the `run_by_default` status of other output.
                 Useful when this output extends another and you don't want to generate the original. """
+            self.output_id = ''
+            """ Text to use for the %I expansion content. To differentiate variations of this output """
         if GS.global_dir:
             self.dir = GS.global_dir
         self._sch_related = False

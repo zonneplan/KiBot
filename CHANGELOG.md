@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **%sc**, **%sC1**, **%sC2**, **%sC3**, **%sC4**, **%sd**, **%sf**,
     **%sF**, **%sp** and **%sr** schematic data
   - **%V** the variant name
+  - **%I** user defined ID for this output
 - Now patterns are also expanded in the out_dir name.
 - Global options to control the date format.
 - Outputs can use the options of other outputs as base (extend them). (#112)

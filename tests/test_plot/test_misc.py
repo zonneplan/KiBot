@@ -853,7 +853,7 @@ def test_disable_default_1(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, 'test_disable_default_1', prj, 'disable_default_1', '')
     ctx.run(extra=[])
-    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos_test).csv')
     ctx.dont_expect_out_file(POS_DIR+'/test_v5_(bottom_pos).csv')
     ctx.clean_up()
 

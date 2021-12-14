@@ -204,6 +204,7 @@ The pattern uses the following expansions:
 - **%g** the `file_id` of the global variant.
 - **%G** the `name` of the global variant.
 - **%i** a contextual ID, depends on the output type.
+- **%I** an ID defined by the user for this output.
 - **%p** pcb/sch title from pcb metadata.
 - **%r** revision from pcb/sch metadata.
 - **%T** time the script was started.

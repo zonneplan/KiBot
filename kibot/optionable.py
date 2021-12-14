@@ -208,7 +208,7 @@ class Optionable(object):
             return GS.solved_global_variant.name
         return ''
 
-    def expand_filename_common(self, name):
+    def expand_filename_common(self, name, parent):
         """ Expansions common to the PCB and Schematic """
         # PCB expansions, explicit
         if GS.board and '%b' in name:
@@ -244,15 +244,17 @@ class Optionable(object):
             name = name.replace('%v', self._find_variant())
             name = name.replace('%V', self._find_variant_name())
             name = name.replace('%x', self._expand_ext)
+            if parent and hasattr(parent, 'output_id'):
+                name = name.replace('%I', parent.output_id)
         return name
 
     def expand_filename_both(self, name, is_sch=True):
         """ Expands %* values in filenames.
             Uses data from the PCB. """
+        parent = None
+        if self and hasattr(self, '_parent'):
+            parent = self._parent
         if GS.debug_level > 3:
-            parent = None
-            if self and hasattr(self, '_parent'):
-                parent = self._parent
             logger.debug('Expanding `{}` in PCB context for {} parent: {}'.format(name, self, parent))
         # Determine if we need to expand SCH and/or PCB related data
         has_dep_exp = any(map(lambda x: x in name, ['%c', '%d', '%F', '%f', '%p', '%r', '%C1', '%C2', '%C3', '%C4']))
@@ -270,7 +272,7 @@ class Optionable(object):
                 GS.load_sch()
             GS.load_sch_title_block()
         # This member can be called with a preflight object
-        name = Optionable.expand_filename_common(self, name)
+        name = Optionable.expand_filename_common(self, name, parent)
         if GS.board and do_pcb:
             name = name.replace('%c', GS.pcb_comp)
             name = name.replace('%d', GS.pcb_date)

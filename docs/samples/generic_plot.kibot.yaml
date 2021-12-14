@@ -1087,8 +1087,6 @@ outputs:
       download: true
       # [number=720] Image height (aprox.)
       height: 720
-      # [string=''] Text to add to the %i expansion content. To differentiate variations of this output
-      id_add: ''
       # [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models
       kicad_3d_url: 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
       # [number=0] Steps to move in the X axis, positive is to the right.

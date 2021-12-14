@@ -2,7 +2,7 @@ kibot:
   version: 1
 
 global:
-  output: '%f_(%i).%x'
+  output: '%f_(%i%I).%x'
 
 outputs:
   - name: 'position_mine'
@@ -11,6 +11,7 @@ outputs:
     dir: positiondir
     extends: position
     disable_run_by_default: position
+    output_id: '_test'
     options:
       separate_files_for_front_and_back: false
 
