@@ -93,11 +93,15 @@ class CfgYamlReader(object):
             o_out.run_by_default = True
         o_out.disable_run_by_default = o_tree.get('disable_run_by_default', '')
         # Pre-parse the disable_run_by_default option
-        if not isinstance(o_out.disable_run_by_default, str):
+        if isinstance(o_out.disable_run_by_default, str):
+            if o_out.disable_run_by_default:
+                self.no_run_by_default.append(o_out.disable_run_by_default)
+        elif isinstance(o_out.disable_run_by_default, bool):
+            # True means to disable the one we extend
+            if o_out.disable_run_by_default and o_out.extends:
+                self.no_run_by_default.append(o_out.extends)
+        else:
             o_out.disable_run_by_default = ''
-        elif o_out.disable_run_by_default:
-            self.no_run_by_default.append(o_out.disable_run_by_default)
-
         return o_out
 
     def _parse_outputs(self, v):

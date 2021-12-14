@@ -719,9 +719,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `boardview` output.
       * Valid keys:
@@ -741,9 +742,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `bom` output.
       * Valid keys:
@@ -883,9 +885,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `compress` output.
       * Valid keys:
@@ -912,9 +915,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -961,9 +965,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `excellon` output.
       * Valid keys:
@@ -999,9 +1004,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `gerb_drill` output.
       * Valid keys:
@@ -1028,9 +1034,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1082,9 +1089,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1133,9 +1141,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `ibom` output.
       * Valid keys:
@@ -1200,9 +1209,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `kibom` output.
       * Valid keys:
@@ -1296,9 +1306,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `kicost` output.
       * Valid keys:
@@ -1338,9 +1349,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pcbdraw` output.
       * Valid keys:
@@ -1389,15 +1401,16 @@ Next time you need this list just use an alias, like this:
                      Use ${filename(LAYER)} for the file corresponding to LAYER.
         - `output`: [string='Custom_report.txt'] File name for the custom report.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
     - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                     A short-cut to use for simple cases where a variant is an overkill.
     - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
     - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
     - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
     - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                  The replacement pattern can contain %n for the inner layer number and %N for the layer number.
@@ -1454,9 +1467,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to include in the PDF.
       * Valid keys:
@@ -1491,9 +1505,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_sch_print` output.
       * Valid keys:
@@ -1514,9 +1529,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `position` output.
       * Valid keys:
@@ -1544,9 +1560,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1597,9 +1614,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `render_3d` output.
       * Valid keys:
@@ -1645,9 +1663,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `sch_variant` output.
       * Valid keys:
@@ -1665,9 +1684,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `step` output.
       * Valid keys:
@@ -1694,9 +1714,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot.
       * Valid keys:
@@ -1741,9 +1762,10 @@ Next time you need this list just use an alias, like this:
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string=''] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original..
-    - `extends`: [string=''] Copy the options from the indicated output.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `svg_sch_print` output.
       * Valid keys:

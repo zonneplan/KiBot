@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2021 Salvador E. Tropea
+# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -76,7 +76,12 @@ def document(sentences, **kw):
                 target = Name(id=doc_id, ctx=Store())
             # Reuse the s.value Str
             help_str = s.value
-            help_str.s = type_hint+s.value.s.rstrip()+post_hint
+            doc_str = s.value.s.rstrip()
+            if type_hint and (doc_str.startswith(' [string') or doc_str.startswith(' [number') or
+                              doc_str.startswith(' [boolean')):
+                # Hardcoded type hint, don't add one
+                type_hint = ''
+            help_str.s = type_hint+doc_str+post_hint
             sentences[n] = Assign(targets=[target], value=help_str)
             # Copy the line number from the original docstring
             copy_location(target, s)

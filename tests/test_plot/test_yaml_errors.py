@@ -293,10 +293,10 @@ def test_filter_not_list(test_dir):
     ctx.clean_up()
 
 
-def test_filter_no_number(test_dir):
+def test_filter_no_number_1(test_dir):
     ctx = context.TestContext(test_dir, 'FilterNoNumber', PRJ, 'error_filter_no_number', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Option .?number.? must be a number")
+    assert ctx.search_err("Empty option .?number.?")
     ctx.clean_up()
 
 
@@ -307,10 +307,10 @@ def test_filter_no_number_2(test_dir):
     ctx.clean_up()
 
 
-def test_filter_no_regex(test_dir):
+def test_filter_no_regex_1(test_dir):
     ctx = context.TestContext(test_dir, 'FilterNoRegex', PRJ, 'error_filter_no_regex', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Option .?regex.? must be a string")
+    assert ctx.search_err("Empty option .?regex.?")
     ctx.clean_up()
 
 
@@ -441,7 +441,7 @@ def test_error_bom_no_field(test_dir):
 def test_error_wrong_boolean(test_dir):
     ctx = context.TestContext(test_dir, 'WrongBoolean', PRJ, 'error_wrong_boolean', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err(".?exclude_edge_layer.? must be true/false")
+    assert ctx.search_err(".?exclude_edge_layer.? must be a boolean")
     ctx.clean_up()
 
 
