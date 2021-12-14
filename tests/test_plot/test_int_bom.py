@@ -651,7 +651,7 @@ def test_int_bom_join_2(test_dir):
     value_column = header.index('Value')
     check_kibom_test_netlist(rows, ref_column, LINKS_GROUPS+1, [], LINKS_EXCLUDE+LINKS_COMPONENTS)
     assert rows[0][ref_column] == 'C1'
-    assert rows[0][value_column] == '1nF 10% - (50V)'
+    assert rows[0][value_column] == '1nF 10% - (50V)\nAlternative'
     assert rows[0][manf_column] == 'KEMET C0805C102K5RACTU'
     assert rows[1][ref_column] == 'J1 J2'
     assert rows[1][value_column] == 'Molex KK -'

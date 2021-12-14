@@ -71,6 +71,7 @@ F 5 "C0805C102K5RACTU" H 3750 2500 50  0001 C CNN "manf#"
 F 6 "10%" H 3750 2500 50  0001 C CNN "Tolerance"
 F 7 "KEMET" H 3750 2500 50  0001 C CNN "manf"
 F 8 "50V" H 3750 2500 50  0001 C CNN "Voltage"
+F 9 "Alternative" H 3750 2500 50  0001 C CNN "SMN1"
 	1    3750 2500
 	1    0    0    -1  
 $EndComp

@@ -94,13 +94,16 @@ outputs:
           # [string=''] Name of the field
           - field: 'Voltage'
             # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
-            # Any space to separate it should be added in the text
+            # Any space to separate it should be added in the text.
+            # Use \n for newline and \t for tab
             text: ''
             # [string=''] Text to add after the field content. Will be added only if the field isn't empty.
-            # Any space to separate it should be added in the text
+            # Any space to separate it should be added in the text.
+            # Use \n for newline and \t for tab
             text_after: ''
             # [string=''] Text to add before the field content. Will be added only if the field isn't empty.
-            # Any space to separate it should be added in the text
+            # Any space to separate it should be added in the text.
+            # Use \n for newline and \t for tab
             text_before: ''
           # [number=0] Used to group columns. The XLSX output uses it to collapse columns
           level: 0
@@ -129,13 +132,16 @@ outputs:
           # [string=''] Name of the field
           - field: 'Voltage'
             # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
-            # Any space to separate it should be added in the text
+            # Any space to separate it should be added in the text.
+            # Use \n for newline and \t for tab
             text: ''
             # [string=''] Text to add after the field content. Will be added only if the field isn't empty.
-            # Any space to separate it should be added in the text
+            # Any space to separate it should be added in the text.
+            # Use \n for newline and \t for tab
             text_after: ''
             # [string=''] Text to add before the field content. Will be added only if the field isn't empty.
-            # Any space to separate it should be added in the text
+            # Any space to separate it should be added in the text.
+            # Use \n for newline and \t for tab
             text_before: ''
           # [number=0] Used to group columns. The XLSX output uses it to collapse columns
           level: 0

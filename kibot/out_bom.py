@@ -8,6 +8,7 @@ Internal BoM (Bill of Materials) output for KiBot.
 This is somehow compatible with KiBoM.
 """
 import os
+import re
 from .gs import GS
 from .misc import W_BADFIELD, W_NEEDSPCB
 from .optionable import Optionable, BaseOptions
@@ -52,14 +53,24 @@ class BoMJoinField(Optionable):
             """ Name of the field """
             self.text = ''
             """ Text to use instead of a field. This option is incompatible with the `field` option.
-                Any space to separate it should be added in the text """
+                Any space to separate it should be added in the text.
+                Use \\n for newline and \\t for tab """
             self.text_before = ''
             """ Text to add before the field content. Will be added only if the field isn't empty.
-                Any space to separate it should be added in the text """
+                Any space to separate it should be added in the text.
+                Use \\n for newline and \\t for tab """
             self.text_after = ''
             """ Text to add after the field content. Will be added only if the field isn't empty.
-                Any space to separate it should be added in the text """
+                Any space to separate it should be added in the text.
+                Use \\n for newline and \\t for tab """
         self._field_example = 'Voltage'
+        self._nl = re.compile(r'([^\\]|^)\\n')
+        self._tab = re.compile(r'([^\\]|^)\\t')
+
+    def unescape(self, text):
+        text = self._nl.sub(r'\1\n', text)
+        text = self._tab.sub(r'\1\t', text)
+        return text
 
     def config(self, parent):
         super().config(parent)
@@ -73,6 +84,9 @@ class BoMJoinField(Optionable):
             self.text_before = ''
         if self.text_after is None:
             self.text_after = ''
+        self.text = self.unescape(self.text)
+        self.text_before = self.unescape(self.text_before)
+        self.text_after = self.unescape(self.text_after)
 
     def get_text(self, field_getter):
         if self.text:

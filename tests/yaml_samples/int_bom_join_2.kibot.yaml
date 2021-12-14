@@ -19,6 +19,8 @@ outputs:
             - field: 'Voltage'
               text_before: ' ('
               text_after: ')'
+            - field: 'SMN1'
+              text_before: '\n'
         - field: manf
           join: manf#
         - field: digikey#
