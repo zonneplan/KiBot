@@ -15,9 +15,9 @@ outputs:
         - field: Value
           join:
             - 'Tolerance'
-            - text: '-'
+            - text: ' -'
             - field: 'Voltage'
-              text_before: '('
+              text_before: ' ('
               text_after: ')'
         - field: manf
           join: manf#

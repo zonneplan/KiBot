@@ -93,11 +93,14 @@ outputs:
           join:
           # [string=''] Name of the field
           - field: 'Voltage'
-            # [string=''] Text to use instead of a field. This option is incompatible with the `field` option
+            # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+            # Any space to separate it should be added in the text
             text: ''
-            # [string=''] Text to add after the field content. Will be added only if the field isn't empty
+            # [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+            # Any space to separate it should be added in the text
             text_after: ''
-            # [string=''] Text to add before the field content. Will be added only if the field isn't empty
+            # [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+            # Any space to separate it should be added in the text
             text_before: ''
           # [number=0] Used to group columns. The XLSX output uses it to collapse columns
           level: 0
@@ -125,11 +128,14 @@ outputs:
           join:
           # [string=''] Name of the field
           - field: 'Voltage'
-            # [string=''] Text to use instead of a field. This option is incompatible with the `field` option
+            # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+            # Any space to separate it should be added in the text
             text: ''
-            # [string=''] Text to add after the field content. Will be added only if the field isn't empty
+            # [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+            # Any space to separate it should be added in the text
             text_after: ''
-            # [string=''] Text to add before the field content. Will be added only if the field isn't empty
+            # [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+            # Any space to separate it should be added in the text
             text_before: ''
           # [number=0] Used to group columns. The XLSX output uses it to collapse columns
           level: 0

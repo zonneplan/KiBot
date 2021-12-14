@@ -362,7 +362,7 @@ def apply_join_requests(join, adapted, original):
                 for source in join_l[1:]:
                     v = source.get_text(original.get)
                     if v:
-                        append += ' ' + v
+                        append += v
         if append:
             if val is None:
                 val = ''

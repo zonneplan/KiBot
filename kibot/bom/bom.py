@@ -350,7 +350,7 @@ class ComponentGroup(object):
                     for source in join_l[1:]:
                         v = source.get_text(self.get_field)
                         if v:
-                            val = val + ' ' + v
+                            val += v
             row.append(val)
         return row
 

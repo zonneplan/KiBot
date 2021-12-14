@@ -51,11 +51,14 @@ class BoMJoinField(Optionable):
             self.field = ''
             """ Name of the field """
             self.text = ''
-            """ Text to use instead of a field. This option is incompatible with the `field` option """
+            """ Text to use instead of a field. This option is incompatible with the `field` option.
+                Any space to separate it should be added in the text """
             self.text_before = ''
-            """ Text to add before the field content. Will be added only if the field isn't empty """
+            """ Text to add before the field content. Will be added only if the field isn't empty.
+                Any space to separate it should be added in the text """
             self.text_after = ''
-            """ Text to add after the field content. Will be added only if the field isn't empty """
+            """ Text to add after the field content. Will be added only if the field isn't empty.
+                Any space to separate it should be added in the text """
         self._field_example = 'Voltage'
 
     def config(self, parent):
@@ -77,7 +80,8 @@ class BoMJoinField(Optionable):
         value = field_getter(self.field)
         if not value:
             return None
-        return self.text_before + value + self.text_after
+        separator = '' if self.text_before else ' '
+        return separator + self.text_before + value + self.text_after
 
     def __repr__(self):
         if self.text:

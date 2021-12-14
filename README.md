@@ -762,8 +762,11 @@ Next time you need this list just use an alias, like this:
               * Valid keys:
                 - `field`: [string=''] Name of the field.
                 - `text`: [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+                          Any space to separate it should be added in the text.
                 - `text_after`: [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+                                Any space to separate it should be added in the text.
                 - `text_before`: [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+                                 Any space to separate it should be added in the text.
             - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
             - `name`: [string=''] Name to display in the header. The field is used when empty.
         - `component_aliases`: [list(list(string))] A series of values which are considered to be equivalent for the part name.
@@ -785,8 +788,11 @@ Next time you need this list just use an alias, like this:
               * Valid keys:
                 - `field`: [string=''] Name of the field.
                 - `text`: [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+                          Any space to separate it should be added in the text.
                 - `text_after`: [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+                                Any space to separate it should be added in the text.
                 - `text_before`: [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+                                 Any space to separate it should be added in the text.
             - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
             - `name`: [string=''] Name to display in the header. The field is used when empty.
         - `count_smd_tht`: [boolean=false] Show the stats about how many of the components are SMD/THT. You must provide the PCB.
