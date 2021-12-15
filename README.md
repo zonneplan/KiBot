@@ -1319,6 +1319,7 @@ Next time you need this list just use an alias, like this:
         - `aggregate`: [list(dict)] Add components from other projects.
           * Valid keys:
             - `file`: [string=''] Name of the XML to aggregate.
+            - `number`: [number=100] Number of boards to build (components multiplier).
             - `variant`: [string=' '] Variant for this project.
         - `currency`: [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR).
         - `distributors`: [string|list(string)] Include this distributors list. Default is all the available.
@@ -1333,8 +1334,10 @@ Next time you need this list just use an alias, like this:
         - `no_collapse`: [boolean=false] Do not collapse the part references (collapse=R1-R4).
         - `no_distributors`: [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`.
         - `no_price`: [boolean=false] Do not look for components price. For testing purposes.
+        - `number`: [number=100] Number of boards to build (components multiplier).
         - `output`: [string='%f-%i%v.%x'] Filename for the output (%i=kicost, %x=xlsx). Affected by global options.
         - `show_cat_url`: [boolean=false] Include the catalogue links in the catalogue code.
+        - `split_extra_fields`: [string|list(string)] Declare part fields to include in multipart split process.
         - `translate_fields`: [list(dict)] Fields to rename (KiCost option, not internal filters).
           * Valid keys:
             - `field`: [string=''] Name of the field to rename.

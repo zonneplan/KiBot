@@ -767,6 +767,8 @@ outputs:
       aggregate:
         # [string=''] Name of the XML to aggregate
         - file: ''
+          # [number=100] Number of boards to build (components multiplier)
+          number: 100
           # [string=' '] Variant for this project
           variant: ' '
       # [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR)
@@ -792,10 +794,14 @@ outputs:
       no_distributors:
       # [boolean=false] Do not look for components price. For testing purposes
       no_price: false
+      # [number=100] Number of boards to build (components multiplier)
+      number: 100
       # [string='%f-%i%v.%x'] Filename for the output (%i=kicost, %x=xlsx). Affected by global options
       output: '%f-%i%v.%x'
       # [boolean=false] Include the catalogue links in the catalogue code
       show_cat_url: false
+      # [string|list(string)] Declare part fields to include in multipart split process
+      split_extra_fields:
       # [list(dict)] Fields to rename (KiCost option, not internal filters)
       translate_fields:
         # [string=''] Name of the field to rename

@@ -27,6 +27,8 @@ class Aggregate(Optionable):
             """ Name of the XML to aggregate """
             self.variant = ' '
             """ Variant for this project """
+            self.number = 100
+            """ Number of boards to build (components multiplier) """
 
     def config(self, parent):
         super().config(parent)
@@ -54,6 +56,8 @@ class KiCostOptions(VariantOptions):
             self.group_fields = Optionable
             """ [string|list(string)] List of fields that can be different for a group.
                 Parts with differences in these fields are grouped together, but displayed individually """
+            self.split_extra_fields = Optionable
+            """ [string|list(string)] Declare part fields to include in multipart split process """
             self.ignore_fields = Optionable
             """ [string|list(string)] List of fields to be ignored """
             self.fields = Optionable
@@ -64,6 +68,8 @@ class KiCostOptions(VariantOptions):
             """ Regular expression to match the variant field (KiCost option, not internal variants) """
             self.aggregate = Aggregate
             """ [list(dict)] Add components from other projects """
+            self.number = 100
+            """ Number of boards to build (components multiplier) """
 
         super().__init__()
         self.add_to_doc('variant', WARNING_MIX)
@@ -95,6 +101,7 @@ class KiCostOptions(VariantOptions):
         self.no_distributors = self._validate_dis(self.no_distributors)
         self.currency = self._validate_cur(self.currency)
         self.group_fields = Optionable.force_list(self.group_fields)
+        self.split_extra_fields = Optionable.force_list(self.split_extra_fields)
         self.ignore_fields = Optionable.force_list(self.ignore_fields)
         self.fields = Optionable.force_list(self.fields)
         # Adapt translate_fields to its use
@@ -149,10 +156,15 @@ class KiCostOptions(VariantOptions):
             cmd.append(self.kicost_variant if self.kicost_variant else ' ')
             for p in self.aggregate:
                 cmd.append(p.variant if p.variant else ' ')
+            cmd.extend(['--board_qty', str(self.number)])
+            for p in self.aggregate:
+                cmd.append(str(p.number))
         else:
             # Just this project
             if self.kicost_variant:
                 cmd.extend(['--variant', self.kicost_variant])
+            if self.number != 100:
+                cmd.extend(['--board_qty', str(self.number)])
         # Pass the debug level
         if GS.debug_enabled:
             cmd.append('--debug={}'.format(GS.debug_level))
@@ -165,6 +177,7 @@ class KiCostOptions(VariantOptions):
         self.add_list_opt(cmd, 'exclude', self.no_distributors)
         self.add_list_opt(cmd, 'currency', self.currency)
         self.add_list_opt(cmd, 'group_fields', self.group_fields)
+        self.add_list_opt(cmd, 'split_extra_fields', self.split_extra_fields)
         self.add_list_opt(cmd, 'ignore_fields', self.ignore_fields)
         self.add_list_opt(cmd, 'fields', self.fields)
         # Field translation
