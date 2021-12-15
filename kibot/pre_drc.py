@@ -34,7 +34,7 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         load_board()
         out_pattern = GS.global_output if GS.global_output is not None else GS.def_global_output
         name = Optionable.expand_filename_pcb(self, out_pattern)
-        return [os.path.abspath(os.path.join(Optionable.expand_filename_pcb(self, GS.out_dir), name))]
+        return [os.path.abspath(os.path.join(self.expand_dirname(GS.out_dir), name))]
 
     def run(self):
         check_script(CMD_PCBNEW_RUN_DRC, URL_PCBNEW_RUN_DRC, '1.4.0')
@@ -45,13 +45,13 @@ class Run_DRC(BasePreFlight):  # noqa: F821
             cmd.extend(['-f', GS.filter_file])
         if BasePreFlight.get_option('ignore_unconnected'):  # noqa: F821
             cmd.append('-i')
-        cmd.extend([GS.pcb_file, Optionable.expand_filename_pcb(self, GS.out_dir)])
+        cmd.extend([GS.pcb_file, self.expand_dirname(GS.out_dir)])
         # If we are in verbose mode enable debug in the child
         cmd, video_remove = add_extra_options(cmd)
         logger.info('- Running the DRC')
         ret = exec_with_retry(cmd)
         if video_remove:
-            video_name = os.path.join(Optionable.expand_filename_pcb(self, GS.out_dir), 'pcbnew_run_drc_screencast.ogv')
+            video_name = os.path.join(self.expand_dirname(GS.out_dir), 'pcbnew_run_drc_screencast.ogv')
             if os.path.isfile(video_name):
                 os.remove(video_name)
         if ret:
