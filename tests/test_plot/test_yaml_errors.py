@@ -289,7 +289,7 @@ def test_error_step_min_distance(test_dir):
 def test_filter_not_list(test_dir):
     ctx = context.TestContext(test_dir, 'FilterNotList', PRJ, 'error_filter_not_list', '')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Option .?filters.? must be any of")
+    assert ctx.search_err(r"Option .?filters.? must be a list\(dict\) not `dict`")
     ctx.clean_up()
 
 
