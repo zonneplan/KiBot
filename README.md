@@ -312,7 +312,10 @@ The behavior of these patterns isn't fully defined in this case and the results 
 
 #### Date format option
 
-* The **%d**, **%sd** and **%bd** patterns use the date and time from the PCB and schematic. When abscent they use the file timestamp. The `date_time_format` global option controls the format used.
+* The **%d**, **%sd** and **%bd** patterns use the date and time from the PCB and schematic.
+  When abscent they use the file timestamp, and the `date_time_format` global option controls the format used.
+  When available, and in ISO format, the `date_format` controls the format used.
+  You can disable this reformatting assigning `false` to the `date_reformat` option.
 * The **%D** format is controlled by the `date_format` global option.
 * The **%T** format is controlled by the `time_format` global option.
 

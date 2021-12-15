@@ -1,0 +1,16 @@
+kibot:
+  version: 1
+
+global:
+  output: '%f_%sd.%x'
+  date_format: '%Y%m%d'
+
+outputs:
+  - name: 'position'
+    type: position
+    dir: positiondir
+    options:
+      format: CSV   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: false
+      only_smd: true

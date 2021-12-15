@@ -20,6 +20,11 @@ def filter(v):
     return inspect.isclass(v) or not (callable(v) or isinstance(v, (dict, list)))
 
 
+def _cl(text):
+    """ Eliminates dangerous characters from the text """
+    return re.sub(r'[\\\/\?%\*:|"<>]', '_', text)
+
+
 class Optionable(object):
     """ A class to validate and hold configuration outputs/options.
         Is configured from a dict and the collected values are stored in its attributes. """
@@ -219,40 +224,40 @@ class Optionable(object):
         """ Expansions common to the PCB and Schematic """
         # PCB expansions, explicit
         if GS.board and '%b' in name:
-            name = name.replace('%bc', GS.pcb_comp)
-            name = name.replace('%bd', GS.pcb_date)
+            name = name.replace('%bc', _cl(GS.pcb_comp))
+            name = name.replace('%bd', _cl(GS.pcb_date))
             name = name.replace('%bF', GS.pcb_no_ext)
             name = name.replace('%bf', GS.pcb_basename)
-            name = name.replace('%bp', GS.pcb_title)
-            name = name.replace('%br', GS.pcb_rev)
-            name = name.replace('%bC1', GS.pcb_com1)
-            name = name.replace('%bC2', GS.pcb_com2)
-            name = name.replace('%bC3', GS.pcb_com3)
-            name = name.replace('%bC4', GS.pcb_com4)
+            name = name.replace('%bp', _cl(GS.pcb_title))
+            name = name.replace('%br', _cl(GS.pcb_rev))
+            name = name.replace('%bC1', _cl(GS.pcb_com1))
+            name = name.replace('%bC2', _cl(GS.pcb_com2))
+            name = name.replace('%bC3', _cl(GS.pcb_com3))
+            name = name.replace('%bC4', _cl(GS.pcb_com4))
         if GS.solved_global_variant:
             name = name.replace('%g', GS.solved_global_variant.file_id)
             name = name.replace('%G', GS.solved_global_variant.name)
         # Schematic expansions, explicit
         if GS.sch and '%s' in name:
-            name = name.replace('%sc', GS.sch_comp)
-            name = name.replace('%sd', GS.sch_date)
+            name = name.replace('%sc', _cl(GS.sch_comp))
+            name = name.replace('%sd', _cl(GS.sch_date))
             name = name.replace('%sF', GS.sch_no_ext)
             name = name.replace('%sf', GS.sch_basename)
-            name = name.replace('%sp', GS.sch_title)
-            name = name.replace('%sr', GS.sch_rev)
-            name = name.replace('%sC1', GS.sch_com1)
-            name = name.replace('%sC2', GS.sch_com2)
-            name = name.replace('%sC3', GS.sch_com3)
-            name = name.replace('%sC4', GS.sch_com4)
+            name = name.replace('%sp', _cl(GS.sch_title))
+            name = name.replace('%sr', _cl(GS.sch_rev))
+            name = name.replace('%sC1', _cl(GS.sch_com1))
+            name = name.replace('%sC2', _cl(GS.sch_com2))
+            name = name.replace('%sC3', _cl(GS.sch_com3))
+            name = name.replace('%sC4', _cl(GS.sch_com4))
         name = name.replace('%D', GS.n.strftime(GS.global_date_format))
         name = name.replace('%T', GS.n.strftime(GS.global_time_format))
         if self:
             name = name.replace('%i', self._expand_id)
-            name = name.replace('%v', self._find_variant())
-            name = name.replace('%V', self._find_variant_name())
+            name = name.replace('%v', _cl(self._find_variant()))
+            name = name.replace('%V', _cl(self._find_variant_name()))
             name = name.replace('%x', self._expand_ext)
             if parent and hasattr(parent, 'output_id'):
-                name = name.replace('%I', parent.output_id)
+                name = name.replace('%I', _cl(parent.output_id))
         return name
 
     def expand_filename_both(self, name, is_sch=True):
@@ -281,27 +286,27 @@ class Optionable(object):
         # This member can be called with a preflight object
         name = Optionable.expand_filename_common(self, name, parent)
         if GS.board and do_pcb:
-            name = name.replace('%c', GS.pcb_comp)
-            name = name.replace('%d', GS.pcb_date)
+            name = name.replace('%c', _cl(GS.pcb_comp))
+            name = name.replace('%d', _cl(GS.pcb_date))
             name = name.replace('%F', GS.pcb_no_ext)
             name = name.replace('%f', GS.pcb_basename)
-            name = name.replace('%p', GS.pcb_title)
-            name = name.replace('%r', GS.pcb_rev)
-            name = name.replace('%C1', GS.pcb_com1)
-            name = name.replace('%C2', GS.pcb_com2)
-            name = name.replace('%C3', GS.pcb_com3)
-            name = name.replace('%C4', GS.pcb_com4)
+            name = name.replace('%p', _cl(GS.pcb_title))
+            name = name.replace('%r', _cl(GS.pcb_rev))
+            name = name.replace('%C1', _cl(GS.pcb_com1))
+            name = name.replace('%C2', _cl(GS.pcb_com2))
+            name = name.replace('%C3', _cl(GS.pcb_com3))
+            name = name.replace('%C4', _cl(GS.pcb_com4))
         if GS.sch and do_sch:
-            name = name.replace('%c', GS.sch_comp)
-            name = name.replace('%d', GS.sch_date)
+            name = name.replace('%c', _cl(GS.sch_comp))
+            name = name.replace('%d', _cl(GS.sch_date))
             name = name.replace('%F', GS.sch_no_ext)
             name = name.replace('%f', GS.sch_basename)
-            name = name.replace('%p', GS.sch_title)
-            name = name.replace('%r', GS.sch_rev)
-            name = name.replace('%C1', GS.sch_com1)
-            name = name.replace('%C2', GS.sch_com2)
-            name = name.replace('%C3', GS.sch_com3)
-            name = name.replace('%C4', GS.sch_com4)
+            name = name.replace('%p', _cl(GS.sch_title))
+            name = name.replace('%r', _cl(GS.sch_rev))
+            name = name.replace('%C1', _cl(GS.sch_com1))
+            name = name.replace('%C2', _cl(GS.sch_com2))
+            name = name.replace('%C3', _cl(GS.sch_com3))
+            name = name.replace('%C4', _cl(GS.sch_com4))
         # sanitize the name to avoid characters illegal in file systems
         name = name.replace('\\', '/')
         name = re.sub(r'[?%*:|"<>]', '_', name)

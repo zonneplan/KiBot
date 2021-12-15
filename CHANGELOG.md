@@ -63,6 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a context not related to variants. I.e. when a `compress` target expands
   `%v`.
 - Now you get an error when defining two outputs with the same name.
+- The `%d/%sd/%bd` expansion patterns are now affected by the global `date_format`.
+  Can be disabled using `date_reformat: false`. (#121)
 
 ### Fixed
 - Position files now defaults to use the auxiliar origin as KiCad.

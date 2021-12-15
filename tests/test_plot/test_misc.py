@@ -875,3 +875,22 @@ def test_compress_sources_1(test_dir):
     files = ['source/'+prj+'.kicad_pcb', 'source/'+prj+'.sch', 'source/deeper.sch', 'source/sub-sheet.sch']
     ctx.test_compress(prj + '-result.tar.bz2', files)
     ctx.clean_up()
+
+
+def test_date_format_1(test_dir):
+    """ Date from SCH reformated """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, 'test_date_format_1', prj, 'date_format_1', '')
+    ctx.run(extra=[])
+    ctx.expect_out_file(POS_DIR+'/test_v5_20200812.csv')
+    ctx.clean_up()
+
+
+def test_date_format_2(test_dir):
+    """ Date from SCH reformated """
+    prj = 'bom'
+    ctx = context.TestContext(test_dir, 'test_date_format_2', prj, 'date_format_1', '')
+    ctx.run(extra=[])
+    ctx.expect_out_file(POS_DIR+'/bom_13_07_2020.csv')
+    assert ctx.search_err('Trying to reformat SCH time, but not in ISO format')
+    ctx.clean_up()

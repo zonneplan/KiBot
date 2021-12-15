@@ -11,7 +11,6 @@ Currently oriented to collect the components for the BoM.
 # Encapsulate file/line
 import re
 import os
-from datetime import datetime
 from copy import deepcopy
 from collections import OrderedDict
 from .config import KiConf, un_quote
@@ -961,7 +960,10 @@ class SchematicComponent(object):
                     self.footprint_lib = res[0]
                     self.footprint = res[1]
                 else:
-                    raise SchFileError('Footprint with more than one colon', f.value, fr)
+                    if fr:
+                        raise SchFileError('Footprint with more than one colon', f.value, fr)
+                    else:
+                        raise SchError('Footprint with more than one colon (`{}`)'.format(f.value))
                 basic += 1
             elif f.number == 3:
                 self.datasheet = f.value
@@ -1498,9 +1500,7 @@ class Schematic(object):
             # Load the title block
             self._get_title_block(f)
             # Fill in some missing info
-            if not self.date:
-                file_mtime = os.path.getmtime(fname)
-                self.date = datetime.fromtimestamp(file_mtime).strftime(GS.global_date_time_format)
+            self.date = GS.format_date(self.date, fname, 'SCH')
             if not self.title:
                 self.title = os.path.splitext(os.path.basename(fname))[0]
             logger.debug("SCH title: `{}`".format(self.title))

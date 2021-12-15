@@ -4,10 +4,10 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-from datetime import datetime
+from datetime import datetime, date
 from sys import exit
-from .misc import (EXIT_BAD_ARGS)
-from .log import (get_logger)
+from .misc import EXIT_BAD_ARGS, W_DATEFORMAT
+from .log import get_logger
 
 logger = get_logger(__name__)
 
@@ -87,6 +87,7 @@ class GS(object):
     global_date_time_format = None
     global_date_format = None
     global_time_format = None
+    global_time_reformat = None
     test_boolean = True
 
     @staticmethod
@@ -122,6 +123,20 @@ class GS(object):
         GS.sch_com4 = GS.sch.comment4
 
     @staticmethod
+    def format_date(d, fname, what):
+        if not d:
+            return datetime.fromtimestamp(os.path.getmtime(fname)).strftime(GS.global_date_time_format)
+        elif GS.global_time_reformat:
+            try:
+                dt = date.fromisoformat(d)
+            except ValueError as e:
+                logger.warning(W_DATEFORMAT+"Trying to reformat {} time, but not in ISO format ({})".format(what, d))
+                logger.warning(W_DATEFORMAT+"Problem: {}".format(e))
+                return d
+            return dt.strftime(GS.global_date_format)
+        return d
+
+    @staticmethod
     def load_pcb_title_block():
         if GS.pcb_title is not None:
             return
@@ -131,10 +146,7 @@ class GS(object):
         GS.pcb_comp = ''
         # This is based on InterativeHtmlBom expansion
         title_block = GS.board.GetTitleBlock()
-        GS.pcb_date = title_block.GetDate()
-        if not GS.pcb_date:
-            file_mtime = os.path.getmtime(GS.pcb_file)
-            GS.pcb_date = datetime.fromtimestamp(file_mtime).strftime(GS.global_date_time_format)
+        GS.pcb_date = GS.format_date(title_block.GetDate(), GS.pcb_file, 'PCB')
         GS.pcb_title = title_block.GetTitle()
         if not GS.pcb_title:
             GS.pcb_title = GS.pcb_basename
