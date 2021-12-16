@@ -127,7 +127,7 @@ class KiCostOptions(VariantOptions):
     @staticmethod
     def add_list_opt(cmd, name, val):
         if val:
-            cmd.append('--'+name+'='+','.join(val))
+            cmd.extend(['--'+name] + val)
 
     @staticmethod
     def add_bool_opt(cmd, name, val):

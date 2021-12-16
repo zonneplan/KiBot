@@ -79,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - KiCost variants: empty DNF fields shouldn't be excluded. (#101)
 - KiCost variants: problems when setting a field in a variant that doesn't
   exist when no variant is selected. (#105)
+- KiCost: list arguments wrongly passed. (#120)
 - PCB Print: to show the real name of the PCB file. (#102)
 - Compress: not expanding %VALUES in target dirs. (#111)
 - Gerber: job file didn't use the global output pattern. (#116)
