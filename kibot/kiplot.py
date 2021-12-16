@@ -27,7 +27,8 @@ from .misc import (PLOT_ERROR, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, C
                    W_KIAUTO)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .pre_base import BasePreFlight
-from .kicad.v5_sch import Schematic, SchFileError
+from .kicad.v5_sch import Schematic, SchFileError, SchError
+from .kicad.v6_sch import SchematicV6
 from .kicad.config import KiConfError
 from . import log
 
@@ -246,6 +247,14 @@ def load_sch():
     GS.check_sch()
     # We can't yet load the new format
     if GS.sch_file[-9:] == 'kicad_sch':
+        GS.sch = SchematicV6()
+        try:
+            GS.sch.load(GS.sch_file, GS.sch_basename)
+        except SchError as e:
+            trace_dump()
+            logger.error('While loading `{}`'.format(GS.sch_file))
+            logger.error(str(e))
+            exit(CORRUPTED_SCH)
         return  # pragma: no cover (Ki6)
     GS.sch = Schematic()
     load_any_sch(GS.sch, GS.sch_file, GS.sch_basename)
