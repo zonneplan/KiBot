@@ -2651,6 +2651,8 @@ The internal list of rotations is:
 - **PcbDraw**: Jan Mrázek (@yaqwsx)
 - **KiCost**: Dave Vandenbout (@devbisme) and Hildo Guillardi Júnior (@hildogjr)
 - **KiCAD to Boardview exporter**: @whitequark
+- **S-expression parser**: Takafumi Arakaki
+- **Python macros**: Juha Jeronen (@Technologicat)
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout
@@ -2659,9 +2661,9 @@ The internal list of rotations is:
   - **SCH library loader fix**: Bernhard B. (@bbernhard)
   - **GitHub Actions fix**: @TheSlowGrowth
   - **Easier README navigation**: Robin Vobruba (@hoijui)
-  - **Typos corrections**: Seth Kaz (@sethkaz)
+  - **Typos corrections**: Seth Kaz (@sethkaz) and Sebastian Grau (@SebastianGrau)
 - **Sources of inspiration and good ideas**:
-  - **JLC Kicad Tools**: Matthew Lai @matthewlai
+  - **JLC Kicad Tools**: Matthew Lai (@matthewlai)
   - **KiCad Gerber Zipper**: @g200kg
   - **pimpmykicadbom**: Anton Savov (@antto)
 - **Others**:
