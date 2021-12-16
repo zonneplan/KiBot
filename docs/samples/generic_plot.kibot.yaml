@@ -765,12 +765,14 @@ outputs:
     options:
       # [list(dict)] Add components from other projects
       aggregate:
+        # `board_qty` is an alias for `number`
         # [string=''] Name of the XML to aggregate
         - file: ''
           # [number=100] Number of boards to build (components multiplier)
           number: 100
           # [string=' '] Variant for this project
           variant: ' '
+      # `board_qty` is an alias for `number`
       # [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR)
       currency: USD
       # [string|list(string)] Include this distributors list. Default is all the available

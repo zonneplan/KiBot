@@ -1318,9 +1318,11 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `aggregate`: [list(dict)] Add components from other projects.
           * Valid keys:
+            - *board_qty*: Alias for number.
             - `file`: [string=''] Name of the XML to aggregate.
             - `number`: [number=100] Number of boards to build (components multiplier).
             - `variant`: [string=' '] Variant for this project.
+        - *board_qty*: Alias for number.
         - `currency`: [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR).
         - `distributors`: [string|list(string)] Include this distributors list. Default is all the available.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.

@@ -29,6 +29,8 @@ class Aggregate(Optionable):
             """ Variant for this project """
             self.number = 100
             """ Number of boards to build (components multiplier) """
+            self.board_qty = None
+            """ {number} """
 
     def config(self, parent):
         super().config(parent)
@@ -70,6 +72,8 @@ class KiCostOptions(VariantOptions):
             """ [list(dict)] Add components from other projects """
             self.number = 100
             """ Number of boards to build (components multiplier) """
+            self.board_qty = None
+            """ {number} """
 
         super().__init__()
         self.add_to_doc('variant', WARNING_MIX)
