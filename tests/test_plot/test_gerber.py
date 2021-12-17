@@ -15,7 +15,17 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
-from kibot.misc import (PLOT_ERROR)
+from kibot.misc import PLOT_ERROR
+from kibot.layer import Layer
+from kibot.gs import GS
+from kibot.__main__ import detect_kicad
+
+
+def ki5_2_ki6(l):
+    l_dot = l.replace('_', '.')
+    if l_dot in Layer.KICAD6_RENAME:
+        l = Layer.KICAD6_RENAME[l_dot].replace('.', '_')
+    return l
 
 
 GERBER_DIR = 'gerberdir'
@@ -40,6 +50,10 @@ ALL_LAYERS = ['B_Adhes',
               'F_SilkS',
               'Margin',
               ]
+detect_kicad()
+# New layer names in KiCad 6
+if GS.ki6():
+    ALL_LAYERS = [ki5_2_ki6(l) for l in ALL_LAYERS]
 ALL_EXTS = ['gba',
             'gbr',
             'gbl',
@@ -126,6 +140,8 @@ def check_layers_exist(ctx, dir, prefix, layers, suffix):
 
 
 def check_components(ctx, dir, prefix, layers, suffix, exclude, include):
+    if GS.ki6():
+        layers = [ki5_2_ki6(l) for l in layers]
     for layer in layers:
         fname = compose_fname(dir, prefix, layer, suffix)
         inc = [r'%TO\.C,{}\*%'.format(v) for v in include]
