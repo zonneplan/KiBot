@@ -670,6 +670,10 @@ class SchematicComponentV6(SchematicComponent):
                     parent.fields_lc.add(name_lc)
                 # Add to the component
                 comp.add_field(field)
+                if field.number == 3:
+                    # Reference, Value and Footprint are defined by the instance.
+                    # But datasheet must be transferred from this field.
+                    comp.datasheet = field.value
             # PINS...
             elif i_type == 'pin':
                 pin_name = _check_str(i, 1, name + 'pin name')
