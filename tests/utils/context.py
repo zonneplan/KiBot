@@ -66,6 +66,10 @@ else:
 logging.debug('Detected KiCad v{}.{}.{} ({})'.format(kicad_major, kicad_minor, kicad_patch, kicad_version))
 
 
+def ki6():
+    return kicad_version >= KICAD_VERSION_5_99
+
+
 def quote(s):
     return '"'+s+'"'
 
