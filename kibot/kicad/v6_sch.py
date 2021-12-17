@@ -633,7 +633,8 @@ class SchematicComponentV6(SchematicComponent):
             raise SchError('Component definition is of wrong type')
         comp = SchematicComponentV6()
         comp.project = project
-        comp.sheet_path_h = parent.sheet_path_h
+        # The path will be computed by the instance
+        # comp.sheet_path_h = parent.sheet_path_h
         name = 'component'
         # First argument is the LIB:NAME
         comp.lib_id = comp.name = _check_symbol_str(c, 1, name, 'lib_id')
@@ -989,6 +990,15 @@ class SchematicV6(Schematic):
             self.lib_symbols.append(obj)
             self.lib_symbol_names[obj.lib_id] = obj
 
+    def path_to_human(self, path):
+        """ Converts a UUID path into something we can read """
+        if path == '/':
+            return path
+        res = '/'
+        for p in path[1:].split('/'):
+            res = os.path.join(res, self.sheet_names[p])
+        return res
+
     def load(self, fname, project, parent=None):  # noqa: C901
         """ Load a v6.x KiCad Schematic.
             The caller must be sure the file exists.
@@ -1002,12 +1012,14 @@ class SchematicV6(Schematic):
             self.lib_symbol_names = {}
             self.path = '/'
             self.sheet_path_h = '/'
+            self.sheet_names = {}
         else:
             self.fields = parent.fields
             self.fields_lc = parent.fields_lc
             self.sheet_paths = parent.sheet_paths
             self.symbol_uuids = parent.symbol_uuids
             self.lib_symbol_names = parent.lib_symbol_names
+            self.sheet_names = parent.sheet_names
             # self.path is set by sch.load_sheet
         self.parent = parent
         self.fname = fname
@@ -1104,6 +1116,7 @@ class SchematicV6(Schematic):
             elif e_type == 'sheet':
                 obj = Sheet.parse(e)
                 self.sheets.append(obj)
+                self.sheet_names[obj.uuid] = obj.name
             elif e_type == 'sheet_instances':
                 self.sheet_instances = SheetInstance.parse(e)
             elif e_type == 'symbol_instances':
@@ -1133,6 +1146,7 @@ class SchematicV6(Schematic):
             comp.unit = s.unit
             comp.value = s.value
             comp.set_footprint(s.footprint)
+            comp.sheet_path_h = self.path_to_human(path)
             # Link with its library symbol
             try:
                 lib_symbol = self.lib_symbol_names[comp.lib_id]
