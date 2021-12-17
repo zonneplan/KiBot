@@ -82,13 +82,28 @@ class DCMLineReader(LineReader):
     def __init__(self, f, file):
         super().__init__(f, file)
 
-    def get_line(self):
+    def readline(self):
         res = self.f.readline()
+        try:
+            res = res.decode()
+        except UnicodeDecodeError as e:
+            logger.error('Invalid UTF-8 sequence at line {} of file `{}`'.format(self.line+1, self.file))
+            nres = ''
+            for c in res:
+                if c > 127:
+                    c = 32
+                nres += chr(c)
+            res = nres
+            logger.error('Using: '+res.rstrip())
+        return res
+
+    def get_line(self):
+        res = self.readline()
         while res and res[0] == '#':
             if res.startswith('#End Doc Library'):
                 return res.rstrip()
             self.line += 1
-            res = self.f.readline()
+            res = self.readline()
         if not res:
             raise SchLibError('Unexpected end of file', '', self)
         self.line += 1
@@ -114,6 +129,18 @@ class LibComponentField(object):
                           r'([LRCBT])\s+'               # 7 HJustify
                           r'([LRCBT][IN][BN])\s*'       # 8 VJustify+Italic+Bold
                           r'("(?:[^\\]|(?:\\.))*")?')   # 9 Name for user fields
+    fiel2_re = re.compile(r'F\s*(\d+)\s+'               # 0 Field number
+                          r'"((?:[^\\]|(?:\\.))*)"\s+'  # 1 Field value
+                          r'(-?\d+)\s+'                 # 2 Pos X
+                          r'(-?\d+)\s+'                 # 3 Pos Y
+                          r'(\d+)\s+'                   # 4 Dimension
+                          r'([HV])\s+'                  # 5 Orientation
+                          r'([VI])\s+'                  # 6 Visibility
+                          r'([LRCBT])\s+'               # 7 HJustify
+                          # KiCad never uses spaces between "CNN", but can load files with it
+                          # Some generators seems to use it see #122
+                          r'([LRCBT]\s*[IN]\s*[BN])\s*' # 8 VJustify+Italic+Bold
+                          r'("(?:[^\\]|(?:\\.))*")?')   # 9 Name for user fields
 
     def __init__(self):
         super().__init__()
@@ -122,7 +149,9 @@ class LibComponentField(object):
     def parse(line, lib_name, f):
         m = LibComponentField.field_re.match(line)
         if not m:
-            raise SchLibError('Malformed component field', line, f)
+            m = LibComponentField.fiel2_re.match(line)
+            if not m:
+                raise SchLibError('Malformed component field', line, f)
         field = LibComponentField()
         gs = m.groups()
         field.number = int(gs[0])
@@ -701,7 +730,7 @@ class DocLib(object):
     def load(self, file):
         """ Populates the class, file must exist """
         logger.debug('Loading doc-lib `{}`'.format(file))
-        with open(file, 'rt') as fh:
+        with open(file, 'rb') as fh:
             f = DCMLineReader(fh, file)
             line = f.get_line()
             if not line.startswith('EESchema-DOCLIB'):
