@@ -32,6 +32,7 @@ class ExcellonOptions(AnyDrill):
             self.right_digits = 0
             """ number of digits for mantissa part of coordinates (0 is auto) """
             self.route_mode_for_oval_holes = True
+            """ Use route command for oval holes (G00), otherwise use G85 """
         self._ext = 'drl'
 
     def _configure_writer(self, board, offset):

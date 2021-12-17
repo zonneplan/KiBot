@@ -477,6 +477,7 @@ def print_output_options(name, cl, indent):
             entry = '  - `{}`: '
         if help is None:
             help = 'Undocumented'
+            logger.error('Undocumented option: `{}`'.format(k))
         lines = help.split('\n')
         preface = ind_str+entry.format(k)
         clines = len(lines)

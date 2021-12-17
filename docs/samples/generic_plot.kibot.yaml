@@ -394,6 +394,7 @@ outputs:
         filename: ''
       # [number=0] number of digits for mantissa part of coordinates (0 is auto)
       right_digits: 0
+      # [boolean=true] Use route command for oval holes (G00), otherwise use G85
       route_mode_for_oval_holes: true
       # [boolean=false] Use the auxiliary axis as origin for coordinates
       use_aux_axis_as_origin: false

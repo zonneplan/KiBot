@@ -993,7 +993,7 @@ Next time you need this list just use an alias, like this:
             - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
         - `right_digits`: [number=0] number of digits for mantissa part of coordinates (0 is auto).
-        - `route_mode_for_oval_holes`: Undocumented.
+        - `route_mode_for_oval_holes`: [boolean=true] Use route command for oval holes (G00), otherwise use G85.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `zeros_format`: [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
