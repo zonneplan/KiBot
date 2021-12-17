@@ -1195,6 +1195,9 @@ def test_int_bom_no_xlsx_support(test_dir):
 
 
 def test_int_bom_missing_lib(test_dir):
+    if context.kicad_version >= context.KICAD_VERSION_5_99:
+        # V6 schematics are self-contained, no point in checking for libs
+        return
     prj = 'v5_errors/kibom-test'
     ctx = context.TestContextSCH(test_dir, 'test_int_bom_missing_lib', prj, 'int_bom_simple_csv', BOM_DIR)
     ctx.run()
