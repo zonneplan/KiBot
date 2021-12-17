@@ -1,4 +1,4 @@
-(kicad_pcb (version 20201002) (generator pcbnew)
+(kicad_pcb (version 20211014) (generator pcbnew)
 
   (general
     (thickness 1.6)
@@ -29,6 +29,7 @@
   )
 
   (setup
+    (pad_to_mask_clearance 0)
     (pcbplotparams
       (layerselection 0x00010fc_ffffffff)
       (disableapertmacros false)
@@ -46,6 +47,9 @@
       (hpglpennumber 1)
       (hpglpenspeed 20)
       (hpglpendiameter 15.000000)
+      (dxfpolygonmode true)
+      (dxfimperialunits true)
+      (dxfusepcbnewfont true)
       (psnegative false)
       (psa4output false)
       (plotreference true)
@@ -61,10 +65,10 @@
     )
   )
 
-
   (net 0 "")
 
-  (module "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" (layer "F.Cu") (tedit 5B36C52B) (tstamp 00000000-0000-0000-0000-00005ea76d80)
+  (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" (layer "F.Cu")
+    (tedit 5B36C52B) (tstamp 00000000-0000-0000-0000-00005ea76d80)
     (at 105 35 90)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
@@ -91,8 +95,8 @@
     (fp_line (start -1 -0.6) (end 1 -0.6) (layer "F.Fab") (width 0.1) (tstamp 2ddef00a-9f12-4837-8569-6063e471cad8))
     (fp_line (start 1 -0.6) (end 1 0.6) (layer "F.Fab") (width 0.1) (tstamp 8023ef0f-6945-46ec-a981-7b131d3d0abe))
     (fp_line (start -1 0.6) (end -1 -0.6) (layer "F.Fab") (width 0.1) (tstamp 85bb78b4-3e17-45b4-b116-981f52407a88))
-    (pad "1" smd roundrect (at -1.025 0 90) (size 1.15 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.217391) (tstamp 9b6853f1-1f2b-46bb-86bb-c96ab23e5fa9))
-    (pad "2" smd roundrect (at 1.025 0 90) (size 1.15 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.217391) (tstamp 082ba767-9485-4883-93b1-46cd6b032d47))
+    (pad "1" smd roundrect locked (at -1.025 0 90) (size 1.15 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.217391) (tstamp 9b6853f1-1f2b-46bb-86bb-c96ab23e5fa9))
+    (pad "2" smd roundrect locked (at 1.025 0 90) (size 1.15 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.217391) (tstamp 082ba767-9485-4883-93b1-46cd6b032d47))
     (model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
@@ -100,7 +104,8 @@
     )
   )
 
-  (module "Resistor_THT:R_Box_L13.0mm_W4.0mm_P9.00mm" (layer "F.Cu") (tedit 5AE5139B) (tstamp 00000000-0000-0000-0000-00005ea76ec0)
+  (footprint "Resistor_THT:R_Box_L13.0mm_W4.0mm_P9.00mm" (layer "F.Cu")
+    (tedit 5AE5139B) (tstamp 00000000-0000-0000-0000-00005ea76ec0)
     (at 110 45)
     (descr "Resistor, Box series, Radial, pin pitch=9.00mm, 2W, length*width=13.0*4.0mm^2, http://www.produktinfo.conrad.com/datenblaetter/425000-449999/443860-da-01-de-METALLBAND_WIDERSTAND_0_1_OHM_5W_5Pr.pdf")
     (tags "Resistor Box series Radial pin pitch 9.00mm 2W length 13.0mm width 4.0mm")
@@ -129,8 +134,8 @@
     (fp_line (start -2 -2) (end -2 2) (layer "F.Fab") (width 0.1) (tstamp bab10405-2df6-4f09-a546-81486a8098ef))
     (fp_line (start 11 2) (end 11 -2) (layer "F.Fab") (width 0.1) (tstamp c88e7db9-6e27-4690-a360-aa8a64ff13e1))
     (fp_line (start 11 -2) (end -2 -2) (layer "F.Fab") (width 0.1) (tstamp dcbc4cda-7fe2-47d5-b1dc-59b7e2a8301a))
-    (pad "1" thru_hole circle (at 0 0) (size 2 2) (drill 1) (layers *.Cu *.Mask) (tstamp 785912b7-60c1-43ec-9811-4a74538adb8a))
-    (pad "2" thru_hole circle (at 9 0) (size 2 2) (drill 1) (layers *.Cu *.Mask) (tstamp d69c2026-913a-4a9c-866d-4df3d8ce63a8))
+    (pad "1" thru_hole circle locked (at 0 0) (size 2 2) (drill 1) (layers *.Cu *.Mask) (tstamp 785912b7-60c1-43ec-9811-4a74538adb8a))
+    (pad "2" thru_hole circle locked (at 9 0) (size 2 2) (drill 1) (layers *.Cu *.Mask) (tstamp d69c2026-913a-4a9c-866d-4df3d8ce63a8))
     (model "${KISYS3DMOD}/Resistor_THT.3dshapes/R_Box_L13.0mm_W4.0mm_P9.00mm.wrl"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
@@ -138,7 +143,8 @@
     )
   )
 
-  (module "MountingHole:MountingHole_2.1mm" (layer "F.Cu") (tedit 5B924765) (tstamp 00000000-0000-0000-0000-00005ebe1aa4)
+  (footprint "MountingHole:MountingHole_2.1mm" (layer "F.Cu")
+    (tedit 5B924765) (tstamp 00000000-0000-0000-0000-00005ebe1aa4)
     (at 120 29)
     (descr "Mounting Hole 2.1mm, no annular")
     (tags "mounting hole 2.1mm no annular")
@@ -155,12 +161,13 @@
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp c994ca02-fbbf-4c56-9a36-6854a0a43ff0)
     )
-    (fp_circle (center 0 0) (end 2.1 0) (layer "Cmts.User") (width 0.15) (tstamp 7387fc61-ddba-40f1-bd9e-b6df68988ed3))
-    (fp_circle (center 0 0) (end 2.35 0) (layer "F.CrtYd") (width 0.05) (tstamp 0d6b9c1e-4afb-499a-a533-00e027146f71))
-    (pad "" np_thru_hole circle (at 0 0) (size 2.1 2.1) (drill 2.1) (layers *.Cu *.Mask) (tstamp ceb4799f-93d5-4176-a733-69d970a274b6))
+    (fp_circle (center 0 0) (end 2.1 0) (layer "Cmts.User") (width 0.15) (fill none) (tstamp 7387fc61-ddba-40f1-bd9e-b6df68988ed3))
+    (fp_circle (center 0 0) (end 2.35 0) (layer "F.CrtYd") (width 0.05) (fill none) (tstamp 0d6b9c1e-4afb-499a-a533-00e027146f71))
+    (pad "" np_thru_hole circle locked (at 0 0) (size 2.1 2.1) (drill 2.1) (layers *.Cu *.Mask) (tstamp ceb4799f-93d5-4176-a733-69d970a274b6))
   )
 
-  (module "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" (layer "B.Cu") (tedit 5B36C52B) (tstamp 00000000-0000-0000-0000-00005ea76de9)
+  (footprint "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" (layer "B.Cu")
+    (tedit 5B36C52B) (tstamp 00000000-0000-0000-0000-00005ea76de9)
     (at 110 35 -90)
     (descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
@@ -187,8 +194,8 @@
     (fp_line (start 1 -0.6) (end -1 -0.6) (layer "B.Fab") (width 0.1) (tstamp 56f71ae4-54d4-4aea-911f-bd9df256d954))
     (fp_line (start -1 -0.6) (end -1 0.6) (layer "B.Fab") (width 0.1) (tstamp 600a7f13-2d22-43ba-84c0-98c3577b6a77))
     (fp_line (start -1 0.6) (end 1 0.6) (layer "B.Fab") (width 0.1) (tstamp 7c8ec9db-6194-410f-91ef-e468f5bdb544))
-    (pad "1" smd roundrect (at -1.025 0 270) (size 1.15 1.4) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.217391) (tstamp d736e075-184f-4366-96db-afeb06451de8))
-    (pad "2" smd roundrect (at 1.025 0 270) (size 1.15 1.4) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.217391) (tstamp 385f301d-d00a-47c6-9ff4-fd5305d883b6))
+    (pad "1" smd roundrect locked (at -1.025 0 270) (size 1.15 1.4) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.217391) (tstamp d736e075-184f-4366-96db-afeb06451de8))
+    (pad "2" smd roundrect locked (at 1.025 0 270) (size 1.15 1.4) (layers "B.Cu" "B.Paste" "B.Mask") (roundrect_rratio 0.217391) (tstamp 385f301d-d00a-47c6-9ff4-fd5305d883b6))
     (model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
