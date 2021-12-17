@@ -39,7 +39,7 @@ class DrillReport(Optionable):
 def get_aux_origin(board):
     if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
         settings = board.GetDesignSettings()
-        return settings.m_AuxOrigin
+        return settings.GetAuxOrigin()
     return board.GetAuxOrigin()
 
 
