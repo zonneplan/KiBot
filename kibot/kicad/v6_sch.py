@@ -15,7 +15,7 @@ from copy import deepcopy
 from collections import OrderedDict
 from ..gs import GS
 from .. import log
-from ..misc import W_NOLIB, W_UNKFLD
+from ..misc import W_NOLIB, W_UNKFLD, W_MISSCMP
 from .v5_sch import SchError, SchematicComponent, Schematic
 from .sexpdata import load, SExpData, Symbol
 
@@ -1128,7 +1128,11 @@ class SchematicV6(Schematic):
             comp.value = s.value
             comp.set_footprint(s.footprint)
             # Link with its library symbol
-            lib_symbol = self.lib_symbol_names[comp.lib_id]
+            try:
+                lib_symbol = self.lib_symbol_names[comp.lib_id]
+            except KeyError:
+                logger.warning(W_MISSCMP+'Missing component `{}`'.format(comp.lib_id))
+                lib_symbol = LibComponent()
             comp.lib_symbol = lib_symbol
             comp.is_power = lib_symbol.is_power
             # Add it to the list
