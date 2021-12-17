@@ -35,13 +35,6 @@ class DrillReport(Optionable):
         self._unkown_is_error = True
 
 
-def get_aux_origin(board):
-    if GS.ki6():  # pragma: no cover (Ki6)
-        settings = board.GetDesignSettings()
-        return settings.GetAuxOrigin()
-    return board.GetAuxOrigin()
-
-
 class AnyDrill(BaseOptions):
     def __init__(self):
         # Options
@@ -132,7 +125,7 @@ class AnyDrill(BaseOptions):
             output_dir = os.path.dirname(output_dir)
         # dialog_gendrill.cpp:357
         if self.use_aux_axis_as_origin:
-            offset = get_aux_origin(GS.board)
+            offset = GS.get_aux_origin()
         else:
             offset = wxPoint(0, 0)
         drill_writer = self._configure_writer(GS.board, offset)

@@ -230,7 +230,7 @@ class PositionOptions(VariantOptions):
         x_origin = 0.0
         y_origin = 0.0
         if self.use_aux_axis_as_origin:
-            (x_origin, y_origin) = GS.board.GetAuxOrigin()
+            (x_origin, y_origin) = GS.get_aux_origin()
             logger.debug('Using auxiliar origin: x={} y={}'.format(x_origin, y_origin))
         for m in sorted(GS.get_modules(), key=lambda c: _ref_key(c.GetReference())):
             ref = m.GetReference()

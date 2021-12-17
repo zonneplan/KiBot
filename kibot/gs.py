@@ -162,6 +162,13 @@ class GS(object):
         return board.GetModules()
 
     @staticmethod
+    def get_aux_origin():
+        if GS.ki6():  # pragma: no cover (Ki6)
+            settings = GS.board.GetDesignSettings()
+            return settings.GetAuxOrigin()
+        return GS.board.GetAuxOrigin()
+
+    @staticmethod
     def ki6():
         return GS.kicad_version_n >= KICAD_VERSION_5_99
 
