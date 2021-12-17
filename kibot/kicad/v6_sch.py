@@ -1155,5 +1155,7 @@ class SchematicV6(Schematic):
                 lib_symbol = LibComponent()
             comp.lib_symbol = lib_symbol
             comp.is_power = lib_symbol.is_power
+            # Now we have all the data
+            comp._validate()
             # Add it to the list
             self.components.append(comp)
