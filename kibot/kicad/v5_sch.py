@@ -86,7 +86,7 @@ class DCMLineReader(LineReader):
         res = self.f.readline()
         try:
             res = res.decode()
-        except UnicodeDecodeError as e:
+        except UnicodeDecodeError:
             logger.error('Invalid UTF-8 sequence at line {} of file `{}`'.format(self.line+1, self.file))
             nres = ''
             for c in res:
@@ -139,8 +139,8 @@ class LibComponentField(object):
                           r'([LRCBT])\s+'               # 7 HJustify
                           # KiCad never uses spaces between "CNN", but can load files with it
                           # Some generators seems to use it see #122
-                          r'([LRCBT]\s*[IN]\s*[BN])\s*' # 8 VJustify+Italic+Bold
-                          r'("(?:[^\\]|(?:\\.))*")?')   # 9 Name for user fields
+                          r'([LRCBT]\s*[IN]\s*[BN])\s*'  # 8 VJustify+Italic+Bold
+                          r'("(?:[^\\]|(?:\\.))*")?')    # 9 Name for user fields
 
     def __init__(self):
         super().__init__()
