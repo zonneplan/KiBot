@@ -6,7 +6,7 @@
 import os
 from datetime import datetime, date
 from sys import exit
-from .misc import EXIT_BAD_ARGS, W_DATEFORMAT
+from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, KICAD_VERSION_5_99
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -137,6 +137,19 @@ class GS(object):
         return d
 
     @staticmethod
+    def get_pcb_comment(title_block, num):
+        if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
+            # Backward compatibility ... what's this?
+            return title_block.GetComment(num)
+        if num == 1:
+            return title_block.GetComment1()
+        if num == 2:
+            return title_block.GetComment2()
+        if num == 3:
+            return title_block.GetComment3()
+        return title_block.GetComment4()
+
+    @staticmethod
     def load_pcb_title_block():
         if GS.pcb_title is not None:
             return
@@ -152,10 +165,10 @@ class GS(object):
             GS.pcb_title = GS.pcb_basename
         GS.pcb_rev = title_block.GetRevision()
         GS.pcb_comp = title_block.GetCompany()
-        GS.pcb_com1 = title_block.GetComment1()
-        GS.pcb_com2 = title_block.GetComment2()
-        GS.pcb_com3 = title_block.GetComment3()
-        GS.pcb_com4 = title_block.GetComment4()
+        GS.pcb_com1 = GS.get_pcb_comment(title_block, 1)
+        GS.pcb_com2 = GS.get_pcb_comment(title_block, 2)
+        GS.pcb_com3 = GS.get_pcb_comment(title_block, 3)
+        GS.pcb_com4 = GS.get_pcb_comment(title_block, 4)
         logger.debug("PCB title: `{}`".format(GS.pcb_title))
         logger.debug("PCB date: `{}`".format(GS.pcb_date))
         logger.debug("PCB revision: `{}`".format(GS.pcb_rev))
