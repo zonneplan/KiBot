@@ -254,7 +254,10 @@ class PositionOptions(VariantOptions):
                 rotation = m.GetOrientationDegrees()
             # If passed check the position options
             if (self.only_smd and is_pure_smd(m)) or (not self.only_smd and is_not_virtual(m)):
-                center = m.GetCenter()
+                if GS.ki5():
+                    center = m.GetCenter()
+                else:
+                    center = m.GetPosition()
                 # KiCad: PLACE_FILE_EXPORTER::GenPositionData() in export_footprints_placefile.cpp
                 row = []
                 for k in self.columns:
