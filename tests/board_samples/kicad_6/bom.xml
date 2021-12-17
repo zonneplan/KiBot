@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<export version="D">
+<export version="E">
   <design>
-    <source>/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_5/bom/bom.kicad_sch</source>
-    <date>jue 15 oct 2020 17:09:06</date>
-    <tool>Eeschema 5.99.0-unknown-b8453d1b6~104~ubuntu20.10.1</tool>
+    <source>/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_6/bom.kicad_sch</source>
+    <date>vie 17 dic 2021 11:43:04</date>
+    <tool>Eeschema 6.0.0-rc1-unknown-rc1+332+gd00810c0fb</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
         <title/>
@@ -27,32 +27,29 @@
     <comp ref="C1">
       <value>1uF</value>
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
-      <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <property name="Nombre de hoja" value=""/>
-      <property name="Sheet file" value="/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_5/bom/bom.sch"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="bom.kicad_sch"/>
       <sheetpath names="/" tstamps="/"/>
-      <tstamp>00000000-0000-0000-0000-00005ebe91ac</tstamp>
+      <tstamps>00000000-0000-0000-0000-00005ebe91ac</tstamps>
     </comp>
     <comp ref="R1">
       <value>100</value>
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
-      <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <property name="Nombre de hoja" value=""/>
-      <property name="Sheet file" value="/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_5/bom/bom.sch"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="bom.kicad_sch"/>
       <sheetpath names="/" tstamps="/"/>
-      <tstamp>00000000-0000-0000-0000-00005ebe8a2e</tstamp>
+      <tstamps>00000000-0000-0000-0000-00005ebe8a2e</tstamps>
     </comp>
     <comp ref="R2">
       <value>200</value>
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
-      <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <property name="Nombre de hoja" value=""/>
-      <property name="Sheet file" value="/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_5/bom/bom.sch"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="bom.kicad_sch"/>
       <sheetpath names="/" tstamps="/"/>
-      <tstamp>00000000-0000-0000-0000-00005ebe8e9e</tstamp>
+      <tstamps>00000000-0000-0000-0000-00005ebe8e9e</tstamps>
     </comp>
   </components>
   <libparts>
@@ -68,8 +65,8 @@
         <field name="Datasheet">~</field>
       </fields>
       <pins>
-        <pin num="1" name="~" type="passive"/>
-        <pin num="2" name="~" type="passive"/>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
       </pins>
     </libpart>
     <libpart lib="Device" part="R">
@@ -84,8 +81,8 @@
         <field name="Datasheet">~</field>
       </fields>
       <pins>
-        <pin num="1" name="~" type="passive"/>
-        <pin num="2" name="~" type="passive"/>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
       </pins>
     </libpart>
   </libparts>
@@ -96,16 +93,16 @@
   </libraries>
   <nets>
     <net code="1" name="GND">
-      <node ref="C1" pin="2"/>
-      <node ref="R2" pin="2"/>
+      <node ref="C1" pin="2" pintype="passive"/>
+      <node ref="R2" pin="2" pintype="passive"/>
     </net>
     <net code="2" name="Net-(C1-Pad1)">
-      <node ref="C1" pin="1"/>
-      <node ref="R1" pin="2"/>
-      <node ref="R2" pin="1"/>
+      <node ref="C1" pin="1" pintype="passive"/>
+      <node ref="R1" pin="2" pintype="passive"/>
+      <node ref="R2" pin="1" pintype="passive"/>
     </net>
     <net code="3" name="VCC">
-      <node ref="R1" pin="1"/>
+      <node ref="R1" pin="1" pintype="passive"/>
     </net>
   </nets>
 </export>
