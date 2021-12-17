@@ -53,6 +53,11 @@ class MyLogger(logging.Logger):
     warn_hash = {}
     warn_tcnt = warn_cnt = n_filtered = 0
 
+    @staticmethod
+    def reset_warn_hash():
+        """ Clean the hash, used for testing """
+        MyLogger.warn_hash = {}
+
     def warning(self, msg, *args, **kwargs):
         MyLogger.warn_tcnt += 1
         # Get the message applying optional C style expansions

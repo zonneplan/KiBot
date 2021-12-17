@@ -30,6 +30,7 @@ if prev_dir not in sys.path:
 from kibot.misc import EXIT_BAD_CONFIG
 from kibot.kicad.config import KiConf, KiConfError
 from kibot.gs import GS
+from kibot.log import MyLogger
 
 
 cov = coverage.Coverage()
@@ -69,6 +70,8 @@ def kiconf_de_init():
 def check_load_conf(caplog, dir='kicad', fail=False, catch_conf_error=False, no_conf_path=False):
     caplog.set_level(logging.DEBUG)
     kiconf_de_init()
+    # Repeated messages will be supressed, avoid it
+    MyLogger.reset_warn_hash()
     import pcbnew
     GS.kicad_conf_path = None if no_conf_path else pcbnew.GetKicadConfigPath()
     with context.cover_it(cov):
