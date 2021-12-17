@@ -140,7 +140,8 @@ class GS(object):
     def get_pcb_comment(title_block, num):
         if GS.ki6():  # pragma: no cover (Ki6)
             # Backward compatibility ... what's this?
-            return title_block.GetComment(num)
+            # Also: Maintaining the same numbers used before (and found in the file) is asking too much?
+            return title_block.GetComment(num-1)
         if num == 1:
             return title_block.GetComment1()
         if num == 2:
