@@ -172,6 +172,7 @@ def test_ibom_parse_fail(test_dir, caplog, monkeypatch):
             detect_kicad()
             # Load the plug-ins
             load_actions()
+            init_globals()
             # Create an ibom object
             out = RegOutput.get_class_for('ibom')()
             out.set_tree({})
@@ -221,8 +222,9 @@ def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
             load_actions()
             GS.set_pcb(ctx.board_file)
             sch = ctx.board_file
-            GS.set_sch(sch.replace('.kicad_pcb', '.sch'))
+            GS.set_sch(sch.replace('.kicad_pcb', context.KICAD_SCH_EXT))
             GS.out_dir = test_dir
+            init_globals()
             pre_drc = BasePreFlight.get_class_for('run_drc')('run_drc', True)
             with pytest.raises(SystemExit) as e1:
                 pre_drc.run()
@@ -264,6 +266,7 @@ def test_step_fail(test_dir, caplog, monkeypatch):
         with context.cover_it(cov):
             detect_kicad()
             load_actions()
+            init_globals()
             GS.set_pcb(ctx.board_file)
             GS.board = None
             KiConf.loaded = False
