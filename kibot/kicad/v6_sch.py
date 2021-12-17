@@ -679,6 +679,12 @@ class SchematicComponentV6(SchematicComponent):
                 pin_name = _check_str(i, 1, name + 'pin name')
                 pin_uuid = _get_uuid(i, 2, name)
                 comp.pins[pin_name] = pin_uuid
+        # Fake 'Part' field
+        field = SchematicFieldV6()
+        field.name = 'part'
+        field.value = comp.name
+        field.number = -1
+        comp.add_field(field)
         return comp
 
 
@@ -989,8 +995,8 @@ class SchematicV6(Schematic):
             Only the schematics are loaded not the libs. """
         logger.debug("Loading sheet from "+fname)
         if parent is None:
-            self.fields = []
-            self.fields_lc = set()
+            self.fields = ['part']
+            self.fields_lc = set(self.fields)
             self.sheet_paths = {'/': self}
             self.symbol_uuids = {}
             self.lib_symbol_names = {}
