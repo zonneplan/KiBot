@@ -57,10 +57,10 @@ def expect_position(ctx, file, comp, no_comp=[], inches=False, csv=False, neg_x=
         if neg_x:
             x = -x
         matches = res.pop(0)
-        assert(abs(float(x) - float(matches[0])) < 0.001)
-        assert(abs(float(y) + float(matches[1])) < 0.001)
-        assert(angle == float(matches[2]))
-        assert(side == matches[3])
+        assert(abs(float(x) - float(matches[0])) < 0.001), k
+        assert(abs(float(y) + float(matches[1])) < 0.001), k
+        assert(angle == float(matches[2]) % 360), k
+        assert(side == matches[3]), k
 
     # Components that must not be found
     texts = []
