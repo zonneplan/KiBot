@@ -925,6 +925,15 @@ class SchematicV6(Schematic):
     def __init__(self):
         super().__init__()
         self.annotation_error = False
+        # The title block is optional
+        self.date = self.title = self.revision = self.company = ''
+        self.comment1 = self.comment2 = self.comment3 = self.comment4 = ''
+
+    def _fill_missing_title_block(self):
+        # Fill in some missing info
+        self.date = GS.format_date(self.date, self.fname, 'SCH')
+        if not self.title:
+            self.title = os.path.splitext(os.path.basename(self.fname))[0]
 
     def _get_title_block(self, items):
         if not isinstance(items, list):
@@ -956,10 +965,7 @@ class SchematicV6(Schematic):
                     self.comment4 = value
             else:
                 raise SchError('Unsupported entry in title block ({})'.format(item))
-        # Fill in some missing info
-        self.date = GS.format_date(self.date, self.fname, 'SCH')
-        if not self.title:
-            self.title = os.path.splitext(os.path.basename(self.fname))[0]
+        self._fill_missing_title_block()
         logger.debug("SCH title: `{}`".format(self.title))
         logger.debug("SCH date: `{}`".format(self.date))
         logger.debug("SCH revision: `{}`".format(self.revision))
@@ -1096,6 +1102,8 @@ class SchematicV6(Schematic):
                 raise SchError('Unknown kicad_sch attribute `{}`'.format(e))
             if obj is not None:
                 self.all.append(obj)
+        if not self.title:
+            self._fill_missing_title_block()
         # Load sub-sheets
         self.sub_sheets = []
         for sch in self.sheets:
