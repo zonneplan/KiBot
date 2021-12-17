@@ -138,7 +138,7 @@ class GS(object):
 
     @staticmethod
     def get_pcb_comment(title_block, num):
-        if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
+        if GS.ki6():  # pragma: no cover (Ki6)
             # Backward compatibility ... what's this?
             return title_block.GetComment(num)
         if num == 1:
@@ -151,19 +151,23 @@ class GS(object):
 
     @staticmethod
     def get_modules():
-        if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
+        if GS.ki6():  # pragma: no cover (Ki6)
             return GS.board.GetFootprints()
         return GS.board.GetModules()
 
     @staticmethod
     def get_modules_board(board):
-        if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
+        if GS.ki6():  # pragma: no cover (Ki6)
             return board.GetFootprints()
         return board.GetModules()
 
     @staticmethod
     def ki6():
         return GS.kicad_version_n >= KICAD_VERSION_5_99
+
+    @staticmethod
+    def ki5():
+        return GS.kicad_version_n < KICAD_VERSION_5_99
 
     @staticmethod
     def load_pcb_title_block():

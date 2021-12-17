@@ -9,7 +9,6 @@ from pcbnew import (PLOT_FORMAT_PDF, FromMM, ToMM)
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
 from .gs import GS
-from .misc import KICAD_VERSION_5_99
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -31,14 +30,14 @@ class PDFOptions(DrillMarks):
     def _configure_plot_ctrl(self, po, output_dir):
         super()._configure_plot_ctrl(po, output_dir)
         po.SetMirror(self.mirror_plot)
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
+        if GS.ki5():
             po.SetLineWidth(FromMM(self.line_width))
         po.SetNegative(self.negative_plot)
 
     def read_vals_from_po(self, po):
         super().read_vals_from_po(po)
         self.mirror_plot = po.GetMirror()
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
+        if GS.ki5():
             self.line_width = ToMM(po.GetLineWidth())
         self.negative_plot = po.GetNegative()
 

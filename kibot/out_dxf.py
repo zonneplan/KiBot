@@ -7,9 +7,8 @@ from pcbnew import PLOT_FORMAT_DXF, SKETCH, FILLED
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
 from .gs import GS
-from .misc import KICAD_VERSION_5_99
 from .macros import macros, document, output_class  # noqa: F401
-if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
+if GS.ki6():  # pragma: no cover (Ki6)
     from pcbnew import DXF_UNITS_MILLIMETERS, DXF_UNITS_INCHES
 else:
     DXF_UNITS_MILLIMETERS = 1

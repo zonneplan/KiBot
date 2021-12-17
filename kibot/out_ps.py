@@ -10,7 +10,6 @@ from .misc import AUTO_SCALE
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
 from .gs import GS
-from .misc import KICAD_VERSION_5_99
 from .macros import macros, document, output_class  # noqa: F401
 
 
@@ -46,7 +45,7 @@ class PSOptions(DrillMarks):
         po.SetFineScaleAdjustX(self.scale_adjust_y)
         po.SetA4Output(self.a4_output)
         po.SetPlotMode(SKETCH if self.sketch_plot else FILLED)
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
+        if GS.ki5():
             po.SetLineWidth(FromMM(self.line_width))
         po.SetNegative(self.negative_plot)
         po.SetMirror(self.mirror_plot)
@@ -65,7 +64,7 @@ class PSOptions(DrillMarks):
         self.scale_adjust_y = po.GetFineScaleAdjustX()
         self.a4_output = po.GetA4Output()
         self.sketch_plot = po.GetPlotMode() == SKETCH
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
+        if GS.ki5():
             self.line_width = ToMM(po.GetLineWidth())
         self.negative_plot = po.GetNegative()
         self.mirror_plot = po.GetMirror()

@@ -11,7 +11,7 @@ from datetime import datetime
 from pcbnew import IU_PER_MM, IU_PER_MILS
 from collections import OrderedDict
 from .gs import GS
-from .misc import UI_SMD, UI_VIRTUAL, KICAD_VERSION_5_99, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES
+from .misc import UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES
 from .optionable import Optionable
 from .out_base import VariantOptions
 from .error import KiPlotConfigurationError
@@ -201,7 +201,7 @@ class PositionOptions(VariantOptions):
 
     @staticmethod
     def get_attr_tests():
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
+        if GS.ki5():
             return PositionOptions.is_pure_smd_5, PositionOptions.is_not_virtual_5
         return PositionOptions.is_pure_smd_6, PositionOptions.is_not_virtual_6  # pragma: no cover (Ki6)
 

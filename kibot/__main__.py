@@ -73,7 +73,7 @@ logger = log.init()
 from .docopt import docopt
 from .gs import (GS)
 from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, NO_PCBNEW_MODULE,
-                   KICAD_VERSION_5_99, W_NOKIVER, hide_stderr)
+                   W_NOKIVER, hide_stderr)
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help)
@@ -249,7 +249,7 @@ def detect_kicad():
     # KICAD_PATH isn't good on my system.
     # The kicad-nightly package overwrites the regular package!!
     GS.kicad_share_path = '/usr/share/kicad'
-    if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
+    if GS.ki6():  # pragma: no cover (Ki6)
         GS.kicad_conf_path = pcbnew.GetSettingsManager().GetUserSettingsPath()
         if nightly:
             # Nightly Debian packages uses `/usr/share/kicad-nightly/kicad-nightly.env` as an environment extension

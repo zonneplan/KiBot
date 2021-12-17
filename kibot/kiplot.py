@@ -22,7 +22,7 @@ from collections import OrderedDict
 
 from .gs import GS
 from .misc import (PLOT_ERROR, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
-                   EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, KICAD_VERSION_5_99,
+                   EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL,
                    MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT,
                    W_KIAUTO)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
@@ -276,7 +276,7 @@ def get_board_comps_data(comps):
         c.bottom = m.IsFlipped()
         c.footprint_rot = m.GetOrientationDegrees()
         attrs = m.GetAttributes()
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
+        if GS.ki5():
             # KiCad 5
             if attrs == UI_SMD:
                 c.smd = True

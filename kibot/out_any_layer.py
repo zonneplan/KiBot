@@ -14,7 +14,7 @@ from .out_base import BaseOutput, VariantOptions
 from .error import PlotError, KiPlotConfigurationError
 from .layer import Layer
 from .gs import GS
-from .misc import KICAD_VERSION_5_99, W_NOLAYER
+from .misc import W_NOLAYER
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -85,7 +85,7 @@ class AnyLayerOptions(VariantOptions):
         po.SetPlotValue(self.plot_footprint_values)
         po.SetPlotInvisibleText(self.force_plot_invisible_refs_vals)
         po.SetExcludeEdgeLayer(self.exclude_edge_layer)
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
+        if GS.ki5():
             po.SetPlotPadsOnSilkLayer(not self.exclude_pads_from_silkscreen)
         po.SetPlotViaOnMaskLayer(not self.tent_vias)
         # Only useful for gerber outputs
@@ -230,7 +230,7 @@ class AnyLayerOptions(VariantOptions):
         self.force_plot_invisible_refs_vals = po.GetPlotInvisibleText()
         # viasonmask
         self.tent_vias = not po.GetPlotViaOnMaskLayer()
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
+        if GS.ki5():
             # padsonsilk
             self.exclude_pads_from_silkscreen = not po.GetPlotPadsOnSilkLayer()
 

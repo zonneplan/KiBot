@@ -7,7 +7,6 @@
 # Adapted from: https://github.com/johnbeard/kiplot
 from pcbnew import (PLOT_FORMAT_GERBER, FromMM, ToMM)
 from .gs import GS
-from .misc import KICAD_VERSION_5_99
 from .out_any_layer import (AnyLayer, AnyLayerOptions)
 from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
@@ -62,7 +61,7 @@ class GerberOptions(AnyLayerOptions):
         po.SetIncludeGerberNetlistInfo(self.use_gerber_net_attributes)
         po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
         po.SetDrillMarksType(0)
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
+        if GS.ki5():
             po.SetLineWidth(FromMM(self.line_width))
         else:
             po.SetDisableGerberMacros(self.disable_aperture_macros)  # pragma: no cover (Ki6)
@@ -84,7 +83,7 @@ class GerberOptions(AnyLayerOptions):
         self.subtract_mask_from_silk = po.GetSubtractMaskFromSilk()
         # useauxorigin
         self.use_aux_axis_as_origin = po.GetUseAuxOrigin()
-        if GS.kicad_version_n < KICAD_VERSION_5_99:
+        if GS.ki5():
             # linewidth
             self.line_width = ToMM(po.GetLineWidth())
         else:

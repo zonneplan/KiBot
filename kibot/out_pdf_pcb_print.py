@@ -10,7 +10,7 @@ from .pre_base import BasePreFlight
 from .error import (KiPlotConfigurationError)
 from .gs import (GS)
 from .kiplot import check_script, exec_with_retry, add_extra_options
-from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, KICAD_VERSION_5_99)
+from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT)
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
@@ -65,7 +65,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
 
     @staticmethod
     def _copy_project(fname):
-        pro_ext = '.kicad_pro' if GS.kicad_version_n >= KICAD_VERSION_5_99 else '.pro'
+        pro_ext = '.kicad_pro' if GS.ki6() else '.pro'
         pro_name = GS.pcb_file.replace('.kicad_pcb', pro_ext)
         if not os.path.isfile(pro_name):
             return None

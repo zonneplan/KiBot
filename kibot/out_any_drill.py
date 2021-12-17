@@ -8,7 +8,6 @@ from pcbnew import (PLOT_FORMAT_HPGL, PLOT_FORMAT_POST, PLOT_FORMAT_GERBER, PLOT
                     PLOT_FORMAT_PDF, wxPoint)
 from .optionable import (Optionable, BaseOptions)
 from .gs import GS
-from .misc import KICAD_VERSION_5_99
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -37,7 +36,7 @@ class DrillReport(Optionable):
 
 
 def get_aux_origin(board):
-    if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
+    if GS.ki6():  # pragma: no cover (Ki6)
         settings = board.GetDesignSettings()
         return settings.GetAuxOrigin()
     return board.GetAuxOrigin()
