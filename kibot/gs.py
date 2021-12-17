@@ -150,6 +150,22 @@ class GS(object):
         return title_block.GetComment4()
 
     @staticmethod
+    def get_modules():
+        if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
+            return GS.board.GetFootprints()
+        return GS.board.GetModules()
+
+    @staticmethod
+    def get_modules_board(board):
+        if GS.kicad_version_n >= KICAD_VERSION_5_99:  # pragma: no cover (Ki6)
+            return board.GetFootprints()
+        return board.GetModules()
+
+    @staticmethod
+    def ki6():
+        return GS.kicad_version_n >= KICAD_VERSION_5_99
+
+    @staticmethod
     def load_pcb_title_block():
         if GS.pcb_title is not None:
             return

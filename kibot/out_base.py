@@ -218,7 +218,7 @@ class VariantOptions(BaseOptions):
         bfab = board.GetLayerID('B.Fab')
         extra_ffab_lines = []
         extra_bfab_lines = []
-        for m in board.GetModules():
+        for m in GS.get_modules_board(board):
             ref = m.GetReference()
             # Rectangle containing the drawings, no text
             frect = Rect()
@@ -251,7 +251,7 @@ class VariantOptions(BaseOptions):
         if comps_hash is None:
             return
         # Undo the drawings
-        for m in board.GetModules():
+        for m in GS.get_modules_board(board):
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
             if c and c.included and not c.fitted:
@@ -281,7 +281,7 @@ class VariantOptions(BaseOptions):
         rescue = board.GetLayerID('Rescue')
         fmask = board.GetLayerID('F.Mask')
         bmask = board.GetLayerID('B.Mask')
-        for m in board.GetModules():
+        for m in GS.get_modules_board(board):
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
             if c and c.included and not c.fitted:
@@ -319,7 +319,7 @@ class VariantOptions(BaseOptions):
     def restore_paste_and_glue(self, board, comps_hash):
         if comps_hash is None:
             return
-        for m in board.GetModules():
+        for m in GS.get_modules_board(board):
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
             if c and c.included and not c.fitted:
@@ -343,7 +343,7 @@ class VariantOptions(BaseOptions):
         old_ffab = []
         old_bfab = []
         rescue = board.GetLayerID('Rescue')
-        for m in board.GetModules():
+        for m in GS.get_modules_board(board):
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
             if not c.included:

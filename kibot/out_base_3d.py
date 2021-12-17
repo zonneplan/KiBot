@@ -52,7 +52,7 @@ class Base3DOptions(VariantOptions):
 
     def undo_3d_models_rename(self):
         """ Restores the file name for any renamed 3D module """
-        for m in GS.board.GetModules():
+        for m in GS.get_modules():
             # Get the model references
             models = m.Models()
             models_l = []
@@ -107,7 +107,7 @@ class Base3DOptions(VariantOptions):
         downloaded = set()
         self.undo_3d_models = {}
         # Look for all the footprints
-        for m in GS.board.GetModules():
+        for m in GS.get_modules():
             ref = m.GetReference()
             # Extract the models (the iterator returns copies)
             models = m.Models()
@@ -158,7 +158,7 @@ class Base3DOptions(VariantOptions):
         KiConf.init(GS.pcb_file)
         models = set()
         # Look for all the footprints
-        for m in GS.board.GetModules():
+        for m in GS.get_modules():
             # Look for all the 3D models for this footprint
             for m3d in m.Models():
                 full_name = KiConf.expand_env(m3d.m_Filename)
@@ -184,7 +184,7 @@ class Base3DOptions(VariantOptions):
         if GS.debug_level > 3:
             logger.debug("{} 3D models that aren't for this variant".format('Enable' if enable else 'Disable'))
         len_disable = len(DISABLE_TEXT)
-        for m in GS.board.GetModules():
+        for m in GS.get_modules():
             if GS.debug_level > 3:
                 logger.debug("Processing module " + m.GetReference())
             # Look for text objects
@@ -235,7 +235,7 @@ class Base3DOptions(VariantOptions):
         self.apply_variant_aspect()
         # Remove the 3D models for not fitted components
         rem_models = []
-        for m in GS.board.GetModules():
+        for m in GS.get_modules():
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
             if c:
@@ -257,7 +257,7 @@ class Base3DOptions(VariantOptions):
         fname = self.save_board(dir)
         self.undo_3d_models_rename()
         # Undo the removing
-        for m in GS.board.GetModules():
+        for m in GS.get_modules():
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
             if c and c.included and not c.fitted:

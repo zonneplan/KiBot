@@ -267,7 +267,7 @@ def get_board_comps_data(comps):
         return
     load_board()
     comps_hash = {c.ref: c for c in comps}
-    for m in GS.board.GetModules():
+    for m in GS.get_modules():
         ref = m.GetReference()
         if ref not in comps_hash:
             logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
