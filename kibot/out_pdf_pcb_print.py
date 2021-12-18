@@ -46,6 +46,10 @@ class PDF_Pcb_PrintOptions(VariantOptions):
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
+            self.force_edge_cuts = True
+            """ Only useful for KiCad 6 when printing in one page, you can disable the edge here.
+                KiCad 5 forces it by default, and you can't control it from config files.
+                Same for KiCad 6 when printing to separated pages """
         super().__init__()
         self._expand_ext = 'pdf'
 
@@ -119,6 +123,8 @@ class PDF_Pcb_PrintOptions(VariantOptions):
         cmd, video_remove = add_extra_options(cmd)
         # Add the layers
         cmd.extend([la.layer for la in self._layers])
+        if GS.ki6() and self.force_edge_cuts and not self.separated:
+            cmd.append('Edge.Cuts')
         # Execute it
         ret = exec_with_retry(cmd)
         self.restore_title()

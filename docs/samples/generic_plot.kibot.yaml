@@ -945,6 +945,10 @@ outputs:
       dnf_filter: '_none'
       # [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
+      # [boolean=true] Only useful for KiCad 6 when printing in one page, you can disable the edge here.
+      # KiCad 5 forces it by default, and you can't control it from config files.
+      # Same for KiCad 6 when printing to separated pages
+      force_edge_cuts: true
       # [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant
       hide_excluded: false
       # [boolean=false] Print mirrored (X axis inverted). ONLY for KiCad 6
