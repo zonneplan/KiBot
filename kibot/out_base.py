@@ -278,7 +278,7 @@ class VariantOptions(BaseOptions):
         badhes = board.GetLayerID('B.Adhes')
         old_fadhes = []
         old_badhes = []
-        rescue = board.GetLayerID('Rescue')
+        rescue = board.GetLayerID(GS.work_layer)
         fmask = board.GetLayerID('F.Mask')
         bmask = board.GetLayerID('B.Mask')
         for m in GS.get_modules_board(board):
@@ -342,7 +342,7 @@ class VariantOptions(BaseOptions):
         bfab = board.GetLayerID('B.Fab')
         old_ffab = []
         old_bfab = []
-        rescue = board.GetLayerID('Rescue')
+        rescue = board.GetLayerID(GS.work_layer)
         for m in GS.get_modules_board(board):
             ref = m.GetReference()
             c = comps_hash.get(ref, None)

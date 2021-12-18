@@ -41,6 +41,7 @@ class GS(object):
     kicad_share_path = None
     kicad_plugins_dirs = []
     pro_ext = '.pro'
+    work_layer = 'Rescue'
     # KiCad version: major*1e6+minor*1e3+patch
     kicad_version_n = 0
     kicad_version_major = 0
