@@ -50,10 +50,15 @@ class SCH_Replace(Base_Replace):  # noqa: F821
         if o.date_command:
             # Convert it into another replacement
             t = TagReplaceSCH()
-            t.tag = '^Date \"(.*)\"$'
+            if GS.ki5():
+                t.tag = r'^Date ("(?:[^"]|\\")*")$'
+                t.before = 'Date "'
+                t.after = '"'
+            else:
+                t.tag = r'\(date ("(?:[^"]|\\")*")\)'
+                t.before = '(date "'
+                t.after = '")'
             t.command = o.date_command
-            t.before = 'Date "'
-            t.after = '"'
             t._relax_check = True
             o.replace_tags.append(t)
         load_sch()
