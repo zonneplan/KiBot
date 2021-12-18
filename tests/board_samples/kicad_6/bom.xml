@@ -2,14 +2,14 @@
 <export version="E">
   <design>
     <source>/home/salvador/0Data/Eccosur/kibot/tests/board_samples/kicad_6/bom.kicad_sch</source>
-    <date>vie 17 dic 2021 11:43:04</date>
+    <date>Sat Dec 18 15:43:10 2021</date>
     <tool>Eeschema 6.0.0-rc1-unknown-rc1+332+gd00810c0fb</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
-        <title/>
-        <company/>
-        <rev/>
-        <date/>
+        <title>BoM Test</title>
+        <company>INTI-CMNB</company>
+        <rev>r1</rev>
+        <date>13/07/2020</date>
         <source>bom.kicad_sch</source>
         <comment number="1" value=""/>
         <comment number="2" value=""/>
