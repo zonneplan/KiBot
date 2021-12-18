@@ -72,6 +72,10 @@ def ki6():
     return kicad_version >= KICAD_VERSION_5_99
 
 
+def ki5():
+    return kicad_version < KICAD_VERSION_5_99
+
+
 def quote(s):
     return '"'+s+'"'
 

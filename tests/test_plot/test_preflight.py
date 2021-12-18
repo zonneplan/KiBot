@@ -125,6 +125,9 @@ def test_drc_fail(test_dir):
 
 
 def test_drc_time_out(test_dir):
+    if context.ki6():
+        # KiCad 6 has Python binding, no time-out problems!
+        return
     prj = 'bom'
     ctx = context.TestContext(test_dir, 'test_drc_time_out', prj, 'drc_time_out', '')
     ctx.run(DRC_ERROR)
@@ -133,7 +136,7 @@ def test_drc_time_out(test_dir):
     ctx.clean_up()
 
 
-def test_update_xml(test_dir):
+def test_update_xml_1(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, 'Update_XML', prj, 'update_xml', '')
     # The XML should be created where the schematic is located
@@ -182,7 +185,10 @@ def test_sch_replace_1(test_dir):
             text = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()
             with open(k, 'rt') as f:
                 c = f.read()
-            m = re.search('^Date \"(.*)\"$', c, re.MULTILINE)
+            if context.ki5():
+                m = re.search(r'^Date "((?:[^"]|\\")*)"$', c, re.MULTILINE)
+            else:
+                m = re.search(r'\(date "((?:[^"]|\\")*)"\)', c, re.MULTILINE)
             logging.debug('Date: ' + text)
             assert m is not None
             assert m.group(1) == text
