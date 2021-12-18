@@ -257,6 +257,7 @@ def detect_kicad():
             # So we just patch it, as we patch the name of the binaries
             GS.kicad_conf_path = GS.kicad_conf_path.replace('/kicad/', '/kicadnightly/')
             GS.kicad_share_path = GS.kicad_share_path.replace('/kicad/', '/kicadnightly/')
+        GS.pro_ext = '.kicad_pro'
     else:
         # Bug in KiCad (#6989), prints to stderr:
         # `../src/common/stdpbase.cpp(62): assert "traits" failed in Get(test_dir): create wxApp before calling this`
@@ -264,6 +265,7 @@ def detect_kicad():
         # So we temporarily supress stderr
         with hide_stderr():
             GS.kicad_conf_path = pcbnew.GetKicadConfigPath()
+        GS.pro_ext = '.pro'
     # Dirs to look for plugins
     GS.kicad_plugins_dirs = []
     # /usr/share/kicad/*

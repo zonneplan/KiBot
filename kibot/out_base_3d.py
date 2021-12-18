@@ -172,7 +172,7 @@ class Base3DOptions(VariantOptions):
             fname = f.name
         logger.debug('Storing modified PCB to `{}`'.format(fname))
         GS.board.Save(fname)
-        with open(fname.replace('.kicad_pcb', '.pro'), 'wt') as f:
+        with open(fname.replace('.kicad_pcb', GS.pro_ext), 'wt') as f:
             pass
         return fname
 

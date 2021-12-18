@@ -48,6 +48,7 @@ if kicad_version >= KICAD_VERSION_5_99:
     DEF_DWGSU = 'User_Drawings'
     DEF_ECO1U = 'User_Eco1'
     DEF_ECO2U = 'User_Eco2'
+    PRO_EXT = '.kicad_pro'
 else:
     BOARDS_DIR = '../board_samples/kicad_5'
     KICAD_SCH_EXT = '.sch'
@@ -63,6 +64,7 @@ else:
         REF_DIR = 'tests/reference/5_1_7'
     else:
         REF_DIR = 'tests/reference/5_1_6'
+    PRO_EXT = '.pro'
 logging.debug('Detected KiCad v{}.{}.{} ({})'.format(kicad_major, kicad_minor, kicad_patch, kicad_version))
 
 
@@ -162,7 +164,7 @@ class TestContext(object):
             logging.debug('Removing dir')
             shutil.rmtree(self.output_dir)
         # We don't have a project, and we don't want one
-        pro = os.path.join(self.get_board_dir(), self.board_name+'.pro')
+        pro = os.path.join(self.get_board_dir(), self.board_name+PRO_EXT)
         if os.path.isfile(pro) and not keep_project:
             os.remove(pro)
         # We don't have a footprint cache, and we don't want one

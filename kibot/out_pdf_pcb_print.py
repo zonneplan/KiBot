@@ -65,11 +65,10 @@ class PDF_Pcb_PrintOptions(VariantOptions):
 
     @staticmethod
     def _copy_project(fname):
-        pro_ext = '.kicad_pro' if GS.ki6() else '.pro'
-        pro_name = GS.pcb_file.replace('.kicad_pcb', pro_ext)
+        pro_name = GS.pcb_file.replace('.kicad_pcb', GS.pro_ext)
         if not os.path.isfile(pro_name):
             return None
-        pro_copy = fname.replace('.kicad_pcb', pro_ext)
+        pro_copy = fname.replace('.kicad_pcb', GS.pro_ext)
         logger.debug('Copying project `{}` to `{}`'.format(pro_name, pro_copy))
         copy2(pro_name, pro_copy)
         return pro_copy
