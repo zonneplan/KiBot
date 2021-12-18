@@ -11,6 +11,7 @@ pytest-3 --log-cli-level debug
 
 import os
 import sys
+from glob import glob
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -60,6 +61,8 @@ def test_step_variant_1(test_dir):
     ctx.run(extra_debug=True)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-3D.step')
+    tmps = glob(os.path.join(ctx.get_board_dir(), 'tmp*pro'))
+    assert len(tmps) == 0, tmps
     ctx.clean_up(keep_project=True)
 
 

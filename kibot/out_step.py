@@ -5,6 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 import re
 import os
+from glob import glob
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from shutil import rmtree
 from .error import KiPlotConfigurationError
@@ -80,7 +81,9 @@ class STEPOptions(Base3DOptions):
         finally:
             # Remove the temporal PCB
             if board_name != GS.pcb_file:
-                os.remove(board_name)
+                # KiCad likes to create project files ...
+                for f in glob(board_name.replace('.kicad_pcb', '.*')):
+                    os.remove(f)
             # Remove the downloaded 3D models
             if self._tmp_dir:
                 rmtree(self._tmp_dir)
