@@ -125,7 +125,9 @@ This section is used to specify tasks that will be executed before generating an
                       ```git log -1 --format='%as' -- $KIBOT_PCB_NAME```\
                       Will return the date in YYYY-MM-DD format.\
                       ```date -d @`git log -1 --format='%at' -- $KIBOT_PCB_NAME` +%Y-%m-%d_%H-%M-%S```\
-                      Will return the date in YYYY-MM-DD_HH-MM-SS format.
+                      Will return the date in YYYY-MM-DD_HH-MM-SS format.\
+                      Important: on KiCad 6 the title block data is optional.
+                      This command will work only if you have a date in the PCB/Schematic.
     - `replace_tags`: [dict|list(dict)] Tag or tags to replace.
       * Valid keys:
         - `after`: [string=''] Text to add after the output of `command`.
@@ -147,7 +149,9 @@ This section is used to specify tasks that will be executed before generating an
                       ```git log -1 --format='%as' -- $KIBOT_SCH_NAME```\
                       Will return the date in YYYY-MM-DD format.\
                       ```date -d @`git log -1 --format='%at' -- $KIBOT_SCH_NAME` +%Y-%m-%d_%H-%M-%S```\
-                      Will return the date in YYYY-MM-DD_HH-MM-SS format.
+                      Will return the date in YYYY-MM-DD_HH-MM-SS format.\
+                      Important: on KiCad 6 the title block data is optional.
+                      This command will work only if you have a date in the SCH/Schematic.
     - `replace_tags`: [dict|list(dict)] Tag or tags to replace.
       * Valid keys:
         - `after`: [string=''] Text to add after the output of `command`.

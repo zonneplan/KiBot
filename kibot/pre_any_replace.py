@@ -55,7 +55,9 @@ class Base_ReplaceOptions(Optionable):
                 ```git log -1 --format='%as' -- $KIBOT_PCB_NAME```\\
                 Will return the date in YYYY-MM-DD format.\\
                 ```date -d @`git log -1 --format='%at' -- $KIBOT_PCB_NAME` +%Y-%m-%d_%H-%M-%S```\\
-                Will return the date in YYYY-MM-DD_HH-MM-SS format """
+                Will return the date in YYYY-MM-DD_HH-MM-SS format.\\
+                Important: on KiCad 6 the title block data is optional.
+                This command will work only if you have a date in the PCB/Schematic """
             self.replace_tags = TagReplaceBase
             """ [dict|list(dict)] Tag or tags to replace """
 
