@@ -1049,7 +1049,7 @@ class SchematicV6(Schematic):
                 error = str(e)
             if error:
                 raise SchError(error)
-        if sch[0].value() != 'kicad_sch':
+        if not isinstance(sch, list) or sch[0].value() != 'kicad_sch':
             raise SchError('No kicad_sch signature')
         for e in sch[1:]:
             e_type = _check_is_symbol_list(e)
