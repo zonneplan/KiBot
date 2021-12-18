@@ -1,0 +1,101 @@
+(kicad_sch (version 20211123) (generator eeschema)
+
+  (uuid 87c78429-be2b-40ed-8d3b-56cb9666a56f)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (wire (pts (xy 110.49 63.246) (xy 138.684 63.246))
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (uuid e83e0227-ac0f-4180-82bd-68d3a7b56476)
+  )
+
+  (sheet (at 81.788 54.356) (size 28.702 37.084)
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-00005ca71704)
+    (property "Sheet name" "Power" (id 0) (at 81.788 53.7205 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "power.kicad_sch" (id 1) (at 81.788 91.9485 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "VCC" output (at 110.49 63.246 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid 7e969d15-6cc0-4258-8b27-586608a21adb)
+    )
+  )
+
+  (sheet (at 138.684 55.372) (size 31.242 36.322)
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-00005ca75bc1)
+    (property "Sheet name" "logic" (id 0) (at 138.684 54.7365 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "logic.kicad_sch" (id 1) (at 138.684 92.2025 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "VCC" input (at 138.684 63.246 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid 6ca3c38c-4e71-4202-b6c1-1b25f04a27ae)
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+    (path "/00000000-0000-0000-0000-00005ca71704" (page "2"))
+    (path "/00000000-0000-0000-0000-00005ca75bc1" (page "3"))
+  )
+
+  (symbol_instances
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca72902"
+      (reference "#FLG02") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/730f8822-2270-4bad-80bd-620f2d81aa41"
+      (reference "#FLG0101") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca73f58"
+      (reference "#PWR01") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca755f5"
+      (reference "#PWR02") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ca77789"
+      (reference "#PWR03") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/1ed5ca78-d751-47e9-b748-b057e90ebba6"
+      (reference "#PWR04") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/14e1cf09-3ac8-4563-9bd2-f32f0f92fcaa"
+      (reference "#PWR05") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca71fa4"
+      (reference "#PWR0101") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/f79600f0-8aca-4c42-bd73-ad5321120380"
+      (reference "#PWR0102") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca745a6"
+      (reference "C1") (unit 1) (value "C") (footprint "Capacitor_SMD:C_0402_1005Metric")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ca76352"
+      (reference "C2") (unit 1) (value "C") (footprint "Capacitor_SMD:C_0402_1005Metric")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca714f2"
+      (reference "P1") (unit 1) (value "CONN_01X02") (footprint "Connector_JST:JST_JWPF_B02B-JWPF-SK-R_1x02_P2.00mm_Vertical")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ca75c86"
+      (reference "R1") (unit 1) (value "R") (footprint "Resistor_SMD:R_0402_1005Metric")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/d932e413-55ae-457b-a959-bad83c84d724"
+      (reference "U1") (unit 1) (value "74LVC1G126") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/30e3447e-b729-4837-89d0-2726c444382d"
+      (reference "U2") (unit 4) (value "74LS04") (footprint "")
+    )
+  )
+)

@@ -1,0 +1,101 @@
+(kicad_sch (version 20211123) (generator eeschema)
+
+  (uuid e6521bef-4109-48f7-8b88-4121b0468927)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (wire (pts (xy 110.49 63.246) (xy 138.684 63.246))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid 0f3c9e3a-9c59-4881-b27a-d0e982b3ea8e)
+  )
+
+  (sheet (at 81.788 54.356) (size 28.702 37.084) (fields_autoplaced)
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-00005ca71704)
+    (property "Sheet name" "Power" (id 0) (at 81.788 53.6444 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "power.kicad_sch" (id 1) (at 81.788 92.0246 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "VCC" output (at 110.49 63.246 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid edc9ab4f-487a-48dc-95f2-4d87f0e9cf9e)
+    )
+  )
+
+  (sheet (at 138.684 55.372) (size 31.242 36.322) (fields_autoplaced)
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-00005ca75bc1)
+    (property "Sheet name" "logic" (id 0) (at 138.684 54.6604 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "logic.kicad_sch" (id 1) (at 138.684 92.2786 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "VCC" input (at 138.684 63.246 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid bbb15673-6d42-42b8-9d51-7515b3ad9ee9)
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+    (path "/00000000-0000-0000-0000-00005ca71704" (page "2"))
+    (path "/00000000-0000-0000-0000-00005ca75bc1" (page "3"))
+  )
+
+  (symbol_instances
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca71c3c"
+      (reference "#FLG01") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca72902"
+      (reference "#FLG02") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca73f58"
+      (reference "#PWR01") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca755f5"
+      (reference "#PWR02") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ca77789"
+      (reference "#PWR03") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ead967d"
+      (reference "#PWR04") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ead892d"
+      (reference "#PWR05") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca745a6"
+      (reference "C1") (unit 1) (value "C") (footprint "Capacitor_SMD:C_0402_1005Metric")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ca76352"
+      (reference "C2") (unit 1) (value "C") (footprint "Capacitor_SMD:C_0402_1005Metric")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ca7214e"
+      (reference "C3") (unit 1) (value "CP") (footprint "Capacitor_SMD:CP_Elec_3x5.3")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ca735b9"
+      (reference "C4") (unit 1) (value "CP") (footprint "Capacitor_SMD:CP_Elec_3x5.3")
+    )
+    (path "/00000000-0000-0000-0000-00005ca71704/00000000-0000-0000-0000-00005ca714f2"
+      (reference "P1") (unit 1) (value "CONN_01X02") (footprint "Connector_JST:JST_JWPF_B02B-JWPF-SK-R_1x02_P2.00mm_Vertical")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ca75c86"
+      (reference "R1") (unit 1) (value "R") (footprint "Resistor_SMD:R_0402_1005Metric")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ead683a"
+      (reference "U1") (unit 1) (value "74LS04") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005ca75bc1/00000000-0000-0000-0000-00005ead766b"
+      (reference "U1") (unit 2) (value "74LS04") (footprint "")
+    )
+  )
+)
