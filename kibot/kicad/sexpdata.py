@@ -366,8 +366,12 @@ def cdr(obj):
 
 # ** Core
 
+class Sep(object):
+    pass
+
+
 def tosexp(obj, str_as='string', tuple_as='list',
-           true_as='t', false_as='()', none_as='()'):
+           true_as='t', false_as='()', none_as='()', indent=0):
     """
     Convert an object to an S-expression (`dumps` is just calling this).
 
@@ -378,40 +382,51 @@ def tosexp(obj, str_as='string', tuple_as='list',
 
     """
     def _tosexp(x):
-        tosexp(x, str_as=str_as, tuple_as=tuple_as, true_as=true_as, false_as=false_as, none_as=none_as)
+        return tosexp(x, str_as=str_as, tuple_as=tuple_as, true_as=true_as, false_as=false_as, none_as=none_as, indent=indent)
 
     if isinstance(obj, list):
-        return Bracket(obj, '(').tosexp(_tosexp)
+        c = 1 if not indent else 2
+        indent += c
+        res = Bracket(obj, '(').tosexp(_tosexp)
+        if res.endswith('  )') or res.endswith('\n )'):
+            res = res[:-2] + ')'
+        indent -= c
     elif isinstance(obj, tuple):
+        c = 1 if not indent else 2
+        indent += c
         if tuple_as == 'list':
-            return Bracket(obj, '(').tosexp(_tosexp)
+            res = Bracket(obj, '(').tosexp(_tosexp)
         elif tuple_as == 'array':
-            return Bracket(obj, '[').tosexp(_tosexp)
+            res = Bracket(obj, '[').tosexp(_tosexp)
         else:
             raise ValueError(uformat("tuple_as={0!r} is not valid", tuple_as))
+        indent -= c
     elif obj is True:  # must do this before ``isinstance(obj, int)``
-        return true_as
+        res = true_as
     elif obj is False:
-        return false_as
+        res = false_as
     elif obj is None:
-        return none_as
+        res = none_as
     elif isinstance(obj, (int, float)):
-        return str(obj)
+        res = str(obj)
     elif isinstance(obj, basestring):
         if str_as == 'symbol':
-            return obj
+            res = obj
         elif str_as == 'string':
-            return String(obj).tosexp()
+            res = String(obj).tosexp()
         else:
             raise ValueError(uformat("str_as={0!r} is not valid", str_as))
     elif isinstance(obj, dict):
-        return _tosexp(dict_to_plist(obj))
+        res = _tosexp(dict_to_plist(obj))
     elif isinstance(obj, SExpBase):
-        return obj.tosexp(_tosexp)
+        res = obj.tosexp(_tosexp)
+    elif isinstance(obj, Sep):
+        res = '\n' + ' '*indent
     else:
         raise TypeError(uformat(
             "Object of type '{0}' cannot be converted by `tosexp`. "
             "It's value is '{1!r}'", type(obj), obj))
+    return res
 
 
 @return_as(list)
@@ -507,7 +522,16 @@ class Bracket(SExpBase):
     def tosexp(self, tosexp=tosexp):
         bra = self._bra
         ket = BRACKETS[self._bra]
-        c = ' '.join(tosexp(v) for v in self._val)
+        c = ''
+        for i, v in enumerate(self._val):
+            v = tosexp(v)
+            if i:
+                # Separate by spaces
+                c += ' '
+            if v[0] == '\n':
+                # Avoid spaces at the end of lines
+                c = c.rstrip(' ')
+            c += v
         return uformat("{0}{1}{2}", bra, c, ket)
 
 
