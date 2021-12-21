@@ -11,15 +11,16 @@ Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-schematic/
 """
 # Encapsulate file/line
 import os
-from copy import deepcopy
+import re
 from collections import OrderedDict
 from ..gs import GS
 from .. import log
 from ..misc import W_NOLIB, W_UNKFLD, W_MISSCMP
 from .v5_sch import SchError, SchematicComponent, Schematic
-from .sexpdata import load, SExpData, Symbol
+from .sexpdata import load, SExpData, Symbol, dumps, Sep
 
 logger = log.get_logger(__name__)
+CROSSED_LIB = 'kibot_crossed'
 
 
 def _check_is_symbol_list(e, allow_orphan_symbol=[]):
@@ -143,6 +144,51 @@ class Point(object):
         return Point(items)
 
 
+class PointXY(object):
+    def __init__(self, x, y):
+        super().__init__()
+        self.x = x
+        self.y = y
+
+
+class Box(object):
+    def __init__(self, points=None):
+        self.x1 = self.y1 = self.x2 = self.y2 = 0
+        self.set = False
+        if points:
+            self.x1 = self.x2 = points[0].x
+            self.y1 = self.y2 = points[0].y
+            for p in points[1:]:
+                self.x1 = min(p.x, self.x1)
+                self.x2 = max(p.x, self.x2)
+                self.y1 = min(p.y, self.y1)
+                self.y2 = max(p.y, self.y2)
+            self.set = True
+
+    def __str__(self):
+        if not self.set:
+            return "Box *uninitialized*"
+        return "Box({},{} to {},{})".format(self.x1, self.y1, self.x2, self.y2)
+
+    def diagonal(self, inverse=False):
+        if inverse:
+            return [PointXY(self.x1, self.y2), PointXY(self.x2, self.y1)]
+        return [PointXY(self.x1, self.y1), PointXY(self.x2, self.y2)]
+
+    def union(self, b):
+        if not self.set:
+            self.x1 = b.x1
+            self.y1 = b.y1
+            self.x2 = b.x2
+            self.y2 = b.y2
+            self.set = True
+        elif b.set:
+            self.x1 = min(self.x1, b.x1)
+            self.y1 = min(self.y1, b.y1)
+            self.x2 = max(self.x2, b.x2)
+            self.y2 = max(self.y2, b.y2)
+
+
 def _get_xy(items):
     if len(items) != 3:
         raise SchError('Point definition with wrong args (`{}`)'.format(items))
@@ -188,8 +234,8 @@ class FontEffects(object):
             else:  # A list
                 i_type = _check_is_symbol_list(i)
                 if i_type == 'size':
-                    w = _check_float(i, 1, 'font width')
-                    h = _check_float(i, 2, 'font height')
+                    h = _check_float(i, 1, 'font height')
+                    w = _check_float(i, 2, 'font width')
                 elif i_type == 'thickness':
                     thickness = _check_float(i, 1, 'font thickness')
                 else:
@@ -208,9 +254,9 @@ class FontEffects(object):
                 elif name == 'right':
                     h = 'R'
                 elif name == 'top':
-                    h = 'T'
+                    v = 'T'
                 elif name == 'bottom':
-                    h = 'B'
+                    v = 'B'
                 elif name == 'mirror':
                     mirror = True
                 else:
@@ -236,19 +282,57 @@ class FontEffects(object):
                     raise SchError('Unknown font effect attribute `{}`'.format(i))
         return o
 
+    def write_font(self):
+        data = [_symbol('size', [self.h, self.w])]
+        if self.thickness is not None:
+            data.append(_symbol('thickness', [self.thickness]))
+        if self.bold:
+            data.append(Symbol('bold'))
+        if self.italic:
+            data.append(Symbol('italic'))
+        return _symbol('font', data)
+
+    def write_justify(self):
+        data = []
+        if self.hjustify == 'L':
+            data.append(Symbol('left'))
+        elif self.hjustify == 'R':
+            data.append(Symbol('right'))
+        if self.vjustify == 'T':
+            data.append(Symbol('top'))
+        elif self.vjustify == 'B':
+            data.append(Symbol('bottom'))
+        if self.mirror:
+            data.append(Symbol('mirror'))
+        return _symbol('justify', data)
+
+    def write(self):
+        data = [self.write_font()]
+        if self.hjustify != 'C' or self.vjustify != 'C' or self.mirror:
+            data.append(self.write_justify())
+        if self.hide:
+            data.append(Symbol('hide'))
+        return _symbol('effects', data)
+
 
 class Color(object):
-    def __init__(self, items):
+    def __init__(self, items=None):
         super().__init__()
-        self.r = _check_integer(items, 1, 'red color')
-        self.g = _check_integer(items, 2, 'green color')
-        self.b = _check_integer(items, 3, 'blue color')
-        # Sheet sheet.fill.color is float ...
-        self.a = _check_float(items, 4, 'alpha color')
+        if items:
+            self.r = _check_integer(items, 1, 'red color')
+            self.g = _check_integer(items, 2, 'green color')
+            self.b = _check_integer(items, 3, 'blue color')
+            # Sheet sheet.fill.color is float ...
+            self.a = _check_float(items, 4, 'alpha color')
+        else:
+            self.r = self.g = self.b = self.a = 0
 
     @staticmethod
     def parse(items):
         return Color(items)
+
+    def write(self):
+        return _symbol('color', [self.r, self.g, self.b, self.a])
 
 
 class Stroke(object):
@@ -273,11 +357,17 @@ class Stroke(object):
                 raise SchError('Unknown stroke attribute `{}`'.format(i))
         return stroke
 
+    def write(self):
+        data = [_symbol('width', [self.width])]
+        data.append(_symbol('type', [Symbol(self.type)]))
+        data.append(self.color.write())
+        return _symbol('stroke', data)
+
 
 class Fill(object):
     def __init__(self):
         super().__init__()
-        self.type = 'none'
+        self.type = None
         self.color = None
 
     @staticmethod
@@ -293,6 +383,14 @@ class Fill(object):
             else:
                 raise SchError('Unknown fill attribute `{}`'.format(i))
         return fill
+
+    def write(self):
+        data = []
+        if self.type is not None:
+            data.append(_symbol('type', [Symbol(self.type)]))
+        if self.color is not None:
+            data.append(self.color.write())
+        return _symbol('fill', data)
 
 
 class DrawArcV6(object):
@@ -321,7 +419,17 @@ class DrawArcV6(object):
                 arc.fill = Fill.parse(i)
             else:
                 raise SchError('Unknown arc attribute `{}`'.format(i))
+        arc.box = Box([arc.start, arc.mid, arc.end])
         return arc
+
+    def write(self):
+        data = [_symbol('start', [self.start.x, self.start.y])]
+        data.append(_symbol('mid', [self.mid.x, self.mid.y]))
+        data.append(_symbol('end', [self.end.x, self.end.y]))
+        data.append(Sep())
+        data.extend([self.stroke.write(), Sep()])
+        data.extend([self.fill.write(), Sep()])
+        return _symbol('arc', data)
 
 
 class DrawCircleV6(object):
@@ -347,7 +455,18 @@ class DrawCircleV6(object):
                 circle.fill = Fill.parse(i)
             else:
                 raise SchError('Unknown circle attribute `{}`'.format(i))
+        p1 = PointXY(circle.center.x-circle.radius, circle.center.x-circle.radius)
+        p2 = PointXY(circle.center.x+circle.radius, circle.center.x+circle.radius)
+        circle.box = Box([p1, p2])
         return circle
+
+    def write(self):
+        data = [_symbol('center', [self.center.x, self.center.y])]
+        data.append(_symbol('radius', [self.radius]))
+        data.append(Sep())
+        data.extend([self.stroke.write(), Sep()])
+        data.extend([self.fill.write(), Sep()])
+        return _symbol('circle', data)
 
 
 class DrawRectangleV6(object):
@@ -373,7 +492,16 @@ class DrawRectangleV6(object):
                 rectangle.fill = Fill.parse(i)
             else:
                 raise SchError('Unknown rectangle attribute `{}`'.format(i))
+        rectangle.box = Box([rectangle.start, rectangle.end])
         return rectangle
+
+    def write(self):
+        data = [_symbol('start', [self.start.x, self.start.y])]
+        data.append(_symbol('end', [self.end.x, self.end.y]))
+        data.append(Sep())
+        data.extend([self.stroke.write(), Sep()])
+        data.extend([self.fill.write(), Sep()])
+        return _symbol('rectangle', data)
 
 
 class DrawCurve(object):
@@ -397,7 +525,18 @@ class DrawCurve(object):
                 curve.fill = Fill.parse(i)
             else:
                 raise SchError('Unknown curve attribute `{}`'.format(i))
+        curve.box = Box(curve.points)
         return curve
+
+    def write(self):
+        points = [Sep()]
+        for p in self.points:
+            points.append(_symbol('xy', [p.x, p.y]))
+            points.append(Sep())
+        data = [_symbol('pts', points), Sep()]
+        data.extend([self.stroke.write(), Sep()])
+        data.extend([self.fill.write(), Sep()])
+        return _symbol('gr_curve', data)
 
 
 class DrawPolyLine(object):
@@ -420,7 +559,18 @@ class DrawPolyLine(object):
                 line.fill = Fill.parse(i)
             else:
                 raise SchError('Unknown polyline attribute `{}`'.format(i))
+        line.box = Box(line.points)
         return line
+
+    def write(self):
+        points = [Sep()]
+        for p in self.points:
+            points.append(_symbol('xy', [p.x, p.y]))
+            points.append(Sep())
+        data = [Sep(), _symbol('pts', points), Sep()]
+        data.extend([self.stroke.write(), Sep()])
+        data.extend([self.fill.write(), Sep()])
+        return _symbol('polyline', data)
 
 
 class DrawTextV6(object):
@@ -429,6 +579,7 @@ class DrawTextV6(object):
         self.text = None
         self.x = self.y = self.ang = 0
         self.effects = None
+        self.box = Box()
 
     @staticmethod
     def parse(items):
@@ -437,6 +588,11 @@ class DrawTextV6(object):
         text.x, text.y, text.ang = _get_at(items, 2, 'text')
         text.effects = _get_effects(items, 3, 'text')
         return text
+
+    def write(self):
+        data = [self.text, _symbol('at', [self.x, self.y, self.ang]), Sep()]
+        data.extend([self.effects.write(), Sep()])
+        return _symbol('text', data)
 
 
 def _get_effects(items, pos, name):
@@ -451,6 +607,7 @@ class PinV6(object):
         self.pos_x = self.pos_y = self.ang = self.len = 0
         self.name_effects = self.number_effects = None
         self.hide = False
+        self.box = Box()
 
     @staticmethod
     def parse(items):
@@ -475,7 +632,36 @@ class PinV6(object):
                 pin.number_effects = _get_effects(i, 2, name+' number')
             else:
                 raise SchError('Unknown pin attribute `{}`'.format(i))
+
+        if not pin.hide:
+            p1 = PointXY(pin.pos_x, pin.pos_y)
+            ang = pin.ang % 360
+            if ang == 0:
+                co = 1
+                si = 0
+            elif pin.ang == 90:
+                co = 0
+                si = 1
+            elif pin.ang == 180:
+                co = -1
+                si = 0
+            else:  # 270
+                co = 0
+                si = -1
+            p2 = PointXY(pin.pos_x+pin.len*co, pin.pos_y+pin.len*si)
+            pin.box = Box([p1, p2])
         return pin
+
+    def write(self):
+        data = [Symbol(self.type),
+                Symbol(self.gtype),
+                _symbol('at', [self.pos_x, self.pos_y, self.ang]),
+                _symbol('length', [self.len])]
+        if self.hide:
+            data.append(Symbol('hide'))
+        data.extend([Sep(), _symbol('name', [self.name, self.name_effects.write()]), Sep(),
+                    _symbol('number', [self.number, self.number_effects.write()]), Sep()])
+        return _symbol('pin', data)
 
 
 class SchematicFieldV6(object):
@@ -501,8 +687,25 @@ class SchematicFieldV6(object):
             field.effects = None
         return field
 
+    def write(self):
+        if self.number < 0:
+            return None
+        data = [self.name, self.value, _symbol('id', [self.number])]
+        data.extend([_symbol('at', [self.x, self.y, self.ang])])
+        if self.effects:
+            data.extend([Sep(), self.effects.write(), Sep()])
+        return _symbol('property', data)
+
 
 class LibComponent(object):
+    unit_regex = re.compile(r'^(.*)_(\d+)_(\d+)$')
+    cross_color = Color()
+    cross_stroke = Stroke()
+    cross_stroke.width = 0.6
+    cross_stroke.color = cross_color
+    cross_fill = Fill()
+    cross_fill.type = 'none'
+
     def __init__(self):
         super().__init__()
         self.pin_numbers_hide = None
@@ -515,6 +718,10 @@ class LibComponent(object):
         self.draw = []
         self.fields = []
         self.dfields = {}
+        self.box = Box()
+        # This member is used to generate crossed components (DNF).
+        # When defined means we need to add a cross in this box and then reset the box.
+        self.cross_box = None
 
     @staticmethod
     def load(c, project, is_unit=False):  # noqa: C901
@@ -539,9 +746,11 @@ class LibComponent(object):
                 logger.warning(W_NOLIB + "Component `{}` doesn't specify its library".format(comp.name))
         comp.units = []
         comp.pins = []
+        comp.unit_count = 1
         # Variable list
         for i in c[2:]:
             i_type = _check_is_symbol_list(i)
+            vis_obj = None
             if i_type == 'pin_numbers':
                 comp.pin_numbers_hide = _check_hide(i, 1, i_type)
             elif i_type == 'pin_names':
@@ -570,28 +779,121 @@ class LibComponent(object):
                 comp.dfields[field.name.lower()] = field
             # GRAPHIC_ITEMS...
             elif i_type == 'arc':
-                comp.draw.append(DrawArcV6.parse(i))
+                vis_obj = DrawArcV6.parse(i)
+                comp.draw.append(vis_obj)
             elif i_type == 'circle':
-                comp.draw.append(DrawCircleV6.parse(i))
+                vis_obj = DrawCircleV6.parse(i)
+                comp.draw.append(vis_obj)
             elif i_type == 'gr_curve':
-                comp.draw.append(DrawCurve.parse(i))
+                vis_obj = DrawCurve.parse(i)
+                comp.draw.append(vis_obj)
             elif i_type == 'polyline':
-                comp.draw.append(DrawPolyLine.parse(i))
+                vis_obj = DrawPolyLine.parse(i)
+                comp.draw.append(vis_obj)
             elif i_type == 'rectangle':
-                comp.draw.append(DrawRectangleV6.parse(i))
+                vis_obj = DrawRectangleV6.parse(i)
+                comp.draw.append(vis_obj)
             elif i_type == 'text':
                 comp.draw.append(DrawTextV6.parse(i))
             # PINS...
             elif i_type == 'pin':
-                comp.pins.append(PinV6.parse(i))
+                vis_obj = PinV6.parse(i)
+                comp.pins.append(vis_obj)
             # UNITS...
             elif i_type == 'symbol':
-                obj = LibComponent.load(i, project, is_unit=True)
-                comp.units.append(obj)
-                # logger.warning('Unit: '+str(obj))
+                # They use a special naming scheme:
+                # 1) A symbol without real units:
+                #    - *_0_1 the body
+                #    - *_1_1 the pins
+                # 2) A symbol with real units:
+                #    - Each unit is *_N_* where N is the unit starting from 1
+                #    - If the unit has alternative drawing they are *_N_1 and *_N_2
+                #    - If the unit doesn't have alternative we have *_N_x x starts from 0
+                #      Pins and drawings can be in _N_0 and/or _N_1
+                vis_obj = LibComponent.load(i, project, is_unit=True)
+                comp.units.append(vis_obj)
+                m = LibComponent.unit_regex.search(vis_obj.lib_id)
+                if m is None:
+                    raise SchError('Malformed unit id `{}`'.format(vis_obj.lib_id))
+                unit = int(m.group(2))
+                comp.unit_count = max(unit, comp.unit_count)
             else:
                 raise SchError('Unknown symbol attribute `{}`'.format(i))
+            if vis_obj:
+                comp.box.union(vis_obj.box)
         return comp
+
+    def assign_crosses(self):
+        """ Compute the box for the crossed components """
+        name0 = self.name+"_0"
+        # Compute the full box for each unit
+        for c in range(self.unit_count):
+            name = self.name+"_"+str(c+1)
+            box = Box()
+            unit_with_graphs = None
+            for unit in self.units:
+                # Unit 0 is part of unit 1
+                if unit.name.startswith(name) or (c == 0 and unit.name.startswith(name0)):
+                    box.union(unit.box)
+                    if len(unit.draw):
+                        unit_with_graphs = unit
+            if unit_with_graphs:
+                unit_with_graphs.cross_box = box
+
+    def write_cross(s, sdata):
+        """ Add the cross drawing """
+        if s.cross_box:
+            # Add a cross
+            o = DrawPolyLine()
+            o.stroke = LibComponent.cross_stroke
+            o.fill = LibComponent.cross_fill
+            o.points = s.cross_box.diagonal()
+            sdata.extend([o.write(), Sep()])
+            o.points = s.cross_box.diagonal(True)
+            sdata.extend([o.write(), Sep()])
+            s.cross_box = None
+
+    def write(s, cross=False):
+        lib_id = s.lib_id
+        if cross:
+            # Fill the cross_box of our sub/units
+            s.assign_crosses()
+            if s.lib:
+                # Use an alternative name
+                lib_id = CROSSED_LIB+':'+s.name
+        sdata = [lib_id]
+        if s.is_power:
+            sdata.append(_symbol('power', []))
+        if s.pin_numbers_hide:
+            sdata.append(_symbol('pin_numbers', [Symbol('hide')]))
+        if s.pin_names_hide is not None or s.pin_names_offset is not None:
+            aux = []
+            if s.pin_names_offset is not None:
+                aux.append(_symbol('offset', [s.pin_names_offset]))
+            if s.pin_names_hide is not None:
+                aux.append(Symbol('hide'))
+            sdata.append(_symbol('pin_names', aux))
+        if s.in_bom:
+            sdata.append(_symbol('in_bom', [Symbol('yes')]))
+        if s.on_board:
+            sdata.append(_symbol('on_board', [Symbol('yes')]))
+        sdata.append(Sep())
+        # Properties
+        for f in s.fields:
+            fdata = f.write()
+            if fdata is not None:
+                sdata.extend([fdata, Sep()])
+        # Graphics
+        for g in s.draw:
+            sdata.extend([g.write(), Sep()])
+        s.write_cross(sdata)
+        # Pins
+        for p in s.pins:
+            sdata.extend([p.write(), Sep()])
+        # Units
+        for u in s.units:
+            sdata.extend([u.write(cross), Sep()])
+        return _symbol('symbol', sdata)
 
 
 class SchematicComponentV6(SchematicComponent):
@@ -600,7 +902,8 @@ class SchematicComponentV6(SchematicComponent):
         self.in_bom = False
         self.on_board = False
         self.pins = OrderedDict()
-        self.unit = 0
+        self.unit = 1
+        self.unit_specified = False
         self.ref = None
 
     def set_ref(self, ref):
@@ -648,13 +951,13 @@ class SchematicComponentV6(SchematicComponent):
             logger.warning(W_NOLIB + "Component `{}` doesn't specify its library".format(comp.name))
         # 2 The position
         comp.x, comp.y, comp.ang = _get_at(c, 2, name)
-        # 3 Unit
         # Variable list
-        for i in c[4:]:
+        for i in c[3:]:
             i_type = _check_is_symbol_list(i)
             if i_type == 'unit':
                 # This is documented as mandatory, but isn't always there
                 comp.unit = _check_integer(i, 1, name+' unit')
+                comp.unit_specified = True
             elif i_type == 'in_bom':
                 comp.in_bom = _get_yes_no(i, 1, i_type)
             elif i_type == 'on_board':
@@ -688,6 +991,32 @@ class SchematicComponentV6(SchematicComponent):
         comp.add_field(field)
         return comp
 
+    def write(self, cross=False):
+        lib_id = self.lib_id
+        is_crossed = not(self.fitted or not self.included)
+        if cross and self.lib and is_crossed:
+            # Use an alternative name
+            lib_id = CROSSED_LIB+':'+self.name
+        data = [_symbol('lib_id', [lib_id]),
+                _symbol('at', [self.x, self.y, self.ang])]
+        if self.unit_specified:
+            data.append(_symbol('unit', [self.unit]))
+        data.append(Sep())
+        if self.in_bom or self.on_board:
+            if self.in_bom:
+                data.append(_symbol('in_bom', [Symbol('yes')]))
+            if self.on_board:
+                data.append(_symbol('on_board', [Symbol('yes')]))
+            data.append(Sep())
+        data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        for f in self.fields:
+            d = f.write()
+            if d:
+                data.extend([d, Sep()])
+        for k, v in self.pins.items():
+            data.extend([_symbol('pin', [k, _symbol('uuid', [Symbol(v)])]), Sep()])
+        return _symbol('symbol', data)
+
 
 def _get_uuid(items, pos, where):
     values = _check_symbol_value(items, pos, where + ' uuid', 'uuid')
@@ -705,6 +1034,13 @@ class Junction(object):
         jun.uuid = _get_uuid(items, 4, 'junction')
         return jun
 
+    def write(self):
+        data = [_symbol('at', [self.pos_x, self.pos_y]),
+                _symbol('diameter', [self.diameter]),
+                self.color.write(), Sep(),
+                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+        return _symbol('junction', data)
+
 
 class NoConnect(object):
     @staticmethod
@@ -714,6 +1050,11 @@ class NoConnect(object):
         nocon.pos_x, nocon.pos_y, nocon.ang = _get_at(items, 1, 'no connect')
         nocon.uuid = _get_uuid(items, 2, 'no connect')
         return nocon
+
+    def write(self):
+        data = [_symbol('at', [self.pos_x, self.pos_y]),
+                _symbol('uuid', [Symbol(self.uuid)])]
+        return _symbol('no_connect', data)
 
 
 class BusEntry(object):
@@ -728,16 +1069,29 @@ class BusEntry(object):
         buse.uuid = _get_uuid(items, 4, 'bus entry')
         return buse
 
+    def write(self):
+        data = [_symbol('at', [self.pos_x, self.pos_y]),
+                _symbol('size', [self.size.x, self.size.y]), Sep(),
+                self.stroke.write(), Sep(),
+                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+        return _symbol('bus_entry', data)
+
 
 class SchematicWireV6(object):
     @staticmethod
     def parse(items, name):
         _check_len_total(items, 4, name)
         wire = SchematicWireV6()
+        wire.type = name  # wire, bus, polyline
         wire.points = _get_points(items[1])
         wire.stroke = Stroke.parse(items[2])
         wire.uuid = _get_uuid(items, 3, name)
         return wire
+
+    def write(self):
+        points = [_symbol('xy', [p.x, p.y]) for p in self.points]
+        data = [_symbol('pts', points), Sep(), self.stroke.write(), Sep(), _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+        return _symbol(self.type, data)
 
 
 class SchematicBitmapV6(object):
@@ -757,16 +1111,15 @@ class SchematicBitmapV6(object):
         bmp.data = [_check_symbol(values, i+1, 'image data') for i, d in enumerate(values[1:])]
         return bmp
 
-
-class PolyLine(object):
-    @staticmethod
-    def parse(items):
-        _check_len_total(items, 4, 'polyline')
-        poly = PolyLine()
-        poly.points = _get_points(items[1])
-        poly.stroke = Stroke.parse(items[2])
-        poly.uuid = _get_uuid(items, 3, 'polyline')
-        return poly
+    def write(self):
+        d = []
+        for v in self.data:
+            d.append(Symbol(v))
+            d.append(Sep())
+        data = [_symbol('at', [self.pos_x, self.pos_y]), Sep(),
+                _symbol('uuid', [Symbol(self.uuid)]), Sep(),
+                _symbol('data', [Sep()] + d), Sep()]
+        return _symbol('image', data)
 
 
 class Text(object):
@@ -780,6 +1133,13 @@ class Text(object):
         text.effects = _get_effects(items, 3, name)
         text.uuid = _get_uuid(items, 4, name)
         return text
+
+    def write(self):
+        data = [self.text,
+                _symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
+                self.effects.write(), Sep(),
+                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+        return _symbol(self.name, data)
 
 
 class GlobalLabel(object):
@@ -815,6 +1175,17 @@ class GlobalLabel(object):
                 raise SchError('Unknown label attribute `{}`'.format(i))
         return label
 
+    def write(self):
+        data = [self.text,
+                _symbol('shape', [Symbol(self.shape)]),
+                _symbol('at', [self.pos_x, self.pos_y, self.ang])]
+        if self.fields_autoplaced:
+            data.append(_symbol('fields_autoplaced', []))
+        data.extend([Sep(), self.effects.write(), Sep(), _symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        for p in self.properties:
+            data.extend([p.write(), Sep()])
+        return _symbol('global_label', data)
+
 
 class HierarchicalLabel(object):
     @staticmethod
@@ -829,9 +1200,18 @@ class HierarchicalLabel(object):
         label.uuid = _get_uuid(items, 5, name)
         return label
 
+    def write(self):
+        data = [self.text,
+                _symbol('shape', [Symbol(self.shape)]),
+                _symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
+                self.effects.write(), Sep(),
+                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+        return _symbol('hierarchical_label', data)
+
 
 class HSPin(object):
     """ Hierarchical Sheet Pin """
+    # TODO base class with HierarchicalLabel
     @staticmethod
     def parse(items):
         name = 'hierarchical sheet pin'
@@ -844,6 +1224,14 @@ class HSPin(object):
         pin.uuid = _get_uuid(items, 5, name)
         return pin
 
+    def write(self):
+        data = [self.name,
+                Symbol(self.type),
+                _symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
+                self.effects.write(), Sep(),
+                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+        return _symbol('pin', data)
+
 
 class Sheet(object):
     def __init__(self):
@@ -855,6 +1243,7 @@ class Sheet(object):
         self.properties = []
         self.name = self.file = ''
         self.pins = []
+        self.sch = None
 
     @staticmethod
     def parse(items):
@@ -900,6 +1289,25 @@ class Sheet(object):
         sheet.load(os.path.join(parent_dir, self.file), project, parent_obj)
         return sheet
 
+    def write(self, cross=False):
+        data = [_symbol('at', [self.pos_x, self.pos_y]),
+                _symbol('size', [self.w, self.h])]
+        if self.fields_autoplaced:
+            data.append(_symbol('fields_autoplaced', []))
+        data.extend([Sep(), self.stroke.write(), Sep(),
+                    self.fill.write(), Sep(),
+                    _symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        for p in self.properties:
+            change_file = cross and p.name == 'Sheet file'
+            if change_file:
+                p.value = self.flat_file
+            data.extend([p.write(), Sep()])
+            if change_file:
+                p.value = self.file
+        for p in self.pins:
+            data.extend([p.write(), Sep()])
+        return _symbol('sheet', data)
+
 
 class SheetInstance(object):
     @staticmethod
@@ -913,6 +1321,9 @@ class SheetInstance(object):
             instance.page = _check_symbol_str(v, 2, name, 'page')
             instances.append(instance)
         return instances
+
+    def write(self):
+        return _symbol('path', [self.path, _symbol('page', [self.page])])
 
 
 class SymbolInstance(object):
@@ -931,6 +1342,43 @@ class SymbolInstance(object):
             instances.append(instance)
         return instances
 
+    def write(self):
+        data = [self.path, Sep(),
+                _symbol('reference', [self.reference]),
+                _symbol('unit', [self.unit]),
+                _symbol('value', [self.value]),
+                _symbol('footprint', [self.footprint]), Sep()]
+        return _symbol('path', data)
+
+
+def _symbol(name, content):
+    return [Symbol(name)] + content
+
+
+def _add_items(items, sch, sep=False, cross=False):
+    if len(items):
+        sch.append(Sep())
+        for i in items:
+            if cross:
+                sch.append(i.write(cross=True))
+            else:
+                sch.append(i.write())
+            sch.append(Sep())
+            if sep:
+                sch.append(Sep())
+        if sep:
+            sch.pop()
+
+
+def _add_items_list(name, items, sch):
+    if not len(items):
+        return
+    data = [Sep()]
+    for s in items:
+        data.append(s.write())
+        data.append(Sep())
+    sch.extend([Sep(), _symbol(name, data), Sep()])
+
 
 class SchematicV6(Schematic):
     def __init__(self):
@@ -939,6 +1387,7 @@ class SchematicV6(Schematic):
         # The title block is optional
         self.date = self.title = self.revision = self.company = ''
         self.comment1 = self.comment2 = self.comment3 = self.comment4 = ''
+        self.title_ori = self.date_ori = None
 
     def _fill_missing_title_block(self):
         # Fill in some missing info
@@ -954,9 +1403,9 @@ class SchematicV6(Schematic):
                 raise SchError('Wrong title block entry ({})'.format(item))
             i_type = item[0].value()
             if i_type == 'title':
-                self.title = _check_str(item, 1, i_type)
+                self.title_ori = self.title = _check_str(item, 1, i_type)
             elif i_type == 'date':
-                self.date = _check_str(item, 1, i_type)
+                self.date_ori = self.date = _check_str(item, 1, i_type)
             elif i_type == 'rev':
                 self.revision = _check_str(item, 1, i_type)
             elif i_type == 'company':
@@ -994,10 +1443,105 @@ class SchematicV6(Schematic):
         """ Converts a UUID path into something we can read """
         if path == '/':
             return path
-        res = '/'
-        for p in path[1:].split('/'):
-            res = os.path.join(res, self.sheet_names[p])
+        res = self.sheet_names[path]
         return res
+
+    def write_paper(self):
+        paper_data = [self.paper]
+        if self.paper == "User":
+            paper_data.extend([self.paper_w, self.paper_h])
+        if self.paper_orientation is not None:
+            paper_data.append(Symbol(self.paper_orientation))
+        return [Sep(), Sep(), _symbol('paper', paper_data)]
+
+    def write_title_block(self):
+        data = [Sep()]
+        data += [_symbol('title', [self.title_ori]), Sep()]
+        data += [_symbol('date', [self.date_ori]), Sep()]
+        data += [_symbol('rev', [self.revision]), Sep()]
+        data += [_symbol('company', [self.company]), Sep()]
+        data += [_symbol('comment', [1, self.comment1]), Sep()]
+        data += [_symbol('comment', [2, self.comment2]), Sep()]
+        data += [_symbol('comment', [3, self.comment3]), Sep()]
+        data += [_symbol('comment', [4, self.comment4]), Sep()]
+        return [Sep(), Sep(), _symbol('title_block', data)]
+
+    def write_lib_symbols(self, cross=False):
+        data = [Sep()]
+        for s in self.lib_symbols:
+            data.extend([s.write(), Sep()])
+            if cross:
+                data.extend([s.write(cross), Sep()])
+        return [Sep(), Sep(), _symbol('lib_symbols', data), Sep()]
+
+    def save(self, fname, dest_dir):
+        cross = True
+        fname = os.path.join(dest_dir, fname)
+        sch = [Symbol('kicad_sch')]
+        sch.append(_symbol('version', [self.version]))
+        sch.append(_symbol('generator', [Symbol(self.generator)]))
+        sch.append(Sep())
+        sch.append(Sep())
+        sch.append(_symbol('uuid', [Symbol(self.uuid)]))
+        sch.extend(self.write_paper())
+        if self.title_ori is not None:
+            sch.extend(self.write_title_block())
+        sch.extend(self.write_lib_symbols(cross))
+        # Connections (aka Junctions)
+        _add_items(self.junctions, sch)
+        # No connect
+        _add_items(self.no_conn, sch)
+        # Bus entry
+        _add_items(self.bus_entry, sch)
+        # Lines (wire, bus and polyline)
+        if self.wires:
+            old_type = 'none'
+            for e in self.wires:
+                if e.type != old_type and old_type != 'wire':
+                    sch.append(Sep())
+                sch.append(e.write())
+                old_type = e.type
+                sch.append(Sep())
+        # Images
+        _add_items(self.bitmaps, sch)
+        # Texts
+        _add_items(self.texts, sch)
+        # Labels
+        _add_items(self.labels, sch)
+        # Global Labels
+        _add_items(self.glabels, sch)
+        # Hierarchical Labels
+        _add_items(self.hlabels, sch)
+        # Symbols
+        _add_items(self.symbols, sch, sep=True, cross=cross)
+        # Sheets
+        _add_items(self.sheets, sch, sep=True, cross=cross)
+        # Sheet instances
+        _add_items_list('sheet_instances', self.sheet_instances, sch)
+        # Symbol instances
+        _add_items_list('symbol_instances', self.symbol_instances, sch)
+        with open(fname, 'wt') as f:
+            f.write(dumps(sch))
+            f.write('\n')
+        for sch in self.sheets:
+            if sch.sch:
+                sch.sch.save(sch.flat_file if cross else sch.file, dest_dir)
+
+    def save_variant(self, dest_dir):
+        fname = os.path.basename(self.fname)
+        self.save(fname, dest_dir)
+        return fname
+
+    def _create_flat_name(self, sch):
+        """ Create a unique name that doesn't contain subdirs.
+            Is used to save a variant, where we avoid sharing instance data """
+        # Store it in the UUID -> name
+        # Used to create a human readable sheet path
+        self.sheet_names[os.path.join(self.path, sch.uuid)] = os.path.join(self.sheet_path_h, sch.name)
+        # Eliminate subdirs
+        file = sch.file.replace('/', '_')
+        fparts = os.path.splitext(file)
+        sch.flat_file = fparts[0]+'_'+str(len(self.sheet_names))+fparts[1]
 
     def load(self, fname, project, parent=None):  # noqa: C901
         """ Load a v6.x KiCad Schematic.
@@ -1008,7 +1552,6 @@ class SchematicV6(Schematic):
             self.fields = ['part']
             self.fields_lc = set(self.fields)
             self.sheet_paths = {'/': self}
-            self.symbol_uuids = {}
             self.lib_symbol_names = {}
             self.path = '/'
             self.sheet_path_h = '/'
@@ -1017,30 +1560,31 @@ class SchematicV6(Schematic):
             self.fields = parent.fields
             self.fields_lc = parent.fields_lc
             self.sheet_paths = parent.sheet_paths
-            self.symbol_uuids = parent.symbol_uuids
             self.lib_symbol_names = parent.lib_symbol_names
             self.sheet_names = parent.sheet_names
             # self.path is set by sch.load_sheet
         self.parent = parent
         self.fname = fname
         self.project = project
-        self.all = []
         self.lib_symbols = []
         self.symbols = []
         self.components = []
-        self.juntions = []  # Connect
+        self.junctions = []  # Connect
         self.no_conn = []
         self.bus_entry = []
         self.wires = []
         self.bitmaps = []
         self.texts = []
-        self.lines = []
         self.labels = []
         self.glabels = []
         self.hlabels = []
         self.sheets = []
         self.sheet_instances = []
         self.symbol_instances = []
+        # TODO: this assumes we are expanding the schematic to allow variant.
+        # This is needed to overcome KiCad 6 limitations (symbol instances only differ in Reference)
+        # If we don't want to expand the schematic this member should be shared with the parent
+        self.symbol_uuids = {}
         with open(fname, 'rt') as fh:
             error = None
             try:
@@ -1075,38 +1619,24 @@ class SchematicV6(Schematic):
                 self._get_title_block(e[1:])
             elif e_type == 'lib_symbols':
                 self._get_lib_symbols(e)
-            # The following are mixed
             elif e_type == 'junction':
-                obj = Junction.parse(e)
-                self.juntions.append(obj)
+                self.junctions.append(Junction.parse(e))
             elif e_type == 'no_connect':
-                obj = NoConnect.parse(e)
-                self.no_conn.append(obj)
+                self.no_conn.append(NoConnect.parse(e))
             elif e_type == 'bus_entry':
-                obj = BusEntry.parse(e)
-                self.bus_entry.append(obj)
-            elif e_type == 'bus' or e_type == 'wire':
-                obj = SchematicWireV6.parse(e, e_type)
-                self.wires.append(obj)
+                self.bus_entry.append(BusEntry.parse(e))
+            elif e_type == 'bus' or e_type == 'wire' or e_type == 'polyline':
+                self.wires.append(SchematicWireV6.parse(e, e_type))
             elif e_type == 'image':
-                obj = SchematicBitmapV6.parse(e)
-                self.bitmaps.append(obj)
-            elif e_type == 'polyline':
-                obj = PolyLine.parse(e)
-                self.lines.append(obj)
+                self.bitmaps.append(SchematicBitmapV6.parse(e))
             elif e_type == 'text':
-                obj = Text.parse(e, e_type)
-                self.texts.append(obj)
+                self.texts.append(Text.parse(e, e_type))
             elif e_type == 'label':
-                obj = Text.parse(e, e_type)
-                self.labels.append(obj)
+                self.labels.append(Text.parse(e, e_type))
             elif e_type == 'global_label':
-                obj = GlobalLabel.parse(e)
-                self.glabels.append(obj)
+                self.glabels.append(GlobalLabel.parse(e))
             elif e_type == 'hierarchical_label':
-                obj = HierarchicalLabel.parse(e)
-                self.hlabels.append(obj)
-            # Ordered again
+                self.hlabels.append(HierarchicalLabel.parse(e))
             elif e_type == 'symbol':
                 obj = SchematicComponentV6.load(e, self.project, self)
                 if obj.annotation_error:
@@ -1116,31 +1646,28 @@ class SchematicV6(Schematic):
             elif e_type == 'sheet':
                 obj = Sheet.parse(e)
                 self.sheets.append(obj)
-                self.sheet_names[obj.uuid] = obj.name
+                self._create_flat_name(obj)
             elif e_type == 'sheet_instances':
                 self.sheet_instances = SheetInstance.parse(e)
             elif e_type == 'symbol_instances':
                 self.symbol_instances = SymbolInstance.parse(e)
             else:
                 raise SchError('Unknown kicad_sch attribute `{}`'.format(e))
-            if obj is not None:
-                self.all.append(obj)
         if not self.title:
             self._fill_missing_title_block()
         # Load sub-sheets
-        self.sub_sheets = []
         for sch in self.sheets:
             sheet = sch.load_sheet(project, fname, self)
             if sheet.annotation_error:
                 self.annotation_error = True
-            self.sub_sheets.append(sheet)
+            sch.sch = sheet
         # Create the components list
         for s in self.symbol_instances:
             # Get a copy of the original symbol
             path = os.path.dirname(s.path)
             sheet = self.sheet_paths[path]
             comp_uuid = os.path.basename(s.path)
-            comp = deepcopy(self.symbol_uuids[comp_uuid])
+            comp = sheet.symbol_uuids[comp_uuid]
             # Transfer the instance data
             comp.set_ref(s.reference)
             comp.unit = s.unit
