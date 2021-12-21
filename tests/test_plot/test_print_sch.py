@@ -19,6 +19,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.misc import (PDF_SCH_PRINT, SVG_SCH_PRINT)
 from kibot.kicad.v5_sch import Schematic, SchFileError, DrawPoligon, Pin
+from kibot.kicad.v6_sch import SchematicV6
 from kibot.globals import Globals
 # Utils import
 from utils import context
@@ -40,9 +41,10 @@ def test_print_sch_ok(test_dir):
 
 
 def test_print_sch_fail(test_dir):
-    prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'PrSCHFail', prj, 'print_sch', PDF_DIR)
-    ctx.run(PDF_SCH_PRINT, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'print_err.sch')])
+    prj = 'print_err'
+    ctx = context.TestContextSCH(test_dir, 'PrSCHFail', prj, 'print_sch', PDF_DIR)
+    ctx.run(PDF_SCH_PRINT, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(),
+            'print_err'+context.KICAD_SCH_EXT)])
     ctx.clean_up()
 
 
@@ -64,12 +66,12 @@ def test_print_sch_svg_fail(test_dir):
 
 def check_l1(ctx):
     ctx.run()
-    o_name = os.path.join(NI_DIR, 'test_v5.sch')
+    o_name = os.path.join(NI_DIR, 'test_v5'+context.KICAD_SCH_EXT)
     ctx.expect_out_file(o_name)
     glb = Globals()
     glb.set_tree({})
     glb.config(None)
-    sch = Schematic()
+    sch = Schematic() if context.ki5() else SchematicV6()
     try:
         sch.load(ctx.get_out_path(o_name), 'no_project')
     except SchFileError as e:
@@ -80,7 +82,8 @@ def check_l1(ctx):
     l1 = next(c for c in comps if c.ref == 'L1')
     assert l1
     logging.debug('Found L1')
-    assert l1.lib == 'n'
+    lib_name = 'n' if context.ki5() else 'kibot_crossed'
+    assert l1.lib == lib_name
     logging.debug('L1 is crossed')
     ctx.clean_up()
 
@@ -141,12 +144,12 @@ def test_sch_missing_1(test_dir):
     prj = 'missing'
     ctx = context.TestContextSCH(test_dir, 'test_sch_missing_1', prj, 'sch_no_inductors_1', PDF_DIR)
     ctx.run()
-    o_name = os.path.join(NI_DIR, prj+'.sch')
+    o_name = os.path.join(NI_DIR, prj+context.KICAD_SCH_EXT)
     ctx.expect_out_file(o_name)
     ctx.search_err("Component .?Resistor.? doesn't specify its library")
     ctx.search_err("Missing component .?l1:FooBar.?")
-    ctx.search_err("Missing component(.*)Resistor", invert=True)
-    ctx.search_err("Missing doc-lib entry for l1:C")
+    ctx.search_err("Missing component(.*)Resistor", invert=context.ki5())
+    ctx.search_err("Missing doc-lib entry for l1:C", invert=(not context.ki5()))
     ctx.search_out(r"Found 4 unique warning/s \(")
     ctx.clean_up()
 
@@ -157,12 +160,12 @@ def test_sch_missing_filtered(test_dir):
     prj = 'missing'
     ctx = context.TestContextSCH(test_dir, 'test_sch_missing_filtered', prj, 'sch_no_inductors_1_filtered', PDF_DIR)
     ctx.run()
-    o_name = os.path.join(NI_DIR, prj+'.sch')
+    o_name = os.path.join(NI_DIR, prj+context.KICAD_SCH_EXT)
     ctx.expect_out_file(o_name)
     ctx.search_err("Component .?Resistor.? doesn't specify its library")
     ctx.search_err("Missing component .?l1:FooBar.?", invert=True)
-    ctx.search_err("Missing component(.*)Resistor", invert=True)
-    ctx.search_err("Missing doc-lib entry for l1:C")
+    ctx.search_err("Missing component(.*)Resistor", invert=context.ki5())
+    ctx.search_err("Missing doc-lib entry for l1:C", invert=(not context.ki5()))
     ctx.search_out(r"Found 3 unique warning/s \(\d+ total, \d+ filtered\)")
     ctx.clean_up()
 
@@ -170,6 +173,9 @@ def test_sch_missing_filtered(test_dir):
 def test_sch_bizarre_cases(test_dir):
     """ Poligon without points.
         Pin with unknown direction. """
+    if not context.ki5():
+        # This is very KiCad 5 loader specific
+        return
     pol = DrawPoligon()
     pol.points = 0
     pol.coords = []
