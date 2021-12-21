@@ -5,6 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegFilter, Registrable, RegOutput
 from .optionable import Optionable
+from .gs import GS
 from .misc import (IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT, IFILT_KICOST_RENAME, DISTRIBUTORS,
                    IFILT_VAR_RENAME_KICOST, IFILT_KICOST_DNP)
 from .error import KiPlotConfigurationError
@@ -171,6 +172,8 @@ def apply_fitted_filter(comps, filter):
         for c in comps:
             if c.fitted:
                 c.fitted = filter.filter(c)
+                if not c.fitted and GS.debug_level > 2:
+                    logger.debug('- Not fit: '+c.ref)
 
 
 def apply_fixed_filter(comps, filter):
