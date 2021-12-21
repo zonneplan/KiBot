@@ -217,11 +217,7 @@ class PositionOptions(VariantOptions):
         output_dir = os.path.dirname(fname)
         columns = self.columns.values()
         # Note: the parser already checked the units are milimeters or inches
-        conv = 1.0
-        if self.units == 'millimeters':
-            conv = 1.0 / IU_PER_MM
-        else:  # self.units == 'inches':
-            conv = 0.001 / IU_PER_MILS
+        conv = 1.0/IU_PER_MM if self.units == 'millimeters' else 0.001/IU_PER_MILS
         # Format all strings
         comps_hash = self.get_refs_hash()
         modules = []
