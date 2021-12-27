@@ -17,6 +17,7 @@ I'm not even sure the values are correct.
 import os
 import re
 import sys
+import json
 from io import StringIO
 from glob import glob
 import platform
@@ -126,6 +127,8 @@ class KiConf(object):
         cfg = ''
         if GS.kicad_conf_path:
             cfg = os.path.join(GS.kicad_conf_path, KICAD_COMMON)
+            if GS.ki6():
+                cfg += '.json'
             if os.path.isfile(cfg):
                 return cfg
         logger.warning(W_NOCONFIG + 'Unable to find KiCad configuration file ({})'.format(cfg))
@@ -180,29 +183,48 @@ class KiConf(object):
     def guess_3d_dir():
         return KiConf.guess_kicad_data_dir(os.path.join('modules', 'packages3d'), 'KISYS3DMOD')
 
+    def load_ki5_env(cfg):
+        """ Environment vars from KiCad 5 configuration """
+        # Load the "environment variables"
+        with open(cfg, 'rt') as f:
+            buf = f.read()
+        io_buf = StringIO('[Default]\n'+buf)
+        cf = ConfigParser.RawConfigParser(allow_no_value=True)
+        cf.optionxform = str
+        if sys.version_info.major >= 3:
+            cf.read_file(io_buf, cfg)
+        else:  # pragma: no cover (Py2)
+            cf.readfp(io_buf, cfg)
+        if 'EnvironmentVariables' not in cf.sections():
+            logger.warning(W_NOKIENV + 'KiCad config without EnvironmentVariables section')
+        else:
+            for k, v in cf.items('EnvironmentVariables'):
+                if GS.debug_level > 1:
+                    logger.debug('- KiCad var: {}="{}"'.format(k, v))
+                KiConf.kicad_env[k] = v
+
+    def load_ki6_env(cfg):
+        """ Environment vars from KiCad 6 configuration """
+        with open(cfg, 'rt') as f:
+            data = json.load(f)
+        if "environment" in data and 'vars' in data['environment']:
+            for k, v in data['environment']['vars'].items():
+                if GS.debug_level > 1:
+                    logger.debug('- KiCad var: {}="{}"'.format(k, v))
+                KiConf.kicad_env[k] = v
+        else:
+            logger.warning(W_NOKIENV + 'KiCad config without environment.vars section')
+
     def load_kicad_common():
         # Try to figure out KiCad configuration file
         cfg = KiConf.find_kicad_common()
         if cfg and os.path.isfile(cfg):
             logger.debug('Reading KiCad config from `{}`'.format(cfg))
             KiConf.config_dir = os.path.dirname(cfg)
-            # Load the "environment variables"
-            with open(cfg, 'rt') as f:
-                buf = f.read()
-            io_buf = StringIO('[Default]\n'+buf)
-            cf = ConfigParser.RawConfigParser(allow_no_value=True)
-            cf.optionxform = str
-            if sys.version_info.major >= 3:
-                cf.read_file(io_buf, cfg)
-            else:  # pragma: no cover (Py2)
-                cf.readfp(io_buf, cfg)
-            if 'EnvironmentVariables' not in cf.sections():
-                logger.warning(W_NOKIENV + 'KiCad config without EnvironmentVariables section')
+            if GS.ki5():
+                KiConf.load_ki5_env(cfg)
             else:
-                for k, v in cf.items('EnvironmentVariables'):
-                    if GS.debug_level > 1:
-                        logger.debug('- KiCad var: {}="{}"'.format(k, v))
-                    KiConf.kicad_env[k] = v
+                KiConf.load_ki6_env(cfg)
         if 'KICAD_SYMBOL_DIR' in KiConf.kicad_env:
             KiConf.sym_lib_dir = KiConf.kicad_env['KICAD_SYMBOL_DIR']
         else:
