@@ -74,6 +74,7 @@ from .docopt import docopt
 from .gs import (GS)
 from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, NO_PCBNEW_MODULE,
                    W_NOKIVER, hide_stderr)
+from . import misc
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help)
@@ -255,8 +256,10 @@ def detect_kicad():
             # Nightly Debian packages uses `/usr/share/kicad-nightly/kicad-nightly.env` as an environment extension
             # This script defines KICAD_CONFIG_HOME="$HOME/.config/kicadnightly"
             # So we just patch it, as we patch the name of the binaries
-            GS.kicad_conf_path = GS.kicad_conf_path.replace('/kicad/', '/kicadnightly/')
-            GS.kicad_share_path = GS.kicad_share_path.replace('/kicad/', '/kicadnightly/')
+            # No longer needed for 202112021512+6.0.0+rc1+287+gbb08ef2f41+deb11
+            # GS.kicad_conf_path = GS.kicad_conf_path.replace('/kicad/', '/kicadnightly/')
+            GS.kicad_share_path = GS.kicad_share_path.replace('/kicad/', '/kicad-nightly/')
+            misc.KICAD2STEP += '-nightly'
         GS.pro_ext = '.kicad_pro'
         # KiCad 6 doesn't support the Rescue layer
         GS.work_layer = 'User.9'
