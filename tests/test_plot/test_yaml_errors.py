@@ -412,28 +412,28 @@ def test_error_hpgl_pen_num(test_dir):
 
 def test_error_bom_wrong_format(test_dir):
     ctx = context.TestContext(test_dir, 'BoMWrongFormat', PRJ, 'error_bom_wrong_format', '')
-    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
+    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom'+context.KICAD_SCH_EXT)])
     assert ctx.search_err("Option .?format.? must be any of")
     ctx.clean_up()
 
 
 def test_error_bom_column(test_dir):
     ctx = context.TestContext(test_dir, 'BoMColumn', PRJ, 'error_bom_column', '')
-    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom.sch')])
+    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom'+context.KICAD_SCH_EXT)])
     assert ctx.search_err("Invalid column name .?Impossible.?")
     ctx.clean_up()
 
 
 def test_error_bom_no_columns(test_dir):
     ctx = context.TestContext(test_dir, 'BoMNoColumns', PRJ, 'error_bom_column', '')
-    ctx.run(BOM_ERROR, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom_no_xml.sch')])
+    ctx.run(BOM_ERROR, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom_no_xml'+context.KICAD_SCH_EXT)])
     assert ctx.search_err("Failed to get the column names")
     ctx.clean_up()
 
 
 def test_error_bom_no_field(test_dir):
     ctx = context.TestContext(test_dir, 'BoMNoField', PRJ, 'error_bom_no_field', '')
-    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'fail-erc.sch')])
+    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'fail-erc'+context.KICAD_SCH_EXT)])
     assert ctx.search_err("Missing or empty .?field.?")
     ctx.clean_up()
 
