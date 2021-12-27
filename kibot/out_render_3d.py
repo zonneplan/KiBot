@@ -3,6 +3,7 @@
 # Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+# KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/9890
 import os
 from glob import glob
 from shutil import rmtree

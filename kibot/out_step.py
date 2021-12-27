@@ -3,6 +3,7 @@
 # Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+# KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/10075
 import re
 import os
 from glob import glob
