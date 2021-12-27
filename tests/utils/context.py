@@ -134,9 +134,9 @@ class TestContext(object):
         self.sch_file = os.path.abspath(os.path.join(self.get_board_dir(), self.board_name + KICAD_SCH_EXT))
         logging.info('KiCad file: '+self.board_file)
         if self.mode == MODE_PCB:
-            assert os.path.isfile(self.board_file)
+            assert os.path.isfile(self.board_file), self.board_file
         else:
-            assert os.path.isfile(self.sch_file)
+            assert os.path.isfile(self.sch_file), self.sch_file
 
     def _get_yaml_dir(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))
