@@ -592,7 +592,7 @@ def check_test_v5_sch_deps(ctx, deps, extra=[], in_output=False):
     assert len(deps) == ndeps+len(extra), deps
     dir = os.path.dirname(ctx.board_file)
     deps_abs = [os.path.abspath(f) for f in deps]
-    for sch in ['test_v5.sch', 'sub-sheet.sch', 'deeper.sch']:
+    for sch in ['test_v5'+context.KICAD_SCH_EXT, 'sub-sheet'+context.KICAD_SCH_EXT, 'deeper'+context.KICAD_SCH_EXT]:
         if in_output:
             assert os.path.abspath(ctx.get_out_path(sch)) in deps_abs
         else:
