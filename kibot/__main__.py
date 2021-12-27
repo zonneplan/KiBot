@@ -217,7 +217,13 @@ def detect_kicad():
     nightly = False
     if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (Ki6)
         # Path to the Python module
-        sys_path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
+        pcbnew_path = '/usr/lib/kicad-nightly/lib/python3/dist-packages'
+        sys_path.insert(0, pcbnew_path)
+        # This helps other tools like iBoM to pick-up the right pcbnew module
+        if 'PYTHONPATH' in os.environ:
+            os.environ['PYTHONPATH'] += ':'+pcbnew_path
+        else:
+            os.environ['PYTHONPATH'] = pcbnew_path
         nightly = True
     try:
         import pcbnew
