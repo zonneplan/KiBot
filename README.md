@@ -1169,7 +1169,12 @@ Next time you need this list just use an alias, like this:
         - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status.
                        Components with this field not empty will be blacklisted.
                        IBoM option, avoid using in conjunction with KiBot variants/filters.
+        - `extra_data_file`: [string=''] Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
+                             Leave it blank for most uses, data will be extracted from the PCB.
         - `extra_fields`: [string=''] Comma separated list of extra fields to pull from netlist or xml file.
+                          Using 'X,Y' is a shortcut for `show_fields` and `group_fields` with values 'Value,Footprint,X,Y'.
+        - `group_fields`: [string=''] Comma separated list of fields that components will be grouped by.
+                          Value and Footprint are used when nothing is specified.
         - `hide_pads`: [boolean=false] Hide footprint pads by default.
         - `hide_silkscreen`: [boolean=false] Hide silkscreen by default.
         - `highlight_pin1`: [boolean=false] Highlight pin1 by default.
@@ -1186,14 +1191,16 @@ Next time you need this list just use an alias, like this:
                          %T : bom generation time.
                          Extension .html will be added automatically.
                          Note that this name is used only when output is ''.
-        - `netlist_file`: [string=''] Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
-                          Leave it blank for most uses, data will be extracted from the PCB.
+        - *netlist_file*: Alias for extra_data_file.
         - `no_blacklist_virtual`: [boolean=false] Do not blacklist virtual components.
                                   IBoM option, avoid using in conjunction with KiBot variants/filters.
+        - `no_compression`: [boolean=false] Disable compression of pcb data.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
         - `normalize_field_case`: [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
         - `output`: [string='%f-%i%v.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
         - `show_fabrication`: [boolean=false] Show fabrication layer by default.
+        - `show_fields`: [string=''] Comma separated list of fields to show in the BOM.
+                         Value and Footprint are displayed when nothing is specified.
         - `sort_order`: [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once.
         - `variant`: [string=''] Board variant to apply.
                      Avoid using it in conjunction with with IBoM native filtering options.

@@ -41,6 +41,8 @@ class IBoMOptions(VariantOptions):
             """ [bom-only,left-right,top-bottom] Default BOM view """
             self.layer_view = 'FB'
             """ [F,FB,B] Default layer view """
+            self.no_compression = False
+            """ Disable compression of pcb data """
             self.name_format = 'ibom'
             """ Output file name format supports substitutions:
                 %f : original pcb file name without extension.
@@ -58,11 +60,20 @@ class IBoMOptions(VariantOptions):
             """ Include netlist information in output. """
             self.sort_order = 'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'
             """ Default sort order for components. Must contain '~' once """
-            self.netlist_file = ''
+            self.netlist_file = None
+            """ {extra_data_file} """
+            self.extra_data_file = ''
             """ Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
                 Leave it blank for most uses, data will be extracted from the PCB """
             self.extra_fields = ''
-            """ Comma separated list of extra fields to pull from netlist or xml file """
+            """ Comma separated list of extra fields to pull from netlist or xml file.
+                Using 'X,Y' is a shortcut for `show_fields` and `group_fields` with values 'Value,Footprint,X,Y' """
+            self.show_fields = ''
+            """ Comma separated list of fields to show in the BOM.
+                Value and Footprint are displayed when nothing is specified """
+            self.group_fields = ''
+            """ Comma separated list of fields that components will be grouped by.
+                Value and Footprint are used when nothing is specified """
             self.normalize_field_case = False
             """ Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field """
             self.blacklist = ''
@@ -103,12 +114,12 @@ class IBoMOptions(VariantOptions):
 
     def config(self, parent):
         super().config(parent)
-        self._netlist_file_guess = False
-        if not self.netlist_file and self.need_extra_fields():
-            self.netlist_file = '%F.xml'
-            self._netlist_file_guess = True
-        if self.netlist_file:
-            self.netlist_file = self.expand_filename('', self.netlist_file, 'ibom', 'xml')
+        self._extra_data_file_guess = False
+        if not self.extra_data_file and self.need_extra_fields():
+            self.extra_data_file = '%F.xml'
+            self._extra_data_file_guess = True
+        if self.extra_data_file:
+            self.extra_data_file = self.expand_filename('', self.extra_data_file, 'ibom', 'xml')
 
     def get_targets(self, out_dir):
         if self.output:
@@ -119,8 +130,8 @@ class IBoMOptions(VariantOptions):
 
     def get_dependencies(self):
         files = [GS.pcb_file]
-        if self.netlist_file and os.path.isfile(self.netlist_file):
-            files.append(self.netlist_file)
+        if self.extra_data_file and os.path.isfile(self.extra_data_file):
+            files.append(self.extra_data_file)
         return files
 
     def run(self, name):
@@ -141,14 +152,14 @@ class IBoMOptions(VariantOptions):
             output_dir = name
         cmd = [tool, GS.pcb_file, '--dest-dir', output_dir, '--no-browser', ]
         # Check if the user wants extra_fields but there is no data about them (#68)
-        if self.need_extra_fields() and not os.path.isfile(self.netlist_file):
+        if self.need_extra_fields() and not os.path.isfile(self.extra_data_file):
             logger.warning(W_NONETLIST+'iBoM needs information about user defined fields and no netlist provided')
-            if self._netlist_file_guess:
+            if self._extra_data_file_guess:
                 logger.warning(W_NONETLIST+'Create a BoM in XML format or use the `update_xml` preflight')
                 # If the name of the netlist is just a guess remove it from the options
-                self.netlist_file = ''
+                self.extra_data_file = ''
             else:
-                logger.warning(W_NONETLIST+"The file name used in `netlist_file` doesn't exist")
+                logger.warning(W_NONETLIST+"The file name used in `extra_data_file` doesn't exist")
         # Apply variants/filters
         to_remove = ','.join(self.get_not_fitted_refs())
         if self.blacklist and to_remove:

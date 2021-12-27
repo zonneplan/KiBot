@@ -97,7 +97,7 @@ def test_ibom_all_ops(test_dir):
                              r'"checkboxes": "Sourced,Placed,Bogus"',
                              r'"bom_view": "top-bottom"',
                              r'"layer_view": "B"',
-                             r'"extra_fields": \["EF"\]'])
+                             r'"fields": \["Value", "Footprint", "EF"\]'])
     ctx.clean_up()
 
 
