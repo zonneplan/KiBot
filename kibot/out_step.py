@@ -10,9 +10,10 @@ from glob import glob
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from shutil import rmtree
 from .error import KiPlotConfigurationError
-from .misc import KICAD2STEP, KICAD2STEP_ERR
+from .misc import KICAD2STEP, KICAD2STEP_ERR, URL_PCBNEW_RUN_DRC
 from .gs import (GS)
 from .out_base_3d import Base3DOptions, Base3D
+from .kiplot import check_script
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -49,6 +50,7 @@ class STEPOptions(Base3DOptions):
 
     def run(self, output):
         super().run(output)
+        check_script(KICAD2STEP, URL_PCBNEW_RUN_DRC, '1.6.0')
         # Make units explicit
         if self.metric_units:
             units = 'mm'
@@ -56,6 +58,10 @@ class STEPOptions(Base3DOptions):
             units = 'in'
         # Base command with overwrite
         cmd = [KICAD2STEP, '-o', output, '-f']
+        if GS.debug_level > 0:
+            cmd.append('-vv')
+        else:
+            cmd.append('-v')
         # Add user options
         if self.no_virtual:
             cmd.append('--no-virtual')

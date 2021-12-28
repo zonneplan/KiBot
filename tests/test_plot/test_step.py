@@ -32,8 +32,8 @@ def test_step_1(test_dir):
     ctx.expect_out_file(name)
     # Check the R and C 3D models are there
     ctx.search_in_file(name, ['R_0805_2012Metric', 'C_0805_2012Metric'])
-    ctx.search_err(['Missing 3D model for R1: `(.*)R_0805_2012Metrico.wrl`',
-                    'Failed to download `(.*)R_0805_2012Metrico.wrl`'])
+    ctx.search_err(['Missing 3D model for R1: `(.*)R_0805_2012Metrico',
+                    'Failed to download `(.*)R_0805_2012Metrico'])
     ctx.clean_up()
 
 

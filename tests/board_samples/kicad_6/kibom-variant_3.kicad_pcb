@@ -110,12 +110,12 @@
       (net 2 "Net-(C1-Pad1)") (tstamp 0396208e-a401-46d6-a9d6-4fc5f29a991e))
     (pad "2" smd roundrect locked (at 0.9375 0) (size 0.975 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 1 "Net-(C1-Pad2)") (tstamp c0e176e6-2b65-4e42-ab43-deafd4b2725e))
-    (model "${KISYS3DMOD}/Capacitor_SMD.3dshapes/C_0805_2012Metric.wrl"
+    (model "${KISYS3DMOD}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
-    (model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl"
+    (model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0805_2012Metric.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -156,7 +156,7 @@
       (net 4 "Net-(C2-Pad1)") (tstamp bb444f3e-7d1f-4c82-8eb7-24fddaab885c))
     (pad "2" smd roundrect locked (at 0.9375 0) (size 0.975 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 3 "Net-(C2-Pad2)") (tstamp 378300c0-8cef-4c8a-8338-6f66311fc3c2))
-    (model "${KISYS3DMOD}/Capacitor_SMD.3dshapes/C_0805_2012Metric.wrl"
+    (model "${KISYS3DMOD}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -197,7 +197,7 @@
       (net 8 "Net-(R2-Pad1)") (tstamp d82b2b32-b91d-4cb1-86e2-007ccd994e78))
     (pad "2" smd roundrect locked (at 0.9375 0) (size 0.975 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 7 "Net-(R2-Pad2)") (tstamp ba5049a8-ad9a-49c4-997a-84e5c7fdd3d9))
-    (model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl"
+    (model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0805_2012Metric.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -238,7 +238,7 @@
       (net 6 "Net-(R1-Pad1)") (tstamp 3fbca69d-47ae-4671-b766-56ad2b10b635))
     (pad "2" smd roundrect locked (at 0.9375 0) (size 0.975 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 5 "Net-(R1-Pad2)") (tstamp 364ef61c-3c7f-49af-92ac-c9cb1c72df90))
-    (model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl"
+    (model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0805_2012Metric.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -279,7 +279,7 @@
       (net 6 "Net-(R1-Pad1)") (tstamp 7c75769f-18a4-4d0c-9703-f047e8f5ab1d))
     (pad "2" smd roundrect locked (at 0.9375 0) (size 0.975 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 5 "Net-(R1-Pad2)") (tstamp 2b8f6242-95b2-4ff4-8124-8f1c2a171f0a))
-    (model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl"
+    (model "${KISYS3DMOD}/Resistor_SMD.3dshapes/R_0805_2012Metric.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
