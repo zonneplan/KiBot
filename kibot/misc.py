@@ -84,6 +84,7 @@ URL_PCBDRAW = 'https://github.com/INTI-CMNB/pcbdraw'
 EXAMPLE_CFG = 'example_template.kibot.yaml'
 AUTO_SCALE = 0
 KICAD_VERSION_5_99 = 5099000
+KICAD_VERSION_6_0_0 = 6000000
 
 # Internal filter names
 IFILT_MECHANICAL = '_mechanical'

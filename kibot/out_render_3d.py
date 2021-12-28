@@ -7,7 +7,7 @@
 import os
 from glob import glob
 from shutil import rmtree
-from .misc import CMD_PCBNEW_3D, URL_PCBNEW_3D, RENDER_3D_ERR
+from .misc import CMD_PCBNEW_3D, URL_PCBNEW_3D, RENDER_3D_ERR, KICAD_VERSION_6_0_0
 from .gs import (GS)
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .out_base_3d import Base3DOptions, Base3D
@@ -87,6 +87,12 @@ class Render3DOptions(Base3DOptions):
 
     def run(self, output):
         super().run(output)
+        if GS.ki6():
+            logger.error("3D Viewer not supported for KiCad 6.0.0\n"
+                         "KiCad blindly tries to set the swap interval for non-GL surfaces and crashes.\n"
+                         "Should be fixed in KiCad 6.0.1\n"
+                         "For more information: https://gitlab.com/kicad/code/kicad/-/issues/9890")
+            return
         check_script(CMD_PCBNEW_3D, URL_PCBNEW_3D, '1.5.14')
         # Base command with overwrite
         cmd = [CMD_PCBNEW_3D, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),

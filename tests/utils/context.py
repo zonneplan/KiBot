@@ -18,6 +18,7 @@ from kibot.misc import (error_level_to_name)
 COVERAGE_SCRIPT = 'python3-coverage'
 KICAD_PCB_EXT = '.kicad_pcb'
 KICAD_VERSION_5_99 = 5099000
+KICAD_VERSION_6_0_0 = 6000000
 KICAD_VERSION_5_1_7 = 5001007
 MODE_SCH = 1
 MODE_PCB = 0
