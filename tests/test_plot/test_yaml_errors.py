@@ -433,7 +433,8 @@ def test_error_bom_no_columns(test_dir):
 
 def test_error_bom_no_field(test_dir):
     ctx = context.TestContext(test_dir, 'BoMNoField', PRJ, 'error_bom_no_field', '')
-    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'fail-erc'+context.KICAD_SCH_EXT)])
+    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(),
+            'fail-erc'+context.KICAD_SCH_EXT)])
     assert ctx.search_err("Missing or empty .?field.?")
     ctx.clean_up()
 
