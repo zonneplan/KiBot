@@ -7,7 +7,7 @@
 import os
 from glob import glob
 from shutil import rmtree
-from .misc import CMD_PCBNEW_3D, URL_PCBNEW_3D, RENDER_3D_ERR, KICAD_VERSION_6_0_0
+from .misc import CMD_PCBNEW_3D, URL_PCBNEW_3D, RENDER_3D_ERR
 from .gs import (GS)
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .out_base_3d import Base3DOptions, Base3D
