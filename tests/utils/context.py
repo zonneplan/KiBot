@@ -150,7 +150,7 @@ class TestContext(object):
         if not os.path.isfile(self.yaml_file):
             self.yaml_file = self.yaml_file.replace('.kibot.', '.kiplot.')
         logging.info('YAML file: '+self.yaml_file)
-        assert os.path.isfile(self.yaml_file)
+        assert os.path.isfile(self.yaml_file), self.yaml_file
 
     def _set_up_output_dir(self, test_dir):
         if test_dir:
