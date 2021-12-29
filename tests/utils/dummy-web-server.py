@@ -66,7 +66,7 @@ class S(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers()
-        self.wfile.write(self._html("hi!"))
+        self.wfile.write(self._html(self.path))
 
     def do_HEAD(self):
         self._set_headers()

@@ -301,6 +301,30 @@ outputs:
       # [string='%f-%i%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options
       output: '%f-%i%v.%x'
 
+  # Datasheets downloader:
+  - name: 'download_datasheets_example'
+    comment: 'Downloads the datasheets for the project'
+    type: 'download_datasheets'
+    dir: 'Example/download_datasheets_dir'
+    options:
+      # [boolean=false] Include the DNF components
+      dnf: false
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [string='Datasheet'] Name of the field containing the URL
+      field: 'Datasheet'
+      # [boolean=true] Instead of download things we already downloaded use symlinks
+      link_repeated: true
+      # [string='${VALUE}.pdf'] Name used for the downloaded datasheet.
+      # ${FIELD} will be replaced by the FIELD content
+      output: '${VALUE}.pdf'
+      # [boolean=false] Download URLs that we already downloaded.
+      # It only makes sense if the `output` field makes their output different
+      repeated: false
+      # [string=''] Board variant to apply
+      variant: ''
+
   # DXF (Drawing Exchange Format):
   # This output is what you get from the File/Plot menu in pcbnew.
   - name: 'dxf_example'

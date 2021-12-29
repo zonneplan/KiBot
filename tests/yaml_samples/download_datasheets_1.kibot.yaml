@@ -1,0 +1,48 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+  - name: 'Variant rename'
+    type: var_rename
+    separator: ':'
+
+variants:
+  - name: 'production'
+    comment: 'Production variant'
+    type: kibom
+    file_id: '_(production)'
+    variant: production
+
+  - name: 'test'
+    comment: 'Test variant'
+    type: kibom
+    file_id: '_(test)'
+    variant: test
+    pre_transform: 'Variant rename'
+
+outputs:
+  - name: 'down_ds'
+    comment: "Datasheets"
+    type: download_datasheets
+    dir: DS
+    options:
+      output: '${manf#}.pdf'
+
+  - name: 'down_ds_production'
+    comment: "Datasheets for production"
+    type: download_datasheets
+    dir: DS_%V
+    options:
+      variant: production
+      output: '${manf#}.pdf'
+
+  - name: 'down_ds_test'
+    comment: "Datasheets for test"
+    type: download_datasheets
+    dir: DS_%V
+    options:
+      variant: test
+      output: '${manf#}-${VALUE}:/%V.pdf'
+      repeated: true
+

@@ -215,6 +215,7 @@ W_EMPTREP = '(W073) '
 W_BADCHARS = '(W074) '
 W_DATEFORMAT = '(W075) '
 W_UNKFLD = '(W076) '
+W_ALRDOWN = '(W077) '
 
 
 class Rect(object):

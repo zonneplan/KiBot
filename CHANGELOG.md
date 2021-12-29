@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   So you can create a compressed file containing the source schematic and
   PCB files. (#93)
 - Support for new KiCost options `split_extra_fields` and `board_qty`. (#120)
+- Datasheet downloader. (#119)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

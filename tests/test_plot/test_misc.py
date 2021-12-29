@@ -894,3 +894,17 @@ def test_date_format_2(test_dir):
     ctx.expect_out_file(POS_DIR+'/bom_13_07_2020.csv')
     assert ctx.search_err('Trying to reformat SCH time, but not in ISO format')
     ctx.clean_up()
+
+
+def test_download_datasheets_1(test_dir):
+    prj = 'kibom-variant_2ds'
+    ctx = context.TestContextSCH(test_dir, 'test_download_datasheets_1', prj, 'download_datasheets_1', '')
+    # We use a fake server to avoid needing good URLs and reliable internet connection
+    ctx.run(kicost=True)
+    ctx.expect_out_file('DS/C0805C102J4GAC7800.pdf')
+    ctx.expect_out_file('DS/CR0805-JW-102ELF.pdf')
+    ctx.expect_out_file('DS_production/CR0805-JW-102ELF.pdf')
+    ctx.expect_out_file('DS_test/C0805C102J4GAC7800-1000 pF__test.pdf')
+    ctx.expect_out_file('DS_test/C0805C102J4GAC7800-1nF__test.pdf')
+    ctx.expect_out_file('DS_test/CR0805-JW-102ELF-3k3__test.pdf')
+    ctx.clean_up()
