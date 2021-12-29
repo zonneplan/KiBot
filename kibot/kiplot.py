@@ -467,8 +467,10 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
             dbg = '-'+'v'*GS.debug_level
         f.write('DEBUG?={}\n'.format(dbg))
         f.write('CONFIG={}\n'.format(cfg_file))
-        f.write('SCH={}\n'.format(os.path.relpath(GS.sch_file)))
-        f.write('PCB={}\n'.format(os.path.relpath(GS.pcb_file)))
+        if GS.sch_file:
+            f.write('SCH={}\n'.format(os.path.relpath(GS.sch_file)))
+        if GS.pcb_file:
+            f.write('PCB={}\n'.format(os.path.relpath(GS.pcb_file)))
         f.write('DEST={}\n'.format(os.path.relpath(GS.out_dir)))
         f.write('KIBOT_CMD=$(KIBOT) $(DEBUG) -c $(CONFIG) -e $(SCH) -b $(PCB) -d $(DEST)\n')
         f.write('LOGFILE?=kibot_error.log\n')
