@@ -1594,6 +1594,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `format`: [string='ASCII'] [ASCII,CSV] Format for the position file.
+        - `include_virtual`: [boolean=false] Include virtual components. For special purposes, not pick & place.
         - `only_smd`: [boolean=true] Only include the surface mount components.
         - `output`: [string='%f-%i%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
         - `separate_files_for_front_and_back`: [boolean=true] Generate two separated files, one for the top and another for the bottom.

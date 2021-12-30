@@ -1048,6 +1048,8 @@ outputs:
       dnf_filter: '_none'
       # [string='ASCII'] [ASCII,CSV] Format for the position file
       format: 'ASCII'
+      # [boolean=false] Include virtual components. For special purposes, not pick & place
+      include_virtual: false
       # [boolean=true] Only include the surface mount components
       only_smd: true
       # [string='%f-%i%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options

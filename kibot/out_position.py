@@ -69,7 +69,9 @@ class PositionOptions(VariantOptions):
             self.bottom_negative_x = False
             """ Use negative X coordinates for footprints on bottom layer """
             self.use_aux_axis_as_origin = True
-            """ Use the auxiliary axis as origin for coordinates (KiCad default)"""
+            """ Use the auxiliary axis as origin for coordinates (KiCad default) """
+            self.include_virtual = False
+            """ Include virtual components. For special purposes, not pick & place """
         super().__init__()
         self._expand_id = 'position'
 
@@ -249,7 +251,7 @@ class PositionOptions(VariantOptions):
                 is_bottom = m.IsFlipped()
                 rotation = m.GetOrientationDegrees()
             # If passed check the position options
-            if (self.only_smd and is_pure_smd(m)) or (not self.only_smd and is_not_virtual(m)):
+            if (self.only_smd and is_pure_smd(m)) or (not self.only_smd and (is_not_virtual(m) or self.include_virtual)):
                 if GS.ki5():
                     center = m.GetCenter()
                 else:
