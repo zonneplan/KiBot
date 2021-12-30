@@ -86,6 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compress: not expanding %VALUES in target dirs. (#111)
 - Gerber: job file didn't use the global output pattern. (#116)
 - Warnings count
+- Update XML: Removed the side effect Bom. (#106)
 
 
 ## [0.11.0] - 2021-04-25

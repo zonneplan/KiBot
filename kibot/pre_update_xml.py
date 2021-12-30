@@ -33,11 +33,18 @@ class Update_XML(BasePreFlight):  # noqa: F821
 
     def run(self):
         check_eeschema_do()
-        cmd = [CMD_EESCHEMA_DO, 'bom_xml', GS.sch_file, self.expand_dirname(GS.out_dir)]
+        out_dir = self.expand_dirname(GS.out_dir)
+        cmd = [CMD_EESCHEMA_DO, 'bom_xml', GS.sch_file, out_dir]
         # If we are in verbose mode enable debug in the child
         cmd, video_remove = add_extra_options(cmd)
+        # While creating the XML we run a BoM plug-in that creates a useless BoM
+        # We remove it, unless this is already there
+        side_effect_file = os.path.join(out_dir, GS.sch_basename+'.csv')
+        remove_side_effect_file = not os.path.isfile(side_effect_file)
         logger.info('- Updating BoM in XML format')
         ret = exec_with_retry(cmd)
+        if remove_side_effect_file and os.path.isfile(side_effect_file):
+            os.remove(side_effect_file)
         if ret:
             logger.error('Failed to update the BoM, error %d', ret)
             exit(BOM_ERROR)
