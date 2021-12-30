@@ -19,7 +19,7 @@ from ..misc import W_NOLIB, W_UNKFLD, W_MISSCMP
 from .v5_sch import SchError, SchematicComponent, Schematic
 from .sexpdata import load, SExpData, Symbol, dumps, Sep
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 CROSSED_LIB = 'kibot_crossed'
 
 

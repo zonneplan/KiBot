@@ -16,7 +16,7 @@ from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 SVG2PNG = 'rsvg-convert'
 CONVERT = 'convert'
 

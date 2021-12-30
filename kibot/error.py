@@ -13,7 +13,7 @@ from .misc import (EXIT_BAD_CONFIG)
 # Logger
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 class KiPlotError(Exception):

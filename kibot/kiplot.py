@@ -32,7 +32,7 @@ from .kicad.v6_sch import SchematicV6
 from .kicad.config import KiConfError
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 # Cache to avoid running external many times to check their versions
 script_versions = {}
 actions_loaded = False

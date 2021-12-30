@@ -13,7 +13,7 @@ from .bom.columnlist import ColumnList
 from .macros import macros, document  # noqa: F401
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 DEFAULT_EXCLUDE = [{'column': ColumnList.COL_REFERENCE, 'regex': '^TP[0-9]*'},
                    {'column': ColumnList.COL_REFERENCE, 'regex': '^FID'},
                    {'column': ColumnList.COL_PART, 'regex': 'mount.*hole'},

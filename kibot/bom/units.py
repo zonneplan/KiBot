@@ -18,7 +18,7 @@ import locale
 from .. import log
 from ..misc import W_BADVAL1, W_BADVAL2, W_BADVAL3
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 PREFIX_MICRO = [u"μ", u"µ", "u", "micro"]
 PREFIX_MILLI = ["milli", "m"]

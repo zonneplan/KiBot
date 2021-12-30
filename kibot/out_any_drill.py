@@ -11,7 +11,7 @@ from .gs import GS
 from .macros import macros, document  # noqa: F401
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 class DrillMap(Optionable):

@@ -12,7 +12,7 @@ from .macros import macros, document, filter_class  # noqa: F401
 from .fil_base import FieldRename
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 @filter_class

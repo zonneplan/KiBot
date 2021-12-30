@@ -9,7 +9,7 @@ from .out_any_layer import AnyLayerOptions
 from .macros import macros, document  # noqa: F401
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 class DrillMarks(AnyLayerOptions):

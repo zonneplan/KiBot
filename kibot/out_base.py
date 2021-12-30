@@ -24,7 +24,7 @@ from .macros import macros, document  # noqa: F401
 from .error import KiPlotConfigurationError
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 class BaseOutput(RegOutput):

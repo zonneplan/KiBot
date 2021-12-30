@@ -19,7 +19,7 @@ from .optionable import Optionable, BaseOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 class FilesList(Optionable):

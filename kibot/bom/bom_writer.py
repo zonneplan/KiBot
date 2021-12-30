@@ -20,7 +20,7 @@ from .xml_writer import write_xml
 from .xlsx_writer import write_xlsx
 from .. import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 def write_bom(filename, ext, groups, headings, cfg):

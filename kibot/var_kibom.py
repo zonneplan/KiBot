@@ -13,7 +13,7 @@ from .fil_base import BaseFilter
 from .macros import macros, document, variant_class  # noqa: F401
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 @variant_class

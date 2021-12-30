@@ -18,7 +18,7 @@ from .misc import W_NOLAYER
 from .macros import macros, document  # noqa: F401
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 FORMAT_EXTENSIONS = {PLOT_FORMAT_HPGL: 'plt',

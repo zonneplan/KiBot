@@ -15,7 +15,7 @@ from .macros import macros, document, filter_class  # noqa: F401
 from .out_base import BoMRegex
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 class DNFList(Optionable):

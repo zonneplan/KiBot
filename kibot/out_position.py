@@ -18,7 +18,7 @@ from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 ref_re = compile(r'([^\d]+)([\?\d]+)')
 
 

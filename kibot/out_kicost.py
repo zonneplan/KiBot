@@ -15,7 +15,7 @@ from .macros import macros, document, output_class  # noqa: F401
 from .fil_base import FieldRename
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 WARNING_MIX = "Internal variants and filters are currently ignored"
 
 

@@ -16,7 +16,7 @@ from .kicad.config import KiConf
 from .macros import macros, document  # noqa: F401
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 DISABLE_TEXT = '_Disabled_by_KiBot'
 
 

@@ -26,7 +26,7 @@ from . import log
 # from .mcpyrate.debug import macros, step_expansion
 # with step_expansion:
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 VALID_STYLES = {'modern-blue', 'modern-green', 'modern-red', 'classic'}
 DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
                    ['l', 'l_small', 'inductor'],

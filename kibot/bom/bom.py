@@ -18,7 +18,7 @@ from .columnlist import ColumnList
 from ..misc import DNF, W_FIELDCONF
 from .. import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 # RV == Resistor Variable or Varistor
 # RN == Resistor 'N'(Pack)
 # RT == Thermistor

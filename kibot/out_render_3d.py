@@ -14,7 +14,7 @@ from .out_base_3d import Base3DOptions, Base3D
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 class Render3DOptions(Base3DOptions):

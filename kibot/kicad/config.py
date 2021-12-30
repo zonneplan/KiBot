@@ -33,7 +33,7 @@ else:  # pragma: no cover (Py2)
     # For future Python 2 support
     import ConfigParser
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 SYM_LIB_TABLE = 'sym-lib-table'
 KICAD_COMMON = 'kicad_common'
 

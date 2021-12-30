@@ -20,7 +20,7 @@ from ..misc import (W_BADPOLI, W_POLICOORDS, W_BADSQUARE, W_BADCIRCLE, W_BADARC,
                     W_MISSDCM, W_MISSCMP, W_MISFLDNAME, W_NOENDLIB)
 from .. import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 class SchError(Exception):

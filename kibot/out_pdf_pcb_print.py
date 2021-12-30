@@ -16,7 +16,7 @@ from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 class PDF_Pcb_PrintOptions(VariantOptions):

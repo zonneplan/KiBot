@@ -13,7 +13,7 @@ from .gs import GS
 from .misc import W_UNKOPS
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 
 def filter(v):

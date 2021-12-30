@@ -24,7 +24,7 @@ from .pre_base import BasePreFlight
 # Logger
 from . import log
 
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 
 try:
     import yaml

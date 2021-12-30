@@ -13,7 +13,7 @@ from .misc import W_UNKFLD, W_ALRDOWN, W_FAILDL
 from .gs import GS
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
-logger = log.get_logger(__name__)
+logger = log.get_logger()
 USER_AGENT = 'Mozilla/5.0 (Windows NT 5.2; rv:2.0.1) Gecko/20100101 Firefox/4.0.1'
 
 

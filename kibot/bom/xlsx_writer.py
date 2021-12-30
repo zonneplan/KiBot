@@ -36,7 +36,7 @@ try:
         if rel_path not in sys.path:
             sys.path.insert(0, rel_path)
     # Init the logger first
-    logger = log.get_logger(__name__)
+    logger = log.get_logger()
     from kicost.global_vars import set_logger
     set_logger(logger)
     from kicost import PartGroup
