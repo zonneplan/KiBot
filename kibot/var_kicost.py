@@ -31,10 +31,12 @@ class KiCost(BaseVariant):  # noqa: F821
             self.variant = ''
             """ Variants to match (regex) """
             self.variant_field = 'variant'
-            """ Name of the field that stores board variant/s for component """
+            """ Name of the field that stores board variant/s for component.
+                Only supported internally, don't use it if you plan to use KiCost """
             self.separators = ',;/ '
             """ Valid separators for variants in the variant field.
-                Each character is a valid separator """
+                Each character is a valid separator.
+                Only supported internally, don't use it if you plan to use KiCost """
 
     def get_variant_field(self):
         ''' Returns the name of the field used to determine if the component belongs to teh variant '''

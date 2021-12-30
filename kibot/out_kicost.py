@@ -3,12 +3,15 @@
 # Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+import os
 from os.path import isfile, abspath, join, dirname
 from subprocess import check_output, STDOUT, CalledProcessError
-from .misc import CMD_KICOST, URL_KICOST, BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE
+from tempfile import mkdtemp
+from shutil import rmtree
+from .misc import (CMD_KICOST, URL_KICOST, BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE,
+                   W_KICOSTFLD, W_MIXVARIANT)
 from .error import KiPlotConfigurationError
 from .optionable import Optionable
-from .registrable import RegOutput
 from .gs import GS
 from .kiplot import check_script
 from .out_base import VariantOptions
@@ -17,8 +20,7 @@ from .fil_base import FieldRename
 from . import log
 
 logger = log.get_logger()
-WARNING_MIX = ("Internal variants and filters are currently ignored.\n"
-               "Exception: a KiCost variant that uses `variant` as variant field")
+WARNING_MIX = ("Don't use the `kicost_variant` when using internal variants/filters")
 
 
 class Aggregate(Optionable):
@@ -100,10 +102,6 @@ class KiCostOptions(VariantOptions):
         return val
 
     def config(self, parent):
-        # If we are using a KiCost variant make it the default for `kicost_variant`
-        variant = RegOutput.check_variant(self.variant)
-        if variant is not None and variant.type == 'kicost' and variant.variant_field == 'variant':
-            self.kicost_variant = variant.variant
         super().config(parent)
         if not self.output:
             self.output = '%f.%x'
@@ -142,13 +140,28 @@ class KiCostOptions(VariantOptions):
 
     def run(self, name):
         super().run(name)
-        # Make sure the XML is there.
-        # Currently we only support the XML mechanism.
-        netlist = GS.sch_no_ext+'.xml'
-        if not isfile(netlist):
-            logger.error('Missing netlist in XML format `{}`'.format(netlist))
-            logger.error('You can generate it using the `update_xml` pre-flight')
-            exit(BOM_ERROR)
+        net_dir = None
+        if self._comps and GS.ki5():
+            var_fields = set(['variant', 'version'])
+            if self.variant and self.variant.type == 'kicost' and self.variant.variant_field not in var_fields:
+                # Warning about KiCost limitations
+                logger.warning(W_KICOSTFLD+'KiCost variant `{}` defines `variant_field` as `{}`, not supported by KiCost'.
+                               format(self.variant, self.variant.variant_field))
+            if self.kicost_variant:
+                logger.warning(W_MIXVARIANT+'Avoid using KiCost variants and internal variants on the same output')
+            # Write a custom netlist to a temporal dir
+            net_dir = mkdtemp(prefix='tmp-kibot-kicost-')
+            netlist = os.path.join(net_dir, GS.sch_basename+'.xml')
+            with open(netlist, 'wt') as f:
+                GS.sch.save_netlist(f, self._comps, no_field=var_fields)
+        else:
+            # Make sure the XML is there.
+            # Currently we only support the XML mechanism.
+            netlist = GS.sch_no_ext+'.xml'
+            if not isfile(netlist):
+                logger.error('Missing netlist in XML format `{}`'.format(netlist))
+                logger.error('You can generate it using the `update_xml` pre-flight')
+                exit(BOM_ERROR)
         # Check KiCost is available
         cmd_kicost = abspath(join(dirname(__file__), KICOST_SUBMODULE))
         if not isfile(cmd_kicost):
@@ -204,6 +217,10 @@ class KiCostOptions(VariantOptions):
             if e.output:
                 logger.debug('Output from command: '+e.output.decode())
             exit(BOM_ERROR)
+        finally:
+            if net_dir:
+                logger.debug('Removing temporal variant dir `{}`'.format(net_dir))
+                rmtree(net_dir)
         logger.debug('Output from command:\n'+cmd_output_dec+'\n')
 
 

@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for new KiCost options `split_extra_fields` and `board_qty`. (#120)
 - Datasheet downloader. (#119)
 - Position files now can include virtual components. (#106)
+- Support for variants on KiCost output. (#106)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

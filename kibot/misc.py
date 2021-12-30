@@ -216,6 +216,8 @@ W_BADCHARS = '(W074) '
 W_DATEFORMAT = '(W075) '
 W_UNKFLD = '(W076) '
 W_ALRDOWN = '(W077) '
+W_KICOSTFLD = '(W078) '
+W_MIXVARIANT = '(W079) '
 
 
 class Rect(object):

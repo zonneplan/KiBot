@@ -11,9 +11,13 @@ Currently oriented to collect the components for the BoM.
 # Encapsulate file/line
 import re
 import os
+from xml.etree.ElementTree import Element, SubElement, tostring
+from xml.dom import minidom
+from datetime import datetime
 from copy import deepcopy
 from collections import OrderedDict
 from .config import KiConf, un_quote
+from ..__main__ import __version__
 from ..gs import GS
 from ..misc import (W_BADPOLI, W_POLICOORDS, W_BADSQUARE, W_BADCIRCLE, W_BADARC, W_BADTEXT, W_BADPIN, W_BADCOMP, W_BADDRAW,
                     W_UNKDCM, W_UNKAR, W_ARNOPATH, W_ARNOREF, W_MISCFLD, W_EXTRASPC, W_NOLIB, W_INCPOS, W_NOANNO, W_MISSLIB,
@@ -447,6 +451,8 @@ class Pin(object):
                         r'([012])\s+'       # 9 Which representation (0 == both) for DeMorgan
                         r'([IOBTPUWwCEN])'  # 10 Electrical type
                         r'((?:\s+)\S+)?')   # 11 Graphic type
+    type2name = {'I': 'input', 'O': 'output', 'B': 'BiDi', 'T': '3state', 'P': 'passive', 'U': 'unspc',
+                 'W': 'power_in', 'w': 'power_out', 'C': 'openCol', 'E': 'openEm', 'N': 'NotConnected'}
 
     def __init__(self):
         super().__init__()
@@ -1473,7 +1479,7 @@ class Schematic(object):
         while True:
             line = f.get_line()
             if line.startswith('$EndDescr'):
-                self.title = self.title_block.get('Title', '')
+                self.title_ori = self.title = self.title_block.get('Title', '')
                 self.date = self.title_block.get('Date', '')
                 self.revision = self.title_block.get('Rev', '')
                 self.company = self.title_block.get('Comp', '')
@@ -1507,6 +1513,8 @@ class Schematic(object):
         self.fields = fields
         self.fields_lc = fields_lc
         self.project = project
+        self.sheet_path = sheet_path
+        self.sheet_path_h = sheet_path_h
         with open(fname, 'rt') as fh:
             f = SCHLineReader(fh, fname)
             line = f.get_line()
@@ -1684,6 +1692,11 @@ class Schematic(object):
                     comp.dcm = dcm.comps.get(name)
                     if not comp.dcm and k+':'+name in self.comps_data:
                         logger.warning(W_MISSDCM + 'Missing doc-lib entry for {}:{}'.format(k, name))
+                # Also do it for the aliases
+                for name, comp in lib.alias.items():
+                    comp.dcm = dcm.comps.get(name)
+                    if not comp.dcm and k+':'+name in self.comps_data:
+                        logger.warning(W_MISSDCM + 'Missing doc-lib entry for {}:{}'.format(k, name))
         # Transfer the descriptions to the instances of the components
         self.walk_components(self.apply_dcm, self)
 
@@ -1750,3 +1763,133 @@ class Schematic(object):
             sch = os.path.basename(sch)
             fnames.append(os.path.join(dest_dir, sch.replace('/', '_')))
         return fnames
+
+    def save_netlist_design(self, root):
+        """ Generates the `design` section of the netlist """
+        # TODO: Dump subsheets, may be in the future
+        design = SubElement(root, 'design')
+        SubElement(design, 'source').text = self.fname
+        SubElement(design, 'date').text = datetime.now().strftime("%a %b %e %H:%M:%S %Y")
+        SubElement(design, 'tool').text = 'KiBot v'+__version__
+        sheet = SubElement(design, 'sheet')
+        sheet.set('number', str(self.sheet))
+        sheet.set('name', str(self.sheet_path_h))
+        sheet.set('tstamps', str('/'+self.sheet_path))
+        tblock = SubElement(sheet, 'title_block')
+        title = SubElement(tblock, 'title')
+        if self.title_ori:
+            title.text = self.title_ori
+        company = SubElement(tblock, 'company')
+        if self.company:
+            company.text = self.company
+        rev = SubElement(tblock, 'rev')
+        if self.revision:
+            rev.text = self.revision
+        dt = SubElement(tblock, 'date')
+        if self.date:
+            dt.text = self.date
+        SubElement(tblock, 'source').text = os.path.basename(self.fname)
+        com = SubElement(tblock, 'comment')
+        com.set('number', '1')
+        com.set('value', self.comment1)
+        com = SubElement(tblock, 'comment')
+        com.set('number', '2')
+        com.set('value', self.comment2)
+        com = SubElement(tblock, 'comment')
+        com.set('number', '3')
+        com.set('value', self.comment3)
+        com = SubElement(tblock, 'comment')
+        com.set('number', '4')
+        com.set('value', self.comment4)
+
+    def save_netlist_components(self, root, comps, excluded, fitted, no_field):
+        """ Generates the `components` section of the netlist """
+        components = SubElement(root, 'components')
+        for c in comps:
+            if not excluded and not c.included:
+                continue
+            if fitted and not c.fitted:
+                continue
+            comp = SubElement(components, 'comp')
+            comp.set('ref', c.ref)
+            SubElement(comp, 'value').text = c.value
+            SubElement(comp, 'footprint').text = c.footprint
+            SubElement(comp, 'datasheet').text = c.datasheet
+            fields = SubElement(comp, 'fields')
+            for fname, fvalue in c.get_user_fields():
+                if fname in no_field:
+                    continue
+                fld = SubElement(fields, 'field')
+                fld.set('name', fname)
+                fld.text = fvalue
+            lbs = SubElement(comp, 'libsource')
+            lbs.set('lib', c.lib)
+            lbs.set('part', c.name)
+            lbs.set('description', c.desc)
+            shp = SubElement(comp, 'sheetpath')
+            shp.set('names', c.sheet_path_h)
+            shp.set('tstamps', c.sheet_path_h)
+            SubElement(comp, 'tstamp').text = c.id
+
+    def save_netlist_libparts(self, root):
+        libparts = SubElement(root, 'libparts')
+        for k, v in self.comps_data.items():
+            if not v:
+                continue
+            libpart = SubElement(libparts, 'libpart')
+            res = k.split(':')
+            if res:
+                libpart.set('lib', res[0])
+                libpart.set('part', res[1])
+            if v.alias:
+                aliases = SubElement(libpart, 'aliases')
+                for alias in v.alias:
+                    SubElement(aliases, 'alias').text = alias
+            if v.dcm:
+                if v.dcm.desc:
+                    SubElement(libpart, 'description').text = v.dcm.desc
+                if v.dcm.datasheet:
+                    SubElement(libpart, 'docs').text = v.dcm.datasheet
+            if v.fp_list:
+                fps = SubElement(libpart, 'footprints')
+                for fp in v.fp_list:
+                    SubElement(fps, 'fp').text = fp
+            flds = SubElement(libpart, 'fields')
+            for fld in v.fields:
+                if not fld.value:
+                    continue
+                field = SubElement(flds, 'field')
+                field.set('name', fld.name)
+                field.text = fld.value
+            # Search pins
+            if next(filter(lambda x: isinstance(x, Pin), v.draw), False):
+                pins = SubElement(libpart, 'pins')
+                for pin in sorted(filter(lambda x: isinstance(x, Pin), v.draw), key=lambda x: x.number):
+                    pn = SubElement(pins, 'pin')
+                    pn.set('num', pin.number)
+                    pn.set('name', pin.name)
+                    pn.set('type', pin.type2name.get(pin.type, 'unknown'))
+
+    def save_netlist(self, fhandle, comps, excluded=False, fitted=True, no_field=[]):
+        """ This is a partial netlist in XML, only useful for BoMs """
+        root = Element("export")
+        root.set('version', 'D')
+        # Design section
+        self.save_netlist_design(root)
+        # Components
+        self.save_netlist_components(root, comps, excluded, fitted, no_field)
+        # LibParts
+        self.save_netlist_libparts(root)
+        # Libraries
+        libraries = SubElement(root, 'libraries')
+        for k, v in self.libs.items():
+            lib = SubElement(libraries, 'library')
+            lib.set('logical', k)
+            SubElement(lib, 'uri').text = v
+        # Nets
+        # TODO: May be in the future
+        SubElement(root, 'nets')
+        # Make it look nice
+        rough_string = tostring(root, 'utf-8')
+        reparsed = minidom.parseString(rough_string)
+        fhandle.write(reparsed.toprettyxml(indent="  "))
