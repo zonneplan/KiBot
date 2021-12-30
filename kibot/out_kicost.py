@@ -8,6 +8,7 @@ from subprocess import check_output, STDOUT, CalledProcessError
 from .misc import CMD_KICOST, URL_KICOST, BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE
 from .error import KiPlotConfigurationError
 from .optionable import Optionable
+from .registrable import RegOutput
 from .gs import GS
 from .kiplot import check_script
 from .out_base import VariantOptions
@@ -16,7 +17,8 @@ from .fil_base import FieldRename
 from . import log
 
 logger = log.get_logger()
-WARNING_MIX = "Internal variants and filters are currently ignored"
+WARNING_MIX = ("Internal variants and filters are currently ignored.\n"
+               "Exception: a KiCost variant that uses `variant` as variant field")
 
 
 class Aggregate(Optionable):
@@ -98,6 +100,11 @@ class KiCostOptions(VariantOptions):
         return val
 
     def config(self, parent):
+        # If we are using a KiCost variant make it the default for `kicost_variant`
+        variant = RegOutput.check_variant(self.variant)
+        if variant is not None and variant.type == 'kicost' and variant.variant_field == 'variant':
+            logger.error('variant: '+str(variant.__dict__))
+            self.kicost_variant = variant.variant
         super().config(parent)
         if not self.output:
             self.output = '%f.%x'

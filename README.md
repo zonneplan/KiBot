@@ -1365,6 +1365,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
                         Internal variants and filters are currently ignored.
+                        Exception: a KiCost variant that uses `variant` as variant field.
         - `fields`: [string|list(string)] List of fields to be added to the global data section.
         - `group_fields`: [string|list(string)] List of fields that can be different for a group.
                           Parts with differences in these fields are grouped together, but displayed individually.
@@ -1383,6 +1384,7 @@ Next time you need this list just use an alias, like this:
             - `name`: [string=''] New name.
         - `variant`: [string=''] Board variant to apply.
                      Internal variants and filters are currently ignored.
+                     Exception: a KiCost variant that uses `variant` as variant field.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
