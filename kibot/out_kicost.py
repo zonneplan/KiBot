@@ -103,7 +103,6 @@ class KiCostOptions(VariantOptions):
         # If we are using a KiCost variant make it the default for `kicost_variant`
         variant = RegOutput.check_variant(self.variant)
         if variant is not None and variant.type == 'kicost' and variant.variant_field == 'variant':
-            logger.error('variant: '+str(variant.__dict__))
             self.kicost_variant = variant.variant
         super().config(parent)
         if not self.output:
