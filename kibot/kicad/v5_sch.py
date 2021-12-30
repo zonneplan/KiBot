@@ -17,7 +17,6 @@ from datetime import datetime
 from copy import deepcopy
 from collections import OrderedDict
 from .config import KiConf, un_quote
-from ..__main__ import __version__
 from ..gs import GS
 from ..misc import (W_BADPOLI, W_POLICOORDS, W_BADSQUARE, W_BADCIRCLE, W_BADARC, W_BADTEXT, W_BADPIN, W_BADCOMP, W_BADDRAW,
                     W_UNKDCM, W_UNKAR, W_ARNOPATH, W_ARNOREF, W_MISCFLD, W_EXTRASPC, W_NOLIB, W_INCPOS, W_NOANNO, W_MISSLIB,
@@ -1770,7 +1769,7 @@ class Schematic(object):
         design = SubElement(root, 'design')
         SubElement(design, 'source').text = self.fname
         SubElement(design, 'date').text = datetime.now().strftime("%a %b %e %H:%M:%S %Y")
-        SubElement(design, 'tool').text = 'KiBot v'+__version__
+        SubElement(design, 'tool').text = 'KiBot v'+GS.kibot_version
         sheet = SubElement(design, 'sheet')
         sheet.set('number', str(self.sheet))
         sheet.set('name', str(self.sheet_path_h))

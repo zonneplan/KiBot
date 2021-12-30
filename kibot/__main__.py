@@ -78,6 +78,7 @@ from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile)
+GS.kibot_version = __version__
 
 
 def list_pre_and_outs(logger, outputs):

@@ -35,6 +35,7 @@ class GS(object):
     sch = None
     debug_enabled = False
     debug_level = 0
+    kibot_version = None
     n = datetime.now()
     kicad_version = ''
     kicad_conf_path = None
