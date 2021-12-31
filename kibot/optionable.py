@@ -230,10 +230,8 @@ class Optionable(object):
             name = name.replace('%bf', GS.pcb_basename)
             name = name.replace('%bp', _cl(GS.pcb_title))
             name = name.replace('%br', _cl(GS.pcb_rev))
-            name = name.replace('%bC1', _cl(GS.pcb_com1))
-            name = name.replace('%bC2', _cl(GS.pcb_com2))
-            name = name.replace('%bC3', _cl(GS.pcb_com3))
-            name = name.replace('%bC4', _cl(GS.pcb_com4))
+            for num, val in enumerate(GS.pcb_com):
+                name = name.replace('%bC'+str(num+1), _cl(val))
         if GS.solved_global_variant:
             name = name.replace('%g', GS.solved_global_variant.file_id)
             name = name.replace('%G', GS.solved_global_variant.name)
@@ -245,10 +243,8 @@ class Optionable(object):
             name = name.replace('%sf', GS.sch_basename)
             name = name.replace('%sp', _cl(GS.sch_title))
             name = name.replace('%sr', _cl(GS.sch_rev))
-            name = name.replace('%sC1', _cl(GS.sch_com1))
-            name = name.replace('%sC2', _cl(GS.sch_com2))
-            name = name.replace('%sC3', _cl(GS.sch_com3))
-            name = name.replace('%sC4', _cl(GS.sch_com4))
+            for num, val in enumerate(GS.sch_com):
+                name = name.replace('%sC'+str(num+1), _cl(val))
         name = name.replace('%D', GS.n.strftime(GS.global_date_format))
         name = name.replace('%T', GS.n.strftime(GS.global_time_format))
         if self:
@@ -292,10 +288,8 @@ class Optionable(object):
             name = name.replace('%f', GS.pcb_basename)
             name = name.replace('%p', _cl(GS.pcb_title))
             name = name.replace('%r', _cl(GS.pcb_rev))
-            name = name.replace('%C1', _cl(GS.pcb_com1))
-            name = name.replace('%C2', _cl(GS.pcb_com2))
-            name = name.replace('%C3', _cl(GS.pcb_com3))
-            name = name.replace('%C4', _cl(GS.pcb_com4))
+            for num, val in enumerate(GS.pcb_com):
+                name = name.replace('%C'+str(num+1), _cl(val))
         if GS.sch and do_sch:
             name = name.replace('%c', _cl(GS.sch_comp))
             name = name.replace('%d', _cl(GS.sch_date))
@@ -303,10 +297,8 @@ class Optionable(object):
             name = name.replace('%f', GS.sch_basename)
             name = name.replace('%p', _cl(GS.sch_title))
             name = name.replace('%r', _cl(GS.sch_rev))
-            name = name.replace('%C1', _cl(GS.sch_com1))
-            name = name.replace('%C2', _cl(GS.sch_com2))
-            name = name.replace('%C3', _cl(GS.sch_com3))
-            name = name.replace('%C4', _cl(GS.sch_com4))
+            for num, val in enumerate(GS.sch_com):
+                name = name.replace('%C'+str(num+1), _cl(val))
         # sanitize the name to avoid characters illegal in file systems
         name = name.replace('\\', '/')
         name = re.sub(r'[?%*:|"<>]', '_', name)

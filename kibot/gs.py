@@ -53,19 +53,13 @@ class GS(object):
     sch_date = None
     sch_rev = None
     sch_comp = None
-    sch_com1 = None
-    sch_com2 = None
-    sch_com3 = None
-    sch_com4 = None
+    sch_com = [None]*9
     # Data from the board title block
     pcb_title = None
     pcb_date = None
     pcb_rev = None
     pcb_comp = None
-    pcb_com1 = None
-    pcb_com2 = None
-    pcb_com3 = None
-    pcb_com4 = None
+    pcb_com = [None]*9
     # Current variant/s
     variant = None
     # All the outputs
@@ -120,10 +114,7 @@ class GS(object):
         GS.sch_date = GS.sch.date
         GS.sch_rev = GS.sch.revision
         GS.sch_comp = GS.sch.company
-        GS.sch_com1 = GS.sch.comment1
-        GS.sch_com2 = GS.sch.comment2
-        GS.sch_com3 = GS.sch.comment3
-        GS.sch_com4 = GS.sch.comment4
+        GS.sch_com = GS.sch.comment
 
     @staticmethod
     def format_date(d, fname, what):
@@ -144,14 +135,16 @@ class GS(object):
         if GS.ki6():  # pragma: no cover (Ki6)
             # Backward compatibility ... what's this?
             # Also: Maintaining the same numbers used before (and found in the file) is asking too much?
-            return title_block.GetComment(num-1)
-        if num == 1:
+            return title_block.GetComment(num)
+        if num == 0:
             return title_block.GetComment1()
-        if num == 2:
+        if num == 1:
             return title_block.GetComment2()
-        if num == 3:
+        if num == 2:
             return title_block.GetComment3()
-        return title_block.GetComment4()
+        if num == 3:
+            return title_block.GetComment4()
+        return ''
 
     @staticmethod
     def get_modules():
@@ -196,18 +189,14 @@ class GS(object):
             GS.pcb_title = GS.pcb_basename
         GS.pcb_rev = title_block.GetRevision()
         GS.pcb_comp = title_block.GetCompany()
-        GS.pcb_com1 = GS.get_pcb_comment(title_block, 1)
-        GS.pcb_com2 = GS.get_pcb_comment(title_block, 2)
-        GS.pcb_com3 = GS.get_pcb_comment(title_block, 3)
-        GS.pcb_com4 = GS.get_pcb_comment(title_block, 4)
+        for num in range(9):
+            GS.pcb_com[num] = GS.get_pcb_comment(title_block, num)
         logger.debug("PCB title: `{}`".format(GS.pcb_title))
         logger.debug("PCB date: `{}`".format(GS.pcb_date))
         logger.debug("PCB revision: `{}`".format(GS.pcb_rev))
         logger.debug("PCB company: `{}`".format(GS.pcb_comp))
-        logger.debug("PCB comment 1: `{}`".format(GS.pcb_com1))
-        logger.debug("PCB comment 2: `{}`".format(GS.pcb_com2))
-        logger.debug("PCB comment 3: `{}`".format(GS.pcb_com3))
-        logger.debug("PCB comment 4: `{}`".format(GS.pcb_com4))
+        for num in range(4 if GS.ki5() else 9):
+            logger.debug("PCB comment {}: `{}`".format(num+1, GS.pcb_com[num]))
 
     @staticmethod
     def check_pcb():

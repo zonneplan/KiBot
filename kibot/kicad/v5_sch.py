@@ -1463,6 +1463,7 @@ class Schematic(object):
         self.dcms = {}
         self.lib_comps = {}
         self.annotation_error = False
+        self.max_comments = 4
 
     def _get_title_block(self, f):
         line = f.get_line()
@@ -1475,6 +1476,7 @@ class Schematic(object):
         self.sheet = 1
         self.nsheets = 1
         self.title_block = OrderedDict()
+        self.comment = ['']*9
         while True:
             line = f.get_line()
             if line.startswith('$EndDescr'):
@@ -1482,10 +1484,8 @@ class Schematic(object):
                 self.date = self.title_block.get('Date', '')
                 self.revision = self.title_block.get('Rev', '')
                 self.company = self.title_block.get('Comp', '')
-                self.comment1 = self.title_block.get('Comment1', '')
-                self.comment2 = self.title_block.get('Comment2', '')
-                self.comment3 = self.title_block.get('Comment3', '')
-                self.comment4 = self.title_block.get('Comment4', '')
+                for num in range(4):
+                    self.comment[num] = self.title_block.get('Comment'+str(num+1), '')
                 return
             elif line.startswith('encoding'):
                 if line[9:14] != 'utf-8':
@@ -1789,17 +1789,9 @@ class Schematic(object):
             dt.text = self.date
         SubElement(tblock, 'source').text = os.path.basename(self.fname)
         com = SubElement(tblock, 'comment')
-        com.set('number', '1')
-        com.set('value', self.comment1)
-        com = SubElement(tblock, 'comment')
-        com.set('number', '2')
-        com.set('value', self.comment2)
-        com = SubElement(tblock, 'comment')
-        com.set('number', '3')
-        com.set('value', self.comment3)
-        com = SubElement(tblock, 'comment')
-        com.set('number', '4')
-        com.set('value', self.comment4)
+        for num in range(self.max_comments):
+            com.set('number', str(num+1))
+            com.set('value', self.comment[num])
 
     def save_netlist_components(self, root, comps, excluded, fitted, no_field):
         """ Generates the `components` section of the netlist """

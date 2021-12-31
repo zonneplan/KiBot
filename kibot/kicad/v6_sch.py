@@ -1386,7 +1386,8 @@ class SchematicV6(Schematic):
         self.annotation_error = False
         # The title block is optional
         self.date = self.title = self.revision = self.company = ''
-        self.comment1 = self.comment2 = self.comment3 = self.comment4 = ''
+        self.comment = ['']*9
+        self.max_comments = 9
         self.title_ori = self.date_ori = None
 
     def _fill_missing_title_block(self):
@@ -1412,17 +1413,10 @@ class SchematicV6(Schematic):
                 self.company = _check_str(item, 1, i_type)
             elif i_type == 'comment':
                 index = _check_integer(item, 1, i_type)
-                if index < 1 or index > 4:
+                if index < 1 or index > 9:
                     raise SchError('Unsupported comment index {} in title block'.format(index))
                 value = _check_str(item, 2, i_type)
-                if index == 1:
-                    self.comment1 = value
-                elif index == 2:
-                    self.comment2 = value
-                elif index == 3:
-                    self.comment3 = value
-                elif index == 4:
-                    self.comment4 = value
+                self.comment[index-1] = value
             else:
                 raise SchError('Unsupported entry in title block ({})'.format(item))
         self._fill_missing_title_block()
@@ -1460,10 +1454,8 @@ class SchematicV6(Schematic):
         data += [_symbol('date', [self.date_ori]), Sep()]
         data += [_symbol('rev', [self.revision]), Sep()]
         data += [_symbol('company', [self.company]), Sep()]
-        data += [_symbol('comment', [1, self.comment1]), Sep()]
-        data += [_symbol('comment', [2, self.comment2]), Sep()]
-        data += [_symbol('comment', [3, self.comment3]), Sep()]
-        data += [_symbol('comment', [4, self.comment4]), Sep()]
+        for num, val in enumerate(self.comment):
+            data += [_symbol('comment', [num+1, val]), Sep()]
         return [Sep(), Sep(), _symbol('title_block', data)]
 
     def write_lib_symbols(self, cross=False):
