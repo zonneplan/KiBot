@@ -141,7 +141,7 @@ class KiCostOptions(VariantOptions):
     def run(self, name):
         super().run(name)
         net_dir = None
-        if self._comps and GS.ki5():
+        if self._comps:
             var_fields = set(['variant', 'version'])
             if self.variant and self.variant.type == 'kicost' and self.variant.variant_field not in var_fields:
                 # Warning about KiCost limitations
@@ -152,7 +152,7 @@ class KiCostOptions(VariantOptions):
             # Write a custom netlist to a temporal dir
             net_dir = mkdtemp(prefix='tmp-kibot-kicost-')
             netlist = os.path.join(net_dir, GS.sch_basename+'.xml')
-            with open(netlist, 'wt') as f:
+            with open(netlist, 'wb') as f:
                 GS.sch.save_netlist(f, self._comps, no_field=var_fields)
         else:
             # Make sure the XML is there.

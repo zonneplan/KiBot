@@ -541,6 +541,7 @@ class LibComponent(object):
         self.alias = None
         self.fp_list = []
         self.draw = []
+        self.pins = []
         line = f.get_line()
         while not line.startswith('ENDDEF'):
             if len(line) == 0:
@@ -573,11 +574,20 @@ class LibComponent(object):
                     elif line[0] == 'T':
                         self.draw.append(DrawText.parse(line))
                     elif line[0] == 'X':
-                        self.draw.append(Pin.parse(line))
+                        pin = Pin.parse(line)
+                        self.draw.append(pin)
+                        self.pins.append(pin)
                     else:
                         logger.warning(W_BADDRAW + 'Unknown draw element `{}`'.format(line))
                     line = f.get_line()
             line = f.get_line()
+            self.all_pins = self.pins
+
+    def get_field_value(self, field):
+        field = field.lower()
+        if field in self.dfields:
+            return self.dfields[field].value
+        return ''
 
     def write(self, f, id, cross=False):
         """ cross is used to cross the component (DNF) """
@@ -1384,15 +1394,17 @@ class SchematicSheet(object):
         self.id = ''
         self.annotation_error = False
 
-    def load_sheet(self, project, parent, sheet_path, sheet_path_h, libs, fields, fields_lc):
+    def load_sheet(self, project, parent, sheet_path, sheet_path_h, libs, fields, fields_lc, parent_obj):
         assert self.name
         self.sheet = Schematic()
+        parent_obj.all_sheets.append(self.sheet)
         parent_dir = os.path.dirname(parent)
         sheet_path += '/'+self.id
         if len(sheet_path_h) > 1:
             sheet_path_h += '/'
         sheet_path_h += self.name if self.name else 'Unknown'
-        self.sheet.load(os.path.join(parent_dir, self.file), project, sheet_path, sheet_path_h, libs, fields, fields_lc)
+        self.sheet.load(os.path.join(parent_dir, self.file), project, sheet_path, sheet_path_h, libs, fields, fields_lc,
+                        parent_obj)
         return self.sheet
 
     @staticmethod
@@ -1457,6 +1469,14 @@ class SchematicSheet(object):
         f.write('$EndSheet\n')
 
 
+def _path(p):
+    if not p.startswith('/'):
+        p = '/'+p
+    if p[-1] != '/':
+        p = p+'/'
+    return p
+
+
 class Schematic(object):
     def __init__(self):
         super().__init__()
@@ -1464,6 +1484,7 @@ class Schematic(object):
         self.lib_comps = {}
         self.annotation_error = False
         self.max_comments = 4
+        self.netlist_version = 'D'
 
     def _get_title_block(self, f):
         line = f.get_line()
@@ -1502,7 +1523,7 @@ class Schematic(object):
                     raise SchFileError('Wrong entry in title block', line, f)
                 self.title_block[m.group(1)] = m.group(2)
 
-    def load(self, fname, project, sheet_path='', sheet_path_h='/', libs={}, fields=[], fields_lc=set()):
+    def load(self, fname, project, sheet_path='', sheet_path_h='/', libs={}, fields=[], fields_lc=set(), parent=None):
         """ Load a v5.x KiCad Schematic.
             The caller must be sure the file exists.
             Only the schematics are loaded not the libs. """
@@ -1581,11 +1602,15 @@ class Schematic(object):
                 line = f.get_line()
             # Load sub-sheets
             self.sub_sheets = []
+            if parent is None:
+                self.all_sheets = [self]
             for sch in self.sheets:
-                sheet = sch.load_sheet(project, fname, sheet_path, sheet_path_h, libs, fields, fields_lc)
+                sheet = sch.load_sheet(project, fname, sheet_path, sheet_path_h, libs, fields, fields_lc,
+                                       self if parent is None else parent)
                 if sheet.annotation_error:
                     self.annotation_error = True
                 self.sub_sheets.append(sheet)
+
 
     def get_files(self):
         """ A list of the names for all the sheets, including this one.
@@ -1765,67 +1790,107 @@ class Schematic(object):
 
     def save_netlist_design(self, root):
         """ Generates the `design` section of the netlist """
-        # TODO: Dump subsheets, may be in the future
         design = SubElement(root, 'design')
         SubElement(design, 'source').text = self.fname
-        SubElement(design, 'date').text = datetime.now().strftime("%a %b %e %H:%M:%S %Y")
+        SubElement(design, 'date').text = datetime.now().strftime("%c")
         SubElement(design, 'tool').text = 'KiBot v'+GS.kibot_version
-        sheet = SubElement(design, 'sheet')
-        sheet.set('number', str(self.sheet))
-        sheet.set('name', str(self.sheet_path_h))
-        sheet.set('tstamps', str('/'+self.sheet_path))
-        tblock = SubElement(sheet, 'title_block')
-        title = SubElement(tblock, 'title')
-        if self.title_ori:
-            title.text = self.title_ori
-        company = SubElement(tblock, 'company')
-        if self.company:
-            company.text = self.company
-        rev = SubElement(tblock, 'rev')
-        if self.revision:
-            rev.text = self.revision
-        dt = SubElement(tblock, 'date')
-        if self.date:
-            dt.text = self.date
-        SubElement(tblock, 'source').text = os.path.basename(self.fname)
-        com = SubElement(tblock, 'comment')
-        for num in range(self.max_comments):
-            com.set('number', str(num+1))
-            com.set('value', self.comment[num])
+        order = 1
+        is_v5 = self.max_comments == 4
+        for s in self.all_sheets:
+             sheet = SubElement(design, 'sheet')
+             # KiCad v5 numbering is broken
+             sheet.set('number', str(order) if is_v5 else s.sheet)
+             sheet.set('name', _path(s.sheet_path_h))
+             sheet.set('tstamps', _path(s.sheet_path))
+             tblock = SubElement(sheet, 'title_block')
+             title = SubElement(tblock, 'title')
+             if s.title_ori:
+                 title.text = s.title_ori
+             company = SubElement(tblock, 'company')
+             if s.company:
+                 company.text = s.company
+             rev = SubElement(tblock, 'rev')
+             if s.revision:
+                 rev.text = s.revision
+             dt = SubElement(tblock, 'date')
+             if s.date:
+                 dt.text = s.date
+             SubElement(tblock, 'source').text = os.path.basename(s.fname)
+             for num in range(s.max_comments):
+                 com = SubElement(tblock, 'comment')
+                 com.set('number', str(num+1))
+                 com.set('value', s.comment[num])
+             order += 1
 
     def save_netlist_components(self, root, comps, excluded, fitted, no_field):
         """ Generates the `components` section of the netlist """
         components = SubElement(root, 'components')
+        # Colapse units
+        real_comps = []
+        tstamps = {}
         for c in comps:
+            if c.ref in tstamps:
+                tstamps[c.ref] += ' '+c.id
+            else:
+                tstamps[c.ref] = c.id
+                real_comps.append(c)
+        for c in real_comps:
             if not excluded and not c.included:
+                # Excluded, i.e. virtual
                 continue
             if fitted and not c.fitted:
+                # DNP
                 continue
             comp = SubElement(components, 'comp')
             comp.set('ref', c.ref)
             SubElement(comp, 'value').text = c.value
-            SubElement(comp, 'footprint').text = c.footprint
-            SubElement(comp, 'datasheet').text = c.datasheet
-            fields = SubElement(comp, 'fields')
-            for fname, fvalue in c.get_user_fields():
-                if fname in no_field:
-                    continue
-                fld = SubElement(fields, 'field')
-                fld.set('name', fname)
-                fld.text = fvalue
+            if c.footprint:
+                SubElement(comp, 'footprint').text = c.footprint
+            if len(c.datasheet) and not (self.netlist_version == 'E' and c.datasheet != '~'):
+                SubElement(comp, 'datasheet').text = c.datasheet
+            user_fields = c.get_user_fields()
+            if user_fields:
+                fields = SubElement(comp, 'fields')
+                for fname, fvalue in user_fields:
+                    if fname in no_field:
+                        continue
+                    fld = SubElement(fields, 'field')
+                    fld.set('name', fname)
+                    fld.text = fvalue
             lbs = SubElement(comp, 'libsource')
             lbs.set('lib', c.lib)
             lbs.set('part', c.name)
             lbs.set('description', c.desc)
+            # v6 properties
+            if self.netlist_version == 'E':
+                for fname, fvalue in user_fields:
+                    if fname in no_field:
+                        continue
+                    fld = SubElement(comp, 'property')
+                    fld.set('name', fname)
+                    fld.set('value', fvalue)
+                prop = SubElement(comp, 'property')
+                prop.set('name', 'Sheetname')
+                prop.set('value', os.path.basename(c.sheet_path_h))
+                prop = SubElement(comp, 'property')
+                prop.set('name', 'Sheetfile')
+                prop.set('value', os.path.basename(c.parent_sheet.fname))
             shp = SubElement(comp, 'sheetpath')
-            shp.set('names', c.sheet_path_h)
-            shp.set('tstamps', c.sheet_path_h)
-            SubElement(comp, 'tstamp').text = c.id
+            shp.set('names', _path(c.sheet_path_h))
+            shp.set('tstamps', _path(c.sheet_path))
+            if self.netlist_version == 'D':
+                SubElement(comp, 'tstamp').text = tstamps[c.ref].split()[0]
+            else:
+                SubElement(comp, 'tstamps').text = tstamps[c.ref]
 
     def save_netlist_libparts(self, root):
         libparts = SubElement(root, 'libparts')
-        for k, v in self.comps_data.items():
+        for k in sorted(self.comps_data.keys()):
+            v = self.comps_data[k]
             if not v:
+                continue
+            ref = v.get_field_value('reference')
+            if ref and ref[0] == '#':
                 continue
             libpart = SubElement(libparts, 'libpart')
             res = k.split(':')
@@ -1836,35 +1901,59 @@ class Schematic(object):
                 aliases = SubElement(libpart, 'aliases')
                 for alias in v.alias:
                     SubElement(aliases, 'alias').text = alias
-            if v.dcm:
-                if v.dcm.desc:
-                    SubElement(libpart, 'description').text = v.dcm.desc
-                if v.dcm.datasheet:
-                    SubElement(libpart, 'docs').text = v.dcm.datasheet
+            # Description
+            desc = None
+            if v.dcm and v.dcm.desc:
+                desc = v.dcm.desc
+            else:
+                desc = v.get_field_value('ki_description')
+            if desc:
+                SubElement(libpart, 'description').text = desc
+            # Datatsheet
+            datasheet = None
+            if v.dcm and v.dcm.datasheet:
+                datasheet = v.dcm.datasheet
+            else:
+                datasheet = v.get_field_value('datasheet')
+            if datasheet:
+                SubElement(libpart, 'docs').text = datasheet
+            # Footprint filters
+            fp_list = None
             if v.fp_list:
+                fp_list = v.fp_list
+            else:
+                fp_list = v.get_field_value('ki_fp_filters').split()
+            if fp_list:
                 fps = SubElement(libpart, 'footprints')
-                for fp in v.fp_list:
+                for fp in fp_list:
                     SubElement(fps, 'fp').text = fp
+            # Fields
             flds = SubElement(libpart, 'fields')
             for fld in v.fields:
-                if not fld.value:
+                if not fld.value or fld.name.startswith('ki_'):
                     continue
                 field = SubElement(flds, 'field')
                 field.set('name', fld.name)
                 field.text = fld.value
-            # Search pins
-            if next(filter(lambda x: isinstance(x, Pin), v.draw), False):
+            # Pins
+            if v.all_pins:
                 pins = SubElement(libpart, 'pins')
-                for pin in sorted(filter(lambda x: isinstance(x, Pin), v.draw), key=lambda x: x.number):
+                for pin in sorted(v.all_pins, key=lambda x: "%10s" % x.number):
                     pn = SubElement(pins, 'pin')
                     pn.set('num', pin.number)
-                    pn.set('name', pin.name)
-                    pn.set('type', pin.type2name.get(pin.type, 'unknown'))
+                    name = pin.name
+                    if self.netlist_version == 'E' and name == '~':
+                        name = ''
+                    pn.set('name', name)
+                    tp = pin.type
+                    if len(tp) == 1:
+                        tp = pin.type2name.get(pin.type, 'unknown')
+                    pn.set('type', tp)
 
     def save_netlist(self, fhandle, comps, excluded=False, fitted=True, no_field=[]):
         """ This is a partial netlist in XML, only useful for BoMs """
         root = Element("export")
-        root.set('version', 'D')
+        root.set('version', self.netlist_version)
         # Design section
         self.save_netlist_design(root)
         # Components
@@ -1881,6 +1970,6 @@ class Schematic(object):
         # TODO: May be in the future
         SubElement(root, 'nets')
         # Make it look nice
-        rough_string = tostring(root, 'utf-8')
+        rough_string = tostring(root, encoding='utf8')
         reparsed = minidom.parseString(rough_string)
-        fhandle.write(reparsed.toprettyxml(indent="  "))
+        fhandle.write(reparsed.toprettyxml(indent="  ", encoding='UTF-8'))

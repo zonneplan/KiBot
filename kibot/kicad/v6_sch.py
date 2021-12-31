@@ -719,12 +719,21 @@ class LibComponent(object):
         self.fields = []
         self.dfields = {}
         self.box = Box()
+        self.alias = None
+        self.dcm = None
+        self.fp_list = None
         # This member is used to generate crossed components (DNF).
         # When defined means we need to add a cross in this box and then reset the box.
         self.cross_box = None
 
+    def get_field_value(self, field):
+        field = field.lower()
+        if field in self.dfields:
+            return self.dfields[field].value
+        return ''
+
     @staticmethod
-    def load(c, project, is_unit=False):  # noqa: C901
+    def load(c, project, parent=None):  # noqa: C901
         if not isinstance(c, list):
             raise SchError('Library component definition is not a list')
         if len(c) < 3:
@@ -740,12 +749,12 @@ class LibComponent(object):
         if len(res) == 2:
             comp.name = res[1]
             comp.lib = res[0]
-            # libs[comp.lib] = None
         else:
-            if not is_unit:
+            if parent is None:
                 logger.warning(W_NOLIB + "Component `{}` doesn't specify its library".format(comp.name))
         comp.units = []
         comp.pins = []
+        comp.all_pins = []
         comp.unit_count = 1
         # Variable list
         for i in c[2:]:
@@ -799,6 +808,8 @@ class LibComponent(object):
             elif i_type == 'pin':
                 vis_obj = PinV6.parse(i)
                 comp.pins.append(vis_obj)
+                if parent:
+                    parent.all_pins.append(vis_obj)
             # UNITS...
             elif i_type == 'symbol':
                 # They use a special naming scheme:
@@ -810,7 +821,7 @@ class LibComponent(object):
                 #    - If the unit has alternative drawing they are *_N_1 and *_N_2
                 #    - If the unit doesn't have alternative we have *_N_x x starts from 0
                 #      Pins and drawings can be in _N_0 and/or _N_1
-                vis_obj = LibComponent.load(i, project, is_unit=True)
+                vis_obj = LibComponent.load(i, project, parent=comp if parent is None else parent)
                 comp.units.append(vis_obj)
                 m = LibComponent.unit_regex.search(vis_obj.lib_id)
                 if m is None:
@@ -938,6 +949,7 @@ class SchematicComponentV6(SchematicComponent):
         comp.project = project
         # The path will be computed by the instance
         # comp.sheet_path_h = parent.sheet_path_h
+        comp.parent_sheet = parent
         name = 'component'
         # First argument is the LIB:NAME
         comp.lib_id = comp.name = _check_symbol_str(c, 1, name, 'lib_id')
@@ -946,7 +958,6 @@ class SchematicComponentV6(SchematicComponent):
         if len(res) == 2:
             comp.name = res[1]
             comp.lib = res[0]
-            # libs[comp.lib] = None
         else:
             logger.warning(W_NOLIB + "Component `{}` doesn't specify its library".format(comp.name))
         # 2 The position
@@ -1283,9 +1294,9 @@ class Sheet(object):
         sheet = SchematicV6()
         self.sheet = sheet
         parent_dir = os.path.dirname(parent_file)
-        sheet.path = os.path.join(parent_obj.path, self.uuid)
+        sheet.sheet_path = os.path.join(parent_obj.sheet_path, self.uuid)
         sheet.sheet_path_h = os.path.join(parent_obj.sheet_path_h, self.name)
-        parent_obj.sheet_paths[sheet.path] = sheet
+        parent_obj.sheet_paths[sheet.sheet_path] = sheet
         sheet.load(os.path.join(parent_dir, self.file), project, parent_obj)
         return sheet
 
@@ -1389,6 +1400,7 @@ class SchematicV6(Schematic):
         self.comment = ['']*9
         self.max_comments = 9
         self.title_ori = self.date_ori = None
+        self.netlist_version = 'E'
 
     def _fill_missing_title_block(self):
         # Fill in some missing info
@@ -1529,7 +1541,7 @@ class SchematicV6(Schematic):
             Is used to save a variant, where we avoid sharing instance data """
         # Store it in the UUID -> name
         # Used to create a human readable sheet path
-        self.sheet_names[os.path.join(self.path, sch.uuid)] = os.path.join(self.sheet_path_h, sch.name)
+        self.sheet_names[os.path.join(self.sheet_path, sch.uuid)] = os.path.join(self.sheet_path_h, sch.name)
         # Eliminate subdirs
         file = sch.file.replace('/', '_')
         fparts = os.path.splitext(file)
@@ -1545,7 +1557,7 @@ class SchematicV6(Schematic):
             self.fields_lc = set(self.fields)
             self.sheet_paths = {'/': self}
             self.lib_symbol_names = {}
-            self.path = '/'
+            self.sheet_path = '/'
             self.sheet_path_h = '/'
             self.sheet_names = {}
         else:
@@ -1554,7 +1566,7 @@ class SchematicV6(Schematic):
             self.sheet_paths = parent.sheet_paths
             self.lib_symbol_names = parent.lib_symbol_names
             self.sheet_names = parent.sheet_names
-            # self.path is set by sch.load_sheet
+            # self.sheet_path is set by sch.load_sheet
         self.parent = parent
         self.fname = fname
         self.project = project
@@ -1573,9 +1585,11 @@ class SchematicV6(Schematic):
         self.sheets = []
         self.sheet_instances = []
         self.symbol_instances = []
+        self.libs = {}  # Just for compatibility with v5 class
         # TODO: this assumes we are expanding the schematic to allow variant.
         # This is needed to overcome KiCad 6 limitations (symbol instances only differ in Reference)
         # If we don't want to expand the schematic this member should be shared with the parent
+        # TODO: We must fix some UUIDs because now we expanded them.
         self.symbol_uuids = {}
         with open(fname, 'rt') as fh:
             error = None
@@ -1595,7 +1609,7 @@ class SchematicV6(Schematic):
             elif e_type == 'generator':
                 self.generator = _check_symbol(e, 1, e_type)
             elif e_type == 'uuid':
-                self.uuid = _check_symbol(e, 1, e_type)
+                self.id = self.uuid = _check_symbol(e, 1, e_type)
             elif e_type == 'paper':
                 self.paper = _check_str(e, 1, e_type)
                 index = 2
@@ -1653,6 +1667,14 @@ class SchematicV6(Schematic):
             if sheet.annotation_error:
                 self.annotation_error = True
             sch.sch = sheet
+        # Assign the page numbers
+        if parent is None:
+            self.all_sheets = []
+            for i in self.sheet_instances:
+                sheet = self.sheet_paths.get(i.path)
+                if sheet:
+                    sheet.sheet = i.page
+                    self.all_sheets.append(sheet)
         # Create the components list
         for s in self.symbol_instances:
             # Get a copy of the original symbol
@@ -1665,7 +1687,9 @@ class SchematicV6(Schematic):
             comp.unit = s.unit
             comp.value = s.value
             comp.set_footprint(s.footprint)
+            comp.sheet_path = path
             comp.sheet_path_h = self.path_to_human(path)
+            comp.id = comp_uuid
             # Link with its library symbol
             try:
                 lib_symbol = self.lib_symbol_names[comp.lib_id]
@@ -1674,7 +1698,9 @@ class SchematicV6(Schematic):
                 lib_symbol = LibComponent()
             comp.lib_symbol = lib_symbol
             comp.is_power = lib_symbol.is_power
+            comp.desc = lib_symbol.get_field_value('ki_description')
             # Now we have all the data
             comp._validate()
             # Add it to the list
             self.components.append(comp)
+        self.comps_data = self.lib_symbol_names
