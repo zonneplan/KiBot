@@ -9,7 +9,7 @@
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
-         [-q | -v...] [-i] [-m MKFILE] [-g DEF]... [TARGET...]
+         [-q | -v...] [-i] [-C] [-m MKFILE] [-g DEF]... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] --help-filters
@@ -27,6 +27,7 @@ Options:
   -h, --help                       Show this help message and exit
   -b BOARD, --board-file BOARD     The PCB .kicad-pcb board file
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
+  -C, --cli-order                  Generate outputs using the indicated order
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
@@ -372,7 +373,7 @@ def main():
         generate_makefile(args.makefile, plot_config, outputs)
     else:
         # Do all the job (pre-flight + outputs)
-        generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre)
+        generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre, args.cli_order)
     # Print total warnings
     logger.log_totals()
 

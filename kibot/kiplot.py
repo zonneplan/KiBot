@@ -21,6 +21,7 @@ from importlib.util import (spec_from_file_location, module_from_spec)
 from collections import OrderedDict
 
 from .gs import GS
+from .registrable import RegOutput
 from .misc import (PLOT_ERROR, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
                    EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL,
                    MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT,
@@ -356,7 +357,7 @@ def run_output(out):
         config_error("In section '"+out.name+"' ("+out.type+"): "+str(e))
 
 
-def generate_outputs(outputs, target, invert, skip_pre):
+def generate_outputs(outputs, target, invert, skip_pre, cli_order):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
     GS.outputs = outputs
     preflight_checks(skip_pre)
@@ -366,16 +367,31 @@ def generate_outputs(outputs, target, invert, skip_pre):
         # Skip all targets
         logger.debug('Skipping all outputs')
         return
+    # Check we got a valid list of outputs
+    for name in target:
+        out = RegOutput.get_output(name)
+        if out is None:
+            logger.error('Unknown output `{}`'.format(name))
+            exit(EXIT_BAD_ARGS)
     # Generate outputs
-    for out in outputs:
-        if (((n == 0 or ((out.name not in target) and invert)) and out.run_by_default) or
-           ((out.name in target) and not invert)):
-            # Exclude
+    if cli_order and not invert:
+        # Use the CLI order
+        for name in target:
+            out = RegOutput.get_output(name)
             config_output(out)
             logger.info('- '+str(out))
             run_output(out)
-        else:
-            logger.debug('Skipping `%s` output', str(out))
+    else:
+        # Use the declaration order
+        for out in outputs:
+            if (((n == 0 or ((out.name not in target) and invert)) and out.run_by_default) or
+               ((out.name in target) and not invert)):
+                # Exclude
+                config_output(out)
+                logger.info('- '+str(out))
+                run_output(out)
+            else:
+                logger.debug('Skipping `%s` output', str(out))
 
 
 def adapt_file_name(name):

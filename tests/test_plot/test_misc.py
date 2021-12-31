@@ -107,14 +107,30 @@ def test_skip_pre_and_outputs_5(test_dir):
     ctx.clean_up()
 
 
-def test_unknown_out(test_dir):
+def test_unknown_out_type(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'UnknownOut', prj, 'unknown_out', POS_DIR)
+    ctx = context.TestContext(test_dir, 'test_unknown_out_type', prj, 'unknown_out', POS_DIR)
     ctx.run(EXIT_BAD_CONFIG)
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
     assert ctx.search_err("Unknown output type:? .?bogus")
 
+    ctx.clean_up()
+
+
+def test_unknown_out_name_1(test_dir):
+    prj = 'simple_2layer'
+    ctx = context.TestContext(test_dir, 'test_unknown_out_name_1', prj, 'pre_and_position', POS_DIR)
+    ctx.run(EXIT_BAD_ARGS, extra=['-s', 'all', '-C', 'pp'])
+    assert ctx.search_err("Unknown output .?pp")
+    ctx.clean_up()
+
+
+def test_unknown_out_name_2(test_dir):
+    prj = 'simple_2layer'
+    ctx = context.TestContext(test_dir, 'test_unknown_out_name_1', prj, 'pre_and_position', POS_DIR)
+    ctx.run(EXIT_BAD_ARGS, extra=['-s', 'all', 'pp'])
+    assert ctx.search_err("Unknown output .?pp")
     ctx.clean_up()
 
 
@@ -907,4 +923,20 @@ def test_download_datasheets_1(test_dir):
     ctx.expect_out_file('DS_test/C0805C102J4GAC7800-1000 pF__test.pdf')
     ctx.expect_out_file('DS_test/C0805C102J4GAC7800-1nF__test.pdf')
     ctx.expect_out_file('DS_test/CR0805-JW-102ELF-3k3__test.pdf')
+    ctx.clean_up()
+
+
+def test_cli_order(test_dir):
+    prj = 'simple_2layer'
+    ctx = context.TestContext(test_dir, 'test_cli_order', prj, 'pre_and_position', POS_DIR)
+    ctx.run(extra=['-s', 'all', '-C', 'pos_ascii', 'position'])
+
+    csv = ctx.get_pos_both_csv_filename()
+    pos = ctx.get_pos_both_filename()
+    ctx.expect_out_file(csv)
+    ctx.expect_out_file(pos)
+    pos_txt = ctx.search_out('pos_ascii')
+    csv_txt = ctx.search_out('position')
+    assert pos_txt.start() < csv_txt.start()
+
     ctx.clean_up()

@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Datasheet downloader. (#119)
 - Position files now can include virtual components. (#106)
 - Support for variants on KiCost output. (#106)
+- `--cli-order` option to generate outputs in arbitrary order. (#106)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current
