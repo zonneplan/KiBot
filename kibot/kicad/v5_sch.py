@@ -1611,7 +1611,6 @@ class Schematic(object):
                     self.annotation_error = True
                 self.sub_sheets.append(sheet)
 
-
     def get_files(self):
         """ A list of the names for all the sheets, including this one.
             We avoid repeating the same file. """
@@ -1797,30 +1796,30 @@ class Schematic(object):
         order = 1
         is_v5 = self.max_comments == 4
         for s in self.all_sheets:
-             sheet = SubElement(design, 'sheet')
-             # KiCad v5 numbering is broken
-             sheet.set('number', str(order) if is_v5 else s.sheet)
-             sheet.set('name', _path(s.sheet_path_h))
-             sheet.set('tstamps', _path(s.sheet_path))
-             tblock = SubElement(sheet, 'title_block')
-             title = SubElement(tblock, 'title')
-             if s.title_ori:
-                 title.text = s.title_ori
-             company = SubElement(tblock, 'company')
-             if s.company:
-                 company.text = s.company
-             rev = SubElement(tblock, 'rev')
-             if s.revision:
-                 rev.text = s.revision
-             dt = SubElement(tblock, 'date')
-             if s.date:
-                 dt.text = s.date
-             SubElement(tblock, 'source').text = os.path.basename(s.fname)
-             for num in range(s.max_comments):
-                 com = SubElement(tblock, 'comment')
-                 com.set('number', str(num+1))
-                 com.set('value', s.comment[num])
-             order += 1
+            sheet = SubElement(design, 'sheet')
+            # KiCad v5 numbering is broken
+            sheet.set('number', str(order) if is_v5 else s.sheet)
+            sheet.set('name', _path(s.sheet_path_h))
+            sheet.set('tstamps', _path(s.sheet_path))
+            tblock = SubElement(sheet, 'title_block')
+            title = SubElement(tblock, 'title')
+            if s.title_ori:
+                title.text = s.title_ori
+            company = SubElement(tblock, 'company')
+            if s.company:
+                company.text = s.company
+            rev = SubElement(tblock, 'rev')
+            if s.revision:
+                rev.text = s.revision
+            dt = SubElement(tblock, 'date')
+            if s.date:
+                dt.text = s.date
+            SubElement(tblock, 'source').text = os.path.basename(s.fname)
+            for num in range(s.max_comments):
+                com = SubElement(tblock, 'comment')
+                com.set('number', str(num+1))
+                com.set('value', s.comment[num])
+            order += 1
 
     def save_netlist_components(self, root, comps, excluded, fitted, no_field):
         """ Generates the `components` section of the netlist """
