@@ -954,12 +954,14 @@ def test_qr_lib_1(test_dir):
     cmd = ['zbarimg', ctx.get_out_path('0.png')]
     res = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
     logging.debug(res.split('\n')[0])
-    assert res.startswith('QR-Code:QR Test A')
+    assert 'QR-Code:QR Test A' in res
     cmd = ['zbarimg', ctx.get_out_path('1.png')]
     res = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
     logging.debug(res.split('\n')[0])
-    assert res.startswith('QR-Code:https://github.com/INTI-CMNB/KiBot/')
+    assert 'QR-Code:https://github.com/INTI-CMNB/KiBot/' in res
     bd = ctx.get_board_dir()
     files = ['qr.lib', 'qr.kicad_sym', 'qr.pretty/QR.kicad_mod', 'qr.pretty/QR2.kicad_mod']
     for f in files:
-        shutil.copy2(os.path.join(bd, 'qr_test/'+f+'.bogus'), os.path.join(bd, 'qr_test/'+f))
+        bogus = os.path.join(bd, 'qr_test/'+f+'.bogus')
+        if os.path.isfile(bogus):
+            shutil.copy2(bogus, os.path.join(bd, 'qr_test/'+f))
