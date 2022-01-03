@@ -121,6 +121,7 @@ class BaseOutput(RegOutput):
         return os.path.abspath(os.path.join(out_dir, name))
 
     def run(self, output_dir):
+        self.output_dir = output_dir
         self.options.run(self.expand_filename(output_dir, self.options.output))
 
 

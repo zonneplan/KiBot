@@ -32,6 +32,7 @@ import os
 import sys
 import shutil
 import logging
+import subprocess
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -940,3 +941,25 @@ def test_cli_order(test_dir):
     assert pos_txt.start() < csv_txt.start()
 
     ctx.clean_up()
+
+
+def test_qr_lib_1(test_dir):
+    prj = 'qr_test/qr_test'
+    ctx = context.TestContext(test_dir, 'test_qr_lib_1', prj, 'qr_lib_1', POS_DIR)
+    ctx.run()  # extra_debug=True
+    fname = 'Schematic.pdf'
+    ctx.expect_out_file(fname)
+    cmd = ['convert', '-density', '300', ctx.get_out_path(fname), ctx.get_out_path('%d.png')]
+    subprocess.check_call(cmd)
+    cmd = ['zbarimg', ctx.get_out_path('0.png')]
+    res = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
+    logging.debug(res.split('\n')[0])
+    assert res.startswith('QR-Code:QR Test A')
+    cmd = ['zbarimg', ctx.get_out_path('1.png')]
+    res = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
+    logging.debug(res.split('\n')[0])
+    assert res.startswith('QR-Code:https://github.com/INTI-CMNB/KiBot/')
+    bd = ctx.get_board_dir()
+    files = ['qr.lib', 'qr.kicad_sym', 'qr.pretty/QR.kicad_mod', 'qr.pretty/QR2.kicad_mod']
+    for f in files:
+        shutil.copy2(os.path.join(bd, 'qr_test/'+f+'.bogus'), os.path.join(bd, 'qr_test/'+f))

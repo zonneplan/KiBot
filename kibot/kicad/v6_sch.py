@@ -340,7 +340,7 @@ class Stroke(object):
         super().__init__()
         self.width = 0
         self.type = 'default'
-        self.color = None
+        self.color = Color()
 
     @staticmethod
     def parse(items):
@@ -671,6 +671,16 @@ class SchematicFieldV6(object):
     # 2 Footprint
     # 3 Datasheet
     # Reserved names: ki_keywords, ki_description, ki_locked, ki_fp_filters
+    def __init__(self, name='', value='', id=0, x=0, y=0, ang=0):
+        super().__init__()
+        self.name = name
+        self.value = value
+        self.number = id
+        self.x = x
+        self.y = y
+        self.ang = ang
+        self.effects = None
+        self.hide = False
 
     @staticmethod
     def parse(items):
@@ -691,7 +701,7 @@ class SchematicFieldV6(object):
         if self.number < 0:
             return None
         data = [self.name, self.value, _symbol('id', [self.number])]
-        data.extend([_symbol('at', [self.x, self.y, self.ang])])
+        data.append(_symbol('at', [self.x, self.y, self.ang]))
         if self.effects:
             data.extend([Sep(), self.effects.write(), Sep()])
         return _symbol('property', data)

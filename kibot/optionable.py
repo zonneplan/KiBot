@@ -256,14 +256,15 @@ class Optionable(object):
                 name = name.replace('%I', _cl(parent.output_id))
         return name
 
-    def expand_filename_both(self, name, is_sch=True):
+    def expand_filename_both(self, name, is_sch=True, make_safe=True):
         """ Expands %* values in filenames.
             Uses data from the PCB. """
         parent = None
         if self and hasattr(self, '_parent'):
             parent = self._parent
         if GS.debug_level > 3:
-            logger.debug('Expanding `{}` in PCB context for {} parent: {}'.format(name, self, parent))
+            logger.debug('Expanding `{}` in {} context for {} parent: {}'.
+                         format(name, 'SCH' if is_sch else 'PCB', self, parent))
         # Determine if we need to expand SCH and/or PCB related data
         has_dep_exp = any(map(lambda x: x in name, ['%c', '%d', '%F', '%f', '%p', '%r', '%C1', '%C2', '%C3', '%C4']))
         do_sch = is_sch and has_dep_exp
@@ -299,9 +300,10 @@ class Optionable(object):
             name = name.replace('%r', _cl(GS.sch_rev))
             for num, val in enumerate(GS.sch_com):
                 name = name.replace('%C'+str(num+1), _cl(val))
-        # sanitize the name to avoid characters illegal in file systems
-        name = name.replace('\\', '/')
-        name = re.sub(r'[?%*:|"<>]', '_', name)
+        if make_safe:
+            # sanitize the name to avoid characters illegal in file systems
+            name = name.replace('\\', '/')
+            name = re.sub(r'[?%*:|"<>]', '_', name)
         if GS.debug_level > 3:
             logger.debug('Expanded `{}`'.format(name))
         return name

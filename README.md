@@ -606,6 +606,7 @@ The available values for *type* are:
     - `compress` creates an archive containing generated data.
     - `download_datasheets` downloads the datasheets for all the components.
     - `pcbdraw` nice images of the PCB in customized colors.
+    - `qr_lib` generates symbol and footprints for QR codes.
     - `sch_variant` the schematic after applying all filters and variants, including crossed components.
 
 Here is an example of a configuration file to generate the gerbers for the top and bottom layers:
@@ -1667,6 +1668,37 @@ Next time you need this list just use an alias, like this:
         - `variant`: [string=''] Board variant to apply.
         - `width_adjust`: [number=0] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
+* QR_Lib
+  * Type: `qr_lib`
+  * Description: Generates a QR code symbol and footprint.
+                 This output creates a library containing a symbol and footprint for a QR code.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `boardview` output.
+      * Valid keys:
+        - `lib`: [string='QR'] Short name for the library.
+        - `output`: [string='%f-%i%v.%x'] Filename for the output (%i=qr, %x=lib). Affected by global options.
+        - `qrs`: [list(dict)] QR codes to include in the library.
+          * Valid keys:
+            - `correction_level`: [string='low'] [low,medium,quartile,high] Error correction level.
+            - `layer`: [string='silk'] [silk,copper] Layer for the footprint.
+            - `name`: [string='QR'] Name for the symbol/footprint.
+            - `pcb_negative`: [boolean=false] Generate a negative image for the PCB.
+            - `size_pcb`: [number=15] Size of the QR footprint.
+            - `size_sch`: [number=15] Size of the QR symbol.
+            - `size_units`: [string='millimeters'] [millimeters,inches] Units used for the size.
+            - `text`: [string='%p %r'] Text to encode as QR.
+        - `reference`: [string='QR'] The reference prefix.
+        - `use_sch_dir`: [boolean=true] Generate the libs relative to the schematic/PCB dir.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 

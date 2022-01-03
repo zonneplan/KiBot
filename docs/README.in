@@ -425,6 +425,7 @@ The available values for *type* are:
     - `compress` creates an archive containing generated data.
     - `download_datasheets` downloads the datasheets for all the components.
     - `pcbdraw` nice images of the PCB in customized colors.
+    - `qr_lib` generates symbol and footprints for QR codes.
     - `sch_variant` the schematic after applying all filters and variants, including crossed components.
 
 Here is an example of a configuration file to generate the gerbers for the top and bottom layers:
