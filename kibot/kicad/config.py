@@ -207,7 +207,7 @@ class KiConf(object):
         """ Environment vars from KiCad 6 configuration """
         with open(cfg, 'rt') as f:
             data = json.load(f)
-        if "environment" in data and 'vars' in data['environment']:
+        if "environment" in data and 'vars' in data['environment'] and (data['environment']['vars'] != None):
             for k, v in data['environment']['vars'].items():
                 if GS.debug_level > 1:
                     logger.debug('- KiCad var: {}="{}"'.format(k, v))
