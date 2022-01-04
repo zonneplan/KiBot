@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from collections import OrderedDict
@@ -44,6 +44,8 @@ class RegOutput(Optionable, Registrable):
     _def_variants = {}
     # List of defined outputs
     _def_outputs = OrderedDict()
+    # List of prioritary outputs
+    _prio_outputs = OrderedDict()
 
     def __init__(self):
         super().__init__()
@@ -95,8 +97,18 @@ class RegOutput(Optionable, Registrable):
         return RegOutput._def_outputs.values()
 
     @staticmethod
+    def get_prioritary_outputs():
+        return RegOutput._prio_outputs.values()
+
+    @staticmethod
     def get_output(name):
         return RegOutput._def_outputs.get(name, None)
+
+    @staticmethod
+    def make_prioritary(name):
+        out = RegOutput._def_outputs[name]
+        del RegOutput._def_outputs[name]
+        RegOutput._prio_outputs[name] = out
 
     @staticmethod
     def check_variant(variant):

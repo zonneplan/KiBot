@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -359,8 +359,12 @@ def run_output(out):
 
 def generate_outputs(outputs, target, invert, skip_pre, cli_order):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
-    GS.outputs = outputs
     preflight_checks(skip_pre)
+    # Chek if the preflights pulled options
+    for out in RegOutput.get_prioritary_outputs():
+        config_output(out)
+        logger.info('- '+str(out))
+        run_output(out)
     # Check if all must be skipped
     n = len(target)
     if n == 0 and invert:
@@ -383,10 +387,9 @@ def generate_outputs(outputs, target, invert, skip_pre, cli_order):
             run_output(out)
     else:
         # Use the declaration order
-        for out in outputs:
+        for out in RegOutput.get_outputs():
             if (((n == 0 or ((out.name not in target) and invert)) and out.run_by_default) or
                ((out.name in target) and not invert)):
-                # Exclude
                 config_output(out)
                 logger.info('- '+str(out))
                 run_output(out)
@@ -492,7 +495,6 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
         f.write('LOGFILE?=kibot_error.log\n')
         f.write('\n')
         # Configure all outputs
-        GS.outputs = outputs
         for out in outputs:
             config_output(out)
         # Get all targets and dependencies

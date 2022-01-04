@@ -947,6 +947,7 @@ def test_qr_lib_1(test_dir):
     prj = 'qr_test/qr_test'
     ctx = context.TestContext(test_dir, 'test_qr_lib_1', prj, 'qr_lib_1', POS_DIR)
     ctx.run()  # extra_debug=True
+    # Check the schematic
     fname = 'Schematic.pdf'
     ctx.expect_out_file(fname)
     cmd = ['convert', '-density', '300', ctx.get_out_path(fname), ctx.get_out_path('%d.png')]
@@ -959,9 +960,25 @@ def test_qr_lib_1(test_dir):
     res = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
     logging.debug(res.split('\n')[0])
     assert 'QR-Code:https://github.com/INTI-CMNB/KiBot/' in res
+    # Check the PCB
+    fname = 'PCB.pdf'
+    ctx.expect_out_file(fname)
+    cmd = ['convert', '-density', '300', ctx.get_out_path(fname), ctx.get_out_path('p%d.png')]
+    subprocess.check_call(cmd)
+    cmd = ['zbarimg', ctx.get_out_path('p0.png')]
+    res = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
+    logging.debug(res.split('\n')[0])
+    assert 'QR-Code:QR PCB B' in res
+    cmd = ['zbarimg', ctx.get_out_path('p1.png')]
+    res = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
+    logging.debug(res.split('\n')[0])
+    assert 'QR-Code:https://github.com/INTI-CMNB/KiBot/' in res
+    # Restore the original files
     bd = ctx.get_board_dir()
-    files = ['qr.lib', 'qr.kicad_sym', 'qr.pretty/QR.kicad_mod', 'qr.pretty/QR2.kicad_mod']
+    files = ['qr.lib', 'qr.kicad_sym', 'qr.pretty/QR.kicad_mod', 'qr.pretty/QR2.kicad_mod', 'qr_test.kicad_pcb']
     for f in files:
         bogus = os.path.join(bd, 'qr_test/'+f+'.bogus')
         if os.path.isfile(bogus):
             shutil.copy2(bogus, os.path.join(bd, 'qr_test/'+f))
+    os.remove(os.path.join(bd, 'qr_test/qr_test.kicad_pcb-bak'))
+    os.remove(os.path.join(bd, 'qr_test/qr_test.pro-bak'))

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Salvador E. Tropea
-# Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2022 Salvador E. Tropea
+# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import re
@@ -16,6 +16,7 @@ from .gs import GS
 from .kiplot import config_output, get_output_dir, run_output
 from .misc import MISSING_TOOL, WRONG_INSTALL, W_EMPTYZIP, WRONG_ARGUMENTS, INTERNAL_ERROR
 from .optionable import Optionable, BaseOptions
+from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -127,12 +128,11 @@ class CompressOptions(BaseOptions):
             # Get the list of candidates
             files_list = None
             if f.from_output:
-                for out in GS.outputs:
-                    if out.name == f.from_output:
-                        config_output(out)
-                        files_list = out.get_targets(get_output_dir(out.dir, out, dry=True))
-                        break
-                if files_list is None:
+                out = RegOutput.get_output(f.from_output)
+                if out is not None:
+                    config_output(out)
+                    files_list = out.get_targets(get_output_dir(out.dir, out, dry=True))
+                else:
                     logger.error('Unknown output `{}` selected in {}'.format(f.from_output, self._parent))
                     exit(WRONG_ARGUMENTS)
                 if not no_out_run:

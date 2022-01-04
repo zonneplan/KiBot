@@ -43,6 +43,10 @@ preflight:
         before: 'Git hash: <'
         after: '>'
 
+  # [boolean=false] Update the QR codes.
+  # Complements the `qr_lib` output.
+  # The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.
+  update_qr: true
   # [boolean=false] Update the XML version of the BoM (Bill of Materials).
   # To ensure our generated BoM is up to date.
   # Note that this isn't needed when using the internal BoM generator (`bom`).

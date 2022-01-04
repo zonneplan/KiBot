@@ -6,9 +6,15 @@
 import os
 from qrcodegen import QrCode
 from .gs import GS
+if GS.ki6():  # pragma: no cover (Ki6)
+    from pcbnew import IU_PER_MM, S_POLYGON, wxPoint, ADD_MODE_APPEND
+    ADD_APPEND = ADD_MODE_APPEND
+else:
+    from pcbnew import IU_PER_MM, S_POLYGON, wxPoint, ADD_APPEND
 from .optionable import BaseOptions, Optionable
+from .out_base import VariantOptions
 from .error import KiPlotConfigurationError
-from .kicad.sexpdata import Symbol, dumps, Sep
+from .kicad.sexpdata import Symbol, dumps, Sep, load, SExpData
 from .kicad.v6_sch import DrawRectangleV6, PointXY, Stroke, Fill, SchematicFieldV6, FontEffects
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -42,6 +48,7 @@ class QRCodeOptions(Optionable):
             self.pcb_negative = False
             """ Generate a negative image for the PCB """
         self._unkown_is_error = True
+        self._update_mode = False
 
     def config(self, parent):
         super().config(parent)
@@ -151,6 +158,34 @@ class QR_LibOptions(BaseOptions):
                     mod.append(rect)
                     mod.append(Sep())
         return mod
+
+    def qr_draw_fp_memory(self, m, size, size_rect, center, qrc, negative, layer):
+        """ Create the QR drawings for the board in memory """
+        for y in range(size):
+            for x in range(size):
+                if qrc.get_module(x-negative, y-negative) ^ negative:
+                    x_pos = round(x*size_rect-center, 2)
+                    y_pos = round(y*size_rect-center, 2)
+                    x_pos2 = round(x_pos+size_rect, 2)
+                    y_pos2 = round(y_pos+size_rect, 2)
+                    # Convert to Internal Units
+                    x_pos *= IU_PER_MM
+                    y_pos *= IU_PER_MM
+                    x_pos2 *= IU_PER_MM
+                    y_pos2 *= IU_PER_MM
+                    # Create a PCB polygon
+                    poly = VariantOptions.create_module_element(m)
+                    poly.SetShape(S_POLYGON)
+                    points = []
+                    points.append(wxPoint(x_pos, y_pos))
+                    points.append(wxPoint(x_pos, y_pos2))
+                    points.append(wxPoint(x_pos2, y_pos2))
+                    points.append(wxPoint(x_pos2, y_pos))
+                    poly.SetPolyPoints(points)
+                    poly.SetLayer(layer)
+                    poly.SetWidth(0)
+                    poly.thisown = 0
+                    m.AddNative(poly, ADD_APPEND)
 
     def qr_draw_sym(self, size, size_rect, center, qrc):
         mod = []
@@ -280,6 +315,53 @@ class QR_LibOptions(BaseOptions):
             f.write(dumps(lib))
             f.write('\n')
 
+    def update_footprint(self, name, qr):
+        logger.debug('Updating QR footprint: '+name)
+        # Compute the size
+        # TODO: don't repeat
+        qrc = qr._code_pcb
+        size = qrc.get_size()
+        if qr.pcb_negative:
+            size += 2
+        full_size = qr.size_pcb * (1 if qr.size_units == 'millimeters' else 25.4)
+        center = round(full_size/2, 2)
+        size_rect = round(full_size/size, 2)
+        # Replace any instance
+        name = name.lower()
+        for m in GS.get_modules():
+            id = m.GetFPID()
+            m_name = ('{}:{}'.format(id.GetLibNickname(), id.GetLibItemName())).lower()
+            if name == m_name:
+                ref = m.GetReference()
+                logger.debug('- Updating '+ref)
+                # Remove all the drawings
+                for gi in m.GraphicalItems():
+                    if gi.GetClass() == 'MGRAPHIC':
+                        m.Remove(gi)
+                # Add the updated version
+                self.qr_draw_fp_memory(m, size, size_rect, center, qrc, qr.pcb_negative, GS.board.GetLayerID(qr.layer))
+
+    def load_k6_sheet(self, fname):
+        with open(fname, 'rt') as fh:
+            error = None
+            try:
+                sch = load(fh)
+            except SExpData as e:
+                error = str(e)
+            if error:
+                raise KiPlotConfigurationError(error)
+        return sch
+
+    def load_k6_sheets(self, fname, sheets={}):
+        assert GS.sch_file is not None
+        sheet = self.load_k6_sheet(fname)
+        sheets[fname] = sheet
+        if not isinstance(sheet, list) or sheet[0].value() != 'kicad_sch':
+            raise KiPlotConfigurationError('No kicad_sch signature in '+fname)
+        for e in sheet[1:]:
+            if isinstance(e, list) and isinstance(e[0], Symbol) and e[0].value == 'sheet':
+                logger.error(e)
+
     def run(self, output):
         if self.use_sch_dir:
             self._odir_sch = GS.sch_dir
@@ -305,6 +387,23 @@ class QR_LibOptions(BaseOptions):
         for qr in self.qrs:
             logger.debug('Adding footprint: '+qr.name)
             self.footprint(dir_pretty, qr)
+        # Update the files
+        if self._parent._update_mode:
+            # PCB
+            assert GS.board is not None
+            for qr in self.qrs:
+                self.update_footprint(self.lib+':'+qr.name, qr)
+            bkp = GS.pcb_file+'-bak'
+            if os.path.isfile(bkp):
+                os.remove(bkp)
+            os.rename(GS.pcb_file, bkp)
+            GS.board.Save(GS.pcb_file)
+            # Schematic
+            if GS.ki6():
+                # KiCad 5 reads the lib, but KiCad 6 is more like the PCB
+                # sheets = self.load_k6_sheets(GS.sch_file)
+                pass
+                # TODO: KiCad 6 is crashing when we delete the graphics
 
 
 @output_class

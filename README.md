@@ -163,6 +163,9 @@ This section is used to specify tasks that will be executed before generating an
         - `tag_delimiter`: [string='@'] Character used to indicate the beginning and the end of a tag.
                            Don't change it unless you really know about KiCad's file formats.
         - `text`: [string=''] Text to insert instead of the tag.
+- `update_qr`: [boolean=false] Update the QR codes.
+        Complements the `qr_lib` output.
+        The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.
 - `update_xml`: [boolean=false] Update the XML version of the BoM (Bill of Materials).
         To ensure our generated BoM is up to date.
         Note that this isn't needed when using the internal BoM generator (`bom`).
