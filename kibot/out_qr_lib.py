@@ -5,17 +5,13 @@
 # Project: KiBot (formerly KiPlot)
 import os
 from qrcodegen import QrCode
+from tempfile import NamedTemporaryFile
 from .gs import GS
-if GS.ki6():  # pragma: no cover (Ki6)
-    from pcbnew import IU_PER_MM, S_POLYGON, wxPoint, ADD_MODE_APPEND
-    ADD_APPEND = ADD_MODE_APPEND
-else:
-    from pcbnew import IU_PER_MM, S_POLYGON, wxPoint, ADD_APPEND
 from .optionable import BaseOptions, Optionable
-from .out_base import VariantOptions
 from .error import KiPlotConfigurationError
-from .kicad.sexpdata import Symbol, dumps, Sep, load, SExpData
+from .kicad.sexpdata import Symbol, dumps, Sep, load, SExpData, sexp_iter
 from .kicad.v6_sch import DrawRectangleV6, PointXY, Stroke, Fill, SchematicFieldV6, FontEffects
+from .kiplot import load_board
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -24,6 +20,46 @@ QR_ECCS = {'low': QrCode.Ecc.LOW,
            'quartile': QrCode.Ecc.QUARTILE,
            'high': QrCode.Ecc.HIGH}
 logger = log.get_logger()
+TO_SEPARATE = set(['kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
+                   'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'])
+
+
+def is_symbol(name, sexp):
+    return isinstance(sexp, list) and len(sexp) >= 1 and isinstance(sexp[0], Symbol) and sexp[0].value() == name
+
+
+def make_separated(sexp):
+    if not isinstance(sexp, list):
+        return sexp
+    if not isinstance(sexp[0], Symbol) or sexp[0].value() not in TO_SEPARATE:
+        return sexp
+    separated = []
+    for s in sexp:
+        separated.append(make_separated(s))
+        if isinstance(s, list):
+            separated.append(Sep())
+    return separated
+
+
+def compute_size(qr, is_sch=True, use_mm=True):
+    if is_sch:
+        qrc = qr._code_sch
+        full_size = qr.size_sch
+    else:
+        qrc = qr._code_pcb
+        full_size = qr.size_pcb
+    size = qrc.get_size()
+    if not is_sch and qr.pcb_negative:
+        size += 2
+    if use_mm:
+        full_size *= 1 if qr.size_units == 'millimeters' else 25.4
+        center = round(full_size/2, 2)
+        size_rect = round(full_size/size, 2)
+    else:
+        full_size *= 39.37007874 if qr.size_units == 'millimeters' else 1000
+        center = round(full_size/2)
+        size_rect = full_size/size
+    return qrc, size, full_size, center, size_rect
 
 
 class QRCodeOptions(Optionable):
@@ -85,11 +121,7 @@ class QR_LibOptions(BaseOptions):
 
     def symbol_k5(self, f, qr):
         # Compute the size
-        qrc = qr._code_sch
-        size = qrc.get_size()
-        full_size = qr.size_sch * (39.37007874 if qr.size_units == 'millimeters' else 1000)
-        center = round(full_size/2)
-        size_rect = full_size/size
+        qrc, size, full_size, center, size_rect = compute_size(qr, use_mm=False)
         # Generate the symbol
         f.write("#\n# {}\n#\n".format(qr.name))
         f.write("DEF {} {} 0 {} N N 1 F N\n".format(qr.name, '#'+self.reference, 0))
@@ -136,7 +168,7 @@ class QR_LibOptions(BaseOptions):
         fld.append(Sep())
         return fld
 
-    def qr_draw_fp(self, size, size_rect, center, qrc, negative, layer):
+    def qr_draw_fp(self, size, size_rect, center, qrc, negative, layer, do_sep=True):
         mod = []
         for y in range(size):
             for x in range(size):
@@ -156,38 +188,11 @@ class QR_LibOptions(BaseOptions):
                         rect.append([Symbol('layer'), Symbol(layer)])
                     rect.append([Symbol('width'), 0])
                     mod.append(rect)
-                    mod.append(Sep())
+                    if do_sep:
+                        mod.append(Sep())
         return mod
 
-    def qr_draw_fp_memory(self, m, size, size_rect, center, qrc, negative, layer):
-        """ Create the QR drawings for the board in memory """
-        for y in range(size):
-            for x in range(size):
-                if qrc.get_module(x-negative, y-negative) ^ negative:
-                    x_pos = round(x*size_rect-center, 2)
-                    y_pos = round(y*size_rect-center, 2)
-                    x_pos2 = round(x_pos+size_rect, 2)
-                    y_pos2 = round(y_pos+size_rect, 2)
-                    # Convert to Internal Units
-                    x_pos *= IU_PER_MM
-                    y_pos *= IU_PER_MM
-                    x_pos2 *= IU_PER_MM
-                    y_pos2 *= IU_PER_MM
-                    # Create a PCB polygon
-                    poly = VariantOptions.create_module_element(m)
-                    poly.SetShape(S_POLYGON)
-                    points = []
-                    points.append(wxPoint(x_pos, y_pos))
-                    points.append(wxPoint(x_pos, y_pos2))
-                    points.append(wxPoint(x_pos2, y_pos2))
-                    points.append(wxPoint(x_pos2, y_pos))
-                    poly.SetPolyPoints(points)
-                    poly.SetLayer(layer)
-                    poly.SetWidth(0)
-                    poly.thisown = 0
-                    m.AddNative(poly, ADD_APPEND)
-
-    def qr_draw_sym(self, size, size_rect, center, qrc):
+    def qr_draw_sym(self, size, size_rect, center, qrc, do_sep=True):
         mod = []
         for y in range(size):
             for x in range(size):
@@ -202,18 +207,13 @@ class QR_LibOptions(BaseOptions):
                     rect.fill = Fill()
                     rect.fill.type = 'outline'
                     mod.append(rect.write())
-                    mod.append(Sep())
+                    if do_sep:
+                        mod.append(Sep())
         return mod
 
     def footprint(self, dir, qr):
         # Compute the size
-        qrc = qr._code_pcb
-        size = qrc.get_size()
-        if qr.pcb_negative:
-            size += 2
-        full_size = qr.size_pcb * (1 if qr.size_units == 'millimeters' else 25.4)
-        center = round(full_size/2, 2)
-        size_rect = round(full_size/size, 2)
+        qrc, size, full_size, center, size_rect = compute_size(qr, is_sch=False)
         # Generate the footprint
         fname = os.path.join(dir, qr.name+'.kicad_mod')
         mod = [Symbol('module'), Symbol(qr.name)]
@@ -276,11 +276,7 @@ class QR_LibOptions(BaseOptions):
         for qr in self.qrs:
             logger.debug('Adding symbol: '+qr.name)
             # Compute the size
-            qrc = qr._code_sch
-            size = qrc.get_size()
-            full_size = qr.size_sch * (1 if qr.size_units == 'millimeters' else 25.4)
-            center = round(full_size/2, 2)
-            size_rect = round(full_size/size, 2)
+            qrc, size, full_size, center, size_rect = compute_size(qr)
             # Symbol main attributes
             sym = [Symbol('symbol'), qr.name]
             sym.append([Symbol('pin_numbers'), Symbol('hide')])
@@ -315,52 +311,129 @@ class QR_LibOptions(BaseOptions):
             f.write(dumps(lib))
             f.write('\n')
 
-    def update_footprint(self, name, qr):
-        logger.debug('Updating QR footprint: '+name)
+    def update_footprint(self, name, sexp, qr):
+        logger.debug('- Updating QR footprint: '+name)
         # Compute the size
-        # TODO: don't repeat
-        qrc = qr._code_pcb
-        size = qrc.get_size()
-        if qr.pcb_negative:
-            size += 2
-        full_size = qr.size_pcb * (1 if qr.size_units == 'millimeters' else 25.4)
-        center = round(full_size/2, 2)
-        size_rect = round(full_size/size, 2)
-        # Replace any instance
-        name = name.lower()
-        for m in GS.get_modules():
-            id = m.GetFPID()
-            m_name = ('{}:{}'.format(id.GetLibNickname(), id.GetLibItemName())).lower()
-            if name == m_name:
-                ref = m.GetReference()
-                logger.debug('- Updating '+ref)
-                # Remove all the drawings
-                for gi in m.GraphicalItems():
-                    if gi.GetClass() == 'MGRAPHIC':
-                        m.Remove(gi)
-                # Add the updated version
-                self.qr_draw_fp_memory(m, size, size_rect, center, qrc, qr.pcb_negative, GS.board.GetLayerID(qr.layer))
+        qrc, size, full_size, center, size_rect = compute_size(qr, is_sch=False)
+        # Remove old drawing
+        sexp[:] = list(filter(lambda s: not is_symbol('fp_poly', s), sexp))
+        # Add the new drawings
+        sexp.extend(self.qr_draw_fp(size, size_rect, center, qrc, qr.pcb_negative, qr.layer, do_sep=False))
 
-    def load_k6_sheet(self, fname):
+    def update_footprints(self, known_qrs):
+        # Replace known QRs in the PCB
+        updated = False
+        pcb = self.load_sexp_file(GS.pcb_file)
+        for iter in [sexp_iter(pcb, 'kicad_pcb/module'), sexp_iter(pcb, 'kicad_pcb/footprint')]:
+            for s in iter:
+                if len(s) < 2:
+                    continue
+                if isinstance(s[1], Symbol):
+                    name = s[1].value().lower()
+                else:
+                    name = s[1].lower()
+                if name in known_qrs:
+                    updated = True
+                    self.update_footprint(name, s, known_qrs[name])
+        # Save the resulting PCB
+        if updated:
+            # Make it readable
+            separated = make_separated(pcb[0])
+            # Save it to a temporal
+            with NamedTemporaryFile(mode='wt', suffix='.kicad_pcb', delete=False) as f:
+                logger.debug('- Saving updated PCB to: '+f.name)
+                f.write(dumps(separated))
+                f.write('\n')
+                tmp_pcb = f.name
+            # Reload it
+            GS.board = None
+            logger.debug('- Loading the temporal PCB')
+            load_board(tmp_pcb)
+            # Create a back-up and save it in the original place
+            logger.debug('- Replacing the old PCB')
+            os.remove(tmp_pcb)
+            bkp = GS.pcb_file+'-bak'
+            if os.path.isfile(bkp):
+                os.remove(bkp)
+            os.rename(GS.pcb_file, bkp)
+            prl = None
+            if GS.ki6():
+                # KiCad 6 is destroying the PRL ...
+                prl_name = GS.pcb_no_ext+'.kicad_prl'
+                if os.path.isfile(prl_name):
+                    with open(prl_name, 'rt') as f:
+                        prl = f.read()
+            GS.board.Save(GS.pcb_file)
+            if prl:
+                with open(prl_name, 'wt') as f:
+                    f.write(prl)
+
+    def update_symbol(self, name, c_name, sexp, qr):
+        logger.debug('- Updating QR symbol: '+name)
+        # Compute the size
+        qrc, size, full_size, center, size_rect = compute_size(qr)
+        # Create the new drawings
+        sub_unit_name = c_name+"_1_1"
+        sub_unit_sexp = [Symbol('symbol'), sub_unit_name]
+        sub_unit_sexp.extend(self.qr_draw_sym(size, size_rect, center, qrc, do_sep=False))
+        # Replace the old one
+        for s in sexp_iter(sexp, 'symbol'):
+            if len(s) >= 2 and isinstance(s[1], str) and s[1] == sub_unit_name:
+                s[:] = list(sub_unit_sexp)
+
+    def update_symbols(self, fname, sexp, known_qrs):
+        # Replace known QRs in the Schematic
+        updated = False
+        for s in sexp_iter(sexp, 'kicad_sch/lib_symbols/symbol'):
+            if len(s) < 2 or not isinstance(s[1], str):
+                continue
+            name = s[1].lower()
+            c_name = s[1].split(':')[1]
+            if name in known_qrs:
+                updated = True
+                self.update_symbol(name, c_name, s, known_qrs[name])
+        # Save the resulting Schematic
+        if updated:
+            # Make it readable
+            separated = make_separated(sexp[0])
+            # Create a back-up and save it in the original place
+            logger.debug('- Replacing the old SCH')
+            bkp = fname+'-bak'
+            if os.path.isfile(bkp):
+                os.remove(bkp)
+            os.rename(fname, bkp)
+            with open(fname, 'wt') as f:
+                f.write(dumps(separated))
+                f.write('\n')
+
+    def load_sexp_file(self, fname):
         with open(fname, 'rt') as fh:
             error = None
             try:
-                sch = load(fh)
+                ki_file = load(fh)
             except SExpData as e:
                 error = str(e)
             if error:
                 raise KiPlotConfigurationError(error)
-        return sch
+        return ki_file
 
     def load_k6_sheets(self, fname, sheets={}):
-        assert GS.sch_file is not None
-        sheet = self.load_k6_sheet(fname)
+        logger.debug('- Loading '+fname)
+        sheet = self.load_sexp_file(fname)
         sheets[fname] = sheet
-        if not isinstance(sheet, list) or sheet[0].value() != 'kicad_sch':
+        if not is_symbol('kicad_sch', sheet[0]):
             raise KiPlotConfigurationError('No kicad_sch signature in '+fname)
-        for e in sheet[1:]:
-            if isinstance(e, list) and isinstance(e[0], Symbol) and e[0].value == 'sheet':
-                logger.error(e)
+        path = os.path.dirname(fname)
+        for s in sexp_iter(sheet, 'kicad_sch/sheet'):
+            sub_name = None
+            for prop in sexp_iter(s, 'property'):
+                if len(prop) > 2 and isinstance(prop[1], str) and isinstance(prop[2], str) and prop[1] == 'Sheet file':
+                    sub_name = prop[2]
+            if sub_name is not None:
+                sub_name = os.path.abspath(os.path.join(path, sub_name))
+                if sub_name not in sheets:
+                    self.load_k6_sheets(os.path.join(path, sub_name), sheets)
+        return sheets
 
     def run(self, output):
         if self.use_sch_dir:
@@ -389,28 +462,34 @@ class QR_LibOptions(BaseOptions):
             self.footprint(dir_pretty, qr)
         # Update the files
         if self._parent._update_mode:
-            # PCB
-            assert GS.board is not None
+            logger.debug('Updating the PCB and schematic')
+            # Create a dict with the known QRs
+            known_qrs = {}
             for qr in self.qrs:
-                self.update_footprint(self.lib+':'+qr.name, qr)
-            bkp = GS.pcb_file+'-bak'
-            if os.path.isfile(bkp):
-                os.remove(bkp)
-            os.rename(GS.pcb_file, bkp)
-            GS.board.Save(GS.pcb_file)
+                name = self.lib+':'+qr.name
+                known_qrs[name.lower()] = qr
+            # TODO: Update fields
+            # PCB
+            self.update_footprints(known_qrs)
             # Schematic
             if GS.ki6():
                 # KiCad 5 reads the lib, but KiCad 6 is more like the PCB
-                # sheets = self.load_k6_sheets(GS.sch_file)
-                pass
-                # TODO: KiCad 6 is crashing when we delete the graphics
+                assert GS.sch_file is not None
+                sheets = self.load_k6_sheets(GS.sch_file)
+                for k, v in sheets.items():
+                    self.update_symbols(k, v, known_qrs)
 
 
 @output_class
 class QR_Lib(BaseOutput):  # noqa: F821
     """ QR_Lib
         Generates a QR code symbol and footprint.
-        This output creates a library containing a symbol and footprint for a QR code. """
+        This output creates a library containing a symbol and footprint for a QR code.
+        To refresh the generated symbols and footprints use the `update_qr` preflight.
+        The workflow is as follows:
+        - Create the symbol and footprints using this output.
+        - Use them in your schematic and PCB.
+        - To keep them updated add the `update_qr` preflight """
     def __init__(self):
         super().__init__()
         with document:

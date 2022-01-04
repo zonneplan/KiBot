@@ -980,5 +980,12 @@ def test_qr_lib_1(test_dir):
         bogus = os.path.join(bd, 'qr_test/'+f+'.bogus')
         if os.path.isfile(bogus):
             shutil.copy2(bogus, os.path.join(bd, 'qr_test/'+f))
-    os.remove(os.path.join(bd, 'qr_test/qr_test.kicad_pcb-bak'))
-    os.remove(os.path.join(bd, 'qr_test/qr_test.pro-bak'))
+    if context.ki5():
+        os.remove(os.path.join(bd, 'qr_test/qr_test.pro-bak'))
+    else:
+        os.remove(os.path.join(bd, 'qr_test/qr_test.kicad_sch-bak'))
+        os.remove(os.path.join(bd, 'qr_test/sub_1.kicad_sch-bak'))
+    bkp = os.path.join(bd, 'qr_test/qr_test.kicad_pcb-bak')
+    if os.path.isfile(bkp):
+        # Not always there, pcbnew_do can remove it
+        os.remove(bkp)

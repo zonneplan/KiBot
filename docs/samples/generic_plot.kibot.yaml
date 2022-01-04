@@ -1133,6 +1133,11 @@ outputs:
 
   # QR_Lib:
   # This output creates a library containing a symbol and footprint for a QR code.
+  # To refresh the generated symbols and footprints use the `update_qr` preflight.
+  # The workflow is as follows:
+  # - Create the symbol and footprints using this output.
+  # - Use them in your schematic and PCB.
+  # - To keep them updated add the `update_qr` preflight
   - name: 'qr_lib_example'
     comment: 'Generates a QR code symbol and footprint.'
     type: 'qr_lib'

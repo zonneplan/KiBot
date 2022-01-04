@@ -1678,6 +1678,11 @@ Next time you need this list just use an alias, like this:
   * Type: `qr_lib`
   * Description: Generates a QR code symbol and footprint.
                  This output creates a library containing a symbol and footprint for a QR code.
+                 To refresh the generated symbols and footprints use the `update_qr` preflight.
+                 The workflow is as follows:
+                 - Create the symbol and footprints using this output.
+                 - Use them in your schematic and PCB.
+                 - To keep them updated add the `update_qr` preflight
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.

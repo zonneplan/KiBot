@@ -1604,7 +1604,7 @@ class SchematicV6(Schematic):
         with open(fname, 'rt') as fh:
             error = None
             try:
-                sch = load(fh)
+                sch = load(fh)[0]
             except SExpData as e:
                 error = str(e)
             if error:

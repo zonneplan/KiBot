@@ -41,6 +41,11 @@ See the source code for more information.
 # Copyright (c) 2012 Takafumi Arakaki
 # All rights reserved.
 
+# Copyright (c) 2022 Salvador E. Tropea
+# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# - Adapted to KiCad
+# - Added sexp_iter
+
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
@@ -250,7 +255,7 @@ def loads(string, **kwds):
     obj = parse(string, **kwds)
     if len(obj) != 1:
         raise SExpData("Not an s-expression file")
-    return obj[0]
+    return obj
 
 
 def dump(obj, filelike, **kwds):
@@ -707,3 +712,18 @@ def parse(string, **kwds):
 
     """
     return Parser(string, **kwds).parse()
+
+
+def sexp_iter(vect, path):
+    """
+    Returns an iterator to filter all the elements described in the path.
+    """
+    elems = path.split('/')
+    total = len(elems)
+    for i, e in enumerate(elems):
+        iter = filter(lambda x: isinstance(x, list) and isinstance(x[0], Symbol) and x[0].value() == e, vect)
+        if i == total-1:
+            return iter
+        vect = next(iter, None)
+        if vect is None:
+            return None
