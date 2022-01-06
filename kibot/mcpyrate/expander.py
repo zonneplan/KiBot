@@ -51,15 +51,17 @@ __all__ = ["namemacro", "isnamemacro",
            "MacroExpander", "MacroCollector",
            "expand_macros", "find_macros"]
 
-from ast import (Name, Subscript, Tuple, Import, alias, AST, Assign, Store, Constant,
-                 Lambda, arguments, Call, copy_location, iter_fields, NodeVisitor)
+import sys
+from ast import (AST, Assign, Call, Starred, Constant, Import, Lambda, Name,
+                 NodeVisitor, Store, Subscript, Tuple, alias, arguments,
+                 copy_location, iter_fields)
 from copy import copy
 from warnings import warn_explicit
 
-from .core import BaseMacroExpander, global_postprocess, Done
-from .coreutils import ismacroimport, get_macros
+from .core import BaseMacroExpander, Done, global_postprocess
+from .coreutils import get_macros, ismacroimport
 from .unparser import unparse_with_fallbacks
-from .utils import format_macrofunction
+from .utils import format_location, format_macrofunction
 
 
 def namemacro(function):
@@ -94,17 +96,43 @@ def isparametricmacro(function):
 
 # --------------------------------------------------------------------------------
 
-def destructure_candidate(tree):
+def destructure_candidate(tree, *, filename, _validate_call_syntax=True):
     """Destructure a macro call candidate AST, `macroname` or `macroname[arg0, ...]`."""
     if type(tree) is Name:
         return tree.id, []
     elif type(tree) is Subscript and type(tree.value) is Name:
-        macroargs = tree.slice.value
+        if sys.version_info >= (3, 9, 0):  # Python 3.9+: no ast.Index wrapper
+            macroargs = tree.slice
+        else:
+            macroargs = tree.slice.value
+
         if type(macroargs) is Tuple:  # [a0, a1, ...]
             macroargs = macroargs.elts
         else:  # anything that doesn't have at least one comma at the top level
             macroargs = [macroargs]
         return tree.value.id, macroargs
+    # Up to Python 3.8, decorators cannot be subscripted. This is a problem for
+    # decorator macros that would like to have macro arguments.
+    #
+    # To work around this, we allow passing macro arguments also using parentheses
+    # (like in `macropy`). Note macro arguments must still be passed positionally!
+    #
+    # For uniformity, we limit to a subset of the function call syntax that
+    # remains valid if you replace the parentheses with brackets in Python 3.9.
+    elif type(tree) is Call and type(tree.func) is Name and not tree.keywords:
+        # `MacroExpander._detect_macro_items` needs to perform a preliminary check
+        # without full validation when it is trying to detect which `with` items
+        # and decorators are in fact macro invocations.
+        if _validate_call_syntax:
+            if not tree.args:  # reject empty args
+                approx_sourcecode = unparse_with_fallbacks(tree, debug=True, color=True)
+                loc = format_location(filename, tree, approx_sourcecode)
+                raise SyntaxError(f"{loc}\nmust provide at least one argument when passing macro arguments")
+            if any(type(arg) is Starred for arg in tree.args):  # reject starred items
+                approx_sourcecode = unparse_with_fallbacks(tree, debug=True, color=True)
+                loc = format_location(filename, tree, approx_sourcecode)
+                raise SyntaxError(f"{loc}\nunpacking (splatting) not supported in macro argument position")
+        return tree.func.id, tree.args
     return None, None  # not a macro invocation
 
 
@@ -115,13 +143,13 @@ class MacroExpander(BaseMacroExpander):
         """Shorthand to check `destructure_candidate` output.
 
         Return whether that output is a macro call to a macro (of invocation
-        type `syntax`) bound in this expander.
+        type `syntax`) bound in this expander or globally.
         """
         if not (macroname and self.isbound(macroname)):
             return False
         if syntax == 'name':
-            return isnamemacro(self.bindings[macroname])
-        return not macroargs or isparametricmacro(self.bindings[macroname])
+            return isnamemacro(self.isbound(macroname))
+        return not macroargs or isparametricmacro(self.isbound(macroname))
 
     def visit_Subscript(self, subscript):
         """Detect an expression (expr) macro invocation.
@@ -138,10 +166,16 @@ class MacroExpander(BaseMacroExpander):
         # because things like `(some_expr_macro[tree])[subscript_expression]` are valid. This
         # is actually exploited by `h`, as in `q[h[target_macro][tree_for_target_macro]]`.
         candidate = subscript.value
-        macroname, macroargs = destructure_candidate(candidate)
+        macroname, macroargs = destructure_candidate(candidate, filename=self.filename,
+                                                     _validate_call_syntax=False)
         if self.ismacrocall(macroname, macroargs, "expr"):
+            # Now we know it's a macro invocation, so we can validate the parenthesis syntax to pass arguments.
+            macroname, macroargs = destructure_candidate(candidate, filename=self.filename)
             kw = {"args": macroargs}
-            tree = subscript.slice.value
+            if sys.version_info >= (3, 9, 0):  # Python 3.9+: no ast.Index wrapper
+                tree = subscript.slice
+            else:
+                tree = subscript.slice.value
             sourcecode = unparse_with_fallbacks(subscript, debug=True, color=True, expander=self)
             new_tree = self.expand("expr", subscript, macroname, tree, sourcecode=sourcecode, kw=kw)
             if new_tree is None:
@@ -190,13 +224,35 @@ class MacroExpander(BaseMacroExpander):
         do anything it wants to its input tree. Any remaining block macro
         invocations are attached to the `With` node, so if that is removed,
         they will be skipped.
+
+        **NOTE**: At least up to v3.3.0, if there are three or more macro
+        invocations in the same `with` statement::
+
+            with macro1, macro2, macro3:
+                ...
+
+        this is equivalent with::
+
+            with macro1:
+                with macro2, macro3:
+                    ...
+
+        and **not** equivalent with::
+
+            with macro1:
+                with macro2:
+                    with macro3:
+                        ...
+
+        which may be important if `macro1` needs to scan for invocations of
+        `macro2` and `macro3` to work together with them.
         """
         macros, others = self._detect_macro_items(withstmt.items, "block")
         if not macros:
             return self.generic_visit(withstmt)
         with_item = macros[0]
         candidate = with_item.context_expr
-        macroname, macroargs = destructure_candidate(candidate)
+        macroname, macroargs = destructure_candidate(candidate, filename=self.filename)
 
         # let the source code and `invocation` see also the withitem we pop away
         sourcecode = unparse_with_fallbacks(withstmt, debug=True, color=True, expander=self)
@@ -250,7 +306,7 @@ class MacroExpander(BaseMacroExpander):
         if not macros:
             return self.generic_visit(decorated)
         innermost_macro = macros[-1]
-        macroname, macroargs = destructure_candidate(innermost_macro)
+        macroname, macroargs = destructure_candidate(innermost_macro, filename=self.filename)
 
         # let the source code and `invocation` see also the decorator we pop away
         sourcecode = unparse_with_fallbacks(decorated, debug=True, color=True, expander=self)
@@ -279,7 +335,8 @@ class MacroExpander(BaseMacroExpander):
                 candidate = item.context_expr
             else:
                 candidate = item
-            macroname, macroargs = destructure_candidate(candidate)
+            macroname, macroargs = destructure_candidate(candidate, filename=self.filename,
+                                                         _validate_call_syntax=False)
 
             # warn about likely mistake
             if (macroname and self.isbound(macroname) and
@@ -350,7 +407,11 @@ class MacroCollector(NodeVisitor):
     Sister class of the actual `MacroExpander`, mirroring its syntax detection.
     """
     def __init__(self, expander):
-        """`expander`: a `MacroExpander` instance to query macro bindings from."""
+        """`expander`: a `MacroExpander` instance to query macro bindings from.
+
+        `filename`: full path to `.py` file being expanded, for error reporting.
+                    Only used for errors during `destructure_candidate`.
+        """
         self.expander = expander
         self.clear()
 
@@ -379,7 +440,7 @@ class MacroCollector(NodeVisitor):
 
     def visit_Subscript(self, subscript):
         candidate = subscript.value
-        macroname, macroargs = destructure_candidate(candidate)
+        macroname, macroargs = destructure_candidate(candidate, filename=self.expander.filename)
         if self.expander.ismacrocall(macroname, macroargs, "expr"):
             key = (macroname, "expr")
             if key not in self._seen:
@@ -388,7 +449,10 @@ class MacroCollector(NodeVisitor):
             self.visit(macroargs)
             # Don't `self.generic_visit(tree)`; that'll incorrectly detect
             # the name part as an identifier macro. Recurse only in the expr.
-            self.visit(subscript.slice.value)
+            if sys.version_info >= (3, 9, 0):  # Python 3.9+: no ast.Index wrapper
+                self.visit(subscript.slice)
+            else:
+                self.visit(subscript.slice.value)
         else:
             self.generic_visit(subscript)
 
@@ -397,7 +461,7 @@ class MacroCollector(NodeVisitor):
         if macros:
             for with_item in macros:
                 candidate = with_item.context_expr
-                macroname, macroargs = destructure_candidate(candidate)
+                macroname, macroargs = destructure_candidate(candidate, filename=self.expander.filename)
                 key = (macroname, "block")
                 if key not in self._seen:
                     self.collected.append(key)
@@ -419,7 +483,7 @@ class MacroCollector(NodeVisitor):
         macros, others = self.expander._detect_macro_items(decorated.decorator_list, "decorator")
         if macros:
             for macro in macros:
-                macroname, macroargs = destructure_candidate(macro)
+                macroname, macroargs = destructure_candidate(macro, filename=self.expander.filename)
                 key = (macroname, "decorator")
                 if key not in self._seen:
                     self.collected.append(key)

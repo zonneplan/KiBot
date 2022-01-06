@@ -12,18 +12,20 @@ We also provide a public API to compile and run macro-enabled code at run time.
 
 __all__ = ["expand", "compile",
            "singlephase_expand",
-           "run", "create_module"]
+           "run", "create_module",
+           "temporary_module"]
 
 import ast
 import builtins
+from contextlib import contextmanager
 import importlib.util
 import sys
-from types import ModuleType, CodeType
+from types import CodeType, ModuleType
 
-from .dialects import DialectExpander
-from .expander import find_macros, expand_macros
-from .markers import check_no_markers_remaining
 from . import multiphase
+from .dialects import DialectExpander
+from .expander import expand_macros, find_macros
+from .markers import check_no_markers_remaining
 from .unparser import unparse
 from .utils import gensym, getdocstring
 
@@ -48,9 +50,8 @@ def expand(source, filename, optimize=-1, self_module=None):
 
     `filename`:     Full path to the `.py` file being compiled.
 
-    `optimize`:     Passed to Python's built-in `compile` function, as well as to
-                    the multi-phase compiler. The multi-phase compiler uses the
-                    `optimize` setting for the temporary higher-phase modules.
+    `optimize`:     Passed to the multi-phase compiler. It uses the `optimize`
+                    setting for the temporary higher-phase modules.
 
     `self_module`:  Absolute dotted module name of the module being compiled.
                     Needed for modules that request multi-phase compilation.
@@ -192,6 +193,8 @@ def compile(source, filename, optimize=-1, self_module=None):
     that calls `expand`, and then passes the result to Python's built-in `compile`.
     The main reason for its existence is to provide a near drop-in replacement for
     the built-in `compile` for macro-enabled input.
+
+    The `optimize` parameter is passed to Python's built-in `compile` function.
 
     Currently the API differs from the built-in `compile` in that:
 
@@ -542,3 +545,42 @@ def create_module(dotted_name=None, filename=None, *, update_parent=True):
 
     sys.modules[dotted_name] = module
     return module
+
+
+@contextmanager
+def temporary_module(dotted_name=None, filename=None, *, update_parent=True):
+    """Context manager. Create and destroy a temporary module.
+
+    Usage::
+
+        with temporary_module(name, filename) as module:
+            ...
+
+    Arguments are passed to `create_module`. The created module is
+    automatically inserted to `sys.modules`, and then assigned to
+    the as-part.
+
+    When the context exits, the temporary module is removed from
+    `sys.modules`. If the `update_parent` optional kwarg is `True`,
+    it is also removed from the parent package's namespace, for
+    symmetry.
+
+    This is useful for sandboxed testing of macros, because the
+    temporary modules will not pollute `sys.modules` beyond their
+    useful lifetime.
+    """
+    try:
+        module = create_module(dotted_name, filename, update_parent=update_parent)
+        yield module
+    finally:
+        try:
+            del sys.modules[dotted_name]
+
+            # The standard importer doesn't do this, but it seems nice for symmetry,
+            # considering the use case.
+            if update_parent and dotted_name.find(".") != -1:
+                packagename, finalcomponent = dotted_name.rsplit(".", maxsplit=1)
+                package = sys.modules.get(packagename, None)
+                delattr(package, finalcomponent)
+        except BaseException:
+            pass

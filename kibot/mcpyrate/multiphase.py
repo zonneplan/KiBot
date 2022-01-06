@@ -21,11 +21,11 @@ because Racket's phase level tower is the system that most resembles this one.
 __all__ = ["phase", "ismultiphase", "detect_highest_phase", "isdebug", "multiphase_expand"]
 
 import ast
-from copy import copy, deepcopy
 import sys
+from copy import copy, deepcopy
 
-from .colorizer import setcolor, ColorScheme
 from . import compiler
+from .colorizer import ColorScheme, setcolor
 from .coreutils import ismacroimport
 from .expander import destructure_candidate, namemacro, parametricmacro
 from .unparser import unparse_with_fallbacks
@@ -34,7 +34,7 @@ from .utils import getdocstring
 # --------------------------------------------------------------------------------
 # Private utilities.
 
-def iswithphase(stmt):
+def iswithphase(stmt, *, filename):
     """Check if AST node `stmt` is a `with phase[n]`, where `n >= 1` is an integer.
 
     Return `n`, or `False`.
@@ -52,7 +52,7 @@ def iswithphase(stmt):
     if type(candidate) is not ast.Subscript:
         return False
 
-    macroname, macroargs = destructure_candidate(candidate)
+    macroname, macroargs = destructure_candidate(candidate, filename=filename)
     if macroname != "phase":
         return False
     if not macroargs or len(macroargs) != 1:  # exactly one macro-argument
@@ -71,8 +71,11 @@ def iswithphase(stmt):
 
     return n
 
+def isfutureimport(tree):
+    """Return whether `tree` is a `from __future__ import ...`."""
+    return isinstance(tree, ast.ImportFrom) and tree.module == "__future__"
 
-def extract_phase(tree, *, phase=0):
+def extract_phase(tree, *, filename, phase=0):
     """Split `tree` into given `phase` and remaining parts.
 
     Primarily meant to be called with `tree` the AST of a module that
@@ -88,7 +91,8 @@ def extract_phase(tree, *, phase=0):
 
     The lifted AST is deep-copied to minimize confusion, since it may get
     edited by macros during macro expansion. (This guarantees that
-    macro-expanding it, in either phase, gives the same result.)
+    macro-expanding it, in either phase, gives the same result,
+    up to and including any side effects of the macros.)
     """
     if not isinstance(phase, int):
         raise TypeError(f"`phase` must be `int`, got {type(phase)} with value {repr(phase)}")
@@ -99,7 +103,7 @@ def extract_phase(tree, *, phase=0):
 
     remaining = []
     def lift(withphase):  # Lift a `with phase[n]` code block to phase `n - 1`.
-        original_phase = iswithphase(withphase)
+        original_phase = iswithphase(withphase, filename=filename)
         assert original_phase
         if original_phase == 1:
             # Lifting to phase 0. Drop the `with phase` wrapper.
@@ -107,7 +111,11 @@ def extract_phase(tree, *, phase=0):
         else:
             # Lifting to phase >= 1. Decrease the `n` in `with phase[n]`
             # by one, so the block gets processed again in the next phase.
-            macroarg = withphase.items[0].context_expr.slice.value
+            if sys.version_info >= (3, 9, 0):  # Python 3.9+: no ast.Index wrapper
+                macroarg = withphase.items[0].context_expr.slice
+            else:
+                macroarg = withphase.items[0].context_expr.slice.value
+
             if type(macroarg) is ast.Constant:
                 macroarg.value -= 1
             elif type(macroarg) is ast.Num:  # TODO: Python 3.8: remove ast.Num
@@ -116,16 +124,52 @@ def extract_phase(tree, *, phase=0):
 
     thisphase = []
     for stmt in tree.body:
-        if iswithphase(stmt) == phase:
+        if iswithphase(stmt, filename=filename) == phase:
             thisphase.extend(stmt.body)
             lift(stmt)
         else:
+            # Issue #28: `__future__` imports.
+            #
+            # `__future__` imports should affect all phases, because they change
+            # the semantics of the module they appear in. Essentially, they are
+            # a kind of dialect defined by the Python core itself.
+            if isfutureimport(stmt):
+                thisphase.append(stmt)
             remaining.append(stmt)
     tree.body[:] = remaining
 
     newmodule = copy(tree)
     newmodule.body = thisphase
     return newmodule
+
+def split_futureimports(body):
+    """Split `body` into `__future__` imports and everything else.
+
+    `body`: list of `ast.stmt`, the suite representing a module top level.
+
+    Returns `[future_imports, the_rest]`.
+    """
+    k = -1  # ensure `k` gets defined even if `body` is empty
+    for k, bstmt in enumerate(body):
+        if not isfutureimport(bstmt):
+            break
+    if k >= 0:
+        return body[:k], body[k:]
+    return [], body
+
+def inject_after_futureimports(stmt, body):
+    """Inject a statement into `body` after `__future__` imports.
+
+    `body`: list of `ast.stmt`, the suite representing a module top level.
+    `stmt`: `ast.stmt`, the statement to inject.
+    """
+    if getdocstring(body):
+        docstring, *body = body
+        futureimports, body = split_futureimports(body)
+        return [docstring] + futureimports + [stmt] + body
+    else:  # no docstring
+        futureimports, body = split_futureimports(body)
+        return futureimports + [stmt] + body
 
 # --------------------------------------------------------------------------------
 # Public utilities.
@@ -237,7 +281,7 @@ def ismultiphase(tree):
     return False
 
 
-def detect_highest_phase(tree):
+def detect_highest_phase(tree, *, filename):
     """Scan a module body for `with phase[n]` statements and return highest `n`, or `None`.
 
     Primarily meant to be called with `tree` the AST of a module that
@@ -248,7 +292,7 @@ def detect_highest_phase(tree):
     """
     maxn = None
     for stmt in tree.body:
-        n = iswithphase(stmt)
+        n = iswithphase(stmt, filename=filename)
         if maxn is None or (n is not None and n > maxn):
             maxn = n
     return maxn
@@ -336,7 +380,7 @@ def multiphase_expand(tree, *, filename, self_module, dexpander=None, _optimize=
 
     Return value is the final phase-0 `tree`, after macro expansion.
     """
-    n = detect_highest_phase(tree)
+    n = detect_highest_phase(tree, filename=filename)
     debug = isdebug(tree)
     c, CS = setcolor, ColorScheme
 
@@ -350,7 +394,7 @@ def multiphase_expand(tree, *, filename, self_module, dexpander=None, _optimize=
         original_module = None
 
     if debug:
-        print(f"{c(CS.HEADING)}**Multi-phase compiling module {c(CS.TREEID)}'{self_module}' ({c(CS.SOURCEFILENAME)}{filename}{c(CS.TREEID)}){c()}", file=sys.stderr)
+        print(f"{c(CS.HEADING1)}**Multi-phase compiling module {c(CS.HEADING2)}'{self_module}' ({c(CS.SOURCEFILENAME)}{filename}{c(CS.HEADING2)}){c()}", file=sys.stderr)
 
     # Inject temporary module into `sys.modules`.
     #
@@ -366,20 +410,18 @@ def multiphase_expand(tree, *, filename, self_module, dexpander=None, _optimize=
 
     for k in range(n, -1, -1):  # phase 0 is what a regular compile would do
         if debug:
-            print(f"{c(CS.HEADING)}**AST for {c(CS.ATTENTION)}PHASE {k}{c(CS.HEADING)} of module {c(CS.TREEID)}'{self_module}' ({c(CS.SOURCEFILENAME)}{filename}{c(CS.TREEID)}){c()}", file=sys.stderr)
+            print(f"{c(CS.HEADING1)}**AST for {c(CS.ATTENTION)}PHASE {k}{c(CS.HEADING1)} of module {c(CS.HEADING2)}'{self_module}' ({c(CS.SOURCEFILENAME)}{filename}{c(CS.HEADING2)}){c()}", file=sys.stderr)
 
-        phase_k_tree = extract_phase(tree, phase=k)
+        phase_k_tree = extract_phase(tree, filename=filename, phase=k)
         if phase_k_tree.body:
             # inject `__phase__ = k` for introspection (at run time of the phase being compiled now)
             tgt = ast.Name(id="__phase__", ctx=ast.Store(), lineno=1, col_offset=1)
             val = ast.Constant(value=k, lineno=1, col_offset=13)
             assignment = ast.Assign(targets=[tgt], value=val, lineno=1, col_offset=1)
 
-            if getdocstring(phase_k_tree.body):
-                docstring, *body = phase_k_tree.body
-                phase_k_tree.body = [docstring, assignment] + body
-            else:  # no docstring
-                phase_k_tree.body = [assignment] + phase_k_tree.body
+            # Issue #28: `__future__` imports.
+            # They must be the first statements after the module docstring, if any. So we inject after them.
+            phase_k_tree.body = inject_after_futureimports(assignment, phase_k_tree.body)
 
             if debug:
                 print(unparse_with_fallbacks(phase_k_tree, debug=True, color=True), file=sys.stderr)

@@ -10,13 +10,25 @@ __all__ = ["setcolor", "colorize", "ColorScheme",
            "Fore", "Back", "Style"]
 
 try:
-    from colorama import init as colorama_init, Fore, Back, Style
+    from colorama import Back, Fore, Style  # type: ignore[import]
+    from colorama import init as colorama_init  # type: ignore[import]
     colorama_init()
 except ImportError:  # pragma: no cover
     # The `ansi` module is a slightly modified, POSIX-only,
     # vendored version from Colorama. Useful e.g. in Docker
     # images that don't have the library available.
     from .ansi import Fore, Back, Style  # noqa: F811
+
+# TODO: Get rid of this hack if Colorama adds these styles later.
+# Inject some styles missing from Colorama 0.4.4
+_additional_styles = (("ITALIC", "\33[3m"),
+                      ("URL", "\33[4m"),  # underline plus possibly a special color (depends on terminal app)
+                      ("BLINK", "\33[5m"),
+                      ("BLINK2", "\33[6m"))  # same effect as BLINK?
+for _name, _value in _additional_styles:
+    if not hasattr(Style, _name):
+        setattr(Style, _name, _value)
+del _name, _value
 
 from .bunch import Bunch
 
@@ -140,17 +152,15 @@ class ColorScheme(Bunch):
         # ------------------------------------------------------------
         # format_bindings, step_expansion, StepExpansion
 
-        self.HEADING = (Style.BRIGHT, Fore.LIGHTBLUE_EX)
+        self.HEADING1 = (Style.BRIGHT, Fore.LIGHTBLUE_EX)  # main heading
+        self.HEADING2 = Fore.LIGHTBLUE_EX  # subheading (filenames, tree ids, ...)
         self.SOURCEFILENAME = Style.BRIGHT
 
         # format_bindings
         self.GREYEDOUT = Style.DIM  # if no bindings
 
-        # step_expansion
-        self.TREEID = Fore.LIGHTBLUE_EX
-
         # StepExpansion
-        self.ATTENTION = (Style.BRIGHT, Fore.GREEN)  # "DialectExpander debug mode"
+        self.ATTENTION = (Style.BRIGHT, Fore.GREEN)  # "DialectExpander debug mode", "PHASE 0"
         self.TRANSFORMERKIND = (Style.BRIGHT, Fore.GREEN)  # "source", "AST"
         self.DIALECTTRANSFORMERNAME = (Style.BRIGHT, Fore.YELLOW)
 
@@ -160,4 +170,11 @@ class ColorScheme(Bunch):
         self.NODETYPE = (Style.BRIGHT, Fore.LIGHTBLUE_EX)
         self.FIELDNAME = Fore.YELLOW
         self.BAREVALUE = Fore.GREEN
-ColorScheme = ColorScheme()
+
+        # ------------------------------------------------------------
+        # runtests
+        self.TESTHEADING = self.HEADING1
+        self.TESTPASS = (Style.BRIGHT, Fore.GREEN)
+        self.TESTFAIL = (Style.BRIGHT, Fore.RED)
+        self.TESTERROR = (Style.BRIGHT, Fore.YELLOW)
+ColorScheme = ColorScheme()  # type: ignore[assignment, misc]

@@ -4,7 +4,7 @@
 __all__ = ["resolve_package", "relativize", "match_syspath",
            "ismacroimport", "get_macros"]
 
-from ast import ImportFrom
+import ast
 import importlib
 import importlib.util
 import os
@@ -13,6 +13,7 @@ import sys
 
 from .unparser import unparse_with_fallbacks
 from .utils import format_location
+
 
 def resolve_package(filename):  # TODO: for now, `guess_package`, really. Check the docs again.
     """Resolve absolute Python package name for .py source file `filename`.
@@ -79,7 +80,7 @@ def ismacroimport(statement, magicname='macros'):
 
     where "macros" is the literal string given as `magicname`.
     """
-    if isinstance(statement, ImportFrom):
+    if isinstance(statement, ast.ImportFrom):
         firstimport = statement.names[0]
         if firstimport.name == magicname and firstimport.asname is None:
             return True
@@ -146,6 +147,8 @@ def get_macros(macroimport, *, filename, reload=False, allow_asname=True, self_m
         try:
             module = sys.modules[module_absname]
         except KeyError:
+            approx_sourcecode = unparse_with_fallbacks(macroimport, debug=True, color=True)
+            loc = format_location(filename, macroimport, approx_sourcecode)
             raise ModuleNotFoundError(f"{loc}\nModule {module_absname} not found in `sys.modules`")
 
     # regular macro-import
@@ -165,13 +168,76 @@ def get_macros(macroimport, *, filename, reload=False, allow_asname=True, self_m
     bindings = {}
     for name in macroimport.names[1:]:
         if not allow_asname and name.asname is not None:
+            approx_sourcecode = unparse_with_fallbacks(macroimport, debug=True, color=True)
+            loc = format_location(filename, macroimport, approx_sourcecode)
             raise ImportError(f"{loc}\nThis expander (see traceback) does not support as-naming macro-imports.")
 
         try:
-            bindings[name.asname or name.name] = getattr(module, name.name)
+            macro = getattr(module, name.name)
         except AttributeError as err:
             approx_sourcecode = unparse_with_fallbacks(macroimport, debug=True, color=True)
             loc = format_location(filename, macroimport, approx_sourcecode)
             raise ImportError(f"{loc}\ncannot import name '{name.name}' from module {module_absname}") from err
 
+        if not callable(macro):
+            approx_sourcecode = unparse_with_fallbacks(macroimport, debug=True, color=True)
+            loc = format_location(filename, macroimport, approx_sourcecode)
+            raise ImportError(f"{loc}\nname '{name.name}' in module {module_absname} is not a callable object (got {type(macro)} with value {repr(macro)}), so it cannot be imported as a macro.")
+
+        bindings[name.asname or name.name] = macro
+
     return module_absname, bindings
+
+# --------------------------------------------------------------------------------
+
+def _mcpyrate_attr(dotted_name, *, force_import=False):
+    """Create an AST that, when compiled and run, looks up an attribute of `mcpyrate`.
+
+    `dotted_name` is an `str`. Examples::
+
+        _mcpyrate_attr("dump")  # -> mcpyrate.dump
+        _mcpyrate_attr("quotes.lookup_value")  # -> mcpyrate.quotes.lookup_value
+
+    If `force_import` is `True`, use the builtin `__import__` function to
+    first import the `mcpyrate` module whose attribute will be accessed.
+    This is useful when the eventual use site might not import any `mcpyrate`
+    modules.
+    """
+    if not isinstance(dotted_name, str):
+        raise TypeError(f"dotted_name name must be str; got {type(dotted_name)} with value {repr(dotted_name)}")
+
+    if dotted_name.find(".") != -1:
+        submodule_dotted_name, _ = dotted_name.rsplit(".", maxsplit=1)
+    else:
+        submodule_dotted_name = None
+
+    # Issue #21: `mcpyrate` might not be in scope at the use site. Fortunately,
+    # `__import__` is a builtin, so we are guaranteed to always have that available.
+    if not force_import:
+        mcpyrate_module = ast.Name(id="mcpyrate")
+    else:
+        globals_call = ast.Call(ast.Name(id="globals"),
+                                [],
+                                [])
+
+        if submodule_dotted_name:
+            modulename_to_import = f"mcpyrate.{submodule_dotted_name}"
+        else:
+            modulename_to_import = "mcpyrate"
+
+        import_call = ast.Call(ast.Name(id="__import__"),
+                               [ast.Constant(value=modulename_to_import),
+                                globals_call,  # globals (used for determining context)
+                                ast.Constant(value=None),  # locals (unused)
+                                ast.Tuple(elts=[]),  # fromlist
+                                ast.Constant(value=0)],  # level
+                               [])
+        # When compiled and run, the import call will evaluate to a reference
+        # to the top-level `mcpyrate` module.
+        mcpyrate_module = import_call
+
+    value = mcpyrate_module
+    for name in dotted_name.split("."):
+        value = ast.Attribute(value=value, attr=name)
+
+    return value

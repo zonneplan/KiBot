@@ -3,15 +3,11 @@
 
 __all__ = ["fix_ctx", "fix_locations"]
 
-from ast import (Load, Store, Del,
-                 Assign, AnnAssign, AugAssign,
-                 Attribute, Subscript,
-                 comprehension,
-                 For, AsyncFor,
-                 withitem,
-                 Delete,
-                 iter_child_nodes)
+from ast import (AnnAssign, Assign, AsyncFor, Attribute, AugAssign, Del,
+                 Delete, For, Load, Store, Subscript, comprehension,
+                 iter_child_nodes, withitem)
 from copy import copy
+from typing import Type
 
 from . import walkers
 
@@ -20,7 +16,7 @@ try:  # Python 3.8+
 except ImportError:
     class _NoSuchNodeType:
         pass
-    NamedExpr = _NoSuchNodeType
+    NamedExpr: Type = _NoSuchNodeType  # type: ignore[no-redef]
 
 
 class _CtxFixer(walkers.ASTTransformer):
@@ -71,6 +67,7 @@ class _CtxFixer(walkers.ASTTransformer):
             # `AugStore` and `AugLoad` are for internal use only, not even
             # meant to be exposed to the user; the compiler expects `Store`
             # and `Load` here. https://bugs.python.org/issue39988
+            # Those internal classes are indeed deprecated in Python 3.9.
             self.withstate(tree.target, ctxclass=Store)
             self.withstate(tree.value, ctxclass=Load)
 

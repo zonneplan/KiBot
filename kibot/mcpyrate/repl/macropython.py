@@ -6,20 +6,24 @@
 
 import argparse
 import atexit
-from importlib import import_module
-from importlib.util import resolve_name, module_from_spec
 import os
 import pathlib
 import sys
+from importlib import import_module
+from importlib.util import module_from_spec, resolve_name
 
-from ..coreutils import relativize
-
+from .. import __version__ as __mcpyrate_version__
 from .. import activate  # noqa: F401
+from ..core import MacroApplicationError
+from ..coreutils import relativize
+from ..pycachecleaner import deletepycachedirs, getpycachedirs
 
-__version__ = "3.0.0"
+__version__ = "3.1.0"
 
 _config_dir = "~/.config/mcpyrate"
 _macropython_module = None  # sys.modules doesn't always seem to keep it, so stash it locally too.
+
+# --------------------------------------------------------------------------------
 
 def import_module_as_main(name, script_mode):
     """Import a module, pretending it's __main__.
@@ -98,8 +102,19 @@ def import_module_as_main(name, script_mode):
         sys.modules["__main__"] = module  # replace this bootstrapper with the new __main__
         try:
             spec.loader.exec_module(module)
-        except Exception:
+        except Exception as err:
             sys.modules["__main__"] = _macropython_module
+            if isinstance(err, MacroApplicationError):
+                # To avoid noise, discard most of the traceback of the chained
+                # macro-expansion errors emitted by the expander core. The
+                # linked (`__cause__`) exceptions have the actual tracebacks.
+                #
+                # Keep just the last entry, which should state that this
+                # exception came from `expand` in `core.py`.
+                tb = err.__traceback__
+                while tb.tb_next:
+                    tb = tb.tb_next
+                raise err.with_traceback(tb)
             raise
         # # __main__ has no parent module so we don't need to do this.
         # if path is not None:
@@ -128,7 +143,7 @@ def main():
     parser = argparse.ArgumentParser(description="""Run a Python program or an interactive interpreter with mcpyrate enabled.""",
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser.add_argument('-v', '--version', action='version', version=('%(prog)s (mcpyrate ' + __version__ + ')'))
+    parser.add_argument('-v', '--version', action='version', version=('%(prog)s ' + __version__ + ' (mcpyrate ' + __mcpyrate_version__ + ')'))
     parser.add_argument(dest='filename', nargs='?', default=None, type=str, metavar='file',
                         help='script to run')
     parser.add_argument('-m', '--module', dest='module', default=None, type=str, metavar='mod',
@@ -140,16 +155,37 @@ def main():
                         help='For use together with "-i". Automatically "import numpy as np", '
                              '"import matplotlib.pyplot as plt", and enable mpl\'s interactive '
                              'mode (somewhat like IPython\'s pylab mode).')
+    parser.add_argument('-c', '--clean', dest='path_to_clean', default=None, type=str, metavar='dir',
+                        help='Delete Python bytecode (`.pyc`) caches inside given directory, recursively, '
+                             'and then exit. This removes the `__pycache__` directories, too. '
+                             'The purpose is to facilitate testing `mcpyrate` and programs that use it, '
+                             'because the expander only runs when the `.pyc` cache for the module being '
+                             'imported is out of date or does not exist. For any given module, once the '
+                             'expander is done, Python\'s import system automatically writes the `.pyc` '
+                             'cache for that module.')
+    parser.add_argument("-n", "--dry-run", dest="dry_run", action="store_true", default=False,
+                        help='For use together with "-c". Just scan for and print the .pyc cache '
+                             'directory paths, don\'t actually clean them.')
     opts = parser.parse_args()
 
+    if opts.path_to_clean:
+        # If an error occurs during cleaning, we just let it produce a standard stack trace.
+        if not opts.dry_run:
+            deletepycachedirs(opts.path_to_clean)
+        else:
+            for x in getpycachedirs(opts.path_to_clean):
+                print(x)
+        sys.exit(0)  # only reached if cleaning (or dry run) successful
+
     if opts.interactive:
-        from .console import MacroConsole
         import readline  # noqa: F401, side effect: enable GNU readline in input()
         import rlcompleter  # noqa: F401, side effects: readline tab completion
+
+        from .console import MacroConsole
         repl_locals = {}
         if opts.pylab:  # like IPython's pylab mode, but we keep things in separate namespaces.
-            import numpy
             import matplotlib.pyplot
+            import numpy
             repl_locals["np"] = numpy
             repl_locals["plt"] = matplotlib.pyplot
             matplotlib.pyplot.ion()
@@ -206,6 +242,13 @@ def main():
             if sys.path[0] != "":
                 sys.path.insert(0, "")
 
+        # https://www.python.org/dev/peps/pep-0582/
+        if sys.version_info >= (3, 8, 0):
+            local_pypackages_dir = pathlib.Path.cwd().expanduser().resolve() / "__pypackages__"
+            if local_pypackages_dir.is_dir():
+                # TODO: figure out correct insert index (spec: "after cwd, just before site packages")
+                sys.path.insert(1, str(local_pypackages_dir))
+
         import_module_as_main(opts.module, script_mode=False)
 
     else:  # no module, so use opts.filename
@@ -216,6 +259,13 @@ def main():
         containing_directory = str(fullpath.parent)
         if sys.path[0] != containing_directory:
             sys.path.insert(0, containing_directory)
+
+        # https://www.python.org/dev/peps/pep-0582/
+        if sys.version_info >= (3, 8, 0):
+            local_pypackages_dir = fullpath.parent / "__pypackages__"
+            if local_pypackages_dir.is_dir():
+                # TODO: figure out correct insert index (spec: "after cwd, just before site packages")
+                sys.path.insert(1, str(local_pypackages_dir))
 
         # This approach finds the standard loader even for macro-enabled scripts.
         # TODO: For mcpyrate, that could be ok, since we monkey-patch just that.
@@ -237,6 +287,6 @@ def main():
 
         import_module_as_main(module_name, script_mode=True)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _macropython_module = sys.modules["__macropython__"] = sys.modules["__main__"]
     main()

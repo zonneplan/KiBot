@@ -9,9 +9,7 @@ __all__ = ["ASTMarker", "get_markers", "delete_markers", "check_no_markers_remai
 
 import ast
 
-from . import core
-from . import utils
-from . import walkers
+from . import core, utils, walkers
 
 
 class ASTMarker(ast.AST):
@@ -36,7 +34,9 @@ class ASTMarker(ast.AST):
     section. So just before the quote operator exits, it checks that all
     quasiquote markers within that section have been compiled away.
     """
-    def __init__(self, body):
+    # TODO: Silly default `None`, because `copy` and `deepcopy` call `__init__` without arguments,
+    # TODO: though the docs say they behave like `pickle` (and wouldn't thus need to call __init__ at all!).
+    def __init__(self, body=None):
         """body: the actual AST that is annotated by this marker"""
         self.body = body
         self._fields = ["body"]  # support ast.iter_fields
@@ -63,7 +63,7 @@ def delete_markers(tree, cls=ASTMarker):
     class ASTMarkerDeleter(walkers.ASTTransformer):
         def transform(self, tree):
             if isinstance(tree, cls):
-                tree = tree.body
+                return self.visit(tree.body)
             return self.generic_visit(tree)
     return ASTMarkerDeleter().visit(tree)
 
@@ -79,7 +79,6 @@ def check_no_markers_remaining(tree, *, filename, cls=None):
     `filename` is the full path to the `.py` file, for error reporting.
 
     Convenience function.
-
     """
     cls = cls or ASTMarker
     remaining_markers = get_markers(tree, cls)

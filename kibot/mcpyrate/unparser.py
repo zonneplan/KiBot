@@ -1,17 +1,22 @@
 # -*- coding: utf-8; -*-
-"""Back-convert a Python AST into source code. Original formatting is disregarded."""
+"""Back-convert a Python AST into source code. Original formatting is disregarded.
+
+Python 3.9+ provides `ast.unparse`, but ours comes with some additional features,
+notably syntax highlighting and debug rendering of invisible AST nodes.
+"""
 
 __all__ = ["UnparserError", "unparse", "unparse_with_fallbacks"]
 
 import ast
 import builtins
-from contextlib import contextmanager
 import io
 import sys
+from contextlib import contextmanager
 
-from .astdumper import dump  # fallback
-from .colorizer import setcolor, colorize, ColorScheme
 from . import markers
+from .astdumper import dump  # fallback
+from .colorizer import ColorScheme, colorize, setcolor
+quotes = None  # HACK: avoid circular import
 
 # Large float and imaginary literals get turned into infinities in the AST.
 # We unparse those infinities to INFSTR.
@@ -78,6 +83,10 @@ class Unparser:
         `expander`: optional `BaseMacroExpander` instance. If provided,
                     used for syntax highlighting macro names.
         """
+        # HACK: avoid circular import
+        global quotes
+        from . import quotes
+
         self.debug = debug
         self.color = color
         self._color_override = False  # for syntax highlighting of decorators
@@ -162,6 +171,12 @@ class Unparser:
             for t in tree:
                 self.dispatch(t)
             return
+        if self.debug and quotes.is_captured_value(tree):
+            self.captured_value(tree)
+            return
+        if self.debug and quotes.is_captured_macro(tree):
+            self.captured_macro(tree)
+            return
         if isinstance(tree, markers.ASTMarker):  # mcpyrate and macro communication internal
             self.astmarker(tree)
             return
@@ -184,7 +199,10 @@ class Unparser:
 
     def astmarker(self, tree):
         def write_astmarker_field_value(v):
-            if isinstance(v, ast.AST):
+            if isinstance(v, list):  # statement suite
+                for item in v:
+                    self.dispatch(item)
+            elif isinstance(v, ast.AST):
                 self.dispatch(v)
             else:
                 self.write(repr(v))
@@ -194,8 +212,8 @@ class Unparser:
         # that "source code" containing AST markers cannot be eval'd.
         # If you need to get rid of them, see `mcpyrate.markers.delete_markers`.
 
-        header = self.maybe_colorize(f"$ASTMarker", ColorScheme.ASTMARKER)
-        if isinstance(tree.body, ast.stmt):
+        header = self.maybe_colorize("$ASTMarker", ColorScheme.ASTMARKER)
+        if isinstance(tree.body, (ast.stmt, list)):
             print_mode = "stmt"
             self.fill(header, lineno_node=tree)
         else:
@@ -241,6 +259,20 @@ class Unparser:
         self.leave()
         if print_mode == "expr":
             self.write(")")
+
+    def captured_value(self, t):  # hygienic capture; output of `mcpyrate.quotes.h`; only emitted in debug mode
+        name, _ignored_value = quotes.is_captured_value(t)
+        self.write(self.maybe_colorize("$h", ColorScheme.ASTMARKER))
+        self.write(self.maybe_colorize("[", ColorScheme.ASTMARKER))
+        self.write(name)
+        self.write(self.maybe_colorize("]", ColorScheme.ASTMARKER))
+
+    def captured_macro(self, t):  # hygienic capture; output of `mcpyrate.quotes.h`; only emitted in debug mode
+        name, _ignored_unique_name, _ignored_value = quotes.is_captured_macro(t)
+        self.write(self.maybe_colorize("$h", ColorScheme.ASTMARKER))
+        self.write(self.maybe_colorize("[", ColorScheme.ASTMARKER))
+        self.write(self.maybe_colorize(name, ColorScheme.MACRONAME))
+        self.write(self.maybe_colorize("]", ColorScheme.ASTMARKER))
 
     # top level nodes
     def _Module(self, t):  # ast.parse(..., mode="exec")
@@ -584,6 +616,8 @@ class Unparser:
                 v = self.maybe_colorize(v, ColorScheme.NAMECONSTANT)
             elif type(t.value) in (str, bytes):
                 v = self.maybe_colorize(v, ColorScheme.STRING)
+            else:  # pragma: no cover
+                raise UnparserError(f"Don't know how to unparse Constant with value of type {type(t.value)}, got {repr(t.value)}")
         self.write(v)
 
     def _Bytes(self, t):  # up to Python 3.7
@@ -681,25 +715,33 @@ class Unparser:
         interleave(lambda: self.write(", "), write_pair, zip(t.keys, t.values))
         self.write("}")
 
+    # Python 3.9+: we must emit the parentheses separate from the main logic,
+    # because a Tuple directly inside a Subscript slice should be rendered
+    # without parentheses; so our `_Subscript` method special-cases that.
+    # This is important, because the notation `a[1,2:5]` is fine, but
+    # `a[(1,2:5)]` is a syntax error. See https://bugs.python.org/issue34822
     def _Tuple(self, t):
         self.write("(")
+        self.__Tuple_helper(t)
+        self.write(")")
+
+    def __Tuple_helper(self, t):
         if len(t.elts) == 1:
             (elt,) = t.elts
             self.dispatch(elt)
             self.write(",")
         else:
             interleave(lambda: self.write(", "), self.dispatch, t.elts)
-        self.write(")")
 
     unop = {"Invert": "~", "Not": "not", "UAdd": "+", "USub": "-"}
     def _UnaryOp(self, t):
         self.write("(")
-        # if it's an English keyword, highlight it.
+        # If it's an English keyword, highlight it, and add a space.
         if t.op.__class__.__name__ == "Not":
             self.write(self.maybe_colorize_python_keyword(self.unop[t.op.__class__.__name__]))
+            self.write(" ")
         else:
             self.write(self.unop[t.op.__class__.__name__])
-        self.write(" ")
         self.dispatch(t.operand)
         self.write(")")
 
@@ -815,7 +857,12 @@ class Unparser:
     def _Subscript(self, t):
         self.dispatch(t.value)
         self.write("[")
-        self.dispatch(t.slice)
+        # Python 3.9+: Omit parentheses for a tuple directly inside a Subscript slice.
+        # See https://bugs.python.org/issue34822
+        if type(t.slice) is ast.Tuple:
+            self.__Tuple_helper(t.slice)
+        else:
+            self.dispatch(t.slice)
         self.write("]")
 
     def _Starred(self, t):
@@ -826,7 +873,7 @@ class Unparser:
     def _Ellipsis(self, t):  # up to Python 3.7
         self.write("...")
 
-    def _Index(self, t):
+    def _Index(self, t):  # up to Python 3.8; the Index wrapper is gone in Python 3.9
         self.dispatch(t.value)
 
     def _Slice(self, t):
@@ -839,7 +886,7 @@ class Unparser:
             self.write(":")
             self.dispatch(t.step)
 
-    def _ExtSlice(self, t):
+    def _ExtSlice(self, t):  # up to Python 3.8; Python 3.9 uses a Tuple instead
         interleave(lambda: self.write(", "), self.dispatch, t.dims)
 
     # argument
