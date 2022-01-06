@@ -101,7 +101,8 @@ def _do_wrap_class_register(tree, mod, base_class):
         # Function call to it passing reg_name and name
         do_register = Expr(value=Call(func=attr, args=[Str(s=reg_name), Name(id=name, ctx=Load())], keywords=[]))
         # Create the import
-        do_import = ImportFrom(module=mod, names=[alias(name=base_class, asname=None)], level=1)
+        do_import = ImportFrom(module=mod, names=[alias(name=base_class, asname=None, lineno=tree.lineno,
+                               col_offset=tree.col_offset)], level=1)
         return [do_import, tree, do_register]
     # Just in case somebody applies it to anything other than a class
     return tree
