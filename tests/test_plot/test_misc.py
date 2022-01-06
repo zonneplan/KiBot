@@ -973,9 +973,11 @@ def test_qr_lib_1(test_dir):
     res = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
     logging.debug(res.split('\n')[0])
     assert 'QR-Code:https://github.com/INTI-CMNB/KiBot/' in res
+    assert ctx.search_err('Updating text `https')
     # Restore the original files
     bd = ctx.get_board_dir()
-    files = ['qr.lib', 'qr.kicad_sym', 'qr.pretty/QR.kicad_mod', 'qr.pretty/QR2.kicad_mod', 'qr_test.kicad_pcb']
+    files = ['qr.lib', 'qr.kicad_sym', 'qr.pretty/QR.kicad_mod', 'qr.pretty/QR2.kicad_mod', 'qr_test.kicad_pcb',
+             'qr_test.kicad_sch', 'sub_1.kicad_sch']
     for f in files:
         bogus = os.path.join(bd, 'qr_test/'+f+'.bogus')
         if os.path.isfile(bogus):

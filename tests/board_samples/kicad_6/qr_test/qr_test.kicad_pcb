@@ -94,7 +94,7 @@
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 7f2301df-e4bc-479e-a681-cc59c9a2dbbb)
     )
-    (fp_text user "bogus 1 2 3 4" (at 0 -35.15) (layer "F.Cu") hide
+    (fp_text user " bogus 1 2 3 4" (at 0 -35.15) (layer "F.Cu") hide
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 8087f566-a94d-4bbc-985b-e49ee7762296)
     )
@@ -1580,7 +1580,7 @@
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 2db910a0-b943-40b4-b81f-068ba5265f56)
     )
-    (fp_text user "bogus 1 2 3 4" (at 0 -17.25) (layer "F.SilkS") hide
+    (fp_text user " bogus 1 2 3 4" (at 0 -17.25) (layer "F.SilkS") hide
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 3f8a5430-68a9-4732-9b89-4e00dd8ae219)
     )

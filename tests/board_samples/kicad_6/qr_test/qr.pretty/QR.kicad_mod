@@ -17,7 +17,7 @@
   (fp_text user "qr_mask: 6" (at 0 -33.449999999999996) (layer F.Cu) hide
     (effects (font (size 1 1) (thickness 0.15)))
   )
-  (fp_text user "bogus 1 2 3 4" (at 0 -35.15) (layer F.Cu) hide
+  (fp_text user " bogus 1 2 3 4" (at 0 -35.15) (layer F.Cu) hide
     (effects (font (size 1 1) (thickness 0.15)))
   )
   (fp_poly (pts (xy -25.4 -25.4) (xy -25.4 -22.98) (xy -22.98 -22.98) (xy -22.98 -25.4)) (layer F.Cu) (width 0))

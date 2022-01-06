@@ -220,6 +220,8 @@ class QR_LibOptions(BaseOptions):
         mod.append([Symbol('layer'), Symbol(qr.layer)])
         mod.append([Symbol('tedit'), 0])
         mod.append(Sep())
+        mod.append([Symbol('attr'), Symbol('virtual')])
+        mod.append(Sep())
         mod.append(self.fp_field(center, 'reference', self.reference+'***', qr.layer, 0))
         mod.append(Sep())
         mod.append(self.fp_field(center, 'value', qr.name, qr.layer, 1))
@@ -233,7 +235,7 @@ class QR_LibOptions(BaseOptions):
         mod.append(Sep())
         mod.append(self.fp_field(center, 'user', 'qr_mask: '+str(qrc.get_mask()), qr.layer, 5))
         mod.append(Sep())
-        mod.append(self.fp_field(center, 'user', qr._text_sch, qr.layer, 6))
+        mod.append(self.fp_field(center, 'user', qr._text_pcb, qr.layer, 6))
         mod.append(Sep())
         # The QR itself
         mod.extend(self.qr_draw_fp(size, size_rect, center, qrc, qr.pcb_negative, qr.layer))
@@ -319,6 +321,25 @@ class QR_LibOptions(BaseOptions):
         sexp[:] = list(filter(lambda s: not is_symbol('fp_poly', s), sexp))
         # Add the new drawings
         sexp.extend(self.qr_draw_fp(size, size_rect, center, qrc, qr.pcb_negative, qr.layer, do_sep=False))
+        # Update the fields
+        for s in sexp:
+            if (is_symbol('fp_text', s) and len(s) > 2 and isinstance(s[1], Symbol) and s[1].value() == 'user' and
+               isinstance(s[2], str)):
+                res = s[2].split(':')
+                if len(res) > 1:
+                    logger.debug('- Updating field `{}`'.format(res[0]))
+                    if res[0] == 'qr_version':
+                        s[2] = 'qr_version: '+str(qrc.get_version())
+                    elif res[0] == 'qr_size':
+                        s[2] = 'qr_size: '+str(size)
+                    elif res[0] == 'qr_ecc':
+                        ecc = qrc.get_error_correction_level()
+                        s[2] = 'qr_ecc: {},{}'.format(ecc.ordinal, ecc.formatbits)
+                    elif res[0] == 'qr_mask':
+                        s[2] = 'qr_mask: '+str(qrc.get_mask())
+                elif s[2][0] == ' ':
+                    logger.debug('- Updating text `{}`'.format(qr._text_pcb))
+                    s[2] = ' '+qr._text_pcb
 
     def update_footprints(self, known_qrs):
         # Replace known QRs in the PCB
@@ -380,6 +401,25 @@ class QR_LibOptions(BaseOptions):
         for s in sexp_iter(sexp, 'symbol'):
             if len(s) >= 2 and isinstance(s[1], str) and s[1] == sub_unit_name:
                 s[:] = list(sub_unit_sexp)
+        # Update the fields
+        for s in sexp:
+            if is_symbol('property', s) and len(s) > 2 and isinstance(s[1], str) and isinstance(s[2], str):
+                new_val = None
+                field = s[1]
+                if field == 'qr_version':
+                    new_val = str(qrc.get_version())
+                elif field == 'qr_size':
+                    new_val = str(size)
+                elif field == 'qr_ecc':
+                    ecc = qrc.get_error_correction_level()
+                    new_val = '{},{}'.format(ecc.ordinal, ecc.formatbits)
+                elif field == 'qr_mask':
+                    new_val = str(qrc.get_mask())
+                elif field == 'qr_text':
+                    new_val = qr._text_sch
+                if new_val is not None:
+                    logger.debug('- Updating field `{}` {} -> {}'.format(field, s[2], new_val))
+                    s[2] = new_val
 
     def update_symbols(self, fname, sexp, known_qrs):
         # Replace known QRs in the Schematic
@@ -468,7 +508,6 @@ class QR_LibOptions(BaseOptions):
             for qr in self.qrs:
                 name = self.lib+':'+qr.name
                 known_qrs[name.lower()] = qr
-            # TODO: Update fields
             # PCB
             self.update_footprints(known_qrs)
             # Schematic
