@@ -60,7 +60,8 @@ def test_print_sch_svg_ok(test_dir):
 def test_print_sch_svg_fail(test_dir):
     prj = '3Rs'
     ctx = context.TestContext(test_dir, 'PrSCHFail_SVG', prj, 'print_sch_svg', PDF_DIR)
-    ctx.run(SVG_SCH_PRINT, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'print_err.sch')])
+    ctx.run(SVG_SCH_PRINT, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(),
+            'print_err'+context.KICAD_SCH_EXT)])
     ctx.clean_up()
 
 
