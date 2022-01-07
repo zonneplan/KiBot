@@ -34,7 +34,7 @@ def test_bom_ok(test_dir):
     # Default format is PRJ_bom_REVISION
     name = os.path.join(BOM_DIR, prj)
     csv = name+'-bom.csv'
-    html = name+'_bom__(pp).html'
+    html = name+'_bom_r1_(pp).html'
     ctx.expect_out_file(csv)
     ctx.expect_out_file(html)
     ctx.search_in_file(csv, ['R,R1,100', 'R,R2,200', 'C,C1,1uF'])

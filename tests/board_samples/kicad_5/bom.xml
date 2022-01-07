@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <export version="D">
   <design>
-    <source>tests/board_samples/kicad_5/bom/bom.sch</source>
-    <date>jue 15 oct 2020 18:50:36</date>
-    <tool>Eeschema 5.1.7+dfsg1-1</tool>
+    <source>tests/board_samples/kicad_5/bom.sch</source>
+    <date>vie 07 ene 2022 12:55:47</date>
+    <tool>Eeschema 5.1.9+dfsg1-1</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
-        <title/>
-        <company/>
-        <rev/>
-        <date/>
+        <title>BoM Test</title>
+        <company>INTI-CMNB</company>
+        <rev>r1</rev>
+        <date>13/07/2020</date>
         <source>bom.sch</source>
         <comment number="1" value=""/>
         <comment number="2" value=""/>
@@ -82,17 +82,17 @@
     </library>
   </libraries>
   <nets>
-    <net code="1" name="Net-(C1-Pad1)">
-      <node ref="R1" pin="2"/>
-      <node ref="R2" pin="1"/>
-      <node ref="C1" pin="1"/>
-    </net>
-    <net code="2" name="GND">
+    <net code="1" name="GND">
       <node ref="R2" pin="2"/>
       <node ref="C1" pin="2"/>
     </net>
-    <net code="3" name="VCC">
+    <net code="2" name="VCC">
       <node ref="R1" pin="1"/>
+    </net>
+    <net code="3" name="Net-(C1-Pad1)">
+      <node ref="C1" pin="1"/>
+      <node ref="R2" pin="1"/>
+      <node ref="R1" pin="2"/>
     </net>
   </nets>
 </export>
