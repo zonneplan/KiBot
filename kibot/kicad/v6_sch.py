@@ -1063,6 +1063,20 @@ class Junction(object):
         return _symbol('junction', data)
 
 
+class BusAlias(object):
+    @staticmethod
+    def parse(items):
+        _check_len_total(items, 3, 'bus_alias')
+        alias = BusAlias()
+        alias.name = _check_str(items, 1, 'bus_alias')
+        elems = _check_symbol_value(items, 2, 'bus_alias', 'members')
+        alias.members = elems[1:]
+        return alias
+
+    def write(self):
+        return _symbol('bus_alias', [self.name, _symbol('members', self.members)])
+
+
 class NoConnect(object):
     @staticmethod
     def parse(items):
@@ -1376,9 +1390,10 @@ def _symbol(name, content):
     return [Symbol(name)] + content
 
 
-def _add_items(items, sch, sep=False, cross=False):
+def _add_items(items, sch, sep=False, cross=False, pre_sep=True):
     if len(items):
-        sch.append(Sep())
+        if pre_sep:
+            sch.append(Sep())
         for i in items:
             if cross:
                 sch.append(i.write(cross=True))
@@ -1501,8 +1516,10 @@ class SchematicV6(Schematic):
         if self.title_ori is not None:
             sch.extend(self.write_title_block())
         sch.extend(self.write_lib_symbols(cross))
+        # Bus aliases
+        _add_items(self.bus_alias, sch)
         # Connections (aka Junctions)
-        _add_items(self.junctions, sch)
+        _add_items(self.junctions, sch, pre_sep=(len(self.bus_alias) == 0))
         # No connect
         _add_items(self.no_conn, sch)
         # Bus entry
@@ -1595,6 +1612,7 @@ class SchematicV6(Schematic):
         self.sheets = []
         self.sheet_instances = []
         self.symbol_instances = []
+        self.bus_alias = []
         self.libs = {}  # Just for compatibility with v5 class
         # TODO: this assumes we are expanding the schematic to allow variant.
         # This is needed to overcome KiCad 6 limitations (symbol instances only differ in Reference)
@@ -1635,6 +1653,8 @@ class SchematicV6(Schematic):
                 self._get_title_block(e[1:])
             elif e_type == 'lib_symbols':
                 self._get_lib_symbols(e)
+            elif e_type == 'bus_alias':
+                self.bus_alias.append(BusAlias.parse(e))
             elif e_type == 'junction':
                 self.junctions.append(Junction.parse(e))
             elif e_type == 'no_connect':
