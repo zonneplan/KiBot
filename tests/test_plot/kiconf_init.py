@@ -11,6 +11,10 @@ from unittest.mock import patch
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
+# One more level for the project
+prev_dir = os.path.dirname(prev_dir)
+if prev_dir not in sys.path:
+    sys.path.insert(0, prev_dir)
 
 import kibot.log as log
 log.set_domain('kibot')
@@ -19,10 +23,6 @@ logger.setLevel(logging.DEBUG)
 
 # Utils import
 from utils import context
-# One more level for the project
-prev_dir = os.path.dirname(prev_dir)
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
 from kibot.kicad.config import KiConf
 from kibot.gs import GS
 
@@ -53,7 +53,6 @@ if context.ki5():
     ki_path = pcbnew.GetKicadConfigPath()
 else:
     ki_path = pcbnew.SETTINGS_MANAGER.GetUserSettingsPath()
-    logger.error(ki_path)
 GS.kicad_conf_path = None if args.no_conf_path else ki_path
 
 
