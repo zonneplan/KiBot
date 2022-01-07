@@ -17,6 +17,7 @@ import pytest
 import coverage
 import logging
 import sysconfig
+from subprocess import run, STDOUT, PIPE
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -28,9 +29,8 @@ prev_dir = os.path.dirname(prev_dir)
 if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 from kibot.misc import EXIT_BAD_CONFIG
-from kibot.kicad.config import KiConf, KiConfError
+from kibot.kicad.config import KiConf
 from kibot.gs import GS
-from kibot.log import MyLogger
 
 
 cov = coverage.Coverage()
@@ -39,6 +39,10 @@ _real_posix_prefix = None
 
 def test_kicad_conf_bad_sym_lib_table(test_dir):
     """ Check various problems in the sym-lib-table file """
+    if context.ki6():
+        # We currently don't use the sym-lib-table for KiCad 6.
+        # All data is in the Schematic file.
+        return
     sch = 'sym-lib-table_errors/kibom-test'
     test = 'test_kicad_conf_bad_sym_lib_table'
     ctx = context.TestContextSCH(test_dir, test, sch, 'int_bom_simple_csv', None)
@@ -58,90 +62,72 @@ def test_kicad_conf_no_instance():
     assert str(pytest_wrapped_e.value) == 'KiConf is fully static, no instances allowed'
 
 
-def kiconf_de_init():
-    KiConf.loaded = False
-    KiConf.config_dir = None
-    KiConf.dirname = None
-    KiConf.sym_lib_dir = None
-    KiConf.kicad_env = {}
-    KiConf.lib_aliases = {}
-
-
-def check_load_conf(caplog, dir='kicad', fail=False, catch_conf_error=False, no_conf_path=False):
-    caplog.set_level(logging.DEBUG)
-    kiconf_de_init()
-    # Repeated messages will be supressed, avoid it
-    MyLogger.reset_warn_hash()
-    import pcbnew
-    GS.kicad_conf_path = None if no_conf_path else pcbnew.GetKicadConfigPath()
-    with context.cover_it(cov):
-        if catch_conf_error:
-            with pytest.raises(KiConfError) as err:
-                KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
-        else:
-            KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
-            # Check we can call it again and nothing is done
-            KiConf.init('bogus')
-            err = None
-    ref = 'Reading KiCad config from `tests/data/'+dir+'/kicad_common`'
+def check_load_conf(dir='kicad', fail=False, catch_conf_error=False, no_conf_path=False, patch_get_path=False):
+    cmd = ['python3', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'kiconf_init.py')]
+    if no_conf_path:
+        cmd.append('--no_conf_path')
+    if patch_get_path:
+        cmd.append('--patch_get_path')
+    res = run(cmd, stdout=PIPE, stderr=STDOUT).stdout.decode()
+    logging.debug(res)
+    ref = 'Reading KiCad config from `tests/data/'+dir  # +'/kicad_common`'
     if fail:
         ref = 'Unable to find KiCad configuration file'
-    assert ref in caplog.text, caplog.text
-    return err
+    assert ref in res, res
+    return res
 
 
-def test_kicad_conf_user(caplog, monkeypatch):
+def test_kicad_conf_user(monkeypatch):
     """ Check we can load the KiCad configuration from $KICAD_CONFIG_HOME """
     GS.debug_level = 2
     with monkeypatch.context() as m:
         m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_ok')
-        check_load_conf(caplog, dir='kicad_ok')
-    assert 'KICAD_TEMPLATE_DIR="/usr/share/kicad/template_test"' in caplog.text, caplog.text
+        res = check_load_conf(dir='kicad_ok')
+    assert 'KICAD_TEMPLATE_DIR="/usr/share/kicad/template_test"' in res, res
 
 
-def test_kicad_conf_xdg(caplog, monkeypatch):
+def test_kicad_conf_xdg(monkeypatch):
     """ Check we can load the KiCad configuration from $XDG_CONFIG_HOME/kicad """
     with monkeypatch.context() as m:
         m.setenv("XDG_CONFIG_HOME", 'tests/data')
-        check_load_conf(caplog)
-    assert 'KiCad config without EnvironmentVariables section' in caplog.text, caplog.text
+        res = check_load_conf()
+    msg = 'KiCad config without EnvironmentVariables section'
+    if context.ki6():
+        msg = 'KiCad config without environment.vars section'
+    assert msg in res, res
 
 
-def test_kicad_conf_guess_libs(caplog, monkeypatch):
+def test_kicad_conf_guess_libs(monkeypatch):
     """ Check no HOME and fail to load kicad_common.
         Also check we correctly guess the libs dir. """
-    check_load_conf(caplog, fail=True, no_conf_path=True)
-    assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/library"' in caplog.text, caplog.text
+    res = check_load_conf(fail=True, no_conf_path=True)
+    assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/library"' in res, res
 
 
-def test_kicad_conf_lib_env(caplog, monkeypatch):
+def test_kicad_conf_lib_env(monkeypatch):
     """ Check we can use KICAD_SYMBOL_DIR as fallback """
     with monkeypatch.context() as m:
         m.setenv("KICAD_SYMBOL_DIR", 'tests')
-        check_load_conf(caplog, fail=True, no_conf_path=True)
-    assert 'Detected KICAD_SYMBOL_DIR="tests"' in caplog.text, caplog.text
+        res = check_load_conf(fail=True, no_conf_path=True)
+    assert 'Detected KICAD_SYMBOL_DIR="tests"' in res, res
 
 
-def test_kicad_conf_sym_err_1(caplog, monkeypatch):
+def test_kicad_conf_sym_err_1(monkeypatch):
     """ Test broken sym-lib-table, no signature """
     GS.debug_level = 2
     with monkeypatch.context() as m:
         m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_err_1')
-        err = check_load_conf(caplog, dir='kicad_err_1', catch_conf_error=True)
-    assert err.type == KiConfError
-    assert err.value.msg == 'Symbol libs table missing signature'
-    assert err.value.line == 1
+        res = check_load_conf(dir='kicad_err_1', catch_conf_error=True)
+    assert "raise KiConfError('Symbol libs table missing signature" in res, res
 
 
-def test_kicad_conf_sym_err_2(caplog, monkeypatch):
+def test_kicad_conf_sym_err_2(monkeypatch):
     """ Test broken sym-lib-table, wrong entry """
     GS.debug_level = 2
     with monkeypatch.context() as m:
         m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_err_2')
-        err = check_load_conf(caplog, dir='kicad_err_2', catch_conf_error=True)
-    assert err.type == KiConfError
-    assert err.value.msg == 'Unknown symbol table entry'
-    assert err.value.line == 2
+        res = check_load_conf(dir='kicad_err_2', catch_conf_error=True)
+    assert "raise KiConfError('Unknown symbol table entry" in res, res
 
 
 def mocked_get_path_1(name, scheme):
@@ -155,7 +141,7 @@ def mocked_get_path_1(name, scheme):
     return sysconfig.get_path(name, scheme)
 
 
-def test_kicad_conf_local_conf(caplog, monkeypatch):
+def test_kicad_conf_local_conf(monkeypatch):
     """ Test if we can use the 'posix_user' """
     global _real_posix_prefix
     _real_posix_prefix = sysconfig.get_path('data', 'posix_prefix')
@@ -165,18 +151,16 @@ def test_kicad_conf_local_conf(caplog, monkeypatch):
             assert KiConf.guess_symbol_dir() == '/usr/share/kicad/library'
 
 
-def test_kicad_conf_no_conf(caplog, monkeypatch):
+def test_kicad_conf_no_conf():
     """ Test a complete fail to find libs """
-    with monkeypatch.context() as m:
-        m.setattr("sysconfig.get_path", lambda a, b: '')
-        check_load_conf(caplog, fail=True, no_conf_path=True)
-    assert 'Unable to find KiCad libraries' in caplog.text, caplog.text
+    res = check_load_conf(fail=True, no_conf_path=True, patch_get_path=True)
+    assert 'Unable to find KiCad libraries' in res, res
 
 
-def test_config_redirect(caplog, monkeypatch):
+def test_config_redirect(monkeypatch):
     """ Test bizarre KICAD_CONFIG_HOME inside kicad_common """
     with monkeypatch.context() as m:
         m.setenv("KICAD_CONFIG_HOME", 'tests/data/config_redirect')
-        check_load_conf(caplog, dir='config_redirect')
-    assert 'Reading KiCad config from `tests/data/config_redirect/kicad_common`' in caplog.text, caplog.text
-    assert 'Redirecting symbols lib table to /usr/share/kicad/template' in caplog.text, caplog.text
+        res = check_load_conf(dir='config_redirect')
+    assert 'Reading KiCad config from `tests/data/config_redirect/' in res, res
+    assert 'Redirecting symbols lib table to /usr/share/kicad/template' in res, res
