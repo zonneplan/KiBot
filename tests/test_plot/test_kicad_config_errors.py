@@ -101,7 +101,7 @@ def test_kicad_conf_guess_libs(monkeypatch):
     """ Check no HOME and fail to load kicad_common.
         Also check we correctly guess the libs dir. """
     res = check_load_conf(fail=True, no_conf_path=True)
-    assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/library"' in res, res
+    assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/' in res, res
 
 
 def test_kicad_conf_lib_env(monkeypatch):
@@ -148,7 +148,8 @@ def test_kicad_conf_local_conf(monkeypatch):
     with monkeypatch.context() as m:
         m.setattr("sysconfig.get_path", mocked_get_path_1)
         with context.cover_it(cov):
-            assert KiConf.guess_symbol_dir() == '/usr/share/kicad/library'
+            assert (KiConf.guess_symbol_dir() == '/usr/share/kicad/library' or
+                    KiConf.guess_symbol_dir() == '/usr/share/kicad/symbols')
 
 
 def test_kicad_conf_no_conf():

@@ -178,7 +178,10 @@ class KiConf(object):
         return None
 
     def guess_symbol_dir():
-        return KiConf.guess_kicad_data_dir('library', 'KICAD_SYMBOL_DIR')
+        guess = KiConf.guess_kicad_data_dir('library', 'KICAD_SYMBOL_DIR')
+        if guess is None:
+            guess = KiConf.guess_kicad_data_dir('symbols', 'KICAD_SYMBOL_DIR')
+        return guess
 
     def guess_3d_dir():
         return KiConf.guess_kicad_data_dir(os.path.join('modules', 'packages3d'), 'KISYS3DMOD')
