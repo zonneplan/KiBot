@@ -97,7 +97,10 @@ def test_kicost_bom_sel_dist_1(test_dir):
 def test_kicost_bom_merge_1(test_dir):
     ''' Internal BoM + KiCost, merging 3 projects. '''
     prj = 'merge_1'
-    ctx = context.TestContextSCH(test_dir, 'test_kicost_bom_merge_1', prj, 'int_bom_kicost_merge_xlsx', OUT_DIR)
+    yaml = 'int_bom_kicost_merge_xlsx'
+    if context.ki6():
+        yaml += '_k6'
+    ctx = context.TestContextSCH(test_dir, 'test_kicost_bom_merge_1', prj, yaml, OUT_DIR)
     ctx.run(kicost=True)  # , extra_debug=True
     output = op.join(OUT_DIR, prj+'-bom.xlsx')
     ctx.expect_out_file(output)

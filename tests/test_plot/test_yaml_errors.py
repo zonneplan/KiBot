@@ -665,7 +665,10 @@ def test_error_aggregate_no_file(test_dir):
 
 
 def test_error_aggregate_miss_file(test_dir):
-    ctx = context.TestContext(test_dir, 'test_error_aggregate_miss_file', 'bom', 'error_aggregate_miss_file', '')
+    yaml = 'error_aggregate_miss_file'
+    if context.ki6():
+        yaml += '_k6'
+    ctx = context.TestContext(test_dir, 'test_error_aggregate_miss_file', 'bom', yaml, '')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Missing `dummy`")
     ctx.clean_up()

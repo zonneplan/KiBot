@@ -224,10 +224,17 @@ def load_board(pcb_file=None):
     return board
 
 
-def load_any_sch(sch, file, project):
+def load_any_sch(file, project):
+    if file[-9:] == 'kicad_sch':
+        sch = SchematicV6()
+        load_libs = False
+    else:
+        sch = Schematic()
+        load_libs = True
     try:
         sch.load(file, project)
-        sch.load_libs(file)
+        if load_libs:
+            sch.load_libs(file)
         if GS.debug_level > 1:
             logger.debug('Schematic dependencies: '+str(sch.get_files()))
     except SchFileError as e:
@@ -235,30 +242,24 @@ def load_any_sch(sch, file, project):
         logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
         logger.error('Line content: `{}`'.format(e.code))
         exit(CORRUPTED_SCH)
+    except SchError as e:
+        trace_dump()
+        logger.error('While loading `{}`'.format(file))
+        logger.error(str(e))
+        exit(CORRUPTED_SCH)
     except KiConfError as e:
         trace_dump()
         logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
         logger.error('Line content: `{}`'.format(e.code))
         exit(EXIT_BAD_CONFIG)
+    return sch
 
 
 def load_sch():
     if GS.sch:  # Already loaded
         return
     GS.check_sch()
-    # We can't yet load the new format
-    if GS.sch_file[-9:] == 'kicad_sch':
-        GS.sch = SchematicV6()
-        try:
-            GS.sch.load(GS.sch_file, GS.sch_basename)
-        except SchError as e:
-            trace_dump()
-            logger.error('While loading `{}`'.format(GS.sch_file))
-            logger.error(str(e))
-            exit(CORRUPTED_SCH)
-        return  # pragma: no cover (Ki6)
-    GS.sch = Schematic()
-    load_any_sch(GS.sch, GS.sch_file, GS.sch_basename)
+    GS.sch = load_any_sch(GS.sch_file, GS.sch_basename)
 
 
 def get_board_comps_data(comps):

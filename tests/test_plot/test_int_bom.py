@@ -1534,7 +1534,10 @@ def test_int_bom_variant_5(test_dir):
 
 def test_int_bom_merge_csv_1(test_dir):
     prj = 'merge_1'
-    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_csv_1', prj, 'int_bom_merge_csv_1', BOM_DIR)
+    yaml = 'int_bom_merge_csv_1'
+    if context.ki6():
+        yaml += '_k6'
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_csv_1', prj, yaml, BOM_DIR)
     ctx.run(extra_debug=True)
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1547,7 +1550,10 @@ def test_int_bom_merge_csv_1(test_dir):
 
 def test_int_bom_merge_html_1(test_dir):
     prj = 'merge_1'
-    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_html_1', prj, 'int_bom_merge_html_1', BOM_DIR)
+    yaml = 'int_bom_merge_html_1'
+    if context.ki6():
+        yaml += '_k6'
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_html_1', prj, yaml, BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_html(prj+'-bom.html')
     logging.debug(rows[0])
@@ -1560,7 +1566,10 @@ def test_int_bom_merge_html_1(test_dir):
 
 def test_int_bom_merge_xlsx_1(test_dir):
     prj = 'merge_1'
-    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_xlsx_1', prj, 'int_bom_merge_xlsx_1', BOM_DIR)
+    yaml = 'int_bom_merge_xlsx_1'
+    if context.ki6():
+        yaml += '_k6'
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_xlsx_1', prj, yaml, BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_xlsx(prj+'-bom.xlsx')
     ref_column = header.index(REF_COLUMN_NAME)
@@ -1572,7 +1581,10 @@ def test_int_bom_merge_xlsx_1(test_dir):
 
 def test_int_bom_merge_xml_1(test_dir):
     prj = 'merge_1'
-    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_xml_1', prj, 'int_bom_merge_xml_1', BOM_DIR)
+    yaml = 'int_bom_merge_xml_1'
+    if context.ki6():
+        yaml += '_k6'
+    ctx = context.TestContextSCH(test_dir, 'test_int_bom_merge_xml_1', prj, yaml, BOM_DIR)
     ctx.run()
     rows, header = ctx.load_xml(prj+'-bom.xml')
     ref_column = header.index(REF_COLUMN_NAME)

@@ -18,7 +18,6 @@ from .kiplot import get_board_comps_data, load_any_sch
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
 from .var_kibom import KiBoM
-from .kicad.v5_sch import Schematic
 from .fil_base import BaseFilter, apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, reset_filters
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -563,8 +562,7 @@ class BoMOptions(BaseOptions):
             logger.debug('Adding components from project {} ({}) using reference id `{}`'.
                          format(prj.name, prj.file, prj.ref_id))
             self.qtys[prj.name] = prj.number
-            prj.sch = Schematic()
-            load_any_sch(prj.sch, prj.file, prj.name)
+            prj.sch = load_any_sch(prj.file, prj.name)
             new_comps = prj.sch.get_components()
             for c in new_comps:
                 c.ref = prj.ref_id+c.ref

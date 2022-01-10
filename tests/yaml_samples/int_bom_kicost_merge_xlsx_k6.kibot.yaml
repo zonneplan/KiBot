@@ -1,0 +1,31 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in XLSX format"
+    type: bom
+    dir: KiCost
+    options:
+      use_alt: true
+      ref_id: 'prj0:'
+      number: 50
+      source_by_id: true
+      aggregate:
+        - file: tests/board_samples/kicad_6/merge_2.kicad_sch
+          name: 2nd project
+          ref_id: 'prj1:'
+          number: 20
+        - file: tests/board_samples/kicad_6/merge_3.kicad_sch
+          ref_id: 'prj2:'
+          number: 30
+      columns:
+        - References
+        - Part
+        - Value
+        - Quantity Per PCB
+        - field: manf#
+          name: Manufacturer P/N
+      xlsx:
+        kicost: true
