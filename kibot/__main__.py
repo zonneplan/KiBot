@@ -266,6 +266,7 @@ def detect_kicad():
             # No longer needed for 202112021512+6.0.0+rc1+287+gbb08ef2f41+deb11
             # GS.kicad_conf_path = GS.kicad_conf_path.replace('/kicad/', '/kicadnightly/')
             GS.kicad_share_path = GS.kicad_share_path.replace('/kicad/', '/kicad-nightly/')
+            GS.kicad_dir = 'kicad-nightly'
         GS.pro_ext = '.kicad_pro'
         # KiCad 6 doesn't support the Rescue layer
         GS.work_layer = 'User.9'

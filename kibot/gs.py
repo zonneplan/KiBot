@@ -40,6 +40,7 @@ class GS(object):
     kicad_version = ''
     kicad_conf_path = None
     kicad_share_path = None
+    kicad_dir = 'kicad'
     kicad_plugins_dirs = []
     pro_ext = '.pro'
     work_layer = 'Rescue'

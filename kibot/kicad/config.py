@@ -104,6 +104,7 @@ class KiConf(object):
     config_dir = None
     dirname = None
     sym_lib_dir = None
+    template_dir = None
     kicad_env = {}
     lib_aliases = {}
 
@@ -141,7 +142,7 @@ class KiConf(object):
         if dir and os.path.isdir(dir):
             return dir
         system = platform.system()
-        share = os.path.join('share', 'kicad', data_dir)
+        share = os.path.join('share', GS.kicad_dir, data_dir)
         if system == 'Linux':
             scheme_names = sysconfig.get_scheme_names()
             # Try in local dir
@@ -155,7 +156,7 @@ class KiConf(object):
                 if os.path.isdir(dir):
                     return dir
         elif system == 'Darwin':  # pragma: no cover (Darwin)
-            app_data = os.path.join('Library', 'Application Support', 'kicad', data_dir)
+            app_data = os.path.join('Library', 'Application Support', GS.kicad_dir, data_dir)
             home = os.environ.get('HOME')
             if home:
                 dir = os.path.join(home, app_data)
@@ -178,13 +179,38 @@ class KiConf(object):
         return None
 
     def guess_symbol_dir():
-        guess = KiConf.guess_kicad_data_dir('library', 'KICAD_SYMBOL_DIR')
+        if GS.ki5():
+            order = ['library', 'symbols']
+        else:
+            order = ['symbols', 'library']
+        guess = KiConf.guess_kicad_data_dir(order[0], 'KICAD_SYMBOL_DIR')
         if guess is None:
-            guess = KiConf.guess_kicad_data_dir('symbols', 'KICAD_SYMBOL_DIR')
+            guess = KiConf.guess_kicad_data_dir(order[1], 'KICAD_SYMBOL_DIR')
         return guess
 
+    def guess_footprint_dir():
+        if GS.ki5():
+            order = ['modules', 'footprints']
+        else:
+            order = ['footprints', 'modules']
+        guess = KiConf.guess_kicad_data_dir(order[0], 'KICAD_FOOTPRINT_DIR')
+        if guess is None:
+            guess = KiConf.guess_kicad_data_dir(order[1], 'KICAD_FOOTPRINT_DIR')
+        return guess
+
+    def guess_template_dir():
+        return KiConf.guess_kicad_data_dir('template', 'KICAD_TEMPLATE_DIR')
+
     def guess_3d_dir():
-        return KiConf.guess_kicad_data_dir(os.path.join('modules', 'packages3d'), 'KISYS3DMOD')
+        modules3d = os.path.join('modules', 'packages3d')
+        if GS.ki5():
+            order = [modules3d, '3dmodels']
+        else:
+            order = ['3dmodels', modules3d]
+        guess = KiConf.guess_kicad_data_dir(order[0], 'KISYS3DMOD')
+        if guess is None:
+            guess = KiConf.guess_kicad_data_dir(order[1], 'KISYS3DMOD')
+        return guess
 
     def load_ki5_env(cfg):
         """ Environment vars from KiCad 5 configuration """
@@ -238,6 +264,16 @@ class KiConf(object):
                 logger.debug('Detected KICAD_SYMBOL_DIR="{}"'.format(sym_dir))
             else:
                 logger.warning(W_NOLIBS + 'Unable to find KiCad libraries')
+        if 'KICAD_TEMPLATE_DIR' in KiConf.kicad_env:
+            KiConf.template_dir = KiConf.kicad_env['KICAD_TEMPLATE_DIR']
+        else:
+            template_dir = KiConf.guess_template_dir()
+            if template_dir:
+                KiConf.kicad_env['KICAD_TEMPLATE_DIR'] = template_dir
+                KiConf.template_dir = template_dir
+                logger.debug('Detected KICAD_TEMPLATE_DIR="{}"'.format(template_dir))
+            else:
+                logger.warning(W_NOLIBS + 'Unable to find KiCad templates')
         # If we couldn't get KISYS3DMOD from configuration and KISYS3DMOD isn't defined in the environment
         # OR the 3D config dir is missing.
         if (('KISYS3DMOD' not in KiConf.kicad_env and 'KISYS3DMOD' not in os.environ) or
@@ -253,6 +289,40 @@ class KiConf(object):
                 logger.debug('Exporting KISYS3DMOD="{}"'.format(ki_sys_3d_mod))
             else:
                 logger.warning(W_NOLIBS + 'Unable to find KiCad 3D modules')
+        # Extra magic variables defined by KiCad 6
+        if GS.ki6():
+            # Schematic symbols
+            aux = os.environ.get('KICAD6_SYMBOL_DIR')
+            if aux is None:
+                aux = KiConf.kicad_env.get('KICAD_SYMBOL_DIR')
+            if aux is not None:
+                KiConf.kicad_env['KICAD6_SYMBOL_DIR'] = aux
+                logger.debug('Exporting KICAD6_SYMBOL_DIR="{}"'.format(aux))
+                os.environ['KICAD6_SYMBOL_DIR'] = aux
+            # 3D models
+            aux = os.environ.get('KICAD6_3DMODEL_DIR')
+            if aux is None:
+                aux = KiConf.kicad_env.get('KISYS3DMOD')
+            if aux is not None:
+                KiConf.kicad_env['KICAD6_3DMODEL_DIR'] = aux
+                logger.debug('Exporting KICAD6_3DMODEL_DIR="{}"'.format(aux))
+                os.environ['KICAD6_3DMODEL_DIR'] = aux
+            # Templates
+            aux = os.environ.get('KICAD6_TEMPLATE_DIR')
+            if aux is None:
+                aux = KiConf.kicad_env.get('KICAD_TEMPLATE_DIR')
+            if aux is not None:
+                KiConf.kicad_env['KICAD6_TEMPLATE_DIR'] = aux
+                logger.debug('Exporting KICAD6_TEMPLATE_DIR="{}"'.format(aux))
+                os.environ['KICAD6_TEMPLATE_DIR'] = aux
+            # Footprints
+            aux = os.environ.get('KICAD6_FOOTPRINT_DIR')
+            if aux is None:
+                aux = KiConf.guess_footprint_dir()
+            if aux is not None:
+                KiConf.kicad_env['KICAD6_FOOTPRINT_DIR'] = aux
+                logger.debug('Exporting KICAD6_FOOTPRINT_DIR="{}"'.format(aux))
+                os.environ['KICAD6_FOOTPRINT_DIR'] = aux
 
     def load_lib_aliases(fname):
         if not os.path.isfile(fname):
@@ -289,6 +359,8 @@ class KiConf(object):
                 conf_dir = KiConf.kicad_env['KICAD_CONFIG_HOME']
                 logger.debug('Redirecting symbols lib table to '+conf_dir)
             loaded = KiConf.load_lib_aliases(os.path.join(conf_dir, SYM_LIB_TABLE))
+        if not loaded and 'KICAD_TEMPLATE_DIR' in KiConf.kicad_env:
+            loaded = KiConf.load_lib_aliases(os.path.join(KiConf.kicad_env['KICAD_TEMPLATE_DIR'], SYM_LIB_TABLE))
         if not loaded:
             logger.warning(W_NODEFSYMLIB + 'Missing default symbol library table')
             # No default symbol libs table, try to create one
