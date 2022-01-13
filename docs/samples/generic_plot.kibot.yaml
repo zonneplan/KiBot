@@ -1273,6 +1273,8 @@ outputs:
       origin: 'grid'
       # [string='%f-%i%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options
       output: '%f-%i%v.%x'
+      # [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models
+      subst_models: true
       # [string=''] Board variant to apply
       variant: ''
 

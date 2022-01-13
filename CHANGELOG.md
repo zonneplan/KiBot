@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for variants on KiCost output. (#106)
 - `--cli-order` option to generate outputs in arbitrary order. (#106)
 - QR codes generation and update: symbols and footprints. (#93)
+- Support for `--subst-models` option for KiCad 6's kicad2step. (#137)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

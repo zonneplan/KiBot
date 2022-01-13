@@ -1804,6 +1804,7 @@ Next time you need this list just use an alias, like this:
                     The drill option uses the auxiliary reference defined by the user.
                     You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
         - `output`: [string='%f-%i%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
+        - `subst_models`: [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.

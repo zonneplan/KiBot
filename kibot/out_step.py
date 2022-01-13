@@ -33,6 +33,8 @@ class STEPOptions(Base3DOptions):
             """ The minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm) """
             self.output = GS.def_global_output
             """ Name for the generated STEP file (%i='3D' %x='step') """
+            self.subst_models = True
+            """ Substitute STEP or IGS models with the same name in place of VRML models """
         # Temporal dir used to store the downloaded files
         self._tmp_dir = None
         super().__init__()
@@ -50,7 +52,7 @@ class STEPOptions(Base3DOptions):
 
     def run(self, output):
         super().run(output)
-        check_script(KICAD2STEP, URL_PCBNEW_RUN_DRC, '1.6.0')
+        check_script(KICAD2STEP, URL_PCBNEW_RUN_DRC, '1.6.1')
         # Make units explicit
         if self.metric_units:
             units = 'mm'
@@ -65,6 +67,8 @@ class STEPOptions(Base3DOptions):
         # Add user options
         if self.no_virtual:
             cmd.append('--no-virtual')
+        if self.subst_models:
+            cmd.append('--subst-models')
         if self.min_distance >= 0:
             cmd.extend(['--min-distance', "{}{}".format(self.min_distance, units)])
         if self.origin == 'drill':
