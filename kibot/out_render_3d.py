@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Salvador E. Tropea
-# Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2022 Salvador E. Tropea
+# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/9890
 import os
 from glob import glob
 from shutil import rmtree
-from .misc import CMD_PCBNEW_3D, URL_PCBNEW_3D, RENDER_3D_ERR
+from .misc import (CMD_PCBNEW_3D, URL_PCBNEW_3D, RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS)
 from .gs import (GS)
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .out_base_3d import Base3DOptions, Base3D
@@ -42,11 +42,11 @@ class Render3DOptions(Base3DOptions):
             """ Second color for the background gradient """
             self.board = "#332B16"
             """ Color for the board without copper or solder mask """
-            self.copper = "#B29C00"
+            self.copper = "#8b898c"
             """ Color for the copper """
-            self.silk = "#E5E5E5"
+            self.silk = "#d5dce4"
             """ Color for the silk screen """
-            self.solder_mask = "#143324"
+            self.solder_mask = "#208b47"
             """ Color for the solder mask """
             self.solder_paste = "#808080"
             """ Color for the solder paste """
@@ -78,6 +78,27 @@ class Render3DOptions(Base3DOptions):
         self._expand_ext = 'png'
 
     def config(self, parent):
+        # Apply global defaults
+        if GS.global_pcb_material is not None:
+            material = GS.global_pcb_material.lower()
+            for mat, color in PCB_MAT_COLORS.items():
+                if mat in material:
+                    self.board = "#"+color
+                    break
+        if GS.global_solder_mask_color is not None:
+            name = GS.global_solder_mask_color.lower()
+            if name in SOLDER_COLORS:
+                (_, self.solder_mask) = SOLDER_COLORS[name]
+        if GS.global_silk_screen_color is not None:
+            name = GS.global_silk_screen_color.lower()
+            if name in SILK_COLORS:
+                self.silk = "#"+SILK_COLORS[name]
+        if GS.global_pcb_finish is not None:
+            name = GS.global_pcb_finish.lower()
+            for nm, color in PCB_FINISH_COLORS.items():
+                if nm in name:
+                    self.copper = "#"+color
+                    break
         super().config(parent)
         self.validate_colors(self._colors.keys())
         view = self._views.get(self.view, None)

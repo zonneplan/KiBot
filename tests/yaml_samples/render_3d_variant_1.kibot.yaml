@@ -2,6 +2,10 @@
 kibot:
   version: 1
 
+global:
+  solder_mask_color: blue
+  pcb_finish: ENIG
+
 filters:
   - name: '3D change'
     comment: 'Changes R2 3D model'

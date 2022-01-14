@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -8,7 +8,8 @@ from tempfile import (NamedTemporaryFile)
 # Here we import the whole module to make monkeypatch work
 import subprocess
 import shutil
-from .misc import PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK
+from .misc import (PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK, PCB_MAT_COLORS,
+                   PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS)
 from .kiplot import check_script
 from .gs import (GS)
 from .optionable import Optionable
@@ -25,17 +26,17 @@ class PcbDrawStyle(Optionable):
     def __init__(self):
         super().__init__()
         with document:
-            self.copper = "#417e5a"
+            self.copper = "#285e3a"
             """ color for the copper zones (covered by solder mask) """
-            self.board = "#4ca06c"
+            self.board = "#208b47"
             """ color for the board without copper (covered by solder mask) """
-            self.silk = "#f0f0f0"
+            self.silk = "#d5dce4"
             """ color for the silk screen """
-            self.pads = "#b5ae30"
+            self.pads = "#8b898c"
             """ color for the exposed pads (metal finish) """
             self.outline = "#000000"
             """ color for the outline """
-            self.clad = "#9c6b28"
+            self.clad = "#cabb3e"
             """ color for the PCB core (not covered by solder mask) """
             self.vcut = "#bf2600"
             """ color for the V-CUTS """
@@ -47,6 +48,27 @@ class PcbDrawStyle(Optionable):
             """ [0,1000] how much the highlight extends around the component [mm] """
 
     def config(self, parent):
+        # Apply global defaults
+        if GS.global_pcb_material is not None:
+            material = GS.global_pcb_material.lower()
+            for mat, color in PCB_MAT_COLORS.items():
+                if mat in material:
+                    self.clad = "#"+color
+                    break
+        if GS.global_solder_mask_color is not None:
+            name = GS.global_solder_mask_color.lower()
+            if name in SOLDER_COLORS:
+                (self.copper, self.board) = SOLDER_COLORS[name]
+        if GS.global_silk_screen_color is not None:
+            name = GS.global_silk_screen_color.lower()
+            if name in SILK_COLORS:
+                self.silk = "#"+SILK_COLORS[name]
+        if GS.global_pcb_finish is not None:
+            name = GS.global_pcb_finish.lower()
+            for nm, color in PCB_FINISH_COLORS.items():
+                if nm in name:
+                    self.pads = "#"+color
+                    break
         super().config(parent)
         self.validate_colors(['board', 'copper', 'board', 'silk', 'pads', 'outline', 'clad', 'vcut'])
         # Not implemented but required
@@ -155,7 +177,10 @@ class PcbDrawOptions(VariantOptions):
             self.remap = self.remap._tree
         # Style
         if isinstance(self.style, type):
-            self.style = None
+            # Apply the global defaults
+            style = PcbDrawStyle()
+            style.config(self)
+            self.style = style.to_dict()
         elif isinstance(self.style, PcbDrawStyle):
             self.style = self.style.to_dict()
         self._expand_id = 'bottom' if self.bottom else 'top'

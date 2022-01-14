@@ -1,6 +1,10 @@
 kiplot:
   version: 1
 
+global:
+  solder_mask_color: blue
+  pcb_finish: ENIG
+
 outputs:
   - name: PcbDraw
     comment: "PcbDraw test top"

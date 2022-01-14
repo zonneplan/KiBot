@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """ Miscellaneous definitions """
@@ -218,6 +218,17 @@ W_UNKFLD = '(W076) '
 W_ALRDOWN = '(W077) '
 W_KICOSTFLD = '(W078) '
 W_MIXVARIANT = '(W079) '
+# Somehow arbitrary, the colors are real, but can be different
+PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
+PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'none': "d39751"}
+SOLDER_COLORS = {'green': ("#285e3a", "#208b47"),
+                 'black': ("#1d1918", "#2d2522"),
+                 'blue': ("#1b1f44", "#00406a"),
+                 'red': ("#812e2a", "#be352b"),
+                 'white': ("#bdccc7", "#b7b7ad"),
+                 'yellow': ("#73823d", "#f2a756"),
+                 'purple': ("#30234a", "#451d70")}
+SILK_COLORS = {'black': "0b1013", 'white': "d5dce4"}
 
 
 class Rect(object):
