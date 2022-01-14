@@ -889,12 +889,12 @@ outputs:
       show_components: none
       # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
       style:
-        # [string='#4ca06c'] color for the board without copper (covered by solder mask)
-        board: '#4ca06c'
-        # [string='#9c6b28'] color for the PCB core (not covered by solder mask)
-        clad: '#9c6b28'
-        # [string='#417e5a'] color for the copper zones (covered by solder mask)
-        copper: '#417e5a'
+        # [string='#208b47'] color for the board without copper (covered by solder mask)
+        board: '#208b47'
+        # [string='#cabb3e'] color for the PCB core (not covered by solder mask)
+        clad: '#cabb3e'
+        # [string='#285e3a'] color for the copper zones (covered by solder mask)
+        copper: '#285e3a'
         # [boolean=false] highlight over the component (not under)
         highlight_on_top: false
         # [number=1.5] [0,1000] how much the highlight extends around the component [mm]
@@ -903,10 +903,10 @@ outputs:
         highlight_style: 'stroke:none;fill:#ff0000;opacity:0.5;'
         # [string='#000000'] color for the outline
         outline: '#000000'
-        # [string='#b5ae30'] color for the exposed pads (metal finish)
-        pads: '#b5ae30'
-        # [string='#f0f0f0'] color for the silk screen
-        silk: '#f0f0f0'
+        # [string='#8b898c'] color for the exposed pads (metal finish)
+        pads: '#8b898c'
+        # [string='#d5dce4'] color for the silk screen
+        silk: '#d5dce4'
         # [string='#bf2600'] color for the V-CUTS
         vcut: '#bf2600'
       # [string=''] Board variant to apply
@@ -1182,8 +1182,8 @@ outputs:
       background2: '#CCCCE5'
       # [string='#332B16'] Color for the board without copper or solder mask
       board: '#332B16'
-      # [string='#B29C00'] Color for the copper
-      copper: '#B29C00'
+      # [string='#8b898c'] Color for the copper
+      copper: '#8b898c'
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
@@ -1211,10 +1211,10 @@ outputs:
       output: '%f-%i%v.%x'
       # [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`
       ray_tracing: false
-      # [string='#E5E5E5'] Color for the silk screen
-      silk: '#E5E5E5'
-      # [string='#143324'] Color for the solder mask
-      solder_mask: '#143324'
+      # [string='#d5dce4'] Color for the silk screen
+      silk: '#d5dce4'
+      # [string='#208b47'] Color for the solder mask
+      solder_mask: '#208b47'
       # [string='#808080'] Color for the solder paste
       solder_paste: '#808080'
       # [string=''] Board variant to apply

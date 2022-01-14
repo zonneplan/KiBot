@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -384,6 +384,10 @@ class CfgYamlReader(object):
         GS.global_time_format = GS.global_from_cli.get('time_format', None)
         GS.global_kiauto_wait_start = GS.global_from_cli.get('kiauto_wait_start', None)
         GS.global_kiauto_time_out_scale = GS.global_from_cli.get('kiauto_time_out_scale', None)
+        GS.global_pcb_material = GS.global_from_cli.get('pcb_material', None)
+        GS.global_solder_mask_color = GS.global_from_cli.get('solder_mask_color', None)
+        GS.global_silk_screen_color = GS.global_from_cli.get('silk_screen_color', None)
+        GS.global_pcb_finish = GS.global_from_cli.get('pcb_finish', None)
         # List of outputs
         version = None
         globals_found = False

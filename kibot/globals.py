@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -39,6 +39,18 @@ class Globals(FiltersOptions):
             self.time_reformat = True
             """ Tries to reformat the PCB/SCH date using the `date_format`.
                 This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD) """
+            self.pcb_material = 'FR4'
+            """ PCB core material. Currently used for documentation and to choose default colors.
+                Currently known are FR1 to FR5 """
+            self.solder_mask_color = 'green'
+            """ Color for the solder mask. Currently used for documentation and to choose default colors.
+                Currently known are green, black, white, yellow, purple, blue and red """
+            self.silk_screen_color = 'white'
+            """ Color for the markings. Currently used for documentation and to choose default colors.
+                Currently known are black and white """
+            self.pcb_finish = 'HAL'
+            """ Finishing used to protect pads. Currently used for documentation and to choose default colors.
+                Currently known are None, HAL, HASL, ENIG and ImAg """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self._unkown_is_error = True
@@ -68,6 +80,12 @@ class Globals(FiltersOptions):
             logger.warning(W_MUSTBEINT+'kiauto_wait_start must be integer, truncating to '+str(GS.global_kiauto_wait_start))
         GS.global_kiauto_time_out_scale = self.set_global(GS.global_kiauto_time_out_scale, self.kiauto_time_out_scale,
                                                           'kiauto_time_out_scale')
+        GS.global_pcb_material = self.set_global(GS.global_pcb_material, self.pcb_material, 'pcb_material')
+        GS.global_solder_mask_color = self.set_global(GS.global_solder_mask_color, self.solder_mask_color,
+                                                      'solder_mask_color')
+        GS.global_silk_screen_color = self.set_global(GS.global_silk_screen_color, self.silk_screen_color,
+                                                      'silk_screen_color')
+        GS.global_pcb_finish = self.set_global(GS.global_pcb_finish, self.pcb_finish, 'pcb_finish')
         if not GS.out_dir_in_cmd_line and self.out_dir:
             GS.out_dir = os.path.join(os.getcwd(), self.out_dir)
         set_filters(self.unparsed)

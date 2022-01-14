@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -86,6 +86,10 @@ class GS(object):
     global_date_format = None
     global_time_format = None
     global_time_reformat = None
+    global_pcb_material = None
+    global_solder_mask_color = None
+    global_silk_screen_color = None
+    global_pcb_finish = None
     test_boolean = True
 
     @staticmethod

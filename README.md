@@ -28,6 +28,7 @@
     * [Default *variant* option](#default-variant-option)
     * [Output directory option](#output-directory-option)
     * [Date format option](#date-format-option)
+    * [PCB details options](#pcb-details-options)
     * [Filtering KiBot warnings](#filtering-kibot-warnings)
   * [Filters and variants](#filters-and-variants)
     * [Supported filters](#supported-filters)
@@ -324,6 +325,19 @@ The behavior of these patterns isn't fully defined in this case and the results 
 * The **%T** format is controlled by the `time_format` global option.
 
 In all cases the format is the one used by the `strftime` POSIX function, for more information visit this [site](https://strftime.org/).
+
+#### PCB details options
+
+The following variables control the default colors and they are used for documentation purposes:
+
+- `pcb_material` [FR4] PCB core material.
+  Currently known are FR1 to FR5
+- `solder_mask_color` [green] Color for the solder mask.
+  Currently known are green, black, white, yellow, purple, blue and red.
+- `silk_screen_color` [white] Color for the markings.
+  Currently known are black and white.
+- `pcb_finish` [HAL] Finishing used to protect pads.
+  Currently known are None, HAL, HASL, ENIG and ImAg.
 
 #### Filtering KiBot warnings
 
@@ -1434,15 +1448,15 @@ Next time you need this list just use an alias, like this:
                              The default is none.
         - `style`: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
           * Valid keys:
-            - `board`: [string='#4ca06c'] color for the board without copper (covered by solder mask).
-            - `clad`: [string='#9c6b28'] color for the PCB core (not covered by solder mask).
-            - `copper`: [string='#417e5a'] color for the copper zones (covered by solder mask).
+            - `board`: [string='#208b47'] color for the board without copper (covered by solder mask).
+            - `clad`: [string='#cabb3e'] color for the PCB core (not covered by solder mask).
+            - `copper`: [string='#285e3a'] color for the copper zones (covered by solder mask).
             - `highlight_on_top`: [boolean=false] highlight over the component (not under).
             - `highlight_padding`: [number=1.5] [0,1000] how much the highlight extends around the component [mm].
             - `highlight_style`: [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style.
             - `outline`: [string='#000000'] color for the outline.
-            - `pads`: [string='#b5ae30'] color for the exposed pads (metal finish).
-            - `silk`: [string='#f0f0f0'] color for the silk screen.
+            - `pads`: [string='#8b898c'] color for the exposed pads (metal finish).
+            - `silk`: [string='#d5dce4'] color for the silk screen.
             - `vcut`: [string='#bf2600'] color for the V-CUTS.
         - `variant`: [string=''] Board variant to apply.
         - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
@@ -1726,7 +1740,7 @@ Next time you need this list just use an alias, like this:
         - `background1`: [string='#66667F'] First color for the background gradient.
         - `background2`: [string='#CCCCE5'] Second color for the background gradient.
         - `board`: [string='#332B16'] Color for the board without copper or solder mask.
-        - `copper`: [string='#B29C00'] Color for the copper.
+        - `copper`: [string='#8b898c'] Color for the copper.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `download`: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
@@ -1742,8 +1756,8 @@ Next time you need this list just use an alias, like this:
         - `orthographic`: [boolean=false] Enable the orthographic projection mode (top view looks flat).
         - `output`: [string='%f-%i%v.%x'] Name for the generated image file (%i='3D_$VIEW' %x='png'). Affected by global options.
         - `ray_tracing`: [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`.
-        - `silk`: [string='#E5E5E5'] Color for the silk screen.
-        - `solder_mask`: [string='#143324'] Color for the solder mask.
+        - `silk`: [string='#d5dce4'] Color for the silk screen.
+        - `solder_mask`: [string='#208b47'] Color for the solder mask.
         - `solder_paste`: [string='#808080'] Color for the solder paste.
         - `variant`: [string=''] Board variant to apply.
         - `view`: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.

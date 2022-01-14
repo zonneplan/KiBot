@@ -28,6 +28,7 @@
     * [Default *variant* option](#default-variant-option)
     * [Output directory option](#output-directory-option)
     * [Date format option](#date-format-option)
+    * [PCB details options](#pcb-details-options)
     * [Filtering KiBot warnings](#filtering-kibot-warnings)
   * [Filters and variants](#filters-and-variants)
     * [Supported filters](#supported-filters)
@@ -259,6 +260,19 @@ The behavior of these patterns isn't fully defined in this case and the results 
 * The **%T** format is controlled by the `time_format` global option.
 
 In all cases the format is the one used by the `strftime` POSIX function, for more information visit this [site](https://strftime.org/).
+
+#### PCB details options
+
+The following variables control the default colors and they are used for documentation purposes:
+
+- `pcb_material` [FR4] PCB core material.
+  Currently known are FR1 to FR5
+- `solder_mask_color` [green] Color for the solder mask.
+  Currently known are green, black, white, yellow, purple, blue and red.
+- `silk_screen_color` [white] Color for the markings.
+  Currently known are black and white.
+- `pcb_finish` [HAL] Finishing used to protect pads.
+  Currently known are None, HAL, HASL, ENIG and ImAg.
 
 #### Filtering KiBot warnings
 
