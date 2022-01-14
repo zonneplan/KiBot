@@ -116,6 +116,9 @@ def solve_schematic(a_schematic, a_board_file, config):
             logger.info('Using SCH file: '+schematic)
         elif len(schematics) > 1:
             # Look for a schematic with the same name as the config
+            if config[0] == '.':
+                # Unhide hidden config
+                config = config[1:]
             while '.' in config:
                 config = os.path.splitext(config)[0]
             sch = config+'.sch'

@@ -91,6 +91,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Gerber: job file didn't use the global output pattern. (#116)
 - Warnings count
 - Update XML: Removed the side effect Bom. (#106)
+- Problems when using a hidden config file, using an output that needs the SCH,
+  not specifying the SCH and more than one SCH was found. (#138)
 
 
 ## [0.11.0] - 2021-04-25
