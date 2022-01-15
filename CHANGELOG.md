@@ -60,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for `--subst-models` option for KiCad 6's kicad2step. (#137)
 - Added global options to define the PCB details (`pcb_material`,
   `solder_mask_color`, `silk_screen_color` and `pcb_finish`)
+- Report generation (for design house) (#93)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

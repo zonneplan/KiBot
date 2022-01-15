@@ -991,3 +991,14 @@ def test_qr_lib_1(test_dir):
     if os.path.isfile(bkp):
         # Not always there, pcbnew_do can remove it
         os.remove(bkp)
+
+
+def test_report_simple_1(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, 'test_report_simple_1', prj, 'report_simple_1', POS_DIR)
+    ctx.run()
+    ctx.expect_out_file(prj+'-report.txt')
+    ctx.expect_out_file(prj+'-report_simple.txt')
+    ctx.compare_txt(prj+'-report.txt')
+    ctx.compare_txt(prj+'-report_simple.txt')
+    ctx.clean_up()

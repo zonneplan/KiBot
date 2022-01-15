@@ -1,0 +1,20 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  solder_mask_color: blue
+  pcb_finish: ENIG
+
+outputs:
+  - name: 'report_full'
+    comment: "Full design report"
+    type: report
+
+  - name: 'report_simple'
+    comment: "Simple design report"
+    type: report
+    output_id: _simple
+    options:
+      template: simple
+

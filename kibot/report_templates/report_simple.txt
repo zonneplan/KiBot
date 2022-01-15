@@ -1,0 +1,28 @@
+PCB Specifications:
+Size:
+- ${bb_w_mm}x${bb_h_mm} mm
+
+Class: ${pattern_class}${drill_class}
+Track width: ≥ ${track_mm} mm
+Insulation distance: ≥ ${clearance_mm} mm
+Minimum drill size: ≥ ${drill_mm} mm (finished metalized hole: ${drill_1_mm} mm)
+Minimum slot width: ≥ ${slot_mm} mm
+Ring collar: ≥ ${oar_mm} mm
+
+
+Materials:
+- ${pcb_material}, ${thickness_mm} mm
+- ${pcb_finish}
+- ${layers} layers
+- 35 µm copper thickness
+
+Solder mask:
+- ${solder_mask}
+- ${solder_mask_color}
+
+Marking:
+- ${silk_screen} screen printing
+- Silk: ${silk_screen_color}
+
+Other markings:
+- ROHS / UL / Date - Yes if available

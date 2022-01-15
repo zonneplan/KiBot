@@ -1232,6 +1232,18 @@ outputs:
       # Same result as using the mouse wheel in the 3D viewer
       zoom: 0
 
+  # Design report:
+  # Mainly oriented to be sent to the manufacturer or check PCB details.
+  - name: 'report_example'
+    comment: 'Generates a report about the design.'
+    type: 'report'
+    dir: 'Example/report_dir'
+    options:
+      # [string='%f-%i%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options
+      output: '%f-%i%v.%x'
+      # [string='full'] Name for one of the internal templates (full, simple) or a custom template file
+      template: 'full'
+
   # Schematic with variant generator:
   # This copy isn't intended for development.
   # Is just a tweaked version of the original where you can look at the results.

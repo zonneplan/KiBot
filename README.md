@@ -1771,6 +1771,25 @@ Next time you need this list just use an alias, like this:
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* Design report
+  * Type: `report`
+  * Description: Generates a report about the design.
+                 Mainly oriented to be sent to the manufacturer or check PCB details.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `report` output.
+      * Valid keys:
+        - `output`: [string='%f-%i%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options.
+        - `template`: [string='full'] Name for one of the internal templates (full, simple) or a custom template file.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * Schematic with variant generator
   * Type: `sch_variant`
   * Description: Creates a copy of the schematic with all the filters and variants applied.
