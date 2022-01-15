@@ -41,6 +41,7 @@ test: lint
 	rm -rf output
 	rm -f example.kiplot.yaml
 	rm -f example.kibot.yaml
+	rm -f tests/.local
 	$(PY_COV) erase
 	$(PYTEST) --test_dir output
 	$(PY_COV) report
@@ -51,6 +52,7 @@ test1:
 	rm -rf output
 	rm -f example.kiplot.yaml
 	rm -f example.kibot.yaml
+	rm -f tests/.local
 	$(PY_COV) erase
 	$(PYTEST) --log-cli-level debug -k "test_bom_ok" --test_dir output
 	$(PY_COV) report
@@ -63,6 +65,7 @@ test1:
 
 test_docker_local_1:
 	rm -rf output
+	rm -f tests/.local
 	$(PY_COV) erase
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
@@ -73,6 +76,7 @@ test_docker_local_1:
 
 test_docker_local_1_ki6:
 	rm -rf output
+	rm -f tests/.local
 	#$(PY_COV) erase
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
@@ -83,6 +87,7 @@ test_docker_local_1_ki6:
 
 test_docker_local:
 	rm -rf output
+	rm -f tests/.local
 	$(PY_COV) erase
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
@@ -93,6 +98,7 @@ test_docker_local:
 
 test_docker_local_ki6:
 	rm -rf output
+	rm -f tests/.local
 	$(PY_COV) erase
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
