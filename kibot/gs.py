@@ -69,7 +69,7 @@ class GS(object):
     current_output = None
     # Global defaults
     #  This is used as default value for classes supporting "output" option
-    def_global_output = '%f-%i%v.%x'
+    def_global_output = '%f-%i%I%v.%x'
     #  This value will overwrite GS.def_global_output if defined
     #  Classes supporting global "output" option must call super().__init__()
     #  after defining its own options to allow Optionable do the overwrite.

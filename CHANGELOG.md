@@ -74,6 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now you get an error when defining two outputs with the same name.
 - The `%d/%sd/%bd` expansion patterns are now affected by the global `date_format`.
   Can be disabled using `date_reformat: false`. (#121)
+- The default output pattern now includes the `output_id` (%I)
 
 ### Fixed
 - Position files now defaults to use the auxiliar origin as KiCad.
