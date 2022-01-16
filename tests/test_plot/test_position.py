@@ -215,7 +215,7 @@ def test_position_rot_1(test_dir):
     ctx.expect_out_file(output)
     ctx.compare_txt(output)
     ctx.compare_txt(prj+'_bom_jlc.csv')
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_position_rot_2(test_dir):
@@ -226,7 +226,7 @@ def test_position_rot_2(test_dir):
     ctx.expect_out_file(output)
     ctx.compare_txt(output)
     ctx.compare_txt(prj+'_bom_jlc.csv')
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_position_rot_3(test_dir):
@@ -236,7 +236,7 @@ def test_position_rot_3(test_dir):
     output = prj+'_cpl_jlc_aux.csv'
     ctx.expect_out_file(output)
     ctx.compare_txt(output)
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_position_rot_4(test_dir):
@@ -246,7 +246,7 @@ def test_position_rot_4(test_dir):
     output = prj+'_cpl_jlc_aux.csv'
     ctx.expect_out_file(output)
     ctx.compare_txt(output)
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_rot_bottom(test_dir):
