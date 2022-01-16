@@ -81,7 +81,10 @@ class Globals(FiltersOptions):
                 logger.debug("- Failed to load the PCB "+str(e))
         if pcb is None:
             return
-        sp = next(sexp_iter(pcb, 'kicad_pcb/setup/stackup'), None)
+        iter = sexp_iter(pcb, 'kicad_pcb/setup/stackup')
+        if iter is None:
+            return
+        sp = next(iter, None)
         if sp is None:
             return
         logger.debug("- Found stack-up information")
