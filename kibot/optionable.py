@@ -252,8 +252,10 @@ class Optionable(object):
             name = name.replace('%v', _cl(self._find_variant()))
             name = name.replace('%V', _cl(self._find_variant_name()))
             name = name.replace('%x', self._expand_ext)
+            replace_id = ''
             if parent and hasattr(parent, 'output_id'):
-                name = name.replace('%I', _cl(parent.output_id))
+                replace_id = _cl(parent.output_id)
+            name = name.replace('%I', replace_id)
         return name
 
     def expand_filename_both(self, name, is_sch=True, make_safe=True):
