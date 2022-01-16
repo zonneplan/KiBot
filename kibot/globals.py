@@ -99,7 +99,7 @@ class Globals(FiltersOptions):
             self.pcb_finish = copper_finish
 
     def config(self, parent):
-        if GS.ki6() and GS.pcb_file:
+        if GS.ki6() and GS.pcb_file and os.path.isfile(GS.pcb_file):
             self.get_stack_up()
         super().config(parent)
         GS.global_output = self.set_global(GS.global_output, self.output, 'output')
