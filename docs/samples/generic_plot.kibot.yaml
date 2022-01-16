@@ -62,7 +62,7 @@ outputs:
     dir: 'Example/boardview_dir'
     options:
       # [string='%f-%i%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
 
   # BoM (Bill of Materials):
   # Is compatible with KiBoM, but doesn't need to update the XML netlist because the components
@@ -235,7 +235,7 @@ outputs:
       # [number=1] Number of boards to build (components multiplier)
       number: 1
       # [string='%f-%i%v.%x'] filename for the output (%i=bom). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [string=''] A prefix to add to all the references from this project. Used for multiple projects
       ref_id: ''
       # [string=' '] Separator used for the list of references
@@ -303,7 +303,7 @@ outputs:
       # [string='ZIP'] [ZIP,TAR,RAR] Output file format
       format: 'ZIP'
       # [string='%f-%i%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
 
   # Datasheets downloader:
   - name: 'download_datasheets_example'
@@ -363,7 +363,7 @@ outputs:
       # [boolean=false] Use mm instead of inches
       metric_units: false
       # [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=true] Include the footprint references
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
@@ -398,7 +398,7 @@ outputs:
       # Not generated unless a format is specified
       map:
         # [string='%f-%i%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options
-        output: '%f-%i%v.%x'
+        output: '%f-%i%I%v.%x'
         # [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map
         type: 'pdf'
       # [boolean=true] Use metric units instead of inches
@@ -410,7 +410,7 @@ outputs:
       # [string] Force this replacement for %i when generating NPTH files
       npth_id: null
       # [string='%f-%i%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=true] Generate one file for both, plated holes and non-plated holes, instead of two separated files
       pth_and_npth_single_file: true
       # [string] Force this replacement for %i when generating PTH and unified files
@@ -441,13 +441,13 @@ outputs:
       # Not generated unless a format is specified
       map:
         # [string='%f-%i%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options
-        output: '%f-%i%v.%x'
+        output: '%f-%i%I%v.%x'
         # [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map
         type: 'pdf'
       # [string] Force this replacement for %i when generating NPTH files
       npth_id: null
       # [string='%f-%i%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [string] Force this replacement for %i when generating PTH and unified files
       pth_id: null
       # [dict|string] Name of the drill report. Not generated unless a name is specified
@@ -489,7 +489,7 @@ outputs:
       # [boolean=false] Include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
       # [string='%f-%i%v.%x'] Name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options
-      gerber_job_file: '%f-%i%v.%x'
+      gerber_job_file: '%f-%i%I%v.%x'
       # [number=4.6] This the gerber coordinate format, can be 4.5 or 4.6
       gerber_precision: 4.6
       # [string=''] Used to change the Protel style extensions for inner layers.
@@ -499,7 +499,7 @@ outputs:
       # [number=0.1] [0.02,2] Line_width for objects without width [mm] (KiCad 5)
       line_width: 0.1
       # [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=true] Include the footprint references
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
@@ -558,7 +558,7 @@ outputs:
       # [boolean=false] Plot mirrored
       mirror_plot: false
       # [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [number=1] [1,16] Pen number
       pen_number: 1
       # [number=20] [1,99] Pen speed
@@ -656,7 +656,7 @@ outputs:
       # [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field
       normalize_field_case: false
       # [string='%f-%i%v.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=false] Show fabrication layer by default
       show_fabrication: false
       # [string=''] Comma separated list of fields to show in the BOM.
@@ -784,7 +784,7 @@ outputs:
       # [number=1] Number of boards to build (components multiplier)
       number: 1
       # [string='%f-%i%v.%x'] filename for the output (%i=bom). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [string=','] CSV Separator
       separator: ','
       # [string=''] Board variant(s), used to determine which components
@@ -838,7 +838,7 @@ outputs:
       # [number=100] Number of boards to build (components multiplier)
       number: 100
       # [string='%f-%i%v.%x'] Filename for the output (%i=kicost, %x=xlsx). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=false] Include the catalogue links in the catalogue code
       show_cat_url: false
       # [string|list(string)] Declare part fields to include in multipart split process
@@ -879,7 +879,7 @@ outputs:
       # [boolean=false] Do not make holes transparent
       no_drillholes: false
       # [string='%f-%i%v.%x'] Name for the generated file. Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=false] Show placeholder for missing components
       placeholder: false
       # [dict|None] Replacements for PCB references using components (lib:component)
@@ -955,7 +955,7 @@ outputs:
       # [boolean=false] Invert black and white
       negative_plot: false
       # [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=true] Include the footprint references
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
@@ -994,7 +994,7 @@ outputs:
       # [boolean=false] Print in black and white
       monochrome: false
       # [string='%f-%i%v.%x'] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # `output_name` is an alias for `output`
       # [boolean=true] Include the title-block
       plot_sheet_reference: true
@@ -1025,7 +1025,7 @@ outputs:
       # [boolean=false] Generate a monochromatic PDF
       monochrome: false
       # [string='%f-%i%v.%x'] Filename for the output PDF (%i=schematic %x=pdf). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [string=''] Board variant to apply.
       # Not fitted components are crossed
       variant: ''
@@ -1055,7 +1055,7 @@ outputs:
       # [boolean=true] Only include the surface mount components
       only_smd: true
       # [string='%f-%i%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=true] Generate two separated files, one for the top and another for the bottom
       separate_files_for_front_and_back: true
       # [string='millimeters'] [millimeters,inches] Units used for the positions
@@ -1105,7 +1105,7 @@ outputs:
       # [boolean=false] Invert black and white
       negative_plot: false
       # [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=true] Include the footprint references
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
@@ -1146,7 +1146,7 @@ outputs:
       # [string='QR'] Short name for the library
       lib: 'QR'
       # [string='%f-%i%v.%x'] Filename for the output (%i=qr, %x=lib). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [list(dict)] QR codes to include in the library
       qrs:
         # [string='low'] [low,medium,quartile,high] Error correction level
@@ -1208,7 +1208,7 @@ outputs:
       # [boolean=false] Enable the orthographic projection mode (top view looks flat)
       orthographic: false
       # [string='%f-%i%v.%x'] Name for the generated image file (%i='3D_$VIEW' %x='png'). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`
       ray_tracing: false
       # [string='#d5dce4'] Color for the silk screen
@@ -1240,7 +1240,7 @@ outputs:
     dir: 'Example/report_dir'
     options:
       # [string='%f-%i%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [string='full'] Name for one of the internal templates (full, simple) or a custom template file
       template: 'full'
 
@@ -1284,7 +1284,7 @@ outputs:
       # You can define any other origin using the format 'X,Y', i.e. '3.2,-10'
       origin: 'grid'
       # [string='%f-%i%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models
       subst_models: true
       # [string=''] Board variant to apply
@@ -1329,7 +1329,7 @@ outputs:
       # [boolean=false] Invert black and white
       negative_plot: false
       # [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [boolean=true] Include the footprint references
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
@@ -1355,7 +1355,7 @@ outputs:
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
       # [string='%f-%i%v.%x'] Filename for the output SVG (%i=schematic %x=svg). Affected by global options
-      output: '%f-%i%v.%x'
+      output: '%f-%i%I%v.%x'
       # [string=''] Board variant to apply.
       # Not fitted components are crossed
       variant: ''
