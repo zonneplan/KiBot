@@ -764,7 +764,7 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `boardview` output.
       * Valid keys:
-        - `output`: [string='%f-%i%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
@@ -891,7 +891,7 @@ Next time you need this list just use an alias, like this:
         - `normalize_locale`: [boolean=false] When normalizing values use the locale decimal point.
         - `normalize_values`: [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.
         - `number`: [number=1] Number of boards to build (components multiplier).
-        - `output`: [string='%f-%i%v.%x'] filename for the output (%i=bom). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options.
         - `ref_id`: [string=''] A prefix to add to all the references from this project. Used for multiple projects.
         - `ref_separator`: [string=' '] Separator used for the list of references.
         - `source_by_id`: [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name.
@@ -942,7 +942,7 @@ Next time you need this list just use an alias, like this:
                         By default this pattern is applied to the output dir specified with `-d` command line option.
                         See the `from_cwd` option.
         - `format`: [string='ZIP'] [ZIP,TAR,RAR] Output file format.
-        - `output`: [string='%f-%i%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
@@ -1008,7 +1008,7 @@ Next time you need this list just use an alias, like this:
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
         - `metric_units`: [boolean=false] Use mm instead of inches.
-        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `plot_sheet_reference`: [boolean=false] Currently without effect.
@@ -1040,13 +1040,13 @@ Next time you need this list just use an alias, like this:
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
-            - `output`: [string='%f-%i%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
+            - `output`: [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
             - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
         - `metric_units`: [boolean=true] Use metric units instead of inches.
         - `minimal_header`: [boolean=false] Use a minimal header in the file.
         - `mirror_y_axis`: [boolean=false] Invert the Y axis.
         - `npth_id`: [string] Force this replacement for %i when generating NPTH files.
-        - `output`: [string='%f-%i%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
         - `pth_and_npth_single_file`: [boolean=true] Generate one file for both, plated holes and non-plated holes, instead of two separated files.
         - `pth_id`: [string] Force this replacement for %i when generating PTH and unified files.
         - `report`: [dict|string] Name of the drill report. Not generated unless a name is specified.
@@ -1078,10 +1078,10 @@ Next time you need this list just use an alias, like this:
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
-            - `output`: [string='%f-%i%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
+            - `output`: [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
             - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
         - `npth_id`: [string] Force this replacement for %i when generating NPTH files.
-        - `output`: [string='%f-%i%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
         - `pth_id`: [string] Force this replacement for %i when generating PTH and unified files.
         - `report`: [dict|string] Name of the drill report. Not generated unless a name is specified.
           * Valid keys:
@@ -1125,13 +1125,13 @@ Next time you need this list just use an alias, like this:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
-        - `gerber_job_file`: [string='%f-%i%v.%x'] Name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options.
+        - `gerber_job_file`: [string='%f-%i%I%v.%x'] Name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options.
         - `gerber_precision`: [number=4.6] This the gerber coordinate format, can be 4.5 or 4.6.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
         - `line_width`: [number=0.1] [0.02,2] Line_width for objects without width [mm] (KiCad 5).
-        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `plot_sheet_reference`: [boolean=false] Currently without effect.
@@ -1182,7 +1182,7 @@ Next time you need this list just use an alias, like this:
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
         - `mirror_plot`: [boolean=false] Plot mirrored.
-        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `pen_number`: [number=1] [1,16] Pen number.
         - `pen_speed`: [number=20] [1,99] Pen speed.
         - `pen_width`: [number=15] [0,100] Pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
@@ -1254,7 +1254,7 @@ Next time you need this list just use an alias, like this:
         - `no_compression`: [boolean=false] Disable compression of pcb data.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
         - `normalize_field_case`: [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
-        - `output`: [string='%f-%i%v.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
         - `show_fabrication`: [boolean=false] Show fabrication layer by default.
         - `show_fields`: [string=''] Comma separated list of fields to show in the BOM.
                          Value and Footprint are displayed when nothing is specified.
@@ -1359,7 +1359,7 @@ Next time you need this list just use an alias, like this:
             - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `format`: [string='HTML'] [HTML,CSV,XML,XLSX] format for the BoM.
         - `number`: [number=1] Number of boards to build (components multiplier).
-        - `output`: [string='%f-%i%v.%x'] filename for the output (%i=bom). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options.
         - `separator`: [string=','] CSV Separator.
         - `variant`: [string=''] Board variant(s), used to determine which components
                      are output to the BoM. To specify multiple variants,
@@ -1405,7 +1405,7 @@ Next time you need this list just use an alias, like this:
         - `no_distributors`: [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`.
         - `no_price`: [boolean=false] Do not look for components price. For testing purposes.
         - `number`: [number=100] Number of boards to build (components multiplier).
-        - `output`: [string='%f-%i%v.%x'] Filename for the output (%i=kicost, %x=xlsx). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=kicost, %x=xlsx). Affected by global options.
         - `show_cat_url`: [boolean=false] Include the catalogue links in the catalogue code.
         - `split_extra_fields`: [string|list(string)] Declare part fields to include in multipart split process.
         - `translate_fields`: [list(dict)] Fields to rename (KiCost option, not internal filters).
@@ -1441,7 +1441,7 @@ Next time you need this list just use an alias, like this:
         - `libs`: [list(string)=[]] List of libraries.
         - `mirror`: [boolean=false] Mirror the board.
         - `no_drillholes`: [boolean=false] Do not make holes transparent.
-        - `output`: [string='%f-%i%v.%x'] Name for the generated file. Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Name for the generated file. Affected by global options.
         - `placeholder`: [boolean=false] Show placeholder for missing components.
         - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
         - `show_components`: [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
@@ -1518,14 +1518,14 @@ Next time you need this list just use an alias, like this:
         - `line_width`: [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5).
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `negative_plot`: [boolean=false] Invert black and white.
-        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `plot_sheet_reference`: [boolean=false] Currently without effect.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
-    - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+    - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `plot_footprint_refs`: [boolean=true] Include the footprint references.
     - `plot_footprint_values`: [boolean=true] Include the footprint values.
@@ -1565,7 +1565,7 @@ Next time you need this list just use an alias, like this:
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
         - `mirror`: [boolean=false] Print mirrored (X axis inverted). ONLY for KiCad 6.
         - `monochrome`: [boolean=false] Print in black and white.
-        - `output`: [string='%f-%i%v.%x'] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
         - *output_name*: Alias for output.
         - `plot_sheet_reference`: [boolean=true] Include the title-block.
         - `scaling`: [number=1.0] Scale factor (0 means autoscaling).
@@ -1595,7 +1595,7 @@ Next time you need this list just use an alias, like this:
                         A short-cut to use for simple cases where a variant is an overkill.
         - `frame`: [boolean=true] Include the frame and title block.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
-        - `output`: [string='%f-%i%v.%x'] Filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
@@ -1625,7 +1625,7 @@ Next time you need this list just use an alias, like this:
         - `format`: [string='ASCII'] [ASCII,CSV] Format for the position file.
         - `include_virtual`: [boolean=false] Include virtual components. For special purposes, not pick & place.
         - `only_smd`: [boolean=true] Only include the surface mount components.
-        - `output`: [string='%f-%i%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
         - `separate_files_for_front_and_back`: [boolean=true] Generate two separated files, one for the top and another for the bottom.
         - `units`: [string='millimeters'] [millimeters,inches] Units used for the positions.
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
@@ -1672,7 +1672,7 @@ Next time you need this list just use an alias, like this:
         - `line_width`: [number=0.15] [0.02,2] For objects without width [mm] (KiCad 5).
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `negative_plot`: [boolean=false] Invert black and white.
-        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `plot_sheet_reference`: [boolean=false] Currently without effect.
@@ -1708,7 +1708,7 @@ Next time you need this list just use an alias, like this:
     - `options`: [dict] Options for the `boardview` output.
       * Valid keys:
         - `lib`: [string='QR'] Short name for the library.
-        - `output`: [string='%f-%i%v.%x'] Filename for the output (%i=qr, %x=lib). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=qr, %x=lib). Affected by global options.
         - `qrs`: [list(dict)] QR codes to include in the library.
           * Valid keys:
             - `correction_level`: [string='low'] [low,medium,quartile,high] Error correction level.
@@ -1754,7 +1754,7 @@ Next time you need this list just use an alias, like this:
         - `no_tht`: [boolean=false] Used to exclude 3D models for through hole components.
         - `no_virtual`: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
         - `orthographic`: [boolean=false] Enable the orthographic projection mode (top view looks flat).
-        - `output`: [string='%f-%i%v.%x'] Name for the generated image file (%i='3D_$VIEW' %x='png'). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Name for the generated image file (%i='3D_$VIEW' %x='png'). Affected by global options.
         - `ray_tracing`: [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`.
         - `silk`: [string='#d5dce4'] Color for the silk screen.
         - `solder_mask`: [string='#208b47'] Color for the solder mask.
@@ -1785,7 +1785,7 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `report` output.
       * Valid keys:
-        - `output`: [string='%f-%i%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options.
         - `template`: [string='full'] Name for one of the internal templates (full, simple) or a custom template file.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
@@ -1836,7 +1836,7 @@ Next time you need this list just use an alias, like this:
         - `origin`: [string='grid'] Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
                     The drill option uses the auxiliary reference defined by the user.
                     You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
-        - `output`: [string='%f-%i%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
         - `subst_models`: [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
@@ -1881,7 +1881,7 @@ Next time you need this list just use an alias, like this:
         - `line_width`: [number=0.25] [0.02,2] For objects without width [mm] (KiCad 5).
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `negative_plot`: [boolean=false] Invert black and white.
-        - `output`: [string='%f-%i%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `plot_sheet_reference`: [boolean=false] Currently without effect.
@@ -1907,7 +1907,7 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `output`: [string='%f-%i%v.%x'] Filename for the output SVG (%i=schematic %x=svg). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic %x=svg). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
