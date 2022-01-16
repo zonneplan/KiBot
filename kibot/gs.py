@@ -90,6 +90,9 @@ class GS(object):
     global_solder_mask_color = None
     global_silk_screen_color = None
     global_pcb_finish = None
+    global_edge_connector = None
+    global_castellated_pads = None
+    global_edge_plating = None
     test_boolean = True
 
     @staticmethod

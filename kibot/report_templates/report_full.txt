@@ -11,6 +11,14 @@ Solder mask: ${solder_mask}
 Silk screen: ${silk_screen}
 - Color: ${silk_screen_color}
 
+#?edge_connector or castellated_pads or edge_plating
+Special features:
+#?edge_connector
+- Edge connector: ${edge_connector}
+#?castellated_pads
+- Castellated pads
+#?edge_plating
+- Edge plating
 
 # Important sizes
 

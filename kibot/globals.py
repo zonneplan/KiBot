@@ -54,6 +54,15 @@ class Globals(FiltersOptions):
                 KiCad 6: you should set this in the Board Setup -> Board Finish -> Copper Finish option.
                 Currently known are None, HAL, HASL, HAL SnPb, HAL lead-free, ENIG, ENEPIG, Hard gold, ImAg, Immersion Silver,
                 Immersion Ag, ImAu, Immersion Gold, Immersion Au, Immersion Tin, Immersion Nickel, OSP and HT_OSP """
+            self.edge_connector = 'no'
+            """ [yes,no,bevelled] Has the PCB edge connectors?
+                KiCad 6: you should set this in the Board Setup -> Board Finish -> Edge card connectors """
+            self.castellated_pads = False
+            """ Has the PCB castelletad pads?
+                KiCad 6: you should set this in the Board Setup -> Board Finish -> Has castellated pads """
+            self.edge_plating = False
+            """ Has the PCB a plated board edge?
+                KiCad 6: you should set this in the Board Setup -> Board Finish -> Plated board edge """
             self.copper_finish = None
             """ {pcb_finish} """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
@@ -88,15 +97,27 @@ class Globals(FiltersOptions):
         if sp is None:
             return
         logger.debug("- Found stack-up information")
-        copper_finish = None
         for e in sp[1:]:
             if isinstance(e, list) and isinstance(e[0], Symbol):
                 name = e[0].value()
+                value = None
+                if len(e) > 1:
+                    if isinstance(e[1], Symbol):
+                        value = e[1].value()
+                    else:
+                        value = str(e[1])
                 if name == 'copper_finish':
-                    copper_finish = str(e[1])
-                    logger.debug("- Copper finish: "+copper_finish)
-        if copper_finish is not None:
-            self.pcb_finish = copper_finish
+                    self.pcb_finish = value
+                    logger.debug("- Copper finish: "+self.pcb_finish)
+                elif name == 'edge_connector':
+                    self.edge_connector = value
+                    logger.debug("- Edge connector: "+self.edge_connector)
+                elif name == 'castellated_pads':
+                    self.castellated_pads = value == 'yes'
+                    logger.debug("- Castellated pads: "+value)
+                elif name == 'edge_plating':
+                    self.edge_plating = value == 'yes'
+                    logger.debug("- Edge plating: "+value)
 
     def config(self, parent):
         if GS.ki6() and GS.pcb_file and os.path.isfile(GS.pcb_file):
@@ -121,6 +142,9 @@ class Globals(FiltersOptions):
         GS.global_silk_screen_color = self.set_global(GS.global_silk_screen_color, self.silk_screen_color,
                                                       'silk_screen_color')
         GS.global_pcb_finish = self.set_global(GS.global_pcb_finish, self.pcb_finish, 'pcb_finish')
+        GS.global_edge_connector = self.set_global(GS.global_edge_connector, self.edge_connector, 'edge_connector')
+        GS.global_castellated_pads = self.set_global(GS.global_castellated_pads, self.castellated_pads, 'castellated_pads')
+        GS.global_edge_plating = self.set_global(GS.global_edge_plating, self.edge_plating, 'edge_plating')
         if not GS.out_dir_in_cmd_line and self.out_dir:
             GS.out_dir = os.path.join(os.getcwd(), self.out_dir)
         set_filters(self.unparsed)

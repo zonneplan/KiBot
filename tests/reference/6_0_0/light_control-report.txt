@@ -11,6 +11,10 @@ Solder mask: TOP / BOTTOM
 Silk screen: TOP / BOTTOM
 - Color: white
 
+Special features:
+- Edge connector: yes, bevelled
+- Castellated pads
+- Edge plating
 
 # Important sizes
 

@@ -89,6 +89,14 @@ def to_smd_tht(smd, tht):
     return "NONE"
 
 
+def solve_edge_connector(val):
+    if val == 'no':
+        return ''
+    if val == 'bevelled':
+        return 'yes, bevelled'
+    return val
+
+
 class ReportOptions(BaseOptions):
     def __init__(self):
         with document:
@@ -415,23 +423,44 @@ class ReportOptions(BaseOptions):
         self._track_sizes = board.GetTrackWidthList()
         self._tracks_defined = set(self._track_sizes)
 
+    def eval_conditional(self, line):
+        context = {k: getattr(self, k) for k in dir(self) if k[0] != '_'}
+        res = None
+        text = line[2:].strip()
+        logger.debug('- Evaluating `{}`'.format(text))
+        try:
+            res = eval(text, {}, context)
+        except Exception as e:
+            raise KiPlotConfigurationError('wrong conditional: `{}`\nPython says: `{}`'.format(text, str(e)))
+        logger.debug('- Result `{}`'.format(res))
+        return res
+
     def do_template(self, template_file, output_file):
         text = ''
         logger.debug("Report template: `{}`".format(template_file))
         with open(template_file, "rt") as f:
+            skip_next = False
             for line in f:
+                if skip_next:
+                    skip_next = False
+                    continue
                 done = False
-                if line[0] == '#' and ':' in line:
-                    context = line[1:].split(':')[0]
-                    logger.debug("Report context: `{}`".format(context))
-                    try:
-                        # Contexts are members called context_*
-                        line = getattr(self, 'context_'+context)(line[len(context)+2:])
+                if line[0] == '#':
+                    if line.startswith('#?'):
+                        skip_next = not self.eval_conditional(line)
                         done = True
-                    except AttributeError:
-                        pass
-                    if not done:
-                        raise KiPlotConfigurationError("Unknown context: `{}`".format(context))
+                        line = ''
+                    elif ':' in line:
+                        context = line[1:].split(':')[0]
+                        logger.debug("- Report context: `{}`".format(context))
+                        try:
+                            # Contexts are members called context_*
+                            line = getattr(self, 'context_'+context)(line[len(context)+2:])
+                            done = True
+                        except AttributeError:
+                            pass
+                        if not done:
+                            raise KiPlotConfigurationError("Unknown context: `{}`".format(context))
                 if not done:
                     # Just replace using any data member (_* excluded)
                     line = self.do_replacements(line, self.__dict__)
@@ -448,6 +477,9 @@ class ReportOptions(BaseOptions):
         self.solder_mask_color = GS.global_solder_mask_color
         self.silk_screen_color = GS.global_silk_screen_color
         self.pcb_finish = GS.global_pcb_finish
+        self.edge_connector = solve_edge_connector(GS.global_edge_connector)
+        self.castellated_pads = GS.global_castellated_pads
+        self.edge_plating = GS.global_edge_plating
         self.collect_data(GS.board)
         self.do_template(self.template, fname)
 
