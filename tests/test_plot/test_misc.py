@@ -1001,4 +1001,4 @@ def test_report_simple_1(test_dir):
     ctx.expect_out_file(prj+'-report_simple.txt')
     ctx.compare_txt(prj+'-report.txt')
     ctx.compare_txt(prj+'-report_simple.txt')
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
