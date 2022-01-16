@@ -349,6 +349,11 @@ def main():
 
     # Determine the YAML file
     plot_config = solve_config(args.plot_config)
+    # Determine the SCH file
+    GS.set_sch(solve_schematic(args.schematic, args.board_file, plot_config))
+    # Determine the PCB file
+    GS.set_pcb(solve_board_file(GS.sch_file, args.board_file))
+
     # Read the config file
     cr = CfgYamlReader()
     outputs = None
@@ -361,11 +366,6 @@ def main():
     if outputs is None:
         with open(plot_config) as cf_file:
             outputs = cr.read(cf_file)
-
-    # Determine the SCH file
-    GS.set_sch(solve_schematic(args.schematic, args.board_file, plot_config))
-    # Determine the PCB file
-    GS.set_pcb(solve_board_file(GS.sch_file, args.board_file))
 
     # Is just list the available targets?
     if args.list:

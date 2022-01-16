@@ -220,7 +220,11 @@ W_KICOSTFLD = '(W078) '
 W_MIXVARIANT = '(W079) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
-PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'none': "d39751"}
+PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
+                     'none': "d39751", 'hal snpb': "8b898c", 'hal lead-free': "8b898c", 'hard gold': "cfb96e",
+                     'immersion silver': "8b898c", 'immersion ag': "8b898c", 'imau': "cfb96e", 'immersion gold': "cfb96e",
+                     'immersion au': "cfb96e", 'immersion tin': "8b898c", 'immersion nickel': "cfb96e", 'osp': "d39751",
+                     'ht_osp': "d39751"}
 SOLDER_COLORS = {'green': ("#285e3a", "#208b47"),
                  'black': ("#1d1918", "#2d2522"),
                  'blue': ("#1b1f44", "#00406a"),

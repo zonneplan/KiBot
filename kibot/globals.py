@@ -9,6 +9,7 @@ from .macros import macros, document  # noqa: F401
 from .pre_filters import FiltersOptions
 from .log import get_logger, set_filters
 from .misc import W_MUSTBEINT
+from .kicad.sexpdata import load, SExpData, sexp_iter, Symbol
 
 
 class Globals(FiltersOptions):
@@ -50,7 +51,11 @@ class Globals(FiltersOptions):
                 Currently known are black and white """
             self.pcb_finish = 'HAL'
             """ Finishing used to protect pads. Currently used for documentation and to choose default colors.
-                Currently known are None, HAL, HASL, ENIG and ImAg """
+                KiCad 6: you should set this in the Board Setup -> Board Finish -> Copper Finish option.
+                Currently known are None, HAL, HASL, HAL SnPb, HAL lead-free, ENIG, ENEPIG, Hard gold, ImAg, Immersion Silver,
+                Immersion Ag, ImAu, Immersion Gold, Immersion Au, Immersion Tin, Immersion Nickel, OSP and HT_OSP """
+            self.copper_finish = None
+            """ {pcb_finish} """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self._unkown_is_error = True
@@ -65,7 +70,34 @@ class Globals(FiltersOptions):
             return new_val
         return current
 
+    def get_stack_up(self):
+        logger.debug("Looking for stack-up information in the PCB")
+        pcb = None
+        with open(GS.pcb_file, 'rt') as fh:
+            try:
+                pcb = load(fh)
+            except SExpData as e:
+                # Don't make it an error, will be detected and reported latter
+                logger.debug("- Failed to load the PCB "+str(e))
+        if pcb is None:
+            return
+        sp = next(sexp_iter(pcb, 'kicad_pcb/setup/stackup'), None)
+        if sp is None:
+            return
+        logger.debug("- Found stack-up information")
+        copper_finish = None
+        for e in sp[1:]:
+            if isinstance(e, list) and isinstance(e[0], Symbol):
+                name = e[0].value()
+                if name == 'copper_finish':
+                    copper_finish = str(e[1])
+                    logger.debug("- Copper finish: "+copper_finish)
+        if copper_finish is not None:
+            self.pcb_finish = copper_finish
+
     def config(self, parent):
+        if GS.ki6() and GS.pcb_file:
+            self.get_stack_up()
         super().config(parent)
         GS.global_output = self.set_global(GS.global_output, self.output, 'output')
         GS.global_dir = self.set_global(GS.global_dir, self.dir, 'dir')
