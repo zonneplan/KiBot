@@ -250,6 +250,9 @@ def detect_kicad():
         pass
 
     m = re.search(r'(\d+)\.(\d+)\.(\d+)', GS.kicad_version)
+    if m is None:
+        logger.error("Unable to detect KiCad version, got: `{}`".format(GS.kicad_version))
+        sys.exit(NO_PCBNEW_MODULE)
     GS.kicad_version_major = int(m.group(1))
     GS.kicad_version_minor = int(m.group(2))
     GS.kicad_version_patch = int(m.group(3))
