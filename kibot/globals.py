@@ -70,8 +70,9 @@ class Globals(FiltersOptions):
         self._unkown_is_error = True
         self._error_context = 'global '
 
-    @staticmethod
-    def set_global(current, new_val, opt):
+    def set_global(self, opt):
+        current = getattr(GS, 'global_'+opt)
+        new_val = getattr(self, opt)
         if current is not None:
             logger.info('Using command line value `{}` for global option `{}`'.format(current, opt))
             return current
@@ -123,30 +124,17 @@ class Globals(FiltersOptions):
         if GS.ki6() and GS.pcb_file and os.path.isfile(GS.pcb_file):
             self.get_stack_up()
         super().config(parent)
-        GS.global_output = self.set_global(GS.global_output, self.output, 'output')
-        GS.global_dir = self.set_global(GS.global_dir, self.dir, 'dir')
-        GS.global_variant = self.set_global(GS.global_variant, self.variant, 'variant')
-        GS.global_date_time_format = self.set_global(GS.global_date_time_format, self.date_time_format, 'date_time_format')
-        GS.global_date_format = self.set_global(GS.global_date_format, self.date_format, 'date_format')
-        GS.global_time_format = self.set_global(GS.global_time_format, self.time_format, 'time_format')
-        GS.global_time_reformat = self.set_global(GS.global_time_reformat, self.time_reformat, 'time_reformat')
-        GS.global_kiauto_wait_start = self.set_global(GS.global_kiauto_wait_start, self.kiauto_wait_start, 'kiauto_wait_start')
+        # Transfer options to the GS globals
+        for option in filter(lambda x: x[0] != '_', self.__dict__.keys()):
+            gl = 'global_'+option
+            if hasattr(GS, gl):
+                setattr(GS, gl, self.set_global(option))
+        # Special cases
+        if not GS.out_dir_in_cmd_line and self.out_dir:
+            GS.out_dir = os.path.join(os.getcwd(), self.out_dir)
         if GS.global_kiauto_wait_start and int(GS.global_kiauto_wait_start) != GS.global_kiauto_wait_start:
             GS.global_kiauto_wait_start = int(GS.global_kiauto_wait_start)
             logger.warning(W_MUSTBEINT+'kiauto_wait_start must be integer, truncating to '+str(GS.global_kiauto_wait_start))
-        GS.global_kiauto_time_out_scale = self.set_global(GS.global_kiauto_time_out_scale, self.kiauto_time_out_scale,
-                                                          'kiauto_time_out_scale')
-        GS.global_pcb_material = self.set_global(GS.global_pcb_material, self.pcb_material, 'pcb_material')
-        GS.global_solder_mask_color = self.set_global(GS.global_solder_mask_color, self.solder_mask_color,
-                                                      'solder_mask_color')
-        GS.global_silk_screen_color = self.set_global(GS.global_silk_screen_color, self.silk_screen_color,
-                                                      'silk_screen_color')
-        GS.global_pcb_finish = self.set_global(GS.global_pcb_finish, self.pcb_finish, 'pcb_finish')
-        GS.global_edge_connector = self.set_global(GS.global_edge_connector, self.edge_connector, 'edge_connector')
-        GS.global_castellated_pads = self.set_global(GS.global_castellated_pads, self.castellated_pads, 'castellated_pads')
-        GS.global_edge_plating = self.set_global(GS.global_edge_plating, self.edge_plating, 'edge_plating')
-        if not GS.out_dir_in_cmd_line and self.out_dir:
-            GS.out_dir = os.path.join(os.getcwd(), self.out_dir)
         set_filters(self.unparsed)
 
 
