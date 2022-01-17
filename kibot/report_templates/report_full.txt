@@ -6,6 +6,7 @@ Board size: ${bb_w_mm}x${bb_h_mm} mm (${bb_w_in}x${bb_h_in} inches)
 - Material: ${pcb_material}
 - Finish: ${pcb_finish}
 - Layers: ${layers}
+- Copper thickness: ${copper_thickness} µm
 Solder mask: ${solder_mask}
 - Color: ${solder_mask_color_text}
 Silk screen: ${silk_screen}

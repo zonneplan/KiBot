@@ -6,6 +6,7 @@ Board size: 59.69x48.26 mm (2.35x1.9 inches)
 - Material: FR4
 - Finish: ENIG
 - Layers: 4
+- Copper thickness: 35 µm
 Solder mask: TOP / BOTTOM
 - Color: Top: Blue / Bottom: Red
 Silk screen: TOP / BOTTOM

@@ -1386,6 +1386,43 @@ class SymbolInstance(object):
         return _symbol('path', data)
 
 
+# Here because we have al s-expr tools here
+class PCBLayer(object):
+    def __init__(self):
+        super().__init__()
+        self.name = ''
+        self.type = ''
+        self.color = None
+        self.thickness = None
+        self.material = None
+        self.epsilon_r = None
+        self.loss_tangent = None
+
+    @staticmethod
+    def parse(items):
+        name = 'PCB stackup layer'
+        layer = PCBLayer()
+        layer.name = _check_str(items, 1, name)
+        for c, i in enumerate(items[2:]):
+            i_type = _check_is_symbol_list(i)
+            tname = name+' '+i_type
+            if i_type == 'type':
+                layer.type = _check_str(i, 1, tname)
+            elif i_type == 'color':
+                layer.color = _check_str(i, 1, tname)
+            elif i_type == 'thickness':
+                layer.thickness = _check_float(i, 1, tname)
+            elif i_type == 'material':
+                layer.material = _check_str(i, 1, tname)
+            elif i_type == 'epsilon_r':
+                layer.epsilon_r = _check_float(i, 1, tname)
+            elif i_type == 'loss_tangent':
+                layer.loss_tangent = _check_float(i, 1, tname)
+            else:
+                logger.warning('Unknown layer attribute `{}`'.format(i))
+        return layer
+
+
 def _symbol(name, content):
     return [Symbol(name)] + content
 

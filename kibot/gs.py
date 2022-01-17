@@ -94,10 +94,12 @@ class GS(object):
     global_silk_screen_color_top = None
     global_silk_screen_color_bottom = None
     global_pcb_finish = None
+    global_copper_thickness = None
     global_edge_connector = None
     global_castellated_pads = None
     global_edge_plating = None
     test_boolean = True
+    stackup = None
 
     @staticmethod
     def set_sch(name):

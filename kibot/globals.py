@@ -10,6 +10,7 @@ from .pre_filters import FiltersOptions
 from .log import get_logger, set_filters
 from .misc import W_MUSTBEINT
 from .kicad.sexpdata import load, SExpData, sexp_iter, Symbol
+from .kicad.v6_sch import PCBLayer
 
 
 class Globals(FiltersOptions):
@@ -55,6 +56,7 @@ class Globals(FiltersOptions):
                 Read `solder_mask_color` help """
             self.silk_screen_color = 'white'
             """ Color for the markings. Currently used for documentation and to choose default colors.
+                KiCad 6: you should set this in the Board Setup -> Physical Stackup.
                 Currently known are black and white """
             self.silk_screen_color_top = ''
             """ Color for the top silk screen. When not defined `silk_screen_color` is used.
@@ -78,6 +80,9 @@ class Globals(FiltersOptions):
                 KiCad 6: you should set this in the Board Setup -> Board Finish -> Plated board edge """
             self.copper_finish = None
             """ {pcb_finish} """
+            self.copper_thickness = 35
+            """ Copper thickness in micrometers (1 Oz is 35 micrometers).
+                KiCad 6: you should set this in the Board Setup -> Physical Stackup """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self._unkown_is_error = True
@@ -111,6 +116,9 @@ class Globals(FiltersOptions):
         if sp is None:
             return
         logger.debug("- Found stack-up information")
+        stackup = []
+        materials = set()
+        thicknesses = set()
         for e in sp[1:]:
             if isinstance(e, list) and isinstance(e[0], Symbol):
                 name = e[0].value()
@@ -132,6 +140,45 @@ class Globals(FiltersOptions):
                 elif name == 'edge_plating':
                     self.edge_plating = value == 'yes'
                     logger.debug("- Edge plating: "+value)
+                elif name == 'layer':
+                    ly = PCBLayer.parse(e)
+                    stackup.append(ly)
+                    if ly.name == "F.SilkS":
+                        if ly.color:
+                            self.silk_screen_color_top = ly.color.lower()
+                            logger.debug("- F.SilkS color: "+ly.color)
+                    elif ly.name == "B.SilkS":
+                        if ly.color:
+                            self.silk_screen_color_bottom = ly.color.lower()
+                            logger.debug("- B.SilkS color: "+ly.color)
+                    elif ly.name == "F.Mask":
+                        if ly.color:
+                            self.solder_mask_color_top = ly.color.lower()
+                            logger.debug("- F.Mask color: "+ly.color)
+                    elif ly.name == "B.Mask":
+                        if ly.color:
+                            self.solder_mask_color_bottom = ly.color.lower()
+                            logger.debug("- B.Mask color: "+ly.color)
+                    elif ly.material:
+                        if not len(materials):
+                            materials.add(ly.material)
+                            self.pcb_material = ly.material
+                        elif ly.material not in materials:
+                            materials.add(ly.material)
+                            self.pcb_material += ' / '+ly.material
+                    elif ly.type == 'copper' and ly.thickness:
+                        if not len(thicknesses):
+                            thicknesses.add(ly.thickness)
+                            self.copper_thickness = str(int(ly.thickness*1000))
+                        elif ly.thickness not in thicknesses:
+                            thicknesses.add(ly.thickness)
+                            self.copper_thickness += ' / '+str(int(ly.thickness*1000))
+        if stackup:
+            GS.stackup = stackup
+        if len(materials):
+            logger.debug("- PCB Material/s: "+self.pcb_material)
+        if len(thicknesses):
+            logger.debug("- Copper thickness: "+self.copper_thickness)
 
     def config(self, parent):
         if GS.ki6() and GS.pcb_file and os.path.isfile(GS.pcb_file):

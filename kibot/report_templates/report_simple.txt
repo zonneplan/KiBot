@@ -22,7 +22,7 @@ Materials:
 - ${pcb_material}, ${thickness_mm} mm
 - ${pcb_finish}
 - ${layers} layers
-- 35 µm copper thickness
+- ${copper_thickness} µm copper thickness
 
 Solder mask:
 - ${solder_mask}

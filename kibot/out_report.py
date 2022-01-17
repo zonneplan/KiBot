@@ -495,6 +495,7 @@ class ReportOptions(BaseOptions):
         self.edge_connector = solve_edge_connector(GS.global_edge_connector)
         self.castellated_pads = GS.global_castellated_pads
         self.edge_plating = GS.global_edge_plating
+        self.copper_thickness = GS.global_copper_thickness
         self.collect_data(GS.board)
         self.do_template(self.template, fname)
 
