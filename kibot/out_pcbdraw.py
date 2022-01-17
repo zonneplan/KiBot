@@ -156,7 +156,7 @@ class PcbDrawOptions(VariantOptions):
     def config(self, parent):
         # Pre-parse the bottom option
         if 'bottom' in self._tree:
-            bot =  self._tree['bottom']
+            bot = self._tree['bottom']
             if isinstance(bot, bool):
                 self.bottom = bot
         super().config(parent)
