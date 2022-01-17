@@ -49,20 +49,28 @@ class PcbDrawStyle(Optionable):
 
     def config(self, parent):
         # Apply global defaults
+        # PCB Material
         if GS.global_pcb_material is not None:
             material = GS.global_pcb_material.lower()
             for mat, color in PCB_MAT_COLORS.items():
                 if mat in material:
                     self.clad = "#"+color
                     break
-        if GS.global_solder_mask_color is not None:
-            name = GS.global_solder_mask_color.lower()
-            if name in SOLDER_COLORS:
-                (self.copper, self.board) = SOLDER_COLORS[name]
-        if GS.global_silk_screen_color is not None:
-            name = GS.global_silk_screen_color.lower()
-            if name in SILK_COLORS:
-                self.silk = "#"+SILK_COLORS[name]
+        # Solder mask
+        if parent.bottom:
+            name = GS.global_solder_mask_color_bottom or GS.global_solder_mask_color
+        else:
+            name = GS.global_solder_mask_color_top or GS.global_solder_mask_color
+        if name and name.lower() in SOLDER_COLORS:
+            (self.copper, self.board) = SOLDER_COLORS[name.lower()]
+        # Silk screen
+        if parent.bottom:
+            name = GS.global_silk_screen_color_bottom or GS.global_silk_screen_color
+        else:
+            name = GS.global_silk_screen_color_top or GS.global_silk_screen_color
+        if name and name.lower() in SILK_COLORS:
+            self.silk = "#"+SILK_COLORS[name.lower()]
+        # PCB Finish
         if GS.global_pcb_finish is not None:
             name = GS.global_pcb_finish.lower()
             for nm, color in PCB_FINISH_COLORS.items():
@@ -146,6 +154,11 @@ class PcbDrawOptions(VariantOptions):
         super().__init__()
 
     def config(self, parent):
+        # Pre-parse the bottom option
+        if 'bottom' in self._tree:
+            bot =  self._tree['bottom']
+            if isinstance(bot, bool):
+                self.bottom = bot
         super().config(parent)
         # Libs
         if isinstance(self.libs, type):

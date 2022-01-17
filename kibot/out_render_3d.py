@@ -85,14 +85,26 @@ class Render3DOptions(Base3DOptions):
                 if mat in material:
                     self.board = "#"+color
                     break
-        if GS.global_solder_mask_color is not None:
-            name = GS.global_solder_mask_color.lower()
-            if name in SOLDER_COLORS:
-                (_, self.solder_mask) = SOLDER_COLORS[name]
-        if GS.global_silk_screen_color is not None:
-            name = GS.global_silk_screen_color.lower()
-            if name in SILK_COLORS:
-                self.silk = "#"+SILK_COLORS[name]
+        # Pre parse the view option
+        bottom = False
+        if 'view' in self._tree:
+            v = self._tree['view']
+            bottom = isinstance(v, str) and v == 'bottom'
+        # Solder mask
+        if bottom:
+            name = GS.global_solder_mask_color_bottom or GS.global_solder_mask_color
+        else:
+            name = GS.global_solder_mask_color_top or GS.global_solder_mask_color
+        if name and name.lower() in SOLDER_COLORS:
+            (_, self.solder_mask) = SOLDER_COLORS[name.lower()]
+        # Silk screen
+        if bottom:
+            name = GS.global_silk_screen_color_bottom or GS.global_silk_screen_color
+        else:
+            name = GS.global_silk_screen_color_top or GS.global_silk_screen_color
+        if name and name.lower() in SILK_COLORS:
+            self.silk = "#"+SILK_COLORS[name.lower()]
+        # PCB finish
         if GS.global_pcb_finish is not None:
             name = GS.global_pcb_finish.lower()
             for nm, color in PCB_FINISH_COLORS.items():

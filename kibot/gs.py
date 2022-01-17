@@ -88,7 +88,11 @@ class GS(object):
     global_time_reformat = None
     global_pcb_material = None
     global_solder_mask_color = None
+    global_solder_mask_color_top = None
+    global_solder_mask_color_bottom = None
     global_silk_screen_color = None
+    global_silk_screen_color_top = None
+    global_silk_screen_color_bottom = None
     global_pcb_finish = None
     global_edge_connector = None
     global_castellated_pads = None

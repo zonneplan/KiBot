@@ -7,9 +7,9 @@ Board size: ${bb_w_mm}x${bb_h_mm} mm (${bb_w_in}x${bb_h_in} inches)
 - Finish: ${pcb_finish}
 - Layers: ${layers}
 Solder mask: ${solder_mask}
-- Color: ${solder_mask_color}
+- Color: ${solder_mask_color_text}
 Silk screen: ${silk_screen}
-- Color: ${silk_screen_color}
+- Color: ${silk_screen_color_text}
 
 #?edge_connector or castellated_pads or edge_plating
 Special features:

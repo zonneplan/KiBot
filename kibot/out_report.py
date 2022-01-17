@@ -89,6 +89,15 @@ def to_smd_tht(smd, tht):
     return "NONE"
 
 
+def to_top_bottom_color(front, bottom):
+    """ Returns a text indicating the top/bottom colors """
+    f = front.strip().lower()
+    b = bottom.strip().lower()
+    if f == b:
+        return front.capitalize()
+    return "Top: "+front.capitalize()+" / Bottom: "+bottom.capitalize()
+
+
 def solve_edge_connector(val):
     if val == 'no':
         return ''
@@ -475,7 +484,13 @@ class ReportOptions(BaseOptions):
     def run(self, fname):
         self.pcb_material = GS.global_pcb_material
         self.solder_mask_color = GS.global_solder_mask_color
+        self.solder_mask_color_top = GS.global_solder_mask_color_top
+        self.solder_mask_color_bottom = GS.global_solder_mask_color_bottom
+        self.solder_mask_color_text = to_top_bottom_color(GS.global_solder_mask_color_top, GS.global_solder_mask_color_bottom)
         self.silk_screen_color = GS.global_silk_screen_color
+        self.silk_screen_color_top = GS.global_silk_screen_color_top
+        self.silk_screen_color_bottom = GS.global_silk_screen_color_bottom
+        self.silk_screen_color_text = to_top_bottom_color(GS.global_silk_screen_color_top, GS.global_silk_screen_color_bottom)
         self.pcb_finish = GS.global_pcb_finish
         self.edge_connector = solve_edge_connector(GS.global_edge_connector)
         self.castellated_pads = GS.global_castellated_pads

@@ -45,10 +45,23 @@ class Globals(FiltersOptions):
                 Currently known are FR1 to FR5 """
             self.solder_mask_color = 'green'
             """ Color for the solder mask. Currently used for documentation and to choose default colors.
+                KiCad 6: you should set this in the Board Setup -> Physical Stackup.
                 Currently known are green, black, white, yellow, purple, blue and red """
+            self.solder_mask_color_top = ''
+            """ Color for the top solder mask. When not defined `solder_mask_color` is used.
+                Read `solder_mask_color` help """
+            self.solder_mask_color_bottom = ''
+            """ Color for the bottom solder mask. When not defined `solder_mask_color` is used.
+                Read `solder_mask_color` help """
             self.silk_screen_color = 'white'
             """ Color for the markings. Currently used for documentation and to choose default colors.
                 Currently known are black and white """
+            self.silk_screen_color_top = ''
+            """ Color for the top silk screen. When not defined `silk_screen_color` is used.
+                Read `silk_screen_color` help """
+            self.silk_screen_color_bottom = ''
+            """ Color for the bottom silk screen. When not defined `silk_screen_color` is used.
+                Read `silk_screen_color` help """
             self.pcb_finish = 'HAL'
             """ Finishing used to protect pads. Currently used for documentation and to choose default colors.
                 KiCad 6: you should set this in the Board Setup -> Board Finish -> Copper Finish option.
@@ -135,6 +148,23 @@ class Globals(FiltersOptions):
         if GS.global_kiauto_wait_start and int(GS.global_kiauto_wait_start) != GS.global_kiauto_wait_start:
             GS.global_kiauto_wait_start = int(GS.global_kiauto_wait_start)
             logger.warning(W_MUSTBEINT+'kiauto_wait_start must be integer, truncating to '+str(GS.global_kiauto_wait_start))
+        # - Solder mask
+        if GS.global_solder_mask_color_top and GS.global_solder_mask_color_bottom:
+            # Top and bottom defined, use the top as general
+            GS.global_solder_mask_color = GS.global_solder_mask_color_top
+        else:
+            if not GS.global_solder_mask_color_top:
+                GS.global_solder_mask_color_top = GS.global_solder_mask_color
+            if not GS.global_solder_mask_color_bottom:
+                GS.global_solder_mask_color_bottom = GS.global_solder_mask_color
+        # - Silk screen
+        if GS.global_silk_screen_color_top and GS.global_silk_screen_color_bottom:
+            GS.global_silk_screen_color = GS.global_silk_screen_color_top
+        else:
+            if not GS.global_silk_screen_color_top:
+                GS.global_silk_screen_color_top = GS.global_silk_screen_color
+            if not GS.global_silk_screen_color_bottom:
+                GS.global_silk_screen_color_bottom = GS.global_silk_screen_color
         set_filters(self.unparsed)
 
 

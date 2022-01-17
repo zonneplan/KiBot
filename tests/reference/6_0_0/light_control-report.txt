@@ -7,9 +7,9 @@ Board size: 59.69x48.26 mm (2.35x1.9 inches)
 - Finish: ENIG
 - Layers: 4
 Solder mask: TOP / BOTTOM
-- Color: blue
+- Color: Top: Blue / Bottom: Red
 Silk screen: TOP / BOTTOM
-- Color: white
+- Color: White
 
 Special features:
 - Edge connector: yes, bevelled

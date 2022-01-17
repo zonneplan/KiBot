@@ -18,11 +18,11 @@ Materials:
 
 Solder mask:
 - TOP / BOTTOM
-- blue
+- Top: Blue / Bottom: Red
 
 Marking:
 - TOP / BOTTOM screen printing
-- Silk: white
+- Silk: White
 
 Other markings:
 - ROHS / UL / Date - Yes if available

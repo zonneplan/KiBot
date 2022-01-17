@@ -26,11 +26,11 @@ Materials:
 
 Solder mask:
 - ${solder_mask}
-- ${solder_mask_color}
+- ${solder_mask_color_text}
 
 Marking:
 - ${silk_screen} screen printing
-- Silk: ${silk_screen_color}
+- Silk: ${silk_screen_color_text}
 
 Other markings:
 - ROHS / UL / Date - Yes if available
