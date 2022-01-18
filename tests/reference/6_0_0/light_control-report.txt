@@ -18,21 +18,22 @@ Special features:
 - Edge plating
 
 Stackup:
-| Name                 | Type                 | Color    | Thickness | Material | Epsilon_r | Loss tangent |
-|----------------------|----------------------|----------|-----------|----------|-----------|--------------|
-| F.SilkS              | Top Silk Screen      | White    |           |          |           |              |
-| F.Paste              | Top Solder Paste     |          |           |          |           |              |
-| F.Mask               | Top Solder Mask      | Blue     |        10 |          |           |              |
-| F.Cu                 | copper               |          |        35 |          |           |              |
-| dielectric 1         | core                 |          |       480 | FR4      |       4.5 |         0.02 |
-| In1.Cu               | copper               |          |        35 |          |           |              |
-| dielectric 2         | prepreg              |          |       480 | FR4      |       4.5 |         0.02 |
-| In2.Cu               | copper               |          |        35 |          |           |              |
-| dielectric 3         | core                 |          |       480 | FR4      |       4.5 |         0.02 |
-| B.Cu                 | copper               |          |        35 |          |           |              |
-| B.Mask               | Bottom Solder Mask   | Red      |        10 |          |           |              |
-| B.Paste              | Bottom Solder Paste  |          |           |          |           |              |
-| B.SilkS              | Bottom Silk Screen   | Black    |           |          |           |              |
+Impedance controlled: YES
+| Name                 | Type                 | Color    | Thickness | Material        | Epsilon_r | Loss tangent |
+|----------------------|----------------------|----------|-----------|-----------------|-----------|--------------|
+| F.SilkS              | Top Silk Screen      | White    |           | Liquid Photo    |           |              |
+| F.Paste              | Top Solder Paste     |          |           |                 |           |              |
+| F.Mask               | Top Solder Mask      | Blue     |        10 | Liquid Ink      |       3.3 |         0.00 |
+| F.Cu                 | copper               |          |        35 |                 |           |              |
+| dielectric 1         | prepreg              |          |       480 | FR4             |       4.5 |         0.02 |
+| In1.Cu               | copper               |          |        35 |                 |           |              |
+| dielectric 2         | core                 |          |       480 | FR4             |       4.5 |         0.02 |
+| In2.Cu               | copper               |          |        35 |                 |           |              |
+| dielectric 3         | prepreg              |          |       480 | FR4             |       4.5 |         0.02 |
+| B.Cu                 | copper               |          |        35 |                 |           |              |
+| B.Mask               | Bottom Solder Mask   | Red      |        10 | Dry Film        |       3.3 |         0.00 |
+| B.Paste              | Bottom Solder Paste  |          |           |                 |           |              |
+| B.SilkS              | Bottom Silk Screen   | Black    |           | Direct Printing |           |              |
 
 # Important sizes
 
