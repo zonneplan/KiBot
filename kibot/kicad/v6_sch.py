@@ -1411,7 +1411,7 @@ class PCBLayer(object):
             elif i_type == 'color':
                 layer.color = _check_str(i, 1, tname)
             elif i_type == 'thickness':
-                layer.thickness = _check_float(i, 1, tname)
+                layer.thickness = _check_float(i, 1, tname)*1000
             elif i_type == 'material':
                 layer.material = _check_str(i, 1, tname)
             elif i_type == 'epsilon_r':

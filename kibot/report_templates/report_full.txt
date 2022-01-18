@@ -21,6 +21,16 @@ Special features:
 #?edge_plating
 - Edge plating
 
+#?stackup
+Stackup:
+#?stackup
+| Name                 | Type                 | Color    | Thickness | Material | Epsilon_r | Loss tangent |
+#?stackup
+|----------------------|----------------------|----------|-----------|----------|-----------|--------------|
+#?stackup
+#stackup:| ${%-20s,name} | ${%-20s,type} | ${%-8s,color} | ${%9d,thickness} | ${%-8s,material} | ${%9.1f,epsilon_r} | ${%12.2f,loss_tangent} |
+#?stackup
+
 # Important sizes
 
 Clearance: ${clearance_mm} mm (${clearance_mils} mils)

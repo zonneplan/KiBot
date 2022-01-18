@@ -125,10 +125,10 @@ class Globals(FiltersOptions):
         elif ly.type == 'copper' and ly.thickness:
             if not len(thicknesses):
                 thicknesses.add(ly.thickness)
-                self.copper_thickness = str(int(ly.thickness*1000))
+                self.copper_thickness = str(int(ly.thickness))
             elif ly.thickness not in thicknesses:
                 thicknesses.add(ly.thickness)
-                self.copper_thickness += ' / '+str(int(ly.thickness*1000))
+                self.copper_thickness += ' / '+str(int(ly.thickness))
 
     def get_stack_up(self):
         logger.debug("Looking for stack-up information in the PCB")

@@ -136,6 +136,11 @@ class ReportOptions(BaseOptions):
                 continue
             units = None
             var_ori = var
+            m = re.match(r'^(%[^,]+),(.*)$', var)
+            pattern = None
+            if m:
+                pattern = m.group(1)
+                var = m.group(2)
             if var.endswith('_mm'):
                 units = to_mm
                 digits = self._mm_digits
@@ -154,7 +159,22 @@ class ReportOptions(BaseOptions):
                     val = 'N/A'
                 elif units is not None and isinstance(val, (int, float)):
                     val = units(val, digits)
-                line = line.replace('${'+var_ori+'}', str(val))
+                if pattern is not None:
+                    clear = False
+                    if 's' in pattern:
+                        val = str(val)
+                    else:
+                        try:
+                            val = float(val)
+                        except ValueError:
+                            val = 0
+                            clear = True
+                    rep = pattern % val
+                    if clear:
+                        rep = ' '*len(rep)
+                else:
+                    rep = str(val)
+                line = line.replace('${'+var_ori+'}', rep)
             else:
                 print('Error: Unable to expand `{}`'.format(var))
         return line
@@ -210,6 +230,18 @@ class ReportOptions(BaseOptions):
         text = ''
         for d in sorted(self._drills.keys()):
             text += self.do_replacements(line, {'drill': d, 'count': self._drills[d]})
+        return text
+
+    def context_stackup(self, line):
+        """ Replace iterator for the `stackup` context """
+        text = ''
+        for s in self._stackup:
+            context = {}
+            for k in dir(s):
+                val = getattr(s, k)
+                if k[0] != '_' and not callable(val):
+                    context[k] = val if val is not None else ''
+            text += self.do_replacements(line, context)
         return text
 
     @staticmethod
@@ -433,7 +465,7 @@ class ReportOptions(BaseOptions):
         self._tracks_defined = set(self._track_sizes)
 
     def eval_conditional(self, line):
-        context = {k: getattr(self, k) for k in dir(self) if k[0] != '_'}
+        context = {k: getattr(self, k) for k in dir(self) if k[0] != '_' and not callable(getattr(self, k))}
         res = None
         text = line[2:].strip()
         logger.debug('- Evaluating `{}`'.format(text))
@@ -462,13 +494,12 @@ class ReportOptions(BaseOptions):
                     elif ':' in line:
                         context = line[1:].split(':')[0]
                         logger.debug("- Report context: `{}`".format(context))
-                        try:
+                        name = 'context_'+context
+                        if hasattr(self, name):
                             # Contexts are members called context_*
-                            line = getattr(self, 'context_'+context)(line[len(context)+2:])
+                            line = getattr(self, name)(line[len(context)+2:])
                             done = True
-                        except AttributeError:
-                            pass
-                        if not done:
+                        else:
                             raise KiPlotConfigurationError("Unknown context: `{}`".format(context))
                 if not done:
                     # Just replace using any data member (_* excluded)
@@ -496,6 +527,8 @@ class ReportOptions(BaseOptions):
         self.castellated_pads = GS.global_castellated_pads
         self.edge_plating = GS.global_edge_plating
         self.copper_thickness = GS.global_copper_thickness
+        self.stackup = 'yes' if GS.stackup else ''
+        self._stackup = GS.stackup if GS.stackup else []
         self.collect_data(GS.board)
         self.do_template(self.template, fname)
 
