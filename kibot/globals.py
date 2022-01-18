@@ -98,6 +98,38 @@ class Globals(FiltersOptions):
             return new_val
         return current
 
+    def get_data_from_layer(self, ly, materials, thicknesses):
+        if ly.name == "F.SilkS":
+            if ly.color:
+                self.silk_screen_color_top = ly.color.lower()
+                logger.debug("- F.SilkS color: "+ly.color)
+        elif ly.name == "B.SilkS":
+            if ly.color:
+                self.silk_screen_color_bottom = ly.color.lower()
+                logger.debug("- B.SilkS color: "+ly.color)
+        elif ly.name == "F.Mask":
+            if ly.color:
+                self.solder_mask_color_top = ly.color.lower()
+                logger.debug("- F.Mask color: "+ly.color)
+        elif ly.name == "B.Mask":
+            if ly.color:
+                self.solder_mask_color_bottom = ly.color.lower()
+                logger.debug("- B.Mask color: "+ly.color)
+        elif ly.material:
+            if not len(materials):
+                materials.add(ly.material)
+                self.pcb_material = ly.material
+            elif ly.material not in materials:
+                materials.add(ly.material)
+                self.pcb_material += ' / '+ly.material
+        elif ly.type == 'copper' and ly.thickness:
+            if not len(thicknesses):
+                thicknesses.add(ly.thickness)
+                self.copper_thickness = str(int(ly.thickness*1000))
+            elif ly.thickness not in thicknesses:
+                thicknesses.add(ly.thickness)
+                self.copper_thickness += ' / '+str(int(ly.thickness*1000))
+
     def get_stack_up(self):
         logger.debug("Looking for stack-up information in the PCB")
         pcb = None
@@ -143,36 +175,7 @@ class Globals(FiltersOptions):
                 elif name == 'layer':
                     ly = PCBLayer.parse(e)
                     stackup.append(ly)
-                    if ly.name == "F.SilkS":
-                        if ly.color:
-                            self.silk_screen_color_top = ly.color.lower()
-                            logger.debug("- F.SilkS color: "+ly.color)
-                    elif ly.name == "B.SilkS":
-                        if ly.color:
-                            self.silk_screen_color_bottom = ly.color.lower()
-                            logger.debug("- B.SilkS color: "+ly.color)
-                    elif ly.name == "F.Mask":
-                        if ly.color:
-                            self.solder_mask_color_top = ly.color.lower()
-                            logger.debug("- F.Mask color: "+ly.color)
-                    elif ly.name == "B.Mask":
-                        if ly.color:
-                            self.solder_mask_color_bottom = ly.color.lower()
-                            logger.debug("- B.Mask color: "+ly.color)
-                    elif ly.material:
-                        if not len(materials):
-                            materials.add(ly.material)
-                            self.pcb_material = ly.material
-                        elif ly.material not in materials:
-                            materials.add(ly.material)
-                            self.pcb_material += ' / '+ly.material
-                    elif ly.type == 'copper' and ly.thickness:
-                        if not len(thicknesses):
-                            thicknesses.add(ly.thickness)
-                            self.copper_thickness = str(int(ly.thickness*1000))
-                        elif ly.thickness not in thicknesses:
-                            thicknesses.add(ly.thickness)
-                            self.copper_thickness += ' / '+str(int(ly.thickness*1000))
+                    self.get_data_from_layer(ly, materials, thicknesses)
         if stackup:
             GS.stackup = stackup
         if len(materials):
