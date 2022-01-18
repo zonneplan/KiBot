@@ -83,6 +83,9 @@ class Globals(FiltersOptions):
             self.copper_thickness = 35
             """ Copper thickness in micrometers (1 Oz is 35 micrometers).
                 KiCad 6: you should set this in the Board Setup -> Physical Stackup """
+            self.impedance_controlled = False
+            """ The PCB needs specific dielectric characteristics.
+                KiCad 6: you should set this in the Board Setup -> Physical Stackup """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self._unkown_is_error = True
@@ -172,6 +175,9 @@ class Globals(FiltersOptions):
                 elif name == 'edge_plating':
                     self.edge_plating = value == 'yes'
                     logger.debug("- Edge plating: "+value)
+                elif name == 'dielectric_constraints':
+                    self.impedance_controlled = value == 'yes'
+                    logger.debug("- Impedance controlled: "+value)
                 elif name == 'layer':
                     ly = PCBLayer.parse(e)
                     stackup.append(ly)

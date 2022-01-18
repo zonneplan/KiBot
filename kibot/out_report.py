@@ -527,6 +527,7 @@ class ReportOptions(BaseOptions):
         self.castellated_pads = GS.global_castellated_pads
         self.edge_plating = GS.global_edge_plating
         self.copper_thickness = GS.global_copper_thickness
+        self.impedance_controlled = GS.global_impedance_controlled
         self.stackup = 'yes' if GS.stackup else ''
         self._stackup = GS.stackup if GS.stackup else []
         self.collect_data(GS.board)

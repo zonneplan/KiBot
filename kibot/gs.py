@@ -98,6 +98,7 @@ class GS(object):
     global_edge_connector = None
     global_castellated_pads = None
     global_edge_plating = None
+    global_impedance_controlled = None
     test_boolean = True
     stackup = None
 

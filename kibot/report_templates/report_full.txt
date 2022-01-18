@@ -23,12 +23,14 @@ Special features:
 
 #?stackup
 Stackup:
+#?stackup and impedance_controlled
+Impedance controlled: YES
 #?stackup
-| Name                 | Type                 | Color    | Thickness | Material | Epsilon_r | Loss tangent |
+| Name                 | Type                 | Color    | Thickness | Material        | Epsilon_r | Loss tangent |
 #?stackup
-|----------------------|----------------------|----------|-----------|----------|-----------|--------------|
+|----------------------|----------------------|----------|-----------|-----------------|-----------|--------------|
 #?stackup
-#stackup:| ${%-20s,name} | ${%-20s,type} | ${%-8s,color} | ${%9d,thickness} | ${%-8s,material} | ${%9.1f,epsilon_r} | ${%12.2f,loss_tangent} |
+#stackup:| ${%-20s,name} | ${%-20s,type} | ${%-8s,color} | ${%9d,thickness} | ${%-15s,material} | ${%9.1f,epsilon_r} | ${%12.2f,loss_tangent} |
 #?stackup
 
 # Important sizes
