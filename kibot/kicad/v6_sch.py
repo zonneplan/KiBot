@@ -989,7 +989,7 @@ class SchematicComponentV6(SchematicComponent):
                 lib_id_found = True
             elif i_type == 'lib_name':
                 # Symbol defined in schematic
-                comp.local_name =  _check_str(i, 1, name + ' lib_name')
+                comp.local_name = _check_str(i, 1, name + ' lib_name')
             elif i_type == 'at':
                 # 2 The position
                 if len(i) > 3:
@@ -1029,7 +1029,7 @@ class SchematicComponentV6(SchematicComponent):
                 comp.pins[pin_name] = pin_uuid
         if not lib_id_found or not at_found:
             raise SchError("Component missing 'lib_id' and/or 'at'")
-            
+
         # Fake 'Part' field
         field = SchematicFieldV6()
         field.name = 'part'
