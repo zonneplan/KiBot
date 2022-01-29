@@ -756,12 +756,17 @@ class LibComponent(object):
         comp.lib_id = comp.name = _check_str(c, 1, 'name')
         res = comp.name.split(':')
         comp.lib = None
-        if len(res) == 2:
+        if len(res) == 1:
+            # Appears valid: https://docs.kicad.org/doxygen/classLIB__ID.html#a195467cfd12903226615d74540ec647a
+            # Note: seems to be a locally edited component
+            comp.name = res[0]
+            comp.lib = ''
+        elif len(res) == 2:
             comp.name = res[1]
             comp.lib = res[0]
         else:
             if parent is None:
-                logger.warning(W_NOLIB + "Component `{}` doesn't specify its library".format(comp.name))
+                logger.warning(W_NOLIB + "Component `{}` with more than one `:`".format(comp.name))
         comp.units = []
         comp.pins = []
         comp.all_pins = []
@@ -879,7 +884,7 @@ class LibComponent(object):
         if cross:
             # Fill the cross_box of our sub/units
             s.assign_crosses()
-            if s.lib:
+            if s.units:
                 # Use an alternative name
                 lib_id = CROSSED_LIB+':'+s.name
         sdata = [lib_id]
@@ -926,6 +931,7 @@ class SchematicComponentV6(SchematicComponent):
         self.unit = 1
         self.unit_specified = False
         self.ref = None
+        self.local_name = None
 
     def set_ref(self, ref):
         self.ref = ref
@@ -961,21 +967,38 @@ class SchematicComponentV6(SchematicComponent):
         # comp.sheet_path_h = parent.sheet_path_h
         comp.parent_sheet = parent
         name = 'component'
-        # First argument is the LIB:NAME
-        comp.lib_id = comp.name = _check_symbol_str(c, 1, name, 'lib_id')
-        res = comp.name.split(':')
-        comp.lib = None
-        if len(res) == 2:
-            comp.name = res[1]
-            comp.lib = res[0]
-        else:
-            logger.warning(W_NOLIB + "Component `{}` doesn't specify its library".format(comp.name))
-        # 2 The position
-        comp.x, comp.y, comp.ang = _get_at(c, 2, name)
+        lib_id_found = False
+        at_found = False
+
         # Variable list
-        for i in c[3:]:
+        for i in c[1:]:
             i_type = _check_is_symbol_list(i)
-            if i_type == 'unit':
+            if i_type == 'lib_id':
+                # First argument is the LIB:NAME
+                comp.lib_id = comp.name = _check_str(i, 1, name + ' lib_id')
+                res = comp.name.split(':')
+                comp.lib = None
+                if len(res) == 1:
+                    comp.name = res[0]
+                    comp.lib = ''
+                elif len(res) == 2:
+                    comp.name = res[1]
+                    comp.lib = res[0]
+                else:
+                    logger.warning(W_NOLIB + "Component `{}` with more than one `:`".format(comp.name))
+                lib_id_found = True
+            elif i_type == 'lib_name':
+                # Symbol defined in schematic
+                comp.local_name = _check_str(i, 1, name + ' lib_name')
+            elif i_type == 'at':
+                # 2 The position
+                if len(i) > 3:
+                    comp.ang = _check_float(i, 3, 'at angle')
+                else:
+                    comp.ang = 0
+                comp.x, comp.y = _check_float(i, 1, 'at x'), _check_float(i, 2, 'at y')
+                at_found = True
+            elif i_type == 'unit':
                 # This is documented as mandatory, but isn't always there
                 comp.unit = _check_integer(i, 1, name+' unit')
                 comp.unit_specified = True
@@ -1004,6 +1027,9 @@ class SchematicComponentV6(SchematicComponent):
                 pin_name = _check_str(i, 1, name + 'pin name')
                 pin_uuid = _get_uuid(i, 2, name)
                 comp.pins[pin_name] = pin_uuid
+        if not lib_id_found or not at_found:
+            raise SchError("Component missing 'lib_id' and/or 'at'")
+
         # Fake 'Part' field
         field = SchematicFieldV6()
         field.name = 'part'
@@ -1015,9 +1041,9 @@ class SchematicComponentV6(SchematicComponent):
     def write(self, cross=False):
         lib_id = self.lib_id
         is_crossed = not(self.fitted or not self.included)
-        if cross and self.lib and is_crossed:
+        if cross and (self.lib or self.local_name) and is_crossed:
             # Use an alternative name
-            lib_id = CROSSED_LIB+':'+self.name
+            lib_id = CROSSED_LIB+':'+(self.local_name if self.local_name else self.name)
         data = [_symbol('lib_id', [lib_id]),
                 _symbol('at', [self.x, self.y, self.ang])]
         if self.unit_specified:

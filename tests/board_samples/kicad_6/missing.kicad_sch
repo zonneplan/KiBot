@@ -61,7 +61,7 @@
     )
   )
 
-  (symbol (lib_id "Resistor") (at 53.34 43.18 0) (unit 1)
+  (symbol (lib_id "A:B:Resistor") (at 53.34 43.18 0) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 00000000-0000-0000-0000-00005f43d144)
     (property "Reference" "R1" (id 0) (at 55.118 42.0116 0)
