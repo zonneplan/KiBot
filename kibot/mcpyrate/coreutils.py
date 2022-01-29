@@ -2,7 +2,8 @@
 """Utilities related to writing macro expanders and similar meta-metaprogramming tasks."""
 
 __all__ = ["resolve_package", "relativize", "match_syspath",
-           "ismacroimport", "get_macros"]
+           "ismacroimport", "get_macros",
+           "isfutureimport", "split_futureimports", "inject_after_futureimports"]
 
 import ast
 import importlib
@@ -12,7 +13,7 @@ import pathlib
 import sys
 
 from .unparser import unparse_with_fallbacks
-from .utils import format_location
+from .utils import format_location, getdocstring
 
 
 def resolve_package(filename):  # TODO: for now, `guess_package`, really. Check the docs again.
@@ -90,6 +91,15 @@ def ismacroimport(statement, magicname='macros'):
 def get_macros(macroimport, *, filename, reload=False, allow_asname=True, self_module=None):
     """Get absolute module name, macro names and macro functions from a macro-import.
 
+    A macro-import is a statement of the form::
+
+        from ... import macros, ...
+
+    where `macros` is the magic name that your actual macro expander uses to recognize
+    a macro-import (see `ismacroimport`). This function does not care about what the
+    actual magic name is, and simply ignores the first name that is imported by the
+    import statement.
+
     As a side effect, import the macro definition module.
 
     Return value is `module_absname, {macroname0: macrofunction0, ...}`.
@@ -166,7 +176,7 @@ def get_macros(macroimport, *, filename, reload=False, allow_asname=True, self_m
             module = importlib.reload(module)
 
     bindings = {}
-    for name in macroimport.names[1:]:
+    for name in macroimport.names[1:]:  # skip the "macros" in `from ... import macros, ...`
         if not allow_asname and name.asname is not None:
             approx_sourcecode = unparse_with_fallbacks(macroimport, debug=True, color=True)
             loc = format_location(filename, macroimport, approx_sourcecode)
@@ -241,3 +251,54 @@ def _mcpyrate_attr(dotted_name, *, force_import=False):
         value = ast.Attribute(value=value, attr=name)
 
     return value
+
+# --------------------------------------------------------------------------------
+
+def isfutureimport(tree):
+    """Return whether `tree` is a `from __future__ import ...`."""
+    return isinstance(tree, ast.ImportFrom) and tree.module == "__future__"
+
+def split_futureimports(body):
+    """Split `body` into `__future__` imports and everything else.
+
+    `body`: list of `ast.stmt`, the suite representing a module top level.
+
+    Return value is `[docstring, future_imports, the_rest]`, where each item
+    is a list of `ast.stmt` (possibly empty).
+    """
+    if getdocstring(body):
+        docstring, *body = body
+        docstring = [docstring]
+    else:
+        docstring = []
+
+    k = -1  # ensure `k` gets defined even if `body` is empty
+    for k, bstmt in enumerate(body):
+        if not isfutureimport(bstmt):
+            break
+    if k >= 0:
+        return docstring, body[:k], body[k:]
+    return docstring, [], body
+
+def inject_after_futureimports(stmts, body):
+    """Inject one or more statements into `body` after its `__future__` imports.
+
+    `stmts`: `ast.stmt` or list of `ast.stmt`, the statement(s) to inject.
+    `body`: list of `ast.stmt`, the suite representing a module top level.
+
+    Return value is the list `[docstring] + futureimports + stmts + the_rest`.
+
+    If `body` has no docstring node at its beginning, the docstring part is
+    automatically omitted.
+
+    If `body` has no `__future__` imports at the beginning just after the
+    optional docstring, the `futureimports` part is automatically omitted.
+    """
+    if not isinstance(body, list):
+        raise TypeError(f"`body` must be a `list`, got {type(body)} with value {repr(body)}")
+    if not isinstance(stmts, list):
+        if not isinstance(stmts, ast.stmt):
+            raise TypeError(f"`stmts` must be `ast.stmt` or a `list` of `ast.stmt`, got {type(stmts)} with value {repr(stmts)}")
+        stmts = [stmts]
+    docstring, futureimports, body = split_futureimports(body)
+    return docstring + futureimports + stmts + body
