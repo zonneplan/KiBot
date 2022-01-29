@@ -149,7 +149,9 @@ def test_kicad_conf_local_conf(monkeypatch):
         m.setattr("sysconfig.get_path", mocked_get_path_1)
         with context.cover_it(cov):
             assert (KiConf.guess_symbol_dir() == '/usr/share/kicad/library' or
-                    KiConf.guess_symbol_dir() == '/usr/share/kicad/symbols')
+                    KiConf.guess_symbol_dir() == '/usr/share/kicad/symbols' or
+                    KiConf.guess_symbol_dir() == '/usr/share/kicad-nightly/library' or
+                    KiConf.guess_symbol_dir() == '/usr/share/kicad-nightly/symbols')
 
 
 def test_kicad_conf_no_conf():
