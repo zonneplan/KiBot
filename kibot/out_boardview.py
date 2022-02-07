@@ -38,11 +38,13 @@ def y_coord(obj, maxy, y):
         return coord(maxy - y)
 
 
-def pad_sort_key(name):
+def pad_sort_key(pad):
+    name = pad.GetName()
+    pad_pos = pad.GetPosition()
     if re.match(r"^\d+$", name):
-        return (0, int(name))
+        return (0, int(name), pad_pos.x, pad_pos.y)
     else:
-        return (1, name)
+        return (1, name, pad_pos.x, pad_pos.y)
 
 
 def convert(pcb, brd):
@@ -91,7 +93,7 @@ def convert(pcb, brd):
     # Parts
     module_list = GS.get_modules()
     modules = []
-    for m in module_list:
+    for m in sorted(module_list, key=lambda mod: mod.GetReference()):
         if not skip_module(m):
             modules.append(m)
 
@@ -111,13 +113,11 @@ def convert(pcb, brd):
     brd.write("\n")
 
     # Pins
-    module_list = GS.get_modules()
     pads = []
-    for m in module_list:
-        if not skip_module(m):
-            pads_list = m.Pads()
-            for pad in sorted(pads_list, key=lambda pad: pad_sort_key(pad.GetName())):
-                pads.append(pad)
+    for m in modules:
+        pads_list = m.Pads()
+        for pad in sorted(pads_list, key=lambda pad: pad_sort_key(pad)):
+            pads.append(pad)
 
     brd.write("PINS: {count}\n".format(count=len(pads)))
     for pad in pads:
@@ -132,10 +132,10 @@ def convert(pcb, brd):
     # Nails
     module_list = GS.get_modules()
     testpoints = []
-    for m in module_list:
+    for m in sorted(module_list, key=lambda mod: mod.GetReference()):
         if not skip_module(m, tp=True):
             pads_list = m.Pads()
-            for pad in sorted(pads_list, key=lambda pad: pad_sort_key(pad.GetName())):
+            for pad in sorted(pads_list, key=lambda pad: pad_sort_key(pad)):
                 testpoints.append((m, pad))
 
     brd.write("NAILS: {count}\n".format(count=len(testpoints)))
