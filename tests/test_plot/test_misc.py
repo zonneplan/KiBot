@@ -1002,3 +1002,13 @@ def test_report_simple_1(test_dir):
     ctx.compare_txt(prj+'-report.txt')
     ctx.compare_txt(prj+'-report_simple.txt')
     ctx.clean_up(keep_project=True)
+
+
+def test_board_view_1(test_dir):
+    prj = 'glasgow'
+    ctx = context.TestContext(test_dir, 'test_board_view_1', prj, 'boardview', POS_DIR)
+    ctx.run()
+    o = prj+'-boardview.brd'
+    ctx.expect_out_file(o)
+    ctx.compare_txt(o)
+    ctx.clean_up()
