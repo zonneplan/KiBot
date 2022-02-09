@@ -33,4 +33,6 @@ outputs:
         suffix: F_Cu
       - layer: F.SilkS
         suffix: F_SilkS
+      - layer: Dwgs.User
+        suffix: Dwgs
 
