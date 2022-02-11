@@ -16,6 +16,7 @@ from .units import compare_values, comp_match, get_last_warning
 from .bom_writer import write_bom
 from .columnlist import ColumnList
 from ..misc import DNF, W_FIELDCONF
+from ..gs import GS
 from .. import log
 
 logger = log.get_logger()
@@ -302,7 +303,7 @@ class ComponentGroup(object):
                     fld=value, ref=ref))
             self.fields[field] += " " + value
 
-    def update_fields(self, conv, usealt=False):
+    def update_fields(self, conv, bottom_negative_x, x_origin, y_origin, usealt=False):
         for c in self.components:
             for f, v in c.get_user_fields():
                 self.update_field(f, v, c.ref)
@@ -330,9 +331,12 @@ class ComponentGroup(object):
         self.fields[ColumnList.COL_PART_LIB_L] = comp.lib
         self.fields[ColumnList.COL_DATASHEET_L] = comp.datasheet
         self.fields[ColumnList.COL_FP_L] = comp.footprint
-        self.fields[ColumnList.COL_FP_X_L] = "{:.4f}".format(comp.footprint_x * conv)
-        self.fields[ColumnList.COL_FP_Y_L] = "{:.4f}".format(comp.footprint_y * conv)
-        self.fields[ColumnList.COL_FP_ROT_L] = comp.footprint_rot
+        pos_x = (comp.footprint_x - x_origin) * conv
+        if bottom_negative_x and comp.bottom:
+            pos_x = -pos_x
+        self.fields[ColumnList.COL_FP_X_L] = "{:.4f}".format(pos_x)
+        self.fields[ColumnList.COL_FP_Y_L] = "{:.4f}".format(-(comp.footprint_y - y_origin) * conv)
+        self.fields[ColumnList.COL_FP_ROT_L] = "{:.4f}".format(comp.footprint_rot)
         self.fields[ColumnList.COL_FP_SIDE_L] = "bottom" if comp.bottom else "top"
         self.fields[ColumnList.COL_FP_LIB_L] = comp.footprint_lib
         self.fields[ColumnList.COL_SHEETPATH_L] = comp.sheet_path_h
@@ -451,11 +455,18 @@ def group_components(cfg, components):
         decimal_point = locale.localeconv()['decimal_point']
         if decimal_point == '.':
             decimal_point = None
+    # Coordinates origin for XYRS
+    x_origin = 0.0
+    y_origin = 0.0
+    if cfg.use_aux_axis_as_origin:
+        (x_origin, y_origin) = GS.get_aux_origin()
+        logger.debug('Using auxiliar origin: x={} y={}'.format(x_origin, y_origin))
+    # Process the groups
     for g in groups:
         # Sort the references within each group
         g.sort_components()
         # Fill the columns
-        g.update_fields(cfg.conv_units, cfg.use_alt)
+        g.update_fields(cfg.conv_units, cfg.bottom_negative_x, x_origin, y_origin, cfg.use_alt )
         if cfg.normalize_values:
             g.fields[ColumnList.COL_VALUE_L] = normalize_value(g.components[0], decimal_point)
     # Sort the groups

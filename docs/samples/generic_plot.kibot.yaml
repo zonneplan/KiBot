@@ -65,6 +65,7 @@ outputs:
       output: '%f-%i%I%v.%x'
 
   # BoM (Bill of Materials):
+  # This output can generate XYRS files (pick and place files).
   # Is compatible with KiBoM, but doesn't need to update the XML netlist because the components
   # are loaded from the schematic.
   # Important differences with KiBoM output:
@@ -86,6 +87,8 @@ outputs:
           number: 1
           # [string=''] A prefix to add to all the references from this project
           ref_id: ''
+      # [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS)
+      bottom_negative_x: false
       # [list(dict)|list(string)] List of columns to display.
       # Can be just the name of the field
       columns:
@@ -240,12 +243,16 @@ outputs:
       ref_id: ''
       # [string=' '] Separator used for the list of references
       ref_separator: ' '
+      # [string='type_value'] [type_value,type_value_ref,ref] Sorting criteria
+      sort_style: 'type_value'
       # [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name
       source_by_id: false
       # [string='millimeters'] [millimeters,inches] Units used for the positions ('Footprint X' and 'Footprint Y' columns)
       units: 'millimeters'
       # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
       use_alt: false
+      # [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS)
+      use_aux_axis_as_origin: true
       # [string=''] Board variant, used to determine which components
       # are output to the BoM.
       variant: ''

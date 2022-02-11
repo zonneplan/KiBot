@@ -1,0 +1,51 @@
+kibot:
+  version: 1
+
+filters:
+  - name: fix_rotation
+    comment: 'Adjust rotation for JLC'
+    type: rot_footprint
+
+  - name: only_smd
+    comment: 'Only SMD parts'
+    type: generic
+    exclude_virtual: true
+    exclude_tht: true
+
+variants:
+  - name: rotated
+    comment: 'Just a place holder for the rotation filter'
+    type: kibom
+    variant: rotated
+    pre_transform: fix_rotation
+    dnf_filter: only_smd
+
+outputs:
+  - name: 'position'
+    comment: "Pick and place file, JLC style"
+    type: bom
+    options:
+      variant: rotated
+      output: '%f_cpl_jlc.%x'
+      units: millimeters
+      group_fields: []
+      sort_style: ref
+      use_aux_axis_as_origin: false
+      csv:
+        hide_pcb_info: true
+        hide_stats_info: true
+      columns:
+        - field: References
+          name: Designator
+        - field: Value
+          name: Val
+        - field: Footprint
+          name: Package
+        - field: Footprint X
+          name: Mid X
+        - field: Footprint Y
+          name: Mid Y
+        - field: Footprint Rot
+          name: Rotation
+        - field: Footprint Side
+          name: Layer

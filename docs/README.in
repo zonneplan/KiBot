@@ -48,6 +48,7 @@
   * [Github Actions](#usage-of-github-actions)
 * [Notes about Gerber format](#notes-about-gerber-format)
 * [Notes about the position file](#notes-about-the-position-file)
+  * [XYRS files](#xyrs-files)
 * [Credits](#credits)
 
 ## Introduction
@@ -1379,6 +1380,16 @@ The internal list of rotations is:
 |`^PowerPAK_SO-8_Single`                              |  270.0   |
 |`^HTSSOP-28-1EP_4.4x9.7mm*`                          |  270.0   |
 
+### XYRS files
+
+XYRS files are just BoM files in CSV format that includes pick and place data (**X** position, **Y** position, **R**otation and **S**ide).
+You can generate them using the internal BoM generator (`bom` output).
+The following fields contains the needed information:
+
+- `Footprint X`
+- `Footprint Y`
+- `Footprint Rot`
+- `Footprint Side`
 
 ## Credits
 

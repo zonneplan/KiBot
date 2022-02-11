@@ -48,6 +48,7 @@
   * [Github Actions](#usage-of-github-actions)
 * [Notes about Gerber format](#notes-about-gerber-format)
 * [Notes about the position file](#notes-about-the-position-file)
+  * [XYRS files](#xyrs-files)
 * [Credits](#credits)
 
 ## Introduction
@@ -771,6 +772,7 @@ Next time you need this list just use an alias, like this:
 * BoM (Bill of Materials)
   * Type: `bom`
   * Description: Used to generate the BoM in CSV, HTML, TSV, TXT, XML or XLSX format using the internal BoM.
+                 This output can generate XYRS files (pick and place files).
                  Is compatible with KiBoM, but doesn't need to update the XML netlist because the components
                  are loaded from the schematic.
                  Important differences with KiBoM output:
@@ -793,6 +795,7 @@ Next time you need this list just use an alias, like this:
             - `name`: [string=''] Name to identify this source. If empty we use the name of the schematic.
             - `number`: [number=1] Number of boards to build (components multiplier). Use negative to substract.
             - `ref_id`: [string=''] A prefix to add to all the references from this project.
+        - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS).
         - `columns`: [list(dict)|list(string)] List of columns to display.
                      Can be just the name of the field.
           * Valid keys:
@@ -894,9 +897,11 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options.
         - `ref_id`: [string=''] A prefix to add to all the references from this project. Used for multiple projects.
         - `ref_separator`: [string=' '] Separator used for the list of references.
+        - `sort_style`: [string='type_value'] [type_value,type_value_ref,ref] Sorting criteria.
         - `source_by_id`: [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name.
         - `units`: [string='millimeters'] [millimeters,inches] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
+        - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS).
         - `variant`: [string=''] Board variant, used to determine which components
                      are output to the BoM..
         - `xlsx`: [dict] Options for the XLSX format.
@@ -2770,6 +2775,16 @@ The internal list of rotations is:
 |`^PowerPAK_SO-8_Single`                              |  270.0   |
 |`^HTSSOP-28-1EP_4.4x9.7mm*`                          |  270.0   |
 
+### XYRS files
+
+XYRS files are just BoM files in CSV format that includes pick and place data (**X** position, **Y** position, **R**otation and **S**ide).
+You can generate them using the internal BoM generator (`bom` output).
+The following fields contains the needed information:
+
+- `Footprint X`
+- `Footprint Y`
+- `Footprint Rot`
+- `Footprint Side`
 
 ## Credits
 
