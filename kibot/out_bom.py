@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: MIT
 # Project: KiBot (formerly KiPlot)
 """
@@ -9,6 +9,7 @@ This is somehow compatible with KiBoM.
 """
 import os
 import re
+from pcbnew import IU_PER_MM, IU_PER_MILS
 from .gs import GS
 from .misc import W_BADFIELD, W_NEEDSPCB
 from .optionable import Optionable, BaseOptions
@@ -383,6 +384,8 @@ class BoMOptions(BaseOptions):
             """ [string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
             self.count_smd_tht = False
             """ Show the stats about how many of the components are SMD/THT. You must provide the PCB """
+            self.units = 'millimeters'
+            """ [millimeters,inches] Units used for the positions ('Footprint X' and 'Footprint Y' columns) """
         self._format_example = 'CSV'
         super().__init__()
 
@@ -579,6 +582,7 @@ class BoMOptions(BaseOptions):
         self.revision = GS.sch_rev
         self.debug_level = GS.debug_level
         self.kicad_version = GS.kicad_version
+        self.conv_units = 1.0/IU_PER_MM if self.units == 'millimeters' else 0.001/IU_PER_MILS
         # Get the components list from the schematic
         comps = GS.sch.get_components()
         get_board_comps_data(comps)

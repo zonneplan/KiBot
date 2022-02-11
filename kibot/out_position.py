@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2019 Romain Deterre (@rdeterre)
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -245,17 +245,18 @@ class PositionOptions(VariantOptions):
                     footprint = c.footprint
                     is_bottom = c.bottom
                     rotation = c.footprint_rot
+                    center_x = c.footprint_x
+                    center_y = c.footprint_y
             if value is None:
                 value = m.GetValue()
                 footprint = str(m.GetFPID().GetLibItemName())  # pcbnew.UTF8 type
                 is_bottom = m.IsFlipped()
                 rotation = m.GetOrientationDegrees()
+                center = GS.get_center(m)
+                center_x = center.x
+                center_y = center.y
             # If passed check the position options
             if (self.only_smd and is_pure_smd(m)) or (not self.only_smd and (is_not_virtual(m) or self.include_virtual)):
-                if GS.ki5():
-                    center = m.GetCenter()
-                else:
-                    center = m.GetPosition()
                 # KiCad: PLACE_FILE_EXPORTER::GenPositionData() in export_footprints_placefile.cpp
                 row = []
                 for k in self.columns:
@@ -266,12 +267,12 @@ class PositionOptions(VariantOptions):
                     elif k == 'Package':
                         row.append(quote_char+footprint+quote_char)
                     elif k == 'PosX':
-                        pos_x = (center.x - x_origin) * conv
+                        pos_x = (center_x - x_origin) * conv
                         if self.bottom_negative_x and is_bottom:
                             pos_x = -pos_x
                         row.append("{:.4f}".format(pos_x))
                     elif k == 'PosY':
-                        row.append("{:.4f}".format(-(center.y - y_origin) * conv))
+                        row.append("{:.4f}".format(-(center_y - y_origin) * conv))
                     elif k == 'Rot':
                         row.append("{:.4f}".format(rotation))
                     elif k == 'Side':

@@ -242,6 +242,8 @@ outputs:
       ref_separator: ' '
       # [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name
       source_by_id: false
+      # [string='millimeters'] [millimeters,inches] Units used for the positions ('Footprint X' and 'Footprint Y' columns)
+      units: 'millimeters'
       # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
       use_alt: false
       # [string=''] Board variant, used to determine which components

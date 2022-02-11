@@ -895,6 +895,7 @@ Next time you need this list just use an alias, like this:
         - `ref_id`: [string=''] A prefix to add to all the references from this project. Used for multiple projects.
         - `ref_separator`: [string=' '] Separator used for the list of references.
         - `source_by_id`: [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name.
+        - `units`: [string='millimeters'] [millimeters,inches] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `variant`: [string=''] Board variant, used to determine which components
                      are output to the BoM..

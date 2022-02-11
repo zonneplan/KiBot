@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -31,6 +31,14 @@ class ColumnList:
     COL_FP_L = COL_FP.lower()
     COL_FP_LIB = 'Footprint Lib'
     COL_FP_LIB_L = COL_FP_LIB.lower()
+    COL_FP_X = 'Footprint X'
+    COL_FP_X_L = COL_FP_X.lower()
+    COL_FP_Y = 'Footprint Y'
+    COL_FP_Y_L = COL_FP_Y.lower()
+    COL_FP_ROT = 'Footprint Rot'
+    COL_FP_ROT_L = COL_FP_ROT.lower()
+    COL_FP_SIDE = 'Footprint Side'
+    COL_FP_SIDE_L = COL_FP_SIDE.lower()
     COL_PART = 'Part'
     COL_PART_L = COL_PART.lower()
     COL_PART_LIB = 'Part Lib'
@@ -92,6 +100,10 @@ class ColumnList:
         COL_DATASHEET_L,
         COL_SHEETPATH_L,
         COL_FP_L,
+        COL_FP_X_L,
+        COL_FP_Y_L,
+        COL_FP_ROT_L,
+        COL_FP_SIDE_L,
         COL_FP_LIB_L
     }
 

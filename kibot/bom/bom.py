@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -302,7 +302,7 @@ class ComponentGroup(object):
                     fld=value, ref=ref))
             self.fields[field] += " " + value
 
-    def update_fields(self, usealt=False):
+    def update_fields(self, conv, usealt=False):
         for c in self.components:
             for f, v in c.get_user_fields():
                 self.update_field(f, v, c.ref)
@@ -330,6 +330,10 @@ class ComponentGroup(object):
         self.fields[ColumnList.COL_PART_LIB_L] = comp.lib
         self.fields[ColumnList.COL_DATASHEET_L] = comp.datasheet
         self.fields[ColumnList.COL_FP_L] = comp.footprint
+        self.fields[ColumnList.COL_FP_X_L] = "{:.4f}".format(comp.footprint_x * conv)
+        self.fields[ColumnList.COL_FP_Y_L] = "{:.4f}".format(comp.footprint_y * conv)
+        self.fields[ColumnList.COL_FP_ROT_L] = comp.footprint_rot
+        self.fields[ColumnList.COL_FP_SIDE_L] = "bottom" if comp.bottom else "top"
         self.fields[ColumnList.COL_FP_LIB_L] = comp.footprint_lib
         self.fields[ColumnList.COL_SHEETPATH_L] = comp.sheet_path_h
         if not self.fields[ColumnList.COL_DESCRIPTION_L]:
@@ -449,7 +453,7 @@ def group_components(cfg, components):
         # Sort the references within each group
         g.sort_components()
         # Fill the columns
-        g.update_fields(cfg.use_alt)
+        g.update_fields(cfg.conv_units, cfg.use_alt)
         if cfg.normalize_values:
             g.fields[ColumnList.COL_VALUE_L] = normalize_value(g.components[0], decimal_point)
     # Sort the groups

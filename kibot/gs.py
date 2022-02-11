@@ -181,6 +181,12 @@ class GS(object):
         return GS.board.GetAuxOrigin()
 
     @staticmethod
+    def get_center(m):
+        if GS.ki5():
+            return m.GetCenter()
+        return m.GetPosition()
+
+    @staticmethod
     def ki6():
         return GS.kicad_version_n >= KICAD_VERSION_5_99
 

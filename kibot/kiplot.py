@@ -277,6 +277,9 @@ def get_board_comps_data(comps):
         c = comps_hash[ref]
         c.bottom = m.IsFlipped()
         c.footprint_rot = m.GetOrientationDegrees()
+        center = GS.get_center(m)
+        c.footprint_x = center.x
+        c.footprint_y = center.y
         attrs = m.GetAttributes()
         if GS.ki5():
             # KiCad 5

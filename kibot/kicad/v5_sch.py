@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -869,6 +869,8 @@ class SchematicComponent(object):
         - fixed: means you can't change it by a replacement without authorization
                  Is just a flag and doesn't affect much.
         - footprint_rot: angle to rotate the part in the pick & place.
+        - footprint_x: x position of the part in the pick & place.
+        - footprint_y: y position of the part in the pick & place.
         - qty: ammount of this part used.
         """
     ref_re = re.compile(r'([^\d]+)([\?\d]+)')
@@ -890,6 +892,8 @@ class SchematicComponent(object):
         self.fixed = False
         self.bottom = False
         self.footprint_rot = 0.0
+        self.footprint_x = 0
+        self.footprint_y = 0
         self.qty = 1
         self.annotation_error = False
         # KiCad 5 PCB flags (mutually exclusive)
