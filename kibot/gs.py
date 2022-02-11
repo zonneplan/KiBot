@@ -175,6 +175,8 @@ class GS(object):
 
     @staticmethod
     def get_aux_origin():
+        if GS.board is None:
+            return (0, 0)
         if GS.ki6():  # pragma: no cover (Ki6)
             settings = GS.board.GetDesignSettings()
             return settings.GetAuxOrigin()
