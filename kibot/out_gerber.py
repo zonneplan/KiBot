@@ -64,7 +64,7 @@ class GerberOptions(AnyLayerOptions):
         if GS.ki5():
             po.SetLineWidth(FromMM(self.line_width))
         else:
-            po.SetDisableGerberMacros(self.disable_aperture_macros)  # pragma: no cover (Ki6)
+            po.SetDisableGerberMacros(self.disable_aperture_macros)
         po.gerber_job_file = self.gerber_job_file
 
     def read_vals_from_po(self, po):
@@ -88,7 +88,7 @@ class GerberOptions(AnyLayerOptions):
             self.line_width = ToMM(po.GetLineWidth())
         else:
             # disableapertmacros
-            self.disable_aperture_macros = po.GetDisableGerberMacros()  # pragma: no cover (Ki6)
+            self.disable_aperture_macros = po.GetDisableGerberMacros()
 
 
 @output_class

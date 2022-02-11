@@ -191,7 +191,7 @@ class PositionOptions(VariantOptions):
 
     @staticmethod
     def is_pure_smd_6(m):
-        return m.GetAttributes() & (MOD_THROUGH_HOLE | MOD_SMD) == MOD_SMD  # pragma: no cover (Ki6)
+        return m.GetAttributes() & (MOD_THROUGH_HOLE | MOD_SMD) == MOD_SMD
 
     @staticmethod
     def is_not_virtual_5(m):
@@ -199,13 +199,13 @@ class PositionOptions(VariantOptions):
 
     @staticmethod
     def is_not_virtual_6(m):
-        return not (m.GetAttributes() & MOD_EXCLUDE_FROM_POS_FILES)  # pragma: no cover (Ki6)
+        return not (m.GetAttributes() & MOD_EXCLUDE_FROM_POS_FILES)
 
     @staticmethod
     def get_attr_tests():
         if GS.ki5():
             return PositionOptions.is_pure_smd_5, PositionOptions.is_not_virtual_5
-        return PositionOptions.is_pure_smd_6, PositionOptions.is_not_virtual_6  # pragma: no cover (Ki6)
+        return PositionOptions.is_pure_smd_6, PositionOptions.is_not_virtual_6
 
     def get_targets(self, out_dir):
         ext = self._expand_ext

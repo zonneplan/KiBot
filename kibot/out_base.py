@@ -12,7 +12,7 @@ if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
     detect_kicad()
-if GS.ki6():  # pragma: no cover (Ki6)
+if GS.ki6():
     # New name, no alias ...
     from pcbnew import FP_SHAPE, wxPoint, LSET
 else:
@@ -186,7 +186,7 @@ class VariantOptions(BaseOptions):
     @staticmethod
     def create_module_element(m):
         if GS.ki6():
-            return FP_SHAPE(m)  # pragma: no cover (Ki6)
+            return FP_SHAPE(m)
         return EDGE_MODULE(m)
 
     @staticmethod

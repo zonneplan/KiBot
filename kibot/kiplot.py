@@ -289,7 +289,7 @@ def get_board_comps_data(comps):
                 c.virtual = True
             else:
                 c.tht = True
-        else:  # pragma: no cover (Ki6)
+        else:
             # KiCad 6
             if attrs & MOD_SMD:
                 c.smd = True

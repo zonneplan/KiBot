@@ -8,7 +8,7 @@ from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
 from .gs import GS
 from .macros import macros, document, output_class  # noqa: F401
-if GS.ki6():  # pragma: no cover (Ki6)
+if GS.ki6():
     from pcbnew import DXF_UNITS_MILLIMETERS, DXF_UNITS_INCHES
 else:
     DXF_UNITS_MILLIMETERS = 1

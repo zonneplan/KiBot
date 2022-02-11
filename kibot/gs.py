@@ -147,7 +147,7 @@ class GS(object):
 
     @staticmethod
     def get_pcb_comment(title_block, num):
-        if GS.ki6():  # pragma: no cover (Ki6)
+        if GS.ki6():
             # Backward compatibility ... what's this?
             # Also: Maintaining the same numbers used before (and found in the file) is asking too much?
             return title_block.GetComment(num)
@@ -163,13 +163,13 @@ class GS(object):
 
     @staticmethod
     def get_modules():
-        if GS.ki6():  # pragma: no cover (Ki6)
+        if GS.ki6():
             return GS.board.GetFootprints()
         return GS.board.GetModules()
 
     @staticmethod
     def get_modules_board(board):
-        if GS.ki6():  # pragma: no cover (Ki6)
+        if GS.ki6():
             return board.GetFootprints()
         return board.GetModules()
 
@@ -177,7 +177,7 @@ class GS(object):
     def get_aux_origin():
         if GS.board is None:
             return (0, 0)
-        if GS.ki6():  # pragma: no cover (Ki6)
+        if GS.ki6():
             settings = GS.board.GetDesignSettings()
             return settings.GetAuxOrigin()
         return GS.board.GetAuxOrigin()
