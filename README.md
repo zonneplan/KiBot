@@ -26,6 +26,7 @@
     * [Default *output* option](#default-output-option)
     * [Default *dir* option](#default-dir-option)
     * [Default *variant* option](#default-variant-option)
+    * [Default *units* option](#default-units-option)
     * [Output directory option](#output-directory-option)
     * [Date format option](#date-format-option)
     * [PCB details options](#pcb-details-options)
@@ -307,6 +308,14 @@ This option controls the default variant applied to all the outputs. Example:
 global:
   variant: 'production'
 ```
+
+#### Default *units* option
+
+This option controls the default value for the `position` and `bom` outputs.
+If you don't define it then the internal defaults of each output are applied. But when you define it the default is the defined value.
+
+On KiCad 6 the dimensions has units. When you create a new dimension it uses *automatic* units. This means that KiCad uses the units currently selected.
+This selection isn't stored in the PCB file. The global `units` value is used by KiBot instead.
 
 #### Output directory option
 
@@ -904,6 +913,7 @@ Next time you need this list just use an alias, like this:
         - `sort_style`: [string='type_value'] [type_value,type_value_ref,ref] Sorting criteria.
         - `source_by_id`: [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name.
         - `units`: [string='millimeters'] [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
+                   Affected by global options.
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS).
         - `variant`: [string=''] Board variant, used to determine which components
@@ -1637,7 +1647,7 @@ Next time you need this list just use an alias, like this:
         - `only_smd`: [boolean=true] Only include the surface mount components.
         - `output`: [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
         - `separate_files_for_front_and_back`: [boolean=true] Generate two separated files, one for the top and another for the bottom.
-        - `units`: [string='millimeters'] [millimeters,inches] Units used for the positions.
+        - `units`: [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.

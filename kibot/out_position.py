@@ -8,7 +8,6 @@
 import os
 from re import compile
 from datetime import datetime
-from pcbnew import IU_PER_MM, IU_PER_MILS
 from collections import OrderedDict
 from .gs import GS
 from .misc import UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES
@@ -63,7 +62,7 @@ class PositionOptions(VariantOptions):
             self.output = GS.def_global_output
             """ Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
             self.units = 'millimeters'
-            """ [millimeters,inches] Units used for the positions """
+            """ [millimeters,inches,mils] Units used for the positions. Affected by global options """
             self.columns = PosColumns
             """ [list(dict)|list(string)] Which columns are included in the output """
             self.bottom_negative_x = False
@@ -108,7 +107,7 @@ class PositionOptions(VariantOptions):
         for f in files:
             f.write('### Module positions - created on {} ###\n'.format(datetime.now().strftime("%a %d %b %Y %X %Z")))
             f.write('### Printed by KiBot\n')
-            unit = {'millimeters': 'mm', 'inches': 'in'}[self.units]
+            unit = {'millimeters': 'mm', 'inches': 'in', 'mils': 'mils'}[self.units]
             f.write('## Unit = {}, Angle = deg.\n'.format(unit))
 
         if topf is not None:
@@ -218,8 +217,7 @@ class PositionOptions(VariantOptions):
         super().run(fname)
         output_dir = os.path.dirname(fname)
         columns = self.columns.values()
-        # Note: the parser already checked the units are milimeters or inches
-        conv = 1.0/IU_PER_MM if self.units == 'millimeters' else 0.001/IU_PER_MILS
+        conv = GS.unit_name_to_scale_factor(self.units)
         # Format all strings
         comps_hash = self.get_refs_hash()
         modules = []

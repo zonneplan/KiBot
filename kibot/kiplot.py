@@ -214,6 +214,19 @@ def load_board(pcb_file=None):
         board = pcbnew.LoadBoard(pcb_file)
         if BasePreFlight.get_option('check_zone_fills'):
             pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+        if GS.global_units and GS.ki6():
+            # In KiCad 6 "dimensions" has units.
+            # The default value is DIM_UNITS_MODE_AUTOMATIC.
+            # But this has a meaning only in the GUI where you have default units.
+            # So now we have global.units and here we patch the board.
+            UNIT_NAME_TO_INDEX = {'millimeters': pcbnew.DIM_UNITS_MODE_MILLIMETRES,
+                                  'inches': pcbnew.DIM_UNITS_MODE_INCHES,
+                                  'mils': pcbnew.DIM_UNITS_MODE_MILS}
+            forced_units = UNIT_NAME_TO_INDEX[GS.global_units]
+            for dr in board.GetDrawings():
+                if dr.GetClass().startswith('PCB_DIM_') and dr.GetUnitsMode() == pcbnew.DIM_UNITS_MODE_AUTOMATIC:
+                    dr.SetUnitsMode(forced_units)
+                    dr.Update()
         GS.board = board
     except OSError as e:
         logger.error('Error loading PCB file. Corrupted?')

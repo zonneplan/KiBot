@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Generic filter: options to match if a field is/isn't defined.
 - Excellon drill: added `route_mode_for_oval_holes` option.
 - Default global `dir` option.
+- Default global `units` option.
 - Global option to specify `out_dir` (like -d command line option)
 - 3D view render
 - SCH PDF Print: monochrome and no frame options.

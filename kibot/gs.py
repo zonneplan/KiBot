@@ -211,6 +211,15 @@ class GS(object):
         return (r.GetWidth(), r.GetHeight())
 
     @staticmethod
+    def unit_name_to_scale_factor(units):
+        if units == 'millimeters':
+            return 1.0/pcbnew.IU_PER_MM
+        if units == 'mils':
+            return 1.0/pcbnew.IU_PER_MILS
+        # Inches
+        return 0.001/pcbnew.IU_PER_MILS
+
+    @staticmethod
     def ki6():
         return GS.kicad_version_n >= KICAD_VERSION_5_99
 

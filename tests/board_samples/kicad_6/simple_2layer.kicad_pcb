@@ -114,7 +114,7 @@
     (gr_text "0,6299 in" (at 140 107.2) (layer "Dwgs.User") (tstamp e5864fe6-2a71-47f0-90ce-38c3f8901580)
       (effects (font (size 1.5 1.5) (thickness 0.3)))
     )
-    (format (units 0) (units_format 1) (precision 4))
+    (format (units 3) (units_format 1) (precision 4))
     (style (thickness 0.2) (arrow_length 1.27) (text_position_mode 0) (extension_height 0.58642) (extension_offset 0.5) keep_text_aligned)
   )
 

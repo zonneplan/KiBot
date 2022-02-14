@@ -42,10 +42,12 @@ class Optionable(object):
         self._expand_id = ''
         self._expand_ext = ''
         super().__init__()
-        if GS.global_output is not None and getattr(self, 'output', None):
-            setattr(self, 'output', GS.global_output)
-        if GS.global_variant is not None and hasattr(self, 'variant'):
-            setattr(self, 'variant', GS.global_variant)
+        for var in ['output', 'variant', 'units']:
+            glb = getattr(GS, 'global_'+var)
+            if glb is not None and hasattr(self, var):
+                setattr(self, var, glb)
+                if GS.debug_level > 2:
+                    logger.debug('Using global `{}`=`{}`'.format(var, glb))
 
     @staticmethod
     def _check_str(key, val, doc):

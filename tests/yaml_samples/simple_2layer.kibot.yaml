@@ -2,6 +2,9 @@
 kibot:
   version: 1
 
+global:
+  units: millimeters
+
 outputs:
 
   - name: 'gerbers'

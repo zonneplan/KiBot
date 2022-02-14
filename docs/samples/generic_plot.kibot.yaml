@@ -255,7 +255,8 @@ outputs:
       sort_style: 'type_value'
       # [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name
       source_by_id: false
-      # [string='millimeters'] [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns)
+      # [string='millimeters'] [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
+      # Affected by global options
       units: 'millimeters'
       # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
       use_alt: false
@@ -1075,7 +1076,7 @@ outputs:
       output: '%f-%i%I%v.%x'
       # [boolean=true] Generate two separated files, one for the top and another for the bottom
       separate_files_for_front_and_back: true
-      # [string='millimeters'] [millimeters,inches] Units used for the positions
+      # [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options
       units: 'millimeters'
       # [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default)
       use_aux_axis_as_origin: true

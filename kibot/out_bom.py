@@ -9,7 +9,6 @@ This is somehow compatible with KiBoM.
 """
 import os
 import re
-from pcbnew import IU_PER_MM, IU_PER_MILS
 from .gs import GS
 from .misc import W_BADFIELD, W_NEEDSPCB
 from .optionable import Optionable, BaseOptions
@@ -387,7 +386,8 @@ class BoMOptions(BaseOptions):
             self.count_smd_tht = False
             """ Show the stats about how many of the components are SMD/THT. You must provide the PCB """
             self.units = 'millimeters'
-            """ [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns) """
+            """ [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
+                Affected by global options """
             self.bottom_negative_x = False
             """ Use negative X coordinates for footprints on bottom layer (for XYRS) """
             self.use_aux_axis_as_origin = True
@@ -611,12 +611,7 @@ class BoMOptions(BaseOptions):
         self.revision = GS.sch_rev
         self.debug_level = GS.debug_level
         self.kicad_version = GS.kicad_version
-        if self.units == 'millimeters':
-            self.conv_units = 1.0/IU_PER_MM
-        elif self.units == 'mils':
-            self.conv_units = 1.0/IU_PER_MILS
-        else:  # Inches
-            self.conv_units = 0.001/IU_PER_MILS
+        self.conv_units = GS.unit_name_to_scale_factor(self.units)
         # Get the components list from the schematic
         comps = GS.sch.get_components()
         get_board_comps_data(comps)

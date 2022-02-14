@@ -26,6 +26,8 @@ class Globals(FiltersOptions):
             """ Base output dir, same as command line `--out-dir` """
             self.variant = ''
             """ Default variant to apply to all outputs """
+            self.units = ''
+            """ [millimeters,inches,mils] Default units. Affects `position` and `bom` outputs. Also KiCad 6 dimensions """
             self.kiauto_wait_start = 0
             """ Time to wait for KiCad in KiAuto operations """
             self.kiauto_time_out_scale = 0.0
