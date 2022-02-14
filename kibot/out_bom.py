@@ -408,10 +408,9 @@ class BoMOptions(BaseOptions):
     @staticmethod
     def _get_columns():
         """ Create a list of valid columns """
-        cols = ColumnList.COLUMNS_DEFAULT + ColumnList.COLUMNS_EXTRA
         if GS.sch:
-            return GS.sch.get_field_names(cols)
-        return cols
+            return (GS.sch.get_field_names(ColumnList.COLUMNS_DEFAULT), ColumnList.COLUMNS_EXTRA)
+        return (ColumnList.COLUMNS_DEFAULT, ColumnList.COLUMNS_EXTRA)
 
     def _guess_format(self):
         """ Figure out the format """
@@ -444,7 +443,7 @@ class BoMOptions(BaseOptions):
             self.exclude_filter = self.dnf_filter = self.dnc_filter = None
             self.variant.config(self)  # Fill or adjust any detail
 
-    def process_columns_config(self, cols, valid_columns, add_all=True):
+    def process_columns_config(self, cols, valid_columns, extra_columns, add_all=True):
         column_rename = {}
         join = []
         if isinstance(cols, type):
@@ -471,7 +470,7 @@ class BoMOptions(BaseOptions):
             # Ensure the column names are valid.
             # Also create the rename and join lists.
             # Lower case available columns (to check if valid)
-            valid_columns_l = {c.lower(): c for c in valid_columns}
+            valid_columns_l = {c.lower(): c for c in valid_columns + extra_columns}
             logger.debug("Valid columns: {} ({})".format(valid_columns, len(valid_columns)))
             # Create the different lists
             for col in cols:
@@ -581,11 +580,11 @@ class BoMOptions(BaseOptions):
             raise KiPlotConfigurationError("The `footprint_type_values` must contain three values ({})".
                                            format(self.footprint_type_values))
         # Columns
-        valid_columns = self._get_columns()
+        (valid_columns, extra_columns) = self._get_columns()
         (self.columns, self.column_levels, self.column_comments, self.column_rename,
-         self.join) = self.process_columns_config(self.columns, valid_columns)
+         self.join) = self.process_columns_config(self.columns, valid_columns, extra_columns)
         (self.columns_ce, self.column_levels_ce, self.column_comments_ce, self.column_rename_ce,
-         self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, add_all=False)
+         self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, extra_columns, add_all=False)
 
     def aggregate_comps(self, comps):
         self.qtys = {GS.sch_basename: self.number}
