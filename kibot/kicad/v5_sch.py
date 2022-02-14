@@ -871,6 +871,8 @@ class SchematicComponent(object):
         - footprint_rot: angle to rotate the part in the pick & place.
         - footprint_x: x position of the part in the pick & place.
         - footprint_y: y position of the part in the pick & place.
+        - footprint_w: width of the footprint (pads only).
+        - footprint_h: height of the footprint (pads only)
         - qty: ammount of this part used.
         """
     ref_re = re.compile(r'([^\d]+)([\?\d]+)')
@@ -892,8 +894,8 @@ class SchematicComponent(object):
         self.fixed = False
         self.bottom = False
         self.footprint_rot = 0.0
-        self.footprint_x = 0
-        self.footprint_y = 0
+        self.footprint_x = self.footprint_y = 0
+        self.footprint_w = self.footprint_h = 0
         self.qty = 1
         self.annotation_error = False
         # KiCad 5 PCB flags (mutually exclusive)

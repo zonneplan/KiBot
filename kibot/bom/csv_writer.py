@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -89,7 +89,8 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
     with open(filename, "wt") as f:
         writer = csv.writer(f, delimiter=delimiter, lineterminator="\n", quoting=quoting)
         # Headers
-        writer.writerow(head_names)
+        if not cfg.csv.hide_header:
+            writer.writerow(head_names)
         # Body
         for group in groups:
             if cfg.ignore_dnf and not group.is_fitted():

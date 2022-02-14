@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     space. This helps for cases like "10K 1%".
   - `count_smd_tht` option to compute SMD/THT stats. (#113)
   - option to add text to the `join` list. (#108)
+  - two other options for the sorting criteria.
+  - XYRS support (you can generate position files using it)
+  - CSV `hide_header` option
 - Generic filter: options to match if a field is/isn't defined.
 - Excellon drill: added `route_mode_for_oval_holes` option.
 - Default global `dir` option.
@@ -61,8 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added global options to define the PCB details (`pcb_material`,
   `solder_mask_color`, `silk_screen_color` and `pcb_finish`)
 - Report generation (for design house) (#93)
-- Internal BoM: two other options for the sorting criteria.
-- Internal BoM: XYRS support (you can generate position files using it)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

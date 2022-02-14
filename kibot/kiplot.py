@@ -280,6 +280,7 @@ def get_board_comps_data(comps):
         center = GS.get_center(m)
         c.footprint_x = center.x
         c.footprint_y = center.y
+        (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
         attrs = m.GetAttributes()
         if GS.ki5():
             # KiCad 5

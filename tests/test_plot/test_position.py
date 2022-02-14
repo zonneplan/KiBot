@@ -250,12 +250,24 @@ def test_position_rot_4(test_dir):
 
 
 def test_position_rot_5(test_dir):
+    """ Generate a JLC compatible position file using the Internal BoM """
     prj = 'light_control'
     ctx = context.TestContext(test_dir, 'test_position_rot_5', prj, 'simple_position_rot_5', POS_DIR)
     ctx.run()
     output = prj+'_cpl_jlc.csv'
     ctx.expect_out_file(output)
     ctx.compare_txt(output, prj+'_cpl_jlc_nc.csv')
+    ctx.clean_up(keep_project=True)
+
+
+def test_position_rot_6(test_dir):
+    """ Generate a MacroFab XYRS compatible position file using the Internal BoM """
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, 'test_position_rot_6', prj, 'simple_position_rot_6', POS_DIR)
+    ctx.run()
+    output = prj+'.XYRS'
+    ctx.expect_out_file(output)
+    ctx.compare_txt(output)
     ctx.clean_up(keep_project=True)
 
 

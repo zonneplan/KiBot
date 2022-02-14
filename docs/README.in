@@ -1391,6 +1391,13 @@ The following fields contains the needed information:
 - `Footprint Rot`
 - `Footprint Side`
 
+Additionally we support:
+
+- `Footprint Type` (SMD, THT, VIRTUAL)
+- `Footprint X-Size`
+- `Footprint Y-Size`
+- `Footprint Populate`
+
 ## Credits
 
 - **KiBot project**: Salvador E. Tropea (@set-soft)

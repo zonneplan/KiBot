@@ -795,6 +795,7 @@ Next time you need this list just use an alias, like this:
             - `name`: [string=''] Name to identify this source. If empty we use the name of the schematic.
             - `number`: [number=1] Number of boards to build (components multiplier). Use negative to substract.
             - `ref_id`: [string=''] A prefix to add to all the references from this project.
+        - `angle_positive`: [boolean=true] Always use positive values for the footprint rotation.
         - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS).
         - `columns`: [list(dict)|list(string)] List of columns to display.
                      Can be just the name of the field.
@@ -847,6 +848,7 @@ Next time you need this list just use an alias, like this:
         - `count_smd_tht`: [boolean=false] Show the stats about how many of the components are SMD/THT. You must provide the PCB.
         - `csv`: [dict] Options for the CSV, TXT and TSV formats.
           * Valid keys:
+            - `hide_header`: [boolean=false] Hide the header line (names of the columns).
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `quote_all`: [boolean=false] Enclose all values using double quotes.
@@ -859,6 +861,8 @@ Next time you need this list just use an alias, like this:
         - `exclude_filter`: [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
                             The default filter excludes test points, fiducial marks, mounting holes, etc.
         - `fit_field`: [string='Config'] Field name used for internal filters.
+        - `footprint_populate_values`: [string|list(string)='no,yes'] Values for the `Footprint Populate` column.
+        - `footprint_type_values`: [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column.
         - `format`: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
                     Defaults to CSV or a guess according to the options..
         - `group_connectors`: [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector.
@@ -899,7 +903,7 @@ Next time you need this list just use an alias, like this:
         - `ref_separator`: [string=' '] Separator used for the list of references.
         - `sort_style`: [string='type_value'] [type_value,type_value_ref,ref] Sorting criteria.
         - `source_by_id`: [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name.
-        - `units`: [string='millimeters'] [millimeters,inches] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
+        - `units`: [string='millimeters'] [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS).
         - `variant`: [string=''] Board variant, used to determine which components
@@ -2785,6 +2789,13 @@ The following fields contains the needed information:
 - `Footprint Y`
 - `Footprint Rot`
 - `Footprint Side`
+
+Additionally we support:
+
+- `Footprint Type` (SMD, THT, VIRTUAL)
+- `Footprint X-Size`
+- `Footprint Y-Size`
+- `Footprint Populate`
 
 ## Credits
 

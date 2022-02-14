@@ -39,6 +39,14 @@ class ColumnList:
     COL_FP_ROT_L = COL_FP_ROT.lower()
     COL_FP_SIDE = 'Footprint Side'
     COL_FP_SIDE_L = COL_FP_SIDE.lower()
+    COL_FP_TYPE = 'Footprint Type'
+    COL_FP_TYPE_L = COL_FP_TYPE.lower()
+    COL_FP_FIT = 'Footprint Populate'
+    COL_FP_FIT_L = COL_FP_FIT.lower()
+    COL_FP_XS = 'Footprint X-Size'
+    COL_FP_XS_L = COL_FP_XS.lower()
+    COL_FP_YS = 'Footprint Y-Size'
+    COL_FP_YS_L = COL_FP_YS.lower()
     COL_PART = 'Part'
     COL_PART_L = COL_PART.lower()
     COL_PART_LIB = 'Part Lib'
@@ -87,6 +95,18 @@ class ColumnList:
         COL_SOURCE_BOM,
     ]
 
+    # Not included by default
+    COLUMNS_EXTRA = [
+        COL_FP_X,
+        COL_FP_Y,
+        COL_FP_ROT,
+        COL_FP_SIDE,
+        COL_FP_TYPE,
+        COL_FP_FIT,
+        COL_FP_XS,
+        COL_FP_YS,
+    ]
+
     # Default columns
     # These columns are 'immutable'
     COLUMNS_PROTECTED_L = {
@@ -104,6 +124,10 @@ class ColumnList:
         COL_FP_Y_L,
         COL_FP_ROT_L,
         COL_FP_SIDE_L,
+        COL_FP_TYPE_L,
+        COL_FP_FIT_L,
+        COL_FP_XS_L,
+        COL_FP_YS_L,
         COL_FP_LIB_L
     }
 

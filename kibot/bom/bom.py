@@ -303,7 +303,8 @@ class ComponentGroup(object):
                     fld=value, ref=ref))
             self.fields[field] += " " + value
 
-    def update_fields(self, conv, bottom_negative_x, x_origin, y_origin, usealt=False):
+    def update_fields(self, conv, bottom_negative_x, x_origin, y_origin, angle_positive, footprint_populate_values,
+                      footprint_type_values, usealt=False):
         for c in self.components:
             for f, v in c.get_user_fields():
                 self.update_field(f, v, c.ref)
@@ -336,8 +337,20 @@ class ComponentGroup(object):
             pos_x = -pos_x
         self.fields[ColumnList.COL_FP_X_L] = "{:.4f}".format(pos_x)
         self.fields[ColumnList.COL_FP_Y_L] = "{:.4f}".format(-(comp.footprint_y - y_origin) * conv)
-        self.fields[ColumnList.COL_FP_ROT_L] = "{:.4f}".format(comp.footprint_rot)
+        rot = comp.footprint_rot
+        if angle_positive:
+            rot = rot % 360
+        self.fields[ColumnList.COL_FP_ROT_L] = "{:.4f}".format(rot)
         self.fields[ColumnList.COL_FP_SIDE_L] = "bottom" if comp.bottom else "top"
+        type = 0
+        if comp.tht:
+            type = 1
+        if comp.virtual:
+            type = 2
+        self.fields[ColumnList.COL_FP_TYPE_L] = footprint_type_values[type]
+        self.fields[ColumnList.COL_FP_FIT_L] = footprint_populate_values[comp.fitted]
+        self.fields[ColumnList.COL_FP_XS_L] = "{:.4f}".format(comp.footprint_w * conv)
+        self.fields[ColumnList.COL_FP_YS_L] = "{:.4f}".format(comp.footprint_h * conv)
         self.fields[ColumnList.COL_FP_LIB_L] = comp.footprint_lib
         self.fields[ColumnList.COL_SHEETPATH_L] = comp.sheet_path_h
         if not self.fields[ColumnList.COL_DESCRIPTION_L]:
@@ -466,7 +479,8 @@ def group_components(cfg, components):
         # Sort the references within each group
         g.sort_components()
         # Fill the columns
-        g.update_fields(cfg.conv_units, cfg.bottom_negative_x, x_origin, y_origin, cfg.use_alt )
+        g.update_fields(cfg.conv_units, cfg.bottom_negative_x, x_origin, y_origin, cfg.angle_positive,
+                        cfg.footprint_populate_values, cfg.footprint_type_values, cfg.use_alt)
         if cfg.normalize_values:
             g.fields[ColumnList.COL_VALUE_L] = normalize_value(g.components[0], decimal_point)
     # Sort the groups

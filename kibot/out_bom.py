@@ -217,6 +217,8 @@ class BoMCSV(Optionable):
         with document:
             self.separator = ','
             """ CSV Separator. TXT and TSV always use tab as delimiter """
+            self.hide_header = False
+            """ Hide the header line (names of the columns) """
             self.hide_pcb_info = False
             """ Hide project information """
             self.hide_stats_info = False
@@ -385,22 +387,31 @@ class BoMOptions(BaseOptions):
             self.count_smd_tht = False
             """ Show the stats about how many of the components are SMD/THT. You must provide the PCB """
             self.units = 'millimeters'
-            """ [millimeters,inches] Units used for the positions ('Footprint X' and 'Footprint Y' columns) """
+            """ [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns) """
             self.bottom_negative_x = False
             """ Use negative X coordinates for footprints on bottom layer (for XYRS) """
             self.use_aux_axis_as_origin = True
             """ Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS) """
+            self.angle_positive = True
+            """ Always use positive values for the footprint rotation """
             self.sort_style = 'type_value'
             """ [type_value,type_value_ref,ref] Sorting criteria """
+            self.footprint_populate_values = Optionable
+            """ [string|list(string)='no,yes'] Values for the `Footprint Populate` column """
+            self.footprint_type_values = Optionable
+            """ [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column """
         self._format_example = 'CSV'
+        self._footprint_populate_values_example = 'no,yes'
+        self._footprint_type_values_example = 'SMD,THT,VIRTUAL'
         super().__init__()
 
     @staticmethod
     def _get_columns():
         """ Create a list of valid columns """
+        cols = ColumnList.COLUMNS_DEFAULT + ColumnList.COLUMNS_EXTRA
         if GS.sch:
-            return GS.sch.get_field_names(ColumnList.COLUMNS_DEFAULT)
-        return ColumnList.COLUMNS_DEFAULT
+            return GS.sch.get_field_names(cols)
+        return cols
 
     def _guess_format(self):
         """ Figure out the format """
@@ -556,6 +567,19 @@ class BoMOptions(BaseOptions):
         # List of distributors
         self.distributors = Optionable.force_list(self.distributors)
         self.no_distributors = Optionable.force_list(self.no_distributors)
+        # Column values
+        self.footprint_populate_values = Optionable.force_list(self.footprint_populate_values)
+        if not self.footprint_populate_values:
+            self.footprint_populate_values = ['no', 'yes']
+        if len(self.footprint_populate_values) != 2:
+            raise KiPlotConfigurationError("The `footprint_populate_values` must contain two values ({})".
+                                           format(self.footprint_populate_values))
+        self.footprint_type_values = Optionable.force_list(self.footprint_type_values)
+        if not self.footprint_type_values:
+            self.footprint_type_values = ['SMD', 'THT', 'VIRTUAL']
+        if len(self.footprint_type_values) != 3:
+            raise KiPlotConfigurationError("The `footprint_type_values` must contain three values ({})".
+                                           format(self.footprint_type_values))
         # Columns
         valid_columns = self._get_columns()
         (self.columns, self.column_levels, self.column_comments, self.column_rename,
@@ -588,7 +612,12 @@ class BoMOptions(BaseOptions):
         self.revision = GS.sch_rev
         self.debug_level = GS.debug_level
         self.kicad_version = GS.kicad_version
-        self.conv_units = 1.0/IU_PER_MM if self.units == 'millimeters' else 0.001/IU_PER_MILS
+        if self.units == 'millimeters':
+            self.conv_units = 1.0/IU_PER_MM
+        elif self.units == 'mils':
+            self.conv_units = 1.0/IU_PER_MILS
+        else:  # Inches
+            self.conv_units = 0.001/IU_PER_MILS
         # Get the components list from the schematic
         comps = GS.sch.get_components()
         get_board_comps_data(comps)

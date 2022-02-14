@@ -87,6 +87,8 @@ outputs:
           number: 1
           # [string=''] A prefix to add to all the references from this project
           ref_id: ''
+      # [boolean=true] Always use positive values for the footprint rotation
+      angle_positive: true
       # [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS)
       bottom_negative_x: false
       # [list(dict)|list(string)] List of columns to display.
@@ -158,6 +160,8 @@ outputs:
       count_smd_tht: false
       # [dict] Options for the CSV, TXT and TSV formats
       csv:
+        # [boolean=false] Hide the header line (names of the columns)
+        hide_header: false
         # [boolean=false] Hide project information
         hide_pcb_info: false
         # [boolean=false] Hide statistics information
@@ -179,6 +183,10 @@ outputs:
       exclude_filter: '_mechanical'
       # [string='Config'] Field name used for internal filters
       fit_field: 'Config'
+      # [string|list(string)='no,yes'] Values for the `Footprint Populate` column
+      footprint_populate_values: 'no,yes'
+      # [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column
+      footprint_type_values: 'SMD,THT,VIRTUAL'
       # [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
       # Defaults to CSV or a guess according to the options.
       format: 'CSV'
@@ -247,7 +255,7 @@ outputs:
       sort_style: 'type_value'
       # [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name
       source_by_id: false
-      # [string='millimeters'] [millimeters,inches] Units used for the positions ('Footprint X' and 'Footprint Y' columns)
+      # [string='millimeters'] [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns)
       units: 'millimeters'
       # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
       use_alt: false

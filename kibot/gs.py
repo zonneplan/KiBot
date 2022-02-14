@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
+import pcbnew
 from datetime import datetime, date
 from sys import exit
 from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, KICAD_VERSION_5_99
@@ -187,6 +188,21 @@ class GS(object):
         if GS.ki5():
             return m.GetCenter()
         return m.GetPosition()
+
+    @staticmethod
+    def get_fp_size(m):
+        if GS.ki5():
+            pads = m.Pads()
+            r = pcbnew.EDA_RECT()
+            for pad in pads:
+                r.Merge(pad.GetBoundingBox())
+            rot = m.GetOrientationDegrees()
+            if rot == 270 or rot == 90:
+                return (r.GetHeight(), r.GetWidth())
+            return (r.GetWidth(), r.GetHeight())
+        # KiCad 6
+        r = m.GetFpPadsLocalBbox()
+        return (r.GetWidth(), r.GetHeight())
 
     @staticmethod
     def ki6():
