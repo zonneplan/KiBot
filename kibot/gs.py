@@ -4,7 +4,12 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-import pcbnew
+try:
+    import pcbnew
+except ImportError:
+    # This is catched by __main__, ignore the error here
+    class pcbnew(object):
+        pass
 from datetime import datetime, date
 from sys import exit
 from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, KICAD_VERSION_5_99
@@ -78,6 +83,7 @@ class GS(object):
     global_output = None
     global_dir = None
     global_variant = None
+    global_units = None
     solved_global_variant = None
     global_kiauto_wait_start = None
     global_kiauto_time_out_scale = None

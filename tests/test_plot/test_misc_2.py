@@ -204,7 +204,7 @@ def test_bom_no_sch():
         # Create an ibom object
         GS.sch = None
         out = RegOutput.get_class_for('bom')()
-        columns = out.options._get_columns()
+        (columns, extra) = out.options._get_columns()
         assert columns == ColumnList.COLUMNS_DEFAULT
         out = RegOutput.get_class_for('kibom')()
         options = out.options()
