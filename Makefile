@@ -31,6 +31,7 @@ lint: doc
 	flake8 . --count --statistics
 	rm kiplot.py
 	rm kibot.py
+	pre-commit run -a
 
 test_tmp: lint
 	$(PY_COV) erase
