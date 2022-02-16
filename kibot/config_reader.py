@@ -562,6 +562,12 @@ def print_filters_help():
         print_output_options(n, o, 2)
 
 
+def quoted(val):
+    if "'" in val:
+        return '"{}"'.format(val)
+    return "'{}'".format(val)
+
+
 def print_example_options(f, cls, name, indent, po, is_list=False):
     ind_str = indent*' '
     obj = cls()
@@ -591,7 +597,7 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
         else:
             val = getattr(obj, k)
         if isinstance(val, str):
-            val = "'{}'".format(val)
+            val = quoted(val)
         elif isinstance(val, bool):
             val = str(val).lower()
         if isinstance(val, type):
@@ -662,7 +668,7 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
             for ln in range(2, len(lines)):
                 f.write('  # '+lines[ln].rstrip()+'\n')
             f.write("  - name: '{}_example'\n".format(n))
-            f.write("    comment: '{}'\n".format(lines[1]))
+            f.write("    comment: {}\n".format(quoted(lines[1])))
             f.write("    type: '{}'\n".format(n))
             f.write("    dir: 'Example/{}_dir'\n".format(n))
             f.write("    options:\n")
