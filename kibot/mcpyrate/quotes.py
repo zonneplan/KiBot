@@ -43,7 +43,6 @@ def _mcpyrate_quotes_attr(attr, *, force_import=False):
 
 class QuasiquoteMarker(ASTMarker):
     """Base class for AST markers used by quasiquotes. Compiled away by `astify`."""
-    pass
 
 class SpliceNodes(QuasiquoteMarker):
     """Splice a `list` of AST nodes into the surrounding context.
@@ -51,7 +50,6 @@ class SpliceNodes(QuasiquoteMarker):
     Command sent by `ast_literal` (run-time part of `a`)
     to `splice_ast_literals` (run-time part of the surrounding `q`).
     """
-    pass
 
 class QuasiquoteSearchDone(Done, QuasiquoteMarker):
     """Marker used by nested quasiquotes to tell the expander a subtree is already done.
@@ -64,14 +62,12 @@ class QuasiquoteSearchDone(Done, QuasiquoteMarker):
       2. We need to be able to eliminate these (and only these) before
          generating the final quoted output.
     """
-    pass
 
 # --------------------------------------------------------------------------------
 # Unquote commands for `astify`. Each type corresponds to an unquote macro.
 
 class Unquote(QuasiquoteMarker):
     """Interpolate the value of the given subtree into the quoted tree. Emitted by `u[]`."""
-    pass
 
 
 class LiftSourcecode(QuasiquoteMarker):
@@ -95,12 +91,10 @@ class ASTLiteral(QuasiquoteMarker):  # similar to `macropy`'s `Literal`, but sup
 
 class ASTList(QuasiquoteMarker):
     """Interpolate the given iterable of AST nodes as an `ast.List` node. Emitted by `s[]`."""
-    pass
 
 
 class ASTTuple(QuasiquoteMarker):
     """Interpolate the given iterable of AST nodes as an `ast.Tuple` node. Emitted by `t[]`."""
-    pass
 
 
 class Capture(QuasiquoteMarker):  # like `macropy`'s `Captured`
