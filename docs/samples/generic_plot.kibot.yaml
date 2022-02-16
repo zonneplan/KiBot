@@ -63,7 +63,6 @@ outputs:
     options:
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options
       output: '%f-%i%I%v.%x'
-
   # BoM (Bill of Materials):
   # This output can generate XYRS files (pick and place files).
   # Is compatible with KiBoM, but doesn't need to update the XML netlist because the components
@@ -100,20 +99,20 @@ outputs:
           field: 'Row'
           # [list(dict)|list(string)|string=''] List of fields to join to this column
           join:
-          # [string=''] Name of the field
-          - field: 'Voltage'
-            # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
-            # Any space to separate it should be added in the text.
-            # Use \n for newline and \t for tab
-            text: ''
-            # [string=''] Text to add after the field content. Will be added only if the field isn't empty.
-            # Any space to separate it should be added in the text.
-            # Use \n for newline and \t for tab
-            text_after: ''
-            # [string=''] Text to add before the field content. Will be added only if the field isn't empty.
-            # Any space to separate it should be added in the text.
-            # Use \n for newline and \t for tab
-            text_before: ''
+            # [string=''] Name of the field
+            - field: 'Voltage'
+              # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+              # Any space to separate it should be added in the text.
+              # Use \n for newline and \t for tab
+              text: ''
+              # [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+              # Any space to separate it should be added in the text.
+              # Use \n for newline and \t for tab
+              text_after: ''
+              # [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+              # Any space to separate it should be added in the text.
+              # Use \n for newline and \t for tab
+              text_before: ''
           # [number=0] Used to group columns. The XLSX output uses it to collapse columns
           level: 0
           # [string=''] Name to display in the header. The field is used when empty
@@ -138,20 +137,20 @@ outputs:
           field: 'Row'
           # [list(dict)|list(string)|string=''] List of fields to join to this column
           join:
-          # [string=''] Name of the field
-          - field: 'Voltage'
-            # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
-            # Any space to separate it should be added in the text.
-            # Use \n for newline and \t for tab
-            text: ''
-            # [string=''] Text to add after the field content. Will be added only if the field isn't empty.
-            # Any space to separate it should be added in the text.
-            # Use \n for newline and \t for tab
-            text_after: ''
-            # [string=''] Text to add before the field content. Will be added only if the field isn't empty.
-            # Any space to separate it should be added in the text.
-            # Use \n for newline and \t for tab
-            text_before: ''
+            # [string=''] Name of the field
+            - field: 'Voltage'
+              # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+              # Any space to separate it should be added in the text.
+              # Use \n for newline and \t for tab
+              text: ''
+              # [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+              # Any space to separate it should be added in the text.
+              # Use \n for newline and \t for tab
+              text_after: ''
+              # [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+              # Any space to separate it should be added in the text.
+              # Use \n for newline and \t for tab
+              text_before: ''
           # [number=0] Used to group columns. The XLSX output uses it to collapse columns
           level: 0
           # [string=''] Name to display in the header. The field is used when empty
@@ -293,7 +292,6 @@ outputs:
         style: 'modern-blue'
         # [string='KiBot Bill of Materials'] BoM title
         title: 'KiBot Bill of Materials'
-
   # Archiver (files compressor):
   # This is used to generate groups of files in compressed file format.
   - name: 'compress_example'
@@ -322,7 +320,6 @@ outputs:
       format: 'ZIP'
       # [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options
       output: '%f-%i%I%v.%x'
-
   # Datasheets downloader:
   - name: 'download_datasheets_example'
     comment: 'Downloads the datasheets for the project'
@@ -346,7 +343,6 @@ outputs:
       repeated: false
       # [string=''] Board variant to apply
       variant: ''
-
   # DXF (Drawing Exchange Format):
   # This output is what you get from the File/Plot menu in pcbnew.
   - name: 'dxf_example'
@@ -401,7 +397,6 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
-
   # Excellon drill format:
   # You can create a map file for documentation purposes.
   # This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
@@ -446,7 +441,6 @@ outputs:
       use_aux_axis_as_origin: false
       # [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros
       zeros_format: 'DECIMAL_FORMAT'
-
   # Gerber drill format:
   # You can create a map file for documentation purposes.
   # This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
@@ -475,7 +469,6 @@ outputs:
         filename: ''
       # [boolean=false] Use the auxiliary axis as origin for coordinates
       use_aux_axis_as_origin: false
-
   # Gerber format:
   # This output is what you get from the File/Plot menu in pcbnew.
   - name: 'gerber_example'
@@ -541,7 +534,6 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
-
   # HPGL (Hewlett & Packard Graphics Language):
   # This output is what you get from the File/Plot menu in pcbnew.
   - name: 'hpgl_example'
@@ -600,7 +592,6 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
-
   # IBoM (Interactive HTML BoM):
   # For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
   # This output is what you get from the InteractiveHtmlBom plug-in (pcbnew).
@@ -694,7 +685,6 @@ outputs:
       # [string=''] List of board variants to include in the BOM.
       # IBoM option, avoid using in conjunction with KiBot variants/filters
       variants_whitelist: ''
-
   # KiBoM (KiCad Bill of Materials):
   # For more information: https://github.com/INTI-CMNB/KiBoM
   # Note that this output is provided as a compatibility tool.
@@ -811,7 +801,6 @@ outputs:
       # variants with the ';' (semicolon) character.
       # This isn't related to the KiBot concept of variants
       variant: ''
-
   # KiCost (KiCad Cost calculator):
   # For more information: https://github.com/INTI-CMNB/KiCost
   # This output is what you get from the KiCost plug-in (eeschema).
@@ -870,7 +859,6 @@ outputs:
       # [string=''] Board variant to apply.
       # Don't use the `kicost_variant` when using internal variants/filters
       variant: ''
-
   # PcbDraw - Beautiful 2D PCB render:
   # Uses configurable colors.
   # Can also render the components if the 2D models are available
@@ -933,7 +921,6 @@ outputs:
       vcuts: false
       # [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated
       warnings: 'visible'
-
   # PDF (Portable Document Format):
   # Note that this output isn't the best for documating your project.
   # This output is what you get from the File/Plot menu in pcbnew.
@@ -987,7 +974,6 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
-
   # PDF PCB Print (Portable Document Format):
   # This is the main format to document your PCB.
   # This output is what you get from the 'File/Print' menu in pcbnew.
@@ -1026,7 +1012,6 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
-
   # PDF Schematic Print (Portable Document Format):
   # This is the main format to document your schematic.
   # This output is what you get from the 'File/Print' menu in eeschema.
@@ -1047,7 +1032,6 @@ outputs:
       # [string=''] Board variant to apply.
       # Not fitted components are crossed
       variant: ''
-
   # Pick & place:
   # This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew.
   - name: 'position_example'
@@ -1082,7 +1066,6 @@ outputs:
       use_aux_axis_as_origin: true
       # [string=''] Board variant to apply
       variant: ''
-
   # PS (Postscript):
   # This output is what you get from the File/Plot menu in pcbnew.
   - name: 'ps_example'
@@ -1148,7 +1131,6 @@ outputs:
       # Only used to plot pads and tracks
       width_adjust: 0
     layers: all
-
   # QR_Lib:
   # This output creates a library containing a symbol and footprint for a QR code.
   # To refresh the generated symbols and footprints use the `update_qr` preflight.
@@ -1187,7 +1169,6 @@ outputs:
       reference: 'QR'
       # [boolean=true] Generate the libs relative to the schematic/PCB dir
       use_sch_dir: true
-
   # 3D render of the PCB:
   - name: 'render_3d_example'
     comment: "Exports the image generated by KiCad's 3D viewer."
@@ -1249,7 +1230,6 @@ outputs:
       # [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
       # Same result as using the mouse wheel in the 3D viewer
       zoom: 0
-
   # Design report:
   # Mainly oriented to be sent to the manufacturer or check PCB details.
   - name: 'report_example'
@@ -1261,7 +1241,6 @@ outputs:
       output: '%f-%i%I%v.%x'
       # [string='full'] Name for one of the internal templates (full, simple) or a custom template file
       template: 'full'
-
   # Schematic with variant generator:
   # This copy isn't intended for development.
   # Is just a tweaked version of the original where you can look at the results.
@@ -1275,7 +1254,6 @@ outputs:
       dnf_filter: '_none'
       # [string=''] Board variant to apply
       variant: ''
-
   # STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure):
   # This is the most common 3D format for exchange purposes.
   # This output is what you get from the 'File/Export/STEP' menu in pcbnew.
@@ -1307,7 +1285,6 @@ outputs:
       subst_models: true
       # [string=''] Board variant to apply
       variant: ''
-
   # SVG (Scalable Vector Graphics):
   # Unlike bitmaps SVG drawings can be scaled without losing resolution.
   # This output is what you get from the File/Plot menu in pcbnew.
@@ -1361,7 +1338,6 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
-
   # SVG Schematic Print:
   # This is a format to document your schematic.
   - name: 'svg_sch_print_example'

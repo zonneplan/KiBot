@@ -611,7 +611,8 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
                 f.write(ind_str+'{}: {}\n'.format(k, val.get_default()))
             else:
                 f.write(ind_str+'{}:\n'.format(k))
-                print_example_options(f, val, '', indent+2, None, help and 'list(dict' in help_lines[0])
+                extra_indent = 2 if not is_list else 4
+                print_example_options(f, val, '', indent+extra_indent, None, help and 'list(dict' in help_lines[0])
         else:
             if is_list and first:
                 k = '- '+k
@@ -646,7 +647,10 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
                 lines = trim(o.__doc__.rstrip()+'.')
                 for ln in lines:
                     f.write('  # '+ln.rstrip()+'\n')
-            f.write('  {}: {}\n'.format(n, o.get_example()))
+            example = o.get_example()
+            if not example.startswith("\n"):
+                example = ' '+example
+            f.write('  {}:{}\n'.format(n, example))
         # Outputs
         outs = RegOutput.get_registered()
         f.write('\noutputs:\n')
@@ -685,4 +689,3 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
                             f.write("        description: '{}'\n".format(layer.description))
                 else:
                     f.write('    layers: {}\n'.format(layers))
-            f.write('\n')
