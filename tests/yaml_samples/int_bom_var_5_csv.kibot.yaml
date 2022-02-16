@@ -15,4 +15,3 @@ outputs:
     dir: BoM
     options:
       variant: 'test multi'
-

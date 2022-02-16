@@ -23,4 +23,3 @@ outputs:
           name: Código Digi-Key
         - field: Quantity Per PCB
           name: Cantidad por PCB
-

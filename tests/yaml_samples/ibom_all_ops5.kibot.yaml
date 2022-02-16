@@ -32,4 +32,3 @@ outputs:
       variants_whitelist: 'bla,ble,bli'
       variants_blacklist: 'blo,blu'
       dnp_field: 'DNP'
-

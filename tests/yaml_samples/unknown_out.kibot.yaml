@@ -6,4 +6,3 @@ outputs:
     comment: "Testing an unknown type"
     type: bogus
     dir: FooBar
-

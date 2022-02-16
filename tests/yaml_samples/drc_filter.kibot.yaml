@@ -24,5 +24,3 @@ preflight:
     - filter_msg: 'Ignore unconnected pad 2 of C4'
       error: unconnected_items
       regexp:  'Pad 2 .* of C4'
-
-

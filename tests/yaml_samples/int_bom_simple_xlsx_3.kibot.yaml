@@ -11,4 +11,3 @@ outputs:
       format: XLSX
       xlsx:
         logo: false
-

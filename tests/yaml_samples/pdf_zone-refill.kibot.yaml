@@ -27,4 +27,3 @@ outputs:
     layers:
       - layer: B.Cu
         suffix: B_Cu
-

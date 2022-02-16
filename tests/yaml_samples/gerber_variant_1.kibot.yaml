@@ -44,4 +44,3 @@ outputs:
     layers: all
     options:
       variant: test
-

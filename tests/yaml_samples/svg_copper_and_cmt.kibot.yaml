@@ -24,4 +24,3 @@ outputs:
     layers:
       - copper
       - 'Cmts.User'
-

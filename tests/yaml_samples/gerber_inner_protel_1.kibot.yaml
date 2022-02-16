@@ -30,4 +30,3 @@ outputs:
       output: '%f_%i.%x'
 
     layers: all
-

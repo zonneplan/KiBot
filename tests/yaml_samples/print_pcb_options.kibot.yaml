@@ -16,4 +16,3 @@ outputs:
     layers:
       - layer: F.Cu
       - layer: F.SilkS
-

@@ -8,5 +8,3 @@ global:
 
 preflight:
   run_drc: true
-
-

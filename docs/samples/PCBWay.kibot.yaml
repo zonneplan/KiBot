@@ -67,4 +67,3 @@ outputs:
           dest: /
         - from_output: PCBWay_drill
           dest: /
-

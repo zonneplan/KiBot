@@ -9,4 +9,3 @@ outputs:
     dir: BoM
     options:
       ref_separator: ','
-

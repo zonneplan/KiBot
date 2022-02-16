@@ -5,5 +5,3 @@ kibot:
 preflight:
   run_drc: true
   ignore_unconnected: true
-
-

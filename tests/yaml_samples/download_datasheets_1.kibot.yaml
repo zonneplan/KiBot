@@ -45,4 +45,3 @@ outputs:
       variant: test
       output: '${manf#}-${VALUE}:/%V.pdf'
       repeated: true
-

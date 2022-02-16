@@ -452,4 +452,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pick & place position
 - Debian package
 - Gerber job generation
-

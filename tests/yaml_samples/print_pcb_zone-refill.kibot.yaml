@@ -15,4 +15,3 @@ outputs:
       scaling: 0
     layers:
       - layer: B.Cu
-

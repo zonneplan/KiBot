@@ -35,4 +35,3 @@ outputs:
       - layer: Inner.5
         suffix: Signal1
         description: 'Inner signals 1'
-

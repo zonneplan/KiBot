@@ -14,4 +14,3 @@ outputs:
     options:
       files:
         - from_output: 'do_test'
-

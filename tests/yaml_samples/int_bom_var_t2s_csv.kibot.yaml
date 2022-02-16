@@ -28,4 +28,3 @@ outputs:
     dir: BoM
     options:
       variant: dummy2
-

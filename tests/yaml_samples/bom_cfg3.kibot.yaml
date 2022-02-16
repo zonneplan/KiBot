@@ -11,4 +11,3 @@ outputs:
       format: CSV  # HTML or CSV
       conf:
         ignore_dnf: true
-

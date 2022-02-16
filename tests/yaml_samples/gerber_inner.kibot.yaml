@@ -44,4 +44,3 @@ outputs:
       format: RAR
       files:
         - from_output: gerbers
-

@@ -1377,4 +1377,3 @@ outputs:
       # [string=''] Board variant to apply.
       # Not fitted components are crossed
       variant: ''
-

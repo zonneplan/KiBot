@@ -15,4 +15,3 @@ outputs:
     layers: [ F.Fab, B.Fab ]
     options:
       variant: default
-

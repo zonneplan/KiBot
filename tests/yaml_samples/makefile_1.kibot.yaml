@@ -120,4 +120,3 @@ outputs:
         - from_output: 'drill'
         - source: '*'
           dest: AnotherCopy
-

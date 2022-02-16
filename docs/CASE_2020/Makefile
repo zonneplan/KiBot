@@ -68,6 +68,3 @@ clean:
 	@-rm  -f $(TEXFILE).aux $(TEXFILE).ps $(TEXFILE).bbl $(TEXFILE).blg  2>/dev/null
 	@-rm  -f $(TEXFILE).lof $(TEXFILE).idx $(TEXFILE).ind $(TEXFILE).ilg 2>/dev/null
 	@-rm  -f .firstrun  2>/dev/null
-
-
-

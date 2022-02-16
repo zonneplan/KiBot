@@ -20,4 +20,3 @@ outputs:
         - file: tests/board_samples/kicad_6/merge_3.kicad_sch
           ref_id: 'C:'
           number: 4
-

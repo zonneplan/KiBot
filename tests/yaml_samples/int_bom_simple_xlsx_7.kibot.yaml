@@ -12,4 +12,3 @@ outputs:
       xlsx:
         logo: docs/images/bot.png
         col_colors: false
-

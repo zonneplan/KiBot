@@ -15,4 +15,3 @@ outputs:
     disable_run_by_default: true
     options:
       separate_files_for_front_and_back: false
-

@@ -24,4 +24,3 @@ outputs:
     options:
       use_aux_axis_as_origin: false
       map: 'pdf'
-

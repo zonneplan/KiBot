@@ -30,4 +30,3 @@ outputs:
       map:
         output: ''
         type: 'pdf'
-

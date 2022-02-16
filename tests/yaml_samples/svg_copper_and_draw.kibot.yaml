@@ -26,4 +26,3 @@ outputs:
       - layer: 'Dwgs.User'
         suffix: 'Dwgs_User'
         description: 'User drawings'
-

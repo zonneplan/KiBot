@@ -66,4 +66,3 @@ outputs:
           dest: /
         - from_output: JLCPCB_drill
           dest: /
-

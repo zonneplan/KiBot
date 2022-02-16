@@ -157,4 +157,3 @@ outputs:
     comment: "STEP 3D model"
     type: step
     dir: 3D
-

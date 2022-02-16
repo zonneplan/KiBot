@@ -6,4 +6,3 @@ outputs:
   - name: result
     comment: Test rar compress
     type: compress
-

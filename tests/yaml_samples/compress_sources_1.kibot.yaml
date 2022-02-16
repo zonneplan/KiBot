@@ -19,4 +19,3 @@ outputs:
         - source: tests/board_samples/kicad_5/sub-sheet.sch
           from_cwd: true
           dest: source
-

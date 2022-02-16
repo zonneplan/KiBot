@@ -44,4 +44,3 @@ outputs:
       compression: deflated
       files:
         - from_output: gerbers
-

@@ -64,4 +64,3 @@ outputs:
             join:
               - Footprint
               - Footprint Lib
-

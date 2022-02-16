@@ -30,4 +30,3 @@ outputs:
       mirror_plot: true
       negative_plot: true
     layers: *copper_and_cmts
-

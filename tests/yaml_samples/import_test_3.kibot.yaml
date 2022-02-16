@@ -14,4 +14,3 @@ outputs:
     extends: position
     options:
       separate_files_for_front_and_back: false
-

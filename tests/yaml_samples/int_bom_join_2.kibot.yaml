@@ -26,4 +26,3 @@ outputs:
         - field: digikey#
           join: ''
         - Quantity Per PCB
-

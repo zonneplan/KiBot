@@ -26,4 +26,3 @@ outputs:
         suffix: F_Cu
       - layer: F.Fab
         suffix: F_Fab
-

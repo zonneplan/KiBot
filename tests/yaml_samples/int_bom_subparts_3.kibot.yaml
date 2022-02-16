@@ -65,4 +65,3 @@ outputs:
       xlsx:
         digikey_link: 'digikey#'
         highlight_empty: false
-

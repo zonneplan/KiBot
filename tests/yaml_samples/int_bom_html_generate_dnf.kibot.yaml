@@ -10,4 +10,3 @@ outputs:
     options:
       html:
         generate_dnf: false
-

@@ -7,4 +7,3 @@ outputs:
     comment: "Interactive Bill of Materials (HTML)"
     type: ibom
     dir: BoM
-

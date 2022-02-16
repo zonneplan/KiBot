@@ -262,4 +262,3 @@ and a list of component remappings. In this case 'PcbDraw 2' wants to use the sa
 So we use an anchor in the first options list (`&pcb_draw_ops`) and then we copy the data with `<<: *pcb_draw_ops`.
 The good thing is that we can overwrite options. Here we choose another `style` (ridiculous example), the bottom side
 (good example), a different list of components to show and we eliminate the `remap` dict.
-

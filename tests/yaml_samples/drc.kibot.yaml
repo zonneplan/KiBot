@@ -4,5 +4,3 @@ kibot:
 
 preflight:
   run_drc: true
-
-
