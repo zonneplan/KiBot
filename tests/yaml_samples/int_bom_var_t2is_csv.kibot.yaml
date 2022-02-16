@@ -3,11 +3,11 @@ kibot:
   version: 1
 
 filters:
- - name: 'no R1'
-   type: 'generic'
-   comment: 'Remove components by prefix'
-   exclude_refs:
-     - R1
+  - name: 'no R1'
+    type: 'generic'
+    comment: 'Remove components by prefix'
+    exclude_refs:
+      - R1
 
 variants:
   - name: 'test'

@@ -110,31 +110,31 @@ outputs:
     comment: "PDF for PCB top layer"
     type: pdf_pcb_print
     dir: PCB
-    layers: [ F.Cu, Dwgs.User ]
+    layers: [F.Cu, Dwgs.User]
 
   - name: print_pdf_l2
     comment: "PDF for PCB GND plane"
     type: pdf_pcb_print
     dir: PCB
-    layers: [ GND.Cu, Dwgs.User ]
+    layers: [GND.Cu, Dwgs.User]
 
   - name: print_pdf_l3
     comment: "PDF for PCB power plane"
     type: pdf_pcb_print
     dir: PCB
-    layers: [ Power.Cu, Dwgs.User ]
+    layers: [Power.Cu, Dwgs.User]
 
   - name: print_pdf_l4
     comment: "PDF for PCB bottom layer"
     type: pdf_pcb_print
     dir: PCB
-    layers: [ B.Cu, Dwgs.User ]
+    layers: [B.Cu, Dwgs.User]
 
   - name: print_fab
     comment: "PDF to show fab layers"
     type: pdf_pcb_print
     dir: PCB
-    layers: [ F.Fab, F.Paste, F.Adhes, Dwgs.User ]
+    layers: [F.Fab, F.Paste, F.Adhes, Dwgs.User]
 
   - name: board_top
     comment: "Top layer view"

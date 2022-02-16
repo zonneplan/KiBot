@@ -3,12 +3,12 @@ kibot:
   version: 1
 
 filters:
- - name: 'include_only'
-   type: 'generic'
-   comment: 'Test for include_only'
-   include_only:
-     - column: 'Footprint'
-       regex: '0805'
+  - name: 'include_only'
+    type: 'generic'
+    comment: 'Test for include_only'
+    include_only:
+      - column: 'Footprint'
+        regex: '0805'
 
 outputs:
   - name: 'bom_internal'

@@ -3,20 +3,20 @@ kibot:
   version: 1
 
 filters:
- - name: 'no smd'
-   type: 'generic'
-   comment: 'Remove components with smd attribute'
-   exclude_smd: true
+  - name: 'no smd'
+    type: 'generic'
+    comment: 'Remove components with smd attribute'
+    exclude_smd: true
 
- - name: 'no tht'
-   type: 'generic'
-   comment: 'Remove components with through-hole attribute'
-   exclude_tht: true
+  - name: 'no tht'
+    type: 'generic'
+    comment: 'Remove components with through-hole attribute'
+    exclude_tht: true
 
- - name: 'no virtual'
-   type: 'generic'
-   comment: 'Remove components with virtual attribute'
-   exclude_virtual: true
+  - name: 'no virtual'
+    type: 'generic'
+    comment: 'Remove components with virtual attribute'
+    exclude_virtual: true
 
 outputs:
   - name: 'no smd'

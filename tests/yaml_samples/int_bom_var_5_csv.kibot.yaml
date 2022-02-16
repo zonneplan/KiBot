@@ -6,7 +6,7 @@ variants:
   - name: 'test multi'
     comment: 'Test multi variant'
     type: kibom
-    variant: [A,B]
+    variant: [A, B]
 
 outputs:
   - name: 'bom filtered'

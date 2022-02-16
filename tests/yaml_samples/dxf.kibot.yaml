@@ -20,7 +20,6 @@ outputs:
       # DXF options
       drill_marks: full
       sketch_plot: false
-      use_aux_axis_as_origin: false
       polygon_mode: true
       metric_units: false
     layers:

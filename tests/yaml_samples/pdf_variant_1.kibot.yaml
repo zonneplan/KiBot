@@ -12,6 +12,6 @@ outputs:
   - name: 'pdf_default'
     comment: "PDF w/variant"
     type: pdf
-    layers: [ F.Fab, B.Fab ]
+    layers: [F.Fab, B.Fab]
     options:
       variant: default

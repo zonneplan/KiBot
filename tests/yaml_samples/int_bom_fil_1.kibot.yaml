@@ -3,31 +3,31 @@ kibot:
   version: 1
 
 filters:
- - name: 'empty val'
-   type: 'generic'
-   comment: 'Remove components with empty value'
-   exclude_empty_val: true
+  - name: 'empty val'
+    type: 'generic'
+    comment: 'Remove components with empty value'
+    exclude_empty_val: true
 
- - name: 'by prefix'
-   type: 'generic'
-   comment: 'Remove components by prefix'
-   exclude_refs:
-     - R1
-     - C*
+  - name: 'by prefix'
+    type: 'generic'
+    comment: 'Remove components by prefix'
+    exclude_refs:
+      - R1
+      - C*
 
- - name: no_KK_Q,Q
-   type: 'generic'
-   comment: 'Remove components with K K and Q,Q fields'
-   keys: ['K K', 'Q,Q']
-   exclude_field: true
+  - name: no_KK_Q,Q
+    type: 'generic'
+    comment: 'Remove components with K K and Q,Q fields'
+    keys: ['K K', 'Q,Q']
+    exclude_field: true
 
- - name: no Conf KK
-   type: 'generic'
-   comment: 'Remove components with K K and Q,Q in config'
-   keys: ['K K', 'Q,Q']
-   exclude_config: true
-   config_separators: ''
-   config_field: BB
+  - name: no Conf KK
+    type: 'generic'
+    comment: 'Remove components with K K and Q,Q in config'
+    keys: ['K K', 'Q,Q']
+    exclude_config: true
+    config_separators: ''
+    config_field: BB
 
 outputs:
   - name: 'empty_val'

@@ -8,4 +8,4 @@ outputs:
     type: bom
     dir: BoM
     options:
-        group_fields: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib']
+      group_fields: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib']
