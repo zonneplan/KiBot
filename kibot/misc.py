@@ -263,7 +263,7 @@ def name2make(name):
 
 @contextmanager
 def hide_stderr():
-    """ Low level stderr supression, used to hide KiCad bugs. """
+    """ Low level stderr suppression, used to hide KiCad bugs. """
     newstderr = os.dup(2)
     devnull = os.open('/dev/null', os.O_WRONLY)
     os.dup2(devnull, 2)

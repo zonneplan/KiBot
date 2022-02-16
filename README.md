@@ -8,7 +8,7 @@
 
 **Important for KiCad 6 users**:
 - Only the code in the git repo supports KiCad 6 (no stable release yet)
-- The docker images taget `ki6` has KiCad 6, but you need to use the KiBot from the repo, not the one in the images.
+- The docker images target `ki6` has KiCad 6, but you need to use the KiBot from the repo, not the one in the images.
 - The docker image with KiCad 6 and KiBot that supports it is tagged as `dev_k6`
 - The GitHub action with KiCad 6 support is tagged as `v1_k6`
 - When using KiCad 6 you must migrate the whole project and pass the migrated files to KiBot.
@@ -319,7 +319,7 @@ This selection isn't stored in the PCB file. The global `units` value is used by
 
 #### Output directory option
 
-The `out_dir` option can define the base outut directory. This is the same as the `-d`/`--out-dir` command line option.
+The `out_dir` option can define the base output directory. This is the same as the `-d`/`--out-dir` command line option.
 Note that the command line option has precedence over it.
 
 Expansion patterns are applied to this value, but you should avoid using patterns that expand according to the context, i.e. **%c**, **%d**, **%f**, **%F**, **%p** and **%r**.
@@ -379,7 +379,7 @@ Both concepts are closely related. In fact variants can use filters.
 The current implementation of the filters allow to exclude components from some of the processing stages. The most common use is to exclude them from some output.
 In the future more advanced filters will allow modification of component details.
 
-Variants are currently used to create *assembly variants*. This concept is used to manufature one PCB used for various products.
+Variants are currently used to create *assembly variants*. This concept is used to manufacture one PCB used for various products.
 You can learn more about KiBot variants on the following [example repo](https://inti-cmnb.github.io/kibot_variants_arduprog/).
 
 As mentioned above the current use of filters is to mark some components. Mainly to exclude them, but also to mark them as special.
@@ -412,12 +412,12 @@ Currently the only type available is `generic`.
 - generic: Generic filter
         This filter is based on regular expressions.
         It also provides some shortcuts for common situations.
-        Note that matches aren't case sensitive and spaces at the beggining and the end are removed.
+        Note that matches aren't case sensitive and spaces at the beginning and the end are removed.
         The internal `_mechanical` filter emulates the KiBoM behavior for default exclusions.
         The internal `_kicost_dnp` filter emulates KiCost's `dnp` field.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `config_field`: [string='Config'] Name of the field used to clasify components.
+    - `config_field`: [string='Config'] Name of the field used to classify components.
     - `config_separators`: [string=' ,'] Characters used to separate options inside the config field.
     - `exclude_all_hash_ref`: [boolean=false] Exclude all components with a reference starting with #.
     - `exclude_any`: [list(dict)] A series of regular expressions used to exclude parts.
@@ -495,12 +495,12 @@ Currently the only type available is `generic`.
     - `split_fields`: [list(string)] List of fields to split, usually the distributors part numbers.
     - `split_fields_expand`: [boolean=false] When `true` the fields in `split_fields` are added to the internal names.
     - `use_ref_sep_for_first`: [boolean=true] Force the reference separator use even for the first component in the list (KiCost behavior).
-    - `value_alt_field`: [string='value_subparts'] Field containing replacements for the `Value` field. So we get real values for splitted parts.
+    - `value_alt_field`: [string='value_subparts'] Field containing replacements for the `Value` field. So we get real values for split parts.
 - var_rename: Var_Rename
         This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
-    - `force_variant`: [string=''] Use this variant instead of the current variant. Usefull for IBoM variants.
+    - `force_variant`: [string=''] Use this variant instead of the current variant. Useful for IBoM variants.
     - `name`: [string=''] Used to identify this particular filter definition.
     - `separator`: [string=':'] Separator used between the variant and the field name.
     - `variant_to_value`: [boolean=false] Rename fields matching the variant to the value of the component.
@@ -802,7 +802,7 @@ Next time you need this list just use an alias, like this:
           * Valid keys:
             - `file`: [string=''] Name of the schematic to aggregate.
             - `name`: [string=''] Name to identify this source. If empty we use the name of the schematic.
-            - `number`: [number=1] Number of boards to build (components multiplier). Use negative to substract.
+            - `number`: [number=1] Number of boards to build (components multiplier). Use negative to subtract.
             - `ref_id`: [string=''] A prefix to add to all the references from this project.
         - `angle_positive`: [boolean=true] Always use positive values for the footprint rotation.
         - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS).
@@ -1155,7 +1155,7 @@ Next time you need this list just use an alias, like this:
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `plot_sheet_reference`: [boolean=false] Currently without effect.
-        - `subtract_mask_from_silk`: [boolean=false] Substract the solder mask from the silk screen.
+        - `subtract_mask_from_silk`: [boolean=false] Subtract the solder mask from the silk screen.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
@@ -1486,7 +1486,7 @@ Next time you need this list just use an alias, like this:
 
 * PDF (Portable Document Format)
   * Type: `pdf`
-  * Description: Exports the PCB to the most common exhange format. Suitable for printing.
+  * Description: Exports the PCB to the most common exchange format. Suitable for printing.
                  Note that this output isn't the best for documating your project.
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
@@ -1557,7 +1557,7 @@ Next time you need this list just use an alias, like this:
 
 * PDF PCB Print (Portable Document Format)
   * Type: `pdf_pcb_print`
-  * Description: Exports the PCB to the most common exhange format. Suitable for printing.
+  * Description: Exports the PCB to the most common exchange format. Suitable for printing.
                  This is the main format to document your PCB.
                  This output is what you get from the 'File/Print' menu in pcbnew.
   * Valid keys:
@@ -1598,7 +1598,7 @@ Next time you need this list just use an alias, like this:
 
 * PDF Schematic Print (Portable Document Format)
   * Type: `pdf_sch_print`
-  * Description: Exports the PCB to the most common exhange format. Suitable for printing.
+  * Description: Exports the PCB to the most common exchange format. Suitable for printing.
                  This is the main format to document your schematic.
                  This output is what you get from the 'File/Print' menu in eeschema.
   * Valid keys:
@@ -1624,7 +1624,7 @@ Next time you need this list just use an alias, like this:
 * Pick & place
   * Type: `position`
   * Description: Generates the file with position information for the PCB components, used by the pick and place machine.
-                 This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew.
+                 This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
@@ -1639,7 +1639,7 @@ Next time you need this list just use an alias, like this:
         - `columns`: [list(dict)|list(string)] Which columns are included in the output.
           * Valid keys:
             - `id`: [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name.
-            - `name`: [string=''] Name to use in the outut file. The id is used when empty.
+            - `name`: [string=''] Name to use in the output file. The id is used when empty.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `format`: [string='ASCII'] [ASCII,CSV] Format for the position file.
@@ -2136,7 +2136,7 @@ But looking at the 1 k resistors is harder. We have 80, three from *merge_1*, on
 So we have 10*3+20*3+30=120, this is clear, but the BoM says they are R1-R3 R2-R4 R5, which is a little bit confusing.
 In this simple example is easy to correlate R1-R3 to *merge_1*, R2-R4 to *merge_2* and R5 to *merge_1*.
 For bigger projects this gets harder.
-Lets assing an *id* to each project, we'll use 'A' for *merge_1*, 'B' for *merge_2* and 'C' for *merge_3*:
+Lets assign an *id* to each project, we'll use 'A' for *merge_1*, 'B' for *merge_2* and 'C' for *merge_3*:
 
 ```yaml
 kibot:
@@ -2278,7 +2278,7 @@ import:
 ```
 
 This will import all outputs and filters, but not variants or globals.
-Also note that imported globals has more precendence than the ones defined in the same file.
+Also note that imported globals has more precedence than the ones defined in the same file.
 
 ## Usage
 
@@ -2321,7 +2321,7 @@ pcb_files:
     kibot -b $(PCB) -c $(KIBOT_CFG)
 ```
 
-If you need to supress messages use `--quiet` or `-q` and if you need to get more informatio about what's going on use `--verbose` or `-v`.
+If you need to suppress messages use `--quiet` or `-q` and if you need to get more information about what's going on use `--verbose` or `-v`.
 
 If you want to generate only some of the outputs use:
 

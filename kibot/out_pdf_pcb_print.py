@@ -149,7 +149,7 @@ class PDF_Pcb_PrintOptions(VariantOptions):
 @output_class
 class PDF_Pcb_Print(BaseOutput):  # noqa: F821
     """ PDF PCB Print (Portable Document Format)
-        Exports the PCB to the most common exhange format. Suitable for printing.
+        Exports the PCB to the most common exchange format. Suitable for printing.
         This is the main format to document your PCB.
         This output is what you get from the 'File/Print' menu in pcbnew. """
     def __init__(self):

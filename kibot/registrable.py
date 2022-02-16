@@ -44,7 +44,7 @@ class RegOutput(Optionable, Registrable):
     _def_variants = {}
     # List of defined outputs
     _def_outputs = OrderedDict()
-    # List of prioritary outputs
+    # List of priority outputs
     _prio_outputs = OrderedDict()
 
     def __init__(self):

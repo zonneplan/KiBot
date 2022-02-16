@@ -39,7 +39,7 @@ class KiCost(BaseVariant):  # noqa: F821
                 Only supported internally, don't use it if you plan to use KiCost """
 
     def get_variant_field(self):
-        ''' Returns the name of the field used to determine if the component belongs to teh variant '''
+        ''' Returns the name of the field used to determine if the component belongs to the variant '''
         return self.variant_field
 
     def config(self, parent):

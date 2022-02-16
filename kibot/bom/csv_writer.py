@@ -72,7 +72,7 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
     head_names = [list of headings to display in the BoM file]
     cfg = BoMOptions object with all the configuration
     """
-    # Delimeter is assumed from file extension
+    # Delimiter is assumed from file extension
     # Override delimiter if separator specified
     if ext == "csv" and cfg.csv.separator:
         delimiter = cfg.csv.separator

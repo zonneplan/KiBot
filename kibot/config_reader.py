@@ -240,12 +240,12 @@ class CfgYamlReader(object):
         if outs is None and explicit_outs and 'outputs' not in data:
             logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
 
-    def _parse_import_filters(self, fils, explicit_fils, fn_rel, data):
-        if (fils is None or len(fils) > 0) and 'filters' in data:
+    def _parse_import_filters(self, filters, explicit_fils, fn_rel, data):
+        if (filters is None or len(filters) > 0) and 'filters' in data:
             i_fils = self._parse_filters(data['filters'])
-            if fils is not None:
+            if filters is not None:
                 sel_fils = {}
-                for f in fils:
+                for f in filters:
                     if f in i_fils:
                         sel_fils[f] = i_fils[f]
                     else:
@@ -257,7 +257,7 @@ class CfgYamlReader(object):
             else:
                 RegOutput.add_filters(sel_fils)
                 logger.debug('Filters loaded from `{}`: {}'.format(fn_rel, sel_fils.keys()))
-        if fils is None and explicit_fils and 'filters' not in data:
+        if filters is None and explicit_fils and 'filters' not in data:
             logger.warning(W_NOFILTERS+"No filters found in `{}`".format(fn_rel))
 
     def _parse_import_variants(self, vars, explicit_vars, fn_rel, data):
@@ -313,7 +313,7 @@ class CfgYamlReader(object):
             if isinstance(entry, str):
                 fn = entry
                 outs = None
-                fils = []
+                filters = []
                 vars = []
                 globals = []
                 explicit_outs = True
@@ -321,7 +321,7 @@ class CfgYamlReader(object):
                 explicit_vars = False
                 explicit_globals = False
             elif isinstance(entry, dict):
-                fn = outs = fils = vars = globals = None
+                fn = outs = filters = vars = globals = None
                 explicit_outs = explicit_fils = explicit_vars = explicit_globals = False
                 for k, v in entry.items():
                     if k == 'file':
@@ -332,7 +332,7 @@ class CfgYamlReader(object):
                         outs = self._parse_import_items('outputs', fn, v)
                         explicit_outs = True
                     elif k == 'filters':
-                        fils = self._parse_import_items('filters', fn, v)
+                        filters = self._parse_import_items('filters', fn, v)
                         explicit_fils = True
                     elif k == 'variants':
                         vars = self._parse_import_items('variants', fn, v)
@@ -355,7 +355,7 @@ class CfgYamlReader(object):
             # Outputs
             self._parse_import_outputs(outs, explicit_outs, fn_rel, data)
             # Filters
-            self._parse_import_filters(fils, explicit_fils, fn_rel, data)
+            self._parse_import_filters(filters, explicit_fils, fn_rel, data)
             # Variants
             self._parse_import_variants(vars, explicit_vars, fn_rel, data)
             # Globals
@@ -392,7 +392,7 @@ class CfgYamlReader(object):
         # List of outputs
         version = None
         globals_found = False
-        # Analize each section
+        # Analyze each section
         for k, v in data.items():
             # logger.debug('{} {}'.format(k, v))
             if k == 'kiplot' or k == 'kibot':
@@ -490,7 +490,7 @@ def print_output_options(name, cl, indent):
         ind_help = len(preface)*' '
         for ln in range(1, clines):
             text = lines[ln].strip()
-            # Dots at the beggining are replaced by spaces.
+            # Dots at the beginning are replaced by spaces.
             # Used to keep indentation.
             if text[0] == '.':
                 for i in range(1, len(text)):
@@ -538,10 +538,10 @@ def print_output_help(name):
 
 
 def print_preflights_help():
-    pres = BasePreFlight.get_registered()
-    logger.debug('{} supported preflights'.format(len(pres)))
+    prefs = BasePreFlight.get_registered()
+    logger.debug('{} supported preflights'.format(len(prefs)))
     print('Supported preflight options:\n')
-    for n, o in OrderedDict(sorted(pres.items())).items():
+    for n, o in OrderedDict(sorted(prefs.items())).items():
         help, options = o.get_doc()
         if help is None:
             help = 'Undocumented'
@@ -551,10 +551,10 @@ def print_preflights_help():
 
 
 def print_filters_help():
-    fils = RegFilter.get_registered()
-    logger.debug('{} supported filters'.format(len(fils)))
+    filters = RegFilter.get_registered()
+    logger.debug('{} supported filters'.format(len(filters)))
     print('Supported filters:\n')
-    for n, o in OrderedDict(sorted(fils.items())).items():
+    for n, o in OrderedDict(sorted(filters.items())).items():
         help = o.__doc__
         if help is None:
             help = 'Undocumented'
@@ -582,7 +582,7 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
         if help:
             help_lines = help.split('\n')
             for hl in help_lines:
-                # Dots at the beggining are replaced by spaces.
+                # Dots at the beginning are replaced by spaces.
                 # Used to keep indentation.
                 hl = hl.strip()
                 if hl[0] == '.':
@@ -641,8 +641,8 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         f.write('kibot:\n  version: 1\n')
         # Preflights
         f.write('\npreflight:\n')
-        pres = BasePreFlight.get_registered()
-        for n, o in OrderedDict(sorted(pres.items())).items():
+        prefs = BasePreFlight.get_registered()
+        for n, o in OrderedDict(sorted(prefs.items())).items():
             if o.__doc__:
                 lines = trim(o.__doc__.rstrip()+'.')
                 for ln in lines:

@@ -155,7 +155,7 @@ def test_no_get_targets(caplog):
         test.get_targets('')
         files = test.get_dependencies()
         files_pre = test_pre.get_dependencies()
-    assert "Output 'Fake' (dummy) [none] doesn't implement get_targets(), plese report it" in caplog.text
+    assert "Output 'Fake' (dummy) [none] doesn't implement get_targets(), please report it" in caplog.text
     assert files == [GS.sch_file]
     assert files_pre == [GS.sch_file]
 

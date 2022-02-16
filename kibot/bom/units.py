@@ -90,7 +90,7 @@ def get_prefix(prefix):
     if prefix in PREFIX_GIGA:
         return 1.0e9, 'G'
     # Unknown, we shouldn't get here because the regex matched
-    # BUT: I found that sometimes unexpected things happend, like mu matching micro and then we reaching this code
+    # BUT: I found that sometimes unexpected things happen, like mu matching micro and then we reaching this code
     #      Now is fixed, but I can't be sure some bizarre case is overlooked
     logger.error('Unknown prefix, please report')
     return 1, ''
@@ -193,7 +193,7 @@ def compare_values(c1, c2):
         # Values match
         if u1 == u2:
             return True  # Units match
-        # No longer posible because now we use the prefix to determine absent units
+        # No longer possible because now we use the prefix to determine absent units
         # if not u1:
         #     return True  # No units for component 1
         # if not u2:

@@ -89,7 +89,7 @@ class PDF_Sch_PrintOptions(VariantOptions):
 @output_class
 class PDF_Sch_Print(BaseOutput):  # noqa: F821
     """ PDF Schematic Print (Portable Document Format)
-        Exports the PCB to the most common exhange format. Suitable for printing.
+        Exports the PCB to the most common exchange format. Suitable for printing.
         This is the main format to document your schematic.
         This output is what you get from the 'File/Print' menu in eeschema. """
     def __init__(self):

@@ -82,7 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The default output pattern now includes the `output_id` (%I)
 
 ### Fixed
-- Position files now defaults to use the auxiliar origin as KiCad.
+- Position files now defaults to use the auxiliary origin as KiCad.
   Can be disabled to use absolute coordinates. (#87)
 - Board View: flipped output. (#89)
 - Board View: problems with netnames using spaces. (#90)
@@ -130,7 +130,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Problem when using E/DRC filters and the output dir didn't exist.
-- Not all errors during makefile generation were catched (got a stack trace).
+- Not all errors during makefile generation were caught (got a stack trace).
 - Output dirs created when generating a makefile for a compress target.
 - Problems with some SnapEDA libs (extra space in lib termination tag #57)
 - The "References" (plural) column is now coloured as "Reference" (singular)
@@ -268,8 +268,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.2] - 2020-08-25
 ### Changed
-- Discarded spaces at the beggining and end of user fields when creating the
-  internal BoM. They are ususally mistakes that prevents grouping components.
+- Discarded spaces at the beginning and end of user fields when creating the
+  internal BoM. They are usually mistakes that prevents grouping components.
 
 ### Fixed
 - The variants logic for BoMs when a component resquested to be only added to
@@ -277,7 +277,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed warnings about malformed values for DNF components indicating it in
   its value.
 - Problems with PcbDraw when generating PNG and JPG outputs. Now we use a more
-  reliable conversion methode when available.
+  reliable conversion method when available.
 
 ## [0.6.1] - 2020-08-20
 ### Added
@@ -407,7 +407,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - All pcbnew plot formats generated gerber job files
-- Most formats that needed layers didn't complain when ommited
+- Most formats that needed layers didn't complain when omitted
 
 ## [0.2.4] - 2020-05-19
 ### Changed

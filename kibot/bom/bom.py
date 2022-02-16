@@ -182,7 +182,7 @@ class ComponentGroup(object):
     def add_component(self, c):
         """ Add a component to the group.
             Avoid repetition, checks if suitable.
-            Note: repeated components happend when a component contains more than one unit """
+            Note: repeated components happens when a component contains more than one unit """
         if not self.components:
             self.components.append(c)
             self.refs[c.ref+c.project] = c
@@ -382,7 +382,7 @@ def get_value_sort(comp, fallback_ref=False):
     if res:
         value, (mult, mult_s), unit = res
         if comp.ref_prefix in "CL":
-            # fempto Farads
+            # femto Farads
             value = "{0:15d}".format(int(value * 1e15 * mult + 0.1))
         else:
             # milli Ohms
@@ -473,7 +473,7 @@ def group_components(cfg, components):
     y_origin = 0.0
     if cfg.use_aux_axis_as_origin:
         (x_origin, y_origin) = GS.get_aux_origin()
-        logger.debug('Using auxiliar origin: x={} y={}'.format(x_origin, y_origin))
+        logger.debug('Using auxiliary origin: x={} y={}'.format(x_origin, y_origin))
     # Process the groups
     for g in groups:
         # Sort the references within each group

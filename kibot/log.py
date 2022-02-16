@@ -7,7 +7,7 @@
 """
 Log module
 
-Handles logging initialization and formating.
+Handles logging initialization and formatting.
 """
 import sys
 import logging

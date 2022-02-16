@@ -45,7 +45,7 @@ class PDFOptions(DrillMarks):
 @output_class
 class PDF(AnyLayer, DrillMarks):
     """ PDF (Portable Document Format)
-        Exports the PCB to the most common exhange format. Suitable for printing.
+        Exports the PCB to the most common exchange format. Suitable for printing.
         Note that this output isn't the best for documating your project.
         This output is what you get from the File/Plot menu in pcbnew. """
     def __init__(self):

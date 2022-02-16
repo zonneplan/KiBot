@@ -77,7 +77,7 @@ def test_sch_errors_l3(test_dir):
 def test_sch_errors_l5(test_dir):
     if context.ki6():
         return
-    setup_ctx(test_dir, 'l5', ['Unknown poligon definition', 'Expected 6 coordinates and got 8 in poligon',
+    setup_ctx(test_dir, 'l5', ['Unknown polygon definition', 'Expected 6 coordinates and got 8 in polygon',
                                'Unknown square definition', 'Unknown circle definition', 'Unknown arc definition',
                                'Unknown text definition', 'Unknown pin definition', 'Failed to load component definition',
                                'Unknown draw element'])

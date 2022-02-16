@@ -8,7 +8,7 @@
 
 **Important for KiCad 6 users**:
 - Only the code in the git repo supports KiCad 6 (no stable release yet)
-- The docker images taget `ki6` has KiCad 6, but you need to use the KiBot from the repo, not the one in the images.
+- The docker images target `ki6` has KiCad 6, but you need to use the KiBot from the repo, not the one in the images.
 - The docker image with KiCad 6 and KiBot that supports it is tagged as `dev_k6`
 - The GitHub action with KiCad 6 support is tagged as `v1_k6`
 - When using KiCad 6 you must migrate the whole project and pass the migrated files to KiBot.
@@ -254,7 +254,7 @@ This selection isn't stored in the PCB file. The global `units` value is used by
 
 #### Output directory option
 
-The `out_dir` option can define the base outut directory. This is the same as the `-d`/`--out-dir` command line option.
+The `out_dir` option can define the base output directory. This is the same as the `-d`/`--out-dir` command line option.
 Note that the command line option has precedence over it.
 
 Expansion patterns are applied to this value, but you should avoid using patterns that expand according to the context, i.e. **%c**, **%d**, **%f**, **%F**, **%p** and **%r**.
@@ -314,7 +314,7 @@ Both concepts are closely related. In fact variants can use filters.
 The current implementation of the filters allow to exclude components from some of the processing stages. The most common use is to exclude them from some output.
 In the future more advanced filters will allow modification of component details.
 
-Variants are currently used to create *assembly variants*. This concept is used to manufature one PCB used for various products.
+Variants are currently used to create *assembly variants*. This concept is used to manufacture one PCB used for various products.
 You can learn more about KiBot variants on the following [example repo](https://inti-cmnb.github.io/kibot_variants_arduprog/).
 
 As mentioned above the current use of filters is to mark some components. Mainly to exclude them, but also to mark them as special.
@@ -777,7 +777,7 @@ But looking at the 1 k resistors is harder. We have 80, three from *merge_1*, on
 So we have 10*3+20*3+30=120, this is clear, but the BoM says they are R1-R3 R2-R4 R5, which is a little bit confusing.
 In this simple example is easy to correlate R1-R3 to *merge_1*, R2-R4 to *merge_2* and R5 to *merge_1*.
 For bigger projects this gets harder.
-Lets assing an *id* to each project, we'll use 'A' for *merge_1*, 'B' for *merge_2* and 'C' for *merge_3*:
+Lets assign an *id* to each project, we'll use 'A' for *merge_1*, 'B' for *merge_2* and 'C' for *merge_3*:
 
 ```yaml
 kibot:
@@ -919,7 +919,7 @@ import:
 ```
 
 This will import all outputs and filters, but not variants or globals.
-Also note that imported globals has more precendence than the ones defined in the same file.
+Also note that imported globals has more precedence than the ones defined in the same file.
 
 ## Usage
 
@@ -962,7 +962,7 @@ pcb_files:
     kibot -b $(PCB) -c $(KIBOT_CFG)
 ```
 
-If you need to supress messages use `--quiet` or `-q` and if you need to get more informatio about what's going on use `--verbose` or `-v`.
+If you need to suppress messages use `--quiet` or `-q` and if you need to get more information about what's going on use `--verbose` or `-v`.
 
 If you want to generate only some of the outputs use:
 

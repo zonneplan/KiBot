@@ -178,7 +178,7 @@ def test_sch_missing_filtered(test_dir):
 
 
 def test_sch_bizarre_cases(test_dir):
-    """ Poligon without points.
+    """ Polygon without points.
         Pin with unknown direction. """
     if not context.ki5():
         # This is very KiCad 5 loader specific

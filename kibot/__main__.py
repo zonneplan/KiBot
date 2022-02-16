@@ -280,7 +280,7 @@ def detect_kicad():
         # Bug in KiCad (#6989), prints to stderr:
         # `../src/common/stdpbase.cpp(62): assert "traits" failed in Get(test_dir): create wxApp before calling this`
         # Found in KiCad 5.1.8, 5.1.9
-        # So we temporarily supress stderr
+        # So we temporarily suppress stderr
         with hide_stderr():
             GS.kicad_conf_path = pcbnew.GetKicadConfigPath()
         GS.pro_ext = '.pro'

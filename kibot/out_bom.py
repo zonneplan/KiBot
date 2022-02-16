@@ -281,7 +281,7 @@ class Aggregate(Optionable):
             self.ref_id = ''
             """ A prefix to add to all the references from this project """
             self.number = 1
-            """ Number of boards to build (components multiplier). Use negative to substract """
+            """ Number of boards to build (components multiplier). Use negative to subtract """
 
     def config(self, parent):
         super().config(parent)

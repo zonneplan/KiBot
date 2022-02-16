@@ -340,17 +340,17 @@ class TestContext(object):
                 server = None
             else:
                 os.environ['KICOST_KITSPACE_URL'] = 'http://localhost:8000'
-                fo = open(self.get_out_path('server_stdout.txt'), 'at')
-                fe = open(self.get_out_path('server_stderr.txt'), 'at')
-                server = subprocess.Popen('./tests/utils/dummy-web-server.py', stdout=fo, stderr=fe)
+                f_o = open(self.get_out_path('server_stdout.txt'), 'at')
+                f_e = open(self.get_out_path('server_stderr.txt'), 'at')
+                server = subprocess.Popen('./tests/utils/dummy-web-server.py', stdout=f_o, stderr=f_e)
         try:
             self.do_run(cmd, ret_val, use_a_tty, chdir_out)
         finally:
             # Always kill the fake web server
             if kicost and server is not None:
                 server.terminate()
-                fo.close()
-                fe.close()
+                f_o.close()
+                f_e.close()
         # Do we need to restore the locale?
         if do_locale:
             if old_LOCPATH:
@@ -475,7 +475,7 @@ class TestContext(object):
                self.get_out_path(gen),
                self.get_out_path('gen-%d.png')]
         subprocess.check_call(cmd)
-        # Chek number of pages
+        # Check number of pages
         ref_pages = glob(self.get_out_path('ref-*.png'))
         gen_pages = glob(self.get_out_path('gen-*.png'))
         logging.debug('Pages {} vs {}'.format(len(gen_pages), len(ref_pages)))

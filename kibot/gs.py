@@ -7,7 +7,7 @@ import os
 try:
     import pcbnew
 except ImportError:
-    # This is catched by __main__, ignore the error here
+    # This is caught by __main__, ignore the error here
     class pcbnew(object):
         pass
 from datetime import datetime, date

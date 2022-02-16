@@ -246,7 +246,7 @@ class BaseMacroExpander(NodeTransformer):
             # Resolve macro binding.
             macro = self.isbound(macroname)
             if not macro:  # pragma: no cover
-                raise MacroApplicationError(f"{loc}\nin {syntax} macro invocation for '{macroname}': the name '{macroname}' is not bound to a macro.")
+                raise MacroApplicationError(f"{loc}\n""in {syntax} macro invocation for '{macroname}': the name '{macroname}' is not bound to a macro.")
 
             # Expand the macro.
             expansion = self._apply_macro(macro, tree, kw, macroname, target)
@@ -272,7 +272,7 @@ class BaseMacroExpander(NodeTransformer):
 
         # If something went wrong, generate a standardized macro use site report.
         except Exception as err:
-            msg = f"{loc}\nin {syntax} macro invocation for '{macroname}'"
+            msg = f"{loc}\n""in {syntax} macro invocation for '{macroname}'"
             if isinstance(err, MacroApplicationError) and err.__cause__:
                 # Telescope nested use site reports, by keeping the original
                 # traceback and `__cause__`, but combining the messages.

@@ -1450,7 +1450,7 @@ def test_int_bom_variant_t3(test_dir):
 
 
 def test_int_bom_variant_cli(test_dir):
-    """ Assing t1_v1 to default from cli. Make sure t1_v3 isn't affected """
+    """ Assign t1_v1 to default from cli. Make sure t1_v3 isn't affected """
     prj = 'kibom-variante'
     ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_cli', prj, 'int_bom_var_t1_cli', BOM_DIR)
     ctx.run(extra=['--global-redef', 'variant=t1_v1'])
@@ -1471,7 +1471,7 @@ def test_int_bom_variant_cli(test_dir):
 
 
 def test_int_bom_variant_glb(test_dir):
-    """ Assing t1_v1 to default from global. Make sure t1_v3 isn't affected """
+    """ Assign t1_v1 to default from global. Make sure t1_v3 isn't affected """
     prj = 'kibom-variante'
     ctx = context.TestContextSCH(test_dir, 'test_int_bom_variant_glb', prj, 'int_bom_var_t1_glb', BOM_DIR)
     ctx.run()
@@ -1491,7 +1491,7 @@ def test_int_bom_variant_glb(test_dir):
 
 
 def test_int_bom_variant_cl_gl(test_dir):
-    """ Assing t1_v1 to default from global.
+    """ Assign t1_v1 to default from global.
         Overwrite it from cli to t1_v2.
         Make sure t1_v3 isn't affected """
     prj = 'kibom-variante'

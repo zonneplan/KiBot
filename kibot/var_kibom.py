@@ -29,7 +29,7 @@ class KiBoM(BaseVariant):  # noqa: F821
         self._def_dnc_filter = None
         with document:
             self.config_field = 'Config'
-            """ Name of the field used to clasify components """
+            """ Name of the field used to classify components """
             self.variant = Optionable
             """ [string|list(string)=''] Board variant(s) """
 

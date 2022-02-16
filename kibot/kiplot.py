@@ -66,7 +66,7 @@ def _load_actions(path, load_internals=False):
 
 
 def load_actions():
-    """ Load all the available ouputs and preflights """
+    """ Load all the available outputs and preflights """
     global actions_loaded
     if actions_loaded:
         return
@@ -378,7 +378,7 @@ def run_output(out):
 def generate_outputs(outputs, target, invert, skip_pre, cli_order):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
     preflight_checks(skip_pre)
-    # Chek if the preflights pulled options
+    # Check if the preflights pulled options
     for out in RegOutput.get_prioritary_outputs():
         config_output(out)
         logger.info('- '+str(out))
@@ -448,9 +448,9 @@ def gen_global_targets(f, pre_targets, out_targets, type):
 
 def get_pre_targets(targets, dependencies, is_pre):
     pcb_targets = sch_targets = ''
-    pres = BasePreFlight.get_in_use_objs()
+    prefs = BasePreFlight.get_in_use_objs()
     try:
-        for pre in pres:
+        for pre in prefs:
             tg = pre.get_targets()
             if not tg:
                 continue

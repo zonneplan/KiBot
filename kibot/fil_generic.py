@@ -30,7 +30,7 @@ class Generic(BaseFilter):  # noqa: F821
     """ Generic filter
         This filter is based on regular expressions.
         It also provides some shortcuts for common situations.
-        Note that matches aren't case sensitive and spaces at the beggining and the end are removed.
+        Note that matches aren't case sensitive and spaces at the beginning and the end are removed.
         The internal `_mechanical` filter emulates the KiBoM behavior for default exclusions.
         The internal `_kicost_dnp` filter emulates KiCost's `dnp` field """
     def __init__(self):
@@ -53,7 +53,7 @@ class Generic(BaseFilter):  # noqa: F821
             self.exclude_value = False
             """ Exclude components if their 'Value' is any of the keys """
             self.config_field = 'Config'
-            """ Name of the field used to clasify components """
+            """ Name of the field used to classify components """
             self.config_separators = ' ,'
             """ Characters used to separate options inside the config field """
             self.exclude_config = False

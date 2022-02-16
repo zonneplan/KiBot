@@ -197,7 +197,7 @@ class DrawPoligon(object):
     pol_re = re.compile(r'P\s+(\d+)\s+'     # 0 Number of points
                         r'(\d+)\s+'         # 1 Sub-part (0 == all)
                         r'([012])\s+'       # 2 Which representation (0 == both) for DeMorgan
-                        r'(-?\d+)\s+'       # 3 Thickness (Components from 74xx.lib has poligons with -1000)
+                        r'(-?\d+)\s+'       # 3 Thickness (Components from 74xx.lib has polygons with -1000)
                         r'((?:-?\d+\s+)+)'  # 4 The points
                         r'([NFf])')         # 5 Normal, Filled
 
@@ -208,7 +208,7 @@ class DrawPoligon(object):
     def parse(line):
         m = DrawPoligon.pol_re.match(line)
         if not m:
-            logger.warning(W_BADPOLI + 'Unknown poligon definition `{}`'.format(line))
+            logger.warning(W_BADPOLI + 'Unknown polygon definition `{}`'.format(line))
             return None
         pol = DrawPoligon()
         g = m.groups()
@@ -219,7 +219,7 @@ class DrawPoligon(object):
         pol.fill = g[5]
         coords = _split_space(g[4])
         if len(coords) != 2*pol.points:
-            logger.warning(W_POLICOORDS + 'Expected {} coordinates and got {} in poligon'.format(2*pol.points, len(coords)))
+            logger.warning(W_POLICOORDS + 'Expected {} coordinates and got {} in polygon'.format(2*pol.points, len(coords)))
             pol.points = int(len(coords)/2)
         pol.coords = [int(c) for c in coords]
         return pol
@@ -873,7 +873,7 @@ class SchematicComponent(object):
         - footprint_y: y position of the part in the pick & place.
         - footprint_w: width of the footprint (pads only).
         - footprint_h: height of the footprint (pads only)
-        - qty: ammount of this part used.
+        - qty: amount of this part used.
         """
     ref_re = re.compile(r'([^\d]+)([\?\d]+)')
 
@@ -969,7 +969,7 @@ class SchematicComponent(object):
             self.dfields_bkp = {f.name.lower(): f for f in self.fields_bkp}
 
     def _solve_ref(self, path):
-        """ Look fo the correct reference for this path.
+        """ Look for the correct reference for this path.
             Returns the default reference if no paths defined.
             Returns the first not empty reference if the current is empty. """
         ref = self.f_ref
@@ -1764,7 +1764,7 @@ class Schematic(object):
             self.sub_sheets[c].save(file, dest_dir)
 
     def save_variant(self, dest_dir):
-        # Currently imposible
+        # Currently impossible
         # if not os.path.exists(dest_dir):
         #    os.makedirs(dest_dir)
         lib_yes = os.path.join(dest_dir, 'y.lib')

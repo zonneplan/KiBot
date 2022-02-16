@@ -526,7 +526,7 @@ class Bracket(SExpBase):
 
     def tosexp(self, tosexp=tosexp):
         bra = self._bra
-        ket = BRACKETS[self._bra]
+        ke = BRACKETS[self._bra]
         c = ''
         for i, v in enumerate(self._val):
             v = tosexp(v)
@@ -537,7 +537,7 @@ class Bracket(SExpBase):
                 # Avoid spaces at the end of lines
                 c = c.rstrip(' ')
             c += v
-        return uformat("{0}{1}{2}", bra, c, ket)
+        return uformat("{0}{1}{2}", bra, c, ke)
 
 
 def bracket(val, bra):

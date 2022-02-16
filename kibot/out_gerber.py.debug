@@ -5,11 +5,14 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
-from pcbnew import (PLOT_FORMAT_GERBER, FromMM, ToMM)
+from pcbnew import (PLOT_FORMAT_GERBER, FromMM, ToMM, DIM_UNITS_MODE_MILLIMETRES, DIM_UNITS_MODE_INCHES, DIM_UNITS_MODE_AUTOMATIC)
 from .gs import GS
 from .out_any_layer import (AnyLayer, AnyLayerOptions)
 from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
+from . import log
+
+logger = log.get_logger()
 
 
 class GerberOptions(AnyLayerOptions):
@@ -20,7 +23,7 @@ class GerberOptions(AnyLayerOptions):
             self.line_width = 0.1
             """ [0.02,2] Line_width for objects without width [mm] (KiCad 5) """
             self.subtract_mask_from_silk = False
-            """ Subtract the solder mask from the silk screen """
+            """ Substract the solder mask from the silk screen """
             self.use_protel_extensions = False
             """ Use legacy Protel file extensions """
             self._gerber_precision = 4.6
@@ -64,7 +67,12 @@ class GerberOptions(AnyLayerOptions):
         if GS.ki5():
             po.SetLineWidth(FromMM(self.line_width))
         else:
-            po.SetDisableGerberMacros(self.disable_aperture_macros)
+            po.SetDisableGerberMacros(self.disable_aperture_macros)  # pragma: no cover (Ki6)
+            ds = GS.board.GetDesignSettings()
+            logger.error(ds.m_DimensionUnitsMode)
+            ds.m_DimensionUnitsMode = DIM_UNITS_MODE_MILLIMETRES
+            logger.error(ds.m_DimensionUnitsMode)
+            logger.error(DIM_UNITS_MODE_AUTOMATIC)
         po.gerber_job_file = self.gerber_job_file
 
     def read_vals_from_po(self, po):
@@ -88,7 +96,7 @@ class GerberOptions(AnyLayerOptions):
             self.line_width = ToMM(po.GetLineWidth())
         else:
             # disableapertmacros
-            self.disable_aperture_macros = po.GetDisableGerberMacros()
+            self.disable_aperture_macros = po.GetDisableGerberMacros()  # pragma: no cover (Ki6)
 
 
 @output_class

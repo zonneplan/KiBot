@@ -97,7 +97,7 @@ variants:
 
 outputs:
   - name: 'bom_internal_subparts'
-    comment: "Bill of Materials in CSV format, subparts splitted"
+    comment: "Bill of Materials in CSV format, subparts split"
     type: bom
     dir: .
     options: &bom_options

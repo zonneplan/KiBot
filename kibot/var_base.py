@@ -40,7 +40,7 @@ class BaseVariant(RegVariant):
                 Use '_kibom_dnc' for the default KiBoM behavior """
 
     def get_variant_field(self):
-        ''' Returns the name of the field used to determine if the component belongs to teh variant '''
+        ''' Returns the name of the field used to determine if the component belongs to the variant '''
         return None
 
     def filter(self, comps):

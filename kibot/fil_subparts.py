@@ -58,7 +58,7 @@ class Subparts(BaseFilter):  # noqa: F821
             self.use_ref_sep_for_first = True
             """ Force the reference separator use even for the first component in the list (KiCost behavior) """
             self.value_alt_field = 'value_subparts'
-            """ Field containing replacements for the `Value` field. So we get real values for splitted parts """
+            """ Field containing replacements for the `Value` field. So we get real values for split parts """
 
     def config(self, parent):
         super().config(parent)
@@ -139,13 +139,13 @@ class Subparts(BaseFilter):  # noqa: F821
         except ValueError:
             logger.error('Internal error qty_to_float("{}"), please report'.format(qty))
 
-    def do_split(self, comp, max_num_subparts, splitted_fields):
+    def do_split(self, comp, max_num_subparts, split_fields):
         """ Split `comp` according to the detected subparts """
         # Split it
         multi_part = max_num_subparts > 1
         if multi_part and GS.debug_level > 1:
             logger.debug("Splitting {} in {} subparts".format(comp.ref, max_num_subparts))
-        splitted = []
+        split = []
         # Compute the total for the modified value
         total_parts = max_num_subparts if self.modify_first_value else max_num_subparts-1
         # Check if we have replacements for the `Value` field
@@ -161,7 +161,7 @@ class Subparts(BaseFilter):  # noqa: F821
                 if self.use_ref_sep_for_first:
                     new_comp.ref = new_comp.ref+self.ref_sep+str(i+1)
                 elif i > 0:
-                    # I like it better. The first is usually the real component, the rest are accesories.
+                    # I like it better. The first is usually the real component, the rest are accessories.
                     new_comp.ref = new_comp.ref+self.ref_sep+str(i)
                 # Adjust the suffix to be "sort friendly"
                 # Currently useless, but could help in the future
@@ -180,10 +180,10 @@ class Subparts(BaseFilter):  # noqa: F821
             prev_qty = None
             prev_field = None
             max_qty = 0
-            if not self.check_multiplier.intersection(splitted_fields):
+            if not self.check_multiplier.intersection(split_fields):
                 # No field to check for qty here, default to 1
                 max_qty = 1
-            for field, values in splitted_fields.items():
+            for field, values in split_fields.items():
                 check_multiplier = field in self.check_multiplier
                 value = ''
                 qty = '1'
@@ -203,23 +203,23 @@ class Subparts(BaseFilter):  # noqa: F821
                     new_comp.set_field(field+'_qty', qty)
                     max_qty = max(max_qty, self.qty_to_float(qty))
             new_comp.qty = max_qty
-            splitted.append(new_comp)
+            split.append(new_comp)
         if not multi_part and int(max_qty) == 1:
             # No real split and no multiplier
             return
         if GS.debug_level > 2:
             logger.debug('Old component: '+comp.ref+' '+str([str(f) for f in comp.fields]))
-            logger.debug('Fields to split: '+str(splitted_fields))
+            logger.debug('Fields to split: '+str(split_fields))
             logger.debug('New components:')
-            for c in splitted:
+            for c in split:
                 logger.debug(' '+c.ref+' '+str([str(f) for f in c.fields]))
-        return splitted
+        return split
 
     def filter(self, comp):
         """ Look for fields containing `part1; mult:part2; etc.` """
         # Analyze how to split this component
         max_num_subparts = 0
-        splitted_fields = {}
+        split_fields = {}
         field_max = None
         for field in self._fields:
             value = comp.get_field_value(field)
@@ -227,16 +227,16 @@ class Subparts(BaseFilter):  # noqa: F821
                 # Skip it if not used
                 continue
             subparts = self.subpart_list(value)
-            splitted_fields[field] = subparts
+            split_fields[field] = subparts
             num_subparts = len(subparts)
             if num_subparts > max_num_subparts:
                 field_max = field
                 max_num_subparts = num_subparts
-            # Print a warning if this field has a different ammount
+            # Print a warning if this field has a different amount
             if num_subparts != max_num_subparts:
-                logger.warning(W_NUMSUBPARTS+'Different subparts ammount on {r}, field {c} has {cn} and {lc} has {lcn}.'
+                logger.warning(W_NUMSUBPARTS+'Different subparts amount on {r}, field {c} has {cn} and {lc} has {lcn}.'
                                .format(r=comp.ref, c=field_max, cn=max_num_subparts, lc=field, lcn=num_subparts))
-        if len(splitted_fields) == 0:
+        if len(split_fields) == 0:
             # Nothing to split
             return
         # Split the manufacturer name
@@ -253,6 +253,6 @@ class Subparts(BaseFilter):  # noqa: F821
                     for i in range(len(manfs)-1):
                         if manfs[i+1] == '~':
                             manfs[i+1] = manfs[i]
-                splitted_fields[self.manf_field] = manfs
+                split_fields[self.manf_field] = manfs
         # Now do the work
-        return self.do_split(comp, max_num_subparts, splitted_fields)
+        return self.do_split(comp, max_num_subparts, split_fields)

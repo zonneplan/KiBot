@@ -40,7 +40,7 @@ class PosColumns(Optionable):
             self.id = ''
             """ [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name """
             self.name = ''
-            """ Name to use in the outut file. The id is used when empty """
+            """ Name to use in the output file. The id is used when empty """
         self._id_example = 'Ref'
         self._name_example = 'Reference'
 
@@ -129,17 +129,17 @@ class PositionOptions(VariantOptions):
         maxSizes[0] = maxSizes[0] + 2
 
         for m in modulesStr:
-            fle = bothf
-            if fle is None:
+            file = bothf
+            if file is None:
                 if m[-1] == "top":
-                    fle = topf
+                    file = topf
                 else:
-                    fle = botf
+                    file = botf
             for idx, col in enumerate(m):
                 if idx > 0:
-                    fle.write("   ")
-                fle.write("{0: <{width}}".format(col, width=maxSizes[idx]))
-            fle.write("\n")
+                    file.write("   ")
+                file.write("{0: <{width}}".format(col, width=maxSizes[idx]))
+            file.write("\n")
 
         for f in files:
             f.write("## End\n")
@@ -168,14 +168,14 @@ class PositionOptions(VariantOptions):
             f.write("\n")
 
         for m in modulesStr:
-            fle = bothf
-            if fle is None:
+            file = bothf
+            if file is None:
                 if m[-1] == "top":
-                    fle = topf
+                    file = topf
                 else:
-                    fle = botf
-            fle.write(",".join('{}'.format(e) for e in m))
-            fle.write("\n")
+                    file = botf
+            file.write(",".join('{}'.format(e) for e in m))
+            file.write("\n")
 
         if topf is not None:
             topf.close()
@@ -227,7 +227,7 @@ class PositionOptions(VariantOptions):
         y_origin = 0.0
         if self.use_aux_axis_as_origin:
             (x_origin, y_origin) = GS.get_aux_origin()
-            logger.debug('Using auxiliar origin: x={} y={}'.format(x_origin, y_origin))
+            logger.debug('Using auxiliary origin: x={} y={}'.format(x_origin, y_origin))
         for m in sorted(GS.get_modules(), key=lambda c: _ref_key(c.GetReference())):
             ref = m.GetReference()
             logger.debug('P&P ref: {}'.format(ref))
@@ -294,7 +294,7 @@ class PositionOptions(VariantOptions):
 class Position(BaseOutput):  # noqa: F821
     """ Pick & place
         Generates the file with position information for the PCB components, used by the pick and place machine.
-        This output is what you get from the 'File/Fabrication output/Footprint poistion (.pos) file' menu in pcbnew. """
+        This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew. """
     def __init__(self):
         super().__init__()
         with document:
