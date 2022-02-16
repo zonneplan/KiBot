@@ -11,7 +11,7 @@ preflight:
   # [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
   erc_warnings: false
   # [list(dict)] A list of entries to filter out ERC/DRC messages.
-  filters: 
+  filters:
     - filter: 'Filter description'
       error: '10'
       regex: 'Regular expression to match'
@@ -19,7 +19,7 @@ preflight:
   ignore_unconnected: false
   # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
   # This pre-flight modifies the PCB. Even when a back-up is done use it carefully.
-  pcb_replace: 
+  pcb_replace:
     date_command: "git log -1 --format='%as' -- $KIBOT_PCB_NAME"
     replace_tags:
       - tag: '@git_hash@'
@@ -35,7 +35,7 @@ preflight:
   run_erc: true
   # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
   # This pre-flight modifies the schematics. Even when a back-up is done use it carefully.
-  sch_replace: 
+  sch_replace:
     date_command: "git log -1 --format='%as' -- $KIBOT_SCH_NAME"
     replace_tags:
       - tag: '@git_hash@'

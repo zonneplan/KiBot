@@ -38,7 +38,7 @@ $(TEXFILE).ps :  $(TEXFILE).dvi
 
 $(TEXFILE).pdf :  $(TEXFILE).ps
 	ps2pdf   $(PS2PDF_OPTS)  $(TEXFILE).ps
-    
+
 
 $(TEXFILE).dvi :  $(TEXFILE).tex   utic.bib
 	latex  $(TEXFILE).tex
@@ -47,7 +47,7 @@ $(TEXFILE).dvi :  $(TEXFILE).tex   utic.bib
 	echo "SECONDRUN" 1>&2
 	latex  $(TEXFILE).tex
 	latex  $(TEXFILE).tex
-        
+
 aspell: $(TEXFILE).tex
 	aspell -t --encoding=iso8859-1 -c $(TEXFILE).tex
 
@@ -55,7 +55,7 @@ force:
 	touch $(TEXFILE).tex
 	make
 
-eps: 
+eps:
 	make -C img eps
 
 cleanall: clean cleaneps

@@ -138,7 +138,7 @@ function args_process {
                help
                exit
                ;;
-           *)                     
+           *)
                illegal_arg "$@"
                exit $EXIT_ERROR
                ;;
@@ -159,7 +159,7 @@ function run {
     else
         echo "config file '$CONFIG' not found!"
         exit $EXIT_ERROR
-    fi 
+    fi
 }
 
 function main {
