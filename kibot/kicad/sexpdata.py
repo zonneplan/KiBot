@@ -488,7 +488,7 @@ class Symbol(SExpBase):
         (';', r'\;'), ('#', r'\#'),
     ]
 
-    _lisp_quoted_to_raw = dict((q, r) for (r, q) in _lisp_quoted_specials)
+    _lisp_quoted_to_raw = {(q, r) for (r, q) in _lisp_quoted_specials}
 
     def tosexp(self, tosexp=None):
         return self.quote(self._val)
@@ -501,7 +501,7 @@ class String(SExpBase):
         ('"', '\\"'), ('\b', '\\b'), ('\f', '\\f'),
         ('\n', '\\n'), ('\r', '\\r'), ('\t', '\\t')]
 
-    _lisp_quoted_to_raw = dict((q, r) for (r, q) in _lisp_quoted_specials)
+    _lisp_quoted_to_raw = {(q, r) for (r, q) in _lisp_quoted_specials}
 
     def tosexp(self, tosexp=None):
         return uformat('"{0}"', self.quote(self._val))
