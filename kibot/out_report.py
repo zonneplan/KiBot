@@ -391,7 +391,7 @@ class ReportOptions(BaseOptions):
                 oar_t = min(oar_x, oar_y)
                 if oar_t:
                     self.oar_pads = min(self.oar_pads, oar_t)
-        self._vias_m = list(sorted(self._vias.keys()))
+        self._vias_m = sorted(self._vias.keys())
         # Via Pad size
         self.via_pad_d = ds.m_ViasMinSize
         self.via_pad = self._vias_m[0][1]
