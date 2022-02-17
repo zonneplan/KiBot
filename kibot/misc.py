@@ -135,9 +135,9 @@ DISTRIBUTORS = ['arrow', 'digikey', 'farnell', 'lcsc', 'mouser', 'newark', 'rs',
 DISTRIBUTORS_F = [d+'#' for d in DISTRIBUTORS]
 # ISO ISO4217 currency codes
 # Not all, but the ones we get from the European Central Bank (march 2021)
-ISO_CURRENCIES = set(['EUR', 'USD', 'JPY', 'BGN', 'CZK', 'DKK', 'GBP', 'HUF', 'PLN', 'RON', 'SEK', 'CHF', 'ISK', 'NOK', 'HRK',
-                      'RUB', 'TRY', 'AUD', 'BRL', 'CAD', 'CNY', 'HKD', 'IDR', 'ILS', 'INR', 'KRW', 'MXN', 'MYR', 'NZD', 'PHP',
-                      'SGD', 'THB', 'ZAR'])
+ISO_CURRENCIES = {'EUR', 'USD', 'JPY', 'BGN', 'CZK', 'DKK', 'GBP', 'HUF', 'PLN', 'RON', 'SEK', 'CHF', 'ISK', 'NOK', 'HRK',
+                  'RUB', 'TRY', 'AUD', 'BRL', 'CAD', 'CNY', 'HKD', 'IDR', 'ILS', 'INR', 'KRW', 'MXN', 'MYR', 'NZD', 'PHP',
+                  'SGD', 'THB', 'ZAR'}
 
 W_VARCFG = '(W001) '
 W_VARPCB = '(W002) '

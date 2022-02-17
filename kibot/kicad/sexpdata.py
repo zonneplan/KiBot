@@ -581,7 +581,7 @@ class Parser(object):
         self.false = false
         self.string_to = (lambda x: x) if string_to is None else string_to
         self.line_comment = line_comment
-        self.atom_end = set([line_comment]) | self._atom_end_basic
+        self.atom_end = {line_comment} | self._atom_end_basic
         self.atom_end_or_escape_re = re.compile("{0}|{1}".format(self._atom_end_basic_or_escape_regexp,
                                                 re.escape(line_comment)))
 

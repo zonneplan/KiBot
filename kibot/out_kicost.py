@@ -142,7 +142,7 @@ class KiCostOptions(VariantOptions):
         super().run(name)
         net_dir = None
         if self._comps:
-            var_fields = set(['variant', 'version'])
+            var_fields = {'variant', 'version'}
             if self.variant and self.variant.type == 'kicost' and self.variant.variant_field not in var_fields:
                 # Warning about KiCost limitations
                 logger.warning(W_KICOSTFLD+'KiCost variant `{}` defines `variant_field` as `{}`, not supported by KiCost'.

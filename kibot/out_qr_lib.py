@@ -20,8 +20,8 @@ QR_ECCS = {'low': QrCode.Ecc.LOW,
            'quartile': QrCode.Ecc.QUARTILE,
            'high': QrCode.Ecc.HIGH}
 logger = log.get_logger()
-TO_SEPARATE = set(['kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
-                   'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'])
+TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
+               'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
 
 
 def is_symbol(name, sexp):
