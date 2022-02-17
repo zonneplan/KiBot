@@ -23,7 +23,7 @@ logger = log.get_logger()
 CROSSED_LIB = 'kibot_crossed'
 
 
-def _check_is_symbol_list(e, allow_orphan_symbol=[]):
+def _check_is_symbol_list(e, allow_orphan_symbol=()):
     # Each entry is a list
     if not isinstance(e, list):
         if isinstance(e, Symbol):

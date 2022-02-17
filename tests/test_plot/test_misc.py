@@ -602,7 +602,7 @@ def test_no_colorama(test_dir):
     ctx.search_err(r'\[31m.\[1mERROR:Testing 1 2 3')
 
 
-def check_test_v5_sch_deps(ctx, deps, extra=[], in_output=False):
+def check_test_v5_sch_deps(ctx, deps, extra=(), in_output=False):
     ndeps = 4
     if in_output:
         ndeps -= 1

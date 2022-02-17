@@ -1532,15 +1532,15 @@ class Schematic(object):
                     raise SchFileError('Wrong entry in title block', line, f)
                 self.title_block[m.group(1)] = m.group(2)
 
-    def load(self, fname, project, sheet_path='', sheet_path_h='/', libs={}, fields=[], fields_lc=set(), parent=None):
+    def load(self, fname, project, sheet_path='', sheet_path_h='/', libs=None, fields=None, fields_lc=None, parent=None):
         """ Load a v5.x KiCad Schematic.
             The caller must be sure the file exists.
             Only the schematics are loaded not the libs. """
         logger.debug("Loading sheet from "+fname)
         self.fname = fname
-        self.libs = libs
-        self.fields = fields
-        self.fields_lc = fields_lc
+        self.libs = {} if libs is None else libs
+        self.fields = [] if fields is None else fields
+        self.fields_lc = set() if fields_lc is None else fields_lc
         self.project = project
         self.sheet_path = sheet_path
         self.sheet_path_h = sheet_path_h
@@ -1961,7 +1961,7 @@ class Schematic(object):
                         tp = pin.type2name.get(pin.type, 'unknown')
                     pn.set('type', tp)
 
-    def save_netlist(self, fhandle, comps, excluded=False, fitted=True, no_field=[]):
+    def save_netlist(self, fhandle, comps, excluded=False, fitted=True, no_field=()):
         """ This is a partial netlist in XML, only useful for BoMs """
         root = Element("export")
         root.set('version', self.netlist_version)

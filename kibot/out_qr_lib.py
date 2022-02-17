@@ -457,9 +457,11 @@ class QR_LibOptions(BaseOptions):
                 raise KiPlotConfigurationError(error)
         return ki_file
 
-    def load_k6_sheets(self, fname, sheets={}):
+    def load_k6_sheets(self, fname, sheets=None):
         logger.debug('- Loading '+fname)
         sheet = self.load_sexp_file(fname)
+        if sheets is None:
+            sheets = {}
         sheets[fname] = sheet
         if not is_symbol('kicad_sch', sheet[0]):
             raise KiPlotConfigurationError('No kicad_sch signature in '+fname)

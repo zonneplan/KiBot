@@ -37,7 +37,7 @@ CSV_EXPR = r'^"%s",[^,]+,[^,]+,([-\d\.]+),([-\d\.]+),([-\d\.]+),(\S+)$'
 ASCII_EXPR = r'^%s\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$'
 
 
-def expect_position(ctx, file, comp, no_comp=[], inches=False, csv=False, neg_x=False):
+def expect_position(ctx, file, comp, no_comp=(), inches=False, csv=False, neg_x=False):
     """
     Check if a list of components are or aren't in the file
     """
