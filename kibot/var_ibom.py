@@ -33,7 +33,7 @@ class IBoM(BaseVariant):  # noqa: F821
             """ [string|list(string)=''] List of board variants to include in the BOM """
 
     def get_variant_field(self):
-        ''' Returns the name of the field used to determine if the component belongs to the variant '''
+        """ Returns the name of the field used to determine if the component belongs to the variant """
         return self.variant_field
 
     def config(self, parent):
