@@ -1256,7 +1256,7 @@ def check_value(rows, r_col, ref, v_col, val):
             assert r[v_col] == val
             logging.debug(ref+'='+val+' OK')
             return
-    assert False, "Failed to find "+ref
+    raise AssertionError("Failed to find "+ref)
 
 
 def test_int_bom_variant_t2b(test_dir):

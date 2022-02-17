@@ -267,9 +267,9 @@ class GS(object):
     @staticmethod
     def load_board():
         """ Will be repplaced by kiplot.py """
-        assert False
+        raise AssertionError()
 
     @staticmethod
     def load_sch():
         """ Will be repplaced by kiplot.py """
-        assert False
+        raise AssertionError()

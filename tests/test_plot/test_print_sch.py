@@ -78,7 +78,7 @@ def check_l1(ctx):
     except SchFileError as e:
         logging.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
         logging.error('Line content: `{}`'.format(e.code))
-        assert False
+        raise AssertionError()
     comps = sch.get_components()
     l1 = next(c for c in comps if c.ref == 'L1')
     assert l1

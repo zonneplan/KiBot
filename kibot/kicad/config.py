@@ -109,7 +109,7 @@ class KiConf(object):
     lib_aliases = {}
 
     def __init__(self):
-        assert False, "KiConf is fully static, no instances allowed"
+        raise AssertionError("KiConf is fully static, no instances allowed")
 
     def init(fname):
         """ fname is the base project name, any extension is allowed.
