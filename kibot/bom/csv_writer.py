@@ -100,7 +100,7 @@ def write_csv(filename, ext, groups, headings, head_names, cfg):
         # PCB info
         if not (cfg.csv.hide_pcb_info and cfg.csv.hide_stats_info):
             # Add some blank rows
-            for i in range(5):
+            for _ in range(5):
                 writer.writerow([])
             # The info
             write_stats(writer, cfg)

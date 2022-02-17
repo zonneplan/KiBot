@@ -1375,7 +1375,7 @@ class SheetInstance(object):
     def parse(items):
         name = 'sheet instance'
         instances = []
-        for c, i in enumerate(items[1:]):
+        for c, _ in enumerate(items[1:]):
             v = _check_symbol_value(items, c+1, name, 'path')
             instance = SheetInstance()
             instance.path = _check_str(v, 1, name+' path')
@@ -1392,7 +1392,7 @@ class SymbolInstance(object):
     def parse(items):
         name = 'symbol instance'
         instances = []
-        for c, i in enumerate(items[1:]):
+        for c, _ in enumerate(items[1:]):
             v = _check_symbol_value(items, c+1, name, 'path')
             instance = SymbolInstance()
             instance.path = _check_str(v, 1, name+' path')
@@ -1429,7 +1429,7 @@ class PCBLayer(object):
         name = 'PCB stackup layer'
         layer = PCBLayer()
         layer.name = _check_str(items, 1, name)
-        for c, i in enumerate(items[2:]):
+        for i in items[2:]:
             i_type = _check_is_symbol_list(i)
             tname = name+' '+i_type
             if i_type == 'type':

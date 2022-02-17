@@ -229,7 +229,7 @@ class Layer(Optionable):
     @staticmethod
     def _get_layers(d_layers):
         layers = []
-        for n, id in d_layers.items():
+        for n in d_layers.keys():
             layers.append(Layer.create_layer(n))
         return layers
 

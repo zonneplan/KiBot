@@ -175,11 +175,11 @@ def test_sch_replace_1(test_dir):
     files[file] = file + '-bak'
     file = ctx.sch_file.replace('test_v5', 'sub-sheet')
     files[file] = file + '-bak'
-    for k, v in files.items():
+    for v in files.values():
         assert os.path.isfile(v), v
         assert os.path.getsize(v) > 0
     try:
-        for k, v in files.items():
+        for k in files.keys():
             logging.debug(k)
             cmd = ['/bin/bash', '-c', "date -d @`git log -1 --format='%at' -- " + k + "` +%Y-%m-%d_%H-%M-%S"]
             text = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()

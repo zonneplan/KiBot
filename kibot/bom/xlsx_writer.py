@@ -192,7 +192,7 @@ def create_col_fmt(col_fields, col_colors, fmt_cols):
         for c in col_fields:
             col_fmt.append(fmt_cols[bg_color(c)])
     else:
-        for c in col_fields:
+        for _ in col_fields:
             col_fmt.append(fmt_cols[0])
     # Empty color
     col_fmt.append(fmt_cols[-1])

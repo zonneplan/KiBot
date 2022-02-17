@@ -56,7 +56,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
         else:
             if context_w in context_dictionaryToCreate:
                 if ord(context_w[0]) < 256:
-                    for i in range(context_numBits):
+                    for _ in range(context_numBits):
                         context_data_val = (context_data_val << 1)
                         if context_data_position == bitsPerChar-1:
                             context_data_position = 0
@@ -65,7 +65,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
                         else:
                             context_data_position += 1
                     value = ord(context_w[0])
-                    for i in range(8):
+                    for _ in range(8):
                         context_data_val = (context_data_val << 1) | (value & 1)
                         if context_data_position == bitsPerChar - 1:
                             context_data_position = 0
@@ -77,7 +77,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
 
                 else:
                     value = 1
-                    for i in range(context_numBits):
+                    for _ in range(context_numBits):
                         context_data_val = (context_data_val << 1) | value
                         if context_data_position == bitsPerChar - 1:
                             context_data_position = 0
@@ -87,7 +87,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
                             context_data_position += 1
                         value = 0
                     value = ord(context_w[0])
-                    for i in range(16):
+                    for _ in range(16):
                         context_data_val = (context_data_val << 1) | (value & 1)
                         if context_data_position == bitsPerChar - 1:
                             context_data_position = 0
@@ -103,7 +103,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
                 del context_dictionaryToCreate[context_w]
             else:
                 value = context_dictionary[context_w]
-                for i in range(context_numBits):
+                for _ in range(context_numBits):
                     context_data_val = (context_data_val << 1) | (value & 1)
                     if context_data_position == bitsPerChar - 1:
                         context_data_position = 0
@@ -127,7 +127,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
     if context_w != "":
         if context_w in context_dictionaryToCreate:
             if ord(context_w[0]) < 256:
-                for i in range(context_numBits):
+                for _ in range(context_numBits):
                     context_data_val = (context_data_val << 1)
                     if context_data_position == bitsPerChar-1:
                         context_data_position = 0
@@ -136,7 +136,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
                     else:
                         context_data_position += 1
                 value = ord(context_w[0])
-                for i in range(8):
+                for _ in range(8):
                     context_data_val = (context_data_val << 1) | (value & 1)
                     if context_data_position == bitsPerChar - 1:
                         context_data_position = 0
@@ -147,7 +147,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
                     value = value >> 1
             else:
                 value = 1
-                for i in range(context_numBits):
+                for _ in range(context_numBits):
                     context_data_val = (context_data_val << 1) | value
                     if context_data_position == bitsPerChar - 1:
                         context_data_position = 0
@@ -157,7 +157,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
                         context_data_position += 1
                     value = 0
                 value = ord(context_w[0])
-                for i in range(16):
+                for _ in range(16):
                     context_data_val = (context_data_val << 1) | (value & 1)
                     if context_data_position == bitsPerChar - 1:
                         context_data_position = 0
@@ -173,7 +173,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
             del context_dictionaryToCreate[context_w]
         else:
             value = context_dictionary[context_w]
-            for i in range(context_numBits):
+            for _ in range(context_numBits):
                 context_data_val = (context_data_val << 1) | (value & 1)
                 if context_data_position == bitsPerChar - 1:
                     context_data_position = 0
@@ -190,7 +190,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):  # noqa: C901
 
     # Mark the end of the stream
     value = 2
-    for i in range(context_numBits):
+    for _ in range(context_numBits):
         context_data_val = (context_data_val << 1) | (value & 1)
         if context_data_position == bitsPerChar - 1:
             context_data_position = 0
