@@ -184,7 +184,7 @@ def load(filelike, **kwds):
 
 
 def loads(string, **kwds):
-    """
+    r"""
     Load object from S-expression `string`.
 
     :arg        string: String containing an S-expression.
@@ -698,7 +698,7 @@ class Parser(object):
 
 
 def parse(string, **kwds):
-    """
+    r"""
     Parse s-expression.
 
     >>> parse('(a b)')
