@@ -1538,9 +1538,15 @@ class Schematic(object):
             Only the schematics are loaded not the libs. """
         logger.debug("Loading sheet from "+fname)
         self.fname = fname
-        self.libs = {} if libs is None else libs
-        self.fields = [] if fields is None else fields
-        self.fields_lc = set() if fields_lc is None else fields_lc
+        if libs is None:
+            libs = {}
+        self.libs = libs
+        if fields is None:
+            fields = []
+        self.fields = fields
+        if fields_lc is None:
+            fields_lc = set()
+        self.fields_lc = fields_lc
         self.project = project
         self.sheet_path = sheet_path
         self.sheet_path_h = sheet_path_h
