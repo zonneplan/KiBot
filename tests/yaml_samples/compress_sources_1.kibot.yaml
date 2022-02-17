@@ -10,7 +10,7 @@ outputs:
       format: TAR
       compression: bzip2
       files:
-        - source: tests/board_samples/kicad_5/test_v5.*
+        - source: tests/board_samples/kicad_5/%f.*
           from_cwd: true
           dest: source
         - source: tests/board_samples/kicad_5/deeper.sch

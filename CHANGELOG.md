@@ -80,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `%d/%sd/%bd` expansion patterns are now affected by the global `date_format`.
   Can be disabled using `date_reformat: false`. (#121)
 - The default output pattern now includes the `output_id` (%I)
+- The `source` path for `compress` now has pattern expansion (#152)
 
 ### Fixed
 - Position files now defaults to use the auxiliary origin as KiCad.

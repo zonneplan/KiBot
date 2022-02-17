@@ -148,7 +148,8 @@ class CompressOptions(BaseOptions):
                                 exit(INTERNAL_ERROR)
             else:
                 out_dir = out_dir_cwd if f.from_cwd else out_dir_default
-                files_list = glob.iglob(os.path.join(out_dir, f.source), recursive=True)
+                source = f.expand_filename_both(f.source, make_safe=False)
+                files_list = glob.iglob(os.path.join(out_dir, source), recursive=True)
             # Filter and adapt them
             for fname in filter(re.compile(f.filter).match, files_list):
                 fname_real = os.path.realpath(fname)
