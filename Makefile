@@ -28,10 +28,9 @@ lint: doc
 	ln -sf src/kibot kibot.py
 	# stop the build if there are Python syntax errors or undefined names
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-	flake8 . --count --statistics
+	pre-commit run -a
 	rm kiplot.py
 	rm kibot.py
-	pre-commit run -a
 
 test_tmp: lint
 	$(PY_COV) erase

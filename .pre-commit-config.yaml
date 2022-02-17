@@ -26,6 +26,7 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: check-json
+        stages: [manual]
       - id: mixed-line-ending
       - id: check-builtin-literals
       - id: check-merge-conflict
@@ -58,11 +59,12 @@ repos:
     rev: v0.3.1
     hooks:
       - id: autoflake8
-# Flake8 is run outside and here the config doesn't work
-#  - repo: https://github.com/PyCQA/flake8
-#    rev: 3.9.2
-#    hooks:
-#      - id: flake8
+  - repo: https://github.com/PyCQA/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8
+        exclude: ^kibot/mcpyrate/
+        args: [--config, .flake8, --count, --statistics]
 # Sorting imports is dangerous.
 #  - repo: https://github.com/PyCQA/isort
 #    rev: 5.10.1
