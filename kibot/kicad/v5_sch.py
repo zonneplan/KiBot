@@ -1494,12 +1494,15 @@ class Schematic(object):
 
     def _get_title_block(self, f):
         line = f.get_line()
-        m = re.match(r'\$Descr (\S+) (\d+) (\d+)', line)
+        m = re.match(r'\$Descr (\S+) (\d+) (\d+)( portrait)?', line)
         if not m:
             raise SchFileError('Missing $Descr', line, f)
         self.page_type = m.group(1)
         self.page_width = m.group(2)
         self.page_height = m.group(3)
+        self.paper_orientation = None
+        if m.group(4):
+            self.paper_orientation = m.group(4).strip()
         self.sheet = 1
         self.nsheets = 1
         self.title_block = OrderedDict()
@@ -1748,7 +1751,10 @@ class Schematic(object):
             f.write('EESchema Schematic File Version {}\n'.format(self.version))
             f.write('EELAYER {} {}\n'.format(self.eelayer_n, self.eelayer_m))
             f.write('EELAYER END\n')
-            f.write('$Descr {} {} {}\n'.format(self.page_type, self.page_width, self.page_height))
+            f.write('$Descr {} {} {}'.format(self.page_type, self.page_width, self.page_height))
+            if self.paper_orientation:
+                f.write(' {}'.format(self.paper_orientation))
+            f.write('\n')
             f.write('encoding utf-8\n')
             f.write('Sheet {} {}\n'.format(self.sheet, self.nsheets))
             for k, v in self.title_block.items():
