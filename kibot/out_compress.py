@@ -77,7 +77,7 @@ class CompressOptions(BaseOptions):
     def create_zip(self, output, files):
         extra = {}
         extra['compression'] = self.ZIP_ALGORITHMS[self.compression]
-        if sys.version_info.major > 3 or (sys.version_info.major == 3 and sys.version_info.minor >= 7):
+        if sys.version_info >= (3, 7):
             extra['compresslevel'] = 9
         with ZipFile(output, 'w', **extra) as zip:
             for fname, dest in files.items():

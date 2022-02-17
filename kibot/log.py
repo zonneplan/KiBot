@@ -87,7 +87,7 @@ class MyLogger(logging.Logger):
                         return
         MyLogger.warn_cnt += 1
         MyLogger.warn_hash[buf] = 1
-        if sys.version_info.major > 3 or (sys.version_info.major == 3 and sys.version_info.minor >= 8):
+        if sys.version_info >= (3, 8):
             super().warning(buf, stacklevel=2, **kwargs)  # pragma: no cover (Py38)
         else:
             super().warning(buf, **kwargs)
