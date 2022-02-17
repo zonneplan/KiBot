@@ -1633,7 +1633,7 @@ class Schematic(object):
         if exclude_power:
             components = [c for c in self.components if not c.is_power]
         else:
-            components = [c for c in self.components]
+            components = list(self.components)
         for sch in self.sheets:
             components.extend(sch.sheet.get_components(exclude_power))
         components.sort(key=lambda g: g.ref)

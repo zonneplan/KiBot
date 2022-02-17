@@ -617,9 +617,9 @@ class TestContext(object):
         rows = []
         headers = None
         for child in ET.parse(self.expect_out_file(os.path.join(self.sub_dir, filename))).getroot():
-            rows.append([v for v in child.attrib.values()])
+            rows.append(list(child.attrib.values()))
             if not headers:
-                headers = [k for k in child.attrib.keys()]
+                headers = list(child.attrib.keys())
         return rows, headers
 
     def load_xlsx(self, filename, sheet=1):

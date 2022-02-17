@@ -75,7 +75,7 @@ DATASHEET_COLUMN_NAME = 'Datasheet'
 SOURCE_BOM_COLUMN_NAME = 'Source BoM'
 KIBOM_TEST_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Status',
                    DATASHEET_COLUMN_NAME, 'Config']
-KIBOM_TEST_HEAD_TOL = [c for c in KIBOM_TEST_HEAD]
+KIBOM_TEST_HEAD_TOL = list(KIBOM_TEST_HEAD)
 KIBOM_TEST_HEAD_TOL.insert(-1, 'Tolerance')
 KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor', 'Código Digi-Key', 'Cantidad por PCB']
 CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Status',
