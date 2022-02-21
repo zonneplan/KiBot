@@ -6,6 +6,7 @@ global:
   solder_mask_color_top: blue
   solder_mask_color_bottom: red
   pcb_finish: ENIG
+  copper_thickness: "35"
 
 outputs:
   - name: 'report_full'

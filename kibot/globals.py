@@ -83,7 +83,7 @@ class Globals(FiltersOptions):
             self.copper_finish = None
             """ {pcb_finish} """
             self.copper_thickness = 35
-            """ Copper thickness in micrometers (1 Oz is 35 micrometers).
+            """ [number|string] Copper thickness in micrometers (1 Oz is 35 micrometers).
                 KiCad 6: you should set this in the Board Setup -> Physical Stackup """
             self.impedance_controlled = False
             """ The PCB needs specific dielectric characteristics.
