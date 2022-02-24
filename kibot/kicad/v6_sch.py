@@ -932,6 +932,8 @@ class SchematicComponentV6(SchematicComponent):
         self.unit_specified = False
         self.ref = None
         self.local_name = None
+        self.fields_autoplaced = False
+        self.mirror = None
 
     def set_ref(self, ref):
         self.ref = ref
@@ -998,6 +1000,9 @@ class SchematicComponentV6(SchematicComponent):
                     comp.ang = 0
                 comp.x, comp.y = _check_float(i, 1, 'at x'), _check_float(i, 2, 'at y')
                 at_found = True
+            elif i_type == 'mirror':
+                # Not documented
+                comp.mirror = _check_symbol(i, 1, name + ' mirror')
             elif i_type == 'unit':
                 # This is documented as mandatory, but isn't always there
                 comp.unit = _check_integer(i, 1, name+' unit')
@@ -1006,6 +1011,9 @@ class SchematicComponentV6(SchematicComponent):
                 comp.in_bom = _get_yes_no(i, 1, i_type)
             elif i_type == 'on_board':
                 comp.on_board = _get_yes_no(i, 1, i_type)
+            elif i_type == 'fields_autoplaced':
+                # Not documented
+                comp.fields_autoplaced = True
             elif i_type == 'uuid':
                 comp.uuid = _check_symbol(i, 1, name + ' uuid')
             # SYMBOL_PROPERTIES...
@@ -1027,6 +1035,8 @@ class SchematicComponentV6(SchematicComponent):
                 pin_name = _check_str(i, 1, name + 'pin name')
                 pin_uuid = _get_uuid(i, 2, name)
                 comp.pins[pin_name] = pin_uuid
+            else:
+                raise SchError('Unknown component attribute `{}`'.format(i))
         if not lib_id_found or not at_found:
             raise SchError("Component missing 'lib_id' and/or 'at'")
 
@@ -1046,6 +1056,8 @@ class SchematicComponentV6(SchematicComponent):
             lib_id = CROSSED_LIB+':'+(self.local_name if self.local_name else self.name)
         data = [_symbol('lib_id', [lib_id]),
                 _symbol('at', [self.x, self.y, self.ang])]
+        if self.mirror:
+            data.append(_symbol('mirror', [Symbol(self.mirror)]))
         if self.unit_specified:
             data.append(_symbol('unit', [self.unit]))
         data.append(Sep())
@@ -1054,6 +1066,8 @@ class SchematicComponentV6(SchematicComponent):
                 data.append(_symbol('in_bom', [Symbol('yes')]))
             if self.on_board:
                 data.append(_symbol('on_board', [Symbol('yes')]))
+            if self.fields_autoplaced:
+                data.append(_symbol('fields_autoplaced'))
             data.append(Sep())
         data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         for f in self.fields:
@@ -1449,7 +1463,9 @@ class PCBLayer(object):
         return layer
 
 
-def _symbol(name, content):
+def _symbol(name, content=None):
+    if content is None:
+        return [Symbol(name)]
     return [Symbol(name)] + content
 
 
