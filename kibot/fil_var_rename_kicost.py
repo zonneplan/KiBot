@@ -55,6 +55,8 @@ class Var_Rename_KiCost(BaseFilter):  # noqa: F821
                 variant = GS.variant[0]
             else:
                 variant = '('+'|'.join(GS.variant)+')'
+        if GS.debug_level > 3:
+            logger.debug(' Variant to match: `{}`'.format(variant))
         var_re = re.compile(variant, re.IGNORECASE)
         for name, value in comp.get_user_fields():
             name = name.strip().lower()
@@ -71,14 +73,16 @@ class Var_Rename_KiCost(BaseFilter):  # noqa: F821
                 # Successfully separated
                 f_variant = res[0].lower()
                 f_field = res[1].lower()
+                if GS.debug_level > 3:
+                    logger.debug(' Checking `{}` | `{}`'.format(f_variant, f_field))
                 if var_re.match(f_variant):
                     # Variant matched
                     if GS.debug_level > 2:
-                        logger.debug('ref: {} {}: {} -> {}'.
+                        logger.debug(' ref: {} {}: {} -> {}'.
                                      format(comp.ref, f_field, comp.get_field_value(f_field), value))
                     comp.set_field(f_field, value)
             elif self.variant_to_value and var_re.match(name):
                 # The field matches the variant and the user wants to change the value
                 if GS.debug_level > 2:
-                    logger.debug('ref: {} value: {} -> {}'.format(comp.ref, comp.value, value))
+                    logger.debug(' ref: {} value: {} -> {}'.format(comp.ref, comp.value, value))
                 comp.set_field('value', value)
