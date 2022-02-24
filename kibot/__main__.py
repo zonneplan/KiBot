@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
