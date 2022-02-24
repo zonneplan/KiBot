@@ -930,7 +930,7 @@ class SchematicComponent(object):
             if target.number < 4:
                 self._solve_fields(LineReader(None, '**Internal**'))
         else:
-            f = SchematicField()
+            f = type(self.fields[0])()
             f.name = field
             f.value = value
             f.number = self.get_free_field_number()
