@@ -1613,6 +1613,12 @@ class SchematicV6(Schematic):
         # Sheet instances
         _add_items_list('sheet_instances', self.sheet_instances, sch)
         # Symbol instances
+        # Copy potentially modified data from components
+        for s in self.symbol_instances:
+            comp = s.component
+            s.reference = comp.ref
+            s.value = comp.value
+            s.footprint = comp.footprint_lib+':'+comp.footprint if comp.footprint_lib else comp.footprint
         _add_items_list('symbol_instances', self.symbol_instances, sch)
         with open(fname, 'wt') as f:
             f.write(dumps(sch))
@@ -1775,6 +1781,7 @@ class SchematicV6(Schematic):
             sheet = self.sheet_paths[path]
             comp_uuid = os.path.basename(s.path)
             comp = sheet.symbol_uuids[comp_uuid]
+            s.component = comp
             # Transfer the instance data
             comp.set_ref(s.reference)
             comp.unit = s.unit
