@@ -14,7 +14,7 @@ else:
     # Force the pcbnew module load to fail
     sys.modules['pcbnew'] = None
 # Import the module to test
-from kibot.__main__ import detect_kicad
 # Avoid the insertion of the nightly path
 os.environ['KIAUS_USE_NIGHTLY'] = ''
+from kibot.__main__ import detect_kicad
 detect_kicad()
