@@ -72,6 +72,19 @@ from . import log
 log.set_domain('kibot')
 logger = log.init()
 from .docopt import docopt
+# GS will import pcbnew, so we must solve the nightly setup first
+# Check if we have to run the nightly KiCad build
+nightly = False
+if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
+    # Path to the Python module
+    pcbnew_path = '/usr/lib/kicad-nightly/lib/python3/dist-packages'
+    sys_path.insert(0, pcbnew_path)
+    # This helps other tools like iBoM to pick-up the right pcbnew module
+    if 'PYTHONPATH' in os.environ:
+        os.environ['PYTHONPATH'] += ':'+pcbnew_path
+    else:
+        os.environ['PYTHONPATH'] = pcbnew_path
+    nightly = True
 from .gs import (GS)
 from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, NO_PCBNEW_MODULE,
                    W_NOKIVER, hide_stderr)
@@ -217,18 +230,6 @@ def set_locale():
 
 
 def detect_kicad():
-    # Check if we have to run the nightly KiCad build
-    nightly = False
-    if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
-        # Path to the Python module
-        pcbnew_path = '/usr/lib/kicad-nightly/lib/python3/dist-packages'
-        sys_path.insert(0, pcbnew_path)
-        # This helps other tools like iBoM to pick-up the right pcbnew module
-        if 'PYTHONPATH' in os.environ:
-            os.environ['PYTHONPATH'] += ':'+pcbnew_path
-        else:
-            os.environ['PYTHONPATH'] = pcbnew_path
-        nightly = True
     try:
         import pcbnew
     except ImportError:
