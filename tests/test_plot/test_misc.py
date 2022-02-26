@@ -30,6 +30,7 @@ pytest-3 --log-cli-level debug
 
 import os
 import sys
+import re
 import shutil
 import logging
 import subprocess
@@ -1011,4 +1012,32 @@ def test_board_view_1(test_dir):
     o = prj+'-boardview.brd'
     ctx.expect_out_file(o)
     ctx.compare_txt(o)
+    ctx.clean_up()
+
+
+def test_annotate_power_1(test_dir):
+    prj = 'test_v5'
+    ctx = context.TestContextSCH(test_dir, 'test_annotate_power_1', prj, 'annotate_power', POS_DIR)
+    # Copy test_v5 schematic, but replacing all #PWRxx references by #PWR?
+    sch_file = os.path.basename(ctx.sch_file)
+    sch_base = ctx.get_out_path(sch_file)
+    with open(ctx.sch_file, 'rt') as f:
+        text = f.read()
+    text = re.sub(r'#(PWR|FLG)\d+', r'#\1?', text)
+    with open(sch_base, 'wt') as f:
+        f.write(text)
+    # deeper
+    sch_file = 'deeper'+context.KICAD_SCH_EXT
+    shutil.copy2(os.path.abspath(os.path.join(ctx.get_board_dir(), sch_file)), ctx.get_out_path(sch_file))
+    # sub-sheet
+    sch_file = 'sub-sheet'+context.KICAD_SCH_EXT
+    with open(os.path.abspath(os.path.join(ctx.get_board_dir(), sch_file)), 'rt') as f:
+        text = f.read()
+    text = re.sub(r'#(PWR|FLG)\d+', r'#\1?', text)
+    with open(ctx.get_out_path(sch_file), 'wt') as f:
+        f.write(text)
+    ctx.run(extra=['-e', sch_base], no_board_file=True)
+    ctx.compare_txt('test_v5'+context.KICAD_SCH_EXT)
+    ctx.compare_txt('deeper'+context.KICAD_SCH_EXT)
+    ctx.compare_txt('sub-sheet'+context.KICAD_SCH_EXT)
     ctx.clean_up()

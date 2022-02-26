@@ -1,0 +1,1 @@
+../../board_samples/kicad_5/test_v5.sch

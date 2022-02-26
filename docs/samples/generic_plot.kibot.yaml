@@ -6,6 +6,10 @@ kibot:
   version: 1
 
 preflight:
+  # [boolean=false] Annotates all power components.
+  # This preflight modifies the schematic, use it only in revision control environments.
+  # Used to solve ERC problems when using filters that remove power reference numbers.
+  annotate_power: true
   # [boolean=false] Zones are filled before doing any operation involving PCB layers.
   check_zone_fills: true
   # [boolean=false] Option for `run_erc`. ERC warnings are considered errors.

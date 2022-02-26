@@ -1145,11 +1145,14 @@ class SchematicComponent(object):
         comp._validate()
         return comp
 
-    def write(self, f):
-        # Fake lib to reflect fitted status
-        lib = 'y' if self.fitted or not self.included else 'n'
-        # Fake name using cache style
-        name = '{}:{}_{}'.format(lib, self.lib, self.name)
+    def write(self, f, crossed=False):
+        if crossed:
+            # Fake lib to reflect fitted status
+            lib = 'y' if self.fitted or not self.included else 'n'
+            # Fake name using cache style
+            name = '{}:{}_{}'.format(lib, self.lib, self.name)
+        else:
+            name = '{}:{}'.format(self.lib, self.name)
         f.write('$Comp\n')
         f.write('L {} {}\n'.format(name, self.f_ref))
         f.write('U {} {} {}\n'.format(self.unit, self.unit2, self.id))
@@ -1355,7 +1358,7 @@ class SchematicBitmap(object):
     def write(self, f):
         f.write('$Bitmap\n')
         f.write('Pos {} {}\n'.format(self.x, self.y))
-        f.write('Scale {}\n'.format(self.scale))
+        f.write('Scale {0:.6f}\n'.format(self.scale))
         f.write('Data')
         for c, b in enumerate(self.data):
             if (c % 32) == 0:
@@ -1751,31 +1754,66 @@ class Schematic(object):
                     logger.warning(W_MISSCMP + 'Missing component `{}`'.format(k))
             f.write('#\n#End Library\n')
 
-    def save(self, fname, dest_dir):
-        fname = os.path.join(dest_dir, fname)
-        with open(fname, 'wt') as f:
-            f.write('EESchema Schematic File Version {}\n'.format(self.version))
-            f.write('EELAYER {} {}\n'.format(self.eelayer_n, self.eelayer_m))
-            f.write('EELAYER END\n')
-            f.write('$Descr {} {} {}'.format(self.page_type, self.page_width, self.page_height))
-            if self.paper_orientation:
-                f.write(' {}'.format(self.paper_orientation))
-            f.write('\n')
-            f.write('encoding utf-8\n')
-            f.write('Sheet {} {}\n'.format(self.sheet, self.nsheets))
-            for k, v in self.title_block.items():
-                f.write('{} "{}"\n'.format(k, v))
-            f.write('$EndDescr\n')
-            for e in self.all:
-                e.write(f)
-            f.write('$EndSCHEMATC\n')
+    def save(self, fname=None, dest_dir=None, base_sheet=None, saved=None):
+        """ Save the schematic and its sub-sheets.
+            If dest_dir is not None all files are stored in dest_dir (for variants). """
+        if base_sheet is None:
+            # We are the base sheet
+            base_sheet = self
+        if saved is None:
+            # Start memorizing saved files
+            saved = set()
+        if fname is None:
+            # Use our name if none provided
+            fname = self.fname
+        if dest_dir is None:
+            # Save at the same place
+            if not os.path.isabs(fname):
+                # Use the base sheet as reference
+                fname = os.path.join(os.path.dirname(base_sheet.fname), fname)
+        else:
+            # Save all in dest_dir (variant)
+            fname = os.path.join(dest_dir, fname)
+        # Save the sheet
+        if fname not in saved:
+            logger.debug('Saving schematic: `{}`'.format(fname))
+            # Keep a back-up of existing files
+            if os.path.isfile(fname):
+                bkp = fname+'-bak'
+                if os.path.isfile(bkp):
+                    os.remove(bkp)
+                os.rename(fname, bkp)
+            with open(fname, 'wt') as f:
+                f.write('EESchema Schematic File Version {}\n'.format(self.version))
+                f.write('EELAYER {} {}\n'.format(self.eelayer_n, self.eelayer_m))
+                f.write('EELAYER END\n')
+                f.write('$Descr {} {} {}'.format(self.page_type, self.page_width, self.page_height))
+                if self.paper_orientation:
+                    f.write(' {}'.format(self.paper_orientation))
+                f.write('\n')
+                f.write('encoding utf-8\n')
+                f.write('Sheet {} {}\n'.format(self.sheet, self.nsheets))
+                for k, v in self.title_block.items():
+                    f.write('{} "{}"\n'.format(k, v))
+                f.write('$EndDescr\n')
+                crossed = dest_dir is not None
+                for e in self.all:
+                    if isinstance(e, SchematicComponent):
+                        e.write(f, crossed)
+                    else:
+                        e.write(f)
+                f.write('$EndSCHEMATC\n')
+            saved.add(fname)
         # Save sub-sheets
         for c, sch in enumerate(self.sheets):
-            # Fake file name
-            file = sch.file.replace('/', '_')
-            self.sub_sheets[c].save(file, dest_dir)
+            file = sch.file
+            if dest_dir is not None:
+                # Fake file name, forcing a flat structure (all files in dest_dir)
+                file = file.replace('/', '_')
+            self.sub_sheets[c].save(file, dest_dir, base_sheet, saved)
 
     def save_variant(self, dest_dir):
+        """ Save a modified schematic with crossed components """
         # Currently impossible
         # if not os.path.exists(dest_dir):
         #    os.makedirs(dest_dir)

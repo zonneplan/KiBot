@@ -956,6 +956,20 @@ class SchematicComponentV6(SchematicComponent):
             raise SchError('Footprint with more than one colon (`{}`)'.format(fp))
 
     @staticmethod
+    def get_lib_and_name(comp, i, name):
+        comp.lib_id = comp.name = _check_str(i, 1, name+' lib_id')
+        res = comp.name.split(':')
+        comp.lib = None
+        if len(res) == 1:
+            comp.name = res[0]
+            comp.lib = ''
+        elif len(res) == 2:
+            comp.name = res[1]
+            comp.lib = res[0]
+        else:
+            logger.warning(W_NOLIB + "Component `{}` with more than one `:`".format(comp.name))
+
+    @staticmethod
     def load(c, project, parent):
         if not isinstance(c, list):
             raise SchError('Component definition is not a list')
@@ -977,17 +991,7 @@ class SchematicComponentV6(SchematicComponent):
             i_type = _check_is_symbol_list(i)
             if i_type == 'lib_id':
                 # First argument is the LIB:NAME
-                comp.lib_id = comp.name = _check_str(i, 1, name + ' lib_id')
-                res = comp.name.split(':')
-                comp.lib = None
-                if len(res) == 1:
-                    comp.name = res[0]
-                    comp.lib = ''
-                elif len(res) == 2:
-                    comp.name = res[1]
-                    comp.lib = res[0]
-                else:
-                    logger.warning(W_NOLIB + "Component `{}` with more than one `:`".format(comp.name))
+                SchematicComponentV6.get_lib_and_name(comp, i, name)
                 lib_id_found = True
             elif i_type == 'lib_name':
                 # Symbol defined in schematic
@@ -1582,66 +1586,92 @@ class SchematicV6(Schematic):
                 data.extend([s.write(cross), Sep()])
         return [Sep(), Sep(), _symbol('lib_symbols', data), Sep()]
 
-    def save(self, fname, dest_dir):
-        cross = True
-        fname = os.path.join(dest_dir, fname)
-        sch = [Symbol('kicad_sch')]
-        sch.append(_symbol('version', [self.version]))
-        sch.append(_symbol('generator', [Symbol(self.generator)]))
-        sch.append(Sep())
-        sch.append(Sep())
-        sch.append(_symbol('uuid', [Symbol(self.uuid)]))
-        sch.extend(self.write_paper())
-        if self.title_ori is not None:
-            sch.extend(self.write_title_block())
-        sch.extend(self.write_lib_symbols(cross))
-        # Bus aliases
-        _add_items(self.bus_alias, sch)
-        # Connections (aka Junctions)
-        _add_items(self.junctions, sch, pre_sep=(len(self.bus_alias) == 0))
-        # No connect
-        _add_items(self.no_conn, sch)
-        # Bus entry
-        _add_items(self.bus_entry, sch)
-        # Lines (wire, bus and polyline)
-        if self.wires:
-            old_type = 'none'
-            for e in self.wires:
-                if e.type != old_type and old_type != 'wire':
+    def save(self, fname=None, dest_dir=None, base_sheet=None, saved=None):
+        cross = dest_dir is not None
+        if base_sheet is None:
+            # We are the base sheet
+            base_sheet = self
+        if saved is None:
+            # Start memorizing saved files
+            saved = set()
+        if fname is None:
+            # Use our name if none provided
+            fname = self.fname
+        if dest_dir is None:
+            # Save at the same place
+            if not os.path.isabs(fname):
+                # Use the base sheet as reference
+                fname = os.path.join(os.path.dirname(base_sheet.fname), fname)
+        else:
+            # Save all in dest_dir (variant)
+            fname = os.path.join(dest_dir, fname)
+        # Save the sheet
+        if fname not in saved:
+            sch = [Symbol('kicad_sch')]
+            sch.append(_symbol('version', [self.version]))
+            sch.append(_symbol('generator', [Symbol(self.generator)]))
+            sch.append(Sep())
+            sch.append(Sep())
+            sch.append(_symbol('uuid', [Symbol(self.uuid)]))
+            sch.extend(self.write_paper())
+            if self.title_ori is not None:
+                sch.extend(self.write_title_block())
+            sch.extend(self.write_lib_symbols(cross))
+            # Bus aliases
+            _add_items(self.bus_alias, sch)
+            # Connections (aka Junctions)
+            _add_items(self.junctions, sch, pre_sep=(len(self.bus_alias) == 0))
+            # No connect
+            _add_items(self.no_conn, sch)
+            # Bus entry
+            _add_items(self.bus_entry, sch)
+            # Lines (wire, bus and polyline)
+            if self.wires:
+                old_type = 'none'
+                for e in self.wires:
+                    if e.type != old_type and old_type != 'wire':
+                        sch.append(Sep())
+                    sch.append(e.write())
+                    old_type = e.type
                     sch.append(Sep())
-                sch.append(e.write())
-                old_type = e.type
-                sch.append(Sep())
-        # Images
-        _add_items(self.bitmaps, sch)
-        # Texts
-        _add_items(self.texts, sch)
-        # Labels
-        _add_items(self.labels, sch)
-        # Global Labels
-        _add_items(self.glabels, sch)
-        # Hierarchical Labels
-        _add_items(self.hlabels, sch)
-        # Symbols
-        _add_items(self.symbols, sch, sep=True, cross=cross)
-        # Sheets
-        _add_items(self.sheets, sch, sep=True, cross=cross)
-        # Sheet instances
-        _add_items_list('sheet_instances', self.sheet_instances, sch)
-        # Symbol instances
-        # Copy potentially modified data from components
-        for s in self.symbol_instances:
-            comp = s.component
-            s.reference = comp.ref
-            s.value = comp.value
-            s.footprint = comp.footprint_lib+':'+comp.footprint if comp.footprint_lib else comp.footprint
-        _add_items_list('symbol_instances', self.symbol_instances, sch)
-        with open(fname, 'wt') as f:
-            f.write(dumps(sch))
-            f.write('\n')
+            # Images
+            _add_items(self.bitmaps, sch)
+            # Texts
+            _add_items(self.texts, sch)
+            # Labels
+            _add_items(self.labels, sch)
+            # Global Labels
+            _add_items(self.glabels, sch)
+            # Hierarchical Labels
+            _add_items(self.hlabels, sch)
+            # Symbols
+            _add_items(self.symbols, sch, sep=True, cross=cross)
+            # Sheets
+            _add_items(self.sheets, sch, sep=True, cross=cross)
+            # Sheet instances
+            _add_items_list('sheet_instances', self.sheet_instances, sch)
+            # Symbol instances
+            # Copy potentially modified data from components
+            for s in self.symbol_instances:
+                comp = s.component
+                s.reference = comp.ref
+                s.value = comp.value
+                s.footprint = comp.footprint_lib+':'+comp.footprint if comp.footprint_lib else comp.footprint
+            _add_items_list('symbol_instances', self.symbol_instances, sch)
+            logger.debug('Saving schematic: `{}`'.format(fname))
+            # Keep a back-up of existing files
+            if os.path.isfile(fname):
+                bkp = fname+'-bak'
+                if os.path.isfile(bkp):
+                    os.remove(bkp)
+                os.rename(fname, bkp)
+            with open(fname, 'wt') as f:
+                f.write(dumps(sch))
+                f.write('\n')
+            saved.add(fname)
         for sch in self.sheets:
             if sch.sch:
-                sch.sch.save(sch.flat_file if cross else sch.file, dest_dir)
+                sch.sch.save(sch.flat_file if cross else sch.file, dest_dir, base_sheet, saved)
 
     def save_variant(self, dest_dir):
         fname = os.path.basename(self.fname)
@@ -1760,8 +1790,6 @@ class SchematicV6(Schematic):
                 self.hlabels.append(HierarchicalLabel.parse(e))
             elif e_type == 'symbol':
                 obj = SchematicComponentV6.load(e, self.project, self)
-                if obj.annotation_error:
-                    self.annotation_error = True
                 self.symbols.append(obj)
                 self.symbol_uuids[obj.uuid] = obj
             elif e_type == 'sheet':
@@ -1778,10 +1806,7 @@ class SchematicV6(Schematic):
             self._fill_missing_title_block()
         # Load sub-sheets
         for sch in self.sheets:
-            sheet = sch.load_sheet(project, fname, self)
-            if sheet.annotation_error:
-                self.annotation_error = True
-            sch.sch = sheet
+            sch.sch = sch.load_sheet(project, fname, self)
         # Assign the page numbers
         if parent is None:
             self.all_sheets = []
@@ -1806,6 +1831,9 @@ class SchematicV6(Schematic):
             comp.sheet_path = path
             comp.sheet_path_h = self.path_to_human(path)
             comp.id = comp_uuid
+            if s.reference[-1] == '?':
+                comp.annotation_error = True
+                self.annotation_error = True
             # Link with its library symbol
             try:
                 lib_symbol = self.lib_symbol_names[comp.lib_id]
