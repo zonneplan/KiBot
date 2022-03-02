@@ -9,8 +9,10 @@ import pcbnew
 
 from .gs import GS
 from .misc import UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES
+from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
+from .kiplot import config_output
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -241,6 +243,22 @@ class ReportOptions(BaseOptions):
                 val = getattr(s, k)
                 if k[0] != '_' and not callable(val):
                     context[k] = val if val is not None else ''
+            text += self.do_replacements(line, context)
+        return text
+
+    def context_layer_pdfs(self, line):
+        """ Replace iterator for the `layer_pdfs` context """
+        text = ''
+        for s in self._layer_pdfs:
+            context = {'path': s[0], 'comment': s[1], 'new_line': '\n'}
+            text += self.do_replacements(line, context)
+        return text
+
+    def context_schematic_pdfs(self, line):
+        """ Replace iterator for the `schematic_pdfs` context """
+        text = ''
+        for s in self._schematic_pdfs:
+            context = {'path': s[0], 'comment': s[1], 'new_line': '\n'}
             text += self.do_replacements(line, context)
         return text
 
@@ -531,6 +549,25 @@ class ReportOptions(BaseOptions):
         self.stackup = 'yes' if GS.stackup else ''
         self._stackup = GS.stackup if GS.stackup else []
         self.collect_data(GS.board)
+        base_dir = os.path.dirname(fname)
+        self._layer_pdfs = []
+        self._schematic_pdfs = []
+        for o in RegOutput.get_outputs():
+            if o.type == 'pdf_pcb_print':
+                if not o._configured:
+                    config_output(o)
+                out_file = o.get_targets(o.expand_dirname(os.path.join(GS.out_dir, o.dir)))[0]
+                rel_path = os.path.relpath(out_file, base_dir)
+                self._layer_pdfs.append((rel_path, o.comment))
+            elif o.type == 'pdf_sch_print':
+                if not o._configured:
+                    config_output(o)
+                out_files = o.get_targets(o.expand_dirname(os.path.join(GS.out_dir, o.dir)))
+                for of in out_files:
+                    rel_path = os.path.relpath(of, base_dir)
+                    self._schematic_pdfs.append((rel_path, o.comment))
+        self.layer_pdfs = len(self._layer_pdfs) > 0
+        self.schematic_pdfs = len(self._schematic_pdfs) > 0
         self.do_template(self.template, fname)
 
 

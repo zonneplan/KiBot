@@ -1,24 +1,32 @@
 # PCB
 
 Board size: 59.69x48.26 mm (2.35x1.9 inches)
+
 - This is the size of the rectangle that contains the board
 - Thickness: 1.6 mm (63 mils)
 - Material: FR4
 - Finish: ENIG
 - Layers: 4
 - Copper thickness: 35 µm
+
 Solder mask: TOP / BOTTOM
+
 - Color: Top: Blue / Bottom: Red
+
 Silk screen: TOP / BOTTOM
+
 - Color: Top: White / Bottom: Black
 
 Special features:
+
 - Edge connector: yes, bevelled
 - Castellated pads
 - Edge plating
 
 Stackup:
+
 Impedance controlled: YES
+
 | Name                 | Type                 | Color    | Thickness | Material        | Epsilon_r | Loss tangent |
 |----------------------|----------------------|----------|-----------|-----------------|-----------|--------------|
 | F.SilkS              | Top Silk Screen      | White    |           | Liquid Photo    |           |              |
@@ -38,16 +46,24 @@ Impedance controlled: YES
 # Important sizes
 
 Clearance: 0.15 mm (6 mils)
+
 Track width: 0.15 mm (6 mils)
+
 - By design rules: 0.13 mm (5 mils)
+
 Drill: 0.25 mm (10 mils)
+
 - Vias: 0.25 mm (10 mils) [Design: 0.2 mm (8 mils)]
 - Pads: 0.6 mm (24 mils)
+
 Via: 0.51/0.25 mm (20/10 mils)
+
 - By design rules: 0.46/0.2 mm (18/8 mils)
 - Micro via: no [0.2/0.1 mm (8/4 mils)]
 - Burried/blind via: no
+
 Outer Annular Ring: 0.25 mm (10 mils)
+
 - By design rules: 0.25 mm (10 mils)
 
 Eurocircuits class: 6D
@@ -56,30 +72,50 @@ Eurocircuits class: 6D
 # General stats
 
 Components count: (SMD/THT)
+
 - Top: 61/12 (SMD + THT)
 - Bottom: 0/0 (NONE)
 
 Defined tracks:
+
 - 0.15 mm (6 mils)
 - 0.3 mm (12 mils)
 - 0.64 mm (25 mils)
 
 Used tracks:
+
 - 0.15 mm (6 mils) (276) defined: yes
 - 0.3 mm (12 mils) (11) defined: yes
 - 0.64 mm (25 mils) (175) defined: yes
 
 Defined vias:
+
 - 0.51/0.25 mm (20/10 mils)
 - 0.89/0.51 mm (35/20 mils)
 
 Used vias:
+
 - 0.51/0.25 mm (20/10 mils) (Count: 23, Aspect: 3.1 A) defined: yes
 - 0.89/0.51 mm (35/20 mils) (Count: 33, Aspect: 1.8 A) defined: yes
 
 Holes (excluding vias):
+
 - 0.8 mm (31 mils) (4)
 - 0.85 mm (33 mils) (2)
 - 0.95 mm (37 mils) (3)
 - 1.2 mm (47 mils) (20)
 - 3.2 mm (126 mils) (4)
+
+
+# Schematic
+
+![Schematic](Schematic.pdf){ width=16.5cm height=11.7cm }
+
+
+
+# PCB Layers
+
+![Top copper and silkscreen](Layers/light_control-F_Cu+F_SilkS.pdf){ width=16.5cm height=11.7cm }
+
+![Bottom copper and silkscreen](Layers/light_control-B_Cu+B_SilkS.pdf){ width=16.5cm height=11.7cm }
+

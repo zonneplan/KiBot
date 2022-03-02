@@ -997,7 +997,7 @@ def test_qr_lib_1(test_dir):
 def test_report_simple_1(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, 'test_report_simple_1', prj, 'report_simple_1', POS_DIR)
-    ctx.run()
+    ctx.run(extra=['report_full', 'report_simple'])
     ctx.expect_out_file(prj+'-report.txt')
     ctx.expect_out_file(prj+'-report_simple.txt')
     ctx.compare_txt(prj+'-report.txt')
