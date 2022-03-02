@@ -3,10 +3,8 @@
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-import os
 from .error import KiPlotConfigurationError
 from .gs import (GS)
-from .optionable import Optionable
 from .kiplot import load_sch
 from .misc import W_NOANNO
 from .macros import macros, pre_class  # noqa: F401
