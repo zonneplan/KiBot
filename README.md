@@ -1914,6 +1914,47 @@ Next time you need this list just use an alias, like this:
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* SVG PCB Print (Scalable Vector Graphics)
+  * Type: `svg_pcb_print`
+  * Description: Exports the PCB to the scalable vector graphics format.
+                 This output is what you get from the 'File/Print' menu in pcbnew.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                List of PCB layers to include in the PDF.
+      * Valid keys:
+        - `description`: [string=''] A description for the layer, for documentation purposes.
+        - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+        - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `pdf_pcb_print` output.
+      * Valid keys:
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
+        - `enable_ki6_page_fix`: [boolean=true] Enable workaround for KiCad 6 bug #11033.
+        - `force_edge_cuts`: [boolean=true] Only useful for KiCad 6 when printing in one page, you can disable the edge here.
+                             KiCad 5 forces it by default, and you can't control it from config files.
+                             Same for KiCad 6 when printing to separated pages.
+        - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+        - `mirror`: [boolean=false] Print mirrored (X axis inverted). ONLY for KiCad 6.
+        - `monochrome`: [boolean=false] Print in black and white.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=layers, %x=svg). Affected by global options.
+        - *output_name*: Alias for output.
+        - `plot_sheet_reference`: [boolean=true] Include the title-block.
+        - `scaling`: [number=1.0] Scale factor (0 means autoscaling).
+        - `separated`: [boolean=false] Print layers in separated pages.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
+        - `variant`: [string=''] Board variant to apply.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * SVG Schematic Print
   * Type: `svg_sch_print`
   * Description: Exports the PCB. Suitable for printing.

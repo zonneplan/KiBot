@@ -246,21 +246,29 @@ class ReportOptions(BaseOptions):
             text += self.do_replacements(line, context)
         return text
 
-    def context_layer_pdfs(self, line):
-        """ Replace iterator for the `layer_pdfs` context """
+    def _context_images(self, line, images):
+        """ Replace iterator for the various contexts that expands images """
         text = ''
-        for s in self._layer_pdfs:
+        for s in images:
             context = {'path': s[0], 'comment': s[1], 'new_line': '\n'}
             text += self.do_replacements(line, context)
         return text
 
+    def context_layer_pdfs(self, line):
+        """ Replace iterator for the `layer_pdfs` context """
+        return self._context_images(line, self._layer_pdfs)
+
+    def context_layer_svgs(self, line):
+        """ Replace iterator for the `layer_svgs` context """
+        return self._context_images(line, self._layer_svgs)
+
     def context_schematic_pdfs(self, line):
         """ Replace iterator for the `schematic_pdfs` context """
-        text = ''
-        for s in self._schematic_pdfs:
-            context = {'path': s[0], 'comment': s[1], 'new_line': '\n'}
-            text += self.do_replacements(line, context)
-        return text
+        return self._context_images(line, self._schematic_pdfs)
+
+    def context_schematic_svgs(self, line):
+        """ Replace iterator for the `schematic_svgs` context """
+        return self._context_images(line, self._schematic_svgs)
 
     @staticmethod
     def is_pure_smd_5(m):
@@ -550,24 +558,32 @@ class ReportOptions(BaseOptions):
         self._stackup = GS.stackup if GS.stackup else []
         self.collect_data(GS.board)
         base_dir = os.path.dirname(fname)
+        # Collect the PCB layers and schematic prints
         self._layer_pdfs = []
+        self._layer_svgs = []
         self._schematic_pdfs = []
+        self._schematic_svgs = []
         for o in RegOutput.get_outputs():
+            dest = None
             if o.type == 'pdf_pcb_print':
-                if not o._configured:
-                    config_output(o)
-                out_file = o.get_targets(o.expand_dirname(os.path.join(GS.out_dir, o.dir)))[0]
-                rel_path = os.path.relpath(out_file, base_dir)
-                self._layer_pdfs.append((rel_path, o.comment))
+                dest = self._layer_pdfs
+            elif o.type == 'svg_pcb_print':
+                dest = self._layer_svgs
             elif o.type == 'pdf_sch_print':
+                dest = self._schematic_pdfs
+            elif o.type == 'svg_sch_print':
+                dest = self._schematic_svgs
+            if dest is not None:
                 if not o._configured:
                     config_output(o)
                 out_files = o.get_targets(o.expand_dirname(os.path.join(GS.out_dir, o.dir)))
                 for of in out_files:
                     rel_path = os.path.relpath(of, base_dir)
-                    self._schematic_pdfs.append((rel_path, o.comment))
+                    dest.append((rel_path, o.comment))
         self.layer_pdfs = len(self._layer_pdfs) > 0
+        self.layer_svgs = len(self._layer_svgs) > 0
         self.schematic_pdfs = len(self._schematic_pdfs) > 0
+        self.schematic_svgs = len(self._schematic_svgs) > 0
         self.do_template(self.template, fname)
 
 

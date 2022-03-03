@@ -1342,6 +1342,45 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
+  # SVG PCB Print (Scalable Vector Graphics):
+  # This output is what you get from the 'File/Print' menu in pcbnew.
+  - name: 'svg_pcb_print_example'
+    comment: 'Exports the PCB to the scalable vector graphics format.'
+    type: 'svg_pcb_print'
+    dir: 'Example/svg_pcb_print_dir'
+    options:
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale)
+      drill_marks: 'full'
+      # [boolean=true] Enable workaround for KiCad 6 bug #11033
+      enable_ki6_page_fix: true
+      # [boolean=true] Only useful for KiCad 6 when printing in one page, you can disable the edge here.
+      # KiCad 5 forces it by default, and you can't control it from config files.
+      # Same for KiCad 6 when printing to separated pages
+      force_edge_cuts: true
+      # [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant
+      hide_excluded: false
+      # [boolean=false] Print mirrored (X axis inverted). ONLY for KiCad 6
+      mirror: false
+      # [boolean=false] Print in black and white
+      monochrome: false
+      # [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=layers, %x=svg). Affected by global options
+      output: '%f-%i%I%v.%x'
+      # `output_name` is an alias for `output`
+      # [boolean=true] Include the title-block
+      plot_sheet_reference: true
+      # [number=1.0] Scale factor (0 means autoscaling)
+      scaling: 1.0
+      # [boolean=false] Print layers in separated pages
+      separated: false
+      # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+      # If it starts with `+` the text is concatenated
+      title: ''
+      # [string=''] Board variant to apply
+      variant: ''
+    layers: all
   # SVG Schematic Print:
   # This is a format to document your schematic.
   - name: 'svg_sch_print_example'

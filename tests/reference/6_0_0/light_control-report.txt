@@ -109,13 +109,13 @@ Holes (excluding vias):
 
 # Schematic
 
-![Schematic](Schematic.pdf){ width=16.5cm height=11.7cm }
+![Schematic](Schematic.svg){ width=16.5cm height=11.7cm }
 
 
 
 # PCB Layers
 
-![Top copper and silkscreen](Layers/light_control-F_Cu+F_SilkS.pdf){ width=16.5cm height=11.7cm }
+![Top copper and silkscreen](Layers/light_control-F_Cu+F_SilkS.svg){ width=16.5cm height=11.7cm }
 
-![Bottom copper and silkscreen](Layers/light_control-B_Cu+B_SilkS.pdf){ width=16.5cm height=11.7cm }
+![Bottom copper and silkscreen](Layers/light_control-B_Cu+B_SilkS.svg){ width=16.5cm height=11.7cm }
 
