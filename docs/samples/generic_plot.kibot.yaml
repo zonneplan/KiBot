@@ -1036,6 +1036,28 @@ outputs:
       # [string=''] Board variant to apply.
       # Not fitted components are crossed
       variant: ''
+  # PDF joiner:
+  # This is just a PDF joiner, using `pdfunite` from Poppler Utils.
+  - name: 'pdfunite_example'
+    comment: 'Generates a new PDF from other outputs.'
+    type: 'pdfunite'
+    dir: 'Example/pdfunite_dir'
+    options:
+      # [string='%f-%i%I%v.%x'] Name for the generated PDF (%i=name of the output %x=pdf). Affected by global options
+      output: '%f-%i%I%v.%x'
+      # [list(dict)] Which files will be included
+      outputs:
+        # [string='.*\.pdf'] A regular expression that source files must match
+        - filter: '.*\.pdf'
+          # [boolean=false] Use the current working directory instead of the dir specified by `-d`
+          from_cwd: false
+          # [string=''] Collect files from the selected output.
+          # When used the `source` option is ignored
+          from_output: ''
+          # [string='*.pdf'] File names to add, wildcards allowed. Use ** for recursive match.
+          # By default this pattern is applied to the output dir specified with `-d` command line option.
+          # See the `from_cwd` option
+          source: '*.pdf'
   # Pick & place:
   # This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew.
   - name: 'position_example'

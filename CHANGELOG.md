@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `solder_mask_color`, `silk_screen_color` and `pcb_finish`)
 - Report generation (for design house) (#93)
 - New output to print PCB layers in SVG format.
+- New output to join PDFs. (#156)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

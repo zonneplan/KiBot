@@ -1041,3 +1041,12 @@ def test_annotate_power_1(test_dir):
     ctx.compare_txt('deeper'+context.KICAD_SCH_EXT)
     ctx.compare_txt('sub-sheet'+context.KICAD_SCH_EXT)
     ctx.clean_up()
+
+
+def test_pdfunite_1(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, 'test_pdfunite_1', prj, 'pdfunite_1', POS_DIR)
+    ctx.run()
+    o = prj+'-PDF_Joined.pdf'
+    ctx.expect_out_file(o)
+    ctx.clean_up(keep_project=True)
