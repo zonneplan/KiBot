@@ -1,28 +1,42 @@
 PCB Specifications:
 Size:
+
 - 59.69x48.26 mm
 
 Class: 6D
+
 Track width: ≥ 0.15 mm
+
 Insulation distance: ≥ 0.15 mm
+
 Minimum drill size: ≥ 0.25 mm (finished metalized hole: 0.15 mm)
+
 Minimum slot width: ≥ 0.6 mm
+
 Ring collar: ≥ 0.25 mm
 
 
 Materials:
+
 - FR4, 1.6 mm
 - ENIG
 - 4 layers
 - 35 µm copper thickness
 
 Solder mask:
+
 - TOP / BOTTOM
 - Top: Blue / Bottom: Red
 
 Marking:
+
 - TOP / BOTTOM screen printing
 - Silk: White
 
 Other markings:
+
 - ROHS / UL / Date - Yes if available
+
+PCB:
+
+![Top copper and silkscreen](Layers/light_control-F_Cu+F_SilkS.svg){ width=16.5cm height=11.7cm }

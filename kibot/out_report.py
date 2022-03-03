@@ -270,6 +270,32 @@ class ReportOptions(BaseOptions):
         """ Replace iterator for the `schematic_svgs` context """
         return self._context_images(line, self._schematic_svgs)
 
+    def _context_individual_images(self, line, images):
+        """ Replace iterator for the various contexts that expands one image """
+        text = ''
+        context = {'new_line': '\n'}
+        for s in images:
+            context['path_'+s[2]] = s[0]
+            context['comment_'+s[2]] = s[1]
+        text += self.do_replacements(line, context)
+        return text
+
+    def context_layer_pdf(self, line):
+        """ Replace iterator for the `layer_pdf` context """
+        return self._context_individual_images(line, self._layer_pdfs)
+
+    def context_layer_svg(self, line):
+        """ Replace iterator for the `layer_svg` context """
+        return self._context_individual_images(line, self._layer_svgs)
+
+    def context_schematic_pdf(self, line):
+        """ Replace iterator for the `schematic_pdf` context """
+        return self._context_individual_images(line, self._schematic_pdfs)
+
+    def context_schematic_svg(self, line):
+        """ Replace iterator for the `schematic_svg` context """
+        return self._context_individual_images(line, self._schematic_svgs)
+
     @staticmethod
     def is_pure_smd_5(m):
         return m.GetAttributes() == UI_SMD
@@ -579,7 +605,7 @@ class ReportOptions(BaseOptions):
                 out_files = o.get_targets(o.expand_dirname(os.path.join(GS.out_dir, o.dir)))
                 for of in out_files:
                     rel_path = os.path.relpath(of, base_dir)
-                    dest.append((rel_path, o.comment))
+                    dest.append((rel_path, o.comment, o.name))
         self.layer_pdfs = len(self._layer_pdfs) > 0
         self.layer_svgs = len(self._layer_svgs) > 0
         self.schematic_pdfs = len(self._schematic_pdfs) > 0
