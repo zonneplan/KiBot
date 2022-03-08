@@ -85,6 +85,7 @@ EXAMPLE_CFG = 'example_template.kibot.yaml'
 AUTO_SCALE = 0
 KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_6_0_0 = 6000000
+KICAD_VERSION_6_0_2 = 6000002
 
 # Internal filter names
 IFILT_MECHANICAL = '_mechanical'
@@ -219,6 +220,7 @@ W_ALRDOWN = '(W077) '
 W_KICOSTFLD = '(W078) '
 W_MIXVARIANT = '(W079) '
 W_NOTPDF = '(W080) '
+W_NOREF = '(W081) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
