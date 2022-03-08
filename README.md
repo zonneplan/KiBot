@@ -8,7 +8,7 @@
 
 **Important for KiCad 6 users**:
 - Only the code in the git repo supports KiCad 6 (no stable release yet)
-- The docker images target `ki6` has KiCad 6, but you need to use the KiBot from the repo, not the one in the images.
+- The docker images tagged `ki6` has KiCad 6, but you need to use the KiBot from the repo, not the one in the images.
 - The docker image with KiCad 6 and KiBot that supports it is tagged as `dev_k6`
 - The GitHub action with KiCad 6 support is tagged as `v1_k6`
 - When using KiCad 6 you must migrate the whole project and pass the migrated files to KiBot.
@@ -2931,6 +2931,8 @@ Additionally we support:
   - **GitHub Actions fix**: @TheSlowGrowth
   - **Easier README navigation**: Robin Vobruba (@hoijui)
   - **Typos corrections**: Seth Kaz (@sethkaz) and Sebastian Grau (@SebastianGrau)
+  - **Various tools suggested**: MDW (@mdeweerd)
+  - **GENCAD export for KiAuto**: Theo Hussey (@flaminggoat)
 - **Sources of inspiration and good ideas**:
   - **JLC Kicad Tools**: Matthew Lai (@matthewlai)
   - **KiCad Gerber Zipper**: @g200kg
