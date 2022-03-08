@@ -1,0 +1,12 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'GENCAD export Test'
+    comment: "Example of GENCAD export"
+    type: gencad
+    options:
+      flip_bottom_padstacks: true
+      no_reuse_shapes: true
+      save_origin: true

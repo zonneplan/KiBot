@@ -1115,3 +1115,19 @@ def test_annotate_pcb_tbrl_big_grid(test_dir):
 def test_annotate_pcb_tbrl_small_grid(test_dir):
     check_anno_pcb(test_dir, 'tbrl_small_grid',
                    {'C1': '1u', 'C2': '2u', 'R1': '2', 'R2': '1', 'C3': '3u', 'C4': '4u', 'R3': '3', 'R4': '4'})
+
+
+def test_gencad_1(test_dir):
+    prj = 'gencad'
+    ctx = context.TestContext(test_dir, 'test_gencad_1', prj, 'gencad_1', '')
+    ctx.run()
+    o = prj+'-gencad.cad'
+    ctx.expect_out_file(o)
+    file = ctx.get_out_path(o)
+    with open(file, 'rt') as f:
+        text = f.read()
+    text = re.sub(r'(USER|DRAWING) "(.*)"', r'\1 ""', text)
+    with open(file, 'wt') as f:
+        f.write(text)
+    ctx.compare_txt(o)
+    ctx.clean_up()

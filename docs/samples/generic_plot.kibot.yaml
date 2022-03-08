@@ -460,6 +460,26 @@ outputs:
       use_aux_axis_as_origin: false
       # [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros
       zeros_format: 'DECIMAL_FORMAT'
+  # GenCAD:
+  # This format is interpreted by some CADCAM software and helps certain
+  # manufacturers
+  - name: 'gencad_example'
+    comment: 'Exports the PCB in GENCAD format.'
+    type: 'gencad'
+    dir: 'Example/gencad_dir'
+    options:
+      # [boolean=false] Use auxiliary axis as origin
+      aux_origin: false
+      # [boolean=false] Flip bottom footprint padstacks
+      flip_bottom_padstacks: false
+      # [boolean=false] Generate a new shape for each footprint instance (Do not reuse shapes)
+      no_reuse_shapes: false
+      # [string='%f-%i%I%v.%x'] Filename for the output (%i=gencad, %x=cad). Affected by global options
+      output: '%f-%i%I%v.%x'
+      # [boolean=false] Save the origin coordinates in the file
+      save_origin: false
+      # [boolean=false] Generate unique pin names
+      unique_pin_names: false
   # Gerber drill format:
   # You can create a map file for documentation purposes.
   # This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.

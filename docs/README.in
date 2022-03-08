@@ -448,6 +448,7 @@ The available values for *type* are:
     - `render_3d` PCB render, from the KiCad's 3D Viewer (broken in KiCad 6.0.0)
 - Others:
     - `boardview` creates a file useful to repair the board, but without disclosing the full layout.
+    - `gencad` exports the PCB in GENCAD format.
     - `compress` creates an archive containing generated data.
     - `download_datasheets` downloads the datasheets for all the components.
     - `pcbdraw` nice images of the PCB in customized colors.
