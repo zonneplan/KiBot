@@ -1,0 +1,104 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Device:R R1
+U 1 1 6223A923
+P 3200 2400
+F 0 "R1" H 3270 2446 50  0000 L CNN
+F 1 "1" H 3270 2355 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3130 2400 50  0001 C CNN
+F 3 "~" H 3200 2400 50  0001 C CNN
+	1    3200 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R2
+U 1 1 6223ADF1
+P 3500 2400
+F 0 "R2" H 3570 2446 50  0000 L CNN
+F 1 "2" H 3570 2355 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3430 2400 50  0001 C CNN
+F 3 "~" H 3500 2400 50  0001 C CNN
+	1    3500 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R3
+U 1 1 6223B0E5
+P 3800 2400
+F 0 "R3" H 3870 2446 50  0000 L CNN
+F 1 "3" H 3870 2355 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3730 2400 50  0001 C CNN
+F 3 "~" H 3800 2400 50  0001 C CNN
+	1    3800 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R4
+U 1 1 6223B0EF
+P 4100 2400
+F 0 "R4" H 4170 2446 50  0000 L CNN
+F 1 "4" H 4170 2355 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 4030 2400 50  0001 C CNN
+F 3 "~" H 4100 2400 50  0001 C CNN
+	1    4100 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C1
+U 1 1 6223BA95
+P 3200 2900
+F 0 "C1" H 3315 2946 50  0000 L CNN
+F 1 "1u" H 3315 2855 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 3238 2750 50  0001 C CNN
+F 3 "~" H 3200 2900 50  0001 C CNN
+	1    3200 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C2
+U 1 1 6223BC65
+P 3500 2900
+F 0 "C2" H 3615 2946 50  0000 L CNN
+F 1 "2u" H 3615 2855 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 3538 2750 50  0001 C CNN
+F 3 "~" H 3500 2900 50  0001 C CNN
+	1    3500 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C3
+U 1 1 6223C1B3
+P 3800 2900
+F 0 "C3" H 3915 2946 50  0000 L CNN
+F 1 "3u" H 3915 2855 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 3838 2750 50  0001 C CNN
+F 3 "~" H 3800 2900 50  0001 C CNN
+	1    3800 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C4
+U 1 1 6223C217
+P 4100 2900
+F 0 "C4" H 4215 2946 50  0000 L CNN
+F 1 "4u" H 4215 2855 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 4138 2750 50  0001 C CNN
+F 3 "~" H 4100 2900 50  0001 C CNN
+	1    4100 2900
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC

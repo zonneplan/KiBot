@@ -32,7 +32,7 @@ class Annotate_Power(BasePreFlight):  # noqa: F821
         for c in comps:
             if c.is_power:
                 # Force a new number
-                c.f_ref = c.ref_prefix+'{:02d}'.format(num)
+                c.ref = c.f_ref = c.ref_prefix+'{:02d}'.format(num)
                 c.ref_suffix = str(num)
                 num = num+1
                 # Fix the ARs
@@ -41,7 +41,7 @@ class Annotate_Power(BasePreFlight):  # noqa: F821
                     for o in c.ar:
                         if first:
                             # Copy this to the first
-                            o.ref = c.f_ref
+                            o.ref = c.ref
                             first = False
                         else:
                             # Allocate new numbers for the rest
@@ -50,7 +50,7 @@ class Annotate_Power(BasePreFlight):  # noqa: F821
                 # Fix the reference field
                 field = next(filter(lambda x: x.number == 0, c.fields), None)
                 if field:
-                    field.value = c.f_ref
+                    field.value = c.ref
 
     def annotate_ki6(self):
         """ Annotate power components for KiCad 6 """

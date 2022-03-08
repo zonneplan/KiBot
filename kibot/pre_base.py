@@ -6,6 +6,8 @@
 from .gs import GS
 from .registrable import Registrable
 from .optionable import Optionable
+from .error import PlotError
+from .misc import PLOT_ERROR
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -48,18 +50,22 @@ class BasePreFlight(Registrable):
 
     @staticmethod
     def run_enabled():
-        for k, v in BasePreFlight._in_use.items():
-            if v._enabled:
-                if v.is_sch():
-                    GS.check_sch()
-                if v.is_pcb():
-                    GS.check_pcb()
-                logger.debug('Preflight apply '+k)
-                v.apply()
-        for k, v in BasePreFlight._in_use.items():
-            if v._enabled:
-                logger.debug('Preflight run '+k)
-                v.run()
+        try:
+            for k, v in BasePreFlight._in_use.items():
+                if v._enabled:
+                    if v.is_sch():
+                        GS.check_sch()
+                    if v.is_pcb():
+                        GS.check_pcb()
+                    logger.debug('Preflight apply '+k)
+                    v.apply()
+            for k, v in BasePreFlight._in_use.items():
+                if v._enabled:
+                    logger.debug('Preflight run '+k)
+                    v.run()
+        except PlotError as e:
+            logger.error("In preflight `"+str(k)+"`: "+str(e))
+            exit(PLOT_ERROR)
 
     def disable(self):
         self._enabled = False

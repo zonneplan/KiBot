@@ -373,10 +373,7 @@ class QR_LibOptions(BaseOptions):
             # Create a back-up and save it in the original place
             logger.debug('- Replacing the old PCB')
             os.remove(tmp_pcb)
-            bkp = GS.pcb_file+'-bak'
-            if os.path.isfile(bkp):
-                os.remove(bkp)
-            os.rename(GS.pcb_file, bkp)
+            GS.make_bkp(GS.pcb_file)
             prl = None
             if GS.ki6():
                 # KiCad 6 is destroying the PRL ...
@@ -438,10 +435,7 @@ class QR_LibOptions(BaseOptions):
             separated = make_separated(sexp[0])
             # Create a back-up and save it in the original place
             logger.debug('- Replacing the old SCH')
-            bkp = fname+'-bak'
-            if os.path.isfile(bkp):
-                os.remove(bkp)
-            os.rename(fname, bkp)
+            GS.make_bkp(fname)
             with open(fname, 'wt') as f:
                 f.write(dumps(separated))
                 f.write('\n')

@@ -1,0 +1,14 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  annotate_pcb:
+    top_main_axis: x
+    top_main_ascending: true
+    top_secondary_ascending: true
+    bottom_main_axis: x
+    bottom_main_ascending: true
+    bottom_secondary_ascending: true
+    use_position_of: reference
+    grid: 1.0

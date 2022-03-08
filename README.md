@@ -109,6 +109,10 @@ This section is used to specify tasks that will be executed before generating an
 
 #### Supported preflight options:
 
+- `annotate_pcb`: [dict] Annotates the PCB according to physical coordinates.
+        This preflight modifies the PCB and schematic, use it only in revision control environments.
+        Used to assign references according to footprint coordinates.
+        The project must be fully annotated first.
 - `annotate_power`: [boolean=false] Annotates all power components.
         This preflight modifies the schematic, use it only in revision control environments.
         Used to solve ERC problems when using filters that remove power reference numbers.

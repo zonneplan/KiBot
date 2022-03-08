@@ -1050,3 +1050,68 @@ def test_pdfunite_1(test_dir):
     o = prj+'-PDF_Joined.pdf'
     ctx.expect_out_file(o)
     ctx.clean_up(keep_project=True)
+
+
+def check_refs(ctx, refs):
+    rows, _, _ = ctx.load_csv('ano_pcb-bom.csv')
+    for r in rows:
+        assert r[1] == refs[r[0]], "{}={} should be {}".format(r[0], r[1], refs[r[0]])
+    assert len(rows) == len(refs)
+    logging.debug("{} references OK".format(len(rows)))
+
+
+def check_anno_pcb(test_dir, type, refs):
+    prj = 'ano_pcb'
+    ctx = context.TestContext(test_dir, 'test_annotate_pcb_'+type, prj, 'annotate_pcb_'+type, '')
+    pcb_file = ctx.get_out_path(os.path.basename(ctx.board_file))
+    sch_file = ctx.get_out_path(os.path.basename(ctx.sch_file))
+    shutil.copy2(ctx.board_file, pcb_file)
+    shutil.copy2(ctx.sch_file, sch_file)
+    ctx.run(extra=['-b', pcb_file], no_board_file=True)
+    check_refs(ctx, refs)
+    ctx.clean_up()
+
+
+def test_annotate_pcb_tblr(test_dir):
+    check_anno_pcb(test_dir, 'tblr',
+                   {'C1': '2u', 'C2': '1u', 'R1': '2', 'R2': '1', 'C101': '3u', 'C102': '4u', 'R101': '3', 'R102': '4'})
+
+
+def test_annotate_pcb_btlr(test_dir):
+    check_anno_pcb(test_dir, 'btlr',
+                   {'C1': '1u', 'C2': '2u', 'R1': '1', 'R2': '2', 'C101': '4u', 'C102': '3u', 'R101': '4', 'R102': '3'})
+
+
+def test_annotate_pcb_btrl(test_dir):
+    check_anno_pcb(test_dir, 'btrl',
+                   {'C1': '1u', 'C2': '2u', 'R1': '2', 'R2': '1', 'C101': '4u', 'C102': '3u', 'R101': '4', 'R102': '3'})
+
+
+def test_annotate_pcb_lrbt(test_dir):
+    check_anno_pcb(test_dir, 'lrbt',
+                   {'C1': '1u', 'C2': '2u', 'R1': '1', 'R2': '2', 'C101': '4u', 'C102': '3u', 'R101': '4', 'R102': '3'})
+
+
+def test_annotate_pcb_lrtb(test_dir):
+    check_anno_pcb(test_dir, 'lrtb',
+                   {'C1': '1u', 'C2': '2u', 'R1': '1', 'R2': '2', 'C101': '3u', 'C102': '4u', 'R101': '3', 'R102': '4'})
+
+
+def test_annotate_pcb_rlbt(test_dir):
+    check_anno_pcb(test_dir, 'rlbt',
+                   {'C1': '2u', 'C2': '1u', 'R1': '2', 'R2': '1', 'C101': '4u', 'C102': '3u', 'R101': '4', 'R102': '3'})
+
+
+def test_annotate_pcb_rltb(test_dir):
+    check_anno_pcb(test_dir, 'rltb',
+                   {'C1': '2u', 'C2': '1u', 'R1': '2', 'R2': '1', 'C101': '3u', 'C102': '4u', 'R101': '3', 'R102': '4'})
+
+
+def test_annotate_pcb_tbrl_big_grid(test_dir):
+    check_anno_pcb(test_dir, 'tbrl_big_grid',
+                   {'C1': '2u', 'C2': '1u', 'R1': '2', 'R2': '1', 'C3': '3u', 'C4': '4u', 'R3': '3', 'R4': '4'})
+
+
+def test_annotate_pcb_tbrl_small_grid(test_dir):
+    check_anno_pcb(test_dir, 'tbrl_small_grid',
+                   {'C1': '1u', 'C2': '2u', 'R1': '2', 'R2': '1', 'C3': '3u', 'C4': '4u', 'R3': '3', 'R4': '4'})

@@ -11,6 +11,7 @@ from .error import KiPlotConfigurationError
 from .misc import FAILED_EXECUTE, W_EMPTREP, W_BADCHARS
 from .optionable import Optionable
 from .pre_base import BasePreFlight
+from .gs import GS
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 
@@ -112,6 +113,6 @@ class Base_Replace(BasePreFlight):  # noqa: F821
                     text = new_text
             logger.debug('- ' + r.tag + ' -> ' + text)
             content = re.sub(r.tag, text, content, flags=re.MULTILINE)
-        os.rename(file, file + '-bak')
+        GS.make_bkp(file)
         with open(file, 'wt') as f:
             f.write(content)

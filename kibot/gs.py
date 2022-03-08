@@ -220,6 +220,13 @@ class GS(object):
         return 0.001/pcbnew.IU_PER_MILS
 
     @staticmethod
+    def make_bkp(fname):
+        bkp = fname+'-bak'
+        if os.path.isfile(bkp):
+            os.remove(bkp)
+        os.rename(fname, bkp)
+
+    @staticmethod
     def ki6():
         return GS.kicad_version_n >= KICAD_VERSION_5_99
 

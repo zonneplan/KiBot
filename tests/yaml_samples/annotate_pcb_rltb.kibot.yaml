@@ -1,0 +1,40 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  annotate_pcb:
+    top_main_axis: x
+    top_main_ascending: false
+    top_secondary_ascending: true
+    bottom_main_axis: x
+    bottom_main_ascending: false
+    bottom_secondary_ascending: true
+    use_position_of: footprint
+    grid: 1.0
+
+outputs:
+  - name: PDF_F
+    comment: "PDF files"
+    type: pdf
+    layers:
+      - layer: F.SilkS
+        suffix: F_Silks
+
+  - name: PDF_B
+    comment: "PDF files"
+    type: pdf
+    options:
+      mirror_plot: true
+    layers:
+      - layer: B.SilkS
+        suffix: B_Silks
+
+  - name: 'bom_internal'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    options:
+      csv:
+        hide_pcb_info: true
+        hide_stats_info: true
+      columns: [References, Value]

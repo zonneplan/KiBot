@@ -51,8 +51,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Another experimental mechanism to change 3D models according to the variant.
   (#103)
 - A mechanism to avoid running some outputs by default. (#112)
-- New preflight commands to replace tags in the schematic and PCB. (#93)
-- New preflight to annotate power components. (#76)
+- New preflights:
+  - Commands to replace tags in the schematic and PCB. (#93)
+  - Annotate power components. (#76)
+  - Annotate according to PCB coordinates (#93)
 - Now you can compress files relative to the current working directory.
   So you can create a compressed file containing the source schematic and
   PCB files. (#93)
