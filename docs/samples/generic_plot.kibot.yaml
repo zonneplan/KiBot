@@ -45,7 +45,6 @@ preflight:
         command: 'git log -1 --format="%h" $KIBOT_PCB_NAME'
         before: 'Git hash: <'
         after: '>'
-
   # [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
   # The report file name is controlled by the global output pattern (%i=drc %x=txt).
   run_drc: true
@@ -61,7 +60,14 @@ preflight:
         command: 'git log -1 --format="%h" $KIBOT_SCH_NAME'
         before: 'Git hash: <'
         after: '>'
-
+  # [dict|list(dict)] Defines KiCad 6 variables.
+  # They are expanded using ${VARIABLE}, and stored in the project file.
+  # This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
+  set_text_variables:
+    - name: 'git_hash'
+      command: 'git log -1 --format="%h" $KIBOT_PCB_NAME'
+      before: 'Git hash: <'
+      after: '>'
   # [boolean=false] Update the QR codes.
   # Complements the `qr_lib` output.
   # The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.

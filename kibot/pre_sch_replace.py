@@ -32,6 +32,7 @@ class SCH_ReplaceOptions(Base_ReplaceOptions):
 @pre_class
 class SCH_Replace(Base_Replace):  # noqa: F821
     """ [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+        This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
         This pre-flight modifies the schematics. Even when a back-up is done use it carefully """
     _context = 'SCH'
 

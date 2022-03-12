@@ -18,6 +18,7 @@ import os
 import sys
 import logging
 import re
+import json
 from subprocess import run, PIPE
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -229,5 +230,28 @@ def test_pcb_replace_1(test_dir):
         logging.debug('Hash: ' + text)
         assert m is not None
         assert m.group(1) == text
+    finally:
+        os.rename(file_back, file)
+
+
+def test_set_text_variables_1(test_dir):
+    """ KiCad 6 variables """
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, 'test_set_text_variables_1', prj, 'set_text_variables_1', '')
+    ctx.run(extra=[])
+    file = os.path.join(ctx.get_board_dir(), ctx.board_name+context.PRO_EXT)
+    file_back = file + '-bak'
+    assert os.path.isfile(file_back), file_back
+    assert os.path.getsize(file_back) > 0
+    try:
+        logging.debug(file)
+        cmd = ['/bin/bash', '-c', "git log -1 --format='%h' " + ctx.board_file]
+        text = "Git_hash:'" + run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip() + "'"
+        with open(file, 'rt') as f:
+            c = f.read()
+        data = json.loads(c)
+        assert 'text_variables' in data
+        assert 'Comment4' in data['text_variables']
+        assert data['text_variables']['Comment4'] == text
     finally:
         os.rename(file_back, file)

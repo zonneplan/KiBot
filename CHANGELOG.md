@@ -52,7 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (#103)
 - A mechanism to avoid running some outputs by default. (#112)
 - New preflights:
-  - Commands to replace tags in the schematic and PCB. (#93)
+  - Commands to replace tags in the schematic and PCB (KiCad 5). (#93)
+    Also a mechanism to define variables in KiCad 6. (#161)
   - Annotate power components. (#76)
   - Annotate according to PCB coordinates (#93)
 - Now you can compress files relative to the current working directory.

@@ -1,0 +1,10 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  set_text_variables:
+    - variable: "Comment4"
+      command: git log -1 --format="%h" $KIBOT_PCB_NAME
+      before: "Git_hash:'"
+      after: "'"

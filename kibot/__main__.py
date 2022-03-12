@@ -145,8 +145,8 @@ def solve_schematic(a_schematic, a_board_file, config):
                     # Look for a schematic with a PCB and/or project
                     for sch in schematics:
                         base = os.path.splitext(sch)[0]
-                        if os.path.isfile(base+'.pro') or os.path.isfile(base+'.kicad_pro') or \
-                           os.path.isfile(base+'.kicad_pcb'):
+                        if (os.path.isfile(base+'.pro') or os.path.isfile(base+'.kicad_pro') or
+                           os.path.isfile(base+'.kicad_pcb')):
                             schematic = sch
                             break
                     else:

@@ -84,7 +84,7 @@ class Base_Replace(BasePreFlight):  # noqa: F821
                 "\n      - tag: '@git_hash@'"
                 "\n        command: 'git log -1 --format=\"%h\" $KIBOT_{}_NAME'"
                 "\n        before: 'Git hash: <'"
-                "\n        after: '>'\n".format(cls._context, cls._context))
+                "\n        after: '>'".format(cls._context, cls._context))
 
     def replace(self, file):
         logger.debug('Applying replacements to `{}`'.format(file))
