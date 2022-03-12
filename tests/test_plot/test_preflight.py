@@ -26,7 +26,7 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # Utils import
 from utils import context
-from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH)
+from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH, EXIT_BAD_CONFIG)
 
 
 def test_erc_1(test_dir):
@@ -203,6 +203,7 @@ def test_sch_replace_1(test_dir):
     finally:
         for k, v in files.items():
             os.rename(v, k)
+    ctx.clean_up()
 
 
 def test_pcb_replace_1(test_dir):
@@ -232,26 +233,31 @@ def test_pcb_replace_1(test_dir):
         assert m.group(1) == text
     finally:
         os.rename(file_back, file)
+    ctx.clean_up(keep_project=True)
 
 
 def test_set_text_variables_1(test_dir):
     """ KiCad 6 variables """
     prj = 'light_control'
     ctx = context.TestContext(test_dir, 'test_set_text_variables_1', prj, 'set_text_variables_1', '')
-    ctx.run(extra=[])
-    file = os.path.join(ctx.get_board_dir(), ctx.board_name+context.PRO_EXT)
-    file_back = file + '-bak'
-    assert os.path.isfile(file_back), file_back
-    assert os.path.getsize(file_back) > 0
-    try:
-        logging.debug(file)
-        cmd = ['/bin/bash', '-c', "git log -1 --format='%h' " + ctx.board_file]
-        text = "Git_hash:'" + run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip() + "' ({})".format(prj)
-        with open(file, 'rt') as f:
-            c = f.read()
-        data = json.loads(c)
-        assert 'text_variables' in data
-        assert 'Comment4' in data['text_variables']
-        assert data['text_variables']['Comment4'] == text
-    finally:
-        os.rename(file_back, file)
+    if context.ki5():
+        ctx.run(EXIT_BAD_CONFIG)
+    else:
+        ctx.run()
+        file = os.path.join(ctx.get_board_dir(), ctx.board_name+context.PRO_EXT)
+        file_back = file + '-bak'
+        assert os.path.isfile(file_back), file_back
+        assert os.path.getsize(file_back) > 0
+        try:
+            logging.debug(file)
+            cmd = ['/bin/bash', '-c', "git log -1 --format='%h' " + ctx.board_file]
+            text = "Git_hash:'"+run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()+"' ({})".format(prj)
+            with open(file, 'rt') as f:
+                c = f.read()
+            data = json.loads(c)
+            assert 'text_variables' in data
+            assert 'Comment4' in data['text_variables']
+            assert data['text_variables']['Comment4'] == text
+        finally:
+            os.rename(file_back, file)
+    ctx.clean_up(keep_project=True)

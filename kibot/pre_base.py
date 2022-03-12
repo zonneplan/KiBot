@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
 from .registrable import Registrable
 from .optionable import Optionable
-from .error import PlotError
-from .misc import PLOT_ERROR
+from .error import PlotError, KiPlotConfigurationError
+from .misc import PLOT_ERROR, EXIT_BAD_CONFIG
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -66,6 +66,9 @@ class BasePreFlight(Registrable):
         except PlotError as e:
             logger.error("In preflight `"+str(k)+"`: "+str(e))
             exit(PLOT_ERROR)
+        except KiPlotConfigurationError as e:
+            logger.error("In preflight `"+str(k)+"`: "+str(e))
+            exit(EXIT_BAD_CONFIG)
 
     def disable(self):
         self._enabled = False
