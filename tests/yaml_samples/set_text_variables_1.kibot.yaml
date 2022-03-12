@@ -7,4 +7,4 @@ preflight:
     - variable: "Comment4"
       command: git log -1 --format="%h" $KIBOT_PCB_NAME
       before: "Git_hash:'"
-      after: "'"
+      after: "' (%f)"

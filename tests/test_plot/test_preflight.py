@@ -246,7 +246,7 @@ def test_set_text_variables_1(test_dir):
     try:
         logging.debug(file)
         cmd = ['/bin/bash', '-c', "git log -1 --format='%h' " + ctx.board_file]
-        text = "Git_hash:'" + run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip() + "'"
+        text = "Git_hash:'" + run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip() + "' ({})".format(prj)
         with open(file, 'rt') as f:
             c = f.read()
         data = json.loads(c)

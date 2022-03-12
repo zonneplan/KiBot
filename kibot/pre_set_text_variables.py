@@ -36,6 +36,8 @@ class KiCadVariable(Optionable):
             """ Text to add before the output of `command` """
             self.after = ''
             """ Text to add after the output of `command` """
+            self.expand_kibot_patterns = True
+            """ Expand %X patterns. The context is `schematic` """
 
     def config(self, parent):
         super().config(parent)
@@ -110,6 +112,8 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                     continue
                 text = result.stdout.strip()
             text = r.before + text + r.after
+            if r.expand_kibot_patterns:
+                text = Optionable.expand_filename_both(self, text, make_safe=False)
             logger.debug('  - ' + r.name + ' -> ' + text)
             text_variables[r.name] = text
         logger.debug("- New list of variables: {}".format(text_variables))
