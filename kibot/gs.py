@@ -298,7 +298,7 @@ class GS(object):
         GS.pcb_rev = ''
         GS.pcb_comp = ''
         # This is based on InterativeHtmlBom expansion
-        title_block = GS.expand_text_variables(GS.board.GetTitleBlock())
+        title_block = GS.board.GetTitleBlock()
         GS.pcb_date = GS.format_date(GS.expand_text_variables(title_block.GetDate()), GS.pcb_file, 'PCB')
         GS.pcb_title = GS.expand_text_variables(title_block.GetTitle())
         if not GS.pcb_title:
