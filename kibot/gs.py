@@ -168,7 +168,7 @@ class GS(object):
         GS.sch_date = GS.expand_text_variables(GS.sch.date)
         GS.sch_rev = GS.expand_text_variables(GS.sch.revision)
         GS.sch_comp = GS.expand_text_variables(GS.sch.company)
-        GS.sch_com = map(GS.expand_text_variables, GS.sch.comment)
+        GS.sch_com = [GS.expand_text_variables(x) for x in GS.sch.comment]
 
     @staticmethod
     def format_date(d, fname, what):
