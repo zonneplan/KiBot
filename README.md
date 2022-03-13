@@ -129,6 +129,7 @@ This section is used to specify tasks that will be executed before generating an
     - *regexp*: Alias for regex.
 - `ignore_unconnected`: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
 - `pcb_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+        This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
         This pre-flight modifies the PCB. Even when a back-up is done use it carefully.
   * Valid keys:
     - `date_command`: [string=''] Command to get the date to use in the PCB.\
@@ -153,6 +154,7 @@ This section is used to specify tasks that will be executed before generating an
 - `run_erc`: [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
         The report file name is controlled by the global output pattern (%i=erc %x=txt).
 - `sch_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+        This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
         This pre-flight modifies the schematics. Even when a back-up is done use it carefully.
   * Valid keys:
     - `date_command`: [string=''] Command to get the date to use in the SCH.\
