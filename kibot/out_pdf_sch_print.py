@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -21,7 +21,7 @@ def copy_project(sch_dir):
     ext = GS.pro_ext
     source = GS.pro_file
     prj_file = os.path.join(sch_dir, GS.sch_basename+ext)
-    if os.path.isfile(source):
+    if source is not None and os.path.isfile(source):
         copy2(source, prj_file)
     else:
         # Create a dummy project file to avoid warnings

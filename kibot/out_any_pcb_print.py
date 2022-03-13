@@ -67,7 +67,7 @@ class Any_PCB_PrintOptions(VariantOptions):
     @staticmethod
     def _copy_project(fname):
         pro_name = GS.pro_file
-        if not os.path.isfile(pro_name):
+        if pro_name is None or not os.path.isfile(pro_name):
             return None
         pro_copy = fname.replace('.kicad_pcb', GS.pro_ext)
         logger.debug('Copying project `{}` to `{}`'.format(pro_name, pro_copy))
