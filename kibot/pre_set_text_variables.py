@@ -86,8 +86,8 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
             return
         if GS.ki5():
             raise KiPlotConfigurationError("The `set_text_variables` preflight is for KiCad 6 or newer")
-        pro_name = GS.pcb_file.replace('.kicad_pcb', GS.pro_ext)
-        if not os.path.isfile(pro_name):
+        pro_name = GS.pro_file
+        if not pro_name or not os.path.isfile(pro_name):
             raise KiPlotConfigurationError("Trying to define KiCad 6 variables but the project is missing ({})".
                                            format(pro_name))
         # Get the current definitions
@@ -95,10 +95,13 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
             pro_text = f.read()
         data = json.loads(pro_text)
         text_variables = data.get('text_variables', {})
+        GS.pro_variables = text_variables
         logger.debug("- Current variables: {}".format(text_variables))
         # Define the requested variables
-        os.environ['KIBOT_PCB_NAME'] = GS.pcb_file
-        os.environ['KIBOT_SCH_NAME'] = GS.sch_file
+        if GS.pcb_file:
+            os.environ['KIBOT_PCB_NAME'] = GS.pcb_file
+        if GS.sch_file:
+            os.environ['KIBOT_SCH_NAME'] = GS.sch_file
         for r in o:
             text = r.text
             if not text:
@@ -112,10 +115,17 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                     continue
                 text = result.stdout.strip()
             text = r.before + text + r.after
-            if r.expand_kibot_patterns:
-                text = Optionable.expand_filename_both(self, text, make_safe=False)
             logger.debug('  - ' + r.name + ' -> ' + text)
             text_variables[r.name] = text
+        logger.debug("- Expanding %X patterns in variables")
+        # Now that we have the variables defined expand the %X patterns (they could use variables)
+        for r in o:
+            if r.expand_kibot_patterns:
+                text = text_variables[r.name]
+                new_text = Optionable.expand_filename_both(self, text, make_safe=False)
+                if text != new_text:
+                    logger.debug('  - ' + r.name + ' -> ' + new_text)
+                    text_variables[r.name] = new_text
         logger.debug("- New list of variables: {}".format(text_variables))
         # Store the modified project
         data['text_variables'] = text_variables

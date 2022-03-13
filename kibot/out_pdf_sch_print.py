@@ -19,7 +19,7 @@ logger = log.get_logger()
 def copy_project(sch_dir):
     """ Copy the project file to the temporal dir """
     ext = GS.pro_ext
-    source = GS.sch_no_ext+ext
+    source = GS.pro_file
     prj_file = os.path.join(sch_dir, GS.sch_basename+ext)
     if os.path.isfile(source):
         copy2(source, prj_file)

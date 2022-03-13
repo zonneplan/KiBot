@@ -238,20 +238,21 @@ def test_pcb_replace_1(test_dir):
 
 def test_set_text_variables_1(test_dir):
     """ KiCad 6 variables """
-    prj = 'light_control'
-    ctx = context.TestContext(test_dir, 'test_set_text_variables_1', prj, 'set_text_variables_1', '')
+    prj = 'test_vars'
+    ctx = context.TestContextSCH(test_dir, 'test_set_text_variables_1', prj, 'set_text_variables_1', '')
     if context.ki5():
         ctx.run(EXIT_BAD_CONFIG)
     else:
-        ctx.run()
+        ctx.run(extra_debug=True)
         file = os.path.join(ctx.get_board_dir(), ctx.board_name+context.PRO_EXT)
         file_back = file + '-bak'
         assert os.path.isfile(file_back), file_back
         assert os.path.getsize(file_back) > 0
         try:
             logging.debug(file)
-            cmd = ['/bin/bash', '-c', "git log -1 --format='%h' " + ctx.board_file]
-            text = "Git_hash:'"+run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()+"' ({})".format(prj)
+            cmd = ['/bin/bash', '-c', "git log -1 --format='%h' " + ctx.sch_file]
+            hash = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()
+            text = "Git_hash:'{}' ({})".format(hash, prj)
             with open(file, 'rt') as f:
                 c = f.read()
             data = json.loads(c)
@@ -260,4 +261,5 @@ def test_set_text_variables_1(test_dir):
             assert data['text_variables']['Comment4'] == text
         finally:
             os.rename(file_back, file)
+        ctx.expect_out_file(prj+'-bom_'+hash+'.csv')
     ctx.clean_up(keep_project=True)

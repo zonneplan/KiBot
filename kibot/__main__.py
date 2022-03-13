@@ -304,6 +304,18 @@ def detect_kicad():
         logger.debug('KiCad config path {}'.format(GS.kicad_conf_path))
 
 
+def solve_project_file():
+    if GS.pcb_file:
+        pro_name = GS.pcb_no_ext+GS.pro_ext
+        if os.path.isfile(pro_name):
+            return pro_name
+    if GS.sch_file:
+        pro_name = GS.sch_no_ext+GS.pro_ext
+        if os.path.isfile(pro_name):
+            return pro_name
+    return None
+
+
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -357,6 +369,8 @@ def main():
     GS.set_sch(solve_schematic(args.schematic, args.board_file, plot_config))
     # Determine the PCB file
     GS.set_pcb(solve_board_file(GS.sch_file, args.board_file))
+    # Determine the project file
+    GS.set_pro(solve_project_file())
 
     # Read the config file
     cr = CfgYamlReader()

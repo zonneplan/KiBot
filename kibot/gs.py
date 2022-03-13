@@ -4,6 +4,8 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
+import re
+import json
 try:
     import pcbnew
 except ImportError:
@@ -12,7 +14,7 @@ except ImportError:
         pass
 from datetime import datetime, date
 from sys import exit
-from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, KICAD_VERSION_5_99
+from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, KICAD_VERSION_5_99, W_UNKVAR
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -33,6 +35,14 @@ class GS(object):
     sch_no_ext = None    # /.../dir/file
     sch_dir = None       # /.../dir
     sch_basename = None  # file
+    # Project and useful parts
+    pro_file = None      # /.../dir/file.kicad_pro (or .pro)
+    pro_no_ext = None    # /.../dir/file
+    pro_dir = None       # /.../dir
+    pro_basename = None  # file
+    pro_ext = '.pro'
+    pro_variables = None  # KiCad 6 text variables defined in the project
+    vars_regex = re.compile(r'\$\{([^\}]+)\}')
     # Main output dir
     out_dir = None
     out_dir_in_cmd_line = False
@@ -48,7 +58,6 @@ class GS(object):
     kicad_share_path = None
     kicad_dir = 'kicad'
     kicad_plugins_dirs = []
-    pro_ext = '.pro'
     work_layer = 'Rescue'
     # KiCad version: major*1e6+minor*1e3+patch
     kicad_version_n = 0
@@ -128,15 +137,38 @@ class GS(object):
             GS.pcb_dir = os.path.dirname(name)
 
     @staticmethod
+    def set_pro(name):
+        if name:
+            name = os.path.abspath(name)
+            GS.pro_file = name
+            GS.pro_basename = os.path.splitext(os.path.basename(name))[0]
+            GS.pro_no_ext = os.path.splitext(name)[0]
+            GS.pro_dir = os.path.dirname(name)
+
+    @staticmethod
+    def load_pro_variables():
+        if GS.pro_variables is not None:
+            return GS.pro_variables
+        if GS.pro_file is None or GS.pro_ext == '.pro':
+            return {}
+        # Get the text_variables
+        with open(GS.pro_file, 'rt') as f:
+            pro_text = f.read()
+        data = json.loads(pro_text)
+        GS.pro_variables = data.get('text_variables', {})
+        logger.debug("Current text variables: {}".format(GS.pro_variables))
+        return GS.pro_variables
+
+    @staticmethod
     def load_sch_title_block():
         if GS.sch_title is not None:
             return
         assert GS.sch is not None
-        GS.sch_title = GS.sch.title
-        GS.sch_date = GS.sch.date
-        GS.sch_rev = GS.sch.revision
-        GS.sch_comp = GS.sch.company
-        GS.sch_com = GS.sch.comment
+        GS.sch_title = GS.expand_text_variables(GS.sch.title)
+        GS.sch_date = GS.expand_text_variables(GS.sch.date)
+        GS.sch_rev = GS.expand_text_variables(GS.sch.revision)
+        GS.sch_comp = GS.expand_text_variables(GS.sch.company)
+        GS.sch_com = map(GS.expand_text_variables, GS.sch.comment)
 
     @staticmethod
     def format_date(d, fname, what):
@@ -235,6 +267,29 @@ class GS(object):
         return GS.kicad_version_n < KICAD_VERSION_5_99
 
     @staticmethod
+    def expand_text_variables(text):
+        vars = GS.load_pro_variables()
+        new_text = ''
+        last = 0
+        text_l = len(text)
+        for match in GS.vars_regex.finditer(text):
+            vname = match.group(1)
+            value = vars.get(vname, None)
+            if value is None:
+                value = '${'+vname+'}'
+                logger.warning(W_UNKVAR+"Unknown text variable `{}`".format(vname))
+            if match.start():
+                new_text += text[last:match.start()]
+            new_text += value
+            last = match.end()
+        if last < text_l:
+            new_text += text[last:text_l]
+        if new_text != text:
+            if GS.debug_level > 3:
+                logger.debug('Replacing KiCad text variables: {} -> {}'.format(text, new_text))
+        return new_text
+
+    @staticmethod
     def load_pcb_title_block():
         if GS.pcb_title is not None:
             return
@@ -243,15 +298,15 @@ class GS(object):
         GS.pcb_rev = ''
         GS.pcb_comp = ''
         # This is based on InterativeHtmlBom expansion
-        title_block = GS.board.GetTitleBlock()
-        GS.pcb_date = GS.format_date(title_block.GetDate(), GS.pcb_file, 'PCB')
-        GS.pcb_title = title_block.GetTitle()
+        title_block = GS.expand_text_variables(GS.board.GetTitleBlock())
+        GS.pcb_date = GS.format_date(GS.expand_text_variables(title_block.GetDate()), GS.pcb_file, 'PCB')
+        GS.pcb_title = GS.expand_text_variables(title_block.GetTitle())
         if not GS.pcb_title:
             GS.pcb_title = GS.pcb_basename
-        GS.pcb_rev = title_block.GetRevision()
-        GS.pcb_comp = title_block.GetCompany()
+        GS.pcb_rev = GS.expand_text_variables(title_block.GetRevision())
+        GS.pcb_comp = GS.expand_text_variables(title_block.GetCompany())
         for num in range(9):
-            GS.pcb_com[num] = GS.get_pcb_comment(title_block, num)
+            GS.pcb_com[num] = GS.expand_text_variables(GS.get_pcb_comment(title_block, num))
         logger.debug("PCB title: `{}`".format(GS.pcb_title))
         logger.debug("PCB date: `{}`".format(GS.pcb_date))
         logger.debug("PCB revision: `{}`".format(GS.pcb_rev))

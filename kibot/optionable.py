@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """ Base class for output options """
@@ -269,6 +269,8 @@ class Optionable(object):
         if GS.debug_level > 3:
             logger.debug('Expanding `{}` in {} context for {} parent: {}'.
                          format(name, 'SCH' if is_sch else 'PCB', self, parent))
+        # Replace KiCad 6 variables first
+        name = GS.expand_text_variables(name)
         # Determine if we need to expand SCH and/or PCB related data
         has_dep_exp = any(map(lambda x: x in name, ['%c', '%d', '%F', '%f', '%p', '%r', '%C1', '%C2', '%C3', '%C4']))
         do_sch = is_sch and has_dep_exp
@@ -304,6 +306,8 @@ class Optionable(object):
             name = name.replace('%r', _cl(GS.sch_rev))
             for num, val in enumerate(GS.sch_com):
                 name = name.replace('%C'+str(num+1), _cl(val))
+        # Also replace KiCad 6 variables after it
+        name = GS.expand_text_variables(name)
         if make_safe:
             # sanitize the name to avoid characters illegal in file systems
             name = name.replace('\\', '/')
