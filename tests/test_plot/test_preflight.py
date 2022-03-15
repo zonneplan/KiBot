@@ -70,7 +70,7 @@ def test_erc_warning_1(test_dir):
 def test_erc_warning_2(test_dir):
     """ Using an SCH with ERC warnings as errors """
     prj = 'warning-project'
-    ctx = context.TestContextSCH(test_dir, 'test_erc_warning_1', 'erc_warning/'+prj, 'erc_no_w', '')
+    ctx = context.TestContextSCH(test_dir, 'test_erc_warning_2', 'erc_warning/'+prj, 'erc_no_w', '')
     ctx.run(ERC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt')
