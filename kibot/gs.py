@@ -164,8 +164,8 @@ class GS(object):
         if GS.sch_title is not None:
             return
         assert GS.sch is not None
-        GS.sch_title = GS.expand_text_variables(GS.sch.title)
-        GS.sch_date = GS.expand_text_variables(GS.sch.date)
+        GS.sch_title = GS.sch.title
+        GS.sch_date = GS.sch.date
         GS.sch_rev = GS.expand_text_variables(GS.sch.revision)
         GS.sch_comp = GS.expand_text_variables(GS.sch.company)
         GS.sch_com = [GS.expand_text_variables(x) for x in GS.sch.comment]

@@ -1524,9 +1524,11 @@ class SchematicV6(Schematic):
                 raise SchError('Wrong title block entry ({})'.format(item))
             i_type = item[0].value()
             if i_type == 'title':
-                self.title_ori = self.title = _check_str(item, 1, i_type)
+                self.title_ori = _check_str(item, 1, i_type)
+                self.title = GS.expand_text_variables(self.title_ori)
             elif i_type == 'date':
-                self.date_ori = self.date = _check_str(item, 1, i_type)
+                self.date_ori = _check_str(item, 1, i_type)
+                self.date = GS.expand_text_variables(self.date_ori)
             elif i_type == 'rev':
                 self.revision = _check_str(item, 1, i_type)
             elif i_type == 'company':
@@ -1540,8 +1542,8 @@ class SchematicV6(Schematic):
             else:
                 raise SchError('Unsupported entry in title block ({})'.format(item))
         self._fill_missing_title_block()
-        logger.debug("SCH title: `{}`".format(self.title))
-        logger.debug("SCH date: `{}`".format(self.date))
+        logger.debug("SCH title: `{}`".format(self.title_ori))
+        logger.debug("SCH date: `{}`".format(self.date_ori))
         logger.debug("SCH revision: `{}`".format(self.revision))
         logger.debug("SCH company: `{}`".format(self.company))
 
