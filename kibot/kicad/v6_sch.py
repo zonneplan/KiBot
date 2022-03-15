@@ -1506,8 +1506,9 @@ class SchematicV6(Schematic):
         # The title block is optional
         self.date = self.title = self.revision = self.company = ''
         self.comment = ['']*9
+        self.comment_ori = ['']*9
         self.max_comments = 9
-        self.title_ori = self.date_ori = None
+        self.title_ori = self.date_ori = self.revision_ori = self.company_ori = None
         self.netlist_version = 'E'
 
     def _fill_missing_title_block(self):
@@ -1530,22 +1531,25 @@ class SchematicV6(Schematic):
                 self.date_ori = _check_str(item, 1, i_type)
                 self.date = GS.expand_text_variables(self.date_ori)
             elif i_type == 'rev':
-                self.revision = _check_str(item, 1, i_type)
+                self.revision_ori = _check_str(item, 1, i_type)
+                self.revision = GS.expand_text_variables(self.revision_ori)
             elif i_type == 'company':
-                self.company = _check_str(item, 1, i_type)
+                self.company_ori = _check_str(item, 1, i_type)
+                self.company = GS.expand_text_variables(self.company_ori)
             elif i_type == 'comment':
                 index = _check_integer(item, 1, i_type)
                 if index < 1 or index > 9:
                     raise SchError('Unsupported comment index {} in title block'.format(index))
                 value = _check_str(item, 2, i_type)
-                self.comment[index-1] = value
+                self.comment_ori[index-1] = value
+                self.comment[index-1] = GS.expand_text_variables(value)
             else:
                 raise SchError('Unsupported entry in title block ({})'.format(item))
         self._fill_missing_title_block()
         logger.debug("SCH title: `{}`".format(self.title_ori))
         logger.debug("SCH date: `{}`".format(self.date_ori))
-        logger.debug("SCH revision: `{}`".format(self.revision))
-        logger.debug("SCH company: `{}`".format(self.company))
+        logger.debug("SCH revision: `{}`".format(self.revision_ori))
+        logger.debug("SCH company: `{}`".format(self.company_ori))
 
     def _get_lib_symbols(self, comps):
         if not isinstance(comps, list):
@@ -1574,9 +1578,9 @@ class SchematicV6(Schematic):
         data = [Sep()]
         data += [_symbol('title', [self.title_ori]), Sep()]
         data += [_symbol('date', [self.date_ori]), Sep()]
-        data += [_symbol('rev', [self.revision]), Sep()]
-        data += [_symbol('company', [self.company]), Sep()]
-        for num, val in enumerate(self.comment):
+        data += [_symbol('rev', [self.revision_ori]), Sep()]
+        data += [_symbol('company', [self.company_ori]), Sep()]
+        for num, val in enumerate(self.comment_ori):
             data += [_symbol('comment', [num+1, val]), Sep()]
         return [Sep(), Sep(), _symbol('title_block', data)]
 

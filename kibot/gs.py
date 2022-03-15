@@ -166,9 +166,9 @@ class GS(object):
         assert GS.sch is not None
         GS.sch_title = GS.sch.title
         GS.sch_date = GS.sch.date
-        GS.sch_rev = GS.expand_text_variables(GS.sch.revision)
-        GS.sch_comp = GS.expand_text_variables(GS.sch.company)
-        GS.sch_com = [GS.expand_text_variables(x) for x in GS.sch.comment]
+        GS.sch_rev = GS.sch.revision
+        GS.sch_comp = GS.sch.company
+        GS.sch_com = GS.sch.comment
 
     @staticmethod
     def format_date(d, fname, what):
