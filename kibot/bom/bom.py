@@ -447,7 +447,8 @@ def group_components(cfg, components):
                 value_sort = comp_match(value, c.ref_prefix)
                 if value_sort is not None:
                     c.value_sort = value_sort
-                    logger.warning(get_last_warning() + "Using `{}` for {} instead".format(value, c.ref))
+                    extra = ', only for sorting purposes' if not cfg.normalize_values else ''
+                    logger.warning(get_last_warning() + "Using `{}` for {} instead{}".format(value, c.ref, extra))
         else:
             c.value_sort = None
         # Try to add the component to an existing group
