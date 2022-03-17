@@ -10,7 +10,7 @@ from subprocess import check_output, STDOUT, CalledProcessError
 
 from .gs import GS
 from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, PANDOC, MISSING_TOOL,
-                   FAILED_EXECUTE)
+                   FAILED_EXECUTE, W_WRONGEXT)
 from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
@@ -129,7 +129,8 @@ class ReportOptions(BaseOptions):
                 The output file will be in `convert_to` format.
                 The available formats depends on the `Pandoc` installation """
             self.converted_output = GS.def_global_output
-            """ Converted output file name (%i='report', %x=`convert_to`) """
+            """ Converted output file name (%i='report', %x=`convert_to`).
+                Note that the extension should match the `convert_to` value """
         super().__init__()
         self._expand_id = 'report'
         self._expand_ext = 'txt'
@@ -609,7 +610,10 @@ class ReportOptions(BaseOptions):
         out = self.expand_converted_output(GS.out_dir)
         logger.debug('Converting the report to: {}'.format(out))
         resources = '--resource-path='+GS.out_dir
-        cmd = [PANDOC, '--from', self.convert_from, '--to', self.convert_to, resources, fname, '-o', out]
+        # Pandoc 2.2.1 doesn't support "--to pdf"
+        if not out.endswith('.'+self.convert_to):
+            logger.warning(W_WRONGEXT+'The conversion tool detects the output format using the extension')
+        cmd = [PANDOC, '--from', self.convert_from, resources, fname, '-o', out]
         logger.debug('Executing {}'.format(cmd))
         try:
             check_output(cmd, stderr=STDOUT)

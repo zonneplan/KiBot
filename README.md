@@ -1874,7 +1874,8 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `convert_from`: [string='markdown'] Original format for the report conversion. Current templates are `markdown`. See `do_convert`.
         - `convert_to`: [string='pdf'] Target format for the report conversion. See `do_convert`.
-        - `converted_output`: [string='%f-%i%I%v.%x'] Converted output file name (%i='report', %x=`convert_to`). Affected by global options.
+        - `converted_output`: [string='%f-%i%I%v.%x'] Converted output file name (%i='report', %x=`convert_to`).
+                              Note that the extension should match the `convert_to` value. Affected by global options.
         - `do_convert`: [boolean=false] Run `Pandoc` to convert the report. Note that Pandoc must be installed.
                         The conversion is done assuming the report is in `convert_from` format.
                         The output file will be in `convert_to` format.
