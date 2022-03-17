@@ -1011,7 +1011,7 @@ def test_report_simple_2(test_dir):
     ctx.run()
     ctx.expect_out_file(prj+'-report.txt')
     ctx.expect_out_file(prj+'-report_simple.txt')
-    ctx.compare_txt(prj+'-report.txt')
+    ctx.compare_txt(prj+'-report.txt', prj+'-report.txt_2')
     ctx.compare_txt(prj+'-report_simple.txt')
     ctx.expect_out_file(prj+'-report.pdf')
     ctx.clean_up(keep_project=True)
