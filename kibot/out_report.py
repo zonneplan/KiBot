@@ -332,6 +332,19 @@ class ReportOptions(BaseOptions):
                     y2 = max(y2, p.y)
                     x1 = min(x1, p.x)
                     y1 = min(y1, p.y)
+        # This is a special case: the PCB edges are in a footprint
+        for m in GS.get_modules():
+            for gi in m.GraphicalItems():
+                if gi.GetClass() == 'MGRAPHIC' and gi.GetLayer() == edge_layer:
+                    if x1 is None:
+                        p = gi.GetStart()
+                        x1 = x2 = p.x
+                        y1 = y2 = p.y
+                    for p in [gi.GetStart(), gi.GetEnd()]:
+                        x2 = max(x2, p.x)
+                        y2 = max(y2, p.y)
+                        x1 = min(x1, p.x)
+                        y1 = min(y1, p.y)
         if x1 is None:
             self.bb_w = self.bb_h = INF
         else:
