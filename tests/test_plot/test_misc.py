@@ -1017,6 +1017,16 @@ def test_report_simple_2(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+def test_report_edge_1(test_dir):
+    """ Meassures the PCB size when using a component that contains the real PCB edges #164 """
+    prj = 'comp_edge'
+    ctx = context.TestContext(test_dir, 'test_report_edge_1', prj, 'report_edge_1', POS_DIR)
+    ctx.run()
+    ctx.expect_out_file(prj+'-report.txt')
+    ctx.compare_txt(prj+'-report.txt')
+    ctx.clean_up()
+
+
 def test_board_view_1(test_dir):
     prj = 'glasgow'
     ctx = context.TestContext(test_dir, 'test_board_view_1', prj, 'boardview', POS_DIR)

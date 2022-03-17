@@ -1,0 +1,2 @@
+${bb_w_mm}x${bb_h_mm}
+

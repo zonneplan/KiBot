@@ -1,0 +1,10 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'report_edge'
+    comment: "Just the PCB size"
+    type: report
+    options:
+      template: tests/data/report_size.txt
