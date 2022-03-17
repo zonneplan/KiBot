@@ -6,9 +6,11 @@
 import os
 import re
 import pcbnew
+from subprocess import check_output, STDOUT, CalledProcessError
 
 from .gs import GS
-from .misc import UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES
+from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, PANDOC, MISSING_TOOL,
+                   FAILED_EXECUTE)
 from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
@@ -18,6 +20,8 @@ from . import log
 
 logger = log.get_logger()
 INF = float('inf')
+PANDOC_INSTALL = ("In CI/CD environments: the `kicad_auto_test` docker image contains it.\n"
+                  "In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`")
 
 
 def do_round(v, dig):
@@ -115,12 +119,24 @@ class ReportOptions(BaseOptions):
             """ Output file name (%i='report', %x='txt') """
             self.template = 'full'
             """ Name for one of the internal templates (full, simple) or a custom template file """
+            self.convert_from = 'markdown'
+            """ Original format for the report conversion. Current templates are `markdown`. See `do_convert` """
+            self.convert_to = 'pdf'
+            """ Target format for the report conversion. See `do_convert` """
+            self.do_convert = False
+            """ Run `Pandoc` to convert the report. Note that Pandoc must be installed.
+                The conversion is done assuming the report is in `convert_from` format.
+                The output file will be in `convert_to` format.
+                The available formats depends on the `Pandoc` installation """
+            self.converted_output = GS.def_global_output
+            """ Converted output file name (%i='report', %x=`convert_to`) """
         super().__init__()
         self._expand_id = 'report'
         self._expand_ext = 'txt'
         self._mm_digits = 2
         self._mils_digits = 0
         self._in_digits = 2
+        self._help_do_convert += ".\n"+PANDOC_INSTALL
 
     def config(self, parent):
         super().config(parent)
@@ -574,8 +590,38 @@ class ReportOptions(BaseOptions):
         with open(output_file, "wt") as f:
             f.write(text)
 
+    def expand_converted_output(self, out_dir):
+        aux = self._expand_ext
+        self._expand_ext = str(self.convert_to)
+        res = self._parent.expand_filename(out_dir, self.converted_output)
+        self._expand_ext = aux
+        return res
+
     def get_targets(self, out_dir):
-        return [self._parent.expand_filename(out_dir, self.output)]
+        files = [self._parent.expand_filename(out_dir, self.output)]
+        if self.do_convert:
+            files.append(self.expand_converted_output(out_dir))
+        return files
+
+    def convert(self, fname):
+        if not self.do_convert:
+            return
+        out = self.expand_converted_output(GS.out_dir)
+        logger.debug('Converting the report to: {}'.format(out))
+        resources = '--resource-path='+GS.out_dir
+        cmd = [PANDOC, '--from', self.convert_from, '--to', self.convert_to, resources, fname, '-o', out]
+        logger.debug('Executing {}'.format(cmd))
+        try:
+            check_output(cmd, stderr=STDOUT)
+        except FileNotFoundError:
+            logger.error("Unable to convert the report, `{}` must be installed.".format(PANDOC))
+            logger.error(PANDOC_INSTALL)
+            exit(MISSING_TOOL)
+        except CalledProcessError as e:
+            logger.error('{} error: {}'.format(PANDOC, e.returncode))
+            if e.output:
+                logger.debug('Output from command: '+e.output.decode())
+            exit(FAILED_EXECUTE)
 
     def run(self, fname):
         self.pcb_material = GS.global_pcb_material
@@ -624,6 +670,7 @@ class ReportOptions(BaseOptions):
         self.schematic_pdfs = len(self._schematic_pdfs) > 0
         self.schematic_svgs = len(self._schematic_svgs) > 0
         self.do_template(self.template, fname)
+        self.convert(fname)
 
 
 @output_class

@@ -1005,6 +1005,18 @@ def test_report_simple_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+def test_report_simple_2(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, 'test_report_simple_2', prj, 'report_simple_2', POS_DIR)
+    ctx.run()
+    ctx.expect_out_file(prj+'-report.txt')
+    ctx.expect_out_file(prj+'-report_simple.txt')
+    ctx.compare_txt(prj+'-report.txt')
+    ctx.compare_txt(prj+'-report_simple.txt')
+    ctx.expect_out_file(prj+'-report.pdf')
+    ctx.clean_up(keep_project=True)
+
+
 def test_board_view_1(test_dir):
     prj = 'glasgow'
     ctx = context.TestContext(test_dir, 'test_board_view_1', prj, 'boardview', POS_DIR)

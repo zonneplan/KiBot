@@ -85,6 +85,7 @@ PCBDRAW = 'pcbdraw'
 URL_PCBDRAW = 'https://github.com/INTI-CMNB/pcbdraw'
 EXAMPLE_CFG = 'example_template.kibot.yaml'
 AUTO_SCALE = 0
+PANDOC = 'pandoc'
 KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_6_0_0 = 6000000
 KICAD_VERSION_6_0_2 = 6000002

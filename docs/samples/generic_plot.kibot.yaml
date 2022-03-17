@@ -1306,6 +1306,19 @@ outputs:
     type: 'report'
     dir: 'Example/report_dir'
     options:
+      # [string='markdown'] Original format for the report conversion. Current templates are `markdown`. See `do_convert`
+      convert_from: 'markdown'
+      # [string='pdf'] Target format for the report conversion. See `do_convert`
+      convert_to: 'pdf'
+      # [string='%f-%i%I%v.%x'] Converted output file name (%i='report', %x=`convert_to`). Affected by global options
+      converted_output: '%f-%i%I%v.%x'
+      # [boolean=false] Run `Pandoc` to convert the report. Note that Pandoc must be installed.
+      # The conversion is done assuming the report is in `convert_from` format.
+      # The output file will be in `convert_to` format.
+      # The available formats depends on the `Pandoc` installation.
+      # In CI/CD environments: the `kicad_auto_test` docker image contains it.
+      # In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`
+      do_convert: false
       # [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options
       output: '%f-%i%I%v.%x'
       # [string='full'] Name for one of the internal templates (full, simple) or a custom template file
