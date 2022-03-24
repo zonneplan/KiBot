@@ -217,6 +217,24 @@ class TestContext(object):
     def get_pth_pdf_drl_filename(self):
         return os.path.join(self.sub_dir, self.board_name+'-PTH-drl_map.pdf')
 
+    def get_f1_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-front-in1.drl')
+
+    def get_f1_gbr_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-front-in1-drl.gbr')
+
+    def get_f1_pdf_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-front-in1-drl_map.pdf')
+
+    def get_12_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-in1-in2.drl')
+
+    def get_12_gbr_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-in1-in2-drl.gbr')
+
+    def get_12_pdf_drl_filename(self):
+        return os.path.join(self.sub_dir, self.board_name+'-in1-in2-drl_map.pdf')
+
     def get_npth_drl_filename(self):
         return os.path.join(self.sub_dir, self.board_name+'-NPTH.drl')
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import pcbnew
@@ -40,6 +40,8 @@ class Layer(Optionable):
         'F.Fab': pcbnew.F_Fab,
         'B.Fab': pcbnew.B_Fab,
     }
+    # ID to default name table
+    ID_2_DEFAULT_NAME = None
     # Default names
     DEFAULT_LAYER_DESC = {
         'F.Cu': 'Front copper',
@@ -270,8 +272,15 @@ class Layer(Optionable):
             return "{} ({} '{}' {})".format(self.layer, self._id, self.description, self.suffix)
         return "{} ('{}' {})".format(self.layer, self.description, self.suffix)
 
+    @staticmethod
+    def id2def_name(id):
+        if GS.ki5():
+            return Layer.ID_2_DEFAULT_NAME[id]
+        return pcbnew.LayerName(id)
+
 
 for i in range(1, 30):
     name = 'In'+str(i)+'.Cu'
     Layer.DEFAULT_LAYER_NAMES[name] = pcbnew.In1_Cu+i-1
     Layer.DEFAULT_LAYER_DESC[name] = 'Inner layer '+str(i)
+Layer.ID_2_DEFAULT_NAME = {v: k for k, v in Layer.DEFAULT_LAYER_NAMES.items()}

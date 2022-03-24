@@ -28,7 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - XYRS support (you can generate position files using it)
   - CSV `hide_header` option
 - Generic filter: options to match if a field is/isn't defined.
-- Excellon drill: added `route_mode_for_oval_holes` option.
+- Drill:
+  - Excellon: added `route_mode_for_oval_holes` option.
+  - Support for blind/buried vias. (#166)
 - Default global `dir` option.
 - Default global `units` option.
 - Global option to specify `out_dir` (like -d command line option)

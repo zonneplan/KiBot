@@ -24,25 +24,37 @@ positions = {'R1': (105, 35, 'top'), 'R2': (110, 35, 'bottom'), 'R3': (110, 45, 
 
 
 def do_3Rs(test_dir, conf, dir, modern, single=False):
-    ctx = context.TestContext(test_dir, dir, '3Rs', conf, DRILL_DIR)
+    ctx = context.TestContext(test_dir, dir, '3Rs_bv', conf, DRILL_DIR)
     ctx.run()
     # Check all outputs are there
     pth_drl = ctx.get_pth_drl_filename()
     npth_drl = ctx.get_npth_drl_filename()
+    f1_drl = ctx.get_f1_drl_filename()
+    i12_drl = ctx.get_12_drl_filename()
     pth_pdf_drl = ctx.get_pth_pdf_drl_filename()
     npth_pdf_drl = ctx.get_npth_pdf_drl_filename()
+    f1_pdf_drl = ctx.get_f1_pdf_drl_filename()
+    i12_pdf_drl = ctx.get_12_pdf_drl_filename()
     pth_gbr_drl = ctx.get_pth_gbr_drl_filename()
     npth_gbr_drl = ctx.get_npth_gbr_drl_filename()
+    f1_gbr_drl = ctx.get_f1_gbr_drl_filename()
+    i12_gbr_drl = ctx.get_12_gbr_drl_filename()
     report = 'report.rpt'
 
     if modern:
         pth_drl = pth_drl.replace('PTH', 'PTH_drill')
         npth_drl = npth_drl.replace('PTH', 'PTH_drill')
+        f1_drl = f1_drl.replace('front-in1', 'front-in1_drill')
+        i12_drl = i12_drl.replace('in1-in2', 'in1-in2_drill')
         pth_gbr_drl = pth_gbr_drl.replace('-drl', '_drill')
         npth_gbr_drl = npth_gbr_drl.replace('-drl', '_drill')
+        f1_gbr_drl = f1_gbr_drl.replace('-drl', '_drill')
+        i12_gbr_drl = i12_gbr_drl.replace('-drl', '_drill')
         pth_pdf_drl = pth_pdf_drl.replace('-drl', '_drill')
         npth_pdf_drl = npth_pdf_drl.replace('-drl', '_drill')
-        report = '3Rs-drill_report.txt'
+        f1_pdf_drl = f1_pdf_drl.replace('-drl', '_drill')
+        i12_pdf_drl = i12_pdf_drl.replace('-drl', '_drill')
+        report = '3Rs_bv-drill_report.txt'
         if single:
             pth_drl = pth_drl.replace('PTH_', '')
             npth_drl = npth_drl.replace('NPTH_', '')
@@ -57,10 +69,16 @@ def do_3Rs(test_dir, conf, dir, modern, single=False):
     ctx.expect_out_file(os.path.join(DRILL_DIR, report))
     ctx.expect_out_file(pth_drl)
     ctx.expect_out_file(npth_drl)
+    ctx.expect_out_file(f1_drl)
+    ctx.expect_out_file(i12_drl)
     ctx.expect_out_file(pth_gbr_drl)
     ctx.expect_out_file(npth_gbr_drl)
+    ctx.expect_out_file(f1_gbr_drl)
+    ctx.expect_out_file(i12_gbr_drl)
     ctx.expect_out_file(pth_pdf_drl)
     ctx.expect_out_file(npth_pdf_drl)
+    ctx.expect_out_file(f1_pdf_drl)
+    ctx.expect_out_file(i12_pdf_drl)
     # We have R3 at (110, 45) length is 9 mm on X, drill 1 mm
     ctx.search_in_file(pth_drl, ['X110.0Y-45.0', 'X119.0Y-45.0'])
     ctx.expect_gerber_flash_at(pth_gbr_drl, 6, (110, -45))

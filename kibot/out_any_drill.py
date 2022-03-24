@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
+import re
 from pcbnew import (PLOT_FORMAT_HPGL, PLOT_FORMAT_POST, PLOT_FORMAT_GERBER, PLOT_FORMAT_DXF, PLOT_FORMAT_SVG,
                     PLOT_FORMAT_PDF, wxPoint)
 from .optionable import (Optionable, BaseOptions)
 from .gs import GS
+from .layer import Layer
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -96,12 +98,43 @@ class AnyDrill(BaseOptions):
         # PTH
         return self.pth_id if self.pth_id is not None else d+'_drill'
 
+    @staticmethod
+    def _get_layer_name(id):
+        """ Converts a layer ID into the magical name used by KiCad.
+            This is somehow portable because we don't directly rely on the ID. """
+        name = Layer.id2def_name(id)
+        if name == 'F.Cu':
+            return 'front'
+        if name == 'B.Cu':
+            return 'back'
+        m = re.match(r'In(\d+)\.Cu', name)
+        if not m:
+            return None
+        return 'in'+m.group(1)
+
+    @staticmethod
+    def _get_drill_groups(unified):
+        """ Get the ID for all the generated files.
+            It includes buried/blind vias. """
+        groups = [''] if unified else ['PTH', 'NPTH']
+        via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
+        pairs = set()
+        for t in GS.board.GetTracks():
+            tclass = t.GetClass()
+            if tclass == via_type:
+                via = t.Cast()
+                l1 = AnyDrill._get_layer_name(via.TopLayer())
+                l2 = AnyDrill._get_layer_name(via.BottomLayer())
+                pairs.add(l1+'-'+l2)
+        groups.extend(list(pairs))
+        return groups
+
     def get_file_names(self, output_dir):
         """ Returns a dict containing KiCad names and its replacement.
             If no replacement is needed the replacement is empty """
         filenames = {}
         self._configure_writer(GS.board, wxPoint(0, 0))
-        files = [''] if self._unified_output else ['PTH', 'NPTH']
+        files = AnyDrill._get_drill_groups(self._unified_output)
         for d in files:
             kicad_id = '-'+d if d else d
             kibot_id = self.solve_id(d)
