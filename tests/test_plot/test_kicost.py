@@ -83,7 +83,7 @@ def test_kicost_bom_sel_dist_1(test_dir):
     """ Internal BoM + KiCost, select distributors (Mouser+Digi-Key). With DNF sheet. """
     prj = 'kibom-variant_2c'
     ctx = context.TestContextSCH(test_dir, 'test_kicost_bom_sel_dist_1', prj, 'int_bom_kicost_sel_dist_1_xlsx', OUT_DIR)
-    ctx.run(kicost=True)  # , extra_debug=True
+    ctx.run(kicost=True, extra_debug=True)  # , extra_debug=True
     output = op.join(OUT_DIR, prj+'-bom.xlsx')
     ctx.expect_out_file(output)
     convert2csv(ctx.get_out_path(output), sheet='Costs')

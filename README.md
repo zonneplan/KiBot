@@ -944,9 +944,37 @@ Next time you need this list just use an alias, like this:
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
             - `kicost`: [boolean=false] Enable KiCost worksheet creation.
+            - `kicost_api_disable`: [string|list(string)=''] List of KiCost APIs to disable.
+            - `kicost_api_enable`: [string|list(string)=''] List of KiCost APIs to enable.
+            - `kicost_config`: [string=''] KiCost configuration file. It contains the keys for the different distributors APIs.
+                               The regular KiCost config is used when empty.
+            - `kicost_dist_desc`: [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component.
             - `logo`: [string|boolean=''] PNG file to use as logo, use false to remove.
             - `logo_scale`: [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
             - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
+            - `specs`: [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
+                       Works with only some KiCost APIs.
+            - `specs_columns`: [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
+                               'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
+                               Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
+                               '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'.
+              * Valid keys:
+                - `comment`: [string=''] Used as explanation for this column. The XLSX output uses it.
+                - `field`: [string=''] Name of the field to use for this column.
+                - `join`: [list(dict)|list(string)|string=''] List of fields to join to this column.
+                  * Valid keys:
+                    - `field`: [string=''] Name of the field.
+                    - `text`: [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+                              Any space to separate it should be added in the text.
+                              Use \n for newline and \t for tab.
+                    - `text_after`: [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+                                    Any space to separate it should be added in the text.
+                                    Use \n for newline and \t for tab.
+                    - `text_before`: [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+                                     Any space to separate it should be added in the text.
+                                     Use \n for newline and \t for tab.
+                - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
+                - `name`: [string=''] Name to display in the header. The field is used when empty.
             - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
             - `title`: [string='KiBot Bill of Materials'] BoM title.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
@@ -2011,6 +2039,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
+        - `enable_ki5_page_fix`: [boolean=true] Enable workaround for KiCad 5 bug.
         - `enable_ki6_page_fix`: [boolean=true] Enable workaround for KiCad 6 bug #11033.
         - `force_edge_cuts`: [boolean=true] Only useful for KiCad 6 when printing in one page, you can disable the edge here.
                              KiCad 5 forces it by default, and you can't control it from config files.

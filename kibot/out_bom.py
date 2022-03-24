@@ -237,8 +237,62 @@ class BoMXLSX(BoMLinkable):
             """ Head style: modern-blue, modern-green, modern-red and classic """
             self.kicost = False
             """ Enable KiCost worksheet creation """
+            self.kicost_api_enable = Optionable
+            """ [string|list(string)=''] List of KiCost APIs to enable """
+            self.kicost_api_disable = Optionable
+            """ [string|list(string)=''] List of KiCost APIs to disable """
+            self.kicost_dist_desc = False
+            """ Used to add a column with the distributor's description. So you can check this is the right component """
+            self.kicost_config = ''
+            """ KiCost configuration file. It contains the keys for the different distributors APIs.
+                The regular KiCost config is used when empty """
+            self.specs = False
+            """ Enable Specs worksheet creation. Contains specifications for the components.
+                Works with only some KiCost APIs """
+            self.specs_columns = BoMColumns
+            """ [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
+                'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
+                Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
+                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size' """
             self.logo_scale = 2
             """ Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software """
+
+    def process_columns_config(self, cols):
+        if isinstance(cols, type):
+            return (None, None, None, None, None)
+        columns = []
+        column_levels = []
+        column_comments = []
+        column_rename = {}
+        join = []
+        # Create the different lists
+        for col in cols:
+            if isinstance(col, str):
+                # Just a string, add to the list of used
+                new_col = col
+                new_col_l = new_col.lower()
+                level = 0
+                comment = ''
+                if new_col_l[0] == '_':
+                    column_rename[new_col_l] = new_col_l[1:].capitalize()
+            else:
+                # A complete entry
+                new_col = col.field
+                new_col_l = new_col.lower()
+                # A column rename
+                if col.name:
+                    column_rename[new_col_l] = col.name
+                elif new_col_l[0] == '_':
+                    column_rename[new_col_l] = new_col_l[1:].capitalize()
+                # Attach other columns
+                if col.join:
+                    join.append(col.join)
+                level = col.level
+                comment = col.comment
+            columns.append(new_col)
+            column_levels.append(level)
+            column_comments.append(comment)
+        return (columns, column_levels, column_comments, column_rename, join)
 
     def config(self, parent):
         super().config(parent)
@@ -247,6 +301,22 @@ class BoMXLSX(BoMLinkable):
             self.style = 'modern-blue'
         if self.style not in VALID_STYLES:
             raise KiPlotConfigurationError('Unknown style `{}`'.format(self.style))
+        if self.kicost_config and not os.path.isfile(self.kicost_config):
+            raise KiPlotConfigurationError('Missing KiCost configuration file `{}`'.format(self.kicost_config))
+        if not self.kicost_config:
+            self.kicost_config = None
+        # KiCost APIs
+        if isinstance(self.kicost_api_enable, type):
+            self.kicost_api_enable = []
+        elif isinstance(self.kicost_api_enable, str):
+            self.kicost_api_enable = [self.kicost_api_enable]
+        if isinstance(self.kicost_api_disable, type):
+            self.kicost_api_disable = []
+        elif isinstance(self.kicost_api_disable, str):
+            self.kicost_api_disable = [self.kicost_api_disable]
+        # Specs columns
+        (self.s_columns, self.s_levels, self.s_comments, self.s_rename,
+         self.s_join) = self.process_columns_config(self.specs_columns)
 
 
 class ComponentAliases(Optionable):

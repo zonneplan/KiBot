@@ -92,6 +92,16 @@ class MyLogger(logging.Logger):
         else:
             super().warning(buf, **kwargs)
 
+    def log(self, level, msg, *args, **kwargs):
+        if level < self.getEffectiveLevel():
+            return
+        if isinstance(msg, tuple):
+            msg = ' '.join(map(str, msg))
+        if sys.version_info >= (3, 8):
+            super(self.__class__, self).debug(msg, stacklevel=2, *args, **kwargs)  # pragma: no cover (Py38)
+        else:
+            super(self.__class__, self).debug(msg, *args, **kwargs)
+
     def log_totals(self):
         if MyLogger.warn_cnt:
             filt_msg = ''
@@ -144,7 +154,7 @@ class CustomFormatter(logging.Formatter):
     """Logging Formatter to add colors"""
 
     def __init__(self, stream):
-        super().__init__()
+        super(logging.Formatter, self).__init__()
         if stream.isatty():
             white = Fore.WHITE
             yellow = Fore.YELLOW + Style.BRIGHT

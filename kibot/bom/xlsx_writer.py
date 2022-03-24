@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -12,12 +12,16 @@ import io
 import pprint
 import os.path as op
 import sys
+import logging
 from textwrap import wrap
 from base64 import b64decode
+from math import ceil
 from .columnlist import ColumnList
 from .kibot_logo import KIBOT_LOGO
 from .. import log
-from ..misc import W_NOKICOST, W_UNKDIST
+from ..misc import W_NOKICOST, W_UNKDIST, KICOST_ERROR, W_BADFIELD
+from ..error import trace_dump
+from ..gs import GS
 from ..__main__ import __version__
 try:
     from xlsxwriter import Workbook
@@ -37,19 +41,26 @@ try:
             sys.path.insert(0, rel_path)
     # Init the logger first
     logger = log.get_logger()
-    from kicost.global_vars import set_logger
+    from kicost.global_vars import set_logger, KiCostError
     set_logger(logger)
     from kicost import PartGroup
     from kicost.kicost import query_part_info
     from kicost.spreadsheet import create_worksheet, Spreadsheet
     from kicost.distributors import (init_distributor_dict, set_distributors_logger, get_distributors_list,
-                                     get_dist_name_from_label, set_distributors_progress)
+                                     get_dist_name_from_label, set_distributors_progress, is_valid_api,
+                                     configure_from_environment, configure_apis)
     from kicost.edas import set_edas_logger
+    from kicost.edas.tools import partgroup_qty
+    from kicost.config import load_config
     # Progress mechanism: use the one declared in __main__ (TQDM)
     from kicost.__main__ import ProgressConsole
     set_distributors_progress(ProgressConsole)
     KICOST_SUPPORT = True
 except ModuleNotFoundError:
+    KICOST_SUPPORT = False
+except ImportError:
+    logger.error("Installed KiCost is older than the version we support.")
+    logger.error("Try installing the last release or the current GIT code.")
     KICOST_SUPPORT = False
 
 BG_GEN = "#E6FFEE"  # "#C6DFCE"
@@ -66,10 +77,11 @@ GREY_L = "#f3f3f3"
 HEAD_COLOR_R = "#982020"
 HEAD_COLOR_G = "#009879"
 HEAD_COLOR_B = "#0e4e8e"
-DEFAULT_FMT = {'text_wrap': True, 'align': 'center_across', 'valign': 'vjustify'}
+DEFAULT_FMT = {'text_wrap': True, 'align': 'center_across', 'valign': 'vcenter'}
 KICOST_COLUMNS = {'refs': ColumnList.COL_REFERENCE,
                   'desc': ColumnList.COL_DESCRIPTION,
                   'qty': ColumnList.COL_GRP_BUILD_QUANTITY}
+SPECS_GENERATED = {ColumnList.COL_REFERENCE_L, ColumnList.COL_ROW_NUMBER_L, 'sep'}
 
 
 def bg_color(col):
@@ -246,6 +258,75 @@ def create_color_ref(workbook, col_colors, hl_empty, fmt_cols, do_kicost, kicost
             worksheet.write_string(row, 0, label, format)
 
 
+def get_spec(part, name):
+    if name[0] != '_':
+        return part.specs.get(name, ['', ''])
+    name = name[1:]
+    for v in part.dd.values():
+        val = v.extra_info.get(name, None)
+        if val:
+            return [name, val]
+    return ['', '']
+
+
+def create_meta(workbook, name, columns, parts, fmt_head, fmt_cols, max_w, rename, levels, comments, join):
+    worksheet = workbook.add_worksheet(name)
+    col_w = []
+    row_h = 1
+    for c, col in enumerate(columns):
+        name = rename.get(col.lower(), col) if rename else col
+        worksheet.write_string(0, c, name, fmt_head)
+        text_l = max(len(col), 6)
+        if text_l > max_w:
+            h = len(wrap(col, max_w))
+            row_h = max(row_h, h)
+            text_l = max_w
+        col_w.append(text_l)
+    if row_h > 1:
+        worksheet.set_row(0, 15.0*row_h)
+    for r, part in enumerate(parts):
+        # Add the references as another spec
+        part.specs[ColumnList.COL_REFERENCE_L] = (ColumnList.COL_REFERENCE, part.collapsed_refs)
+        # Also add the row
+        part.specs[ColumnList.COL_ROW_NUMBER_L] = (ColumnList.COL_ROW_NUMBER, str(r+1))
+        row_h = 1
+        for c, col in enumerate(columns):
+            col_l = col.lower()
+            if col_l == 'sep':
+                col_w[c] = 0
+                continue
+            v = get_spec(part, col_l)
+            text = v[1]
+            # Append text from other fields
+            if join:
+                for j in join:
+                    if j[0] == col_l:
+                        for c_join in j[1:]:
+                            v = part.specs.get(c_join, None)
+                            if v:
+                                text += ' ' + v[1]
+            text_l = len(text)
+            if not text_l:
+                continue
+            fmt_kind = 0 if col_l in SPECS_GENERATED else 2
+            worksheet.write_string(r+1, c, text, fmt_cols[fmt_kind][r % 2])
+            if text_l > col_w[c]:
+                if text_l > max_w:
+                    h = len(wrap(text, max_w))
+                    row_h = max(row_h, h)
+                    text_l = max_w
+                col_w[c] = text_l
+        if row_h > 1:
+            worksheet.set_row(r+1, 15.0*row_h)
+    for i, width in enumerate(col_w):
+        ops = {'level': levels[i] if levels else 0}
+        if not width:
+            ops['hidden'] = 1
+        if comments and comments[i]:
+            worksheet.write_comment(0, i, comments[i])
+        worksheet.set_column(i, i, width, None, ops)
+
+
 def adjust_widths(worksheet, column_widths, max_width, levels):
     c_levels = len(levels)
     for i, width in enumerate(column_widths):
@@ -375,7 +456,9 @@ def remove_unknown_distributors(distributors, available, silent):
         d = d.lower()
         if d not in available:
             # Is the label of the column?
-            d = get_dist_name_from_label(d)
+            new_d = get_dist_name_from_label(d)
+            if new_d is not None:
+                d = new_d
         if d not in available:
             if not silent:
                 logger.warning(W_UNKDIST+'Unknown distributor `{}`'.format(d))
@@ -412,7 +495,51 @@ def compute_qtys(cfg, g):
     return [str(g.get_count(sch.name)) for sch in cfg.aggregate]
 
 
-def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, cfg):
+def create_meta_sheets(workbook, used_parts, fmt_head, fmt_cols, cfg, ss):
+    if cfg.xlsx.specs:
+        meta_names = ['Specs', 'Specs (DNF)']
+        for ws in range(2):
+            spec_cols = {}
+            spec_cols_l = set()
+            parts = used_parts[ws]
+            for part in parts:
+                for name_l, v in part.specs.items():
+                    spec_cols_l.add(name_l)
+                    spec = v[0]
+                    if spec in spec_cols:
+                        spec_cols[spec] += 1
+                    else:
+                        spec_cols[spec] = 1
+            if len(spec_cols):
+                columns = cfg.xlsx.s_columns
+                if columns is None:
+                    # Use all columns, sort them by relevance (most used) and alphabetically
+                    c = len(parts)
+                    columns = sorted(spec_cols, key=lambda k: (c - spec_cols[k], k))
+                    columns.insert(0, ColumnList.COL_REFERENCE)
+                else:
+                    # Inform about missing columns
+                    for c in columns:
+                        col = c.lower()
+                        if ((col[0] == '_' and col[1:] not in ss.extra_info_display) or
+                           (col[0] != '_' and col not in spec_cols_l and col not in SPECS_GENERATED)):
+                            logger.warning(W_BADFIELD+'Invalid Specs column name `{}` {}'.format(c, col[1:]))
+                create_meta(workbook, meta_names[ws], columns, parts, fmt_head, fmt_cols, cfg.xlsx.max_col_width,
+                            cfg.xlsx.s_rename, cfg.xlsx.s_levels, cfg.xlsx.s_comments, cfg.xlsx.s_join)
+
+
+def adapt_column_names(cfg):
+    for id, v in Spreadsheet.GLOBAL_COLUMNS.items():
+        if id in KICOST_COLUMNS:
+            # We use another name
+            new_id = KICOST_COLUMNS[id]
+            v['label'] = new_id
+            id = new_id.lower()
+        if id in cfg.column_rename:
+            v['label'] = cfg.column_rename[id]
+
+
+def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg):
     if not KICOST_SUPPORT:
         logger.warning(W_NOKICOST, 'KiCost sheet requested but failed to load KiCost support')
         return
@@ -426,6 +553,21 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
     # Force KiCost to use our logger
     set_distributors_logger(logger)
     set_edas_logger(logger)
+    if GS.debug_enabled:
+        logger.setLevel(logging.DEBUG+1-GS.debug_level)
+    # Load KiCost config (includes APIs config)
+    api_options = load_config(cfg.xlsx.kicost_config)
+    # Environment with overwrite
+    configure_from_environment(api_options, True)
+    # Filter which APIs we want
+    for api in cfg.xlsx.kicost_api_disable:
+        if is_valid_api(api):
+            api_options[api]['enable'] = False
+    for api in cfg.xlsx.kicost_api_enable:
+        if is_valid_api(api):
+            api_options[api]['enable'] = True
+    # Configure the APIs
+    configure_apis(api_options)
     # Start with a clean list of available distributors
     init_distributor_dict()
     # Create the projects information structure
@@ -437,6 +579,9 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
     Spreadsheet.ADJUST_ROW_AND_COL_SIZE = True
     Spreadsheet.MAX_COL_WIDTH = cfg.xlsx.max_col_width
     Spreadsheet.PART_NSEQ_SEPRTR = cfg.ref_separator
+    Spreadsheet.SUPPRESS_DIST_DESC = not cfg.xlsx.kicost_dist_desc
+    # Keep our sorting
+    Spreadsheet.SORT_GROUPS = False
     # Make the version less intrusive
     Spreadsheet.WRK_FORMATS['about_msg']['font_size'] = 8
     # Don 't add project info, we add our own data
@@ -467,14 +612,8 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
     # Pass any extra column
     adapt_extra_cost_columns(cfg)
     # Adapt the column names
-    for id, v in Spreadsheet.GLOBAL_COLUMNS.items():
-        if id in KICOST_COLUMNS:
-            # We use another name
-            new_id = KICOST_COLUMNS[id]
-            v['label'] = new_id
-            id = new_id.lower()
-        if id in cfg.column_rename:
-            v['label'] = cfg.column_rename[id]
+    adapt_column_names(cfg)
+    used_parts = []
     for ws in range(2):
         # Second pass is DNF
         dnf = ws == 1
@@ -483,6 +622,7 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
             break
         # Create the parts structure from the groups
         parts = []
+        multi_prj = len(prj_info) > 1
         for g in groups:
             if (cfg.ignore_dnf and not g.is_fitted()) != dnf:
                 continue
@@ -490,6 +630,16 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
             part.refs = [c.ref for c in g.components]
             part.fields = g.fields
             part.fields['manf#_qty'] = compute_qtys(cfg, g)
+            # Solve the QTYs
+            part.qty_str, part.qty = partgroup_qty(part)
+            # Total for all boards
+            if multi_prj:
+                total = 0
+                for i_prj, p_info in enumerate(prj_info):
+                    total += part.qty[i_prj] * p_info['qty']
+            else:
+                total = part.qty * prj_info[0]['qty']
+            part.qty_total_spreadsheet = ceil(total)
             parts.append(part)
             # Process any "join" request
             apply_join_requests(cfg.join_ce, part.fields, g.fields)
@@ -523,6 +673,9 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
         if cfg.xlsx.title:
             wks.set_row(0, 32)
             wks.merge_range(0, col1, 0, ss.globals_width, cfg.xlsx.title, fmt_title)
+        used_parts.append(parts)
+    # Specs sheets
+    create_meta_sheets(workbook, used_parts, fmt_head, fmt_cols, cfg, ss)
     colors = {}
     colors['Best price'] = ss.wrk_formats['best_price']
     colors['No manufacturer or distributor code'] = ss.wrk_formats['not_manf_codes']
@@ -534,6 +687,15 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
     colors['This part is obsolete'] = ss.wrk_formats['part_format_obsolete']
     colors['This part is listed but is not normally stocked'] = ss.wrk_formats['not_stocked']
     return colors
+
+
+def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg):
+    try:
+        return _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg)
+    except KiCostError as e:
+        trace_dump()
+        logger.error('KiCost error: `{}` ({})'.format(e.msg, e.id))
+        exit(KICOST_ERROR)
 
 
 def write_xlsx(filename, groups, col_fields, head_names, cfg):
@@ -660,7 +822,8 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     # Optionally add KiCost information
     kicost_colors = None
     if cfg.xlsx.kicost:
-        kicost_colors = create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, cfg)
+        kicost_colors = create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head,
+                                            fmt_cols, cfg)
     # Add a sheet for the color references
     create_color_ref(workbook, cfg.xlsx.col_colors, hl_empty, fmt_cols, cfg.xlsx.kicost and KICOST_SUPPORT, kicost_colors)
 

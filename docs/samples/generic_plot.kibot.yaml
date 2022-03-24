@@ -309,12 +309,53 @@ outputs:
         highlight_empty: true
         # [boolean=false] Enable KiCost worksheet creation
         kicost: false
+        # [string|list(string)=''] List of KiCost APIs to disable
+        kicost_api_disable: ''
+        # [string|list(string)=''] List of KiCost APIs to enable
+        kicost_api_enable: ''
+        # [string=''] KiCost configuration file. It contains the keys for the different distributors APIs.
+        # The regular KiCost config is used when empty
+        kicost_config: ''
+        # [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component
+        kicost_dist_desc: false
         # [string|boolean=''] PNG file to use as logo, use false to remove
         logo: ''
         # [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software
         logo_scale: 2
         # [number=60] [20,999] Maximum column width (characters)
         max_col_width: 60
+        # [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
+        # Works with only some KiCost APIs
+        specs: false
+        # [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
+        # 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
+        # Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
+        # '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'
+        specs_columns:
+          # [string=''] Used as explanation for this column. The XLSX output uses it
+          - comment: ''
+            # [string=''] Name of the field to use for this column
+            field: 'Row'
+            # [list(dict)|list(string)|string=''] List of fields to join to this column
+            join:
+              # [string=''] Name of the field
+              - field: 'Voltage'
+                # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+                # Any space to separate it should be added in the text.
+                # Use \n for newline and \t for tab
+                text: ''
+                # [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+                # Any space to separate it should be added in the text.
+                # Use \n for newline and \t for tab
+                text_after: ''
+                # [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+                # Any space to separate it should be added in the text.
+                # Use \n for newline and \t for tab
+                text_before: ''
+            # [number=0] Used to group columns. The XLSX output uses it to collapse columns
+            level: 0
+            # [string=''] Name to display in the header. The field is used when empty
+            name: 'Line'
         # [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic
         style: 'modern-blue'
         # [string='KiBot Bill of Materials'] BoM title
@@ -1433,6 +1474,8 @@ outputs:
       dnf_filter: '_none'
       # [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
+      # [boolean=true] Enable workaround for KiCad 5 bug
+      enable_ki5_page_fix: true
       # [boolean=true] Enable workaround for KiCad 6 bug #11033
       enable_ki6_page_fix: true
       # [boolean=true] Only useful for KiCad 6 when printing in one page, you can disable the edge here.
