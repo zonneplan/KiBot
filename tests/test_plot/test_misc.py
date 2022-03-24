@@ -59,7 +59,7 @@ def test_skip_pre_and_outputs(test_dir):
     ctx.run(extra=['-s', 'all', '-i'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
-    assert ctx.search_err('Skipping all pre-flight actions')
+    assert ctx.search_err('Skipping all preflight actions')
     assert ctx.search_err('Skipping all outputs')
 
     ctx.clean_up()

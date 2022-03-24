@@ -118,7 +118,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.11.0] - 2021-04-25
 ### Added
-- `erc_warnings` pre-flight option to consider ERC warnings as errors.
+- `erc_warnings` preflight option to consider ERC warnings as errors.
 - Pattern expansion in the `dir` option for outputs (#58)
 - New filter types:
   - `suparts`: Adds support for KiCost's subparts feature.
@@ -436,7 +436,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.2] - 2020-04-20
 ### Fixed
 - KiBoM temporal files, now removed
-- pre-flight tasks that didn't honor --out-dir
+- preflight tasks that didn't honor --out-dir
 
 ## [0.2.1] - 2020-04-18
 ### Fixed
@@ -452,7 +452,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - KiBoM and InteractiveHtmlBoM support
 - Pre-flight: generation of the BoM in XML format
 - Pre-flight: DRC and ERC
-- Option to skip pre-flight actions
+- Option to skip preflight actions
 - Option to select which outputs will be generated
 - Progress information
 - --version option

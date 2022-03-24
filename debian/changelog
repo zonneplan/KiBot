@@ -224,7 +224,7 @@ kiplot.inti-cmnb (0.2.3-1) stable; urgency=medium
 kiplot.inti-cmnb (0.2.2-1) stable; urgency=medium
 
   *  Removed KiBoM temporal files
-  *  Fixed pre-flight tasks that didn't honor --out-dir
+  *  Fixed preflight tasks that didn't honor --out-dir
 
  -- Salvador E. Tropea <salvador@inti.gob.ar>  Mon, 20 Apr 2020 18:35:00 -0300
 

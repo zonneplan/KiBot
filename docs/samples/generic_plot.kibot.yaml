@@ -26,6 +26,7 @@ preflight:
   # Used to solve ERC problems when using filters that remove power reference numbers.
   annotate_power: true
   # [boolean=false] Zones are filled before doing any operation involving PCB layers.
+  # The original PCB remains unchanged.
   check_zone_fills: true
   # [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
   erc_warnings: false
@@ -36,7 +37,7 @@ preflight:
       regex: 'Regular expression to match'
   # [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
   ignore_unconnected: false
-  # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+  # [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
   # This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
   # This pre-flight modifies the PCB. Even when a back-up is done use it carefully.
   pcb_replace:
@@ -65,6 +66,7 @@ preflight:
   # [dict|list(dict)] Defines KiCad 6 variables.
   # They are expanded using ${VARIABLE}, and stored in the project file.
   # This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
+  # This pre-flight modifies the KiCad project file.
   set_text_variables:
     - name: 'git_hash'
       command: 'git log -1 --format="%h" $KIBOT_PCB_NAME'

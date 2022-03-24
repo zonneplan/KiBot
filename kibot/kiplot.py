@@ -318,7 +318,7 @@ def preflight_checks(skip_pre):
 
     if skip_pre is not None:
         if skip_pre == 'all':
-            logger.debug("Skipping all pre-flight actions")
+            logger.debug("Skipping all preflight actions")
             return
         else:
             skip_list = skip_pre.split(',')

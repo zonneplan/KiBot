@@ -117,6 +117,7 @@ This section is used to specify tasks that will be executed before generating an
         This preflight modifies the schematic, use it only in revision control environments.
         Used to solve ERC problems when using filters that remove power reference numbers.
 - `check_zone_fills`: [boolean=false] Zones are filled before doing any operation involving PCB layers.
+        The original PCB remains unchanged.
 - `erc_warnings`: [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
 - `filters`: [list(dict)] A list of entries to filter out ERC/DRC messages.
   * Valid keys:
@@ -128,7 +129,7 @@ This section is used to specify tasks that will be executed before generating an
     - `regex`: [string='None'] Regular expression to match the text for the error we want to exclude.
     - *regexp*: Alias for regex.
 - `ignore_unconnected`: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
-- `pcb_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+- `pcb_replace`: [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
         This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
         This pre-flight modifies the PCB. Even when a back-up is done use it carefully.
   * Valid keys:
@@ -178,6 +179,7 @@ This section is used to specify tasks that will be executed before generating an
 - `set_text_variables`: [dict|list(dict)] Defines KiCad 6 variables.
         They are expanded using ${VARIABLE}, and stored in the project file.
         This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
+        This pre-flight modifies the KiCad project file.
 - `update_qr`: [boolean=false] Update the QR codes.
         Complements the `qr_lib` output.
         The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.

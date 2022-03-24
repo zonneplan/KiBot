@@ -394,7 +394,7 @@ def main():
         # Only create a makefile
         generate_makefile(args.makefile, plot_config, outputs)
     else:
-        # Do all the job (pre-flight + outputs)
+        # Do all the job (preflight + outputs)
         generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre, args.cli_order)
     # Print total warnings
     logger.log_totals()
