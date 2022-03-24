@@ -30,13 +30,30 @@ def test_pdf(test_dir):
     ctx.clean_up()
 
 
-def test_pdf_refill(test_dir):
+def test_pdf_refill_1(test_dir):
     prj = 'zone-refill'
     ctx = context.TestContext(test_dir, 'Plot_PDF_Refill', prj, 'pdf_zone-refill', '')
     ctx.run()
     b_cu = ctx.get_gerber_filename('B_Cu', '.pdf')
     ctx.expect_out_file(b_cu)
     ctx.compare_image(b_cu)
+    ctx.clean_up()
+
+
+def test_pdf_refill_2(test_dir):
+    prj = 'zone-refill'
+    ctx = context.TestContext(test_dir, 'Plot_PDF_Refill', prj, 'pdf_zone-refill_2', '')
+    ori = ctx.board_file
+    bkp = ori+'-bak'
+    try:
+        ctx.run()
+        b_cu = ctx.get_gerber_filename('B_Cu', '.pdf')
+        ctx.expect_out_file(b_cu)
+        ctx.compare_image(b_cu)
+        assert os.path.isfile(bkp)
+    finally:
+        if os.path.isfile(bkp):
+            os.rename(bkp, ori)
     ctx.clean_up()
 
 

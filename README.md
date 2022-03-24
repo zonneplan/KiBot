@@ -119,6 +119,7 @@ This section is used to specify tasks that will be executed before generating an
 - `check_zone_fills`: [boolean=false] Zones are filled before doing any operation involving PCB layers.
         The original PCB remains unchanged.
 - `erc_warnings`: [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
+- `fill_zones`: [boolean=false] Fill all zones again and save the PCB.
 - `filters`: [list(dict)] A list of entries to filter out ERC/DRC messages.
   * Valid keys:
     - `error`: [string=''] Error id we want to exclude. A name for KiCad 6 or a number for KiCad 5, but always a string.
@@ -131,7 +132,7 @@ This section is used to specify tasks that will be executed before generating an
 - `ignore_unconnected`: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
 - `pcb_replace`: [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
         This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
-        This pre-flight modifies the PCB. Even when a back-up is done use it carefully.
+        This preflight modifies the PCB. Even when a back-up is done use it carefully.
   * Valid keys:
     - `date_command`: [string=''] Command to get the date to use in the PCB.\
                       ```git log -1 --format='%as' -- $KIBOT_PCB_NAME```\
@@ -156,7 +157,7 @@ This section is used to specify tasks that will be executed before generating an
         The report file name is controlled by the global output pattern (%i=erc %x=txt).
 - `sch_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
         This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
-        This pre-flight modifies the schematics. Even when a back-up is done use it carefully.
+        This preflight modifies the schematics. Even when a back-up is done use it carefully.
   * Valid keys:
     - `date_command`: [string=''] Command to get the date to use in the SCH.\
                       ```git log -1 --format='%as' -- $KIBOT_SCH_NAME```\
@@ -179,7 +180,7 @@ This section is used to specify tasks that will be executed before generating an
 - `set_text_variables`: [dict|list(dict)] Defines KiCad 6 variables.
         They are expanded using ${VARIABLE}, and stored in the project file.
         This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
-        This pre-flight modifies the KiCad project file.
+        The KiCad project file is modified.
 - `update_qr`: [boolean=false] Update the QR codes.
         Complements the `qr_lib` output.
         The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.

@@ -30,6 +30,8 @@ preflight:
   check_zone_fills: true
   # [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
   erc_warnings: false
+  # [boolean=false] Fill all zones again and save the PCB.
+  fill_zones: true
   # [list(dict)] A list of entries to filter out ERC/DRC messages.
   filters:
     - filter: 'Filter description'
@@ -39,7 +41,7 @@ preflight:
   ignore_unconnected: false
   # [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
   # This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
-  # This pre-flight modifies the PCB. Even when a back-up is done use it carefully.
+  # This preflight modifies the PCB. Even when a back-up is done use it carefully.
   pcb_replace:
     date_command: "git log -1 --format='%as' -- $KIBOT_PCB_NAME"
     replace_tags:
@@ -55,7 +57,7 @@ preflight:
   run_erc: true
   # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
   # This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
-  # This pre-flight modifies the schematics. Even when a back-up is done use it carefully.
+  # This preflight modifies the schematics. Even when a back-up is done use it carefully.
   sch_replace:
     date_command: "git log -1 --format='%as' -- $KIBOT_SCH_NAME"
     replace_tags:
@@ -66,7 +68,7 @@ preflight:
   # [dict|list(dict)] Defines KiCad 6 variables.
   # They are expanded using ${VARIABLE}, and stored in the project file.
   # This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
-  # This pre-flight modifies the KiCad project file.
+  # The KiCad project file is modified.
   set_text_variables:
     - name: 'git_hash'
       command: 'git log -1 --format="%h" $KIBOT_PCB_NAME'
