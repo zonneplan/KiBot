@@ -95,8 +95,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Position files now defaults to use the auxiliary origin as KiCad.
   Can be disabled to use absolute coordinates. (#87)
-- Board View: flipped output. (#89)
-- Board View: problems with netnames using spaces. (#90)
+- Board View:
+  - flipped output. (#89)
+  - problems with netnames using spaces. (#90)
+  - get_targets not implemented. (#167)
 - Schematic
   - load: problems with fields containing double quotes. (#98)
   - Paper orientation was discarded on v5 files. (#150)

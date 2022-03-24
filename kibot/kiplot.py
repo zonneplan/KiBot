@@ -558,7 +558,7 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
                 skip = filter(lambda n: n != name, is_pre)
                 f.write('{} -s {} -i{}\n\n'.format(kibot_cmd, ','.join(skip), log_action))
             else:
-                f.write('{} -s all {}{}\n\n'.format(kibot_cmd, ori_names[name], log_action))
+                f.write('{} -s all "{}"{}\n\n'.format(kibot_cmd, ori_names[name], log_action))
         # Mark all outputs as PHONY
         f.write('.PHONY: '+' '.join(extra_targets+list(targets.keys()))+'\n')
 

@@ -163,6 +163,9 @@ class BoardViewOptions(BaseOptions):
         with open(output, 'wt') as f:
             convert(GS.board, f)
 
+    def get_targets(self, out_dir):
+        return [self._parent.expand_filename(out_dir, self.output)]
+
 
 @output_class
 class BoardView(BaseOutput):  # noqa: F821

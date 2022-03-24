@@ -109,6 +109,10 @@ outputs:
     comment: "Schematic with variants applied"
     type: sch_variant
 
+  - name: 'Board View Test'
+    comment: "Example of board view export"
+    type: boardview
+
   - name: 'archive'
     comment: 'Compressed files'
     type: compress

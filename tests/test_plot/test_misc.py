@@ -704,6 +704,15 @@ def check_makefile(ctx, mkfile, prj, dbg, txt):
     assert ctx.get_out_path(prj+'.pdf') in deps
     check_test_v5_sch_deps(ctx, targets[targets['pdf_sch_def']].split(' '))
     logging.debug('- Target `pdf_sch_def` OK')
+    # boardview
+    deps = targets['Board_View_Test'].split(' ')
+    assert len(deps) == 1, deps
+    assert ctx.get_out_path(prj+'-boardview.brd') in deps
+    deps = targets[targets['Board_View_Test']].split(' ')
+    assert len(deps) == 2
+    assert board_file in deps
+    assert yaml in deps
+    logging.debug('- Target `Board View Test` OK')
     # pdf_sch_int
     deps = targets['pdf_sch_int'].split(' ')
     assert len(deps) == 1, deps
