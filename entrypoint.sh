@@ -184,19 +184,12 @@ function args_process {
 }
 
 function run {
-    CONFIG="$(echo "$CONFIG" | tr -d '[:space:]')"
-
     if [ -d .git ]; then
         /usr/bin/kicad-git-filters.py
     fi
 
-    if [ -f $CONFIG ]; then
-        echo $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
-        kibot $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
-    else
-        echo "config file '$CONFIG' not found!"
-        exit $EXIT_ERROR
-    fi
+    echo $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
+    kibot $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
 }
 
 function main {
