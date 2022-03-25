@@ -228,6 +228,7 @@
   (gr_line (start 100 25) (end 125 25) (layer "Edge.Cuts") (width 0.05) (tstamp 00000000-0000-0000-0000-00005ea76f1d))
   (gr_line (start 100 50) (end 125 50) (layer "Edge.Cuts") (width 0.05) (tstamp 1a1ab354-5f85-45f9-938c-9f6c4c8c3ea2))
 
+  (via (at 117 34) (size 0.8) (drill 0.4) (layers "F.Cu" "B.Cu") (free) (net 0) (tstamp 240c10af-51b5-420e-a6f4-a2c8f5db1db5))
   (via blind (at 119.25 37.75) (size 0.8) (drill 0.4) (layers "F.Cu" "In1.Cu") (net 0) (tstamp 97fe9c60-586f-4895-8504-4d3729f5f81a))
   (via blind (at 117.5 36.25) (size 0.8) (drill 0.4) (layers "F.Cu" "In2.Cu") (net 0) (tstamp bdc7face-9f7c-4701-80bb-4cc144448db1))
   (via blind (at 120.75 36.25) (size 0.8) (drill 0.4) (layers "In1.Cu" "In2.Cu") (net 0) (tstamp 922058ca-d09a-45fd-8394-05f3e2c1e03a))

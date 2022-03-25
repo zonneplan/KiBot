@@ -125,7 +125,9 @@ class AnyDrill(BaseOptions):
                 via = t.Cast()
                 l1 = AnyDrill._get_layer_name(via.TopLayer())
                 l2 = AnyDrill._get_layer_name(via.BottomLayer())
-                pairs.add(l1+'-'+l2)
+                pair = l1+'-'+l2
+                if pair != 'front-back':
+                    pairs.add(pair)
         groups.extend(list(pairs))
         return groups
 
