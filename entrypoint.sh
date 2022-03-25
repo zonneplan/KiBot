@@ -191,7 +191,8 @@ function run {
     fi
 
     if [ -f $CONFIG ]; then
-        kibot -c $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
+        echo $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
+        kibot $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
     else
         echo "config file '$CONFIG' not found!"
         exit $EXIT_ERROR
