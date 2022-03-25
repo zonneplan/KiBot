@@ -4,7 +4,8 @@ author: 'Salvador E. Tropea'
 inputs:
   config:
     description: 'The plotting config file to use'
-    required: true
+    required: false
+    default: '__SCAN__'
   dir:
     description: 'The output directory [default: .]'
     required: false
@@ -21,6 +22,10 @@ inputs:
     description: 'Skip preflights, comma separated or "all" [default: no skip]'
     required: false
     default: '__NONE__'
+  targets:
+    description: 'List of targets to generate separated by spaces. To only run preflights use __NONE__  [default: generate all]'
+    required: false
+    default: '__ALL__'
   variant:
     description: 'Global variant to use [default: no variants]'
     required: false
@@ -38,6 +43,7 @@ runs:
     -  -b ${{ inputs.board }}
     -  -e ${{ inputs.schema }}
     -  -s ${{ inputs.skip }}
+    -  -t ${{ inputs.targets }}
     -  -v ${{ inputs.verbose }}
     -  -V ${{ inputs.variant }}
 branding:

@@ -13,6 +13,7 @@ SCHEMA=""
 SKIP=""
 DIR=""
 VARIANT=""
+TARGETS=""
 
 # Exit error code
 EXIT_ERROR=1
@@ -44,6 +45,7 @@ function msg_help {
     echo -e "  -b, --board FILE .kicad_pcb board file. Use __SCAN__ to get the first board file found in current folder."
     echo -e "  -e, --schema FILE .sch schematic file.  Use __SCAN__ to get the first schematic file found in current folder."
     echo -e "  -s, --skip Skip preflights, comma separated or 'all'"
+    echo -e "  -t, --targets List of targets to generate separated by spaces. To only run preflights use __NONE__."
     echo -e "  -V, --variant Global variant"
 
 	echo -e "\nMiscellaneous:"
@@ -109,20 +111,33 @@ function args_process {
     do
        case "$1" in
            -c | --config ) shift
-               CONFIG="$1"
+               if [ "$1" == "__SCAN__" ]; then
+                   CONFIG=""
+               else
+                   CONFIG="-c $1"
+               fi
                ;;
            -b | --board ) shift
                if [ "$1" == "__SCAN__" ]; then
-                   BOARD="-b "`ls -1 *.kicad_pcb | head -n1`
+                   BOARD=""
                else
                    BOARD="-b $1"
                fi
                ;;
            -e | --schematic ) shift
                if [ "$1" == "__SCAN__" ]; then
-                   SCHEMA="-e "`ls -1 *.*sch | head -n1`
+                   SCHEMA=""
                else
                    SCHEMA="-e $1"
+               fi
+               ;;
+           -t | --targets ) shift
+               if [ "$1" == "__NONE__" ]; then
+                   TARGETS="-i"
+               elif [ "$1" == "__ALL__" ]; then
+                   TARGETS=""
+               else
+                   TARGETS="$1"
                fi
                ;;
            -V | --variant ) shift
@@ -176,7 +191,7 @@ function run {
     fi
 
     if [ -f $CONFIG ]; then
-        kibot -c $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT
+        kibot -c $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
     else
         echo "config file '$CONFIG' not found!"
         exit $EXIT_ERROR
