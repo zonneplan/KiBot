@@ -12,6 +12,7 @@ BOARD=""
 SCHEMA=""
 SKIP=""
 DIR=""
+VARIANT=""
 
 # Exit error code
 EXIT_ERROR=1
@@ -40,9 +41,10 @@ function msg_help {
 
 	echo -e "\nOptional control arguments:"
     echo -e "  -d, --dir DIR output path. Default: current dir, will be used as prefix of dir configured in config file"
-    echo -e "  -b, --board FILE .kicad_pcb board file. Default: first board file found in current folder."
-    echo -e "  -e, --schema FILE .sch schematic file.  Default: first schematic file found in current folder."
+    echo -e "  -b, --board FILE .kicad_pcb board file. Use __SCAN__ to get the first board file found in current folder."
+    echo -e "  -e, --schema FILE .sch schematic file.  Use __SCAN__ to get the first schematic file found in current folder."
     echo -e "  -s, --skip Skip preflights, comma separated or 'all'"
+    echo -e "  -V, --variant Global variant"
 
 	echo -e "\nMiscellaneous:"
     echo -e "  -v, --verbose annotate program execution"
@@ -110,16 +112,35 @@ function args_process {
                CONFIG="$1"
                ;;
            -b | --board ) shift
-               BOARD="-b $1"
+               if [ "$1" == "__SCAN__" ]; then
+                   BOARD="-b "`ls -1 *.kicad_pcb | head -n1`
+               else
+                   BOARD="-b $1"
+               fi
                ;;
            -e | --schematic ) shift
-               SCHEMA="-e $1"
+               if [ "$1" == "__SCAN__" ]; then
+                   SCHEMA="-e "`ls -1 *.*sch | head -n1`
+               else
+                   SCHEMA="-e $1"
+               fi
+               ;;
+           -V | --variant ) shift
+               if [ "$1" == "__NONE__" ]; then
+                   VARIANT=""
+               else
+                   VARIANT="-g variant=$1"
+               fi
                ;;
            -d | --dir) shift
                DIR="-d $1"
                ;;
            -s | --skip) shift
-               SKIP="-s $1"
+               if [ "$1" == "__NONE__" ]; then
+                   SKIP=""
+               else
+                   SKIP="-s $1"
+               fi
                ;;
            -v | --verbose) shift
                if [ "$1" == "0" ]; then
@@ -155,7 +176,7 @@ function run {
     fi
 
     if [ -f $CONFIG ]; then
-        kibot -c $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE
+        kibot -c $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT
     else
         echo "config file '$CONFIG' not found!"
         exit $EXIT_ERROR

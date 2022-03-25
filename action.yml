@@ -1,5 +1,5 @@
 name: 'KiBot'
-description: 'auto generate exports (schematics, gerbers, plots) for any KiCAD project.'
+description: 'auto generate exports (schematics, gerbers, plots) for any KiCad project.'
 author: 'Salvador E. Tropea'
 inputs:
   config:
@@ -12,13 +12,19 @@ inputs:
   board:
     description: 'The PCB .kicad-pcb board file [default: first *.kicad_pcb found]'
     required: false
-# TODO: fix default 'first *.kicad_pcb file found'
-#    default: '$(ls *.kicad_pcb | head -n1)'
+    default: '__SCAN__'
   schema:
-    description: 'The schematic file (.sch) [default: first *.sch found]'
+    description: 'The schematic file (.sch) [default: first *.*sch found]'
     required: false
-# TODO: fix default 'first *.sch file found'
-#    default: '$(ls *.sch | head -n1)'
+    default: '__SCAN__'
+  skip:
+    description: 'Skip preflights, comma separated or "all" [default: no skip]'
+    required: false
+    default: '__NONE__'
+  variant:
+    description: 'Global variant to use [default: no variants]'
+    required: false
+    default: '__NONE__'
   verbose:
     description: 'Verbosity level [default: 0]'
     required: false
@@ -31,7 +37,9 @@ runs:
     -  -d ${{ inputs.dir }}
     -  -b ${{ inputs.board }}
     -  -e ${{ inputs.schema }}
+    -  -s ${{ inputs.skip }}
     -  -v ${{ inputs.verbose }}
+    -  -V ${{ inputs.variant }}
 branding:
   icon: 'cpu'
   color: 'green'
