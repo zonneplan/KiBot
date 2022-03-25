@@ -2682,11 +2682,12 @@ Another example, but using variants can be found [here](https://github.com/INTI-
 
 The available options are:
 
-- **config**: The KiBot config file to use. Must be specified.
+- **config**: The KiBot config file to use. The first file that matches `*.kibot.yaml` is used when omitted.
 - **dir**: Output directory for the generated files. The current directory is used when omitted.
 - **board**: Name of the PCB file. The first file that matches `*.kicad_pcb` is used when omitted.
 - **schema**: Name of the schematic file. The first file that matches `*.*sch` is used when omitted.
 - **skip**: Skip preflights, comma separated or *all*. Nothing is skipped when omitted.
+- **targets**: List of targets to generate separated by spaces. To only run preflights use __NONE__. All targets are generated when omitted.
 - **variant**: Global variant to use. No variant is applied when omitted.
 - **verbose**: Level of verbosity. Valid values are 0, 1, 2 or 3. Default is 0.
 
