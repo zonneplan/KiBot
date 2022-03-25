@@ -3,9 +3,6 @@
 # Script configurations
 SCRIPT="KiBot"
 
-# Mandatory arguments
-margs=1
-
 # Arguments and their default values
 CONFIG=""
 BOARD=""
@@ -83,28 +80,6 @@ function usage {
     msg_more_info
 }
 
-
-# Ensures that the number of passed args are at least equals
-# to the declared number of mandatory args.
-# It also handles the special case of the -h or --help arg.
-function margs_precheck {
-	if [ "$1" -lt "$margs" ]; then
-        if [ "$2" == "--help" ] || [ "$2" == "-h" ]; then
-            help
-        else
-            usage
-        fi
-        exit $EXIT_ERROR
-	fi
-}
-
-# Ensures that all the mandatory args are not empty
-function margs_check {
-	if [ "$#" -lt "$margs" ]; then
-        usage
-	    exit $EXIT_ERROR
-	fi
-}
 
 function args_process {
     while [ "$1" != "" ];
@@ -193,8 +168,6 @@ function run {
 }
 
 function main {
-    margs_precheck "$#" "$1"
-
     args_process "$@"
 
     run
