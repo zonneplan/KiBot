@@ -14,10 +14,11 @@ inputs:
     description: 'The PCB .kicad-pcb board file [default: first *.kicad_pcb found]'
     required: false
     default: '__SCAN__'
-  kicad:
-    description: 'KiCad major version (5 or 6) [default: 6]'
-    required: false
-    default: 6
+# Currently impossible, too much limitations
+#   kicad:
+#     description: 'KiCad major version (5 or 6) [default: 6]'
+#     required: false
+#     default: 6
   schema:
     description: 'The schematic file (.sch) [default: first *.*sch found]'
     required: false
@@ -40,7 +41,7 @@ inputs:
     default: '0'
 runs:
   using: 'docker'
-  image: ${{ inputs.kicad == 5 && 'Dockerfile_k5' || 'Dockerfile_k6' }}
+  image: Dockerfile
   args:
     -  -c ${{ inputs.config }}
     -  -d ${{ inputs.dir }}
