@@ -20,6 +20,8 @@ on:
     - '.github/workflows/pythonapp.yml'
     - 'tools/dev_image/Dockerfile'
     - 'tools/dev_image_k6/Dockerfile'
+  repository_dispatch:
+    types: [run_tests]
 
 jobs:
   test:
