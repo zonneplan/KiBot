@@ -1576,12 +1576,17 @@ class SchematicV6(Schematic):
 
     def write_title_block(self):
         data = [Sep()]
-        data += [_symbol('title', [self.title_ori]), Sep()]
-        data += [_symbol('date', [self.date_ori]), Sep()]
-        data += [_symbol('rev', [self.revision_ori]), Sep()]
-        data += [_symbol('company', [self.company_ori]), Sep()]
+        if self.title_ori:
+            data += [_symbol('title', [self.title_ori]), Sep()]
+        if self.date_ori:
+            data += [_symbol('date', [self.date_ori]), Sep()]
+        if self.revision_ori:
+            data += [_symbol('rev', [self.revision_ori]), Sep()]
+        if self.company_ori:
+            data += [_symbol('company', [self.company_ori]), Sep()]
         for num, val in enumerate(self.comment_ori):
-            data += [_symbol('comment', [num+1, val]), Sep()]
+            if val:
+                data += [_symbol('comment', [num+1, val]), Sep()]
         return [Sep(), Sep(), _symbol('title_block', data)]
 
     def write_lib_symbols(self, cross=False):

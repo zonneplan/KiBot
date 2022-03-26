@@ -13,11 +13,6 @@
     (comment 2 "Comment 2")
     (comment 3 "Comment 3")
     (comment 4 "@Comment4@")
-    (comment 5 "")
-    (comment 6 "")
-    (comment 7 "")
-    (comment 8 "")
-    (comment 9 "")
   )
 
   (lib_symbols
