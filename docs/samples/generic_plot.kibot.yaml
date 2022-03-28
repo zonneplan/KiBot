@@ -1074,6 +1074,10 @@ outputs:
     type: 'pdf_pcb_print'
     dir: 'Example/pdf_pcb_print_dir'
     options:
+      # [string='_builtin_classic'] Selects the color theme. Onlyu applies to KiCad 6.
+      # To use the KiCad 6 default colors select `_builtin_default`.
+      # Usually user colors are stored as `user`, but you can give it another name
+      color_theme: '_builtin_classic'
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
@@ -1473,6 +1477,10 @@ outputs:
     type: 'svg_pcb_print'
     dir: 'Example/svg_pcb_print_dir'
     options:
+      # [string='_builtin_classic'] Selects the color theme. Onlyu applies to KiCad 6.
+      # To use the KiCad 6 default colors select `_builtin_default`.
+      # Usually user colors are stored as `user`, but you can give it another name
+      color_theme: '_builtin_classic'
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'

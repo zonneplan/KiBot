@@ -21,6 +21,7 @@ from utils import context
 PDF_DIR = 'Layers'
 PDF_FILE = 'bom-F_Cu+F_SilkS.pdf'
 PDF_FILE_B = 'PCB_Bot.pdf'
+PDF_FILE_C = 'PCB_Bot_def.pdf'
 
 
 def test_print_pcb_simple(test_dir):
@@ -32,12 +33,24 @@ def test_print_pcb_simple(test_dir):
     ctx.clean_up()
 
 
-def test_print_pcb_refill(test_dir):
+def test_print_pcb_refill_1(test_dir):
     prj = 'zone-refill'
     ctx = context.TestContext(test_dir, 'print_pcb_refill', prj, 'print_pcb_zone-refill', '')
     ctx.run()
     ctx.expect_out_file(PDF_FILE_B)
     ctx.compare_image(PDF_FILE_B)
+    ctx.clean_up()
+
+
+def test_print_pcb_refill_2(test_dir):
+    """ Using KiCad 6 colors """
+    if context.ki5():
+        return
+    prj = 'zone-refill'
+    ctx = context.TestContext(test_dir, 'print_pcb_refill', prj, 'print_pcb_zone-refill_def', '')
+    ctx.run()
+    ctx.expect_out_file(PDF_FILE_B)
+    ctx.compare_image(PDF_FILE_B, PDF_FILE_C)
     ctx.clean_up()
 
 

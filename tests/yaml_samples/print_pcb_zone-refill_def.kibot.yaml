@@ -1,0 +1,18 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  check_zone_fills: true
+
+outputs:
+  - name: 'print_front'
+    comment: "Print B.Cu (filling zones)"
+    type: pdf_pcb_print
+    dir: .
+    options:
+      output_name: PCB_Bot.pdf
+      scaling: 0
+      color_theme: _builtin_default
+    layers:
+      - layer: B.Cu

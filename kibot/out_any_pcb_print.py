@@ -48,6 +48,10 @@ class Any_PCB_PrintOptions(VariantOptions):
             """ Only useful for KiCad 6 when printing in one page, you can disable the edge here.
                 KiCad 5 forces it by default, and you can't control it from config files.
                 Same for KiCad 6 when printing to separated pages """
+            self.color_theme = '_builtin_classic'
+            """ Selects the color theme. Onlyu applies to KiCad 6.
+                To use the KiCad 6 default colors select `_builtin_default`.
+                Usually user colors are stored as `user`, but you can give it another name """
         super().__init__()
 
     @property
@@ -100,7 +104,7 @@ class Any_PCB_PrintOptions(VariantOptions):
 
     def run(self, output, svg=False):
         super().run(self._layers)
-        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.6.4' if svg else '1.5.10')
+        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.6.7')
         # Output file name
         cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):
@@ -114,6 +118,8 @@ class Any_PCB_PrintOptions(VariantOptions):
             cmd.append('--separate')
         if self.mirror:
             cmd.append('--mirror')
+        if self.color_theme != '_builtin_classic' and self.color_theme:
+            cmd.extend(['--color_theme', self.color_theme])
         if svg:
             cmd.append('--svg')
         self.set_title(self.title)

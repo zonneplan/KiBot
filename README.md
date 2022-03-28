@@ -1647,6 +1647,9 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_pcb_print` output.
       * Valid keys:
+        - `color_theme`: [string='_builtin_classic'] Selects the color theme. Onlyu applies to KiCad 6.
+                         To use the KiCad 6 default colors select `_builtin_default`.
+                         Usually user colors are stored as `user`, but you can give it another name.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
@@ -2039,6 +2042,9 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pdf_pcb_print` output.
       * Valid keys:
+        - `color_theme`: [string='_builtin_classic'] Selects the color theme. Onlyu applies to KiCad 6.
+                         To use the KiCad 6 default colors select `_builtin_default`.
+                         Usually user colors are stored as `user`, but you can give it another name.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
