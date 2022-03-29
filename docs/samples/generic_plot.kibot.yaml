@@ -1328,6 +1328,15 @@ outputs:
       output: '%f-%i%I%v.%x'
       # [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`
       ray_tracing: false
+      # [number=0] Steps to rotate around the X axis, positive is clockwise.
+      # Each step is currently 10 degrees. Only for KiCad 6
+      rotate_x: 0
+      # [number=0] Steps to rotate around the Y axis, positive is clockwise.
+      # Each step is currently 10 degrees. Only for KiCad 6
+      rotate_y: 0
+      # [number=0] Steps to rotate around the Z axis, positive is clockwise.
+      # Each step is currently 10 degrees. Only for KiCad 6
+      rotate_z: 0
       # [string='#d5dce4'] Color for the silk screen
       silk: '#d5dce4'
       # [string='#208b47'] Color for the solder mask

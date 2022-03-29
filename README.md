@@ -1877,6 +1877,12 @@ Next time you need this list just use an alias, like this:
         - `orthographic`: [boolean=false] Enable the orthographic projection mode (top view looks flat).
         - `output`: [string='%f-%i%I%v.%x'] Name for the generated image file (%i='3D_$VIEW' %x='png'). Affected by global options.
         - `ray_tracing`: [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`.
+        - `rotate_x`: [number=0] Steps to rotate around the X axis, positive is clockwise.
+                      Each step is currently 10 degrees. Only for KiCad 6.
+        - `rotate_y`: [number=0] Steps to rotate around the Y axis, positive is clockwise.
+                      Each step is currently 10 degrees. Only for KiCad 6.
+        - `rotate_z`: [number=0] Steps to rotate around the Z axis, positive is clockwise.
+                      Each step is currently 10 degrees. Only for KiCad 6.
         - `silk`: [string='#d5dce4'] Color for the silk screen.
         - `solder_mask`: [string='#208b47'] Color for the solder mask.
         - `solder_paste`: [string='#808080'] Color for the solder paste.

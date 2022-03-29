@@ -57,6 +57,15 @@ class Render3DOptions(Base3DOptions):
             self.move_y = 0
             """ Steps to move in the Y axis, positive is up.
                 Just like pressing the up arrow in the 3D viewer """
+            self.rotate_x = 0
+            """ Steps to rotate around the X axis, positive is clockwise.
+                Each step is currently 10 degrees. Only for KiCad 6 """
+            self.rotate_y = 0
+            """ Steps to rotate around the Y axis, positive is clockwise.
+                Each step is currently 10 degrees. Only for KiCad 6 """
+            self.rotate_z = 0
+            """ Steps to rotate around the Z axis, positive is clockwise.
+                Each step is currently 10 degrees. Only for KiCad 6 """
             self.ray_tracing = False
             """ Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt` """
             self.wait_ray_tracing = -600
@@ -119,13 +128,17 @@ class Render3DOptions(Base3DOptions):
             self.view = view
         self._expand_id += '_'+self._rviews.get(self.view)
 
+    def add_step(self, cmd, steps, ops):
+        if steps:
+            cmd.extend([ops, str(steps)])
+
     def run(self, output):
         super().run(output)
         if GS.ki6() and GS.kicad_version_n < KICAD_VERSION_6_0_2:
             logger.error("3D Viewer not supported for KiCad 6.0.0/1\n"
                          "Please upgrade KiCad to 6.0.2 or newer")
             exit(MISSING_TOOL)
-        check_script(CMD_PCBNEW_3D, URL_PCBNEW_3D, '1.6.5' if GS.ki6() else '1.5.14')
+        check_script(CMD_PCBNEW_3D, URL_PCBNEW_3D, '1.6.8')
         # Base command with overwrite
         cmd = [CMD_PCBNEW_3D, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),
                '3d_view', '--output_name', output]
@@ -138,10 +151,11 @@ class Render3DOptions(Base3DOptions):
             cmd.append('--no_smd')
         for color, option in self._colors.items():
             cmd.extend(['--'+option, getattr(self, color)])
-        if self.move_x:
-            cmd.extend(['--move_x', str(self.move_x)])
-        if self.move_y:
-            cmd.extend(['--move_y', str(self.move_y)])
+        self.add_step(cmd, self.move_x, '--move_x')
+        self.add_step(cmd, self.move_y, '--move_y')
+        self.add_step(cmd, self.rotate_x, '--rotate_x')
+        self.add_step(cmd, self.rotate_y, '--rotate_y')
+        self.add_step(cmd, self.rotate_z, '--rotate_z')
         if self.zoom:
             cmd.extend(['--zoom', str(self.zoom)])
         if self.wait_ray_tracing != 5:
