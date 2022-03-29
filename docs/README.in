@@ -316,6 +316,7 @@ In the future more advanced filters will allow modification of component details
 
 Variants are currently used to create *assembly variants*. This concept is used to manufacture one PCB used for various products.
 You can learn more about KiBot variants on the following [example repo](https://inti-cmnb.github.io/kibot_variants_arduprog/).
+The example is currently using KiCad 6, if you want to see the example files for KiCad 5 go [here](https://github.com/INTI-CMNB/kibot_variants_arduprog/tree/KiCad5/).
 
 As mentioned above the current use of filters is to mark some components. Mainly to exclude them, but also to mark them as special.
 This is the case of *do not change* components in the BoM.
@@ -1132,7 +1133,8 @@ For KiCad 6 use `v2_k6` instead of `v2`.
 A working example applied to a repo can be found [here](https://github.com/INTI-CMNB/kicad-ci-test-spora/tree/test_gh_action)
 ([spora_main.yml](https://github.com/INTI-CMNB/kicad-ci-test-spora/blob/test_gh_action/.github/workflows/spora_main.yml)).
 Another example, but using variants can be found [here](https://github.com/INTI-CMNB/kibot_variants_arduprog)
-([kibot_action.yml](https://github.com/INTI-CMNB/kibot_variants_arduprog/blob/master/.github/workflows/kibot_action.yml))
+([kibot_action.yml](https://github.com/INTI-CMNB/kibot_variants_arduprog/blob/master/.github/workflows/kibot_action.yml) for KiCad 6,
+ [kibot_action.yml](https://github.com/INTI-CMNB/kibot_variants_arduprog/blob/KiCad5/.github/workflows/kibot_action.yml) for KiCad 5)
 
 The available options are:
 
