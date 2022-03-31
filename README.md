@@ -181,6 +181,14 @@ This section is used to specify tasks that will be executed before generating an
         They are expanded using ${VARIABLE}, and stored in the project file.
         This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
         The KiCad project file is modified.
+  * Valid keys:
+    - `after`: [string=''] Text to add after the output of `command`.
+    - `before`: [string=''] Text to add before the output of `command`.
+    - `command`: [string=''] Command to execute to get the text, will be used only if `text` is empty.
+    - `expand_kibot_patterns`: [boolean=true] Expand %X patterns. The context is `schematic`.
+    - `name`: [string=''] Name of the variable. The `version` variable will be expanded using `${version}`.
+    - `text`: [string=''] Text to insert instead of the variable.
+    - *variable*: Alias for name.
 - `update_qr`: [boolean=false] Update the QR codes.
         Complements the `qr_lib` output.
         The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.

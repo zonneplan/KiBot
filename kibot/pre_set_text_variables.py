@@ -74,6 +74,10 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         super().__init__(name, f.variables)
 
     @classmethod
+    def get_doc(cls):
+        return cls.__doc__, KiCadVariable
+
+    @classmethod
     def get_example(cls):
         """ Returns a YAML value for the example config """
         return ("\n    - name: 'git_hash'"
