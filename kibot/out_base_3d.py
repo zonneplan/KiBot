@@ -124,9 +124,10 @@ class Base3DOptions(VariantOptions):
                     # Missing 3D model
                     if full_name not in downloaded:
                         logger.warning(W_MISS3D+'Missing 3D model for {}: `{}`'.format(ref, full_name))
-                    if self.download and m3d.m_Filename.startswith('${KISYS3DMOD}/'):
+                    if self.download and (m3d.m_Filename.startswith('${KISYS3DMOD}/') or
+                                          m3d.m_Filename.startswith('${KICAD6_3DMODEL_DIR}/')):
                         # This is a model from KiCad, try to download it
-                        fname = m3d.m_Filename[14:]
+                        fname = m3d.m_Filename[m3d.m_Filename.find('/')+1:]
                         replace = None
                         if full_name in downloaded:
                             # Already downloaded

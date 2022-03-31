@@ -106,9 +106,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--list`: problems with layers and fields specific for the project.
   (INTI-CMNB/kibot_variants_arduprog#4)
 - Makefile: %VALUE not expanded in the directory targets.
-- KiCost variants: empty DNF fields shouldn't be excluded. (#101)
-- KiCost variants: problems when setting a field in a variant that doesn't
-  exist when no variant is selected. (#105)
+- KiCost variants:
+  - empty DNF fields shouldn't be excluded. (#101)
+  - problems when setting a field in a variant that doesn't
+    exist when no variant is selected. (#105)
 - KiCost: list arguments wrongly passed. (#120)
 - PCB Print: to show the real name of the PCB file. (#102)
 - Compress: not expanding %VALUES in target dirs. (#111)
@@ -117,6 +118,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update XML: Removed the side effect Bom. (#106)
 - Problems when using a hidden config file, using an output that needs the SCH,
   not specifying the SCH and more than one SCH was found. (#138)
+- 3D: problems to download 3D models for native KiCad 6 files. (#171)
+      (not imported from KiCad 5)
 
 
 ## [0.11.0] - 2021-04-25
