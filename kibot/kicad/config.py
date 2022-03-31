@@ -55,11 +55,17 @@ def un_quote(val):
     return val
 
 
-def expand_env(val, env):
+def expand_env(val, env, extra_env, used_extra=None):
     """ Expand KiCad environment variables """
+    if used_extra is None:
+        used_extra = [False]
+    used_extra[0] = False
     for var in re.findall(r'\$\{(\S+)\}', val):
         if var in env:
             val = val.replace('${'+var+'}', env[var])
+        elif var in extra_env:
+            val = val.replace('${'+var+'}', extra_env[var])
+            used_extra[0] = True
         else:
             logger.error('Unable to expand `{}` in `{}`'.format(var, val))
     return val
@@ -80,14 +86,14 @@ class LibAlias(object):
         self.descr = None
 
     @staticmethod
-    def parse(options, cline, env):
+    def parse(options, cline, env, extra_env):
         m = LibAlias.libs_re.match(options)
         if not m:
             raise KiConfError('Malformed lib entry', SYM_LIB_TABLE, cline, options)
         lib = LibAlias()
         lib.name = un_quote(m.group(1))
         lib.legacy = m.group(2) == 'Legacy'
-        lib.uri = os.path.abspath(expand_env(un_quote(m.group(3)), env))
+        lib.uri = os.path.abspath(expand_env(un_quote(m.group(3)), env, extra_env))
         lib.options = un_quote(m.group(4))
         lib.descr = un_quote(m.group(5))
         return lib
@@ -337,7 +343,7 @@ class KiConf(object):
             while line and line[0] != ')':
                 m = re.match(r'\s*\(lib\s*(.*)\)', line)
                 if m:
-                    alias = LibAlias.parse(m.group(1), cline, KiConf.kicad_env)
+                    alias = LibAlias.parse(m.group(1), cline, KiConf.kicad_env, {})
                     if GS.debug_level > 1:
                         logger.debug('- Adding lib alias '+str(alias))
                     KiConf.lib_aliases[alias.name] = alias
@@ -375,5 +381,7 @@ class KiConf(object):
         # Load the project's table
         KiConf.load_lib_aliases(os.path.join(KiConf.dirname, SYM_LIB_TABLE))
 
-    def expand_env(name):
-        return os.path.abspath(expand_env(un_quote(name), KiConf.kicad_env))
+    def expand_env(name, used_extra=None):
+        if used_extra is None:
+            used_extra = [False]
+        return os.path.abspath(expand_env(un_quote(name), KiConf.kicad_env, GS.load_pro_variables(), used_extra))

@@ -105,7 +105,7 @@
       (net 2 "Net-(C1-Pad1)") (tstamp a1823eb2-fb0d-4ed8-8b96-04184ac3a9d5))
     (pad "2" smd roundrect locked (at 0.9375 0) (size 0.975 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 1 "GND") (tstamp 03c52831-5dc5-43c5-a442-8d23643b46fb))
-    (model "${KIPRJMOD}/../../data/R_0805_2012Metric.step"
+    (model "${MYVAR}/R_0805_2012Metric.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))

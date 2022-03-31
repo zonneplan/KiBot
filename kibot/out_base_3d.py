@@ -106,6 +106,7 @@ class Base3DOptions(VariantOptions):
         # List of models we already downloaded
         downloaded = set()
         self.undo_3d_models = {}
+        extra_debug = GS.debug_level > 3
         # Look for all the footprints
         for m in GS.get_modules():
             ref = m.GetReference()
@@ -118,8 +119,13 @@ class Base3DOptions(VariantOptions):
             for m3d in models_l:
                 if m3d.m_Filename.endswith(DISABLE_TEXT):
                     # Skip models we intentionally disabled using a bogus name
+                    if extra_debug:
+                        logger.debug("- Skipping {} (disabled)".format(m3d.m_Filename))
                     continue
-                full_name = KiConf.expand_env(m3d.m_Filename)
+                used_extra = [False]
+                full_name = KiConf.expand_env(m3d.m_Filename, used_extra)
+                if extra_debug:
+                    logger.debug("- Expanded {} -> {}".format(m3d.m_Filename, full_name))
                 if not os.path.isfile(full_name):
                     # Missing 3D model
                     if full_name not in downloaded:
@@ -148,6 +154,14 @@ class Base3DOptions(VariantOptions):
                         if replace:
                             m3d.m_Filename = replace
                             models_replaced = True
+                else:  # File was found
+                    if used_extra[0]:
+                        # The file is there, but we got it expanding a user defined text
+                        # This is completely valid for KiCad, but kicad2step doesn't support it
+                        m3d.m_Filename = full_name
+                        if not models_replaced and extra_debug:
+                            logger.debug('- Modifying models with text vars')
+                        models_replaced = True
             # Push the models back
             for model in models_l:
                 models.push_front(model)
@@ -182,11 +196,12 @@ class Base3DOptions(VariantOptions):
             This mechanism uses the MTEXT attributes. """
         # The magic text is %variant:slot1,slot2...%
         field_regex = re.compile(r'\%([^:]+):(.*)\%')
-        if GS.debug_level > 3:
+        extra_debug = GS.debug_level > 3
+        if extra_debug:
             logger.debug("{} 3D models that aren't for this variant".format('Enable' if enable else 'Disable'))
         len_disable = len(DISABLE_TEXT)
         for m in GS.get_modules():
-            if GS.debug_level > 3:
+            if extra_debug:
                 logger.debug("Processing module " + m.GetReference())
             # Look for text objects
             for gi in m.GraphicalItems():
@@ -207,7 +222,7 @@ class Base3DOptions(VariantOptions):
                             while not models.empty():
                                 m_objs.insert(0, models.pop())
                             for i, m3d in enumerate(m_objs):
-                                if GS.debug_level > 3:
+                                if extra_debug:
                                     logger.debug('- {} {} {}'.format(i+1, i+1 in slots, m3d.m_Filename))
                                 if i+1 not in slots:
                                     if enable:

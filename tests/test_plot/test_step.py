@@ -39,11 +39,15 @@ def test_step_1(test_dir):
 
 def test_step_2(test_dir):
     prj = 'bom_fake_models'
+    yaml = 'step_simple_2'
+    if context.ki6():
+        yaml += '_k6'
     ctx = context.TestContext(test_dir, 'STEP_2', prj, 'step_simple_2', STEP_DIR)
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(os.path.join(STEP_DIR, prj+'-3D.step'))
-    ctx.clean_up()
+    ctx.search_err(['Missing 3D model for C1', 'Could not add 3D model to C1'], invert=True)
+    ctx.clean_up(keep_project=True)
 
 
 def test_step_3(test_dir):
