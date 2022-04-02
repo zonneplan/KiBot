@@ -187,8 +187,7 @@ class Base3DOptions(VariantOptions):
             fname = f.name
         logger.debug('Storing modified PCB to `{}`'.format(fname))
         GS.board.Save(fname)
-        with open(fname.replace('.kicad_pcb', GS.pro_ext), 'wt') as f:
-            pass
+        GS.copy_project(fname)
         return fname
 
     def apply_variant_aspect(self, enable=False):

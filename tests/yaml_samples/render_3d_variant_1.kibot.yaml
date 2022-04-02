@@ -25,3 +25,4 @@ outputs:
     type: render_3d
     options:
       variant: default
+      ray_tracing: true

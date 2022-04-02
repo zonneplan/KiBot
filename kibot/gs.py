@@ -14,6 +14,7 @@ except ImportError:
         pass
 from datetime import datetime, date
 from sys import exit
+from shutil import copy2
 from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, KICAD_VERSION_5_99, W_UNKVAR
 from .log import get_logger
 
@@ -325,6 +326,16 @@ class GS(object):
         if not GS.sch_file:
             logger.error('No SCH file found (*.sch), use -e to specify one.')
             exit(EXIT_BAD_ARGS)
+
+    @staticmethod
+    def copy_project(pcb_name):
+        pro_name = GS.pro_file
+        if pro_name is None or not os.path.isfile(pro_name):
+            return None
+        pro_copy = pcb_name.replace('.kicad_pcb', GS.pro_ext)
+        logger.debug('Copying project `{}` to `{}`'.format(pro_name, pro_copy))
+        copy2(pro_name, pro_copy)
+        return pro_copy
 
     @staticmethod
     def load_board():

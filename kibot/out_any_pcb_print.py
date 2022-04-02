@@ -4,7 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-from shutil import copy2, rmtree
+from shutil import rmtree
 from tempfile import mkdtemp
 from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError
@@ -68,16 +68,6 @@ class Any_PCB_PrintOptions(VariantOptions):
         super().config(parent)
         self._drill_marks = Any_PCB_PrintOptions._drill_marks_map[self._drill_marks]
 
-    @staticmethod
-    def _copy_project(fname):
-        pro_name = GS.pro_file
-        if pro_name is None or not os.path.isfile(pro_name):
-            return None
-        pro_copy = fname.replace('.kicad_pcb', GS.pro_ext)
-        logger.debug('Copying project `{}` to `{}`'.format(pro_name, pro_copy))
-        copy2(pro_name, pro_copy)
-        return pro_copy
-
     def filter_components(self, board, force_copy):
         if not self._comps and not force_copy:
             return GS.pcb_file, None
@@ -92,7 +82,7 @@ class Any_PCB_PrintOptions(VariantOptions):
         logger.debug('Storing filtered PCB to `{}`'.format(fname))
         GS.board.Save(fname)
         # Copy the project: avoids warnings, could carry some options
-        self._copy_project(fname)
+        GS.copy_project(fname)
         self.uncross_modules(board, comps_hash)
         self.restore_paste_and_glue(board, comps_hash)
         if self.hide_excluded:

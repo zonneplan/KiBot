@@ -433,7 +433,7 @@ class TestContext(object):
             logging.debug(msg+' OK')
             # logging.debug(' '+m.group(0))
 
-    def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False, fuzz='5%'):
+    def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False, fuzz='5%', tol=0):
         """ For images and single page PDFs """
         if reference is None:
             reference = image
@@ -464,7 +464,7 @@ class TestContext(object):
                '-colorspace', 'RGB',
                self.get_out_path(diff)]
         logging.debug('Comparing images with: '+usable_cmd(cmd))
-        res = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        res = subprocess.run(cmd, stderr=subprocess.STDOUT, check=(tol == 0), stdout=subprocess.PIPE).stdout
         # m = re.match(r'([\d\.e-]+) \(([\d\.e-]+)\)', res.decode())
         # assert m
         # logging.debug('MSE={} ({})'.format(m.group(1), m.group(2)))
@@ -474,7 +474,7 @@ class TestContext(object):
             os.remove(png_ref)
         if png_image:
             os.remove(png_image)
-        assert ae == 0
+        assert ae <= tol
 
     def compare_pdf(self, gen, reference=None, diff='diff-{}.png'):
         """ For multi-page PDFs """
