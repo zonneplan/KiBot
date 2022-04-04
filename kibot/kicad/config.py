@@ -424,6 +424,7 @@ class KiConf(object):
                 if os.path.isfile(fname):
                     dest = os.path.join(dest_dir, str(order)+'.kicad_wks')
                     copy2(fname, dest)
+                    order = order+1
                 else:
                     logger.error('Missing page layout file: '+fname)
                     exit(MISSING_WKS)
