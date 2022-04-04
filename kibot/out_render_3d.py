@@ -5,7 +5,6 @@
 # Project: KiBot (formerly KiPlot)
 # KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/9890
 import os
-from glob import glob
 from shutil import rmtree
 from .misc import (CMD_PCBNEW_3D, URL_PCBNEW_3D, RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL)
@@ -170,16 +169,13 @@ class Render3DOptions(Base3DOptions):
         if self.view != 'z':
             cmd.extend(['--view', self.view])
         # The board
-        board_name = self.filter_components(GS.pcb_dir)
+        board_name = self.filter_components()
         cmd.extend([board_name, os.path.dirname(output)])
         cmd, video_remove = add_extra_options(cmd)
         # Execute it
         ret = exec_with_retry(cmd)
         # Remove the temporal PCB
-        if board_name != GS.pcb_file:
-            # KiCad likes to create project files ...
-            for f in glob(board_name.replace('.kicad_pcb', '.*')):
-                os.remove(f)
+        self.remove_tmp_board(board_name)
         # Remove the downloaded 3D models
         if self._tmp_dir:
             rmtree(self._tmp_dir)

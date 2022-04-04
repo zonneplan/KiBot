@@ -5,7 +5,6 @@
 # Project: KiBot (formerly KiPlot)
 import os
 from shutil import rmtree
-from tempfile import mkdtemp
 from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError
 from .gs import GS
@@ -77,12 +76,7 @@ class Any_PCB_PrintOptions(VariantOptions):
         if self.hide_excluded:
             self.remove_fab(board, comps_hash)
         # Save the PCB to a temporal dir
-        pcb_dir = mkdtemp(prefix='tmp-kibot-pdf_pcb_print-')
-        fname = os.path.join(pcb_dir, GS.pcb_basename+'.kicad_pcb')
-        logger.debug('Storing filtered PCB to `{}`'.format(fname))
-        GS.board.Save(fname)
-        # Copy the project: avoids warnings, could carry some options
-        GS.copy_project(fname)
+        fname, pcb_dir = self.save_tmp_dir_board('pdf_pcb_print')
         self.uncross_modules(board, comps_hash)
         self.restore_paste_and_glue(board, comps_hash)
         if self.hide_excluded:

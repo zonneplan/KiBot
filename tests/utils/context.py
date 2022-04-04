@@ -433,7 +433,7 @@ class TestContext(object):
             logging.debug(msg+' OK')
             # logging.debug(' '+m.group(0))
 
-    def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False, fuzz='5%', tol=0):
+    def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False, fuzz='5%', tol=0, height='87%'):
         """ For images and single page PDFs """
         if reference is None:
             reference = image
@@ -460,7 +460,7 @@ class TestContext(object):
                image,
                reference,
                # Avoid the part where KiCad version is printed
-               '-crop', '100%x87%+0+0', '+repage',
+               '-crop', '100%x'+height+'+0+0', '+repage',
                '-colorspace', 'RGB',
                self.get_out_path(diff)]
         logging.debug('Comparing images with: '+usable_cmd(cmd))
@@ -476,7 +476,7 @@ class TestContext(object):
             os.remove(png_image)
         assert ae <= tol
 
-    def compare_pdf(self, gen, reference=None, diff='diff-{}.png'):
+    def compare_pdf(self, gen, reference=None, diff='diff-{}.png', height='87%'):
         """ For multi-page PDFs """
         if reference is None:
             reference = gen
@@ -500,7 +500,8 @@ class TestContext(object):
         assert len(ref_pages) == len(gen_pages)
         # Compare each page
         for page in range(len(ref_pages)):
-            self.compare_image('gen-'+str(page)+'.png', 'ref-'+str(page)+'.png', diff.format(page), ref_out_dir=True)
+            self.compare_image('gen-'+str(page)+'.png', 'ref-'+str(page)+'.png', diff.format(page), ref_out_dir=True,
+                               height=height)
 
     def compare_txt(self, text, reference=None, diff='diff.txt'):
         if reference is None:

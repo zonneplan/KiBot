@@ -37,6 +37,7 @@ WRONG_INSTALL = 23
 RENDER_3D_ERR = 24
 FAILED_EXECUTE = 25
 KICOST_ERROR = 26
+MISSING_WKS = 27
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
@@ -64,6 +65,7 @@ error_level_to_name = ['NONE',
                        'RENDER_3D_ERR',
                        'FAILED_EXECUTE',
                        'KICOST_ERROR',
+                       'MISSING_WKS',
                        ]
 CMD_EESCHEMA_DO = 'eeschema_do'
 URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/KiAuto'

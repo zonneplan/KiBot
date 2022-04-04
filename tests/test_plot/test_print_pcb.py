@@ -55,14 +55,14 @@ def test_print_pcb_refill_2(test_dir):
 
 
 def test_print_variant_1(test_dir):
-    prj = 'kibom-variant_3'
+    prj = 'kibom-variant_3_txt'
     ctx = context.TestContext(test_dir, 'print_variant_1', prj, 'print_pcb_variant_1', '')
     ctx.run()
     # Check all outputs are there
     fname = prj+'-F_Fab.pdf'
     ctx.search_err(r'KiCad project file not found', True)
     ctx.expect_out_file(fname)
-    ctx.compare_pdf(fname)
+    ctx.compare_pdf(fname, height='100%')
     ctx.clean_up(keep_project=True)
 
 

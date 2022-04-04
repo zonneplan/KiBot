@@ -328,11 +328,11 @@ class GS(object):
             exit(EXIT_BAD_ARGS)
 
     @staticmethod
-    def copy_project(pcb_name):
+    def copy_project(new_pcb_name):
         pro_name = GS.pro_file
         if pro_name is None or not os.path.isfile(pro_name):
             return None
-        pro_copy = pcb_name.replace('.kicad_pcb', GS.pro_ext)
+        pro_copy = new_pcb_name.replace('.kicad_pcb', GS.pro_ext)
         logger.debug('Copying project `{}` to `{}`'.format(pro_name, pro_copy))
         copy2(pro_name, pro_copy)
         return pro_copy

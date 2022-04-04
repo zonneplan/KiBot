@@ -229,7 +229,7 @@
     (property "Config" "T1" (id 4) (at 63.5 43.18 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "default:_3D_model" "${KICAD6_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_2010_5025Metric.wrl" (id 4) (at 63.5 43.18 0)
+    (property "default:_3D_model" "${KICAD6_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_2010_5025Metric.wrl" (id 5) (at 63.5 43.18 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid c70d9ef3-bfeb-47e0-a1e1-9aeba3da7864))

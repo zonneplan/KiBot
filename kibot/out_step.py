@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/10075
 import re
-import os
-from glob import glob
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from shutil import rmtree
 from .error import KiPlotConfigurationError
@@ -78,7 +76,7 @@ class STEPOptions(Base3DOptions):
         else:
             cmd.extend(['--user-origin', "{}{}".format(self.origin.replace(',', 'x'), units)])
         # The board
-        board_name = self.filter_components(GS.pcb_dir)
+        board_name = self.filter_components()
         cmd.append(board_name)
         # Execute and inform is successful
         logger.debug('Executing: '+str(cmd))
@@ -90,11 +88,7 @@ class STEPOptions(Base3DOptions):
                 logger.debug('Output from command: '+e.output.decode())
             exit(KICAD2STEP_ERR)
         finally:
-            # Remove the temporal PCB
-            if board_name != GS.pcb_file:
-                # KiCad likes to create project files ...
-                for f in glob(board_name.replace('.kicad_pcb', '.*')):
-                    os.remove(f)
+            self.remove_tmp_board(board_name)
             # Remove the downloaded 3D models
             if self._tmp_dir:
                 rmtree(self._tmp_dir)

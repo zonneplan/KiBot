@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
 import re
 import requests
 import tempfile
-from tempfile import NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .misc import W_MISS3D, W_FAILDL
 from .gs import (GS)
@@ -181,15 +180,6 @@ class Base3DOptions(VariantOptions):
                     models.add(full_name)
         return list(models)
 
-    def save_board(self, dir):
-        """ Save the PCB to a temporal file """
-        with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False, dir=dir) as f:
-            fname = f.name
-        logger.debug('Storing modified PCB to `{}`'.format(fname))
-        GS.board.Save(fname)
-        GS.copy_project(fname)
-        return fname
-
     def apply_variant_aspect(self, enable=False):
         """ Disable/Enable the 3D models that aren't for this variant.
             This mechanism uses the MTEXT attributes. """
@@ -233,14 +223,14 @@ class Base3DOptions(VariantOptions):
                                 # Push it back to the module
                                 models.push_back(m3d)
 
-    def filter_components(self, dir):
+    def filter_components(self):
         self.undo_3d_models_rep = {}
         if not self._comps:
             # No variant/filter to apply
             if self.download_models():
                 # Some missing components found and we downloaded them
                 # Save the fixed board
-                ret = self.save_board(dir)
+                ret = self.save_tmp_board()
                 # Undo the changes
                 self.undo_3d_models_rename()
                 return ret
@@ -269,7 +259,7 @@ class Base3DOptions(VariantOptions):
                         # We will change the 3D model
                         self.replace_models(models, new_model, c)
         self.download_models()
-        fname = self.save_board(dir)
+        fname = self.save_tmp_board()
         self.undo_3d_models_rename()
         # Undo the removing
         for m in GS.get_modules():

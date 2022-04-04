@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -20,11 +20,12 @@ import sys
 import json
 from io import StringIO
 from glob import glob
+from shutil import copy2
 import platform
 import sysconfig
 from ..gs import GS
 from .. import log
-from ..misc import W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB
+from ..misc import W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB, MISSING_WKS
 
 # Check python version to determine which version of ConfirParser to import
 if sys.version_info.major >= 3:
@@ -67,6 +68,8 @@ def expand_env(val, env, extra_env, used_extra=None):
             val = val.replace('${'+var+'}', extra_env[var])
             used_extra[0] = True
         else:
+            logger.error(env)
+            logger.error(extra_env)
             logger.error('Unable to expand `{}` in `{}`'.format(var, val))
     return val
 
@@ -380,6 +383,62 @@ class KiConf(object):
                     KiConf.lib_aliases[alias.name] = alias
         # Load the project's table
         KiConf.load_lib_aliases(os.path.join(KiConf.dirname, SYM_LIB_TABLE))
+
+    def fix_page_layout_k6_key(key, data, dest_dir):
+        if key in data:
+            section = data[key]
+            pl = section.get('page_layout_descr_file', None)
+            if pl:
+                fname = KiConf.expand_env(pl)
+                if os.path.isfile(fname):
+                    dest = os.path.join(dest_dir, key+'.kicad_wks')
+                    logger.debug('Copying {} -> {}'.format(fname, dest))
+                    copy2(fname, dest)
+                    data[key]['page_layout_descr_file'] = dest
+                else:
+                    logger.error('Missing page layout file: '+fname)
+                    exit(MISSING_WKS)
+
+    def fix_page_layout_k6(project):
+        # Get the current definitions
+        dest_dir = os.path.dirname(project)
+        with open(project, 'rt') as f:
+            pro_text = f.read()
+        data = json.loads(pro_text)
+        KiConf.fix_page_layout_k6_key('pcbnew', data, dest_dir)
+        KiConf.fix_page_layout_k6_key('schematic', data, dest_dir)
+        with open(project, 'wt') as f:
+            f.write(json.dumps(data, sort_keys=True, indent=2))
+
+    def fix_page_layout_k5(project):
+        order = 1
+        dest_dir = os.path.dirname(project)
+        with open(project, 'rt') as f:
+            lns = f.readlines()
+        for c, line in enumerate(lns):
+            if line.startswith('PageLayoutDescrFile='):
+                fname = line[20:].strip()
+                logger.error(fname)
+                fname = KiConf.expand_env(fname)
+                logger.error(fname)
+                if os.path.isfile(fname):
+                    dest = os.path.join(dest_dir, str(order)+'.kicad_wks')
+                    copy2(fname, dest)
+                else:
+                    logger.error('Missing page layout file: '+fname)
+                    exit(MISSING_WKS)
+                lns[c] = 'PageLayoutDescrFile='+dest+'\n'
+        with open(project, 'wt') as f:
+            lns = f.writelines(lns)
+
+    def fix_page_layout(project):
+        if not project:
+            return
+        KiConf.init(GS.pcb_file)
+        if GS.ki5():
+            KiConf.fix_page_layout_k5(project)
+        else:
+            KiConf.fix_page_layout_k6(project)
 
     def expand_env(name, used_extra=None):
         if used_extra is None:

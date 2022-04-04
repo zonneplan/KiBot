@@ -120,6 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   not specifying the SCH and more than one SCH was found. (#138)
 - 3D: problems to download 3D models for native KiCad 6 files. (#171)
       (not imported from KiCad 5)
+- Problems when using page layout files with relative paths. (#174)
 
 
 ## [0.11.0] - 2021-04-25

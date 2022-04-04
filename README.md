@@ -1698,7 +1698,7 @@ Next time you need this list just use an alias, like this:
                         A short-cut to use for simple cases where a variant is an overkill.
         - `frame`: [boolean=true] Include the frame and title block.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
@@ -2098,7 +2098,9 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic %x=svg). Affected by global options.
+        - `frame`: [boolean=true] Include the frame and title block.
+        - `monochrome`: [boolean=false] Generate a monochromatic PDF.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.

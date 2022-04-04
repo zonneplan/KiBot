@@ -8,6 +8,7 @@ BoardNm=
 [pcbnew]
 version=1
 LastNetListRead=
+PageLayoutDescrFile=${KIPRJMOD}/../../data/rotulo_k5.kicad_wks
 UseCmpFile=1
 PadDrill=0.600000000000
 PadDrillOvalY=0.600000000000
@@ -31,3 +32,13 @@ NetIExt=net
 version=1
 LibDir=
 [eeschema/libraries]
+[schematic_editor]
+version=1
+PageLayoutDescrFile=${KIPRJMOD}/../../data/rotulo_sch_k5.kicad_wks
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=
+SpiceAjustPassiveValues=0
+LabSize=50
+ERC_TestSimilarLabels=1

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
 from copy import deepcopy
+from tempfile import NamedTemporaryFile, mkdtemp
+from glob import glob
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
 from .misc import Rect, W_WRONGPASTE
@@ -20,6 +22,7 @@ else:
 from .registrable import RegOutput
 from .optionable import Optionable, BaseOptions
 from .fil_base import BaseFilter, apply_fitted_filter, reset_filters
+from .kicad.config import KiConf
 from .macros import macros, document  # noqa: F401
 from .error import KiPlotConfigurationError
 from . import log
@@ -385,6 +388,38 @@ class VariantOptions(BaseOptions):
         self.old_title = None
         if self.old_title is not None:
             GS.board.GetTitleBlock().SetTitle(self.old_title)
+
+    def save_tmp_board(self, dir=None):
+        """ Save the PCB to a temporal file.
+            Advantage: all relative paths inside the file remains valid
+            Disadvantage: the name of the file gets altered """
+        if dir is None:
+            dir = GS.pcb_dir
+        with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False, dir=dir) as f:
+            fname = f.name
+        logger.debug('Storing modified PCB to `{}`'.format(fname))
+        GS.board.Save(fname)
+        GS.copy_project(fname)
+        return fname
+
+    def save_tmp_dir_board(self, id):
+        """ Save the PCB to a temporal dir.
+            Disadvantage: all relative paths inside the file becomes useless
+            Aadvantage: the name of the file remains the same """
+        pcb_dir = mkdtemp(prefix='tmp-kibot-'+id+'-')
+        fname = os.path.join(pcb_dir, GS.pcb_basename+'.kicad_pcb')
+        logger.debug('Storing modified PCB to `{}`'.format(fname))
+        GS.board.Save(fname)
+        pro_name = GS.copy_project(fname)
+        KiConf.fix_page_layout(pro_name)
+        return fname, pcb_dir
+
+    def remove_tmp_board(self, board_name):
+        # Remove the temporal PCB
+        if board_name != GS.pcb_file:
+            # KiCad likes to create project files ...
+            for f in glob(board_name.replace('.kicad_pcb', '.*')):
+                os.remove(f)
 
     def run(self, output_dir):
         """ Makes the list of components available """

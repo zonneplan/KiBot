@@ -58,7 +58,7 @@ def test_print_sch_svg_ok(test_dir):
 
 
 def test_print_sch_svg_fail(test_dir):
-    prj = '3Rs'
+    prj = 'print_err'
     ctx = context.TestContext(test_dir, 'PrSCHFail_SVG', prj, 'print_sch_svg', PDF_DIR)
     ctx.run(SVG_SCH_PRINT, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(),
             'print_err'+context.KICAD_SCH_EXT)])
@@ -105,14 +105,14 @@ def test_sch_variant_ni_2(test_dir):
 
 def test_print_sch_variant_ni_1(test_dir):
     """ Using a variant """
-    prj = 'test_v5'  # Is the most complete, contains every KiCad object I know
+    prj = 'test_v5_wks'  # Is the most complete, contains every KiCad object I know
     ctx = context.TestContextSCH(test_dir, 'test_print_sch_variant_ni_1', prj, 'print_pdf_no_inductors_1', PDF_DIR)
     ctx.run()
-    r_name = 'test_v5-schematic_(no_L).pdf'
+    r_name = 'test_v5_wks-schematic_(no_L).pdf'
     o_name = os.path.join(NI_DIR, r_name)
     ctx.expect_out_file(o_name)
-    ctx.compare_pdf(o_name, r_name)
-    ctx.clean_up()
+    ctx.compare_pdf(o_name, r_name, height='100%')
+    ctx.clean_up(keep_project=True)
 
 
 def test_print_sch_svg_variant_ni_1(test_dir):
