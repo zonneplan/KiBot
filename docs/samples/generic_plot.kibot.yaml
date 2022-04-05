@@ -951,6 +951,41 @@ outputs:
       # [string=''] Board variant to apply.
       # Don't use the `kicost_variant` when using internal variants/filters
       variant: ''
+  # PCB Print:
+  - name: 'pcb_print_example'
+    comment: 'Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print`.'
+    type: 'pcb_print'
+    dir: 'Example/pcb_print_dir'
+    options:
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant
+      hide_excluded: false
+      # [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=assembly, %x=pdf). Affected by global options
+      output: '%f-%i%I%v.%x'
+      # `output_name` is an alias for `output`
+      # [list(dict)] List of pages to include in the output document.
+      # Each page contains one or more layers of the PCB
+      pages:
+        # [list(dict)] List of layers printed in this page. Order is important, the last goes on top
+        - layers:
+            # [string=''] Color used for this layer
+            - color: ''
+              # [string=''] A description for the layer, for documentation purposes
+              description: ''
+              # [string=''] Name of the layer. As you see it in KiCad
+              layer: ''
+              # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified
+              suffix: ''
+          # [boolean=false] Print mirrored (X axis inverted)
+          mirror: false
+          # [boolean=false] Print in black and white
+          monochrome: false
+          # [string=''] Layer to plot the page frame
+          sheet_reference_layer: ''
+      # [string=''] Board variant to apply
+      variant: ''
   # PcbDraw - Beautiful 2D PCB render:
   # Uses configurable colors.
   # Can also render the components if the 2D models are available

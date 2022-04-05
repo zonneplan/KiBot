@@ -610,9 +610,14 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
             elif val.get_default():
                 f.write(ind_str+'{}: {}\n'.format(k, val.get_default()))
             else:
+                if is_list and first:
+                    k = '- '+k
                 f.write(ind_str+'{}:\n'.format(k))
                 extra_indent = 2 if not is_list else 4
                 print_example_options(f, val, '', indent+extra_indent, None, help and 'list(dict' in help_lines[0])
+                if is_list and first:
+                    ind_str += '  '
+                    first = False
         else:
             if is_list and first:
                 k = '- '+k

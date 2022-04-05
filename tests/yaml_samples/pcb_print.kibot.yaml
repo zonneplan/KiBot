@@ -1,0 +1,39 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'print_front'
+    comment: "Print Top and Bottom layers"
+    type: pcb_print
+    dir: Layers
+    options:
+#      title: 'Fake title for front copper and silk'
+      pages:
+        - sheet_reference_layer: F.Fab
+          layers:
+            - layer: Edge.Cuts
+              color: "#FF8000"
+            - layer: F.Cu
+              color: "#B3FFB3"
+            - layer: F.Paste
+              color: "#FF8A8A"
+            - layer: F.SilkS
+              color: "#626262"
+            - layer: F.Fab
+              color: "#000080"
+            - layer: User.Eco1
+              color: "#000080"
+        - mirror: true
+          sheet_reference_layer: B.Fab
+          layers:
+            - layer: B.Fab
+              color: "#000080"
+            - layer: Edge.Cuts
+              color: "#FF8000"
+            - layer: B.Silkscreen
+              color: "#626262"
+            - layer: B.Paste
+              color: "#FF8A8A"
+            - layer: B.Cu
+              color: "#B3FFB3"

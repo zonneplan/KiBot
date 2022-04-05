@@ -1517,6 +1517,40 @@ Next time you need this list just use an alias, like this:
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* PCB Print
+  * Type: `pcb_print`
+  * Description: Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print`.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `pcb_print` output.
+      * Valid keys:
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=assembly, %x=pdf). Affected by global options.
+        - *output_name*: Alias for output.
+        - `pages`: [list(dict)] List of pages to include in the output document.
+                   Each page contains one or more layers of the PCB.
+          * Valid keys:
+            - `layers`: [list(dict)] List of layers printed in this page. Order is important, the last goes on top.
+              * Valid keys:
+                - `color`: [string=''] Color used for this layer.
+                - `description`: [string=''] A description for the layer, for documentation purposes.
+                - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+                - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+            - `mirror`: [boolean=false] Print mirrored (X axis inverted).
+            - `monochrome`: [boolean=false] Print in black and white.
+            - `sheet_reference_layer`: [string=''] Layer to plot the page frame.
+        - `variant`: [string=''] Board variant to apply.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * PcbDraw - Beautiful 2D PCB render
   * Type: `pcbdraw`
   * Description: Exports the PCB as a 2D model (SVG, PNG or JPG).
@@ -3010,6 +3044,8 @@ Additionally we support:
 - **KiCAD to Boardview exporter**: @whitequark
 - **S-expression parser**: Takafumi Arakaki
 - **Python macros**: Juha Jeronen (@Technologicat)
+- **Board2Pdf**: Albin Dennevi
+- **PyPDF2**: Mathieu Fenniak
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout

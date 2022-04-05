@@ -1442,6 +1442,8 @@ Additionally we support:
 - **KiCAD to Boardview exporter**: @whitequark
 - **S-expression parser**: Takafumi Arakaki
 - **Python macros**: Juha Jeronen (@Technologicat)
+- **Board2Pdf**: Albin Dennevi
+- **PyPDF2**: Mathieu Fenniak
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout

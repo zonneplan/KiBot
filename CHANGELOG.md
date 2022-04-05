@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     https://forum.kicad.info/t/fab-drawing-for-only-through-hole-parts/
   - mechanism to change the block title. (#102)
   - KiCad 6 color theme selection.
+  - New `pcb_print` output with more flexibility and faster.
 - Internal BoM:
   - option to avoid merging components with empty fields.
     Is named `merge_both_blank` and defaults to true.
