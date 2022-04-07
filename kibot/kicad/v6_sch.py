@@ -1819,13 +1819,16 @@ class SchematicV6(Schematic):
         for sch in self.sheets:
             sch.sch = sch.load_sheet(project, fname, self)
         # Assign the page numbers
-        if parent is None:
-            self.all_sheets = []
-            for i in self.sheet_instances:
-                sheet = self.sheet_paths.get(i.path)
-                if sheet:
-                    sheet.sheet = i.page
-                    self.all_sheets.append(sheet)
+        if parent is not None:
+            # Here we finished for sub-sheets
+            return
+        # On the main sheet analyze the sheet and symbol instances
+        self.all_sheets = []
+        for i in self.sheet_instances:
+            sheet = self.sheet_paths.get(i.path)
+            if sheet:
+                sheet.sheet = i.page
+                self.all_sheets.append(sheet)
         # Create the components list
         for s in self.symbol_instances:
             # Get a copy of the original symbol
