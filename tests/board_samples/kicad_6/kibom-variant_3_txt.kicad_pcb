@@ -66,6 +66,8 @@
     )
   )
 
+  (property "text" "Test")
+
   (net 0 "")
   (net 1 "Net-(C1-Pad2)")
   (net 2 "Net-(C1-Pad1)")
@@ -321,5 +323,10 @@
   (gr_text "Bogus component.\nNot in schematic." (at 161.163 89.281) (layer "Cmts.User") (tstamp 5f5ef4dd-f4ae-40a8-adf2-0ac2296d03fa)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )
+
+  (segment (start 145 82) (end 145 92) (width 0.25) (layer "F.Cu") (net 0) (tstamp 86f6faec-7eee-404c-a73a-2ae625f33d8c))
+  (segment (start 145 92) (end 144 92) (width 0.25) (layer "F.Cu") (net 0) (tstamp 90337a8b-a8c5-48e1-ad0f-b0e67716fe3c))
+  (segment (start 144 92) (end 144 82) (width 0.25) (layer "F.Cu") (net 0) (tstamp d3db736b-0e33-4126-b950-5488923df40e))
+  (segment (start 144 82) (end 145 82) (width 0.25) (layer "F.Cu") (net 0) (tstamp eb83440d-aa8b-4a1e-9e93-00cf0de78de9))
 
 )

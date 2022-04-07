@@ -32,6 +32,7 @@ class Optionable(object):
     _num_range_re = compile(r"number=.*\] \[(-?\d+),(-?\d+)\]")
     _default = None
     _color_re = re.compile(r"#[A-Fa-f0-9]{6}$")
+    _color_re_a = re.compile(r"#[A-Fa-f0-9]{8}$")
 
     def __init__(self):
         self._unkown_is_error = False
@@ -350,8 +351,8 @@ class Optionable(object):
 
     def validate_color(self, name):
         color = getattr(self, name)
-        if not self._color_re.match(color):
-            raise KiPlotConfigurationError('Invalid color for `{}` use `#rrggbb` with hex digits'.format(name))
+        if not self._color_re.match(color) and not self._color_re_a.match(color):
+            raise KiPlotConfigurationError('Invalid color for `{}` use `#rrggbb` or `#rrggbbaa` with hex digits'.format(name))
 
     def validate_colors(self, names):
         for color in names:

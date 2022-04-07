@@ -1,0 +1,33 @@
+(kicad_sch (version 20211123) (generator eeschema)
+
+  (uuid e63e39d7-6ac0-4ffd-8aa3-1841a4541b55)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (sheet (at 96.52 72.39) (size 41.91 13.97) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 22c28634-55a5-4f76-9217-6b70ddd108b8)
+    (property "Sheet name" "Test" (id 0) (at 96.52 71.6784 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "imported_test.kicad_sch" (id 1) (at 96.52 86.9446 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+    (path "/22c28634-55a5-4f76-9217-6b70ddd108b8" (page "2"))
+  )
+
+  (symbol_instances
+    (path "/22c28634-55a5-4f76-9217-6b70ddd108b8/38a501e2-0ee8-439d-bd02-e9e90e7503e9"
+      (reference "R1") (unit 1) (value "R") (footprint "")
+    )
+  )
+)

@@ -106,6 +106,8 @@ class Render3DOptions(Base3DOptions):
             name = GS.global_solder_mask_color_top or GS.global_solder_mask_color
         if name and name.lower() in SOLDER_COLORS:
             (_, self.solder_mask) = SOLDER_COLORS[name.lower()]
+            # Add the default opacity (80%)
+            self.solder_mask += "D4"
         # Silk screen
         if bottom:
             name = GS.global_silk_screen_color_bottom or GS.global_silk_screen_color

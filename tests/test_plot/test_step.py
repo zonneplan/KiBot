@@ -71,13 +71,16 @@ def test_step_variant_1(test_dir):
 
 
 def test_render_3d_variant_1(test_dir):
-    prj = 'kibom-variant_3'
-    if context.ki6():
-        prj += '_txt'
-    ctx = context.TestContext(test_dir, 'test_render_3d_variant_1', prj, 'render_3d_variant_1', '')
+    # Text variables to ensure they are rendered.
+    # Traces
+    prj = 'kibom-variant_3_txt'
+    yaml = 'render_3d_variant_1'
+    if context.ki5():
+        yaml += '_k5'
+    ctx = context.TestContext(test_dir, 'test_render_3d_variant_1', prj, yaml, '')
     ctx.run()
     # Check all outputs are there
     name = prj+'-3D_top.png'
     ctx.expect_out_file(name)
-    ctx.compare_image(name, fuzz='50%', tol=100)
+    ctx.compare_image(name, fuzz='7%', tol=1000)
     ctx.clean_up(keep_project=True)
