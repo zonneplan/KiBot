@@ -314,3 +314,11 @@ def test_sch_errors_bad_snum(test_dir):
 def test_sch_errors_bad_tbentry(test_dir):
     if context.ki5():
         setup_ctx(test_dir, 'bad_tbentry', 'Wrong entry in title block')
+
+
+def test_imported_k6(test_dir):
+    """ Test we can load an schematic with an imported sub-sheet (#178) """
+    if context.ki6():
+        prj = 'imported_top'
+        ctx = context.TestContextSCH(test_dir, 'test_imported_k6', prj, 'int_bom_simple_csv', None)
+        ctx.run()
