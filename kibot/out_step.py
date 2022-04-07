@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/10075
+import os
 import re
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from shutil import rmtree
@@ -11,7 +12,7 @@ from .error import KiPlotConfigurationError
 from .misc import KICAD2STEP, KICAD2STEP_ERR, URL_PCBNEW_RUN_DRC
 from .gs import (GS)
 from .out_base_3d import Base3DOptions, Base3D
-from .kiplot import check_script
+from .kiplot import check_script, add_extra_options
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -57,7 +58,7 @@ class STEPOptions(Base3DOptions):
         else:
             units = 'in'
         # Base command with overwrite
-        cmd = [KICAD2STEP, '-o', output, '-f']
+        cmd = [KICAD2STEP, '-o', output, '-f', '-d', os.path.dirname(output)]
         if GS.debug_level > 0:
             cmd.append('-vv')
         else:
@@ -78,6 +79,7 @@ class STEPOptions(Base3DOptions):
         # The board
         board_name = self.filter_components()
         cmd.append(board_name)
+        cmd, video_remove = add_extra_options(cmd)
         # Execute and inform is successful
         logger.debug('Executing: '+str(cmd))
         try:
@@ -92,6 +94,10 @@ class STEPOptions(Base3DOptions):
             # Remove the downloaded 3D models
             if self._tmp_dir:
                 rmtree(self._tmp_dir)
+        if video_remove:
+            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'kicad2step_screencast.ogv')
+            if os.path.isfile(video_name):
+                os.remove(video_name)
         logger.debug('Output from command:\n'+cmd_output.decode())
 
 
