@@ -654,7 +654,7 @@ class ReportOptions(BaseOptions):
         self._schematic_svgs = []
         for o in RegOutput.get_outputs():
             dest = None
-            if o.type == 'pdf_pcb_print':
+            if o.type == 'pdf_pcb_print' or o.type == 'pcb_print':
                 dest = self._layer_pdfs
             elif o.type == 'svg_pcb_print':
                 dest = self._layer_svgs

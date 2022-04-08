@@ -61,7 +61,3 @@ Marking:
 Other markings:
 
 - ROHS / UL / Date - Yes if available
-
-PCB:
-
-![Top copper and silkscreen](Layers/light_control-F_Cu+F_SilkS.svg){ width=16.5cm height=11.7cm }

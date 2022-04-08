@@ -62,7 +62,3 @@ Marking:
 Other markings:
 
 - ROHS / UL / Date - Yes if available
-
-PCB:
-
-#layer_svg:![${comment_print_front}](${path_print_front}){ width=16.5cm height=11.7cm }

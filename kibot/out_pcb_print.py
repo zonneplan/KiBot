@@ -40,8 +40,11 @@ def to_gray(color):
     return (avg, avg, avg)
 
 
-def colorize_pdf(folder, in_file, out_file, color):
+def colorize_pdf(folder, in_file, out_file, color, black_holes):
     er = None
+    pdf_color = [PyPDF2.generic.FloatObject(color[0]), PyPDF2.generic.FloatObject(color[1]),
+                 PyPDF2.generic.FloatObject(color[2])]
+    black_color = [PyPDF2.generic.FloatObject(0), PyPDF2.generic.FloatObject(0), PyPDF2.generic.FloatObject(0)]
     try:
         with open(os.path.join(folder, in_file), "rb") as f:
             source = PyPDF2.PdfFileReader(f, "rb")
@@ -50,16 +53,14 @@ def colorize_pdf(folder, in_file, out_file, color):
                 page = source.getPage(page)
                 content_object = page["/Contents"].getObject()
                 content = PyPDF2.pdf.ContentStream(content_object, source)
-                i = 0
-                for operands, operator in content.operations:
-                    if operator == PyPDF2.utils.b_("rg") or operator == PyPDF2.utils.b_("RG"):
+                for i, (operands, operator) in enumerate(content.operations):
+                    if operator == b"rg" or operator == b"RG":
                         if operands == [0, 0, 0]:
-                            content.operations[i][0]
-                            content.operations[i] = ([PyPDF2.generic.FloatObject(color[0]),
-                                                     PyPDF2.generic.FloatObject(color[1]),
-                                                     PyPDF2.generic.FloatObject(color[2])],
-                                                     content.operations[i][1])
-                    i = i+1
+                            # Replace black by the selected color
+                            content.operations[i] = (pdf_color, operator)
+                        elif black_holes and operands == [1, 1, 1]:
+                            # Replace white by black
+                            content.operations[i] = (black_color, operator)
                 page.__setitem__(PyPDF2.generic.NameObject('/Contents'), content)
                 output.addPage(page)
             try:
@@ -152,14 +153,14 @@ def create_pdf_from_pages(input_folder, input_files, output_fn):
         f.close()
 
 
-def colorize_layer(suffix, color, monochrome, filelist, temp_dir):
+def colorize_layer(suffix, color, monochrome, filelist, temp_dir, black_holes=False):
     in_file = GS.pcb_basename+"-"+suffix+".pdf"
     if color != "#000000":
         out_file = GS.pcb_basename+"-"+suffix+"-colored.pdf"
         logger.debug('- Giving color to {} -> {} ({})'.format(in_file, out_file, color))
         rgb, alpha = hex_to_rgb(color)
         color = rgb if not monochrome else to_gray(rgb)
-        colorize_pdf(temp_dir, in_file, out_file, color)
+        colorize_pdf(temp_dir, in_file, out_file, color, black_holes)
         filelist.append(out_file)
     else:
         filelist.append(in_file)
@@ -213,6 +214,8 @@ class PagesOptions(Optionable):
             """ Do not plot the component pads in the silk screen (KiCad 5.x only) """
             self.tent_vias = True
             """ Cover the vias """
+            self.black_holes = True
+            """ Change the drill holes to be black instead of white """
             self.layers = LayerOptions
             """ [list(dict)] List of layers printed in this page. Order is important, the last goes on top """
 
@@ -245,7 +248,7 @@ class PCB_PrintOptions(VariantOptions):
                 To use the KiCad 6 default colors select `_builtin_default`.
                 Usually user colors are stored as `user`, but you can give it another name """
             self.plot_sheet_reference = True
-            """ Include the title-block """
+            """ Include the title-block. Only available on KiCad 6. """
             self.pages = PagesOptions
             """ [list(dict)] List of pages to include in the output document.
                 Each page contains one or more layers of the PCB """
@@ -339,11 +342,13 @@ class PCB_PrintOptions(VariantOptions):
                 pc.SetLayer(id)
                 pc.OpenPlotfile(la.suffix, PLOT_FORMAT_PDF, p.sheet)
                 pc.PlotLayer()
-            # 2) Plot the frame using an empry layer and 1.0 scale
-            if self.plot_sheet_reference:
+            # 2) Plot the frame using an empty layer and 1.0 scale
+            if self.plot_sheet_reference and GS.ki6():
                 logger.debug('- Plotting the frame')
                 po.SetPlotFrameRef(True)
                 po.SetScale(1.0)
+                po.SetNegative(False)
+                # TODO: Any better option?
                 pc.SetLayer(GS.board.GetLayerID(GS.work_layer))
                 pc.OpenPlotfile('frame', PLOT_FORMAT_PDF, p.sheet)
                 pc.PlotLayer()
@@ -351,9 +356,9 @@ class PCB_PrintOptions(VariantOptions):
             # 3) Apply the colors to the layer PDFs
             filelist = []
             for la in p.layers:
-                colorize_layer(la.suffix, la.color, p.monochrome, filelist, temp_dir)
+                colorize_layer(la.suffix, la.color, p.monochrome, filelist, temp_dir, p.black_holes)
             # 4) Apply color to the frame
-            if self.plot_sheet_reference:
+            if self.plot_sheet_reference and GS.ki6():
                 color = p.sheet_reference_color if p.sheet_reference_color else self._color_theme.pcb_frame
                 colorize_layer('frame', color, p.monochrome, filelist, temp_dir)
             # 5) Stack all layers in one file
@@ -378,7 +383,8 @@ class PCB_PrintOptions(VariantOptions):
 @output_class
 class PCB_Print(BaseOutput):  # noqa: F821
     """ PCB Print
-        Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print`. """
+        Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print`.
+        Note that it doesn't support the frame/title block for KiCad 5. """
     def __init__(self):
         super().__init__()
         with document:

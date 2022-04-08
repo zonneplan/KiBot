@@ -19,6 +19,7 @@ outputs:
           title: Hola
           sheet: Front
           sheet_reference_color: "#A02020"
+          # black_holes: false
           layers:
             - layer: Edge.Cuts
             - layer: F.Cu
