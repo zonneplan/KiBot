@@ -127,7 +127,7 @@ def test_pcbdraw_variant_2(test_dir):
 
 def test_pcbdraw_variant_3(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContext(test_dir, 'test_pcbdraw_variant_1', prj, 'pcbdraw_variant_3', '')
+    ctx = context.TestContext(test_dir, 'test_pcbdraw_variant_3', prj, 'pcbdraw_variant_3', '')
     ctx.run()
     # Check all outputs are there
     fname = prj+'-top.png'
