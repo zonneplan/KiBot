@@ -7,13 +7,14 @@
 # Adapted from: https://gitlab.com/dennevi/Board2Pdf/
 # Note: Original code released as Public Domain
 import os
-from pcbnew import PLOT_CONTROLLER, IsCopperLayer, PLOT_FORMAT_PDF
+from pcbnew import PLOT_CONTROLLER, PLOT_FORMAT_PDF, FromMM
 from shutil import rmtree
 from tempfile import mkdtemp
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
 from .out_base import VariantOptions
+from .kicad.color_theme import load_color_theme
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
 from . import PyPDF2
@@ -22,29 +23,21 @@ from . import log
 logger = log.get_logger()
 
 # TODO:
-# - Se pueden sacar los colores del esquema de colores?
 # - Opciones de out_pdf y out_any_layer
-# - Estas cosas:
-#             self.scaling = 1.0
-#             """ Scale factor (0 means autoscaling)"""
-#             self._drill_marks = 'full'
-#             """ What to use to indicate the drill places, can be none, small or full (for real scale) """
-#             self.title = ''
-#             """ Text used to replace the sheet title. %VALUE expansions are allowed.
-#                 If it starts with `+` the text is concatenated """
-#             self.color_theme = '_builtin_classic'
-#             """ Selects the color theme. Onlyu applies to KiCad 6.
-#                 To use the KiCad 6 default colors select `_builtin_default`.
-#                 Usually user colors are stored as `user`, but you can give it another name """
 
 
 def hex_to_rgb(value):
     """ Return (red, green, blue) in float between 0-1 for the color given as #rrggbb. """
     value = value.lstrip('#')
-    lv = len(value)
-    rgb = tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+    rgb = tuple(int(value[i:i+2], 16) for i in range(0, 6, 2))
     rgb = (rgb[0]/255, rgb[1]/255, rgb[2]/255)
-    return rgb
+    alpha = int(value[6:], 16)/255 if len(value) == 8 else 1.0
+    return rgb, alpha
+
+
+def to_gray(color):
+    avg = (color[0]+color[1]+color[2])/3
+    return (avg, avg, avg)
 
 
 def colorize_pdf(folder, in_file, out_file, color):
@@ -89,7 +82,10 @@ def merge_pdf(input_folder, input_files, output_folder, output_file):
     i = 0
     er = None
     open_files = []
+    extra_debug = GS.debug_level >= 3
     for filename in input_files:
+        if extra_debug:
+            logger.debug("  - {}".format(filename))
         try:
             file = open(os.path.join(input_folder, filename), 'rb')
             open_files.append(file)
@@ -156,6 +152,19 @@ def create_pdf_from_pages(input_folder, input_files, output_fn):
         f.close()
 
 
+def colorize_layer(suffix, color, monochrome, filelist, temp_dir):
+    in_file = GS.pcb_basename+"-"+suffix+".pdf"
+    if color != "#000000":
+        out_file = GS.pcb_basename+"-"+suffix+"-colored.pdf"
+        logger.debug('- Giving color to {} -> {} ({})'.format(in_file, out_file, color))
+        rgb, alpha = hex_to_rgb(color)
+        color = rgb if not monochrome else to_gray(rgb)
+        colorize_pdf(temp_dir, in_file, out_file, color)
+        filelist.append(out_file)
+    else:
+        filelist.append(in_file)
+
+
 class LayerOptions(Layer):
     """ Data for a layer """
     def __init__(self):
@@ -164,10 +173,17 @@ class LayerOptions(Layer):
         with document:
             self.color = ""
             """ Color used for this layer """
+            self.plot_footprint_refs = True
+            """ Include the footprint references """
+            self.plot_footprint_values = True
+            """ Include the footprint values """
+            self.force_plot_invisible_refs_vals = False
+            """ Include references and values even when they are marked as invisible """
 
     def config(self, parent):
         super().config(parent)
-        self.validate_color('color')
+        if self.color:
+            self.validate_color('color')
 
 
 class PagesOptions(Optionable):
@@ -179,9 +195,24 @@ class PagesOptions(Optionable):
             self.mirror = False
             """ Print mirrored (X axis inverted) """
             self.monochrome = False
-            """ Print in black and white """
-            self.sheet_reference_layer = ''
-            """ Layer to plot the page frame """
+            """ Print in gray scale """
+            self.scaling = 1.0
+            """ Scale factor (0 means autoscaling)"""
+            self.title = ''
+            """ Text used to replace the sheet title. %VALUE expansions are allowed.
+                If it starts with `+` the text is concatenated """
+            self.sheet = 'Assembly'
+            """ Text to use for the `sheet` in the title block """
+            self.sheet_reference_color = ''
+            """ Color to use for the frame and title block """
+            self.line_width = 0.1
+            """ [0.02,2] For objects without width [mm] (KiCad 5) """
+            self.negative_plot = False
+            """ Invert black and white. Only useful for a single layer """
+            self.exclude_pads_from_silkscreen = False
+            """ Do not plot the component pads in the silk screen (KiCad 5.x only) """
+            self.tent_vias = True
+            """ Cover the vias """
             self.layers = LayerOptions
             """ [list(dict)] List of layers printed in this page. Order is important, the last goes on top """
 
@@ -189,18 +220,10 @@ class PagesOptions(Optionable):
         super().config(parent)
         if isinstance(self.layers, type):
             raise KiPlotConfigurationError("Missing `layers` list")
+        # Fill the ID member for all the layers
         self.layers = Layer.solve(self.layers)
-        if self.sheet_reference_layer:
-            # Layer name to layer ID
-            layer = Layer()
-            name = self.sheet_reference_layer
-            layer.layer = self.sheet_reference_layer
-            self.sheet_reference_layer = layer._get_layer_id_from_name()
-            # Check this is one of the specified layers
-            layer = next(filter(lambda x: x._id == self.sheet_reference_layer, self.layers), None)
-            if layer is None:
-                raise KiPlotConfigurationError("The layer selected for the sheet reference ({}) isn't in the list of layers".
-                                               format(name))
+        if self.sheet_reference_color:
+            self.validate_color('sheet_reference_color')
 
 
 class PCB_PrintOptions(VariantOptions):
@@ -215,29 +238,51 @@ class PCB_PrintOptions(VariantOptions):
             """ Filename for the output PDF (%i=assembly, %x=pdf)"""
             self.hide_excluded = False
             """ Hide components in the Fab layer that are marked as excluded by a variant """
+            self._drill_marks = 'full'
+            """ What to use to indicate the drill places, can be none, small or full (for real scale) """
+            self.color_theme = '_builtin_classic'
+            """ Selects the color theme. Only applies to KiCad 6.
+                To use the KiCad 6 default colors select `_builtin_default`.
+                Usually user colors are stored as `user`, but you can give it another name """
+            self.plot_sheet_reference = True
+            """ Include the title-block """
             self.pages = PagesOptions
             """ [list(dict)] List of pages to include in the output document.
                 Each page contains one or more layers of the PCB """
+            self.title = ''
+            """ Text used to replace the sheet title. %VALUE expansions are allowed.
+                If it starts with `+` the text is concatenated """
         super().__init__()
         self._expand_ext = 'pdf'
         self._expand_id = 'assembly'
 
-#     @property
-#     def drill_marks(self):
-#         return self._drill_marks
-#
-#     @drill_marks.setter
-#     def drill_marks(self, val):
-#         if val not in self._drill_marks_map:
-#             raise KiPlotConfigurationError("Unknown drill mark type: {}".format(val))
-#         self._drill_marks = val
+    @property
+    def drill_marks(self):
+        return self._drill_marks
+
+    @drill_marks.setter
+    def drill_marks(self, val):
+        if val not in self._drill_marks_map:
+            raise KiPlotConfigurationError("Unknown drill mark type: {}".format(val))
+        self._drill_marks = val
 
     def config(self, parent):
         super().config(parent)
         if isinstance(self.pages, type):
             raise KiPlotConfigurationError("Missing `pages` list")
-
-        # self._drill_marks = PCB_PrintOptions._drill_marks_map[self._drill_marks]
+        self._color_theme = load_color_theme(self.color_theme)
+        if self._color_theme is None:
+            raise KiPlotConfigurationError("Unable to load `{}` color theme".format(self.color_theme))
+        # Assign a color if none was defined
+        layer_id2color = self._color_theme.layer_id2color
+        for p in self.pages:
+            for la in p.layers:
+                if not la.color:
+                    if la._id in layer_id2color:
+                        la.color = layer_id2color[la._id]
+                    else:
+                        la.color = "#000000"
+        self._drill_marks = PCB_PrintOptions._drill_marks_map[self._drill_marks]
 
     def filter_components(self):
         if not self._comps:
@@ -264,53 +309,59 @@ class PCB_PrintOptions(VariantOptions):
         temp_dir = mkdtemp(prefix='tmp-kibot-pcb_print-')
         logger.debug('- Temporal dir: {}'.format(temp_dir))
         # Plot options
-        plot_controller = PLOT_CONTROLLER(GS.board)
-        plot_options = plot_controller.GetPlotOptions()
-        plot_options.SetOutputDirectory(temp_dir)
+        pc = PLOT_CONTROLLER(GS.board)
+        po = pc.GetPlotOptions()
+        po.SetOutputDirectory(temp_dir)
         # Set General Options:
-        plot_options.SetPlotValue(True)
-        plot_options.SetPlotReference(True)
-        plot_options.SetPlotInvisibleText(False)
-        plot_options.SetPlotViaOnMaskLayer(False)
-        plot_options.SetExcludeEdgeLayer(True)
-        # plot_options.SetPlotPadsOnSilkLayer(False);
-        plot_options.SetUseAuxOrigin(False)
-        plot_options.SetNegative(False)
-        plot_options.SetScale(1.0)
-        plot_options.SetAutoScale(False)
+        po.SetExcludeEdgeLayer(True)   # We plot it separately
+        po.SetUseAuxOrigin(False)
+        po.SetAutoScale(False)
+        po.SetDrillMarksType(self._drill_marks)
         # Generate the output
         pages = []
         for n, p in enumerate(self.pages):
+            self.set_title(p.title if p.title else self.title)
             # 1) Plot all layers to individual PDF files (B&W)
+            po.SetPlotFrameRef(False)   # We plot it separately
+            po.SetMirror(p.mirror)
+            po.SetScale(p.scaling)
+            po.SetNegative(p.negative_plot)
+            po.SetPlotViaOnMaskLayer(not p.tent_vias)
+            if GS.ki5():
+                po.SetLineWidth(FromMM(p.line_width))
+                po.SetPlotPadsOnSilkLayer(not p.exclude_pads_from_silkscreen)
             for la in p.layers:
                 id = la._id
                 logger.debug('- Plotting layer {} ({})'.format(la.layer, id))
-                plot_options.SetPlotFrameRef(id == p.sheet_reference_layer)
-                plot_options.SetMirror(p.mirror)
-                if IsCopperLayer(id):  # Should probably do this on mask layers as well
-                    plot_options.SetDrillMarksType(2)  # NO_DRILL_SHAPE = 0, SMALL_DRILL_SHAPE = 1, FULL_DRILL_SHAPE  = 2
-                else:
-                    plot_options.SetDrillMarksType(0)  # NO_DRILL_SHAPE = 0, SMALL_DRILL_SHAPE = 1, FULL_DRILL_SHAPE  = 2
-                plot_controller.SetLayer(id)
-                plot_controller.OpenPlotfile(la.suffix, PLOT_FORMAT_PDF, "Assembly")
-                plot_controller.PlotLayer()
-            plot_controller.ClosePlot()
-            # 2) Apply the colors to the PDFs
+                po.SetPlotReference(la.plot_footprint_refs)
+                po.SetPlotValue(la.plot_footprint_values)
+                po.SetPlotInvisibleText(la.force_plot_invisible_refs_vals)
+                pc.SetLayer(id)
+                pc.OpenPlotfile(la.suffix, PLOT_FORMAT_PDF, p.sheet)
+                pc.PlotLayer()
+            # 2) Plot the frame using an empry layer and 1.0 scale
+            if self.plot_sheet_reference:
+                logger.debug('- Plotting the frame')
+                po.SetPlotFrameRef(True)
+                po.SetScale(1.0)
+                pc.SetLayer(GS.board.GetLayerID(GS.work_layer))
+                pc.OpenPlotfile('frame', PLOT_FORMAT_PDF, p.sheet)
+                pc.PlotLayer()
+            pc.ClosePlot()
+            # 3) Apply the colors to the layer PDFs
             filelist = []
             for la in p.layers:
-                in_file = GS.pcb_basename+"-"+la.suffix+".pdf"
-                if la.color != "#000000":
-                    out_file = GS.pcb_basename+"-"+la.suffix+"-colored.pdf"
-                    logger.debug('- Giving color to {} -> {} ({})'.format(in_file, out_file, la.color))
-                    colorize_pdf(temp_dir, in_file, out_file, hex_to_rgb(la.color))
-                    filelist.append(out_file)
-                else:
-                    filelist.append(in_file)
-            # 3) Stack all layers in one file
+                colorize_layer(la.suffix, la.color, p.monochrome, filelist, temp_dir)
+            # 4) Apply color to the frame
+            if self.plot_sheet_reference:
+                color = p.sheet_reference_color if p.sheet_reference_color else self._color_theme.pcb_frame
+                colorize_layer('frame', color, p.monochrome, filelist, temp_dir)
+            # 5) Stack all layers in one file
             assembly_file = GS.pcb_basename+"-"+str(n)+".pdf"
             logger.debug('- Merging layers to {}'.format(assembly_file))
             merge_pdf(temp_dir, filelist, temp_dir, assembly_file)
             pages.append(assembly_file)
+            self.restore_title()
         # Join all pages in one file
         logger.debug('- Creating output file {}'.format(output))
         create_pdf_from_pages(temp_dir, pages, output)
@@ -319,7 +370,6 @@ class PCB_PrintOptions(VariantOptions):
 
     def run(self, output):
         super().run(output)
-        # self.set_title(self.title)
         self.filter_components()
         self.generate_output(output)
         self.unfilter_components()

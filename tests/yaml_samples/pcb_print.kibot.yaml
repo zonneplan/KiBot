@@ -8,24 +8,27 @@ outputs:
     type: pcb_print
     dir: Layers
     options:
-#      title: 'Fake title for front copper and silk'
+      # title: 'Fake title for front copper and silk'
+      # color_theme: _builtin_default
+      # drill_marks: small
+      title: Chau
+      # plot_sheet_reference: false
       pages:
-        - sheet_reference_layer: F.Fab
+        - # monochrome: true
+          scaling: 2.0
+          title: Hola
+          sheet: Front
+          sheet_reference_color: "#A02020"
           layers:
             - layer: Edge.Cuts
-              color: "#FF8000"
             - layer: F.Cu
-              color: "#B3FFB3"
             - layer: F.Paste
-              color: "#FF8A8A"
             - layer: F.SilkS
-              color: "#626262"
             - layer: F.Fab
-              color: "#000080"
+              plot_footprint_refs: false
+              plot_footprint_values: false
             - layer: User.Eco1
-              color: "#000080"
         - mirror: true
-          sheet_reference_layer: B.Fab
           layers:
             - layer: B.Fab
               color: "#000080"

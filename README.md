@@ -1530,23 +1530,41 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pcb_print` output.
       * Valid keys:
+        - `color_theme`: [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
+                         To use the KiCad 6 default colors select `_builtin_default`.
+                         Usually user colors are stored as `user`, but you can give it another name.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
+        - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=assembly, %x=pdf). Affected by global options.
         - *output_name*: Alias for output.
         - `pages`: [list(dict)] List of pages to include in the output document.
                    Each page contains one or more layers of the PCB.
           * Valid keys:
+            - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
             - `layers`: [list(dict)] List of layers printed in this page. Order is important, the last goes on top.
               * Valid keys:
                 - `color`: [string=''] Color used for this layer.
                 - `description`: [string=''] A description for the layer, for documentation purposes.
+                - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
                 - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+                - `plot_footprint_refs`: [boolean=true] Include the footprint references.
+                - `plot_footprint_values`: [boolean=true] Include the footprint values.
                 - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+            - `line_width`: [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5).
             - `mirror`: [boolean=false] Print mirrored (X axis inverted).
-            - `monochrome`: [boolean=false] Print in black and white.
-            - `sheet_reference_layer`: [string=''] Layer to plot the page frame.
+            - `monochrome`: [boolean=false] Print in gray scale.
+            - `negative_plot`: [boolean=false] Invert black and white. Only useful for a single layer.
+            - `scaling`: [number=1.0] Scale factor (0 means autoscaling).
+            - `sheet`: [string='Assembly'] Text to use for the `sheet` in the title block.
+            - `sheet_reference_color`: [string=''] Color to use for the frame and title block.
+            - `tent_vias`: [boolean=true] Cover the vias.
+            - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                       If it starts with `+` the text is concatenated.
+        - `plot_sheet_reference`: [boolean=true] Include the title-block.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
