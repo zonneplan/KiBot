@@ -95,3 +95,4 @@ Holes (excluding vias):
 ![Top copper and silkscreen](Layers/light_control-assembly-front.pdf){ width=16.5cm height=11.7cm }
 
 ![Bottom copper and silkscreen](Layers/light_control-assembly-bottom.pdf){ width=16.5cm height=11.7cm }
+
