@@ -26,6 +26,7 @@ KI6_KI5 = {'b_adhesive': 'b_adhes',
            'user_eco2': 'eco2_user',
            'b_courtyard': 'b_crtyd',
            'f_courtyard': 'f_crtyd'}
+CACHE = {}
 
 
 class KiCadColors(object):
@@ -59,6 +60,10 @@ def load_color_theme(name):
     else:
         KiConf.init(GS.pcb_file)
         fn = os.path.join(KiConf.config_dir, 'colors', name+'.json')
+    fn = os.path.abspath(fn)
+    global CACHE
+    if fn in CACHE:
+        return CACHE[fn]
     if not os.path.isfile(fn):
         logger.warning(W_COLORTHEME, "Missing color theme: {}".format(fn))
         return None
@@ -93,4 +98,5 @@ def load_color_theme(name):
     # Title block and frame color
     if 'worksheet' in board:
         c.pcb_frame = parse_color(board['worksheet'])
+    CACHE[fn] = c
     return c
