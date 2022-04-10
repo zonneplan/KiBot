@@ -15,6 +15,29 @@ from . import log
 logger = log.get_logger()
 
 
+LAYER_ORDER = ['F.Cu', 'F.Mask', 'F.SilkS', 'F.Paste', 'F.Adhes', 'F.CrtYd', 'F.Fab', 'Dwgs.User', 'Cmts.User', 'Eco1.User',
+               'Eco2.User', 'Edge.Cuts', 'Margin', 'User.1', 'User.2', 'User.3', 'User.4', 'User.5', 'User.6', 'User.7',
+               'User.8', 'User.9', 'In1.Cu', 'In2.Cu', 'In3.Cu', 'In4.Cu', 'In5.Cu', 'In6.Cu', 'In7.Cu', 'In8.Cu', 'In9.Cu',
+               'In10.Cu', 'In11.Cu', 'In12.Cu', 'In13.Cu', 'In14.Cu', 'In15.Cu', 'In16.Cu', 'In17.Cu', 'In18.Cu', 'In19.Cu',
+               'In20.Cu', 'In21.Cu', 'In22.Cu', 'In23.Cu', 'In24.Cu', 'In25.Cu', 'In26.Cu', 'In27.Cu', 'In28.Cu', 'In29.Cu',
+               'In30.Cu', 'B.Cu', 'B.Mask', 'B.SilkS', 'B.Paste', 'B.Adhes', 'B.CrtYd', 'B.Fab']
+LAYER_PRIORITY = {}
+
+
+def create_print_priority(board):
+    """ Fills LAYER_PRIORITY. This is used to sort layers for printing.
+        It is the way KiCad sorts the layers.
+        We do it as soon as we have a valid board. """
+    global LAYER_PRIORITY
+    if len(LAYER_PRIORITY) > 0:
+        return
+    LAYER_PRIORITY = {board.GetLayerID(name): c for c, name in enumerate(LAYER_ORDER)}
+
+
+def get_priority(id):
+    return LAYER_PRIORITY.get(id, 1e6)
+
+
 class Layer(Optionable):
     """ A layer description """
     # Default names
@@ -151,6 +174,7 @@ class Layer(Optionable):
         layer_cnt = 2
         if board:
             layer_cnt = board.GetCopperLayerCount()
+            create_print_priority(board)
         # Get the list of used layers from the board
         # Used for 'all' but also to validate the layer names
         if Layer._pcb_layers is None:

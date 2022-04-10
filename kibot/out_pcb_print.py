@@ -16,14 +16,17 @@ from .optionable import Optionable
 from .out_base import VariantOptions
 from .kicad.color_theme import load_color_theme
 from .macros import macros, document, output_class  # noqa: F401
-from .layer import Layer
+from .layer import Layer, get_priority
 from . import PyPDF2
 from . import log
 
 logger = log.get_logger()
 
 # TODO:
-# - Opciones de out_pdf y out_any_layer
+# - Cache de colores
+# - Frame en k5?
+# - SVG?
+# - rsvg-convert -f pdf -o pp.pdf simple_2layer-F_Cu.svg
 
 
 def hex_to_rgb(value):
@@ -216,6 +219,8 @@ class PagesOptions(Optionable):
             """ Cover the vias """
             self.black_holes = True
             """ Change the drill holes to be black instead of white """
+            self.sort_layers = False
+            """ Try to sort the layers in the same order that uses KiCad for printing """
             self.layers = LayerOptions
             """ [list(dict)] List of layers printed in this page. Order is important, the last goes on top """
 
@@ -225,6 +230,8 @@ class PagesOptions(Optionable):
             raise KiPlotConfigurationError("Missing `layers` list")
         # Fill the ID member for all the layers
         self.layers = Layer.solve(self.layers)
+        if self.sort_layers:
+            self.layers.sort(key=lambda x: get_priority(x._id), reverse=True)
         if self.sheet_reference_color:
             self.validate_color('sheet_reference_color')
 
