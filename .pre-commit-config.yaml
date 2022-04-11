@@ -83,8 +83,10 @@ repos:
 #    rev: v0.931
 #    hooks:
 #      - id: mypy
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
-    rev: v1.0.5
-    hooks:
-      - id: python-bandit-vulnerability-check
+
+# Bandit is really slow, really annoying for a commit
+#   - repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
+#     rev: v1.0.5
+#     hooks:
+#       - id: python-bandit-vulnerability-check
   # TODO:  mdformat --wrap 75 README.md --number
