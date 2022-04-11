@@ -952,8 +952,10 @@ outputs:
       # Don't use the `kicost_variant` when using internal variants/filters
       variant: ''
   # PCB Print:
+  # KiCad 5: including the frame is slow.
+  # KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow.
   - name: 'pcb_print_example'
-    comment: 'Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print`.'
+    comment: 'Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.'
     type: 'pcb_print'
     dir: 'Example/pcb_print_dir'
     options:
@@ -966,6 +968,10 @@ outputs:
       dnf_filter: '_none'
       # [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
+      # [boolean=false] KiCad 6 doesn't support custom title-block/frames from Python.
+      # This option uses KiCad GUI to print the frame, is slow, but works.
+      # Always enabled for KiCad 5, which crashes if we try to plot the frame
+      enable_ki6_frame_fix: false
       # [string='PDF'] [PDF,SVG] Format for the output file/s
       format: 'PDF'
       # [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant
@@ -1142,6 +1148,7 @@ outputs:
   # PDF PCB Print (Portable Document Format):
   # This is the main format to document your PCB.
   # This output is what you get from the 'File/Print' menu in pcbnew.
+  # The `pcb_print` is an alternative.
   - name: 'pdf_pcb_print_example'
     comment: 'Exports the PCB to the most common exchange format. Suitable for printing.'
     type: 'pdf_pcb_print'
@@ -1554,6 +1561,7 @@ outputs:
     layers: all
   # SVG PCB Print (Scalable Vector Graphics):
   # This output is what you get from the 'File/Print' menu in pcbnew.
+  # The `pcb_print` is an alternative.
   - name: 'svg_pcb_print_example'
     comment: 'Exports the PCB to the scalable vector graphics format.'
     type: 'svg_pcb_print'

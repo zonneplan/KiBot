@@ -438,6 +438,7 @@ The available values for *type* are:
     - `svg_sch_print` schematic in SVG format
     - `pdf_pcb_print` PDF file containing one or more layer and the page frame
     - `svg_pcb_print` SVG file containing one or more layer and the page frame
+    - `pcb_print` PDF/SVG, similar to `pdf_pcb_print` and `svg_pcb_print`, with more flexibility
     - `report` generates a report about the PDF. Can include images from the above outputs.
 - Bill of Materials
     - `bom` The internal BoM generator.

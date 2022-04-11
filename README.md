@@ -645,6 +645,7 @@ The available values for *type* are:
     - `svg_sch_print` schematic in SVG format
     - `pdf_pcb_print` PDF file containing one or more layer and the page frame
     - `svg_pcb_print` SVG file containing one or more layer and the page frame
+    - `pcb_print` PDF/SVG, similar to `pdf_pcb_print` and `svg_pcb_print`, with more flexibility
     - `report` generates a report about the PDF. Can include images from the above outputs.
 - Bill of Materials
     - `bom` The internal BoM generator.
@@ -1519,7 +1520,9 @@ Next time you need this list just use an alias, like this:
 
 * PCB Print
   * Type: `pcb_print`
-  * Description: Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print`.
+  * Description: Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
+                 KiCad 5: including the frame is slow.
+                 KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
@@ -1536,6 +1539,9 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
+        - `enable_ki6_frame_fix`: [boolean=false] KiCad 6 doesn't support custom title-block/frames from Python.
+                                  This option uses KiCad GUI to print the frame, is slow, but works.
+                                  Always enabled for KiCad 5, which crashes if we try to plot the frame.
         - `format`: [string='PDF'] [PDF,SVG] Format for the output file/s.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg). Affected by global options.
@@ -1695,6 +1701,7 @@ Next time you need this list just use an alias, like this:
   * Description: Exports the PCB to the most common exchange format. Suitable for printing.
                  This is the main format to document your PCB.
                  This output is what you get from the 'File/Print' menu in pcbnew.
+                 The `pcb_print` is an alternative.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
@@ -2096,6 +2103,7 @@ Next time you need this list just use an alias, like this:
   * Type: `svg_pcb_print`
   * Description: Exports the PCB to the scalable vector graphics format.
                  This output is what you get from the 'File/Print' menu in pcbnew.
+                 The `pcb_print` is an alternative.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
