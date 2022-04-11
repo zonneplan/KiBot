@@ -1538,7 +1538,7 @@ Next time you need this list just use an alias, like this:
         - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `format`: [string='PDF'] [PDF,SVG] Format for the output file/s.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=assembly, %x=pdf). Affected by global options.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg). Affected by global options.
         - *output_name*: Alias for output.
         - `pages`: [list(dict)] List of pages to include in the output document.
                    Each page contains one or more layers of the PCB.
