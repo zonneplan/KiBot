@@ -28,16 +28,17 @@ outputs:
             - layer: F.Fab
               plot_footprint_refs: false
               plot_footprint_values: false
-            - layer: User.Eco1
+            - layer: Dwgs.User
         - mirror: true
           layers:
             - layer: B.Fab
               color: "#000080"
             - layer: Edge.Cuts
               color: "#FF8000"
-            - layer: B.Silkscreen
+            - layer: B.SilkS
               color: "#626262"
             - layer: B.Paste
               color: "#FF8A8A"
             - layer: B.Cu
               color: "#B3FFB3"
+            - layer: Dwgs.User

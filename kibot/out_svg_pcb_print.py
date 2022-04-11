@@ -4,10 +4,10 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-import re
 from .gs import GS
 from .out_any_pcb_print import Any_PCB_PrintOptions
 from .error import KiPlotConfigurationError
+from .kicad.patch_svg import patch_svg_file
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
 from . import log
@@ -34,15 +34,7 @@ class SVG_PCB_PrintOptions(Any_PCB_PrintOptions):
             o = self._parent
             out_files = o.get_targets(o.expand_dirname(os.path.join(GS.out_dir, o.dir)))
             for file in out_files:
-                logger.debug('Patching SVG file `{}`'.format(file))
-                with open(file, 'rt') as f:
-                    text = f.read()
-                text = re.sub(r'<svg (.*) width="(.*)" height="(.*)" viewBox="(\S+) (\S+) (\S+) (\S+)"',
-                              r'<svg \1 width="\3" height="\2" viewBox="\4 \5 \7 \6"', text)
-                text = re.sub(r'<rect x="(\S+)" y="(\S+)" width="(\S+)" height="(\S+)"',
-                              r'<rect x="\1" y="\2" width="\4" height="\3"', text)
-                with open(file, 'wt') as f:
-                    f.write(text)
+                patch_svg_file(file)
 
 
 @output_class

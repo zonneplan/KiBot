@@ -974,8 +974,10 @@ outputs:
       # [list(dict)] List of pages to include in the output document.
       # Each page contains one or more layers of the PCB
       pages:
-        # [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only)
-        - exclude_pads_from_silkscreen: false
+        # [boolean=true] Change the drill holes to be black instead of white
+        - black_holes: true
+          # [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only)
+          exclude_pads_from_silkscreen: false
           # [list(dict)] List of layers printed in this page. Order is important, the last goes on top
           layers:
             # [string=''] Color used for this layer
@@ -1006,6 +1008,8 @@ outputs:
           sheet: 'Assembly'
           # [string=''] Color to use for the frame and title block
           sheet_reference_color: ''
+          # [boolean=false] Try to sort the layers in the same order that uses KiCad for printing
+          sort_layers: false
           # [boolean=true] Cover the vias
           tent_vias: true
           # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.

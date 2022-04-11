@@ -7,6 +7,7 @@
 # Adapted from: https://gitlab.com/dennevi/Board2Pdf/
 # Note: Original code released as Public Domain
 import os
+import subprocess
 from pcbnew import PLOT_CONTROLLER, PLOT_FORMAT_PDF, FromMM
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -15,6 +16,9 @@ from .gs import GS
 from .optionable import Optionable
 from .out_base import VariantOptions
 from .kicad.color_theme import load_color_theme
+from .kicad.patch_svg import patch_svg_file
+from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT
+from .kiplot import check_script, exec_with_retry, add_extra_options
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer, get_priority
 from . import PyPDF2
@@ -23,10 +27,19 @@ from . import log
 logger = log.get_logger()
 
 # TODO:
-# - Cache de colores
-# - Frame en k5?
 # - SVG?
-# - rsvg-convert -f pdf -o pp.pdf simple_2layer-F_Cu.svg
+
+
+def _run_command(cmd):
+    logger.debug('Executing: '+str(cmd))
+    try:
+        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
+        if e.output:
+            logger.debug('Output from command: '+e.output.decode())
+        exit(PDF_PCB_PRINT)
+    logger.debug('Output from command:\n'+cmd_output.decode())
 
 
 def hex_to_rgb(value):
@@ -255,7 +268,7 @@ class PCB_PrintOptions(VariantOptions):
                 To use the KiCad 6 default colors select `_builtin_default`.
                 Usually user colors are stored as `user`, but you can give it another name """
             self.plot_sheet_reference = True
-            """ Include the title-block. Only available on KiCad 6. """
+            """ Include the title-block """
             self.pages = PagesOptions
             """ [list(dict)] List of pages to include in the output document.
                 Each page contains one or more layers of the PCB """
@@ -315,6 +328,71 @@ class PCB_PrintOptions(VariantOptions):
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
 
+    def clear_edge_cuts(self):
+        tmp_layer = GS.board.GetLayerID(GS.work_layer)
+        edge = GS.board.GetLayerID('Edge.Cuts')
+        moved = []
+        for g in GS.board.GetDrawings():
+            if g.GetLayer() == edge:
+                g.SetLayer(tmp_layer)
+                moved.append(g)
+        for m in GS.get_modules():
+            for gi in m.GraphicalItems():
+                if gi.GetLayer() == edge:
+                    gi.SetLayer(tmp_layer)
+                    moved.append(gi)
+        self.moved_items = moved
+        self.edge_layer = edge
+
+    def restore_edge_cuts(self):
+        for g in self.moved_items:
+            g.SetLayer(self.edge_layer)
+
+    def plot_frame_ki6(self, pc, po, p):
+        """ KiCad 6 can plot the frame because it loads the worksheet format """
+        self.clear_edge_cuts()
+        po.SetPlotFrameRef(True)
+        po.SetScale(1.0)
+        po.SetNegative(False)
+        pc.SetLayer(self.edge_layer)
+        pc.OpenPlotfile('frame', PLOT_FORMAT_PDF, p.sheet)
+        pc.PlotLayer()
+        self.restore_edge_cuts()
+
+    def plot_frame_ki5(self, dir_name):
+        """ KiCad 5 crashes if we try to print the frame.
+            So we print a frame using pcbnew_do export.
+            We use SVG output to then generate a vectorized PDF. """
+        output = os.path.join(dir_name, GS.pcb_basename+"-frame.svg")
+        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.6.7')
+        # Move all the drawings away
+        # KiCad 5 always prints Edge.Cuts, so we make it empty
+        self.clear_edge_cuts()
+        # Save the PCB
+        pcb_name, pcb_dir = self.save_tmp_dir_board('pcb_print')
+        # Restore the layer
+        self.restore_edge_cuts()
+        # Output file name
+        cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output, '--monochrome', '--svg',
+               pcb_name, dir_name, 'Edge.Cuts']
+        cmd, video_remove = add_extra_options(cmd)
+        # Execute it
+        ret = exec_with_retry(cmd)
+        # Remove the temporal PCB
+        logger.debug('Removing temporal PCB used for frame `{}`'.format(pcb_dir))
+        rmtree(pcb_dir)
+        if ret:
+            logger.error(CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)
+            exit(PDF_PCB_PRINT)
+        if video_remove:
+            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_screencast.ogv')
+            if os.path.isfile(video_name):
+                os.remove(video_name)
+        patch_svg_file(output, remove_bkg=True)
+        # Note: rsvg-convert uses 90 dpi but KiCad (and the docs I found) says SVG pt is 72 dpi
+        cmd = ['rsvg-convert', '-d', '72', '-p', '72', '-f', 'pdf', '-o', output.replace('.svg', '.pdf'), output]
+        _run_command(cmd)
+
     def generate_output(self, output):
         temp_dir = mkdtemp(prefix='tmp-kibot-pcb_print-')
         logger.debug('- Temporal dir: {}'.format(temp_dir))
@@ -350,22 +428,19 @@ class PCB_PrintOptions(VariantOptions):
                 pc.OpenPlotfile(la.suffix, PLOT_FORMAT_PDF, p.sheet)
                 pc.PlotLayer()
             # 2) Plot the frame using an empty layer and 1.0 scale
-            if self.plot_sheet_reference and GS.ki6():
+            if self.plot_sheet_reference:
                 logger.debug('- Plotting the frame')
-                po.SetPlotFrameRef(True)
-                po.SetScale(1.0)
-                po.SetNegative(False)
-                # TODO: Any better option?
-                pc.SetLayer(GS.board.GetLayerID(GS.work_layer))
-                pc.OpenPlotfile('frame', PLOT_FORMAT_PDF, p.sheet)
-                pc.PlotLayer()
+                if GS.ki6():
+                    self.plot_frame_ki6(pc, po, p)
+                else:
+                    self.plot_frame_ki5(temp_dir)
             pc.ClosePlot()
             # 3) Apply the colors to the layer PDFs
             filelist = []
             for la in p.layers:
                 colorize_layer(la.suffix, la.color, p.monochrome, filelist, temp_dir, p.black_holes)
             # 4) Apply color to the frame
-            if self.plot_sheet_reference and GS.ki6():
+            if self.plot_sheet_reference:
                 color = p.sheet_reference_color if p.sheet_reference_color else self._color_theme.pcb_frame
                 colorize_layer('frame', color, p.monochrome, filelist, temp_dir)
             # 5) Stack all layers in one file
@@ -390,8 +465,7 @@ class PCB_PrintOptions(VariantOptions):
 @output_class
 class PCB_Print(BaseOutput):  # noqa: F821
     """ PCB Print
-        Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print`.
-        Note that it doesn't support the frame/title block for KiCad 5. """
+        Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print`. """
     def __init__(self):
         super().__init__()
         with document:

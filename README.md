@@ -1542,6 +1542,7 @@ Next time you need this list just use an alias, like this:
         - `pages`: [list(dict)] List of pages to include in the output document.
                    Each page contains one or more layers of the PCB.
           * Valid keys:
+            - `black_holes`: [boolean=true] Change the drill holes to be black instead of white.
             - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
             - `layers`: [list(dict)] List of layers printed in this page. Order is important, the last goes on top.
               * Valid keys:
@@ -1559,6 +1560,7 @@ Next time you need this list just use an alias, like this:
             - `scaling`: [number=1.0] Scale factor (0 means autoscaling).
             - `sheet`: [string='Assembly'] Text to use for the `sheet` in the title block.
             - `sheet_reference_color`: [string=''] Color to use for the frame and title block.
+            - `sort_layers`: [boolean=false] Try to sort the layers in the same order that uses KiCad for printing.
             - `tent_vias`: [boolean=true] Cover the vias.
             - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                        If it starts with `+` the text is concatenated.
