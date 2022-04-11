@@ -418,16 +418,17 @@ class KiConf(object):
         for c, line in enumerate(lns):
             if line.startswith('PageLayoutDescrFile='):
                 fname = line[20:].strip()
-                logger.error(fname)
-                fname = KiConf.expand_env(fname)
-                logger.error(fname)
-                if os.path.isfile(fname):
-                    dest = os.path.join(dest_dir, str(order)+'.kicad_wks')
-                    copy2(fname, dest)
-                    order = order+1
+                if fname:
+                    fname = KiConf.expand_env(fname)
+                    if os.path.isfile(fname):
+                        dest = os.path.join(dest_dir, str(order)+'.kicad_wks')
+                        copy2(fname, dest)
+                        order = order+1
+                    else:
+                        logger.error('Missing page layout file: '+fname)
+                        exit(MISSING_WKS)
                 else:
-                    logger.error('Missing page layout file: '+fname)
-                    exit(MISSING_WKS)
+                    dest = ''
                 lns[c] = 'PageLayoutDescrFile='+dest+'\n'
         with open(project, 'wt') as f:
             lns = f.writelines(lns)
@@ -444,4 +445,6 @@ class KiConf(object):
     def expand_env(name, used_extra=None):
         if used_extra is None:
             used_extra = [False]
+        if not name:
+            return name
         return os.path.abspath(expand_env(un_quote(name), KiConf.kicad_env, GS.load_pro_variables(), used_extra))
