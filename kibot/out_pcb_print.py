@@ -8,16 +8,17 @@
 # Note: Original code released as Public Domain
 import os
 import subprocess
-from pcbnew import PLOT_CONTROLLER, PLOT_FORMAT_PDF, FromMM
-from shutil import rmtree
+from pcbnew import PLOT_CONTROLLER, FromMM, PLOT_FORMAT_SVG
+from shutil import rmtree, which
 from tempfile import mkdtemp
+from .svgutils.transform import fromstring
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
 from .out_base import VariantOptions
 from .kicad.color_theme import load_color_theme
 from .kicad.patch_svg import patch_svg_file
-from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT
+from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer, get_priority
@@ -25,9 +26,7 @@ from . import PyPDF2
 from . import log
 
 logger = log.get_logger()
-
-# TODO:
-# - SVG?
+SVG2PDF = 'rsvg-convert'
 
 
 def _run_command(cmd):
@@ -56,83 +55,42 @@ def to_gray(color):
     return (avg, avg, avg)
 
 
-def colorize_pdf(folder, in_file, out_file, color, black_holes):
-    er = None
-    pdf_color = [PyPDF2.generic.FloatObject(color[0]), PyPDF2.generic.FloatObject(color[1]),
-                 PyPDF2.generic.FloatObject(color[2])]
-    black_color = [PyPDF2.generic.FloatObject(0), PyPDF2.generic.FloatObject(0), PyPDF2.generic.FloatObject(0)]
-    try:
-        with open(os.path.join(folder, in_file), "rb") as f:
-            source = PyPDF2.PdfFileReader(f, "rb")
-            output = PyPDF2.PdfFileWriter()
-            for page in range(source.getNumPages()):
-                page = source.getPage(page)
-                content_object = page["/Contents"].getObject()
-                content = PyPDF2.pdf.ContentStream(content_object, source)
-                for i, (operands, operator) in enumerate(content.operations):
-                    if operator == b"rg" or operator == b"RG":
-                        if operands == [0, 0, 0]:
-                            # Replace black by the selected color
-                            content.operations[i] = (pdf_color, operator)
-                        elif black_holes and operands == [1, 1, 1]:
-                            # Replace white by black
-                            content.operations[i] = (black_color, operator)
-                page.__setitem__(PyPDF2.generic.NameObject('/Contents'), content)
-                output.addPage(page)
-            try:
-                with open(os.path.join(folder, out_file), "wb") as outputStream:
-                    output.write(outputStream)
-            except (IOError, ValueError, EOFError) as e:
-                er = str(e)
-            if er:
-                raise KiPlotConfigurationError('Error creating `{}` ({})'.format(out_file, er))
-    except (IOError, ValueError, EOFError) as e:
-        er = str(e)
-    if er:
-        raise KiPlotConfigurationError('Error reading `{}` ({})'.format(in_file, er))
+def to_gray_hex(color):
+    rgb, alpha = hex_to_rgb(color)
+    avg = (rgb[0]+rgb[1]+rgb[2])/3
+    avg_str = '%02X' % int(avg*255)
+    return '#'+avg_str+avg_str+avg_str
 
 
-def merge_pdf(input_folder, input_files, output_folder, output_file):
+def load_svg(file, color, black_holes, monochrome):
+    with open(file, 'rt') as f:
+        content = f.read()
+    color = color[:7]
+    if monochrome:
+        color = to_gray_hex(color)
+    if black_holes:
+        content = content.replace('#FFFFFF', '**black_hole**')
+    if color != '#000000':
+        content = content.replace('#000000', color)
+    if black_holes:
+        content = content.replace('**black_hole**', '#000000')
+    return content
+
+
+def merge_svg(input_folder, input_files, output_folder, output_file, black_holes, monochrome):
     """ Merge all pages into one """
-    output = PyPDF2.PdfFileWriter()
-    # Collect all pages, as a merged one
-    i = 0
-    er = None
-    open_files = []
-    extra_debug = GS.debug_level >= 3
-    for filename in input_files:
-        if extra_debug:
-            logger.debug("  - {}".format(filename))
-        try:
-            file = open(os.path.join(input_folder, filename), 'rb')
-            open_files.append(file)
-            pdf_reader = PyPDF2.PdfFileReader(file)
-            page_obj = pdf_reader.getPage(0)
-            if(i == 0):
-                merged_page = page_obj
-            else:
-                merged_page.mergePage(page_obj)
-            i = i+1
-        except (IOError, ValueError, EOFError) as e:
-            er = str(e)
-        if er:
-            raise KiPlotConfigurationError('Error reading `{}` ({})'.format(filename, er))
-    output.addPage(merged_page)
-    # Write the result to a file
-    pdf_output = None
-    try:
-        pdf_output = open(os.path.join(output_folder, output_file), 'wb')
-        output.write(pdf_output)
-    except (IOError, ValueError, EOFError) as e:
-        er = str(e)
-    finally:
-        if pdf_output:
-            pdf_output.close()
-    if er:
-        raise KiPlotConfigurationError('Error creating `{}` ({})'.format(output_file, er))
-    # Close the input files
-    for f in open_files:
-        f.close()
+    first = True
+    for (file, color) in input_files:
+        file = os.path.join(input_folder, file)
+        new_layer = fromstring(load_svg(file, color, black_holes, monochrome))
+        if first:
+            svg_out = new_layer
+            first = False
+        else:
+            root = new_layer.getroot()
+            root.moveto(1, 1)
+            svg_out.append([root])
+    svg_out.save(os.path.join(output_folder, output_file))
 
 
 def create_pdf_from_pages(input_folder, input_files, output_fn):
@@ -169,17 +127,20 @@ def create_pdf_from_pages(input_folder, input_files, output_fn):
         f.close()
 
 
-def colorize_layer(suffix, color, monochrome, filelist, temp_dir, black_holes=False):
-    in_file = GS.pcb_basename+"-"+suffix+".pdf"
-    if color != "#000000":
-        out_file = GS.pcb_basename+"-"+suffix+"-colored.pdf"
-        logger.debug('- Giving color to {} -> {} ({})'.format(in_file, out_file, color))
-        rgb, alpha = hex_to_rgb(color)
-        color = rgb if not monochrome else to_gray(rgb)
-        colorize_pdf(temp_dir, in_file, out_file, color, black_holes)
-        filelist.append(out_file)
-    else:
-        filelist.append(in_file)
+def svg_to_pdf(input_folder, svg_file, pdf_file):
+    # Note: rsvg-convert uses 90 dpi but KiCad (and the docs I found) says SVG pt is 72 dpi
+    cmd = [SVG2PDF, '-d', '72', '-p', '72', '-f', 'pdf', '-o', os.path.join(input_folder, pdf_file),
+           os.path.join(input_folder, svg_file)]
+    _run_command(cmd)
+
+
+def create_pdf_from_svg_pages(input_folder, input_files, output_fn):
+    svg_files = []
+    for svg_file in input_files:
+        pdf_file = svg_file.replace('.svg', '.pdf')
+        svg_to_pdf(input_folder, svg_file, pdf_file)
+        svg_files.append(pdf_file)
+    create_pdf_from_pages(input_folder, svg_files, output_fn)
 
 
 class LayerOptions(Layer):
@@ -275,8 +236,9 @@ class PCB_PrintOptions(VariantOptions):
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
+            self.format = 'PDF'
+            """ [PDF,SVG] Format for the output file/s """
         super().__init__()
-        self._expand_ext = 'pdf'
         self._expand_id = 'assembly'
 
     @property
@@ -306,6 +268,7 @@ class PCB_PrintOptions(VariantOptions):
                     else:
                         la.color = "#000000"
         self._drill_marks = PCB_PrintOptions._drill_marks_map[self._drill_marks]
+        self._expand_ext = self.format.lower()
 
     def filter_components(self):
         if not self._comps:
@@ -355,7 +318,7 @@ class PCB_PrintOptions(VariantOptions):
         po.SetScale(1.0)
         po.SetNegative(False)
         pc.SetLayer(self.edge_layer)
-        pc.OpenPlotfile('frame', PLOT_FORMAT_PDF, p.sheet)
+        pc.OpenPlotfile('frame', PLOT_FORMAT_SVG, p.sheet)
         pc.PlotLayer()
         self.restore_edge_cuts()
 
@@ -389,11 +352,13 @@ class PCB_PrintOptions(VariantOptions):
             if os.path.isfile(video_name):
                 os.remove(video_name)
         patch_svg_file(output, remove_bkg=True)
-        # Note: rsvg-convert uses 90 dpi but KiCad (and the docs I found) says SVG pt is 72 dpi
-        cmd = ['rsvg-convert', '-d', '72', '-p', '72', '-f', 'pdf', '-o', output.replace('.svg', '.pdf'), output]
-        _run_command(cmd)
 
     def generate_output(self, output):
+        if which(SVG2PDF) is None:
+            logger.error('`{}` not installed and needed for PDF output'.format(SVG2PDF))
+            logger.error('Install `librsvg2-bin` or equivalent')
+            exit(MISSING_TOOL)
+        output_dir = os.path.dirname(output)
         temp_dir = mkdtemp(prefix='tmp-kibot-pcb_print-')
         logger.debug('- Temporal dir: {}'.format(temp_dir))
         # Plot options
@@ -418,6 +383,7 @@ class PCB_PrintOptions(VariantOptions):
             if GS.ki5():
                 po.SetLineWidth(FromMM(p.line_width))
                 po.SetPlotPadsOnSilkLayer(not p.exclude_pads_from_silkscreen)
+            filelist = []
             for la in p.layers:
                 id = la._id
                 logger.debug('- Plotting layer {} ({})'.format(la.layer, id))
@@ -425,8 +391,9 @@ class PCB_PrintOptions(VariantOptions):
                 po.SetPlotValue(la.plot_footprint_values)
                 po.SetPlotInvisibleText(la.force_plot_invisible_refs_vals)
                 pc.SetLayer(id)
-                pc.OpenPlotfile(la.suffix, PLOT_FORMAT_PDF, p.sheet)
+                pc.OpenPlotfile(la.suffix, PLOT_FORMAT_SVG, p.sheet)
                 pc.PlotLayer()
+                filelist.append((GS.pcb_basename+"-"+la.suffix+".svg", la.color))
             # 2) Plot the frame using an empty layer and 1.0 scale
             if self.plot_sheet_reference:
                 logger.debug('- Plotting the frame')
@@ -434,24 +401,23 @@ class PCB_PrintOptions(VariantOptions):
                     self.plot_frame_ki6(pc, po, p)
                 else:
                     self.plot_frame_ki5(temp_dir)
-            pc.ClosePlot()
-            # 3) Apply the colors to the layer PDFs
-            filelist = []
-            for la in p.layers:
-                colorize_layer(la.suffix, la.color, p.monochrome, filelist, temp_dir, p.black_holes)
-            # 4) Apply color to the frame
-            if self.plot_sheet_reference:
                 color = p.sheet_reference_color if p.sheet_reference_color else self._color_theme.pcb_frame
-                colorize_layer('frame', color, p.monochrome, filelist, temp_dir)
-            # 5) Stack all layers in one file
-            assembly_file = GS.pcb_basename+"-"+str(n)+".pdf"
+                filelist.append((GS.pcb_basename+"-frame.svg", color))
+            pc.ClosePlot()
+            # 3) Stack all layers in one file
+            if self.format == 'PDF':
+                assembly_file = GS.pcb_basename+"-"+str(n+1)+".svg"
+            else:
+                id = self._expand_id+('_page_%02d' % (n+1))
+                assembly_file = self.expand_filename(output_dir, self.output, id, self._expand_ext)
             logger.debug('- Merging layers to {}'.format(assembly_file))
-            merge_pdf(temp_dir, filelist, temp_dir, assembly_file)
+            merge_svg(temp_dir, filelist, temp_dir, assembly_file, p.black_holes, p.monochrome)
             pages.append(assembly_file)
             self.restore_title()
         # Join all pages in one file
-        logger.debug('- Creating output file {}'.format(output))
-        create_pdf_from_pages(temp_dir, pages, output)
+        if self.format == 'PDF':
+            logger.debug('- Creating output file {}'.format(output))
+            create_pdf_from_svg_pages(temp_dir, pages, output)
         # Remove the temporal files
         rmtree(temp_dir)
 

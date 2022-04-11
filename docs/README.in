@@ -1444,6 +1444,7 @@ Additionally we support:
 - **Python macros**: Juha Jeronen (@Technologicat)
 - **Board2Pdf**: Albin Dennevi
 - **PyPDF2**: Mathieu Fenniak
+- **svgutils**: Bartosz Telenczuk (@btel)
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout

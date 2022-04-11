@@ -13,6 +13,7 @@ outputs:
       # drill_marks: small
       title: Chau
       # plot_sheet_reference: false
+      format: 'SVG'
       pages:
         - # monochrome: true
           scaling: 2.0
