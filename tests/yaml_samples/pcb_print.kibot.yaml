@@ -22,6 +22,7 @@ outputs:
           sheet: Front
           sheet_reference_color: "#A02020"
           # black_holes: false
+          # holes_color: "#8080FF"
           layers:
             - layer: Edge.Cuts
             - layer: F.Cu

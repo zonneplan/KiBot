@@ -984,10 +984,12 @@ outputs:
       # [list(dict)] List of pages to include in the output document.
       # Each page contains one or more layers of the PCB
       pages:
-        # [boolean=true] Change the drill holes to be black instead of white
-        - black_holes: true
+        # [boolean=true] Change the drill holes to be colored instead of white
+        - colored_holes: true
           # [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only)
           exclude_pads_from_silkscreen: false
+          # [string='#000000'] Color used for the holes when `colored_holes` is enabled
+          holes_color: '#000000'
           # [list(dict)] List of layers printed in this page. Order is important, the last goes on top
           layers:
             # [string=''] Color used for this layer
