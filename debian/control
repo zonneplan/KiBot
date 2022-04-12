@@ -12,7 +12,7 @@ Architecture: all
 Multi-Arch: foreign
 Depends: ${misc:Depends}, ${python3:Depends}, python3-distutils, python3-yaml, kicad (>= 5.1.6), python3-wxgtk4.0
 Recommends: kibom.inti-cmnb (>= 1.8.0), interactivehtmlbom.inti-cmnb, pcbdraw, imagemagick, librsvg2-bin, python3-xlsxwriter, rar, poppler-utils, python3-lxml
-Suggests: pandoc, texlive-latex-base, texlive-latex-recommended, git
+Suggests: pandoc, texlive-latex-base, texlive-latex-recommended, git, ghostscript
 Description: KiCad Bot
  KiBot is a program which helps you to automate the generation of KiCad
  output documents easily, repeatable, and most of all, scriptably.

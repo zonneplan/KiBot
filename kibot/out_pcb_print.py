@@ -27,9 +27,9 @@ from . import log
 
 logger = log.get_logger()
 SVG2PDF = 'rsvg-convert'
+PDF2PS = 'pdf2ps'
 
 
-# - Implement other rsvg-convert formats
 # - Use PyPDF2 for pdfunite
 # - Implement pad, vias, etc colors
 # - Allow hole color config
@@ -47,7 +47,8 @@ def _run_command(cmd):
         if e.output:
             logger.debug('Output from command: '+e.output.decode())
         exit(PDF_PCB_PRINT)
-    logger.debug('Output from command:\n'+cmd_output.decode())
+    if cmd_output.strip():
+        logger.debug('Output from command:\n'+cmd_output.decode())
 
 
 def hex_to_rgb(value):
@@ -94,6 +95,17 @@ def get_width(svg):
     return float(svg.root.get('viewBox').split(' ')[2])
 
 
+def to_inches(w):
+    val = float(w[:-2])
+    units = w[-2:]
+    if units == 'cm':
+        return val/2.54
+    if units == 'pt':
+        return val/72.0
+    # Currently impossible for KiCad
+    return val
+
+
 def merge_svg(input_folder, input_files, output_folder, output_file, black_holes, monochrome):
     """ Merge all pages into one """
     first = True
@@ -105,6 +117,7 @@ def merge_svg(input_folder, input_files, output_folder, output_file, black_holes
             svg_out = new_layer
             # This is the width declared at the beginning of the file
             base_width = width
+            phys_width = to_inches(new_layer.width)
             first = False
         else:
             root = new_layer.getroot()
@@ -117,6 +130,7 @@ def merge_svg(input_folder, input_files, output_folder, output_file, black_holes
             root.moveto(1, 1)
             svg_out.append([root])
     svg_out.save(os.path.join(output_folder, output_file))
+    return phys_width
 
 
 def create_pdf_from_pages(input_folder, input_files, output_fn):
@@ -157,6 +171,23 @@ def svg_to_pdf(input_folder, svg_file, pdf_file):
     # Note: rsvg-convert uses 90 dpi but KiCad (and the docs I found) says SVG pt is 72 dpi
     cmd = [SVG2PDF, '-d', '72', '-p', '72', '-f', 'pdf', '-o', os.path.join(input_folder, pdf_file),
            os.path.join(input_folder, svg_file)]
+    _run_command(cmd)
+
+
+def svg_to_png(input_folder, svg_file, png_file, width):
+    cmd = [SVG2PDF, '-w', str(width), '-f', 'png', '-o', os.path.join(input_folder, png_file),
+           os.path.join(input_folder, svg_file)]
+    _run_command(cmd)
+
+
+def svg_to_eps(input_folder, svg_file, eps_file):
+    cmd = [SVG2PDF, '-d', '72', '-p', '72', '-f', 'eps', '-o', os.path.join(input_folder, eps_file),
+           os.path.join(input_folder, svg_file)]
+    _run_command(cmd)
+
+
+def pdf_to_ps(ps_file, output):
+    cmd = [PDF2PS, ps_file, output]
     _run_command(cmd)
 
 
@@ -267,7 +298,10 @@ class PCB_PrintOptions(VariantOptions):
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
             self.format = 'PDF'
-            """ [PDF,SVG] Format for the output file/s """
+            """ [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
+                Note that for PS you need `ghostscript` which isn't part of the default docker images """
+            self.png_width = 1280
+            """ Width of the PNG in pixels """
         super().__init__()
         self._expand_id = 'assembly'
 
@@ -319,7 +353,7 @@ class PCB_PrintOptions(VariantOptions):
             self.restore_fab(GS.board, comps_hash)
 
     def get_targets(self, out_dir):
-        if self.format == 'SVG':
+        if self.format in ['SVG', 'PNG', 'EPS']:
             files = []
             for n in range(len(self.pages)):
                 id = self._expand_id+('_page_%02d' % (n+1))
@@ -391,8 +425,11 @@ class PCB_PrintOptions(VariantOptions):
         patch_svg_file(output, remove_bkg=True)
 
     def generate_output(self, output):
-        if which(SVG2PDF) is None:
-            logger.error('`{}` not installed and needed for PDF output'.format(SVG2PDF))
+        if self.format != 'SVG' and which(SVG2PDF) is None:
+            logger.error('`{}` not installed. Install `librsvg2-bin` or equivalent'.format(SVG2PDF))
+            exit(MISSING_TOOL)
+        if self.format == 'PS' and which(PDF2PS) is None:
+            logger.error('`{}` not installed. '.format(PDF2PS))
             logger.error('Install `librsvg2-bin` or equivalent')
             exit(MISSING_TOOL)
         output_dir = os.path.dirname(output)
@@ -445,19 +482,31 @@ class PCB_PrintOptions(VariantOptions):
                 filelist.append((GS.pcb_basename+"-frame.svg", color))
             pc.ClosePlot()
             # 3) Stack all layers in one file
-            if self.format == 'PDF':
-                assembly_file = GS.pcb_basename+"-"+str(n+1)+".svg"
-            else:
+            if self.format == 'SVG':
                 id = self._expand_id+('_page_%02d' % (n+1))
                 assembly_file = self.expand_filename(output_dir, self.output, id, self._expand_ext)
+            else:
+                assembly_file = GS.pcb_basename+"-"+str(n+1)+".svg"
             logger.debug('- Merging layers to {}'.format(assembly_file))
             merge_svg(temp_dir, filelist, temp_dir, assembly_file, p.black_holes, p.monochrome)
+            if self.format in ['PNG', 'EPS']:
+                id = self._expand_id+('_page_%02d' % (n+1))
+                out_file = self.expand_filename(output_dir, self.output, id, self._expand_ext)
+                if self.format == 'PNG':
+                    svg_to_png(temp_dir, assembly_file, out_file, self.png_width)
+                else:
+                    svg_to_eps(temp_dir, assembly_file, out_file)
             pages.append(assembly_file)
             self.restore_title()
         # Join all pages in one file
-        if self.format == 'PDF':
+        if self.format in ['PDF', 'PS']:
             logger.debug('- Creating output file {}'.format(output))
-            create_pdf_from_svg_pages(temp_dir, pages, output)
+            if self.format == 'PDF':
+                create_pdf_from_svg_pages(temp_dir, pages, output)
+            else:
+                ps_file = os.path.join(temp_dir, GS.pcb_basename+'.ps')
+                create_pdf_from_svg_pages(temp_dir, pages, ps_file)
+                pdf_to_ps(ps_file, output)
         # Remove the temporal files
         rmtree(temp_dir)
 
@@ -472,6 +521,7 @@ class PCB_PrintOptions(VariantOptions):
 class PCB_Print(BaseOutput):  # noqa: F821
     """ PCB Print
         Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
+        Supports PDF, SVG, PNG, EPS and PS formats.
         KiCad 5: including the frame is slow.
         KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow. """
     def __init__(self):

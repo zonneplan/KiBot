@@ -646,7 +646,7 @@ The available values for *type* are:
     - `svg_sch_print` schematic in SVG format
     - `pdf_pcb_print` PDF file containing one or more layer and the page frame
     - `svg_pcb_print` SVG file containing one or more layer and the page frame
-    - `pcb_print` PDF/SVG, similar to `pdf_pcb_print` and `svg_pcb_print`, with more flexibility
+    - `pcb_print` PDF/SVG/PNG/EPS/PS, similar to `pdf_pcb_print` and `svg_pcb_print`, with more flexibility
     - `report` generates a report about the PDF. Can include images from the above outputs.
 - Bill of Materials
     - `bom` The internal BoM generator.
@@ -1522,6 +1522,7 @@ Next time you need this list just use an alias, like this:
 * PCB Print
   * Type: `pcb_print`
   * Description: Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
+                 Supports PDF, SVG, PNG, EPS and PS formats.
                  KiCad 5: including the frame is slow.
                  KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow.
   * Valid keys:
@@ -1543,7 +1544,8 @@ Next time you need this list just use an alias, like this:
         - `enable_ki6_frame_fix`: [boolean=false] KiCad 6 doesn't support custom title-block/frames from Python.
                                   This option uses KiCad GUI to print the frame, is slow, but works.
                                   Always enabled for KiCad 5, which crashes if we try to plot the frame.
-        - `format`: [string='PDF'] [PDF,SVG] Format for the output file/s.
+        - `format`: [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
+                    Note that for PS you need `ghostscript` which isn't part of the default docker images.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg). Affected by global options.
         - *output_name*: Alias for output.
@@ -1573,6 +1575,7 @@ Next time you need this list just use an alias, like this:
             - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                        If it starts with `+` the text is concatenated.
         - `plot_sheet_reference`: [boolean=true] Include the title-block.
+        - `png_width`: [number=1280] Width of the PNG in pixels.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.

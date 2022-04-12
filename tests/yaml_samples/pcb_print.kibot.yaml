@@ -13,8 +13,8 @@ outputs:
       # drill_marks: small
       title: Chau
       # plot_sheet_reference: false
-      # format: 'SVG'
-      enable_ki6_frame_fix: true
+      format: 'PS'
+      # enable_ki6_frame_fix: true
       pages:
         - # monochrome: true
           scaling: 2.0
