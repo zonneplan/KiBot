@@ -5,7 +5,7 @@
 [![Python application](https://img.shields.io/github/workflow/status/INTI-CMNB/KiBot/Python%20application?style=plastic)](https://github.com/INTI-CMNB/KiBot/actions)
 [![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
 
 **Important for KiCad 6 users**:
 - Only the code in the git repo supports KiCad 6 (no stable release yet)
