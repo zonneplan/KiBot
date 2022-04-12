@@ -29,6 +29,15 @@ logger = log.get_logger()
 SVG2PDF = 'rsvg-convert'
 
 
+# - Fix get_targets (multiple files)
+# - Implement other rsvg-convert formats
+# - Use PyPDF2 for pdfunite
+# - Implement pad, vias, etc colors
+# - Allow hole color config
+# - move(1,1)? Really needed? 0,0?
+# - Analyze KiCad 6 long delay
+
+
 def _run_command(cmd):
     logger.debug('Executing: '+str(cmd))
     try:
@@ -333,12 +342,13 @@ class PCB_PrintOptions(VariantOptions):
             g.SetLayer(self.cleared_layer)
 
     def plot_frame_ki6(self, pc, po, p):
-        """ KiCad 6 can plot the frame because it loads the worksheet format """
+        """ KiCad 6 can plot the frame because it loads the worksheet format.
+            But not the one from the project, just a default """
         self.clear_layer('Edge.Cuts')
         po.SetPlotFrameRef(True)
         po.SetScale(1.0)
         po.SetNegative(False)
-        pc.SetLayer(self.edge_layer)
+        pc.SetLayer(self.cleared_layer)
         pc.OpenPlotfile('frame', PLOT_FORMAT_SVG, p.sheet)
         pc.PlotLayer()
         self.restore_layer()
