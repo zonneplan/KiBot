@@ -32,7 +32,6 @@ PDF2PS = 'pdf2ps'
 
 # - Use PyPDF2 for pdfunite
 # - Implement pad, vias, etc colors
-# - move(1,1)? Really needed? 0,0?
 # - Analyze KiCad 6 long delay
 # - Manually draw the frame
 
@@ -127,7 +126,6 @@ def merge_svg(input_folder, input_files, output_folder, output_file, colored_hol
                 logger.debug(' - Scaling {} by {}'.format(file, scale))
                 for e in root:
                     e.scale(scale)
-            root.moveto(1, 1)
             svg_out.append([root])
     svg_out.save(os.path.join(output_folder, output_file))
     return phys_width
