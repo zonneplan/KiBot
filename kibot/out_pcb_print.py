@@ -29,13 +29,13 @@ logger = log.get_logger()
 SVG2PDF = 'rsvg-convert'
 
 
-# - Fix get_targets (multiple files)
 # - Implement other rsvg-convert formats
 # - Use PyPDF2 for pdfunite
 # - Implement pad, vias, etc colors
 # - Allow hole color config
 # - move(1,1)? Really needed? 0,0?
 # - Analyze KiCad 6 long delay
+# - Manually draw the frame
 
 
 def _run_command(cmd):
@@ -319,6 +319,12 @@ class PCB_PrintOptions(VariantOptions):
             self.restore_fab(GS.board, comps_hash)
 
     def get_targets(self, out_dir):
+        if self.format == 'SVG':
+            files = []
+            for n in range(len(self.pages)):
+                id = self._expand_id+('_page_%02d' % (n+1))
+                files.append(self.expand_filename(out_dir, self.output, id, self._expand_ext))
+            return files
         return [self._parent.expand_filename(out_dir, self.output)]
 
     def clear_layer(self, layer):
