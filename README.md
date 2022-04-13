@@ -1538,6 +1538,8 @@ Next time you need this list just use an alias, like this:
         - `color_theme`: [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
                          To use the KiCad 6 default colors select `_builtin_default`.
                          Usually user colors are stored as `user`, but you can give it another name.
+        - `colored_pads`: [boolean=true] Plot through-hole in a different color. Like KiCad GUI does.
+        - `colored_vias`: [boolean=true] Plot vias in a different color. Like KiCad GUI does.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
@@ -1549,6 +1551,7 @@ Next time you need this list just use an alias, like this:
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg). Affected by global options.
         - *output_name*: Alias for output.
+        - `pad_color`: [string=''] Color used for `colored_pads`.
         - `pages`: [list(dict)] List of pages to include in the output document.
                    Each page contains one or more layers of the PCB.
           * Valid keys:
@@ -1580,6 +1583,7 @@ Next time you need this list just use an alias, like this:
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
+        - `via_color`: [string=''] Color used for `colored_vias`.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 

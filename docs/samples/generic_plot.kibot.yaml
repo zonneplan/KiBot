@@ -964,6 +964,10 @@ outputs:
       # To use the KiCad 6 default colors select `_builtin_default`.
       # Usually user colors are stored as `user`, but you can give it another name
       color_theme: '_builtin_classic'
+      # [boolean=true] Plot through-hole in a different color. Like KiCad GUI does
+      colored_pads: true
+      # [boolean=true] Plot vias in a different color. Like KiCad GUI does
+      colored_vias: true
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
@@ -981,6 +985,8 @@ outputs:
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg). Affected by global options
       output: '%f-%i%I%v.%x'
       # `output_name` is an alias for `output`
+      # [string=''] Color used for `colored_pads`
+      pad_color: ''
       # [list(dict)] List of pages to include in the output document.
       # Each page contains one or more layers of the PCB
       pages:
@@ -1036,6 +1042,8 @@ outputs:
       title: ''
       # [string=''] Board variant to apply
       variant: ''
+      # [string=''] Color used for `colored_vias`
+      via_color: ''
   # PcbDraw - Beautiful 2D PCB render:
   # Uses configurable colors.
   # Can also render the components if the 2D models are available

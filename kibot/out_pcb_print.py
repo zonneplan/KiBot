@@ -8,7 +8,7 @@
 # Note: Original code released as Public Domain
 import os
 import subprocess
-from pcbnew import PLOT_CONTROLLER, FromMM, PLOT_FORMAT_SVG
+from pcbnew import PLOT_CONTROLLER, FromMM, PLOT_FORMAT_SVG, F_Cu, B_Cu, wxSize, IsCopperLayer
 from shutil import rmtree, which
 from tempfile import mkdtemp
 from .svgutils.transform import fromstring
@@ -28,10 +28,12 @@ from . import log
 logger = log.get_logger()
 SVG2PDF = 'rsvg-convert'
 PDF2PS = 'pdf2ps'
+VIATYPE_THROUGH = 3
+VIATYPE_BLIND_BURIED = 2
+VIATYPE_MICROVIA = 1
 
 
 # - Use PyPDF2 for pdfunite
-# - Implement pad, vias, etc colors
 # - Analyze KiCad 6 long delay
 # - Manually draw the frame
 
@@ -272,6 +274,10 @@ class PagesOptions(Optionable):
 class PCB_PrintOptions(VariantOptions):
     # Mappings to KiCad config values. They should be the same used in drill_marks.py
     _drill_marks_map = {'none': 0, 'small': 1, 'full': 2}
+    _pad_colors = {'pad_color': 'pad_through_hole',
+                   'via_color': 'via_through',
+                   'micro_via_color': 'via_micro',
+                   'blind_via_color': 'via_blind_buried'}
 
     def __init__(self):
         with document:
@@ -304,6 +310,18 @@ class PCB_PrintOptions(VariantOptions):
                 Note that for PS you need `ghostscript` which isn't part of the default docker images """
             self.png_width = 1280
             """ Width of the PNG in pixels """
+            self.colored_pads = True
+            """ Plot through-hole in a different color. Like KiCad GUI does """
+            self.pad_color = ''
+            """ Color used for `colored_pads` """
+            self.colored_vias = True
+            """ Plot vias in a different color. Like KiCad GUI does """
+            self.via_color = ''
+            """ Color used for through-hole `colored_vias` """
+            self.micro_via_color = ''
+            """ Color used for micro `colored_vias` """
+            self.blind_via_color = ''
+            """ Color used for blind/buried `colored_vias` """
         super().__init__()
         self._expand_id = 'assembly'
 
@@ -335,6 +353,11 @@ class PCB_PrintOptions(VariantOptions):
                         la.color = "#000000"
         self._drill_marks = PCB_PrintOptions._drill_marks_map[self._drill_marks]
         self._expand_ext = self.format.lower()
+        for member, color in self._pad_colors.items():
+            if getattr(self, member):
+                self.validate_color(member)
+            else:
+                setattr(self, member, getattr(self._color_theme, color))
 
     def filter_components(self):
         if not self._comps:
@@ -426,6 +449,129 @@ class PCB_PrintOptions(VariantOptions):
                 os.remove(video_name)
         patch_svg_file(output, remove_bkg=True)
 
+    def plot_pads(self, la, pc, p, filelist):
+        id = la._id
+        logger.debug('- Plotting pads for layer {} ({})'.format(la.layer, id))
+        # Make invisible anything but through-hole pads
+        tmp_layer = GS.board.GetLayerID(GS.work_layer)
+        moved = []
+        resized = []
+        vias = []
+        size_0 = wxSize(0, 0)
+        for m in GS.get_modules():
+            for gi in m.GraphicalItems():
+                if gi.GetLayer() == id:
+                    gi.SetLayer(tmp_layer)
+                    moved.append(gi)
+            for pad in m.Pads():
+                dr = pad.GetDrillSize()
+                if dr.x:
+                    continue
+                resized.append((pad, pad.GetSize()))
+                pad.SetSize(size_0)
+        for e in GS.board.GetDrawings():
+            if e.GetLayer() == id:
+                e.SetLayer(tmp_layer)
+                moved.append(e)
+        for e in list(GS.board.Zones()):
+            if e.GetLayer() == id:
+                e.SetLayer(tmp_layer)
+                moved.append(e)
+        via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
+        for e in GS.board.GetTracks():
+            if e.GetClass() == via_type:
+                vias.append((e, e.GetDrill(), e.GetWidth()))
+                e.SetDrill(0)
+                e.SetWidth(0)
+            else:
+                e.SetLayer(tmp_layer)
+                moved.append(e)
+        # Plot the layer
+        # pc.SetLayer(id) already selected
+        suffix = la.suffix+'_pads'
+        pc.OpenPlotfile(suffix, PLOT_FORMAT_SVG, p.sheet)
+        pc.PlotLayer()
+        # Restore everything
+        for e in moved:
+            e.SetLayer(id)
+        for (pad, size) in resized:
+            pad.SetSize(size)
+        for (via, drill, width) in vias:
+            via.SetDrill(drill)
+            via.SetWidth(width)
+        # Add it to the list
+        filelist.append((GS.pcb_basename+"-"+suffix+".svg", self.pad_color))
+
+    def plot_vias(self, la, pc, p, filelist, via_t, via_c):
+        id = la._id
+        logger.debug('- Plotting vias for layer {} ({})'.format(la.layer, id))
+        # Make invisible anything but vias
+        tmp_layer = GS.board.GetLayerID(GS.work_layer)
+        moved = []
+        resized = []
+        vias = []
+        size_0 = wxSize(0, 0)
+        for m in GS.get_modules():
+            for gi in m.GraphicalItems():
+                if gi.GetLayer() == id:
+                    gi.SetLayer(tmp_layer)
+                    moved.append(gi)
+            for pad in m.Pads():
+                resized.append((pad, pad.GetSize()))
+                pad.SetSize(size_0)
+        for e in GS.board.GetDrawings():
+            if e.GetLayer() == id:
+                e.SetLayer(tmp_layer)
+                moved.append(e)
+        for e in list(GS.board.Zones()):
+            if e.GetLayer() == id:
+                e.SetLayer(tmp_layer)
+                moved.append(e)
+        via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
+        for e in GS.board.GetTracks():
+            if e.GetClass() == via_type:
+                if e.GetViaType() == via_t:
+                    # Include it, but ...
+                    if not e.IsOnLayer(id):
+                        # This is a via that doesn't drill this layer
+                        # Lamentably KiCad will draw a drill here
+                        # So we create a "patch" for the hole
+                        top = e.TopLayer()
+                        bottom = e.BottomLayer()
+                        w = e.GetWidth()
+                        d = e.GetDrill()
+                        vias.append((e, d, w, top, bottom))
+                        e.SetWidth(d)
+                        e.SetDrill(1)
+                        e.SetTopLayer(F_Cu)
+                        e.SetBottomLayer(B_Cu)
+                else:
+                    top = e.TopLayer()
+                    bottom = e.BottomLayer()
+                    w = e.GetWidth()
+                    d = e.GetDrill()
+                    vias.append((e, d, w, top, bottom))
+                    e.SetWidth(0)
+            else:
+                e.SetLayer(tmp_layer)
+                moved.append(e)
+        # Plot the layer
+        suffix = la.suffix+'_vias_'+str(via_t)
+        pc.OpenPlotfile(suffix, PLOT_FORMAT_SVG, p.sheet)
+        pc.PlotLayer()
+        # Restore everything
+        for e in moved:
+            e.SetLayer(id)
+        for (pad, size) in resized:
+            pad.SetSize(size)
+        for (via, drill, width, top, bottom) in vias:
+            via.SetDrill(drill)
+            via.SetWidth(width)
+            via.SetTopLayer(top)
+            via.SetBottomLayer(bottom)
+        # Add it to the list
+        filelist.append((GS.pcb_basename+"-"+suffix+".svg", via_c))
+
     def generate_output(self, output):
         if self.format != 'SVG' and which(SVG2PDF) is None:
             logger.error('`{}` not installed. Install `librsvg2-bin` or equivalent'.format(SVG2PDF))
@@ -445,7 +591,6 @@ class PCB_PrintOptions(VariantOptions):
         po.SetExcludeEdgeLayer(True)   # We plot it separately
         po.SetUseAuxOrigin(False)
         po.SetAutoScale(False)
-        po.SetDrillMarksType(self._drill_marks)
         # Generate the output
         pages = []
         for n, p in enumerate(self.pages):
@@ -466,10 +611,19 @@ class PCB_PrintOptions(VariantOptions):
                 po.SetPlotReference(la.plot_footprint_refs)
                 po.SetPlotValue(la.plot_footprint_values)
                 po.SetPlotInvisibleText(la.force_plot_invisible_refs_vals)
+                # Avoid holes on non-copper layers
+                po.SetDrillMarksType(self._drill_marks if IsCopperLayer(id) else 0)
                 pc.SetLayer(id)
                 pc.OpenPlotfile(la.suffix, PLOT_FORMAT_SVG, p.sheet)
                 pc.PlotLayer()
                 filelist.append((GS.pcb_basename+"-"+la.suffix+".svg", la.color))
+                if id >= F_Cu and id <= B_Cu:
+                    if self.colored_pads:
+                        self.plot_pads(la, pc, p, filelist)
+                    if self.colored_vias:
+                        self.plot_vias(la, pc, p, filelist, VIATYPE_THROUGH, self.via_color)
+                        self.plot_vias(la, pc, p, filelist, VIATYPE_BLIND_BURIED, self.blind_via_color)
+                        self.plot_vias(la, pc, p, filelist, VIATYPE_MICROVIA, self.micro_via_color)
             # 2) Plot the frame using an empty layer and 1.0 scale
             if self.plot_sheet_reference:
                 logger.debug('- Plotting the frame')

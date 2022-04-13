@@ -26,6 +26,11 @@ KI6_KI5 = {'b_adhesive': 'b_adhes',
            'user_eco2': 'eco2_user',
            'b_courtyard': 'b_crtyd',
            'f_courtyard': 'f_crtyd'}
+BOARD_COLORS = {'worksheet': 'pcb_frame',
+                'pad_through_hole': 'pad_through_hole',
+                'via_through': 'via_through',
+                'via_blind_buried': 'via_blind_buried',
+                'via_micro': 'via_micro'}
 CACHE = {}
 
 
@@ -33,6 +38,8 @@ class KiCadColors(object):
     def __init__(self):
         self.layer_id2color = {}
         self.pcb_frame = "#480000"
+        self.pad_through_hole = "#C2C200"
+        self.via_through = "#C2C2C2"
 
 
 def parse_color(val):
@@ -95,8 +102,9 @@ def load_color_theme(name):
                 logger.warning(W_WRONGCOLOR+"The `{}` theme doesn't define a color for the {} layer".format(name, c_name_ori))
         if extra_debug:
             logger.debug('- Color for layer {} ({}): {}'.format(c_name_ori, id, cl[id]))
-    # Title block and frame color
-    if 'worksheet' in board:
-        c.pcb_frame = parse_color(board['worksheet'])
+    # Other colors (Title block and frame color, vias, etc.)
+    for color, member in BOARD_COLORS.items():
+        if color in board:
+            setattr(c, member, parse_color(board[color]))
     CACHE[fn] = c
     return c
