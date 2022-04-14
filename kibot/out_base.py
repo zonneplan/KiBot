@@ -385,9 +385,9 @@ class VariantOptions(BaseOptions):
             tb.SetTitle(text)
 
     def restore_title(self):
-        self.old_title = None
         if self.old_title is not None:
             GS.board.GetTitleBlock().SetTitle(self.old_title)
+            self.old_title = None
 
     def save_tmp_board(self, dir=None):
         """ Save the PCB to a temporal file.
