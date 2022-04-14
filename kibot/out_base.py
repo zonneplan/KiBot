@@ -93,15 +93,20 @@ class BaseOutput(RegOutput):
             out = RegOutput.get_output(self.extends)
             if out is None:
                 raise KiPlotConfigurationError('Unknown output `{}` in `extends`'.format(self.extends))
+            if out.type != self.type:
+                raise KiPlotConfigurationError('Trying to extend `{}` using another type `{}`'.format(out, self))
+            if not out._configured:
+                # Make sure the extended output is configured, so it can be an extension of another output
+                out.config(None)
             if out._tree:
                 options = out._tree.get('options', None)
                 if options:
                     old_options = self._tree.get('options', {})
-                    # logger.error("Old options: "+str(old_options))
+                    # logger.error(self.name+" Old options: "+str(old_options))
                     options = deepcopy(options)
                     options.update(old_options)
                     self._tree['options'] = options
-                    # logger.error("New options: "+str(options))
+                    # logger.error(self.name+" New options: "+str(options))
         super().config(parent)
         to_dis = self.disable_run_by_default
         if isinstance(to_dis, str) and to_dis:  # Skip the boolean case
