@@ -583,12 +583,11 @@ class PCB_PrintOptions(VariantOptions):
             logger.error('Install `librsvg2-bin` or equivalent')
             exit(MISSING_TOOL)
         output_dir = os.path.dirname(output)
-        temp_dir = mkdtemp(prefix='tmp-kibot-pcb_print-')
-        logger.debug('- Temporal dir: {}'.format(temp_dir))
+        temp_dir_base = mkdtemp(prefix='tmp-kibot-pcb_print-')
+        logger.debug('- Temporal dir: {}'.format(temp_dir_base))
         # Plot options
         pc = PLOT_CONTROLLER(GS.board)
         po = pc.GetPlotOptions()
-        po.SetOutputDirectory(temp_dir)
         # Set General Options:
         po.SetExcludeEdgeLayer(True)   # We plot it separately
         po.SetUseAuxOrigin(False)
@@ -596,6 +595,12 @@ class PCB_PrintOptions(VariantOptions):
         # Generate the output
         pages = []
         for n, p in enumerate(self.pages):
+            # Use a dir for each page, avoid overwriting files, just for debug purposes
+            page_str = "%02d" % (n+1)
+            temp_dir = os.path.join(temp_dir_base, page_str)
+            os.makedirs(temp_dir)
+            po.SetOutputDirectory(temp_dir)
+            # Adapt the title
             self.set_title(p.title if p.title else self.title)
             # 1) Plot all layers to individual PDF files (B&W)
             po.SetPlotFrameRef(False)   # We plot it separately
@@ -641,32 +646,32 @@ class PCB_PrintOptions(VariantOptions):
             pc.ClosePlot()
             # 3) Stack all layers in one file
             if self.format == 'SVG':
-                id = self._expand_id+('_page_%02d' % (n+1))
+                id = self._expand_id+('_page_'+page_str)
                 assembly_file = self.expand_filename(output_dir, self.output, id, self._expand_ext)
             else:
-                assembly_file = GS.pcb_basename+"-"+str(n+1)+".svg"
+                assembly_file = GS.pcb_basename+".svg"
             logger.debug('- Merging layers to {}'.format(assembly_file))
             merge_svg(temp_dir, filelist, temp_dir, assembly_file, p.colored_holes, p.holes_color, p.monochrome)
             if self.format in ['PNG', 'EPS']:
-                id = self._expand_id+('_page_%02d' % (n+1))
+                id = self._expand_id+('_page_'+page_str)
                 out_file = self.expand_filename(output_dir, self.output, id, self._expand_ext)
                 if self.format == 'PNG':
                     svg_to_png(temp_dir, assembly_file, out_file, self.png_width)
                 else:
                     svg_to_eps(temp_dir, assembly_file, out_file)
-            pages.append(assembly_file)
+            pages.append(os.path.join(page_str, assembly_file))
             self.restore_title()
         # Join all pages in one file
         if self.format in ['PDF', 'PS']:
             logger.debug('- Creating output file {}'.format(output))
             if self.format == 'PDF':
-                create_pdf_from_svg_pages(temp_dir, pages, output)
+                create_pdf_from_svg_pages(temp_dir_base, pages, output)
             else:
                 ps_file = os.path.join(temp_dir, GS.pcb_basename+'.ps')
-                create_pdf_from_svg_pages(temp_dir, pages, ps_file)
+                create_pdf_from_svg_pages(temp_dir_base, pages, ps_file)
                 pdf_to_ps(ps_file, output)
         # Remove the temporal files
-        rmtree(temp_dir)
+        rmtree(temp_dir_base)
 
     def run(self, output):
         super().run(output)
