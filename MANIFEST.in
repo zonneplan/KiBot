@@ -2,3 +2,4 @@ include MANIFEST.in
 include LICENSE
 include README.md
 include kibot/report_templates/*.txt
+include kibot/kicad_colors/*.json
