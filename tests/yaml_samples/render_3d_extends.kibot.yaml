@@ -1,0 +1,31 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: "base"
+    type: render_3d
+    run_by_default: false
+    options:
+      width: 2000
+      height: 1000
+
+  - name: "base2"
+    type: step
+    run_by_default: false
+    options:
+      metric_units: false
+
+  - name: "top"
+    type: render_3d
+    extends: "base"
+    options:
+      rotate_x: 3
+      rotate_z: -2
+
+  - name: "bottom"
+    type: render_3d
+    extends: "top"
+    options:
+      width: 1920
+      view: "bottom"
