@@ -322,6 +322,8 @@ class PCB_PrintOptions(VariantOptions):
             """ Color used for micro `colored_vias` """
             self.blind_via_color = ''
             """ Color used for blind/buried `colored_vias` """
+            self.keep_temporal_files = False
+            """ Store the temporal page and layer files in the output dir and don't delete them """
         super().__init__()
         self._expand_id = 'assembly'
 
@@ -583,7 +585,10 @@ class PCB_PrintOptions(VariantOptions):
             logger.error('Install `librsvg2-bin` or equivalent')
             exit(MISSING_TOOL)
         output_dir = os.path.dirname(output)
-        temp_dir_base = mkdtemp(prefix='tmp-kibot-pcb_print-')
+        if self.keep_temporal_files:
+            temp_dir_base = output_dir
+        else:
+            temp_dir_base = mkdtemp(prefix='tmp-kibot-pcb_print-')
         logger.debug('- Temporal dir: {}'.format(temp_dir_base))
         # Plot options
         pc = PLOT_CONTROLLER(GS.board)
@@ -598,7 +603,7 @@ class PCB_PrintOptions(VariantOptions):
             # Use a dir for each page, avoid overwriting files, just for debug purposes
             page_str = "%02d" % (n+1)
             temp_dir = os.path.join(temp_dir_base, page_str)
-            os.makedirs(temp_dir)
+            os.makedirs(temp_dir, exist_ok=True)
             po.SetOutputDirectory(temp_dir)
             # Adapt the title
             self.set_title(p.title if p.title else self.title)
@@ -671,7 +676,8 @@ class PCB_PrintOptions(VariantOptions):
                 create_pdf_from_svg_pages(temp_dir_base, pages, ps_file)
                 pdf_to_ps(ps_file, output)
         # Remove the temporal files
-        rmtree(temp_dir_base)
+        if not self.keep_temporal_files:
+            rmtree(temp_dir_base)
 
     def run(self, output):
         super().run(output)
