@@ -467,7 +467,8 @@ class PCB_PrintOptions(VariantOptions):
                 dr = pad.GetDrillSize()
                 if dr.x:
                     continue
-                resized.append((pad, pad.GetSize()))
+                size = pad.GetSize()
+                resized.append((pad, wxSize(size.x, size.y)))
                 pad.SetSize(size_0)
         for e in GS.board.GetDrawings():
             if e.GetLayer() == id:
@@ -517,7 +518,8 @@ class PCB_PrintOptions(VariantOptions):
                     gi.SetLayer(tmp_layer)
                     moved.append(gi)
             for pad in m.Pads():
-                resized.append((pad, pad.GetSize()))
+                size = pad.GetSize()
+                resized.append((pad, wxSize(size.x, size.y)))
                 pad.SetSize(size_0)
         for e in GS.board.GetDrawings():
             if e.GetLayer() == id:
