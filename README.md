@@ -1089,7 +1089,8 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `polygon_mode`: [boolean=true] Plot using the contour, instead of the center line.
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
@@ -1236,7 +1237,8 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `subtract_mask_from_silk`: [boolean=false] Subtract the solder mask from the silk screen.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
@@ -1290,7 +1292,8 @@ Next time you need this list just use an alias, like this:
         - `pen_width`: [number=15] [0,100] Pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `scaling`: [number=0] Scale factor (0 means autoscaling).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
@@ -1701,7 +1704,8 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
@@ -1709,7 +1713,8 @@ Next time you need this list just use an alias, like this:
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `plot_footprint_refs`: [boolean=true] Include the footprint references.
     - `plot_footprint_values`: [boolean=true] Include the footprint values.
-    - `plot_sheet_reference`: [boolean=false] Currently without effect.
+    - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                              The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
     - `tent_vias`: [boolean=true] Cover the vias.
     - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
@@ -1888,7 +1893,8 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `scale_adjust_x`: [number=1.0] Fine grain adjust for the X scale (floating point multiplier).
         - `scale_adjust_y`: [number=1.0] Fine grain adjust for the Y scale (floating point multiplier).
         - `scaling`: [number=1] Scale factor (0 means autoscaling).
@@ -2114,7 +2120,8 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Currently without effect.
+        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.

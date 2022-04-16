@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -49,7 +49,8 @@ class AnyLayerOptions(VariantOptions):
             self.exclude_pads_from_silkscreen = False
             """ Do not plot the component pads in the silk screen (KiCad 5.x only) """
             self.plot_sheet_reference = False
-            """ Currently without effect """
+            """ Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs """
             self.plot_footprint_refs = True
             """ Include the footprint references """
             self.plot_footprint_values = True
@@ -80,7 +81,7 @@ class AnyLayerOptions(VariantOptions):
     def _configure_plot_ctrl(self, po, output_dir):
         logger.debug("Configuring plot controller for output")
         po.SetOutputDirectory(output_dir)
-        po.SetPlotFrameRef(self.plot_sheet_reference)
+        po.SetPlotFrameRef(self.plot_sheet_reference and (not GS.ki5()))
         po.SetPlotReference(self.plot_footprint_refs)
         po.SetPlotValue(self.plot_footprint_values)
         po.SetPlotInvisibleText(self.force_plot_invisible_refs_vals)

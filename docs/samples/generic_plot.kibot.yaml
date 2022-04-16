@@ -454,7 +454,8 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Currently without effect
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [boolean=true] Plot using the contour, instead of the center line
       polygon_mode: true
@@ -607,7 +608,8 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Currently without effect
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [boolean=false] Subtract the solder mask from the silk screen
       subtract_mask_from_silk: false
@@ -671,7 +673,8 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Currently without effect
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [number=0] Scale factor (0 means autoscaling)
       scaling: 0
@@ -1164,7 +1167,8 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Currently without effect
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [boolean=true] Cover the vias
       tent_vias: true
@@ -1340,7 +1344,8 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Currently without effect
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [number=1.0] Fine grain adjust for the X scale (floating point multiplier)
       scale_adjust_x: 1.0
@@ -1582,7 +1587,8 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Currently without effect
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [boolean=true] Cover the vias
       tent_vias: true
