@@ -14,23 +14,32 @@ Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-worksheet/
 import io
 from struct import unpack
 from pcbnew import (wxPoint, wxSize, FromMM, GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
-                    GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM, FILL_T_FILLED_SHAPE,
-                    SHAPE_T_POLY, wxPointMM)
-import pcbnew
+                    GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM, wxPointMM)
+from ..gs import GS
+if not GS.kicad_version_n:
+    # When running the regression tests we need it
+    from kibot.__main__ import detect_kicad
+    detect_kicad()
+if GS.ki6():
+    from pcbnew import PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY
+else:
+    from pcbnew import DRAWSEGMENT, TEXTE_PCB
+    PCB_SHAPE = DRAWSEGMENT
+    PCB_TEXT = TEXTE_PCB
+    FILL_T_FILLED_SHAPE = 0
+    SHAPE_T_POLY = 4
 from .sexpdata import load, SExpData
 from .v6_sch import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
                      _check_relaxed, _get_points, _check_symbol_str)
 from ..svgutils.transform import ImageElement, GroupElement
 from ..misc import W_WKSVERSION
-from ..gs import GS
 from .. import log
 
 logger = log.get_logger()
 setup = None
+# The version of "kicad_wks" used for all tests
 SUP_VERSION = 20210606
-
-# TODO
-# - Mover los draw() a cada clase
+# Hash to convert KiCad 5 "%X" markers to KiCad 6 "${XXX}" text variables
 KI5_2_KI6 = {'K': 'KICAD_VERSION', 'S': '#', 'N': '##', 'C0': 'COMMENT1', 'C1': 'COMMENT2', 'C2': 'COMMENT3',
              'C3': 'COMMENT4', 'C4': 'COMMENT5', 'C5': 'COMMENT6', 'C6': 'COMMENT7', 'C7': 'COMMENT8',
              'C8': 'COMMENT9', 'Y': 'COMPANY', 'F': 'FILENAME', 'D': 'ISSUE_DATE', 'Z': 'PAPER', 'R': 'REVISION',
@@ -145,18 +154,28 @@ class WksLine(WksDrawing):
         self.line_width = setup.line_width
         self.shape = 0   # SHAPE_T_SEGMENT but is 1!
 
+    def draw_line(e, p, st, en):
+        s = PCB_SHAPE()
+        s.SetShape(e.shape)
+        s.SetStart(st)
+        s.SetEnd(en)
+        s.SetWidth(e.line_width)
+        s.SetLayer(p.layer)
+        p.board.Add(s)
+        p.pcb_items.append(s)
+
     def draw(e, p):
         st, sti = p.solve_ref(e.start, e.incrx, e.incry, e.start_ref)
         en, eni = p.solve_ref(e.end, e.incrx, e.incry, e.end_ref)
         for _ in range(e.repeat):
-            s = pcbnew.PCB_SHAPE()
-            s.SetShape(e.shape)
-            s.SetStart(st)
-            s.SetEnd(en)
-            s.SetWidth(e.line_width)
-            s.SetLayer(p.layer)
-            p.board.Add(s)
-            p.pcb_items.append(s)
+            if GS.ki5() and e.shape:
+                # Using KiCad 5 I always get a line. Why? What's missing?
+                e.draw_line(p, st, wxPoint(en.x, st.y))
+                e.draw_line(p, wxPoint(en.x, st.y), wxPoint(en.x, en.y))
+                e.draw_line(p, wxPoint(en.x, en.y), wxPoint(st.x, en.y))
+                e.draw_line(p, wxPoint(st.x, en.y), st)
+            else:
+                e.draw_line(p, st, en)
             st += sti
             en += eni
             if p.out_of_margin(st):
@@ -264,15 +283,19 @@ class WksText(WksDrawing):
         pos, posi = p.solve_ref(e.pos, e.incrx, e.incry, e.pos_ref)
         text = GS.expand_text_variables(e.text, p.tb_vars)
         for _ in range(e.repeat):
-            s = pcbnew.PCB_TEXT(None)
+            s = PCB_TEXT(None)
             s.SetText(text)
             s.SetPosition(pos)
             s.SetTextSize(e.font.size)
             if e.font.bold:
                 s.SetBold(True)
-                s.SetTextThickness(round(e.font.line_width*2))
+                thickness = round(e.font.line_width*2)
             else:
-                s.SetTextThickness(e.font.line_width)
+                thickness = e.font.line_width
+            if hasattr(s, 'SetTextThickness'):
+                s.SetTextThickness(thickness)
+            else:
+                s.SetThickness(thickness)
             s.SetHorizJustify(e.h_justify)
             s.SetVertJustify(e.v_justify)
             s.SetLayer(p.layer)
@@ -337,9 +360,10 @@ class WksPolygon(WksDrawing):
         pos, posi = p.solve_ref(e.pos, e.incrx, e.incry, e.pos_ref)
         for _ in range(e.repeat):
             for pts in e.pts:
-                s = pcbnew.PCB_SHAPE()
+                s = PCB_SHAPE()
                 s.SetShape(SHAPE_T_POLY)
-                s.SetFillMode(FILL_T_FILLED_SHAPE)
+                if hasattr(s, 'SetFillMode'):
+                    s.SetFillMode(FILL_T_FILLED_SHAPE)
                 s.SetPolyPoints([pos+p for p in pts])
                 s.SetWidth(e.line_width)
                 s.SetLayer(p.layer)
@@ -391,7 +415,12 @@ class WksBitmap(WksDrawing):
         pos, posi = p.solve_ref(e.pos, e.incrx, e.incry, e.pos_ref)
         for _ in range(e.repeat):
             img = ImageElement(io.BytesIO(s), w, h)
-            img.moveto(pos.x-round(w/2), pos.y-round(h/2))
+            x = pos.x-round(w/2)
+            y = pos.y-round(h/2)
+            img.moveto(x, y)
+            if GS.ki5():
+                # KiCad 5 uses Inches and with less resolution
+                img.scale(0.0003937007874)
             # Put the image in a group
             g = GroupElement([img])
             # Add the group to the SVG
