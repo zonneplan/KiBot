@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2022 Salvador E. Tropea
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
-# Copyright (c) 2022 Albin Dennevi
+# Copyright (c) 2022 Albin Dennevi (create_pdf_from_pages)
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-# Adapted from: https://gitlab.com/dennevi/Board2Pdf/
-# Note: Original code released as Public Domain
+# Base idea: https://gitlab.com/dennevi/Board2Pdf/ (Released as Public Domain)
 import os
 import subprocess
 from pcbnew import PLOT_CONTROLLER, FromMM, PLOT_FORMAT_SVG, F_Cu, B_Cu, wxSize, IsCopperLayer
