@@ -15,6 +15,7 @@ from .misc import MISSING_TOOL, WRONG_INSTALL, WRONG_ARGUMENTS, INTERNAL_ERROR, 
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
+from .out_pcb_print import create_pdf_from_pages
 from . import log
 
 logger = log.get_logger()
@@ -44,6 +45,8 @@ class PDFUniteOptions(BaseOptions):
             """ Name for the generated PDF (%i=name of the output %x=pdf) """
             self.outputs = FilesList
             """ [list(dict)] Which files will be included """
+            self.use_external_command = False
+            """ Use the `pdfunite` tool instead of PyPDF2 Python module """
         super().__init__()
         self._expand_ext = 'pdf'
 
@@ -101,6 +104,20 @@ class PDFUniteOptions(BaseOptions):
         files = self.get_files(output, no_out_run=True)
         return files
 
+    def run_external(self, files, output):
+        cmd = ['pdfunite']+files+[output]
+        logger.debug('Running: {}'.format(cmd))
+        try:
+            check_output(cmd, stderr=STDOUT)
+        except FileNotFoundError:
+            logger.error('Missing `pdfunite` command, install it (poppler-utils)')
+            exit(MISSING_TOOL)
+        except CalledProcessError as e:
+            logger.error('Failed to invoke pdfunite command, error {}'.format(e.returncode))
+            if e.output:
+                logger.error('Output from command: '+e.output.decode())
+            exit(WRONG_INSTALL)
+
     def run(self, output):
         # Output file name
         logger.debug('Collecting files')
@@ -114,18 +131,10 @@ class PDFUniteOptions(BaseOptions):
         logger.debug('Generating `{}` PDF'.format(output))
         if os.path.isfile(output):
             os.remove(output)
-        cmd = ['pdfunite']+files+[output]
-        logger.debug('Running: {}'.format(cmd))
-        try:
-            check_output(cmd, stderr=STDOUT)
-        except FileNotFoundError:
-            logger.error('Missing `pdfunite` command, install it (poppler-utils)')
-            exit(MISSING_TOOL)
-        except CalledProcessError as e:
-            logger.error('Failed to invoke pdfunite command, error {}'.format(e.returncode))
-            if e.output:
-                logger.error('Output from command: '+e.output.decode())
-            exit(WRONG_INSTALL)
+        if self.use_external_command:
+            self.run_external(files, output)
+        else:
+            create_pdf_from_pages(files, output)
 
 
 @output_class

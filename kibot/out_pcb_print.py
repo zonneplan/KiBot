@@ -36,7 +36,6 @@ VIATYPE_THROUGH = 3
 VIATYPE_BLIND_BURIED = 2
 VIATYPE_MICROVIA = 1
 
-# - Use PyPDF2 for pdfunite
 # - Analyze KiCad 6 long delay
 
 
@@ -109,14 +108,14 @@ def to_inches(w):
     return val
 
 
-def create_pdf_from_pages(input_folder, input_files, output_fn):
+def create_pdf_from_pages(input_files, output_fn):
     output = PyPDF2.PdfFileWriter()
     # Collect all pages
     open_files = []
     er = None
     for filename in input_files:
         try:
-            file = open(os.path.join(input_folder, filename), 'rb')
+            file = open(filename, 'rb')
             open_files.append(file)
             pdf_reader = PyPDF2.PdfFileReader(file)
             page_obj = pdf_reader.getPage(0)
@@ -172,8 +171,8 @@ def create_pdf_from_svg_pages(input_folder, input_files, output_fn):
     for svg_file in input_files:
         pdf_file = svg_file.replace('.svg', '.pdf')
         svg_to_pdf(input_folder, svg_file, pdf_file)
-        svg_files.append(pdf_file)
-    create_pdf_from_pages(input_folder, svg_files, output_fn)
+        svg_files.append(os.path.join(input_folder, pdf_file))
+    create_pdf_from_pages(svg_files, output_fn)
 
 
 class LayerOptions(Layer):
