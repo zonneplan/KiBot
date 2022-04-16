@@ -1586,8 +1586,9 @@ Next time you need this list just use an alias, like this:
             - `tent_vias`: [boolean=true] Cover the vias.
             - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                        If it starts with `+` the text is concatenated.
-        - `plot_sheet_reference`: [boolean=true] Include the title-block.
+        - `plot_sheet_reference`: [boolean=true] Include the title-block (worksheet, frame, etc.).
         - `png_width`: [number=1280] Width of the PNG in pixels.
+        - `sheet_reference_layout`: [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.

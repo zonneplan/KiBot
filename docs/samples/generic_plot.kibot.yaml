@@ -1044,10 +1044,12 @@ outputs:
           # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
           # If it starts with `+` the text is concatenated
           title: ''
-      # [boolean=true] Include the title-block
+      # [boolean=true] Include the title-block (worksheet, frame, etc.)
       plot_sheet_reference: true
       # [number=1280] Width of the PNG in pixels
       png_width: 1280
+      # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project
+      sheet_reference_layout: ''
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''

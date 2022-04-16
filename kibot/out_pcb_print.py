@@ -270,7 +270,9 @@ class PCB_PrintOptions(VariantOptions):
                 To use the KiCad 6 default colors select `_builtin_default`.
                 Usually user colors are stored as `user`, but you can give it another name """
             self.plot_sheet_reference = True
-            """ Include the title-block """
+            """ Include the title-block (worksheet, frame, etc.) """
+            self.sheet_reference_layout = ''
+            """ Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project """
             self.frame_plot_mechanism = 'internal'
             """ [gui,internal,plot] Plotting the frame from Python is problematic.
                 This option selects a workaround strategy.
@@ -343,6 +345,11 @@ class PCB_PrintOptions(VariantOptions):
                 setattr(self, member, getattr(self._color_theme, color))
         if self.frame_plot_mechanism == 'plot' and GS.ki5():
             raise KiPlotConfigurationError("You can't use `plot` for `frame_plot_mechanism` with KiCad 5. It will crash.")
+        KiConf.init(GS.pcb_file)
+        if self.sheet_reference_layout:
+            self.sheet_reference_layout = KiConf.expand_env(self.sheet_reference_layout)
+            if not os.path.isfile(self.sheet_reference_layout):
+                raise KiPlotConfigurationError("Missing page layout file: "+self.sheet_reference_layout)
 
     def filter_components(self):
         if not self._comps:
@@ -653,8 +660,11 @@ class PCB_PrintOptions(VariantOptions):
             temp_dir_base = mkdtemp(prefix='tmp-kibot-pcb_print-')
         logger.debug('- Temporal dir: {}'.format(temp_dir_base))
         self.find_paper_size()
-        # Find the layout file
-        layout = KiConf.fix_page_layout(GS.pro_file, dry=True)[1]
+        if self.sheet_reference_layout:
+            layout = self.sheet_reference_layout
+        else:
+            # Find the layout file
+            layout = KiConf.fix_page_layout(GS.pro_file, dry=True)[1]
         if not layout or not os.path.isfile(layout):
             layout = os.path.abspath(os.path.join(os.path.dirname(__file__), 'kicad_layouts', 'default.kicad_wks'))
         logger.debug('- Using layout: '+layout)
