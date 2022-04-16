@@ -54,7 +54,7 @@ Components count: (SMD/THT)
 Defined tracks:
 
 - 0.15 mm (6 mils)
-- 0.15 mm (6 mils)
+- 0.25 mm (10 mils)
 - 0.3 mm (12 mils)
 - 0.64 mm (25 mils)
 
@@ -67,7 +67,7 @@ Used tracks:
 Defined vias:
 
 - 0.51/0.25 mm (20/10 mils)
-- 0.51/0.25 mm (20/10 mils)
+- 0.8/0.4 mm (31/16 mils)
 - 0.89/0.51 mm (35/20 mils)
 
 Used vias:
