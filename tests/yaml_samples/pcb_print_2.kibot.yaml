@@ -13,6 +13,7 @@ outputs:
       # drill_marks: small
       title: Chau
       plot_sheet_reference: true
+      sheet_reference_layout: '${KIPRJMOD}/../../data/test_img.kicad_wks'
       format: 'PDF'
       keep_temporal_files: true
       # enable_ki6_frame_fix: true
