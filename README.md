@@ -1648,6 +1648,7 @@ Next time you need this list just use an alias, like this:
   * Description: Exports the PCB to the most common exchange format. Suitable for printing.
                  Note that this output isn't the best for documating your project.
                  This output is what you get from the File/Plot menu in pcbnew.
+                 The `pcb_print` is usually a better alternative.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -1719,7 +1720,7 @@ Next time you need this list just use an alias, like this:
   * Description: Exports the PCB to the most common exchange format. Suitable for printing.
                  This is the main format to document your PCB.
                  This output is what you get from the 'File/Print' menu in pcbnew.
-                 The `pcb_print` is an alternative.
+                 The `pcb_print` is usually a better alternative.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
@@ -1808,6 +1809,7 @@ Next time you need this list just use an alias, like this:
             - `source`: [string='*.pdf'] File names to add, wildcards allowed. Use ** for recursive match.
                         By default this pattern is applied to the output dir specified with `-d` command line option.
                         See the `from_cwd` option.
+        - `use_external_command`: [boolean=false] Use the `pdfunite` tool instead of PyPDF2 Python module.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
@@ -1847,6 +1849,7 @@ Next time you need this list just use an alias, like this:
   * Type: `ps`
   * Description: Exports the PCB to a format suitable for printing.
                  This output is what you get from the File/Plot menu in pcbnew.
+                 The `pcb_print` is usually a better alternative.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
@@ -2073,6 +2076,7 @@ Next time you need this list just use an alias, like this:
   * Description: Exports the PCB to a format suitable for 2D graphics software.
                  Unlike bitmaps SVG drawings can be scaled without losing resolution.
                  This output is what you get from the File/Plot menu in pcbnew.
+                 The `pcb_print` is usually a better alternative.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
@@ -2121,7 +2125,7 @@ Next time you need this list just use an alias, like this:
   * Type: `svg_pcb_print`
   * Description: Exports the PCB to the scalable vector graphics format.
                  This output is what you get from the 'File/Print' menu in pcbnew.
-                 The `pcb_print` is an alternative.
+                 The `pcb_print` is usually a better alternative.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.

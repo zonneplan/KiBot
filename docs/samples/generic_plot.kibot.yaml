@@ -1122,6 +1122,7 @@ outputs:
   # PDF (Portable Document Format):
   # Note that this output isn't the best for documating your project.
   # This output is what you get from the File/Plot menu in pcbnew.
+  # The `pcb_print` is usually a better alternative.
   - name: 'pdf_example'
     comment: 'Exports the PCB to the most common exchange format. Suitable for printing.'
     type: 'pdf'
@@ -1175,7 +1176,7 @@ outputs:
   # PDF PCB Print (Portable Document Format):
   # This is the main format to document your PCB.
   # This output is what you get from the 'File/Print' menu in pcbnew.
-  # The `pcb_print` is an alternative.
+  # The `pcb_print` is usually a better alternative.
   - name: 'pdf_pcb_print_example'
     comment: 'Exports the PCB to the most common exchange format. Suitable for printing.'
     type: 'pdf_pcb_print'
@@ -1257,6 +1258,8 @@ outputs:
           # By default this pattern is applied to the output dir specified with `-d` command line option.
           # See the `from_cwd` option
           source: '*.pdf'
+      # [boolean=false] Use the `pdfunite` tool instead of PyPDF2 Python module
+      use_external_command: false
   # Pick & place:
   # This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew.
   - name: 'position_example'
@@ -1293,6 +1296,7 @@ outputs:
       variant: ''
   # PS (Postscript):
   # This output is what you get from the File/Plot menu in pcbnew.
+  # The `pcb_print` is usually a better alternative.
   - name: 'ps_example'
     comment: 'Exports the PCB to a format suitable for printing.'
     type: 'ps'
@@ -1536,6 +1540,7 @@ outputs:
   # SVG (Scalable Vector Graphics):
   # Unlike bitmaps SVG drawings can be scaled without losing resolution.
   # This output is what you get from the File/Plot menu in pcbnew.
+  # The `pcb_print` is usually a better alternative.
   - name: 'svg_example'
     comment: 'Exports the PCB to a format suitable for 2D graphics software.'
     type: 'svg'
@@ -1588,7 +1593,7 @@ outputs:
     layers: all
   # SVG PCB Print (Scalable Vector Graphics):
   # This output is what you get from the 'File/Print' menu in pcbnew.
-  # The `pcb_print` is an alternative.
+  # The `pcb_print` is usually a better alternative.
   - name: 'svg_pcb_print_example'
     comment: 'Exports the PCB to the scalable vector graphics format.'
     type: 'svg_pcb_print'

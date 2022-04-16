@@ -78,7 +78,8 @@ class PSOptions(DrillMarks):
 class PS(AnyLayer):
     """ PS (Postscript)
         Exports the PCB to a format suitable for printing.
-        This output is what you get from the File/Plot menu in pcbnew. """
+        This output is what you get from the File/Plot menu in pcbnew.
+        The `pcb_print` is usually a better alternative. """
     def __init__(self):
         super().__init__()
         with document:

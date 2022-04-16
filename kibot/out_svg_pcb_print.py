@@ -42,7 +42,7 @@ class SVG_PCB_Print(BaseOutput):  # noqa: F821
     """ SVG PCB Print (Scalable Vector Graphics)
         Exports the PCB to the scalable vector graphics format.
         This output is what you get from the 'File/Print' menu in pcbnew.
-        The `pcb_print` is an alternative. """
+        The `pcb_print` is usually a better alternative. """
     def __init__(self):
         super().__init__()
         with document:

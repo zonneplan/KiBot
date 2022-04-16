@@ -44,7 +44,8 @@ class SVG(AnyLayer):
     """ SVG (Scalable Vector Graphics)
         Exports the PCB to a format suitable for 2D graphics software.
         Unlike bitmaps SVG drawings can be scaled without losing resolution.
-        This output is what you get from the File/Plot menu in pcbnew. """
+        This output is what you get from the File/Plot menu in pcbnew.
+        The `pcb_print` is usually a better alternative. """
     def __init__(self):
         super().__init__()
         with document:

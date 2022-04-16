@@ -28,7 +28,7 @@ class PDF_PCB_Print(BaseOutput):  # noqa: F821
         Exports the PCB to the most common exchange format. Suitable for printing.
         This is the main format to document your PCB.
         This output is what you get from the 'File/Print' menu in pcbnew.
-        The `pcb_print` is an alternative. """
+        The `pcb_print` is usually a better alternative. """
     def __init__(self):
         super().__init__()
         with document:
