@@ -18,8 +18,9 @@ from .optionable import Optionable
 from .out_base import VariantOptions
 from .kicad.color_theme import load_color_theme
 from .kicad.patch_svg import patch_svg_file
-from .kicad.worksheet import Worksheet
+from .kicad.worksheet import Worksheet, WksError
 from .kicad.config import KiConf
+from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL
 from .kiplot import check_script, exec_with_retry, add_extra_options
@@ -35,8 +36,6 @@ PDF2PS = 'pdf2ps'
 VIATYPE_THROUGH = 3
 VIATYPE_BLIND_BURIED = 2
 VIATYPE_MICROVIA = 1
-
-# - Analyze KiCad 6 long delay
 
 
 def _run_command(cmd):
@@ -441,7 +440,14 @@ class PCB_PrintOptions(VariantOptions):
         po.SetScale(1.0)
         po.SetNegative(False)
         pc.SetLayer(self.cleared_layer)
-        ws = Worksheet.load(self.layout)
+        # Load the WKS
+        error = None
+        try:
+            ws = Worksheet.load(self.layout)
+        except (WksError, SchError) as e:
+            error = str(e)
+        if error:
+            raise KiPlotConfigurationError('Error reading `{}` ({})'.format(self.layout, error))
         tb_vars = self.fill_kicad_vars(page, pages, p)
         ws.draw(GS.board, self.cleared_layer, page, self.paper_w, self.paper_h, tb_vars)
         pc.OpenPlotfile('frame', PLOT_FORMAT_SVG, p.sheet)
