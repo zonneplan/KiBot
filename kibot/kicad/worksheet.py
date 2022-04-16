@@ -143,6 +143,24 @@ class WksLine(WksDrawing):
         self.end = wxPoint(0, 0)
         self.end_ref = 'rbcorner'
         self.line_width = setup.line_width
+        self.shape = 0   # SHAPE_T_SEGMENT but is 1!
+
+    def draw(e, p):
+        st, sti = p.solve_ref(e.start, e.incrx, e.incry, e.start_ref)
+        en, eni = p.solve_ref(e.end, e.incrx, e.incry, e.end_ref)
+        for _ in range(e.repeat):
+            s = pcbnew.PCB_SHAPE()
+            s.SetShape(e.shape)
+            s.SetStart(st)
+            s.SetEnd(en)
+            s.SetWidth(e.line_width)
+            s.SetLayer(p.layer)
+            p.board.Add(s)
+            p.pcb_items.append(s)
+            st += sti
+            en += eni
+            if p.out_of_margin(st):
+                break
 
     def parse_specific_args(self, i_type, i, items, offset):
         if i_type == 'linewidth':
@@ -160,6 +178,7 @@ class WksRect(WksLine):
 
     def __init__(self):
         super().__init__()
+        self.shape = 1  # SHAPE_T_RECT but is 0!!!
 
 
 class WksFont(object):
@@ -241,6 +260,55 @@ class WksText(WksDrawing):
         else:
             super().parse_specific_args(i_type, i, items, offset)
 
+    def draw(e, p):
+        pos, posi = p.solve_ref(e.pos, e.incrx, e.incry, e.pos_ref)
+        text = GS.expand_text_variables(e.text, p.tb_vars)
+        for _ in range(e.repeat):
+            s = pcbnew.PCB_TEXT(None)
+            s.SetText(text)
+            s.SetPosition(pos)
+            s.SetTextSize(e.font.size)
+            if e.font.bold:
+                s.SetBold(True)
+                s.SetTextThickness(round(e.font.line_width*2))
+            else:
+                s.SetTextThickness(e.font.line_width)
+            s.SetHorizJustify(e.h_justify)
+            s.SetVertJustify(e.v_justify)
+            s.SetLayer(p.layer)
+            if e.font.italic:
+                s.SetItalic(True)
+            if e.rotate:
+                s.SetTextAngle(e.rotate*10)
+            # Adjust the text size to the maximum allowed
+            if e.max_len > 0:
+                w = s.GetBoundingBox().GetWidth()
+                if w > e.max_len:
+                    s.SetTextWidth(round(e.font.size.x*e.max_len/w))
+            if e.max_height > 0:
+                h = s.GetBoundingBox().GetHeight()
+                if h > e.max_height:
+                    s.SetTextHeight(round(e.font.size.y*e.max_height/h))
+            # Add it to the board and to the list of things to remove
+            p.board.Add(s)
+            p.pcb_items.append(s)
+            # Increment the position
+            pos += posi
+            if p.out_of_margin(pos):
+                break
+            # Increment the text
+            # This is what KiCad does ... not very cleaver
+            if text:
+                text_end = text[-1]
+                if text_end.isdigit():
+                    # Only increment the last digit "9" -> "10", "10" -> "11", "19" -> "110"?!!
+                    text_end = str(int(text_end)+e.incr_label)
+                else:
+                    text_end = chr((ord(text_end)+e.incr_label) % 256)
+                text = text[:-1]+text_end
+            else:
+                text = '?'
+
 
 class WksPolygon(WksDrawing):
     c_name = 'polygon'
@@ -265,6 +333,24 @@ class WksPolygon(WksDrawing):
         else:
             super().parse_specific_args(i_type, i, items, offset)
 
+    def draw(e, p):
+        pos, posi = p.solve_ref(e.pos, e.incrx, e.incry, e.pos_ref)
+        for _ in range(e.repeat):
+            for pts in e.pts:
+                s = pcbnew.PCB_SHAPE()
+                s.SetShape(SHAPE_T_POLY)
+                s.SetFillMode(FILL_T_FILLED_SHAPE)
+                s.SetPolyPoints([pos+p for p in pts])
+                s.SetWidth(e.line_width)
+                s.SetLayer(p.layer)
+                if e.rotate:
+                    s.Rotate(pos, e.rotate*10)
+                p.board.Add(s)
+                p.pcb_items.append(s)
+            pos += posi
+            if p.out_of_margin(pos):
+                break
+
 
 class WksBitmap(WksDrawing):
     c_name = 'bitmap'
@@ -287,6 +373,33 @@ class WksBitmap(WksDrawing):
                 self.data += bytes([int(c, 16) for c in v.split(' ') if c])
         else:
             super().parse_specific_args(i_type, i, items, offset)
+
+    def draw(e, p):
+        # Can we draw it using KiCad? I don't see how
+        # Make a list to be added to the SVG output
+        p.images.append(e)
+
+    def add_to_svg(e, svg, p):
+        s = e.data
+        w, h = unpack('>LL', s[16:24])
+        # For KiCad 300 dpi is 1:1 scale
+        dpi = 300/e.scale
+        # Convert pixels to mm and then to KiCad units
+        w = FromMM(w/dpi*25.4)
+        h = FromMM(h/dpi*25.4)
+        # KiCad informs the position for the center of the image
+        pos, posi = p.solve_ref(e.pos, e.incrx, e.incry, e.pos_ref)
+        for _ in range(e.repeat):
+            img = ImageElement(io.BytesIO(s), w, h)
+            img.moveto(pos.x-round(w/2), pos.y-round(h/2))
+            # Put the image in a group
+            g = GroupElement([img])
+            # Add the group to the SVG
+            svg.append(g)
+            # Increment the position
+            pos += posi
+            if p.out_of_margin(pos):
+                break
 
 
 class Worksheet(object):
@@ -371,94 +484,6 @@ class Worksheet(object):
     def check_page(self, e):
         return e.option and ((e.option == 'page1only' and self.page != 1) or (e.option == 'notonpage1' and self.page == 1))
 
-    def draw_start_end(self, e, shape):
-        st, sti = self.solve_ref(e.start, e.incrx, e.incry, e.start_ref)
-        en, eni = self.solve_ref(e.end, e.incrx, e.incry, e.end_ref)
-        for _ in range(e.repeat):
-            s = pcbnew.PCB_SHAPE()
-            s.SetShape(shape)
-            s.SetStart(st)
-            s.SetEnd(en)
-            s.SetWidth(e.line_width)
-            s.SetLayer(self.layer)
-            self.board.Add(s)
-            self.pcb_items.append(s)
-            st += sti
-            en += eni
-            if st.x > self.rm or st.y > self.bm:
-                break
-
-    def draw_line(self, e):
-        self.draw_start_end(e, 0)
-
-    def draw_rect(self, e):
-        self.draw_start_end(e, 1)
-
-    def draw_text(self, e):
-        pos, posi = self.solve_ref(e.pos, e.incrx, e.incry, e.pos_ref)
-        text = GS.expand_text_variables(e.text, self.tb_vars)
-        for _ in range(e.repeat):
-            s = pcbnew.PCB_TEXT(None)
-            s.SetText(text)
-            s.SetPosition(pos)
-            s.SetTextSize(e.font.size)
-            if e.font.bold:
-                s.SetBold(True)
-                s.SetTextThickness(round(e.font.line_width*2))
-            else:
-                s.SetTextThickness(e.font.line_width)
-            s.SetHorizJustify(e.h_justify)
-            s.SetVertJustify(e.v_justify)
-            s.SetLayer(self.layer)
-            if e.font.italic:
-                s.SetItalic(True)
-            if e.rotate:
-                s.SetTextAngle(e.rotate*10)
-            # Adjust the text size to the maximum allowed
-            if e.max_len > 0:
-                w = s.GetBoundingBox().GetWidth()
-                if w > e.max_len:
-                    s.SetTextWidth(round(e.font.size.x*e.max_len/w))
-            if e.max_height > 0:
-                h = s.GetBoundingBox().GetHeight()
-                if h > e.max_height:
-                    s.SetTextHeight(round(e.font.size.y*e.max_height/h))
-            # Add it to the board and to the list of things to remove
-            self.board.Add(s)
-            self.pcb_items.append(s)
-            # Increment the position
-            pos += posi
-            if pos.x > self.rm or pos.y > self.bm:
-                break
-            # Increment the text
-            # This is what KiCad does ... not very cleaver
-            if text:
-                text_end = text[-1]
-                if text_end.isdigit():
-                    # Only increment the last digit "9" -> "10", "10" -> "11", "19" -> "110"?!!
-                    text_end = str(int(text_end)+e.incr_label)
-                else:
-                    text_end = chr((ord(text_end)+e.incr_label) % 256)
-                text = text[:-1]+text_end
-            else:
-                text = '?'
-
-    def draw_polygon(self, e):
-        pos, posi = self.solve_ref(e.pos, e.incrx, e.incry, e.pos_ref)
-        for _ in range(e.repeat):
-            for pts in e.pts:
-                s = pcbnew.PCB_SHAPE()
-                s.SetShape(SHAPE_T_POLY)
-                s.SetFillMode(FILL_T_FILLED_SHAPE)
-                s.SetPolyPoints([pos+p for p in pts])
-                s.SetWidth(e.line_width)
-                s.SetLayer(self.layer)
-                if e.rotate:
-                    s.Rotate(pos, e.rotate*10)
-                self.board.Add(s)
-                self.pcb_items.append(s)
-            pos += posi
-
     def draw(self, board, layer, page, page_w, page_h, tb_vars):
         self.pcb_items = []
         self.set_page(page_w, page_h)
@@ -468,43 +493,18 @@ class Worksheet(object):
         self.tb_vars = tb_vars
         self.images = []
         for e in self.elements:
+            # Some objects are for the first page, other for all but the first page, and most for all
             if self.check_page(e):
                 continue
-            if e.c_name == 'line':
-                self.draw_line(e)
-            elif e.c_name == 'rect':
-                self.draw_rect(e)
-            elif e.c_name == 'tbtext':
-                self.draw_text(e)
-            elif e.c_name == 'polygon':
-                self.draw_polygon(e)
-            elif e.c_name == 'bitmap':
-                # Can we draw it using KiCad? I don't see how
-                # Make a list to be added to the SVG output
-                self.images.append(e)
+            e.draw(self)
 
     def add_images_to_svg(self, svg):
         for e in self.images:
-            s = e.data
-            w, h = unpack('>LL', s[16:24])
-            # For KiCad 300 dpi is 1:1 scale
-            dpi = 300/e.scale
-            # Convert pixels to mm and then to KiCad units
-            w = FromMM(w/dpi*25.4)
-            h = FromMM(h/dpi*25.4)
-            # KiCad informs the position for the center of the image
-            pos, posi = self.solve_ref(e.pos, e.incrx, e.incry, e.pos_ref)
-            for _ in range(e.repeat):
-                img = ImageElement(io.BytesIO(s), w, h)
-                img.moveto(pos.x-round(w/2), pos.y-round(h/2))
-                # Put the image in a group
-                g = GroupElement([img])
-                # Add the group to the SVG
-                svg.append(g)
-                # Increment the position
-                pos += posi
-                if pos.x > self.rm or pos.y > self.bm:
-                    break
+            e.add_to_svg(svg, self)
+
+    def out_of_margin(self, p):
+        """ Used to check if the repeat went outside the page usable area """
+        return p.x > self.rm or p.y > self.bm
 
     def undraw(self, board):
         for e in self.pcb_items:
