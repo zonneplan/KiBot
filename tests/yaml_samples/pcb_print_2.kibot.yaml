@@ -1,0 +1,22 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'print_front'
+    comment: "Experiment"
+    type: pcb_print
+    dir: Layers
+    options:
+      # title: 'Fake title for front copper and silk'
+      # color_theme: _builtin_default
+      # drill_marks: small
+      title: Chau
+      plot_sheet_reference: true
+      format: 'PDF'
+      keep_temporal_files: true
+      # enable_ki6_frame_fix: true
+      pages:
+        - layers:
+            - layer: Edge.Cuts
+              color: "#004040"

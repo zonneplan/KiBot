@@ -1535,6 +1535,7 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pcb_print` output.
       * Valid keys:
+        - `blind_via_color`: [string=''] Color used for blind/buried `colored_vias`.
         - `color_theme`: [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
                          To use the KiCad 6 default colors select `_builtin_default`.
                          Usually user colors are stored as `user`, but you can give it another name.
@@ -1543,12 +1544,19 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
-        - `enable_ki6_frame_fix`: [boolean=false] KiCad 6 doesn't support custom title-block/frames from Python.
-                                  This option uses KiCad GUI to print the frame, is slow, but works.
-                                  Always enabled for KiCad 5, which crashes if we try to plot the frame.
         - `format`: [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
                     Note that for PS you need `ghostscript` which isn't part of the default docker images.
+        - `frame_plot_mechanism`: [string='internal'] [gui,internal,plot] Plotting the frame from Python is problematic.
+                                  This option selects a workaround strategy.
+                                  gui: uses KiCad GUI to do it. Is slow but you get the correct frame.
+                                  But it can't keep track of page numbers.
+                                  internal: KiBot loads the `.kicad_wks` and does the drawing work.
+                                  Best option, but some details are different from what the GUI generates.
+                                  plot: uses KiCad Python API. Only available for KiCad 6.
+                                  You get the default frame and some substitutions doesn't work.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+        - `keep_temporal_files`: [boolean=false] Store the temporal page and layer files in the output dir and don't delete them.
+        - `micro_via_color`: [string=''] Color used for micro `colored_vias`.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg). Affected by global options.
         - *output_name*: Alias for output.
         - `pad_color`: [string=''] Color used for `colored_pads`.
@@ -1583,7 +1591,7 @@ Next time you need this list just use an alias, like this:
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
-        - `via_color`: [string=''] Color used for `colored_vias`.
+        - `via_color`: [string=''] Color used for through-hole `colored_vias`.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 

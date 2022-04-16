@@ -395,34 +395,56 @@ class KiConf(object):
                     logger.debug('Copying {} -> {}'.format(fname, dest))
                     copy2(fname, dest)
                     data[key]['page_layout_descr_file'] = dest
+                    return dest
                 else:
                     logger.error('Missing page layout file: '+fname)
                     exit(MISSING_WKS)
+        return None
 
-    def fix_page_layout_k6(project):
+    def fix_page_layout_k6(project, dry):
         # Get the current definitions
         dest_dir = os.path.dirname(project)
         with open(project, 'rt') as f:
             pro_text = f.read()
         data = json.loads(pro_text)
-        KiConf.fix_page_layout_k6_key('pcbnew', data, dest_dir)
-        KiConf.fix_page_layout_k6_key('schematic', data, dest_dir)
-        with open(project, 'wt') as f:
-            f.write(json.dumps(data, sort_keys=True, indent=2))
+        layouts = [None, None]
+        if not dry:
+            layouts[1] = KiConf.fix_page_layout_k6_key('pcbnew', data, dest_dir)
+            layouts[0] = KiConf.fix_page_layout_k6_key('schematic', data, dest_dir)
+            with open(project, 'wt') as f:
+                f.write(json.dumps(data, sort_keys=True, indent=2))
+        else:
+            aux = data.get('schematic', None)
+            if aux:
+                layouts[0] = KiConf.expand_env(aux.get('page_layout_descr_file', None))
+            aux = data.get('pcbnew', None)
+            if aux:
+                layouts[1] = KiConf.expand_env(aux.get('page_layout_descr_file', None))
+        return layouts
 
-    def fix_page_layout_k5(project):
+    def fix_page_layout_k5(project, dry):
         order = 1
         dest_dir = os.path.dirname(project)
         with open(project, 'rt') as f:
             lns = f.readlines()
+        is_pcb_new = False
+        layouts = [None, None]
         for c, line in enumerate(lns):
+            if line.startswith('[pcbnew]'):
+                is_pcb_new = True
+            if line.startswith('[schematic'):
+                is_pcb_new = False
             if line.startswith('PageLayoutDescrFile='):
                 fname = line[20:].strip()
                 if fname:
                     fname = KiConf.expand_env(fname)
                     if os.path.isfile(fname):
                         dest = os.path.join(dest_dir, str(order)+'.kicad_wks')
-                        copy2(fname, dest)
+                        if not dry:
+                            copy2(fname, dest)
+                            layouts[is_pcb_new] = dest
+                        else:
+                            layouts[is_pcb_new] = fname
                         order = order+1
                     else:
                         logger.error('Missing page layout file: '+fname)
@@ -430,17 +452,18 @@ class KiConf(object):
                 else:
                     dest = ''
                 lns[c] = 'PageLayoutDescrFile='+dest+'\n'
-        with open(project, 'wt') as f:
-            lns = f.writelines(lns)
+        if not dry:
+            with open(project, 'wt') as f:
+                lns = f.writelines(lns)
+        return layouts
 
-    def fix_page_layout(project):
+    def fix_page_layout(project, dry=False):
         if not project:
-            return
+            return None, None
         KiConf.init(GS.pcb_file)
         if GS.ki5():
-            KiConf.fix_page_layout_k5(project)
-        else:
-            KiConf.fix_page_layout_k6(project)
+            return KiConf.fix_page_layout_k5(project, dry)
+        return KiConf.fix_page_layout_k6(project, dry)
 
     def expand_env(name, used_extra=None):
         if used_extra is None:

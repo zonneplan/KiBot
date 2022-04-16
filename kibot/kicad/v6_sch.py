@@ -85,6 +85,17 @@ def _check_str(items, pos, name):
     return value
 
 
+def _check_relaxed(items, pos, name):
+    value = _check_len(items, pos, name)
+    if isinstance(value, str):
+        return value
+    if isinstance(value, Symbol):
+        return value.value()
+    if isinstance(value, (float, int)):
+        return str(value)
+    raise SchError('{} is not a string, Symbol or number `{}`'.format(name, value))
+
+
 def _check_symbol_value(items, pos, name, sym):
     value = _check_len(items, pos, name)
     if not isinstance(value, list) or not isinstance(value[0], Symbol) or value[0].value() != sym:

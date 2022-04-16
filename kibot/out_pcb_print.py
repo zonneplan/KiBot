@@ -18,10 +18,14 @@ from .optionable import Optionable
 from .out_base import VariantOptions
 from .kicad.color_theme import load_color_theme
 from .kicad.patch_svg import patch_svg_file
+from .kicad.worksheet import Worksheet
+from .kicad.config import KiConf
+from .kicad.pcb import PCB
 from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer, get_priority
+from .__main__ import __version__
 from . import PyPDF2
 from . import log
 
@@ -32,10 +36,8 @@ VIATYPE_THROUGH = 3
 VIATYPE_BLIND_BURIED = 2
 VIATYPE_MICROVIA = 1
 
-
 # - Use PyPDF2 for pdfunite
 # - Analyze KiCad 6 long delay
-# - Manually draw the frame
 
 
 def _run_command(cmd):
@@ -105,32 +107,6 @@ def to_inches(w):
         return val/72.0
     # Currently impossible for KiCad
     return val
-
-
-def merge_svg(input_folder, input_files, output_folder, output_file, colored_holes, holes_color, monochrome):
-    """ Merge all pages into one """
-    first = True
-    for (file, color) in input_files:
-        file = os.path.join(input_folder, file)
-        new_layer = fromstring(load_svg(file, color, colored_holes, holes_color, monochrome))
-        width = get_width(new_layer)
-        if first:
-            svg_out = new_layer
-            # This is the width declared at the beginning of the file
-            base_width = width
-            phys_width = to_inches(new_layer.width)
-            first = False
-        else:
-            root = new_layer.getroot()
-            # Adjust the coordinates of this section to the main width
-            scale = base_width/width
-            if scale != 1.0:
-                logger.debug(' - Scaling {} by {}'.format(file, scale))
-                for e in root:
-                    e.scale(scale)
-            svg_out.append([root])
-    svg_out.save(os.path.join(output_folder, output_file))
-    return phys_width
 
 
 def create_pdf_from_pages(input_folder, input_files, output_fn):
@@ -295,10 +271,15 @@ class PCB_PrintOptions(VariantOptions):
                 Usually user colors are stored as `user`, but you can give it another name """
             self.plot_sheet_reference = True
             """ Include the title-block """
-            self.enable_ki6_frame_fix = False
-            """ KiCad 6 doesn't support custom title-block/frames from Python.
-                This option uses KiCad GUI to print the frame, is slow, but works.
-                Always enabled for KiCad 5, which crashes if we try to plot the frame """
+            self.frame_plot_mechanism = 'internal'
+            """ [gui,internal,plot] Plotting the frame from Python is problematic.
+                This option selects a workaround strategy.
+                gui: uses KiCad GUI to do it. Is slow but you get the correct frame.
+                But it can't keep track of page numbers.
+                internal: KiBot loads the `.kicad_wks` and does the drawing work.
+                Best option, but some details are different from what the GUI generates.
+                plot: uses KiCad Python API. Only available for KiCad 6.
+                You get the default frame and some substitutions doesn't work """
             self.pages = PagesOptions
             """ [list(dict)] List of pages to include in the output document.
                 Each page contains one or more layers of the PCB """
@@ -360,6 +341,8 @@ class PCB_PrintOptions(VariantOptions):
                 self.validate_color(member)
             else:
                 setattr(self, member, getattr(self._color_theme, color))
+        if self.frame_plot_mechanism == 'plot' and GS.ki5():
+            raise KiPlotConfigurationError("You can't use `plot` for `frame_plot_mechanism` with KiCad 5. It will crash.")
 
     def filter_components(self):
         if not self._comps:
@@ -408,7 +391,7 @@ class PCB_PrintOptions(VariantOptions):
         for g in self.moved_items:
             g.SetLayer(self.cleared_layer)
 
-    def plot_frame_ki6(self, pc, po, p):
+    def plot_frame_api(self, pc, po, p):
         """ KiCad 6 can plot the frame because it loads the worksheet format.
             But not the one from the project, just a default """
         self.clear_layer('Edge.Cuts')
@@ -420,7 +403,49 @@ class PCB_PrintOptions(VariantOptions):
         pc.PlotLayer()
         self.restore_layer()
 
-    def plot_frame_ki5(self, dir_name, layer='Edge.Cuts'):
+    def fill_kicad_vars(self, page, pages, p):
+        vars = {}
+        vars['KICAD_VERSION'] = 'KiCad E.D.A. '+GS.kicad_version+' + KiBot v'+__version__
+        vars['#'] = str(page)
+        vars['##'] = str(pages)
+        GS.load_pcb_title_block()
+        for num in range(9):
+            vars['COMMENT'+str(num+1)] = GS.pcb_com[num]
+        vars['COMPANY'] = GS.pcb_comp
+        vars['ISSUE_DATE'] = GS.pcb_date
+        vars['REVISION'] = GS.pcb_rev
+        # The set_title member already took care of modifying the board value
+        tb = GS.board.GetTitleBlock()
+        vars['TITLE'] = tb.GetTitle()
+        vars['FILENAME'] = GS.pcb_basename+'.kicad_pcb'
+        vars['SHEETNAME'] = p.sheet
+        layer = ''
+        for la in p.layers:
+            if len(layer):
+                layer += '+'
+            layer = layer+la.layer
+        vars['LAYER'] = layer
+        vars['PAPER'] = self.paper
+        return vars
+
+    def plot_frame_internal(self, pc, po, p, page, pages):
+        """ Here we plot the frame manually """
+        self.clear_layer('Edge.Cuts')
+        po.SetPlotFrameRef(False)
+        po.SetScale(1.0)
+        po.SetNegative(False)
+        pc.SetLayer(self.cleared_layer)
+        ws = Worksheet.load(self.layout)
+        tb_vars = self.fill_kicad_vars(page, pages, p)
+        ws.draw(GS.board, self.cleared_layer, page, self.paper_w, self.paper_h, tb_vars)
+        pc.OpenPlotfile('frame', PLOT_FORMAT_SVG, p.sheet)
+        pc.PlotLayer()
+        ws.undraw(GS.board)
+        self.restore_layer()
+        # We need to plot the images in a separated pass
+        self.last_worksheet = ws
+
+    def plot_frame_gui(self, dir_name, layer='Edge.Cuts'):
         """ KiCad 5 crashes if we try to print the frame.
             So we print a frame using pcbnew_do export.
             We use SVG output to then generate a vectorized PDF. """
@@ -576,6 +601,43 @@ class PCB_PrintOptions(VariantOptions):
         # Add it to the list
         filelist.append((GS.pcb_basename+"-"+suffix+".svg", via_c))
 
+    def add_frame_images(self, svg):
+        if not self.frame_plot_mechanism == 'internal' or not self.last_worksheet.has_images:
+            return
+        self.last_worksheet.add_images_to_svg(svg)
+
+    def merge_svg(self, input_folder, input_files, output_folder, output_file, p):
+        """ Merge all pages into one """
+        first = True
+        for (file, color) in input_files:
+            file = os.path.join(input_folder, file)
+            new_layer = fromstring(load_svg(file, color, p.colored_holes, p.holes_color, p.monochrome))
+            width = get_width(new_layer)
+            if first:
+                svg_out = new_layer
+                # This is the width declared at the beginning of the file
+                base_width = width
+                phys_width = to_inches(new_layer.width)
+                first = False
+                self.add_frame_images(svg_out)
+            else:
+                root = new_layer.getroot()
+                # Adjust the coordinates of this section to the main width
+                scale = base_width/width
+                if scale != 1.0:
+                    logger.debug(' - Scaling {} by {}'.format(file, scale))
+                    for e in root:
+                        e.scale(scale)
+                svg_out.append([root])
+        svg_out.save(os.path.join(output_folder, output_file))
+        return phys_width
+
+    def find_paper_size(self):
+        pcb = PCB.load(GS.pcb_file)
+        self.paper_w = pcb.paper_w
+        self.paper_h = pcb.paper_h
+        self.paper = pcb.paper
+
     def generate_output(self, output):
         if self.format != 'SVG' and which(SVG2PDF) is None:
             logger.error('`{}` not installed. Install `librsvg2-bin` or equivalent'.format(SVG2PDF))
@@ -590,6 +652,13 @@ class PCB_PrintOptions(VariantOptions):
         else:
             temp_dir_base = mkdtemp(prefix='tmp-kibot-pcb_print-')
         logger.debug('- Temporal dir: {}'.format(temp_dir_base))
+        self.find_paper_size()
+        # Find the layout file
+        layout = KiConf.fix_page_layout(GS.pro_file, dry=True)[1]
+        if not layout or not os.path.isfile(layout):
+            layout = os.path.abspath(os.path.join(os.path.dirname(__file__), 'kicad_layouts', 'default.kicad_wks'))
+        logger.debug('- Using layout: '+layout)
+        self.layout = layout
         # Plot options
         pc = PLOT_CONTROLLER(GS.board)
         po = pc.GetPlotOptions()
@@ -639,13 +708,12 @@ class PCB_PrintOptions(VariantOptions):
             # 2) Plot the frame using an empty layer and 1.0 scale
             if self.plot_sheet_reference:
                 logger.debug('- Plotting the frame')
-                if GS.ki6():
-                    if self.enable_ki6_frame_fix:
-                        self.plot_frame_ki5(temp_dir)
-                    else:
-                        self.plot_frame_ki6(pc, po, p)
-                else:
-                    self.plot_frame_ki5(temp_dir)
+                if self.frame_plot_mechanism == 'gui':
+                    self.plot_frame_gui(temp_dir)
+                elif self.frame_plot_mechanism == 'plot':
+                    self.plot_frame_api(pc, po, p)
+                else:   # internal
+                    self.plot_frame_internal(pc, po, p, len(pages)+1, len(self.pages))
                 color = p.sheet_reference_color if p.sheet_reference_color else self._color_theme.pcb_frame
                 filelist.append((GS.pcb_basename+"-frame.svg", color))
             pc.ClosePlot()
@@ -656,7 +724,7 @@ class PCB_PrintOptions(VariantOptions):
             else:
                 assembly_file = GS.pcb_basename+".svg"
             logger.debug('- Merging layers to {}'.format(assembly_file))
-            merge_svg(temp_dir, filelist, temp_dir, assembly_file, p.colored_holes, p.holes_color, p.monochrome)
+            self.merge_svg(temp_dir, filelist, temp_dir, assembly_file, p)
             if self.format in ['PNG', 'EPS']:
                 id = self._expand_id+('_page_'+page_str)
                 out_file = self.expand_filename(output_dir, self.output, id, self._expand_ext)

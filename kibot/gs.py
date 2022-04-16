@@ -268,7 +268,7 @@ class GS(object):
         return GS.kicad_version_n < KICAD_VERSION_5_99
 
     @staticmethod
-    def expand_text_variables(text):
+    def expand_text_variables(text, extra_vars=None):
         vars = GS.load_pro_variables()
         new_text = ''
         last = 0
@@ -276,6 +276,8 @@ class GS(object):
         for match in GS.vars_regex.finditer(text):
             vname = match.group(1)
             value = vars.get(vname, None)
+            if value is None and extra_vars is not None:
+                value = extra_vars.get(vname, None)
             if value is None:
                 value = '${'+vname+'}'
                 logger.warning(W_UNKVAR+"Unknown text variable `{}`".format(vname))
