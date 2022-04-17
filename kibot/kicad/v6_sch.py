@@ -945,6 +945,7 @@ class SchematicComponentV6(SchematicComponent):
         self.local_name = None
         self.fields_autoplaced = False
         self.mirror = None
+        self.convert = None
 
     def set_ref(self, ref):
         self.ref = ref
@@ -1022,6 +1023,9 @@ class SchematicComponentV6(SchematicComponent):
                 # This is documented as mandatory, but isn't always there
                 comp.unit = _check_integer(i, 1, name+' unit')
                 comp.unit_specified = True
+            elif i_type == 'convert':
+                # Not documented 2022/04/17
+                comp.convert = _check_integer(i, 1, name+' convert')
             elif i_type == 'in_bom':
                 comp.in_bom = _get_yes_no(i, 1, i_type)
             elif i_type == 'on_board':
@@ -1075,6 +1079,8 @@ class SchematicComponentV6(SchematicComponent):
             data.append(_symbol('mirror', [Symbol(self.mirror)]))
         if self.unit_specified:
             data.append(_symbol('unit', [self.unit]))
+        if self.convert is not None:
+            data.append(_symbol('convert', [self.convert]))
         data.append(Sep())
         if self.in_bom or self.on_board:
             if self.in_bom:
