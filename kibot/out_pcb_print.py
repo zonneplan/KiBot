@@ -9,7 +9,7 @@ import os
 import subprocess
 from pcbnew import PLOT_CONTROLLER, FromMM, PLOT_FORMAT_SVG, F_Cu, B_Cu, wxSize, IsCopperLayer
 from shutil import rmtree, which
-from tempfile import mkdtemp
+from tempfile import NamedTemporaryFile, mkdtemp
 from .svgutils.transform import fromstring
 from .error import KiPlotConfigurationError
 from .gs import GS
@@ -612,9 +612,23 @@ class PCB_PrintOptions(VariantOptions):
         # Add it to the list
         filelist.append((GS.pcb_basename+"-"+suffix+".svg", via_c))
 
-    def add_frame_images(self, svg):
+    def add_frame_images(self, svg, monochrome):
         if not self.frame_plot_mechanism == 'internal' or not self.last_worksheet.has_images:
             return
+        if monochrome:
+            if which('convert') is None:
+                logger.error('`convert` not installed. install `imagemagick` or equivalent')
+                exit(MISSING_TOOL)
+            for img in self.last_worksheet.images:
+                with NamedTemporaryFile(mode='wb', suffix='.png', delete=False) as f:
+                    f.write(img.data)
+                    fname = f.name
+                dest = fname.replace('.png', '_gray.png')
+                _run_command(['convert', fname, '-set', 'colorspace', 'Gray', '-separate', '-average', dest])
+                with open(dest, 'rb') as f:
+                    img.data = f.read()
+                os.remove(fname)
+                os.remove(dest)
         self.last_worksheet.add_images_to_svg(svg)
 
     def merge_svg(self, input_folder, input_files, output_folder, output_file, p):
@@ -630,7 +644,7 @@ class PCB_PrintOptions(VariantOptions):
                 base_width = width
                 phys_width = to_inches(new_layer.width)
                 first = False
-                self.add_frame_images(svg_out)
+                self.add_frame_images(svg_out, p.monochrome)
             else:
                 root = new_layer.getroot()
                 # Adjust the coordinates of this section to the main width
