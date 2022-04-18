@@ -82,6 +82,10 @@ class STEPOptions(Base3DOptions):
         cmd, video_remove = add_extra_options(cmd)
         # Execute and inform is successful
         logger.debug('Executing: '+str(cmd))
+        # Ensure KIPRJMOD is correct:
+        # KiCad sets KIPRJMOD each time we call BOARD.Save() but then Python `os.environ` becomes unsynchronized
+        # We don't even know the actual value and any call to Save could destroy it
+        os.environ['KIPRJMOD'] = os.path.dirname(board_name)
         try:
             cmd_output = check_output(cmd, stderr=STDOUT)
         except CalledProcessError as e:
