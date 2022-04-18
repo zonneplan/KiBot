@@ -5,6 +5,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Base idea: https://gitlab.com/dennevi/Board2Pdf/ (Released as Public Domain)
+import re
 import os
 import subprocess
 from pcbnew import PLOT_CONTROLLER, FromMM, PLOT_FORMAT_SVG, F_Cu, B_Cu, wxSize, IsCopperLayer
@@ -35,10 +36,12 @@ PDF2PS = 'pdf2ps'
 VIATYPE_THROUGH = 3
 VIATYPE_BLIND_BURIED = 2
 VIATYPE_MICROVIA = 1
+POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stroke-opacity:1; stroke-linecap:round; "
+                   "stroke-linejoin:round;fill-rule:evenodd;")
 
 
 def _run_command(cmd):
-    logger.debug('Executing: '+str(cmd))
+    logger.debug('- Executing: '+str(cmd))
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
@@ -47,7 +50,7 @@ def _run_command(cmd):
             logger.debug('Output from command: '+e.output.decode())
         exit(PDF_PCB_PRINT)
     if cmd_output.strip():
-        logger.debug('Output from command:\n'+cmd_output.decode())
+        logger.debug('- Output from command:\n'+cmd_output.decode())
 
 
 def hex_to_rgb(value):
@@ -631,6 +634,58 @@ class PCB_PrintOptions(VariantOptions):
                 os.remove(dest)
         self.last_worksheet.add_images_to_svg(svg)
 
+    def fill_polygons(self, svg, color):
+        """ I don't know how to generate filled polygons on KiCad 5.
+            So here we look for KiCad 5 unfilled polygons and transform them into filled polygons.
+            Note that all polygons in the frame are filled. """
+        logger.debug('- Filling KiCad 5 polygons')
+        cnt = 0
+        ml_coord = re.compile(r'M(\d+) (\d+) L(\d+) (\d+)')
+        # Scan the SVG
+        for e in svg.root:
+            if e.tag.endswith('}g'):
+                # This is a graphic
+                if len(e) < 2:
+                    # Polygons have at least 2 paths
+                    continue
+                # Check that all elements are paths and that they have the coordinates in 'd'
+                all_path = True
+                for c in e:
+                    if not c.tag.endswith('}path') or c.get('d') is None:
+                        all_path = False
+                        break
+                if all_path:
+                    # Ok, this is a KiCad 5 polygon
+                    # Create a list with all the points
+                    coords = 'M '
+                    all_coords = True
+                    first = True
+                    for c in e:
+                        coord = c.get('d')
+                        res = ml_coord.match(coord)
+                        if not res:
+                            # Discard it if we can't understand the coordinates
+                            all_coords = False
+                            break
+                        coords += res.group(1)+','+res.group(2)+'\n'
+                        if first:
+                            start = res.group(1)+','+res.group(2)
+                            first = False
+                    if all_coords:
+                        # Ok, we have all the points
+                        end = res.group(3)+','+res.group(4)
+                        if start == end:
+                            # Must be a closed polygon
+                            coords += end+'\nZ'
+                            # Make the first a single filled polygon
+                            e[0].set('style', POLY_FILL_STYLE.format(color))
+                            e[0].set('d', coords)
+                            # Remove the rest
+                            for c in e[1:]:
+                                e.remove(c)
+                            cnt = cnt+1
+        logger.debug('- Filled {} polygons'.format(cnt))
+
     def merge_svg(self, input_folder, input_files, output_folder, output_file, p):
         """ Merge all pages into one """
         first = True
@@ -638,6 +693,10 @@ class PCB_PrintOptions(VariantOptions):
             file = os.path.join(input_folder, file)
             new_layer = fromstring(load_svg(file, color, p.colored_holes, p.holes_color, p.monochrome))
             width = get_width(new_layer)
+            if GS.ki5() and file.endswith('frame.svg'):
+                if p.monochrome:
+                    color = to_gray_hex(color)
+                self.fill_polygons(new_layer, color)
             if first:
                 svg_out = new_layer
                 # This is the width declared at the beginning of the file
@@ -676,6 +735,7 @@ class PCB_PrintOptions(VariantOptions):
             temp_dir_base = output_dir
         else:
             temp_dir_base = mkdtemp(prefix='tmp-kibot-pcb_print-')
+        logger.debug('Starting to generate `{}`'.format(output))
         logger.debug('- Temporal dir: {}'.format(temp_dir_base))
         self.find_paper_size()
         if self.sheet_reference_layout:
@@ -774,6 +834,7 @@ class PCB_PrintOptions(VariantOptions):
         # Remove the temporal files
         if not self.keep_temporal_files:
             rmtree(temp_dir_base)
+        logger.debug('Finished generating `{}`'.format(output))
 
     def run(self, output):
         super().run(output)
