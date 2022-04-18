@@ -978,6 +978,8 @@ outputs:
       dnf_filter: '_none'
       # [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
+      # [boolean=false] Add the `Edge.Cuts` to all the pages
+      force_edge_cuts: false
       # [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
       # Note that for PS you need `ghostscript` which isn't part of the default docker images
       format: 'PDF'
@@ -1010,7 +1012,7 @@ outputs:
           exclude_pads_from_silkscreen: false
           # [string='#000000'] Color used for the holes when `colored_holes` is enabled
           holes_color: '#000000'
-          # [list(dict)] List of layers printed in this page. Order is important, the last goes on top
+          # [list(dict)|list(string)|string] List of layers printed in this page. Order is important, the last goes on top
           layers:
             # [string=''] Color used for this layer
             - color: ''
@@ -1051,6 +1053,8 @@ outputs:
       plot_sheet_reference: true
       # [number=1280] Width of the PNG in pixels
       png_width: 1280
+      # [number=1.0] Default scale factor (0 means autoscaling)
+      scaling: 1.0
       # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project
       sheet_reference_layout: ''
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.

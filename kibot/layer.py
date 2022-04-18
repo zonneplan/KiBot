@@ -168,8 +168,8 @@ class Layer(Optionable):
         self._protel_extension = 'gbr'
         return
 
-    @staticmethod
-    def solve(values):
+    @classmethod
+    def solve(cls, values):
         board = GS.board
         layer_cnt = 2
         if board:
@@ -213,12 +213,12 @@ class Layer(Optionable):
                     elif layer == 'user':
                         ext = Layer._get_layers(Layer._get_user())
                     elif layer in Layer._pcb_layers:
-                        ext = [Layer.create_layer(layer)]
+                        ext = [cls.create_layer(layer)]
                     # Give compatibility for the KiCad 5 default names (automagically renamed by KiCad 6)
                     elif GS.ki6() and layer in Layer.KICAD6_RENAME:
-                        ext = [Layer.create_layer(Layer.KICAD6_RENAME[layer])]
+                        ext = [cls.create_layer(Layer.KICAD6_RENAME[layer])]
                     elif layer in Layer.DEFAULT_LAYER_NAMES:
-                        ext = [Layer.create_layer(layer)]
+                        ext = [cls.create_layer(layer)]
                     if ext is None:
                         raise KiPlotConfigurationError("Unknown layer spec: `{}`".format(layer))
                     new_vals.extend(ext)

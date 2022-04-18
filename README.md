@@ -1547,6 +1547,7 @@ Next time you need this list just use an alias, like this:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
+        - `force_edge_cuts`: [boolean=false] Add the `Edge.Cuts` to all the pages.
         - `format`: [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
                     Note that for PS you need `ghostscript` which isn't part of the default docker images.
         - `frame_plot_mechanism`: [string='internal'] [gui,internal,plot] Plotting the frame from Python is problematic.
@@ -1569,7 +1570,7 @@ Next time you need this list just use an alias, like this:
             - `colored_holes`: [boolean=true] Change the drill holes to be colored instead of white.
             - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
             - `holes_color`: [string='#000000'] Color used for the holes when `colored_holes` is enabled.
-            - `layers`: [list(dict)] List of layers printed in this page. Order is important, the last goes on top.
+            - `layers`: [list(dict)|list(string)|string] List of layers printed in this page. Order is important, the last goes on top.
               * Valid keys:
                 - `color`: [string=''] Color used for this layer.
                 - `description`: [string=''] A description for the layer, for documentation purposes.
@@ -1591,6 +1592,7 @@ Next time you need this list just use an alias, like this:
                        If it starts with `+` the text is concatenated.
         - `plot_sheet_reference`: [boolean=true] Include the title-block (worksheet, frame, etc.).
         - `png_width`: [number=1280] Width of the PNG in pixels.
+        - `scaling`: [number=1.0] Default scale factor (0 means autoscaling).
         - `sheet_reference_layout`: [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.

@@ -8,7 +8,7 @@
 import re
 import os
 import subprocess
-from pcbnew import PLOT_CONTROLLER, FromMM, PLOT_FORMAT_SVG, F_Cu, B_Cu, wxSize, IsCopperLayer
+from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize
 from shutil import rmtree, which
 from tempfile import NamedTemporaryFile, mkdtemp
 from .svgutils.transform import fromstring
@@ -207,8 +207,8 @@ class PagesOptions(Optionable):
             """ Print mirrored (X axis inverted) """
             self.monochrome = False
             """ Print in gray scale """
-            self.scaling = 1.0
-            """ Scale factor (0 means autoscaling)"""
+            self.scaling = None
+            """ [number=1.0] Scale factor (0 means autoscaling)"""
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
@@ -231,20 +231,25 @@ class PagesOptions(Optionable):
             self.sort_layers = False
             """ Try to sort the layers in the same order that uses KiCad for printing """
             self.layers = LayerOptions
-            """ [list(dict)] List of layers printed in this page. Order is important, the last goes on top """
+            """ [list(dict)|list(string)|string] List of layers printed in this page.
+                Order is important, the last goes on top """
+        self._scaling_example = 1.0
 
     def config(self, parent):
         super().config(parent)
         if isinstance(self.layers, type):
             raise KiPlotConfigurationError("Missing `layers` list")
         # Fill the ID member for all the layers
-        self.layers = Layer.solve(self.layers)
+        self.layers = LayerOptions.solve(self.layers)
         if self.sort_layers:
             self.layers.sort(key=lambda x: get_priority(x._id), reverse=True)
         if self.sheet_reference_color:
             self.validate_color('sheet_reference_color')
         if self.holes_color:
             self.validate_color('holes_color')
+        if self.scaling is None:
+            logger.error('Scale from parent')
+            self.scaling = parent.scaling
 
 
 class PCB_PrintOptions(VariantOptions):
@@ -307,6 +312,10 @@ class PCB_PrintOptions(VariantOptions):
             """ Color used for blind/buried `colored_vias` """
             self.keep_temporal_files = False
             """ Store the temporal page and layer files in the output dir and don't delete them """
+            self.force_edge_cuts = False
+            """ Add the `Edge.Cuts` to all the pages """
+            self.scaling = 1.0
+            """ Default scale factor (0 means autoscaling)"""
         super().__init__()
         self._expand_id = 'assembly'
 
@@ -496,9 +505,9 @@ class PCB_PrintOptions(VariantOptions):
         # Make invisible anything but through-hole pads
         tmp_layer = GS.board.GetLayerID(GS.work_layer)
         moved = []
-        resized = []
+        removed = []
         vias = []
-        size_0 = wxSize(0, 0)
+        wxSize(0, 0)
         for m in GS.get_modules():
             for gi in m.GraphicalItems():
                 if gi.GetLayer() == id:
@@ -508,9 +517,10 @@ class PCB_PrintOptions(VariantOptions):
                 dr = pad.GetDrillSize()
                 if dr.x:
                     continue
-                size = pad.GetSize()
-                resized.append((pad, wxSize(size.x, size.y)))
-                pad.SetSize(size_0)
+                layers = pad.GetLayerSet()
+                layers.removeLayer(id)
+                pad.SetLayerSet(layers)
+                removed.append(pad)
         for e in GS.board.GetDrawings():
             if e.GetLayer() == id:
                 e.SetLayer(tmp_layer)
@@ -525,7 +535,7 @@ class PCB_PrintOptions(VariantOptions):
                 vias.append((e, e.GetDrill(), e.GetWidth()))
                 e.SetDrill(0)
                 e.SetWidth(0)
-            else:
+            elif e.GetLayer() == id:
                 e.SetLayer(tmp_layer)
                 moved.append(e)
         # Plot the layer
@@ -536,8 +546,10 @@ class PCB_PrintOptions(VariantOptions):
         # Restore everything
         for e in moved:
             e.SetLayer(id)
-        for (pad, size) in resized:
-            pad.SetSize(size)
+        for pad in removed:
+            layers = pad.GetLayerSet()
+            layers.addLayer(id)
+            pad.SetLayerSet(layers)
         for (via, drill, width) in vias:
             via.SetDrill(drill)
             via.SetWidth(width)
@@ -550,18 +562,19 @@ class PCB_PrintOptions(VariantOptions):
         # Make invisible anything but vias
         tmp_layer = GS.board.GetLayerID(GS.work_layer)
         moved = []
-        resized = []
+        removed = []
         vias = []
-        size_0 = wxSize(0, 0)
+        wxSize(0, 0)
         for m in GS.get_modules():
             for gi in m.GraphicalItems():
                 if gi.GetLayer() == id:
                     gi.SetLayer(tmp_layer)
                     moved.append(gi)
             for pad in m.Pads():
-                size = pad.GetSize()
-                resized.append((pad, wxSize(size.x, size.y)))
-                pad.SetSize(size_0)
+                layers = pad.GetLayerSet()
+                layers.removeLayer(id)
+                pad.SetLayerSet(layers)
+                removed.append(pad)
         for e in GS.board.GetDrawings():
             if e.GetLayer() == id:
                 e.SetLayer(tmp_layer)
@@ -595,7 +608,7 @@ class PCB_PrintOptions(VariantOptions):
                     d = e.GetDrill()
                     vias.append((e, d, w, top, bottom))
                     e.SetWidth(0)
-            else:
+            elif e.GetLayer() == id:
                 e.SetLayer(tmp_layer)
                 moved.append(e)
         # Plot the layer
@@ -605,8 +618,10 @@ class PCB_PrintOptions(VariantOptions):
         # Restore everything
         for e in moved:
             e.SetLayer(id)
-        for (pad, size) in resized:
-            pad.SetSize(size)
+        for pad in removed:
+            layers = pad.GetLayerSet()
+            layers.addLayer(id)
+            pad.SetLayerSet(layers)
         for (via, drill, width, top, bottom) in vias:
             via.SetDrill(drill)
             via.SetWidth(width)
@@ -722,6 +737,16 @@ class PCB_PrintOptions(VariantOptions):
         self.paper_h = pcb.paper_h
         self.paper = pcb.paper
 
+    def plot_extra_cu(self, id, la, pc, p, filelist):
+        """ Plot pads and vias to make them different """
+        if id >= F_Cu and id <= B_Cu:
+            if self.colored_pads:
+                self.plot_pads(la, pc, p, filelist)
+            if self.colored_vias:
+                self.plot_vias(la, pc, p, filelist, VIATYPE_THROUGH, self.via_color)
+                self.plot_vias(la, pc, p, filelist, VIATYPE_BLIND_BURIED, self.blind_via_color)
+                self.plot_vias(la, pc, p, filelist, VIATYPE_MICROVIA, self.micro_via_color)
+
     def generate_output(self, output):
         if self.format != 'SVG' and which(SVG2PDF) is None:
             logger.error('`{}` not installed. Install `librsvg2-bin` or equivalent'.format(SVG2PDF))
@@ -754,6 +779,15 @@ class PCB_PrintOptions(VariantOptions):
         po.SetExcludeEdgeLayer(True)   # We plot it separately
         po.SetUseAuxOrigin(False)
         po.SetAutoScale(False)
+        # Helpers for force_edge_cuts
+        if self.force_edge_cuts:
+            edge_layer = LayerOptions.create_layer('Edge.Cuts')
+            edge_id = edge_layer._id
+            layer_id2color = self._color_theme.layer_id2color
+            if edge_id in layer_id2color:
+                edge_layer.color = layer_id2color[edge_id]
+            else:
+                edge_layer.color = "#000000"
         # Generate the output
         pages = []
         for n, p in enumerate(self.pages):
@@ -774,6 +808,8 @@ class PCB_PrintOptions(VariantOptions):
                 po.SetLineWidth(FromMM(p.line_width))
                 po.SetPlotPadsOnSilkLayer(not p.exclude_pads_from_silkscreen)
             filelist = []
+            if self.force_edge_cuts and next(filter(lambda x: x._id == edge_id, p.layers), None) is None:
+                p.layers.append(edge_layer)
             for la in p.layers:
                 id = la._id
                 logger.debug('- Plotting layer {} ({})'.format(la.layer, id))
@@ -786,14 +822,9 @@ class PCB_PrintOptions(VariantOptions):
                 pc.OpenPlotfile(la.suffix, PLOT_FORMAT_SVG, p.sheet)
                 pc.PlotLayer()
                 filelist.append((GS.pcb_basename+"-"+la.suffix+".svg", la.color))
-                if id >= F_Cu and id <= B_Cu:
-                    if self.colored_pads:
-                        self.plot_pads(la, pc, p, filelist)
-                    if self.colored_vias:
-                        self.plot_vias(la, pc, p, filelist, VIATYPE_THROUGH, self.via_color)
-                        self.plot_vias(la, pc, p, filelist, VIATYPE_BLIND_BURIED, self.blind_via_color)
-                        self.plot_vias(la, pc, p, filelist, VIATYPE_MICROVIA, self.micro_via_color)
+                self.plot_extra_cu(id, la, pc, p, filelist)
             # 2) Plot the frame using an empty layer and 1.0 scale
+            po.SetMirror(False)
             if self.plot_sheet_reference:
                 logger.debug('- Plotting the frame')
                 if self.frame_plot_mechanism == 'gui':
