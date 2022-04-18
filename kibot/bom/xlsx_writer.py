@@ -792,7 +792,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
                     worksheet.write_url(row_count, i, datasheet, fmt, cell)
                 # A link to Digi-Key?
                 elif link_digikey and col_fields[i] in link_digikey:
-                    url = 'http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=' + cell
+                    url = 'https://www.digikey.com/products/en?keywords=' + cell
                     worksheet.write_url(row_count, i, url, fmt, cell)
                 else:
                     worksheet.write_string(row_count, i, cell, fmt)
