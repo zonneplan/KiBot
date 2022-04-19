@@ -12,33 +12,44 @@ filters:
 
 
 variants:
-  - name: 'topvariant'
+  - name: 'top'
     comment: 'LCD with top connections'
     type: kicost
-    file_id: _leftvariant
+    file_id: _variant_top
     variant: '^(topvariant)$'
     pre_transform: 'kicost_rename'
 
-  - name: 'leftvariant'
+  - name: 'left'
     comment: 'LCD with left connections'
     type: kicost
-    file_id: _rightvariant
+    file_id: _variant_left
     variant: '^(leftvariant)$'
     pre_transform: 'kicost_rename'
 
+  - name: 'default'
+    comment: 'Default variant'
+    type: kicost
+
 outputs:
-  - name: 3d_top_variant
-    comment: "3D view for the topvariant"
+  - name: 3d_no_variant
+    comment: "3D view without variant"
     type: render_3d
     options:
-      variant: topvariant
+      variant: default
       download: false
       zoom: 5
       ray_tracing: true
 
-  - name: 3d_left_variant
-    comment: "3D view for the leftvariant"
+  - name: 3d_top_variant
+    comment: "3D view for the top variant"
     type: render_3d
-    extends: 3d_top_variant
+    extends: 3d_no_variant
     options:
-      variant: leftvariant
+      variant: top
+
+  - name: 3d_left_variant
+    comment: "3D view for the left variant"
+    type: render_3d
+    extends: 3d_no_variant
+    options:
+      variant: left
