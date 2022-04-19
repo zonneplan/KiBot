@@ -585,7 +585,7 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
 
 Note that the last two uses a field named `Config`, but you can customise them invoking **_kibom_dnf_FIELD**. This will create an equivalent filter, but using the indicated **FIELD**.
 
-#### Changing the 3D model (simple mechanism)
+#### Changing the 3D model, simple mechanism
 
 This mechanism allows small changes to the 3D model. Is simple to use, but the information is located in the schematic.
 
@@ -595,7 +595,7 @@ In this way you can change the 3D model according to the component variant.
 
 When the component has more than one 3D model you must provide a comma separated list of models to replace the current models.
 
-#### Changing the 3D model (complex mechanism)
+#### Changing the 3D model, complex mechanism
 
 When the a component has a long list of 3D models and you want to keep all the information in the PCB you can use this mechanism.
 
@@ -646,9 +646,9 @@ ${KIPRJMOD}/steps/WH1602B-TMI-JT#.step
 To achieve it we define the following texts in the footprint: `%left:1,3,4,6%` and `%top:2,5%`.
 Here are both variants:
 
-![Top variant](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/samples/3D_Model_LCD/output/lcd-3D_top_variant_top.png)
-
 ![Left variant](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/samples/3D_Model_LCD/output/lcd-3D_top_variant_left.png)
+
+![Top variant](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/samples/3D_Model_LCD/output/lcd-3D_top_variant_top.png)
 
 Some important notes:
 - If you want to control what models are used when no variant is used you'll need to create a `default` variant.
