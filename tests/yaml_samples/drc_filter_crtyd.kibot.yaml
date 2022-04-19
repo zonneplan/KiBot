@@ -1,0 +1,10 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  run_drc: true
+  filters:
+    - filter: 'Filter to ignore courtyards_overlap'
+      error: 'courtyards_overlap'
+      regex: 'Footprint'
