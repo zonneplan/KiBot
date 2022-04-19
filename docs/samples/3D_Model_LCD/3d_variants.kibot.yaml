@@ -1,0 +1,44 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+  - name: 'kicost_rename'
+    comment: 'Variant rename KiCost style'
+    type: var_rename_kicost
+    # Empty will default to :
+    separator: ''
+    variant_to_value: true
+
+
+variants:
+  - name: 'topvariant'
+    comment: 'LCD with top connections'
+    type: kicost
+    file_id: _leftvariant
+    variant: '^(topvariant)$'
+    pre_transform: 'kicost_rename'
+
+  - name: 'leftvariant'
+    comment: 'LCD with left connections'
+    type: kicost
+    file_id: _rightvariant
+    variant: '^(leftvariant)$'
+    pre_transform: 'kicost_rename'
+
+outputs:
+  - name: 3d_top_variant
+    comment: "3D view for the topvariant"
+    type: render_3d
+    options:
+      variant: topvariant
+      download: false
+      zoom: 5
+      ray_tracing: true
+
+  - name: 3d_left_variant
+    comment: "3D view for the leftvariant"
+    type: render_3d
+    extends: 3d_top_variant
+    options:
+      variant: leftvariant
