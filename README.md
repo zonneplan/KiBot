@@ -36,6 +36,8 @@
     * [Supported filters](#supported-filters)
     * [Examples for filters](#examples-for-filters)
     * [Built-in filters](#built-in-filters)
+    * [Changing the 3D model - simple mechanism](#changing-the-3d-model---simple-mechanism)
+    * [Changing the 3D model - complex mechanism](#changing-the-3d-model---complex-mechanism)
     * [DNF and DNC internal keys](#dnf-and-dnc-internal-keys)
   * [The *outputs* section](#the-outputs-section)
     * [Specifying the layers](#specifying-the-layers)
@@ -401,7 +403,7 @@ The filters and variants are mechanisms used to modify the circuit components.
 Both concepts are closely related. In fact variants can use filters.
 
 The current implementation of the filters allow to exclude components from some of the processing stages. The most common use is to exclude them from some output.
-In the future more advanced filters will allow modification of component details.
+You can also change components fields/properties and also the 3D model.
 
 Variants are currently used to create *assembly variants*. This concept is used to manufacture one PCB used for various products.
 You can learn more about KiBot variants on the following [example repo](https://inti-cmnb.github.io/kibot_variants_arduprog/).
@@ -419,8 +421,6 @@ filters:
    comment: 'A description'
    # Filter options
 ```
-
-Currently the only type available is `generic`.
 
 #### Supported filters:
 
@@ -564,6 +564,18 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
   - References that match: '^TP[0-9]*' or '^FID'
   - Part names that match: 'regex': 'mount.*hole' or 'solder.*bridge' or 'solder.*jump' or 'test.*point'
   - Footprints that match:  'test.*point' or 'mount.*hole' or 'fiducial'
+- **_var_rename** is a default `var_rename` filter
+- **_var_rename_kicost** is a default `var_rename_kicost` filter
+- **_kicost_rename** is a `field_rename` filter that applies KiCost renamings.
+  - Includes all `manf#` and `manf` variations supported by KiCost
+  - Includes all distributor part number variations supported by KiCost
+  - 'version' -> 'variant'
+  - 'nopop' -> 'dnp'
+  - 'description' -> 'desc'
+  - 'pdf' -> 'datasheet'
+- **_kicost_dnp** used emulate the way KiCost handles the `dnp` field.
+  - If the field is 0 the component is included, otherwise excluded.
+- **_rot_footprint** is a default `rot_footprint` filter
 - **_kibom_dnf_Config** it uses the internal `dnf_list` to exclude components with
   - Value matching any of the keys
   - Any of the keys in the `Config` field (comma or space separated)
@@ -572,6 +584,74 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
   - Any of the keys in the `Config` field (comma or space separated)
 
 Note that the last two uses a field named `Config`, but you can customise them invoking **_kibom_dnf_FIELD**. This will create an equivalent filter, but using the indicated **FIELD**.
+
+#### Changing the 3D model (simple mechanism)
+
+This mechanism allows small changes to the 3D model. Is simple to use, but the information is located in the schematic.
+
+If a component defines the field `_3D_model` then its value will replace the 3D model.
+You can use `var_rename` or `var_rename_kicost` filter to define this field only for certain variants.
+In this way you can change the 3D model according to the component variant.
+
+When the component has more than one 3D model you must provide a comma separated list of models to replace the current models.
+
+#### Changing the 3D model (complex mechanism)
+
+When the a component has a long list of 3D models and you want to keep all the information in the PCB you can use this mechanism.
+
+The information is stored in the `Text items` of the footprint. If you want to change the 3D models for certain variant you must add an item containing:
+
+```
+%VARIANT_NAME:SLOT1,SLOT2,SLOTN%
+```
+
+Where `VARIANT_NAME` is the name of the variant that will change the list of 3D models.
+The `SLOT1,SLOT2,SLOTN` is a comma separated list of 3D model positions in the list of 3D models.
+All the slots listed will be enabled, the rest will be disabled.
+
+Here is an [example](https://github.com/INTI-CMNB/KiBot/tree/master/docs/samples/3D_Model_LCD).
+In this example we have a display whose aspect and connectio can radically change according to the variant.
+We have two variants:
+
+- `left`, uses a ERM1602DNS-2.1 with a connector on the left and two other pins on the right
+- `top`, uses a WH1602B-TMI-JT# with a single connector on the top
+
+We have the following list of 3D models:
+
+```
+${KISYS3DMOD}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_2x07_P2.54mm_Vertical.wrl
+${KISYS3DMOD}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x16_P2.54mm_Vertical.wrl
+${KISYS3DMOD}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x01_P2.54mm_Vertical.wrl
+${KISYS3DMOD}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x01_P2.54mm_Vertical.wrl
+${KIPRJMOD}/steps/WH1602B-TMI-JT#.step
+${KIPRJMOD}/steps/ERM1602DNS-2.1.step
+```
+
+The ERM1602DNS-2.1 uses slots 1, 3, 4 and 6. So the effective list will be:
+
+```
+${KISYS3DMOD}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_2x07_P2.54mm_Vertical.wrl
+${KISYS3DMOD}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x01_P2.54mm_Vertical.wrl
+${KISYS3DMOD}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x01_P2.54mm_Vertical.wrl
+${KIPRJMOD}/steps/ERM1602DNS-2.1.step
+```
+
+The WH1602B-TMI-JT# uses slots 2 and 5. So the effective list will be:
+
+```
+${KISYS3DMOD}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x16_P2.54mm_Vertical.wrl
+${KIPRJMOD}/steps/WH1602B-TMI-JT#.step
+```
+
+To achieve it we define the following texts in the footprint: `%left:1,3,4,6%` and `%top:2,5%`.
+
+Some important notes:
+- If you want to control what models are used when no variant is used you'll need to create a `default` variant.
+  This what the above example does. In this case the `default` variant shows all the connectors, but no display.
+- If you want to disable a model and avoid any kind of warning add `_Disabled_by_KiBot` to the 3D model path.
+  This could be needed if you want to remove some model and you don't want to adjust the slot numbers.
+- This mechanism can be used with any of the available variants. For this reason we use the `VARIANT_NAME` and we
+  avoid relying on any variant specific mechanism.
 
 #### DNF and DNC internal keys
 
@@ -1570,7 +1650,8 @@ Next time you need this list just use an alias, like this:
             - `colored_holes`: [boolean=true] Change the drill holes to be colored instead of white.
             - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
             - `holes_color`: [string='#000000'] Color used for the holes when `colored_holes` is enabled.
-            - `layers`: [list(dict)|list(string)|string] List of layers printed in this page. Order is important, the last goes on top.
+            - `layers`: [list(dict)|list(string)|string] List of layers printed in this page.
+                        Order is important, the last goes on top.
               * Valid keys:
                 - `color`: [string=''] Color used for this layer.
                 - `description`: [string=''] A description for the layer, for documentation purposes.

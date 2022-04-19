@@ -1012,7 +1012,8 @@ outputs:
           exclude_pads_from_silkscreen: false
           # [string='#000000'] Color used for the holes when `colored_holes` is enabled
           holes_color: '#000000'
-          # [list(dict)|list(string)|string] List of layers printed in this page. Order is important, the last goes on top
+          # [list(dict)|list(string)|string] List of layers printed in this page.
+          # Order is important, the last goes on top
           layers:
             # [string=''] Color used for this layer
             - color: ''
