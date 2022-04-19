@@ -36,8 +36,8 @@
     * [Supported filters](#supported-filters)
     * [Examples for filters](#examples-for-filters)
     * [Built-in filters](#built-in-filters)
-    * [Changing the 3D model - simple mechanism](#changing-the-3d-model---simple-mechanism)
-    * [Changing the 3D model - complex mechanism](#changing-the-3d-model---complex-mechanism)
+    * [Changing the 3D model, simple mechanism](#changing-the-3d-model,-simple-mechanism)
+    * [Changing the 3D model, complex mechanism](#changing-the-3d-model,--mechanism)
     * [DNF and DNC internal keys](#dnf-and-dnc-internal-keys)
   * [The *outputs* section](#the-outputs-section)
     * [Specifying the layers](#specifying-the-layers)
@@ -644,6 +644,11 @@ ${KIPRJMOD}/steps/WH1602B-TMI-JT#.step
 ```
 
 To achieve it we define the following texts in the footprint: `%left:1,3,4,6%` and `%top:2,5%`.
+Here are both variants:
+
+![Top variant](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/samples/3D_Model_LCD/output/lcd-3D_top_variant_top.png)
+
+![Left variant](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/samples/3D_Model_LCD/output/lcd-3D_top_variant_left.png)
 
 Some important notes:
 - If you want to control what models are used when no variant is used you'll need to create a `default` variant.
