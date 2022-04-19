@@ -201,7 +201,7 @@ class Base3DOptions(VariantOptions):
                     if match:
                         # Check if this is for the current variant
                         var = match.group(1)
-                        slots = match.group(2).split(',')
+                        slots = match.group(2).split(',') if match.group(2) else []
                         if var == self.variant.name:
                             # Disable the unused models adding bogus text to the end
                             slots = [int(v) for v in slots]
