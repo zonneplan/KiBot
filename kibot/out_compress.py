@@ -64,6 +64,10 @@ class CompressOptions(BaseOptions):
             """ [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one """
             self.files = FilesList
             """ [list(dict)] Which files will be included """
+            self.move_files = False
+            """ Move the files to the archive. In other words: remove the files after adding them to the archive """
+            self.remove_files = None
+            """ {move_files} """
         super().__init__()
 
     def config(self, parent):
@@ -186,6 +190,10 @@ class CompressOptions(BaseOptions):
             self.create_tar(output, files)
         elif self.format == 'RAR':
             self.create_rar(output, files)
+        if self.move_files:
+            for fname in files.keys():
+                logger.debug('Removing '+fname)
+                os.remove(fname)
 
 
 @output_class

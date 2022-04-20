@@ -1174,7 +1174,9 @@ Next time you need this list just use an alias, like this:
                         By default this pattern is applied to the output dir specified with `-d` command line option.
                         See the `from_cwd` option.
         - `format`: [string='ZIP'] [ZIP,TAR,RAR] Output file format.
+        - `move_files`: [boolean=false] Move the files to the archive. In other words: remove the files after adding them to the archive.
         - `output`: [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
+        - *remove_files*: Alias for move_files.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 

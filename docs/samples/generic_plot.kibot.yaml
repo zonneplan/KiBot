@@ -390,8 +390,11 @@ outputs:
           source: '*'
       # [string='ZIP'] [ZIP,TAR,RAR] Output file format
       format: 'ZIP'
+      # [boolean=false] Move the files to the archive. In other words: remove the files after adding them to the archive
+      move_files: false
       # [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options
       output: '%f-%i%I%v.%x'
+      # `remove_files` is an alias for `move_files`
   # Datasheets downloader:
   - name: 'download_datasheets_example'
     comment: 'Downloads the datasheets for the project'

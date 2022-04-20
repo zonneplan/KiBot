@@ -60,9 +60,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Also a mechanism to define variables in KiCad 6. (#161)
   - Annotate power components. (#76)
   - Annotate according to PCB coordinates (#93)
-- Now you can compress files relative to the current working directory.
-  So you can create a compressed file containing the source schematic and
-  PCB files. (#93)
+- Compress:
+  - Now you can compress files relative to the current working directory.
+    So you can create a compressed file containing the source schematic and
+    PCB files. (#93)
+  - Added an option to remove the files we compressed. (#192)
 - Support for new KiCost options `split_extra_fields` and `board_qty`. (#120)
 - Datasheet downloader. (#119)
 - Position files now can include virtual components. (#106)
