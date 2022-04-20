@@ -464,7 +464,7 @@ class ReportOptions(BaseOptions):
                     continue
                 self.pad_drill = min(dr.x, self.pad_drill)
                 self.pad_drill = min(dr.y, self.pad_drill)
-                # Compute the drill size to get it after platting
+                # Compute the drill size to get it after plating
                 adjust = 0 if pad.GetAttribute() == npth_attrib else extra_pth_drill
                 self.pad_drill_real = min(dr.x+adjust, self.pad_drill_real)
                 self.pad_drill_real = min(dr.y+adjust, self.pad_drill_real)
