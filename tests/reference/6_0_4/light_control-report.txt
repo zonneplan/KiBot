@@ -63,9 +63,9 @@ Via: 0.51/0.25 mm (20/10 mils)
 - Micro via: no [0.2/0.1 mm (8/4 mils)]
 - Burried/blind via: no
 
-Outer Annular Ring: 0.25 mm (10 mils)
+Outer Annular Ring: 0.15 mm (6 mils)
 
-- By design rules: 0.25 mm (10 mils)
+- By design rules: 0.15 mm (6 mils)
 
 Eurocircuits class: 6C
 

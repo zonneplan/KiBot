@@ -374,6 +374,7 @@ class ReportOptions(BaseOptions):
 
     def collect_data(self, board):
         ds = board.GetDesignSettings()
+        extra_pth_drill = GS.global_extra_pth_drill*pcbnew.IU_PER_MM
         ###########################################################
         # Board size
         ###########################################################
@@ -428,12 +429,11 @@ class ReportOptions(BaseOptions):
                 via = t.Cast()
                 via_id = (via.GetDrill(), via.GetWidth())
                 self._vias[via_id] = self._vias.get(via_id, 0) + 1
-                self.oar_vias = min(self.oar_vias, via_id[1] - via_id[0])
+                self.oar_vias = min(self.oar_vias, via_id[1] - (via_id[0]+extra_pth_drill))
         self.track_min = min(self.track_d, self.track)
         ###########################################################
         # Drill (min)
         ###########################################################
-        extra_pth_drill = GS.global_extra_pth_drill*pcbnew.IU_PER_MM
         self.extra_pth_drill = extra_pth_drill
         modules = board.GetModules() if GS.ki5() else board.GetFootprints()
         self._drills = {}
@@ -479,8 +479,8 @@ class ReportOptions(BaseOptions):
                     self.slot = min(self.slot, m[0])
                     # print('{} @ {}'.format(dr, pad.GetPosition()))
                 pad_sz = pad.GetSize()
-                oar_x = pad_sz.x - dr.x
-                oar_y = pad_sz.y - dr.y
+                oar_x = pad_sz.x - (dr.x+adjust)
+                oar_y = pad_sz.y - (dr.y+adjust)
                 oar_t = min(oar_x, oar_y)
                 if oar_t:
                     self.oar_pads = min(self.oar_pads, oar_t)
@@ -528,7 +528,7 @@ class ReportOptions(BaseOptions):
             h = v.m_Drill
             if not d and not h:
                 continue  # KiCad 6
-            self.oar_vias_d = min(self.oar_vias_d, d - h)
+            self.oar_vias_d = min(self.oar_vias_d, d - (h+extra_pth_drill))
             self._vias_defined.add((h, d))
             self._via_sizes_sorted.append((h, d))
         ###########################################################
