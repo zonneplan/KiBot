@@ -10,7 +10,7 @@ from subprocess import check_output, STDOUT, CalledProcessError
 
 from .gs import GS
 from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, PANDOC, MISSING_TOOL,
-                   FAILED_EXECUTE, W_WRONGEXT)
+                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR)
 from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
@@ -31,6 +31,10 @@ def do_round(v, dig):
 
 def to_mm(iu, dig=2):
     """ KiCad Internal Units to millimeters """
+    if isinstance(iu, pcbnew.wxPoint):
+        return (do_round(iu.x/pcbnew.IU_PER_MM, dig), do_round(iu.y/pcbnew.IU_PER_MM, dig))
+    if isinstance(iu, pcbnew.wxSize):
+        return (do_round(iu.x/pcbnew.IU_PER_MM, dig), do_round(iu.y/pcbnew.IU_PER_MM, dig))
     return do_round(iu/pcbnew.IU_PER_MM, dig)
 
 
@@ -114,6 +118,12 @@ def solve_edge_connector(val):
     if val == 'bevelled':
         return 'yes, bevelled'
     return val
+
+
+def get_pad_info(pad):
+    return ("Position {} on layer {}, size {} drill size {}".
+            format(to_mm(pad.GetPosition()), GS.board.GetLayerName(pad.GetLayer()),
+                   to_mm(pad.GetSize(), 4), to_mm(pad.GetDrillSize(), 4)))
 
 
 class ReportOptions(BaseOptions):
@@ -445,6 +455,7 @@ class ReportOptions(BaseOptions):
         bottom_layer = board.GetLayerID('B.Cu')
         is_pure_smd, is_not_virtual = self.get_attr_tests()
         npth_attrib = 3 if GS.ki5() else pcbnew.PAD_ATTRIB_NPTH
+        min_oar = 0.1*pcbnew.IU_PER_MM
         for m in modules:
             layer = m.GetLayer()
             if layer == top_layer:
@@ -482,8 +493,13 @@ class ReportOptions(BaseOptions):
                 oar_x = pad_sz.x - (dr.x+adjust)
                 oar_y = pad_sz.y - (dr.y+adjust)
                 oar_t = min(oar_x, oar_y)
-                if oar_t:
+                if oar_t > 0:
                     self.oar_pads = min(self.oar_pads, oar_t)
+                    if oar_t < min_oar:
+                        logger.warning(W_WRONGOAR+"Really small OAR detected ({} mm) for pad {}".
+                                       format(to_mm(oar_t, 4), get_pad_info(pad)))
+                elif oar_t < 0:
+                    logger.warning(W_WRONGOAR+"Negative OAR detected for pad "+get_pad_info(pad))
         self._vias_m = sorted(self._vias.keys())
         # Via Pad size
         self.via_pad_d = ds.m_ViasMinSize
