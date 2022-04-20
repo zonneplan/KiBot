@@ -68,7 +68,7 @@ class KiBoM(BaseVariant):  # noqa: F821
         # Config field must be lowercase
         self.config_field = self.config_field.lower()
 
-    def _variant_comp_is_fitted(self, value, config):
+    def _variant_comp_is_fitted(self, config):
         """ Apply the variants to determine if this component will be fitted.
             value: component value (lowercase).
             config: content of the 'Config' field (lowercase). """
@@ -99,10 +99,9 @@ class KiBoM(BaseVariant):  # noqa: F821
             if not (c.fitted and c.included):
                 # Don't check if we already discarded it
                 continue
-            value = c.value.lower()
             config = c.get_field_value(self.config_field).lower()
-            c.fitted = self._variant_comp_is_fitted(value, config)
+            c.fitted = self._variant_comp_is_fitted(config)
             if not c.fitted and GS.debug_level > 2:
-                logger.debug('ref: {} value: {} config: {} variant: {} -> False'.
-                             format(c.ref, value, config, self.variant))
+                logger.debug('ref: {} config: {} variant: {} -> False'.
+                             format(c.ref, config, self.variant))
         return comps
