@@ -62,7 +62,7 @@ def get_pattern_class(track, clearance, oar, case):
     cc = get_class_index(clearance, c1)
     co = get_class_index(oar, c2)
     cf = max(ct, max(cc, co))
-    logger.debug('Eurocircuits Patter class for `{}` is {} because the clearance is {}, track is {} and OAR is {}'.
+    logger.debug('Eurocircuits Pattern class for `{}` is {} because the clearance is {}, track is {} and OAR is {}'.
                  format(case, cf+3, to_mm(clearance), to_mm(track), to_mm(oar)))
     return cf + 3
 
@@ -338,7 +338,7 @@ class ReportOptions(BaseOptions):
             return self.is_pure_smd_5, self.is_not_virtual_5
         return self.is_pure_smd_6, self.is_not_virtual_6
 
-    def meassure_pcb(self, board):
+    def measure_pcb(self, board):
         edge_layer = board.GetLayerID('Edge.Cuts')
         x1 = y1 = x2 = y2 = None
         draw_type = 'DRAWSEGMENT' if GS.ki5() else 'PCB_SHAPE'
@@ -381,7 +381,7 @@ class ReportOptions(BaseOptions):
         bb = board.ComputeBoundingBox(True)
         self.bb_w_d = bb.GetWidth()
         self.bb_h_d = bb.GetHeight()
-        self.meassure_pcb(board)
+        self.measure_pcb(board)
         ###########################################################
         # Board thickness
         ###########################################################
@@ -545,11 +545,11 @@ class ReportOptions(BaseOptions):
         ###########################################################
         # Pattern class
         self.pattern_class_min = get_pattern_class(self.track_min, self.clearance, self.oar_min, 'minimum')
-        self.pattern_class = get_pattern_class(self.track, self.clearance, self.oar, 'meassured')
+        self.pattern_class = get_pattern_class(self.track, self.clearance, self.oar, 'measured')
         self.pattern_class_d = get_pattern_class(self.track_d, self.clearance, self.oar_d, 'defined')
         # Drill class
         self.drill_class_min = get_drill_class(self.drill_real_min, 'minimum')
-        self.drill_class = get_drill_class(self.drill_real, 'meassured')
+        self.drill_class = get_drill_class(self.drill_real, 'measured')
         self.drill_class_d = get_drill_class(self.drill_real_d, 'defined')
         ###########################################################
         # General stats
