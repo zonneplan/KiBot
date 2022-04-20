@@ -43,6 +43,10 @@ class BaseVariant(RegVariant):
         """ Returns the name of the field used to determine if the component belongs to the variant """
         return None
 
+    def matches_variant(self, text):
+        """ This is a generic match mechanism used by variants that doesn't really have a matching mechanism """
+        return self.name.lower() == text.lower()
+
     def filter(self, comps):
         # Apply all the filters
         comps = apply_pre_transform(comps, self.pre_transform)

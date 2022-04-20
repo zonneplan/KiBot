@@ -53,32 +53,38 @@ class KiCost(BaseVariant):  # noqa: F821
             self.separators = ' '
         else:
             self.separators = '['+self.separators+']'
+        if self.variant_field and self.variant:
+            self._var_re = re.compile(self.variant, flags=re.IGNORECASE)
+        else:
+            self._var_re = None
+
+    def matches_variant(self, variants):
+        if self._var_re is None or not variants:
+            return True
+        # The component belongs to one or more variant
+        for v in re.split(self.separators, variants):
+            if self._var_re.match(v):
+                # Matched, remains
+                return True
+        # None of the variants matched
+        return False
 
     def filter(self, comps):
         GS.variant = [self.variant]
         comps = super().filter(comps)
         logger.debug("Applying KiCost style variant `{}`".format(self.name))
-        if not self.variant_field or not self.variant:
+        if self._var_re is None:
             # No variant field or not variant regex
             # Just skip the process
             return comps
         # Apply to all the components
-        var_re = re.compile(self.variant, flags=re.IGNORECASE)
         for c in comps:
             logger.debug("{} {} {}".format(c.ref, c.fitted, c.included))
             if not (c.fitted and c.included):
                 # Don't check if we already discarded it
                 continue
             variants = c.get_field_value(self.variant_field)
-            if variants:
-                # The component belong to one or more variant
-                for v in re.split(self.separators, variants):
-                    if var_re.match(v):
-                        # Matched, remains
-                        break
-                else:
-                    # None of the variants matched
-                    c.fitted = False
-                    if GS.debug_level > 2:
-                        logger.debug('ref: {} value: {} -> False'.format(c.ref, c.value))
+            c.fitted = self.matches_variant(variants)
+            if not c.fitted and GS.debug_level > 2:
+                logger.debug('ref: {} value: {} variants: {} -> False'.format(c.ref, c.value, variants))
         return comps

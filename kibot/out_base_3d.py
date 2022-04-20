@@ -205,15 +205,13 @@ class Base3DOptions(VariantOptions):
         """ Disable/Enable the 3D models that aren't for this variant.
             This mechanism uses the MTEXT attributes. """
         # The magic text is %variant:slot1,slot2...%
-        field_regex = re.compile(r'\%([^:]+):(.*)\%')
+        field_regex = re.compile(r'\%([^:]+):(.*)\%')     # Generic (by name)
+        field_regex_sp = re.compile(r'\$([^:]*):(.*)\$')  # Variant specific
         self.extra_debug = extra_debug = GS.debug_level > 3
         if extra_debug:
             logger.debug("{} 3D models that aren't for this variant".format('Enable' if enable else 'Disable'))
         self.len_disable = len(DISABLE_TEXT)
         variant_name = self.variant.name
-        var_re = None
-        if self.variant.type == 'kicost' and self.variant.variant:
-            var_re = re.compile(self.variant.variant, flags=re.IGNORECASE)
         for m in GS.get_modules():
             if extra_debug:
                 logger.debug("Processing module " + m.GetReference())
@@ -230,10 +228,7 @@ class Base3DOptions(VariantOptions):
                         var = match.group(1)
                         slots = match.group(2).split(',') if match.group(2) else []
                         # Do the match
-                        if var.startswith('_kicost.'):
-                            # KiCost specific matching system
-                            matched = var_re and var_re.match(var[8:])
-                        elif var == '_default_':
+                        if var == '_default_':
                             default = slots
                             if self.extra_debug:
                                 logger.debug('- Found defaults: {}'.format(slots))
@@ -242,6 +237,17 @@ class Base3DOptions(VariantOptions):
                         if matched:
                             self.apply_list_of_models(enable, slots, m, var)
                             break
+                    else:
+                        # Try with the variant specific pattern
+                        match = field_regex_sp.match(text)
+                        if match:
+                            var = match.group(1)
+                            slots = match.group(2).split(',') if match.group(2) else []
+                            # Do the match
+                            matched = self.variant.matches_variant(var)
+                            if matched:
+                                self.apply_list_of_models(enable, slots, m, var)
+                                break
             if not matched and default is not None:
                 self.apply_list_of_models(enable, slots, m, '_default_')
 
