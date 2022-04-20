@@ -173,7 +173,8 @@ def exec_with_retry(cmd):
         result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
         ret = result.returncode
         retry -= 1
-        if ret > 0 and ret < 128 and retry:
+        if ret != 16 and (ret > 0 and ret < 128 and retry):
+            # 16 is KiCad crash
             logger.debug('Failed with error {}, retrying ...'.format(ret))
         else:
             extract_errors(result.stderr)
