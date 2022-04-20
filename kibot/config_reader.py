@@ -562,6 +562,10 @@ def print_filters_help():
         print_output_options(n, o, 2)
 
 
+def print_global_options_help():
+    print_output_options('Global options', GS.global_opts_class, 2)
+
+
 def quoted(val):
     if "'" in val:
         return '"{}"'.format(val)

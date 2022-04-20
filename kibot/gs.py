@@ -116,6 +116,7 @@ class GS(object):
     global_castellated_pads = None
     global_edge_plating = None
     global_impedance_controlled = None
+    global_extra_pth_drill = None
     test_boolean = True
     stackup = None
 

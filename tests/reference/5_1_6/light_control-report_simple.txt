@@ -3,13 +3,13 @@ Size:
 
 - 59.69x48.26 mm
 
-Class: 6D
+Class: 6C
 
 Track width: ≥ 0.15 mm
 
 Insulation distance: ≥ 0.15 mm
 
-Minimum drill size: ≥ 0.25 mm (finished metalized hole: 0.15 mm)
+Minimum drill size: ≥ 0.35 mm (finished metalized hole: 0.25 mm)
 
 Minimum slot width: ≥ 0.6 mm
 

@@ -13,6 +13,7 @@ Usage:
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] --help-filters
+  kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] --help-outputs
@@ -90,7 +91,7 @@ from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, 
                    W_NOKIVER, hide_stderr)
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
-                            print_filters_help)
+                            print_filters_help, print_global_options_help)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile)
 GS.kibot_version = __version__
 
@@ -354,6 +355,9 @@ def main():
         sys.exit(0)
     if args.help_filters:
         print_filters_help()
+        sys.exit(0)
+    if args.help_global_options:
+        print_global_options_help()
         sys.exit(0)
     if args.example:
         check_board_file(args.board_file)

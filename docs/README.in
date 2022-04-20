@@ -32,6 +32,7 @@
     * [Date format option](#date-format-option)
     * [PCB details options](#pcb-details-options)
     * [Filtering KiBot warnings](#filtering-kibot-warnings)
+    * [All available global options](#all-available-global-options)
   * [Filters and variants](#filters-and-variants)
     * [Supported filters](#supported-filters)
     * [Examples for filters](#examples-for-filters)
@@ -308,6 +309,11 @@ global:
     - number: 43
       regex:  'FooBar'
 ```
+
+#### All available global options
+
+global:
+@global_options@
 
 ### Filters and variants
 

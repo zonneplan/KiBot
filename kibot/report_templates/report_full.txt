@@ -52,10 +52,11 @@ Track width: ${track_mm} mm (${track_mils} mils)
 
 - By design rules: ${track_d_mm} mm (${track_d_mils} mils)
 
-Drill: ${drill_mm} mm (${drill_mils} mils)
+Drill: ${drill_real_mm} mm (${drill_real_mils} mils)
 
-- Vias: ${via_drill_mm} mm (${via_drill_mils} mils) [Design: ${via_drill_d_mm} mm (${via_drill_d_mils} mils)]
-- Pads: ${pad_drill_mm} mm (${pad_drill_mils} mils)
+- Vias: ${via_drill_real_mm} mm (${via_drill_real_mils} mils) [Design: ${via_drill_real_d_mm} mm (${via_drill_real_d_mils} mils)]
+- Pads: ${pad_drill_real_mm} mm (${pad_drill_real_mils} mils)
+- The above values are real drill sizes, they add ${extra_pth_drill_mm} mm (${extra_pth_drill_mils} mils) to plated holes (PTH)
 
 Via: ${via_pad_mm}/${via_drill_mm} mm (${via_pad_mils}/${via_drill_mils} mils)
 

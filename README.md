@@ -32,6 +32,7 @@
     * [Date format option](#date-format-option)
     * [PCB details options](#pcb-details-options)
     * [Filtering KiBot warnings](#filtering-kibot-warnings)
+    * [All available global options](#all-available-global-options)
   * [Filters and variants](#filters-and-variants)
     * [Supported filters](#supported-filters)
     * [Examples for filters](#examples-for-filters)
@@ -396,6 +397,69 @@ global:
     - number: 43
       regex:  'FooBar'
 ```
+
+#### All available global options
+
+global:
+  * Valid keys:
+    - `castellated_pads`: [boolean=false] Has the PCB castelletad pads?
+                          KiCad 6: you should set this in the Board Setup -> Board Finish -> Has castellated pads.
+    - *copper_finish*: Alias for pcb_finish.
+    - `copper_thickness`: [number|string] Copper thickness in micrometers (1 Oz is 35 micrometers).
+                          KiCad 6: you should set this in the Board Setup -> Physical Stackup.
+    - `date_format`: [string='%Y-%m-%d'] Format used for the day we started the script.
+                     Is also used for the PCB/SCH date formatting when `time_reformat` is enabled (default behavior).
+                     Uses the `strftime` format.
+    - `date_time_format`: [string='%Y-%m-%d_%H-%M-%S'] Format used for the PCB and schematic date when using the file timestamp. Uses the `strftime` format.
+    - `dir`: [string=''] Default pattern for the output directories.
+    - `edge_connector`: [string='no'] [yes,no,bevelled] Has the PCB edge connectors?
+                        KiCad 6: you should set this in the Board Setup -> Board Finish -> Edge card connectors.
+    - `edge_plating`: [boolean=false] Has the PCB a plated board edge?
+                      KiCad 6: you should set this in the Board Setup -> Board Finish -> Plated board edge.
+    - `extra_pth_drill`: [number=0.1] How many millimeters the manufacturer will add to plated holes.
+                         This is because the plating reduces the hole, so you need to use a bigger drill.
+                         For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/.
+    - `filters`: [list(dict)] KiBot warnings to be ignored.
+      * Valid keys:
+        - `error`: [string=''] Error id we want to exclude. A name for KiCad 6 or a number for KiCad 5, but always a string.
+        - *error_number*: Alias for number.
+        - `filter`: [string=''] Name for the filter, for documentation purposes.
+        - *filter_msg*: Alias for filter.
+        - `number`: [number=0] Error number we want to exclude. KiCad 5 only.
+        - `regex`: [string='None'] Regular expression to match the text for the error we want to exclude.
+        - *regexp*: Alias for regex.
+    - `impedance_controlled`: [boolean=false] The PCB needs specific dielectric characteristics.
+                              KiCad 6: you should set this in the Board Setup -> Physical Stackup.
+    - `kiauto_time_out_scale`: [number=0.0] Time-out multiplier for KiAuto operations.
+    - `kiauto_wait_start`: [number=0] Time to wait for KiCad in KiAuto operations.
+    - `out_dir`: [string=''] Base output dir, same as command line `--out-dir`.
+    - `output`: [string=''] Default pattern for output file names.
+    - `pcb_finish`: [string='HAL'] Finishing used to protect pads. Currently used for documentation and to choose default colors.
+                    KiCad 6: you should set this in the Board Setup -> Board Finish -> Copper Finish option.
+                    Currently known are None, HAL, HASL, HAL SnPb, HAL lead-free, ENIG, ENEPIG, Hard gold, ImAg, Immersion Silver,
+                    Immersion Ag, ImAu, Immersion Gold, Immersion Au, Immersion Tin, Immersion Nickel, OSP and HT_OSP.
+    - `pcb_material`: [string='FR4'] PCB core material. Currently used for documentation and to choose default colors.
+                      Currently known are FR1 to FR5.
+    - `silk_screen_color`: [string='white'] Color for the markings. Currently used for documentation and to choose default colors.
+                           KiCad 6: you should set this in the Board Setup -> Physical Stackup.
+                           Currently known are black and white.
+    - `silk_screen_color_bottom`: [string=''] Color for the bottom silk screen. When not defined `silk_screen_color` is used.
+                                  Read `silk_screen_color` help.
+    - `silk_screen_color_top`: [string=''] Color for the top silk screen. When not defined `silk_screen_color` is used.
+                               Read `silk_screen_color` help.
+    - `solder_mask_color`: [string='green'] Color for the solder mask. Currently used for documentation and to choose default colors.
+                           KiCad 6: you should set this in the Board Setup -> Physical Stackup.
+                           Currently known are green, black, white, yellow, purple, blue and red.
+    - `solder_mask_color_bottom`: [string=''] Color for the bottom solder mask. When not defined `solder_mask_color` is used.
+                                  Read `solder_mask_color` help.
+    - `solder_mask_color_top`: [string=''] Color for the top solder mask. When not defined `solder_mask_color` is used.
+                               Read `solder_mask_color` help.
+    - `time_format`: [string='%H-%M-%S'] Format used for the time we started the script. Uses the `strftime` format.
+    - `time_reformat`: [boolean=true] Tries to reformat the PCB/SCH date using the `date_format`.
+                       This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD).
+    - `units`: [string=''] [millimeters,inches,mils] Default units. Affects `position` and `bom` outputs. Also KiCad 6 dimensions.
+    - `variant`: [string=''] Default variant to apply to all outputs.
+
 
 ### Filters and variants
 
@@ -2732,6 +2796,7 @@ Usage:
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] --help-filters
+  kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] --help-outputs

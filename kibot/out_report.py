@@ -54,7 +54,7 @@ def get_class_index(val, lst):
     return c+1
 
 
-def get_pattern_class(track, clearance, oar):
+def get_pattern_class(track, clearance, oar, case):
     """ Returns the Eurocircuits Pattern class for a track width, clearance and OAR """
     c1 = (0.25, 0.2, 0.175, 0.150, 0.125, 0.1, 0.09)
     c2 = (0.2, 0.15, 0.15, 0.125, 0.125, 0.1, 0.1)
@@ -62,15 +62,19 @@ def get_pattern_class(track, clearance, oar):
     cc = get_class_index(clearance, c1)
     co = get_class_index(oar, c2)
     cf = max(ct, max(cc, co))
+    logger.debug('Eurocircuits Patter class for `{}` is {} because the clearance is {}, track is {} and OAR is {}'.
+                 format(case, cf+3, to_mm(clearance), to_mm(track), to_mm(oar)))
     return cf + 3
 
 
-def get_drill_class(via_drill):
+def get_drill_class(via_drill, case):
     """ Returns the Eurocircuits Drill class for a drill size.
         This is the real (tool) size. """
     c3 = (0.6, 0.45, 0.35, 0.25, 0.2)
     cd = get_class_index(via_drill, c3)
-    return chr(ord('A') + cd)
+    res = chr(ord('A') + cd)
+    logger.debug('Eurocircuits Drill class for `{}` is {} because the drill is {}'.format(case, res, to_mm(via_drill)))
+    return res
 
 
 def to_top_bottom(front, bottom):
@@ -429,15 +433,18 @@ class ReportOptions(BaseOptions):
         ###########################################################
         # Drill (min)
         ###########################################################
+        extra_pth_drill = GS.global_extra_pth_drill*pcbnew.IU_PER_MM
+        self.extra_pth_drill = extra_pth_drill
         modules = board.GetModules() if GS.ki5() else board.GetFootprints()
         self._drills = {}
         self._drills_oval = {}
-        self.oar_pads = self.pad_drill = INF
+        self.oar_pads = self.pad_drill = self.pad_drill_real = INF
         self.slot = INF
         self.top_smd = self.top_tht = self.bot_smd = self.bot_tht = 0
         top_layer = board.GetLayerID('F.Cu')
         bottom_layer = board.GetLayerID('B.Cu')
         is_pure_smd, is_not_virtual = self.get_attr_tests()
+        npth_attrib = 3 if GS.ki5() else pcbnew.PAD_ATTRIB_NPTH
         for m in modules:
             layer = m.GetLayer()
             if layer == top_layer:
@@ -457,6 +464,10 @@ class ReportOptions(BaseOptions):
                     continue
                 self.pad_drill = min(dr.x, self.pad_drill)
                 self.pad_drill = min(dr.y, self.pad_drill)
+                # Compute the drill size to get it after platting
+                adjust = 0 if pad.GetAttribute() == npth_attrib else extra_pth_drill
+                self.pad_drill_real = min(dr.x+adjust, self.pad_drill_real)
+                self.pad_drill_real = min(dr.y+adjust, self.pad_drill_real)
                 if dr.x == dr.y:
                     self._drills[dr.x] = self._drills.get(dr.x, 0) + 1
                 else:
@@ -479,26 +490,26 @@ class ReportOptions(BaseOptions):
         self.via_pad = self._vias_m[0][1]
         self.via_pad_min = min(self.via_pad_d, self.via_pad)
         # Via Drill size
+        self._vias_m = sorted(self._vias.keys())
         self.via_drill_d = ds.m_ViasMinDrill if GS.ki5() else ds.m_MinThroughDrill
         self.via_drill = self._vias_m[0][0]
         self.via_drill_min = min(self.via_drill_d, self.via_drill)
-        # Via Drill size minus 0.1 mm
-        self.via_drill_1_d = self.via_drill_d - pcbnew.IU_PER_MM/10
-        self.via_drill_1 = self.via_drill - pcbnew.IU_PER_MM/10
-        self.via_drill_1_min = self.via_drill_min - pcbnew.IU_PER_MM/10
+        # Via Drill size before platting
+        self.via_drill_real_d = self.via_drill_d+extra_pth_drill
+        self.via_drill_real = self.via_drill+extra_pth_drill
+        self.via_drill_real_min = self.via_drill_min+extra_pth_drill
         # Pad Drill
-        # No minimum defined
+        # No minimum defined (so no _d)
         self.pad_drill_min = self.pad_drill if GS.ki5() else ds.m_MinThroughDrill
-        # Pad Drill size minus 0.1 mm
-        self.pad_drill_1 = self.pad_drill_1_min = self.pad_drill - pcbnew.IU_PER_MM/10
+        self.pad_drill_real_min = self.pad_drill_real if GS.ki5() else ds.m_MinThroughDrill+extra_pth_drill
         # Drill overall
         self.drill_d = min(self.via_drill_d, self.pad_drill)
         self.drill = min(self.via_drill, self.pad_drill)
         self.drill_min = min(self.via_drill_min, self.pad_drill_min)
         # Drill overall size minus 0.1 mm
-        self.drill_1_d = self.drill_d - pcbnew.IU_PER_MM/10
-        self.drill_1 = self.drill - pcbnew.IU_PER_MM/10
-        self.drill_1_min = self.drill_min - pcbnew.IU_PER_MM/10
+        self.drill_real_d = min(self.via_drill_real_d, self.pad_drill_real)
+        self.drill_real = min(self.via_drill_real, self.pad_drill_real)
+        self.drill_real_min = min(self.via_drill_real_min, self.pad_drill_real_min)
         self.top_comp_type = to_smd_tht(self.top_smd, self.top_tht)
         self.bot_comp_type = to_smd_tht(self.bot_smd, self.bot_tht)
         ###########################################################
@@ -533,13 +544,13 @@ class ReportOptions(BaseOptions):
         # https://www.eurocircuits.com/pcb-design-guidelines-classification/
         ###########################################################
         # Pattern class
-        self.pattern_class_min = get_pattern_class(self.track_min, self.clearance, self.oar_min)
-        self.pattern_class = get_pattern_class(self.track, self.clearance, self.oar)
-        self.pattern_class_d = get_pattern_class(self.track_d, self.clearance, self.oar_d)
+        self.pattern_class_min = get_pattern_class(self.track_min, self.clearance, self.oar_min, 'minimum')
+        self.pattern_class = get_pattern_class(self.track, self.clearance, self.oar, 'meassured')
+        self.pattern_class_d = get_pattern_class(self.track_d, self.clearance, self.oar_d, 'defined')
         # Drill class
-        self.drill_class_min = get_drill_class(self.via_drill_min)
-        self.drill_class = get_drill_class(self.via_drill)
-        self.drill_class_d = get_drill_class(self.via_drill_d)
+        self.drill_class_min = get_drill_class(self.drill_real_min, 'minimum')
+        self.drill_class = get_drill_class(self.drill_real, 'meassured')
+        self.drill_class_d = get_drill_class(self.drill_real_d, 'defined')
         ###########################################################
         # General stats
         ###########################################################

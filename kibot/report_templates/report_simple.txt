@@ -9,7 +9,7 @@ Track width: ≥ ${track_mm} mm
 
 Insulation distance: ≥ ${clearance_mm} mm
 
-Minimum drill size: ≥ ${drill_mm} mm (finished metalized hole: ${drill_1_mm} mm)
+Minimum drill size: ≥ ${drill_real_mm} mm (finished metalized hole: ${drill_mm} mm)
 
 Minimum slot width: ≥ ${slot_mm} mm
 
