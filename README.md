@@ -652,11 +652,16 @@ Here are both variants:
 
 Some important notes:
 - If you want to control what models are used when no variant is used you'll need to create a `default` variant.
-  This what the above example does. In this case the `default` variant shows all the connectors, but no display.
+  This is what the above example does. In this case the `default` variant shows all the connectors, but no display.
+  Note that changing the 3D model needs the variants infrastructure.
+- If you are using variants and a lot of them select the same slots you can add special text: `%_default_:SLOTS%`.
+  This will be used if none %VARIANT_NAME:SLOT%` matched.
 - If you want to disable a model and avoid any kind of warning add `_Disabled_by_KiBot` to the 3D model path.
   This could be needed if you want to remove some model and you don't want to adjust the slot numbers.
 - This mechanism can be used with any of the available variants. For this reason we use the `VARIANT_NAME` and we
   avoid relying on any variant specific mechanism.
+- If you are using KiCost variants and you want to match the regex against the text you can use the following syntax:
+  `%_kicost.TEXT:SLOTS%`.
 
 #### DNF and DNC internal keys
 

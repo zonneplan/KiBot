@@ -180,18 +180,45 @@ class Base3DOptions(VariantOptions):
                     models.add(full_name)
         return list(models)
 
+    def apply_list_of_models(self, enable, slots, m, var):
+        # Disable the unused models adding bogus text to the end
+        slots = [int(v) for v in slots]
+        models = m.Models()
+        m_objs = []
+        # Extract the models, we get a copy
+        while not models.empty():
+            m_objs.insert(0, models.pop())
+        for i, m3d in enumerate(m_objs):
+            if self.extra_debug:
+                logger.debug('- {} {} {} {}'.format(var, i+1, i+1 in slots, m3d.m_Filename))
+            if i+1 not in slots:
+                if enable:
+                    # Revert the added text
+                    m3d.m_Filename = m3d.m_Filename[:-self.len_disable]
+                else:
+                    # Not used, add text to make their name invalid
+                    m3d.m_Filename += DISABLE_TEXT
+            # Push it back to the module
+            models.push_back(m3d)
+
     def apply_variant_aspect(self, enable=False):
         """ Disable/Enable the 3D models that aren't for this variant.
             This mechanism uses the MTEXT attributes. """
         # The magic text is %variant:slot1,slot2...%
         field_regex = re.compile(r'\%([^:]+):(.*)\%')
-        extra_debug = GS.debug_level > 3
+        self.extra_debug = extra_debug = GS.debug_level > 3
         if extra_debug:
             logger.debug("{} 3D models that aren't for this variant".format('Enable' if enable else 'Disable'))
-        len_disable = len(DISABLE_TEXT)
+        self.len_disable = len(DISABLE_TEXT)
+        variant_name = self.variant.name
+        var_re = None
+        if self.variant.type == 'kicost' and self.variant.variant:
+            var_re = re.compile(self.variant.variant, flags=re.IGNORECASE)
         for m in GS.get_modules():
             if extra_debug:
                 logger.debug("Processing module " + m.GetReference())
+            default = None
+            matched = False
             # Look for text objects
             for gi in m.GraphicalItems():
                 if gi.GetClass() == 'MTEXT':
@@ -202,26 +229,21 @@ class Base3DOptions(VariantOptions):
                         # Check if this is for the current variant
                         var = match.group(1)
                         slots = match.group(2).split(',') if match.group(2) else []
-                        if var == self.variant.name:
-                            # Disable the unused models adding bogus text to the end
-                            slots = [int(v) for v in slots]
-                            models = m.Models()
-                            m_objs = []
-                            # Extract the models, we get a copy
-                            while not models.empty():
-                                m_objs.insert(0, models.pop())
-                            for i, m3d in enumerate(m_objs):
-                                if extra_debug:
-                                    logger.debug('- {} {} {}'.format(i+1, i+1 in slots, m3d.m_Filename))
-                                if i+1 not in slots:
-                                    if enable:
-                                        # Revert the added text
-                                        m3d.m_Filename = m3d.m_Filename[:-len_disable]
-                                    else:
-                                        # Not used, add text to make their name invalid
-                                        m3d.m_Filename += DISABLE_TEXT
-                                # Push it back to the module
-                                models.push_back(m3d)
+                        # Do the match
+                        if var.startswith('_kicost.'):
+                            # KiCost specific matching system
+                            matched = var_re and var_re.match(var[8:])
+                        elif var == '_default_':
+                            default = slots
+                            if self.extra_debug:
+                                logger.debug('- Found defaults: {}'.format(slots))
+                        else:
+                            matched = var == variant_name
+                        if matched:
+                            self.apply_list_of_models(enable, slots, m, var)
+                            break
+            if not matched and default is not None:
+                self.apply_list_of_models(enable, slots, m, '_default_')
 
     def filter_components(self):
         self.undo_3d_models_rep = {}
