@@ -98,6 +98,14 @@ Holes (excluding vias):
 
 #hole_sizes_no_vias:- ${drill_mm} mm (${drill_mils} mils) (${count})
 
+Oval holes:
+
+#oval_hole_sizes:- ${drill_1_mm}x${drill_2_mm} mm (${drill_1_mils}x${drill_2_mils} mils) (${count})
+
+Drill tools (including vias and computing adjusts and rounding):
+
+#drill_tools:- ${drill_mm} mm (${drill_mils} mils) (${count})
+
 
 #?schematic_svgs
 # Schematic

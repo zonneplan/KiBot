@@ -117,6 +117,7 @@ class GS(object):
     global_edge_plating = None
     global_impedance_controlled = None
     global_extra_pth_drill = None
+    global_drill_size_increment = None
     test_boolean = True
     stackup = None
 

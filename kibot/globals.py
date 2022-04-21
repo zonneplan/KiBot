@@ -92,6 +92,9 @@ class Globals(FiltersOptions):
             """ How many millimeters the manufacturer will add to plated holes.
                 This is because the plating reduces the hole, so you need to use a bigger drill.
                 For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/ """
+            self.drill_size_increment = 0.05
+            """ This is the difference between drill tools in millimeters.
+                A manufacturer with 0.05 of increment has drills for 0.1, 0.15, 0.2, 0.25, etc. """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self._unkown_is_error = True

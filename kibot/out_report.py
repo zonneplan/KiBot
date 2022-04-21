@@ -126,6 +126,19 @@ def get_pad_info(pad):
                    to_mm(pad.GetSize(), 4), to_mm(pad.GetDrillSize(), 4)))
 
 
+def adjust_drill(val, is_pth=True, pad=None):
+    """ Add drill_size_increment if this is a PTH hole and round it to global_extra_pth_drill """
+    step = GS.global_drill_size_increment*pcbnew.IU_PER_MM
+    if is_pth:
+        val += GS.global_extra_pth_drill*pcbnew.IU_PER_MM
+    res = int((val+step/2)/step)*step
+    # if pad:
+    #     logger.error(f"{to_mm(val)} -> {to_mm(res)} {get_pad_info(pad)}")
+    # else:
+    #     logger.error(f"{to_mm(val)} -> {to_mm(res)}")
+    return res
+
+
 class ReportOptions(BaseOptions):
     def __init__(self):
         with document:
@@ -265,6 +278,20 @@ class ReportOptions(BaseOptions):
             text += self.do_replacements(line, {'drill': d, 'count': self._drills[d]})
         return text
 
+    def context_oval_hole_sizes(self, line):
+        """ Replace iterator for the `oval_hole_sizes` context """
+        text = ''
+        for d in sorted(self._drills_oval.keys()):
+            text += self.do_replacements(line, {'drill_1': d[0], 'drill_2': d[1], 'count': self._drills_oval[d]})
+        return text
+
+    def context_drill_tools(self, line):
+        """ Replace iterator for the `drill_tools` context """
+        text = ''
+        for d in sorted(self._drills_real.keys()):
+            text += self.do_replacements(line, {'drill': d, 'count': self._drills_real[d]})
+        return text
+
     def context_stackup(self, line):
         """ Replace iterator for the `stackup` context """
         text = ''
@@ -384,7 +411,7 @@ class ReportOptions(BaseOptions):
 
     def collect_data(self, board):
         ds = board.GetDesignSettings()
-        extra_pth_drill = GS.global_extra_pth_drill*pcbnew.IU_PER_MM
+        self.extra_pth_drill = GS.global_extra_pth_drill*pcbnew.IU_PER_MM
         ###########################################################
         # Board size
         ###########################################################
@@ -427,6 +454,7 @@ class ReportOptions(BaseOptions):
         self.oar_vias = self.track = INF
         self._vias = {}
         self._tracks_m = {}
+        self._drills_real = {}
         track_type = 'TRACK' if GS.ki5() else 'PCB_TRACK'
         via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
         for t in tracks:
@@ -439,12 +467,13 @@ class ReportOptions(BaseOptions):
                 via = t.Cast()
                 via_id = (via.GetDrill(), via.GetWidth())
                 self._vias[via_id] = self._vias.get(via_id, 0) + 1
-                self.oar_vias = min(self.oar_vias, via_id[1] - (via_id[0]+extra_pth_drill))
+                d = adjust_drill(via_id[0])
+                self.oar_vias = min(self.oar_vias, via_id[1] - d)
+                self._drills_real[d] = self._drills_real.get(d, 0) + 1
         self.track_min = min(self.track_d, self.track)
         ###########################################################
         # Drill (min)
         ###########################################################
-        self.extra_pth_drill = extra_pth_drill
         modules = board.GetModules() if GS.ki5() else board.GetFootprints()
         self._drills = {}
         self._drills_oval = {}
@@ -476,22 +505,30 @@ class ReportOptions(BaseOptions):
                 self.pad_drill = min(dr.x, self.pad_drill)
                 self.pad_drill = min(dr.y, self.pad_drill)
                 # Compute the drill size to get it after plating
-                adjust = 0 if pad.GetAttribute() == npth_attrib else extra_pth_drill
-                self.pad_drill_real = min(dr.x+adjust, self.pad_drill_real)
-                self.pad_drill_real = min(dr.y+adjust, self.pad_drill_real)
+                is_pth = pad.GetAttribute() != npth_attrib
+                dr_x_real = adjust_drill(dr.x, is_pth, pad)
+                dr_y_real = adjust_drill(dr.y, is_pth, pad)
+                self.pad_drill_real = min(dr_x_real, self.pad_drill_real)
+                self.pad_drill_real = min(dr_y_real, self.pad_drill_real)
                 if dr.x == dr.y:
                     self._drills[dr.x] = self._drills.get(dr.x, 0) + 1
+                    self._drills_real[dr_x_real] = self._drills_real.get(dr_x_real, 0) + 1
                 else:
                     if dr.x < dr.y:
                         m = (dr.x, dr.y)
+                        d = dr.x
+                        d_r = dr_x_real
                     else:
                         m = (dr.y, dr.x)
+                        d = dr.y
+                        d_r = dr_y_real
                     self._drills_oval[m] = self._drills_oval.get(m, 0) + 1
                     self.slot = min(self.slot, m[0])
                     # print('{} @ {}'.format(dr, pad.GetPosition()))
+                    self._drills_real[d_r] = self._drills_real.get(d_r, 0) + 1
                 pad_sz = pad.GetSize()
-                oar_x = pad_sz.x - (dr.x+adjust)
-                oar_y = pad_sz.y - (dr.y+adjust)
+                oar_x = pad_sz.x - dr_x_real
+                oar_y = pad_sz.y - dr_y_real
                 oar_t = min(oar_x, oar_y)
                 if oar_t > 0:
                     self.oar_pads = min(self.oar_pads, oar_t)
@@ -500,6 +537,8 @@ class ReportOptions(BaseOptions):
                                        format(to_mm(oar_t, 4), get_pad_info(pad)))
                 elif oar_t < 0:
                     logger.warning(W_WRONGOAR+"Negative OAR detected for pad "+get_pad_info(pad))
+                elif oar_t == 0 and is_pth:
+                    logger.warning(W_WRONGOAR+"Plated pad without copper "+get_pad_info(pad))
         self._vias_m = sorted(self._vias.keys())
         # Via Pad size
         self.via_pad_d = ds.m_ViasMinSize
@@ -511,13 +550,13 @@ class ReportOptions(BaseOptions):
         self.via_drill = self._vias_m[0][0]
         self.via_drill_min = min(self.via_drill_d, self.via_drill)
         # Via Drill size before platting
-        self.via_drill_real_d = self.via_drill_d+extra_pth_drill
-        self.via_drill_real = self.via_drill+extra_pth_drill
-        self.via_drill_real_min = self.via_drill_min+extra_pth_drill
+        self.via_drill_real_d = adjust_drill(self.via_drill_d)
+        self.via_drill_real = adjust_drill(self.via_drill)
+        self.via_drill_real_min = adjust_drill(self.via_drill_min)
         # Pad Drill
         # No minimum defined (so no _d)
         self.pad_drill_min = self.pad_drill if GS.ki5() else ds.m_MinThroughDrill
-        self.pad_drill_real_min = self.pad_drill_real if GS.ki5() else ds.m_MinThroughDrill+extra_pth_drill
+        self.pad_drill_real_min = self.pad_drill_real if GS.ki5() else adjust_drill(ds.m_MinThroughDrill, False)
         # Drill overall
         self.drill_d = min(self.via_drill_d, self.pad_drill)
         self.drill = min(self.via_drill, self.pad_drill)
@@ -544,7 +583,7 @@ class ReportOptions(BaseOptions):
             h = v.m_Drill
             if not d and not h:
                 continue  # KiCad 6
-            self.oar_vias_d = min(self.oar_vias_d, d - (h+extra_pth_drill))
+            self.oar_vias_d = min(self.oar_vias_d, d - adjust_drill(h))
             self._vias_defined.add((h, d))
             self._via_sizes_sorted.append((h, d))
         ###########################################################
