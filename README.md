@@ -412,6 +412,8 @@ global:
                      Uses the `strftime` format.
     - `date_time_format`: [string='%Y-%m-%d_%H-%M-%S'] Format used for the PCB and schematic date when using the file timestamp. Uses the `strftime` format.
     - `dir`: [string=''] Default pattern for the output directories.
+    - `drill_size_increment`: [number=0.05] This is the difference between drill tools in millimeters.
+                              A manufacturer with 0.05 of increment has drills for 0.1, 0.15, 0.2, 0.25, etc..
     - `edge_connector`: [string='no'] [yes,no,bevelled] Has the PCB edge connectors?
                         KiCad 6: you should set this in the Board Setup -> Board Finish -> Edge card connectors.
     - `edge_plating`: [boolean=false] Has the PCB a plated board edge?
