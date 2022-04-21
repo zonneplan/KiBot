@@ -611,6 +611,28 @@ def _get_effects(items, pos, name):
     return FontEffects.parse(values)
 
 
+class PinAlternate(object):
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    def parse(items):
+        alt = PinAlternate()
+        name = 'alternate'
+        alt.name = _check_str(items, 1, name+' name')
+        alt.type = _check_symbol(items, 2, name+' type')
+        alt.gtype = _check_symbol(items, 3, name+' style')
+        return alt
+
+    def write(self):
+        return _symbol('alternate', [self.name, Symbol(self.type), Symbol(self.gtype)])
+
+
+def _get_alternate(items, pos, name):
+    values = _check_symbol_value(items, pos, name, 'alternate')
+    return PinAlternate.parse(values)
+
+
 class PinV6(object):
     def __init__(self):
         super().__init__()
@@ -619,6 +641,7 @@ class PinV6(object):
         self.name_effects = self.number_effects = None
         self.hide = False
         self.box = Box()
+        self.alternate = None
 
     @staticmethod
     def parse(items):
@@ -641,6 +664,9 @@ class PinV6(object):
             elif i_type == 'number':
                 pin.number = _check_str(i, 1, name+' number')
                 pin.number_effects = _get_effects(i, 2, name+' number')
+            elif i_type == 'alternate':
+                # Not documented yet
+                pin.alternate = _get_alternate(items, c+3, name)
             else:
                 raise SchError('Unknown pin attribute `{}`'.format(i))
 
@@ -672,6 +698,8 @@ class PinV6(object):
             data.append(Symbol('hide'))
         data.extend([Sep(), _symbol('name', [self.name, self.name_effects.write()]), Sep(),
                     _symbol('number', [self.number, self.number_effects.write()]), Sep()])
+        if self.alternate:
+            data.extend([self.alternate.write(), Sep()])
         return _symbol('pin', data)
 
 
@@ -946,6 +974,7 @@ class SchematicComponentV6(SchematicComponent):
         self.fields_autoplaced = False
         self.mirror = None
         self.convert = None
+        self.pin_alternates = {}
 
     def set_ref(self, ref):
         self.ref = ref
@@ -980,6 +1009,14 @@ class SchematicComponentV6(SchematicComponent):
             comp.lib = res[0]
         else:
             logger.warning(W_NOLIB + "Component `{}` with more than one `:`".format(comp.name))
+
+    def load_pin(self, i, name):
+        pin_name = _check_str(i, 1, name + 'pin name')
+        pin_uuid = _get_uuid(i, 2, name)
+        self.pins[pin_name] = pin_uuid
+        if len(i) > 3:
+            # Not documented
+            self.pin_alternates[pin_name] = _check_symbol_str(i, 3, name, 'alternate')
 
     @staticmethod
     def load(c, project, parent):
@@ -1051,9 +1088,7 @@ class SchematicComponentV6(SchematicComponent):
                     comp.datasheet = field.value
             # PINS...
             elif i_type == 'pin':
-                pin_name = _check_str(i, 1, name + 'pin name')
-                pin_uuid = _get_uuid(i, 2, name)
-                comp.pins[pin_name] = pin_uuid
+                comp.load_pin(i, name)
             else:
                 raise SchError('Unknown component attribute `{}`'.format(i))
         if not lib_id_found or not at_found:
@@ -1096,7 +1131,11 @@ class SchematicComponentV6(SchematicComponent):
             if d:
                 data.extend([d, Sep()])
         for k, v in self.pins.items():
-            data.extend([_symbol('pin', [k, _symbol('uuid', [Symbol(v)])]), Sep()])
+            pin_data = [k, _symbol('uuid', [Symbol(v)])]
+            alternate = self.pin_alternates.get(k, None)
+            if alternate:
+                pin_data.append(_symbol('alternate', [alternate]))
+            data.extend([_symbol('pin', pin_data), Sep()])
         return _symbol('symbol', data)
 
 
