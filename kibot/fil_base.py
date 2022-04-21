@@ -16,7 +16,7 @@ from . import log
 logger = log.get_logger()
 DEFAULT_EXCLUDE = [{'column': ColumnList.COL_REFERENCE, 'regex': '^TP[0-9]*'},
                    {'column': ColumnList.COL_REFERENCE, 'regex': '^FID'},
-                   {'column': ColumnList.COL_PART, 'regex': 'mount.*hole'},
+                   {'column': ColumnList.COL_PART, 'regex': '^mount.*hole'},
                    {'column': ColumnList.COL_PART, 'regex': 'solder.*bridge'},
                    {'column': ColumnList.COL_PART, 'regex': 'solder.*jump'},
                    {'column': ColumnList.COL_PART, 'regex': 'test.*point'},
