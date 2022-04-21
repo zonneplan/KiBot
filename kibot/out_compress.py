@@ -191,9 +191,22 @@ class CompressOptions(BaseOptions):
         elif self.format == 'RAR':
             self.create_rar(output, files)
         if self.move_files:
+            dirs = []
             for fname in files.keys():
-                logger.debug('Removing '+fname)
-                os.remove(fname)
+                if os.path.isfile(fname):
+                    os.remove(fname)
+                    logger.debug('Removing '+fname)
+                elif os.path.isdir(fname):
+                    dirs.append(fname)
+            for d in sorted(dirs, key=lambda x: len(x.split(os.sep)), reverse=True):
+                logger.debug('Removing '+d)
+                try:
+                    os.rmdir(d)
+                except OSError as e:
+                    if e.errno == 39:
+                        logger.debug(' Not empty')
+                    else:
+                        raise
 
 
 @output_class
