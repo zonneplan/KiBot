@@ -182,7 +182,7 @@ class Base3DOptions(VariantOptions):
 
     def apply_list_of_models(self, enable, slots, m, var):
         # Disable the unused models adding bogus text to the end
-        slots = [int(v) for v in slots]
+        slots = [int(v) for v in slots if v]
         models = m.Models()
         m_objs = []
         # Extract the models, we get a copy
@@ -205,8 +205,8 @@ class Base3DOptions(VariantOptions):
         """ Disable/Enable the 3D models that aren't for this variant.
             This mechanism uses the MTEXT attributes. """
         # The magic text is %variant:slot1,slot2...%
-        field_regex = re.compile(r'\%([^:]+):(.*)\%')     # Generic (by name)
-        field_regex_sp = re.compile(r'\$([^:]*):(.*)\$')  # Variant specific
+        field_regex = re.compile(r'\%([^:]+):([\d,]*)\%')     # Generic (by name)
+        field_regex_sp = re.compile(r'\$([^:]*):([\d,]*)\$')  # Variant specific
         self.extra_debug = extra_debug = GS.debug_level > 3
         if extra_debug:
             logger.debug("{} 3D models that aren't for this variant".format('Enable' if enable else 'Disable'))
