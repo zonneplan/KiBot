@@ -10,7 +10,7 @@ from subprocess import check_output, STDOUT, CalledProcessError
 
 from .gs import GS
 from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, PANDOC, MISSING_TOOL,
-                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR)
+                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST)
 from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
@@ -58,26 +58,36 @@ def get_class_index(val, lst):
     return c+1
 
 
-def get_pattern_class(track, clearance, oar, case):
+def get_pattern_class(track, clearance, oar, case, target=None):
     """ Returns the Eurocircuits Pattern class for a track width, clearance and OAR """
     c1 = (0.25, 0.2, 0.175, 0.150, 0.125, 0.1, 0.09)
     c2 = (0.2, 0.15, 0.15, 0.125, 0.125, 0.1, 0.1)
     ct = get_class_index(track, c1)
     cc = get_class_index(clearance, c1)
     co = get_class_index(oar, c2)
-    cf = max(ct, max(cc, co))
+    cf = max(ct, max(cc, co))+3
+    if target is not None and cf > target:
+        if ct+3 > target:
+            logger.warning(W_ECCLASST+"Track too narrow {} mm, should be ≥ {} mm".format(to_mm(track), c1[target-3]))
+        if cc+3 > target:
+            logger.warning(W_ECCLASST+"Clearance too small {} mm, should be ≥ {} mm".
+                           format(to_mm(clearance), c1[target-3]))
+        if co+3 > target:
+            logger.warning(W_ECCLASST+"OAR too small {} mm, should be ≥ {} mm".format(to_mm(oar), c2[target-3]))
     logger.debug('Eurocircuits Pattern class for `{}` is {} because the clearance is {}, track is {} and OAR is {}'.
-                 format(case, cf+3, to_mm(clearance), to_mm(track), to_mm(oar)))
-    return cf + 3
+                 format(case, cf, to_mm(clearance), to_mm(track), to_mm(oar)))
+    return cf
 
 
-def get_drill_class(via_drill, case):
+def get_drill_class(drill, case, target=None):
     """ Returns the Eurocircuits Drill class for a drill size.
         This is the real (tool) size. """
     c3 = (0.6, 0.45, 0.35, 0.25, 0.2)
-    cd = get_class_index(via_drill, c3)
+    cd = get_class_index(drill, c3)
     res = chr(ord('A') + cd)
-    logger.debug('Eurocircuits Drill class for `{}` is {} because the drill is {}'.format(case, res, to_mm(via_drill)))
+    if target is not None and cd > target:
+        logger.warning(W_ECCLASST+"Drill too small {} mm, should be ≥ {} mm".format(to_mm(drill), c3[target]))
+    logger.debug('Eurocircuits Drill class for `{}` is {} because the drill is {}'.format(case, res, to_mm(drill)))
     return res
 
 
@@ -158,6 +168,8 @@ class ReportOptions(BaseOptions):
             self.converted_output = GS.def_global_output
             """ Converted output file name (%i='report', %x=`convert_to`).
                 Note that the extension should match the `convert_to` value """
+            self.eurocircuits_class_target = '10F'
+            """ Which Eurocircuits class are we aiming at """
         super().__init__()
         self._expand_id = 'report'
         self._expand_ext = 'txt'
@@ -173,6 +185,13 @@ class ReportOptions(BaseOptions):
                                             'report_'+self.template.lower()+'.txt'))
         if not os.path.isfile(self.template):
             raise KiPlotConfigurationError("Missing report template: `{}`".format(self.template))
+        m = re.match(r'(\d+)([A-F])', self.eurocircuits_class_target)
+        if not m:
+            raise KiPlotConfigurationError("Malformed Eurocircuits class, must be a number and a letter (<=10F)")
+        self._ec_pat = int(m.group(1))
+        if self._ec_pat < 3 or self._ec_pat > 10:
+            raise KiPlotConfigurationError("Eurocircuits Pattern class out of range [3,10]")
+        self._ec_drl = ord(m.group(2))-ord('A')
 
     def do_replacements(self, line, defined):
         """ Replace ${VAR} patterns """
@@ -600,11 +619,11 @@ class ReportOptions(BaseOptions):
         ###########################################################
         # Pattern class
         self.pattern_class_min = get_pattern_class(self.track_min, self.clearance, self.oar_min, 'minimum')
-        self.pattern_class = get_pattern_class(self.track, self.clearance, self.oar, 'measured')
+        self.pattern_class = get_pattern_class(self.track, self.clearance, self.oar, 'measured', self._ec_pat)
         self.pattern_class_d = get_pattern_class(self.track_d, self.clearance, self.oar_d, 'defined')
         # Drill class
         self.drill_class_min = get_drill_class(self.drill_real_min, 'minimum')
-        self.drill_class = get_drill_class(self.drill_real, 'measured')
+        self.drill_class = get_drill_class(self.drill_real, 'measured', self._ec_drl)
         self.drill_class_d = get_drill_class(self.drill_real_d, 'defined')
         ###########################################################
         # General stats
