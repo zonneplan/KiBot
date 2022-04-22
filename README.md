@@ -1758,6 +1758,9 @@ Next time you need this list just use an alias, like this:
                        If it starts with `+` the text is concatenated.
         - `plot_sheet_reference`: [boolean=true] Include the title-block (worksheet, frame, etc.).
         - `png_width`: [number=1280] Width of the PNG in pixels.
+        - `realistic_solder_mask`: [boolean=true] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
+                                   In order to get a good looking select a color with transparency, i.e. '#14332440'.
+                                   PcbDraw must be installed in order to use this option.
         - `scaling`: [number=1.0] Default scale factor (0 means autoscaling).
         - `sheet_reference_layout`: [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
@@ -2188,6 +2191,7 @@ Next time you need this list just use an alias, like this:
                         The available formats depends on the `Pandoc` installation.
                         In CI/CD environments: the `kicad_auto_test` docker image contains it.
                         In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`.
+        - `eurocircuits_class_target`: [string='10F'] Which Eurocircuits class are we aiming at.
         - `output`: [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options.
         - `template`: [string='full'] Name for one of the internal templates (full, simple) or a custom template file.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.

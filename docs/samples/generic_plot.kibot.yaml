@@ -1057,6 +1057,10 @@ outputs:
       plot_sheet_reference: true
       # [number=1280] Width of the PNG in pixels
       png_width: 1280
+      # [boolean=true] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
+      # In order to get a good looking select a color with transparency, i.e. '#14332440'.
+      # PcbDraw must be installed in order to use this option
+      realistic_solder_mask: true
       # [number=1.0] Default scale factor (0 means autoscaling)
       scaling: 1.0
       # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project
@@ -1502,6 +1506,8 @@ outputs:
       # In CI/CD environments: the `kicad_auto_test` docker image contains it.
       # In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`
       do_convert: false
+      # [string='10F'] Which Eurocircuits class are we aiming at
+      eurocircuits_class_target: '10F'
       # [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options
       output: '%f-%i%I%v.%x'
       # [string='full'] Name for one of the internal templates (full, simple) or a custom template file

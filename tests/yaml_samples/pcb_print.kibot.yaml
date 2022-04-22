@@ -13,11 +13,13 @@ outputs:
       # drill_marks: small
       title: Chau
       # plot_sheet_reference: false
-      format: 'PS'
+      format: 'PDF'
       # enable_ki6_frame_fix: true
+      keep_temporal_files: true
       pages:
         - # monochrome: true
           scaling: 2.0
+          #mirror: true
           title: Hola
           sheet: Front
           sheet_reference_color: "#A02020"
@@ -26,6 +28,8 @@ outputs:
           layers:
             - layer: Edge.Cuts
             - layer: F.Cu
+            - layer: F.Mask
+              color: '#14332440'
             - layer: F.Paste
             - layer: F.SilkS
             - layer: F.Fab
@@ -33,6 +37,7 @@ outputs:
               plot_footprint_values: false
             - layer: Dwgs.User
         - mirror: true
+          scaling: 2.0
           layers:
             - layer: B.Fab
               color: "#000080"
@@ -44,4 +49,6 @@ outputs:
               color: "#FF8A8A"
             - layer: B.Cu
               color: "#B3FFB3"
+            - layer: B.Mask
+              color: '#14332480'
             - layer: Dwgs.User

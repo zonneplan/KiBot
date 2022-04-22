@@ -8,7 +8,7 @@
 import re
 import os
 import subprocess
-from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize
+from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask
 from shutil import rmtree, which
 from tempfile import NamedTemporaryFile, mkdtemp
 from .svgutils.transform import fromstring
@@ -22,7 +22,7 @@ from .kicad.worksheet import Worksheet, WksError
 from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
-from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL
+from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL, W_PDMASKFAIL
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer, get_priority
@@ -315,6 +315,10 @@ class PCB_PrintOptions(VariantOptions):
             """ Add the `Edge.Cuts` to all the pages """
             self.scaling = 1.0
             """ Default scale factor (0 means autoscaling)"""
+            self.realistic_solder_mask = True
+            """ Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
+                In order to get a good looking select a color with transparency, i.e. '#14332440'.
+                PcbDraw must be installed in order to use this option """
         super().__init__()
         self._expand_id = 'assembly'
 
@@ -416,6 +420,7 @@ class PCB_PrintOptions(VariantOptions):
         pc.SetLayer(self.cleared_layer)
         pc.OpenPlotfile('frame', PLOT_FORMAT_SVG, p.sheet)
         pc.PlotLayer()
+        pc.ClosePlot()
         self.restore_layer()
 
     def fill_kicad_vars(self, page, pages, p):
@@ -462,6 +467,7 @@ class PCB_PrintOptions(VariantOptions):
         ws.draw(GS.board, self.cleared_layer, page, self.paper_w, self.paper_h, tb_vars)
         pc.OpenPlotfile('frame', PLOT_FORMAT_SVG, p.sheet)
         pc.PlotLayer()
+        pc.ClosePlot()
         ws.undraw(GS.board)
         self.restore_layer()
         # We need to plot the images in a separated pass
@@ -542,6 +548,7 @@ class PCB_PrintOptions(VariantOptions):
         suffix = la.suffix+'_pads'
         pc.OpenPlotfile(suffix, PLOT_FORMAT_SVG, p.sheet)
         pc.PlotLayer()
+        pc.ClosePlot()
         # Restore everything
         for e in moved:
             e.SetLayer(id)
@@ -614,6 +621,7 @@ class PCB_PrintOptions(VariantOptions):
         suffix = la.suffix+'_vias_'+str(via_t)
         pc.OpenPlotfile(suffix, PLOT_FORMAT_SVG, p.sheet)
         pc.PlotLayer()
+        pc.ClosePlot()
         # Restore everything
         for e in moved:
             e.SetLayer(id)
@@ -705,6 +713,7 @@ class PCB_PrintOptions(VariantOptions):
         """ Merge all pages into one """
         first = True
         for (file, color) in input_files:
+            logger.debug(' - Loading layer file '+file)
             file = os.path.join(input_folder, file)
             new_layer = fromstring(load_svg(file, color, p.colored_holes, p.holes_color, p.monochrome))
             width = get_width(new_layer)
@@ -747,6 +756,99 @@ class PCB_PrintOptions(VariantOptions):
                 self.plot_vias(la, pc, p, filelist, VIATYPE_BLIND_BURIED, self.blind_via_color)
                 self.plot_vias(la, pc, p, filelist, VIATYPE_MICROVIA, self.micro_via_color)
 
+    def plot_realistic_solder_mask(self, id, temp_dir, out_file, color, mirror, scale):
+        """ Plot the solder mask closer to reality, not the apertures """
+        if not self.realistic_solder_mask or (id != F_Mask and id != B_Mask):
+            return
+        logger.debug('- Plotting realistic solder mask using PcbDraw')
+        # Check PcbDraw is available
+        if which('pcbdraw') is None:
+            logger.error('`pcbdraw` not installed, needed for `realistic_solder_mask`')
+            exit(MISSING_TOOL)
+        # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
+        pcbdraw_file = os.path.join(temp_dir, out_file.replace('.svg', '-pcbdraw.svg'))
+        cmd = ['pcbdraw', '--no-warn-back', '-f', '']
+        if id == B_Mask:
+            cmd.append('-b')
+        cmd.extend([GS.pcb_file, pcbdraw_file])
+        _run_command(cmd)
+        # Load the SVG created by PcbDraw
+        with open(pcbdraw_file, 'rt') as f:
+            svg = fromstring(f.read())
+        # Load the plot file from KiCad to get the real coordinates system
+        out_file = os.path.join(temp_dir, out_file)
+        with open(out_file, 'rt') as f:
+            svg_kicad = fromstring(f.read())
+        view_box = svg_kicad.root.get('viewBox')
+        view_box_elements = view_box.split(' ')
+        paper_size_iu_x = int(view_box_elements[2])
+        paper_size_iu_y = int(view_box_elements[3])
+        # Compute the coordinates translation for mirror
+        transform = ''
+        if scale != 1.0 and scale:
+            # This the autocenter computation used by KiCad
+            scale_x = scale_y = scale
+            board_center = GS.board.GetBoundingBox().GetCenter()
+            offset_x = round((board_center.x*scale-(paper_size_iu_x/2.0))/scale)
+            offset_y = round((board_center.y*scale-(paper_size_iu_y/2.0))/scale)
+            if mirror:
+                scale_x = -scale_x
+                offset_x += round(paper_size_iu_x/scale)
+            transform = 'scale({},{}) translate({},{})'.format(scale_x, scale_y, -offset_x, -offset_y)
+        else:
+            if mirror:
+                transform = 'scale(-1,1) translate({},0)'.format(-paper_size_iu_x)
+        # Filter the PcbDraw SVG to get what we want
+        defs = None
+        g = None
+        for child in svg.root:
+            if child.tag.endswith('}defs'):
+                # Keep the cut-off and pads-mask-silkscreen defs
+                defs = child
+                logger.debug(' - Found <defs>')
+                for df in child:
+                    if df.get('id') not in ['cut-off', 'pads-mask-silkscreen']:
+                        child.remove(df)
+            elif child.tag.endswith('}g') and child.get('id') == "boardContainer":
+                # Keep the solder mask
+                g = child
+                g.set('transform', transform)
+                g_mask = g[0]
+                if g_mask.get('clip-path') == "url(#cut-off)" and g_mask.get('mask') == "url(#hole-mask)":
+                    logger.debug(' - Found clip-path')
+                    g_mask.set('mask', "url(#pads-mask-silkscreen)")
+                    for gf in g_mask:
+                        if gf.get('id') != 'substrate-board':
+                            g_mask.remove(gf)
+                        else:
+                            # Apply our color to the solder mask
+                            alpha = 1.0
+                            if len(color) == 9:
+                                alpha = int(color[7:], 16)/255
+                                color = color[:7]
+                            gf.set('style', "fill:{0}; fill-opacity:{1}; stroke:{0};".format(color, alpha))
+        if g is None or defs is None:
+            logger.warning(W_PDMASKFAIL+'Failed to extract elements from the PcbDraw SVG')
+            return
+        # Adjust the paper to what KiCad used
+        svg.root.set('width', svg_kicad.root.get('width'))
+        svg.root.set('height', svg_kicad.root.get('height'))
+        svg.root.set('viewBox', view_box)
+        # Save the filtered file
+        svg.save(out_file)
+
+    def set_scaling(self, po, scaling):
+        if scaling:
+            po.SetScale(scaling)
+            return scaling
+        sz = GS.board.GetBoundingBox().GetSize()
+        scale_x = FromMM(self.paper_w)/sz.x
+        scale_y = FromMM(self.paper_h)/sz.y
+        scale = min(scale_x, scale_y)
+        po.SetScale(scale)
+        logger.debug('- Autoscale: {}'.format(scale))
+        return scale
+
     def generate_output(self, output):
         if self.format != 'SVG' and which(SVG2PDF) is None:
             logger.error('`{}` not installed. Install `librsvg2-bin` or equivalent'.format(SVG2PDF))
@@ -788,7 +890,7 @@ class PCB_PrintOptions(VariantOptions):
                 edge_layer.color = layer_id2color[edge_id]
             else:
                 edge_layer.color = "#000000"
-        # Generate the output
+        # Generate the output, page by page
         pages = []
         for n, p in enumerate(self.pages):
             # Use a dir for each page, avoid overwriting files, just for debug purposes
@@ -801,7 +903,7 @@ class PCB_PrintOptions(VariantOptions):
             # 1) Plot all layers to individual PDF files (B&W)
             po.SetPlotFrameRef(False)   # We plot it separately
             po.SetMirror(p.mirror)
-            po.SetScale(p.scaling)
+            p.scaling = self.set_scaling(po, p.scaling)
             po.SetNegative(p.negative_plot)
             po.SetPlotViaOnMaskLayer(not p.tent_vias)
             if GS.ki5():
@@ -821,8 +923,10 @@ class PCB_PrintOptions(VariantOptions):
                 pc.SetLayer(id)
                 pc.OpenPlotfile(la.suffix, PLOT_FORMAT_SVG, p.sheet)
                 pc.PlotLayer()
+                pc.ClosePlot()
                 filelist.append((GS.pcb_basename+"-"+la.suffix+".svg", la.color))
                 self.plot_extra_cu(id, la, pc, p, filelist)
+                self.plot_realistic_solder_mask(id, temp_dir, filelist[-1][0], filelist[-1][1], p.mirror, p.scaling)
             # 2) Plot the frame using an empty layer and 1.0 scale
             po.SetMirror(False)
             if self.plot_sheet_reference:
@@ -835,7 +939,6 @@ class PCB_PrintOptions(VariantOptions):
                     self.plot_frame_internal(pc, po, p, len(pages)+1, len(self.pages))
                 color = p.sheet_reference_color if p.sheet_reference_color else self._color_theme.pcb_frame
                 filelist.append((GS.pcb_basename+"-frame.svg", color))
-            pc.ClosePlot()
             # 3) Stack all layers in one file
             if self.format == 'SVG':
                 id = self._expand_id+('_page_'+page_str)
