@@ -631,7 +631,8 @@ class PCB_PrintOptions(VariantOptions):
         filelist.append((GS.pcb_basename+"-"+suffix+".svg", via_c))
 
     def add_frame_images(self, svg, monochrome):
-        if not self.frame_plot_mechanism == 'internal' or not self.last_worksheet.has_images:
+        if (not self.plot_sheet_reference or not self.frame_plot_mechanism == 'internal' or
+           not self.last_worksheet.has_images):
             return
         if monochrome:
             if which('convert') is None:
