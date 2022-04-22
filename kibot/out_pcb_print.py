@@ -98,17 +98,6 @@ def get_width(svg):
     return float(svg.root.get('viewBox').split(' ')[2])
 
 
-def to_inches(w):
-    val = float(w[:-2])
-    units = w[-2:]
-    if units == 'cm':
-        return val/2.54
-    if units == 'pt':
-        return val/72.0
-    # Currently impossible for KiCad
-    return val
-
-
 def create_pdf_from_pages(input_files, output_fn):
     output = PyPDF2.PdfFileWriter()
     # Collect all pages
@@ -319,6 +308,8 @@ class PCB_PrintOptions(VariantOptions):
             """ Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
                 In order to get a good looking select a color with transparency, i.e. '#14332440'.
                 PcbDraw must be installed in order to use this option """
+            self.add_background = False
+            """ Add a background to the SVG/PNG """
         super().__init__()
         self._expand_id = 'assembly'
 
@@ -718,6 +709,7 @@ class PCB_PrintOptions(VariantOptions):
             new_layer = fromstring(load_svg(file, color, p.colored_holes, p.holes_color, p.monochrome))
             width = get_width(new_layer)
             if GS.ki5() and file.endswith('frame.svg'):
+                # Workaround for polygon fill on KiCad 5
                 if p.monochrome:
                     color = to_gray_hex(color)
                 self.fill_polygons(new_layer, color)
@@ -725,7 +717,6 @@ class PCB_PrintOptions(VariantOptions):
                 svg_out = new_layer
                 # This is the width declared at the beginning of the file
                 base_width = width
-                phys_width = to_inches(new_layer.width)
                 first = False
                 self.add_frame_images(svg_out, p.monochrome)
             else:
@@ -734,11 +725,11 @@ class PCB_PrintOptions(VariantOptions):
                 scale = base_width/width
                 if scale != 1.0:
                     logger.debug(' - Scaling {} by {}'.format(file, scale))
+                    logger.error('Este')
                     for e in root:
                         e.scale(scale)
                 svg_out.append([root])
         svg_out.save(os.path.join(output_folder, output_file))
-        return phys_width
 
     def find_paper_size(self):
         pcb = PCB.load(GS.pcb_file)
@@ -781,23 +772,28 @@ class PCB_PrintOptions(VariantOptions):
             svg_kicad = fromstring(f.read())
         view_box = svg_kicad.root.get('viewBox')
         view_box_elements = view_box.split(' ')
-        paper_size_iu_x = int(view_box_elements[2])
-        paper_size_iu_y = int(view_box_elements[3])
+        # This is the paper size using the SVG precision
+        paper_size_x = int(view_box_elements[2])
+        paper_size_y = int(view_box_elements[3])
         # Compute the coordinates translation for mirror
         transform = ''
         if scale != 1.0 and scale:
             # This the autocenter computation used by KiCad
             scale_x = scale_y = scale
             board_center = GS.board.GetBoundingBox().GetCenter()
-            offset_x = round((board_center.x*scale-(paper_size_iu_x/2.0))/scale)
-            offset_y = round((board_center.y*scale-(paper_size_iu_y/2.0))/scale)
+            if GS.ki5():
+                # KiCad 5 uses a different precision, we must adjust
+                board_center.x = round(board_center.x*116930/297002200)
+                board_center.y = round(board_center.y*116930/297002200)
+            offset_x = round((board_center.x*scale-(paper_size_x/2.0))/scale)
+            offset_y = round((board_center.y*scale-(paper_size_y/2.0))/scale)
             if mirror:
                 scale_x = -scale_x
-                offset_x += round(paper_size_iu_x/scale)
+                offset_x += round(paper_size_x/scale)
             transform = 'scale({},{}) translate({},{})'.format(scale_x, scale_y, -offset_x, -offset_y)
         else:
             if mirror:
-                transform = 'scale(-1,1) translate({},0)'.format(-paper_size_iu_x)
+                transform = 'scale(-1,1) translate({},0)'.format(-paper_size_x)
         # Filter the PcbDraw SVG to get what we want
         defs = None
         g = None
