@@ -248,7 +248,6 @@ class PagesOptions(Optionable):
         if self.holes_color:
             self.validate_color('holes_color')
         if self.scaling is None:
-            logger.error('Scale from parent')
             self.scaling = parent.scaling
 
 
