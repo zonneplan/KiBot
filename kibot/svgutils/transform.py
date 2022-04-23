@@ -293,6 +293,13 @@ class SVGFigure(object):
         except AttributeError:
             self.root.append(GroupElement(element).root)
 
+    def insert(self, element, pos=0):
+        """Insert new element to the SVG figure, default is at the beginning"""
+        try:
+            self.root.insert(pos, element.root)
+        except AttributeError:
+            self.root.insert(pos, GroupElement(element).root)
+
     def getroot(self):
         """Return the root element of the figure.
 

@@ -11,7 +11,7 @@ import subprocess
 from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask
 from shutil import rmtree, which
 from tempfile import NamedTemporaryFile, mkdtemp
-from .svgutils.transform import fromstring, RectElement
+from .svgutils.transform import fromstring, RectElement, fromfile
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
@@ -314,6 +314,8 @@ class PCB_PrintOptions(VariantOptions):
             """ Add a background to the pages, see `background_color` """
             self.background_color = '#FFFFFF'
             """ Color for the background when `add_background` is enabled """
+            self.background_image = ''
+            """ Background image, must be an SVG, only when `add_background` is enabled """
         super().__init__()
         self._expand_id = 'assembly'
 
@@ -359,6 +361,13 @@ class PCB_PrintOptions(VariantOptions):
                 raise KiPlotConfigurationError("Missing page layout file: "+self.sheet_reference_layout)
         if self.add_background:
             self.validate_color('background_color')
+            if self.background_image:
+                if not os.path.isfile(self.background_image):
+                    raise KiPlotConfigurationError("Missing background image file: "+self.background_image)
+                with open(self.background_image, 'rt') as f:
+                    ln = f.readline()
+                    if not ln.startswith('<?xml') and not ln.startswith('<!DOCTYPE svg'):
+                        raise KiPlotConfigurationError("Background image must be an SVG ({})".format(self.background_image))
 
     def filter_components(self):
         if not self._comps:
@@ -706,6 +715,19 @@ class PCB_PrintOptions(VariantOptions):
                             cnt = cnt+1
         logger.debug('- Filled {} polygons'.format(cnt))
 
+    def process_background(self, svg_out, width, height):
+        """ Applies the background options """
+        if not self.add_background:
+            return
+        if self.background_image:
+            img = fromfile(self.background_image)
+            w, h = get_size(img)
+            root = img.getroot()
+            root.moveto(0, 0)
+            root.scale(width/w, height/h)
+            svg_out.insert([root])
+        svg_out.insert(RectElement(0, 0, width, height, color=self.background_color))
+
     def merge_svg(self, input_folder, input_files, output_folder, output_file, p):
         """ Merge all pages into one """
         first = True
@@ -714,8 +736,8 @@ class PCB_PrintOptions(VariantOptions):
             file = os.path.join(input_folder, file)
             new_layer = fromstring(load_svg(file, color, p.colored_holes, p.holes_color, p.monochrome))
             width, height = get_size(new_layer)
+            # Workaround for polygon fill on KiCad 5
             if GS.ki5() and file.endswith('frame.svg'):
-                # Workaround for polygon fill on KiCad 5
                 if p.monochrome:
                     color = to_gray_hex(color)
                 self.fill_polygons(new_layer, color)
@@ -724,8 +746,7 @@ class PCB_PrintOptions(VariantOptions):
                 # This is the width declared at the beginning of the file
                 base_width = width
                 first = False
-                if self.add_background:
-                    svg_out.append(RectElement(0, 0, width, height, color=self.background_color))
+                self.process_background(svg_out, width, height)
                 self.add_frame_images(svg_out, p.monochrome)
             else:
                 root = new_layer.getroot()

@@ -18,6 +18,9 @@ outputs:
       keep_temporal_files: true
       add_background: true
       background_color: "#C5C4BF"
+      # background_color: "#FFFFFF"
+      background_image: "tests/data/confidential_optimized.svg"
+      sheet_reference_layout: "${KIPRJMOD}/../../data/test_img.kicad_wks"
       pages:
         - # monochrome: true
           scaling: 2.0
