@@ -16,6 +16,8 @@ outputs:
       format: 'PDF'
       # enable_ki6_frame_fix: true
       keep_temporal_files: true
+      add_background: true
+      background_color: "#C5C4BF"
       pages:
         - # monochrome: true
           scaling: 2.0

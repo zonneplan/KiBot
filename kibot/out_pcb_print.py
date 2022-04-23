@@ -11,7 +11,7 @@ import subprocess
 from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask
 from shutil import rmtree, which
 from tempfile import NamedTemporaryFile, mkdtemp
-from .svgutils.transform import fromstring
+from .svgutils.transform import fromstring, RectElement
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
@@ -93,9 +93,10 @@ def load_svg(file, color, colored_holes, holes_color, monochrome):
     return content
 
 
-def get_width(svg):
-    """ Finds the width in viewBox units """
-    return float(svg.root.get('viewBox').split(' ')[2])
+def get_size(svg):
+    """ Finds the width and height in viewBox units """
+    view_box = svg.root.get('viewBox').split(' ')
+    return float(view_box[2]), float(view_box[3])
 
 
 def create_pdf_from_pages(input_files, output_fn):
@@ -309,7 +310,9 @@ class PCB_PrintOptions(VariantOptions):
                 In order to get a good looking select a color with transparency, i.e. '#14332440'.
                 PcbDraw must be installed in order to use this option """
             self.add_background = False
-            """ Add a background to the SVG/PNG """
+            """ Add a background to the pages, see `background_color` """
+            self.background_color = '#FFFFFF'
+            """ Color for the background when `add_background` is enabled """
         super().__init__()
         self._expand_id = 'assembly'
 
@@ -353,6 +356,8 @@ class PCB_PrintOptions(VariantOptions):
             self.sheet_reference_layout = KiConf.expand_env(self.sheet_reference_layout)
             if not os.path.isfile(self.sheet_reference_layout):
                 raise KiPlotConfigurationError("Missing page layout file: "+self.sheet_reference_layout)
+        if self.add_background:
+            self.validate_color('background_color')
 
     def filter_components(self):
         if not self._comps:
@@ -707,7 +712,7 @@ class PCB_PrintOptions(VariantOptions):
             logger.debug(' - Loading layer file '+file)
             file = os.path.join(input_folder, file)
             new_layer = fromstring(load_svg(file, color, p.colored_holes, p.holes_color, p.monochrome))
-            width = get_width(new_layer)
+            width, height = get_size(new_layer)
             if GS.ki5() and file.endswith('frame.svg'):
                 # Workaround for polygon fill on KiCad 5
                 if p.monochrome:
@@ -718,6 +723,8 @@ class PCB_PrintOptions(VariantOptions):
                 # This is the width declared at the beginning of the file
                 base_width = width
                 first = False
+                if self.add_background:
+                    svg_out.append(RectElement(0, 0, width, height, color=self.background_color))
                 self.add_frame_images(svg_out, p.monochrome)
             else:
                 root = new_layer.getroot()

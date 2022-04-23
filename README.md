@@ -1703,6 +1703,8 @@ Next time you need this list just use an alias, like this:
     - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `pcb_print` output.
       * Valid keys:
+        - `add_background`: [boolean=false] Add a background to the pages, see `background_color`.
+        - `background_color`: [string='#FFFFFF'] Color for the background when `add_background` is enabled.
         - `blind_via_color`: [string=''] Color used for blind/buried `colored_vias`.
         - `color_theme`: [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
                          To use the KiCad 6 default colors select `_builtin_default`.

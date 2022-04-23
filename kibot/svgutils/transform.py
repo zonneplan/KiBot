@@ -209,6 +209,19 @@ class LineElement(FigureElement):
         FigureElement.__init__(self, line)
 
 
+class RectElement(FigureElement):
+    """Rectangle element.
+
+    Corresponds to SVG ``<rect>`` tag.
+    """
+
+    def __init__(self, x, y, w, h, color="black"):
+        line = etree.Element(
+            SVG + "rect", {"x": str(x), "y": str(y), "width": str(w), "height": str(h), "fill": color}
+        )
+        FigureElement.__init__(self, line)
+
+
 class GroupElement(FigureElement):
     """Group element.
 

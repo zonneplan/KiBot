@@ -966,6 +966,10 @@ outputs:
     type: 'pcb_print'
     dir: 'Example/pcb_print_dir'
     options:
+      # [boolean=false] Add a background to the pages, see `background_color`
+      add_background: false
+      # [string='#FFFFFF'] Color for the background when `add_background` is enabled
+      background_color: '#FFFFFF'
       # [string=''] Color used for blind/buried `colored_vias`
       blind_via_color: ''
       # [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
