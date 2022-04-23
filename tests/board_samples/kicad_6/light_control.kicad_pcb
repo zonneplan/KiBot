@@ -6,7 +6,8 @@
 
   (paper "A4")
   (title_block
-    (date "2021-12-03")
+    (date "${date}")
+    (rev "${gh}")
     (comment 4 "@Comment4@")
   )
 
