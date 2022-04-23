@@ -22,7 +22,8 @@ from .kicad.worksheet import Worksheet, WksError
 from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
-from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL, W_PDMASKFAIL
+from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL, W_PDMASKFAIL,
+                   KICAD5_SVG_SCALE)
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer, get_priority
@@ -790,8 +791,8 @@ class PCB_PrintOptions(VariantOptions):
             board_center = GS.board.GetBoundingBox().GetCenter()
             if GS.ki5():
                 # KiCad 5 uses a different precision, we must adjust
-                board_center.x = round(board_center.x*116930/297002200)
-                board_center.y = round(board_center.y*116930/297002200)
+                board_center.x = round(board_center.x*KICAD5_SVG_SCALE)
+                board_center.y = round(board_center.y*KICAD5_SVG_SCALE)
             offset_x = round((board_center.x*scale-(paper_size_x/2.0))/scale)
             offset_y = round((board_center.y*scale-(paper_size_y/2.0))/scale)
             if mirror:

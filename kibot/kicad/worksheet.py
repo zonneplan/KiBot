@@ -32,7 +32,7 @@ from .sexpdata import load, SExpData
 from .v6_sch import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
                      _check_relaxed, _get_points, _check_symbol_str)
 from ..svgutils.transform import ImageElement, GroupElement
-from ..misc import W_WKSVERSION
+from ..misc import W_WKSVERSION, KICAD5_SVG_SCALE
 from .. import log
 
 logger = log.get_logger()
@@ -420,7 +420,7 @@ class WksBitmap(WksDrawing):
             img.moveto(x, y)
             if GS.ki5():
                 # KiCad 5 uses Inches and with less resolution
-                img.scale(0.0003937007874)
+                img.scale(KICAD5_SVG_SCALE)
             # Put the image in a group
             g = GroupElement([img])
             # Add the group to the SVG
