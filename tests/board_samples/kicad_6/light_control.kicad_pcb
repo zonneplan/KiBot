@@ -3748,7 +3748,7 @@
   (gr_text "Rev 2" (at 134.62 76.2) (layer "B.SilkS") (tstamp 0ab1512b-eb91-4574-b11f-326e0ff10082)
     (effects (font (size 1 1) (thickness 0.15) italic) (justify mirror))
   )
-  (gr_text "WiredHut ${gh}\nLight Control / Temperature Humidity Sensor" (at 134.62 73.66) (layer "B.SilkS") (tstamp 9a458d6a-a84c-4faf-913e-90bab231d3f8)
+  (gr_text "WiredHut ${gh} ${date}\nLight Control / Temperature Humidity Sensor" (at 134.62 73.66) (layer "B.SilkS") (tstamp 9a458d6a-a84c-4faf-913e-90bab231d3f8)
     (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
   )
   (gr_text "12V  Gnd" (at 103.5 83.2 270) (layer "F.SilkS") (tstamp 00000000-0000-0000-0000-00005da425a7)
