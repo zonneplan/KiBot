@@ -1,0 +1,17 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  set_text_variables:
+    - name: 'gh'
+      command: 'git log -1 --format="%h" $KIBOT_PCB_NAME'
+      before: 'Git:'
+    - name: 'date'
+      command: 'date +%d/%m/%Y'
+
+outputs:
+  - name: 'interactive_bom'
+    comment: "Interactive Bill of Materials (HTML)"
+    type: ibom
+    dir: BoM
