@@ -253,5 +253,21 @@ class AnyLayer(BaseOutput):
     def get_targets(self, out_dir):
         return self.options.get_targets(out_dir, self.layers)
 
+    @staticmethod
+    def layer2dict(la):
+        return {'layer': la.layer, 'suffix': la.suffix, 'description': la.description}
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        gb = {}
+        outs = [gb]
+        name_u = name.upper()
+        gb['name'] = 'basic_'+name
+        gb['comment'] = 'Individual layers in '+name_u+' format'
+        gb['type'] = name
+        gb['dir'] = os.path.join('Individual_Layers', name_u)
+        gb['layers'] = [AnyLayer.layer2dict(la) for la in layers]
+        return outs
+
     def run(self, output_dir):
         self.options.run(output_dir, self.layers)

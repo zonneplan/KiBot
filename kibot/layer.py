@@ -219,6 +219,8 @@ class Layer(Optionable):
                         raise PlotError("Inner layer `{}` is not valid for this board".format(layer))
                     layer.fix_protel_ext()
                     new_vals.append(layer)
+                elif isinstance(layer, int):
+                    new_vals.append(cls.create_layer(layer))
                 else:  # A string
                     ext = None
                     if layer == 'all':
@@ -263,10 +265,16 @@ class Layer(Optionable):
     @classmethod
     def create_layer(cls, name):
         layer = cls()
-        layer.layer = name
+        if isinstance(name, str):
+            layer.layer = name
+            layer._get_layer_id_from_name()
+        else:
+            layer._id = name
+            layer._is_inner = name > pcbnew.F_Cu and name < pcbnew.B_Cu
+            name = GS.board.GetLayerName(name)
+            layer.layer = name
         layer.suffix = name.replace('.', '_')
-        layer.description = Layer.DEFAULT_LAYER_DESC.get(name)
-        layer._get_layer_id_from_name()
+        layer.description = Layer.DEFAULT_LAYER_DESC.get(name, '')
         layer.fix_protel_ext()
         layer.clean_suffix()
         return layer
@@ -309,6 +317,15 @@ class Layer(Optionable):
             else:
                 raise KiPlotConfigurationError("Unknown layer name: `{}`".format(self.layer))
         return self._id
+
+    def is_copper(self):
+        return self._id >= pcbnew.F_Cu and self._id <= pcbnew.B_Cu
+
+    def is_top(self):
+        return self._id == pcbnew.F_Cu
+
+    def is_bottom(self):
+        return self._id == pcbnew.B_Cu
 
     def __str__(self):
         if hasattr(self, '_id'):

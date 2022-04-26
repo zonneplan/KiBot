@@ -147,6 +147,7 @@ class PDFUnite(BaseOutput):  # noqa: F821
         with document:
             self.options = PDFUniteOptions
             """ [dict] Options for the `pdfunite` output """
+        self._none_related = True
 
     def get_dependencies(self):
         return self.options.get_dependencies()

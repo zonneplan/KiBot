@@ -8,7 +8,8 @@
 import re
 import os
 import subprocess
-from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask
+from pcbnew import (B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask, ZONE_FILLER,
+                    ZONES)
 from shutil import rmtree, which
 from tempfile import NamedTemporaryFile, mkdtemp
 from .svgutils.transform import fromstring, RectElement, fromfile
@@ -23,7 +24,7 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL, W_PDMASKFAIL,
-                   KICAD5_SVG_SCALE)
+                   KICAD5_SVG_SCALE, W_MISSTOOL)
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer, get_priority
@@ -39,6 +40,8 @@ VIATYPE_BLIND_BURIED = 2
 VIATYPE_MICROVIA = 1
 POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stroke-opacity:1; stroke-linecap:round; "
                    "stroke-linejoin:round;fill-rule:evenodd;")
+DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
+EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
 
 
 def _run_command(cmd):
@@ -518,6 +521,7 @@ class PCB_PrintOptions(VariantOptions):
         moved = []
         removed = []
         vias = []
+        zones = ZONES()
         wxSize(0, 0)
         for m in GS.get_modules():
             for gi in m.GraphicalItems():
@@ -529,9 +533,10 @@ class PCB_PrintOptions(VariantOptions):
                 if dr.x:
                     continue
                 layers = pad.GetLayerSet()
-                layers.removeLayer(id)
-                pad.SetLayerSet(layers)
-                removed.append(pad)
+                if layers.Contains(id):
+                    layers.removeLayer(id)
+                    pad.SetLayerSet(layers)
+                    removed.append(pad)
         for e in GS.board.GetDrawings():
             if e.GetLayer() == id:
                 e.SetLayer(tmp_layer)
@@ -540,6 +545,7 @@ class PCB_PrintOptions(VariantOptions):
             if e.GetLayer() == id:
                 e.SetLayer(tmp_layer)
                 moved.append(e)
+                zones.append(e)
         via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
         for e in GS.board.GetTracks():
             if e.GetClass() == via_type:
@@ -565,6 +571,8 @@ class PCB_PrintOptions(VariantOptions):
         for (via, drill, width) in vias:
             via.SetDrill(drill)
             via.SetWidth(width)
+        if len(zones):
+            ZONE_FILLER(GS.board).Fill(zones)
         # Add it to the list
         filelist.append((GS.pcb_basename+"-"+suffix+".svg", self.pad_color))
 
@@ -576,6 +584,7 @@ class PCB_PrintOptions(VariantOptions):
         moved = []
         removed = []
         vias = []
+        zones = ZONES()
         wxSize(0, 0)
         for m in GS.get_modules():
             for gi in m.GraphicalItems():
@@ -584,9 +593,10 @@ class PCB_PrintOptions(VariantOptions):
                     moved.append(gi)
             for pad in m.Pads():
                 layers = pad.GetLayerSet()
-                layers.removeLayer(id)
-                pad.SetLayerSet(layers)
-                removed.append(pad)
+                if layers.Contains(id):
+                    layers.removeLayer(id)
+                    pad.SetLayerSet(layers)
+                    removed.append(pad)
         for e in GS.board.GetDrawings():
             if e.GetLayer() == id:
                 e.SetLayer(tmp_layer)
@@ -595,6 +605,7 @@ class PCB_PrintOptions(VariantOptions):
             if e.GetLayer() == id:
                 e.SetLayer(tmp_layer)
                 moved.append(e)
+                zones.append(e)
         via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
         for e in GS.board.GetTracks():
             if e.GetClass() == via_type:
@@ -640,6 +651,8 @@ class PCB_PrintOptions(VariantOptions):
             via.SetWidth(width)
             via.SetTopLayer(top)
             via.SetBottomLayer(bottom)
+        if len(zones):
+            ZONE_FILLER(GS.board).Fill(zones)
         # Add it to the list
         filelist.append((GS.pcb_basename+"-"+suffix+".svg", via_c))
 
@@ -771,6 +784,7 @@ class PCB_PrintOptions(VariantOptions):
         if id >= F_Cu and id <= B_Cu:
             if self.colored_pads:
                 self.plot_pads(la, pc, p, filelist)
+            return
             if self.colored_vias:
                 self.plot_vias(la, pc, p, filelist, VIATYPE_THROUGH, self.via_color)
                 self.plot_vias(la, pc, p, filelist, VIATYPE_BLIND_BURIED, self.blind_via_color)
@@ -1014,3 +1028,72 @@ class PCB_Print(BaseOutput):  # noqa: F821
         with document:
             self.options = PCB_PrintOptions
             """ [dict] Options for the `pcb_print` output """
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        outs = []
+        if len(DRAWING_LAYERS) < 10 and GS.ki6():
+            DRAWING_LAYERS.extend(['User.'+str(c+1) for c in range(9)])
+        extra = {la._id for la in Layer.solve(EXTRA_LAYERS)}
+        disabled = set()
+        # Check we can use PcbDraw
+        realistic_solder_mask = which('pcbdraw') is not None
+        if not realistic_solder_mask:
+            logger.warning(W_MISSTOOL+'Missing PcbDraw tool, disabling `realistic_solder_mask`')
+        # Check we can convert SVGs
+        if which(SVG2PDF) is None:
+            logger.warning(W_MISSTOOL+'Missing {} tool, disabling most printed formats'.format(SVG2PDF))
+            disabled |= {'PDF', 'PNG', 'EPS', 'PS'}
+        # Check we can convert to PS
+        if which(PDF2PS) is None:
+            logger.warning(W_MISSTOOL+'Missing {} tool, disabling postscript printed format'.format(PDF2PS))
+            disabled.add('PS')
+        # Generate one output for each format
+        for fmt in ['PDF', 'SVG', 'PNG', 'EPS', 'PS']:
+            if fmt in disabled:
+                continue
+            gb = {}
+            gb['name'] = 'basic_{}_{}'.format(name, fmt.lower())
+            gb['comment'] = 'PCB'
+            gb['type'] = name
+            gb['dir'] = os.path.join('PCB', fmt)
+            pages = []
+            # One page for each Cu layer
+            for la in layers:
+                page = None
+                mirror = False
+                if la.is_copper():
+                    if la.is_top():
+                        use_layers = ['F.Cu', 'F.Mask', 'F.Paste', 'F.SilkS', 'Edge.Cuts']
+                    elif la.is_bottom():
+                        use_layers = ['B.Cu', 'B.Mask', 'B.Paste', 'B.SilkS', 'Edge.Cuts']
+                        mirror = True
+                    else:
+                        use_layers = [la.layer, 'Edge.Cuts']
+                    useful = GS.get_useful_layers(use_layers+DRAWING_LAYERS, layers)
+                    page = {}
+                    page['layers'] = [{'layer': la.layer} for la in useful]
+                elif la._id in extra:
+                    useful = GS.get_useful_layers([la, 'Edge.Cuts']+DRAWING_LAYERS, layers)
+                    page = {}
+                    page['layers'] = [{'layer': la.layer} for la in useful]
+                    mirror = la.layer.startswith('B.')
+                if page:
+                    if mirror:
+                        page['mirror'] = True
+                    if la.description:
+                        page['sheet'] = la.description
+                    if realistic_solder_mask:
+                        # Change the color of the masks
+                        for ly in page['layers']:
+                            if ly['layer'].endswith('.Mask'):
+                                ly['color'] = '#14332440'
+                    pages.append(page)
+            ops = {'format': fmt, 'pages': pages, 'keep_temporal_files': True}
+            if fmt in ['PNG', 'SVG']:
+                ops['add_background'] = True
+            if not realistic_solder_mask:
+                ops['realistic_solder_mask'] = False
+            gb['options'] = ops
+            outs.append(gb)
+        return outs

@@ -11,6 +11,7 @@ Main KiBot code
 
 import os
 import re
+import yaml
 from sys import exit
 from sys import path as sys_path
 from shutil import which
@@ -25,7 +26,7 @@ from .registrable import RegOutput
 from .misc import (PLOT_ERROR, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
                    EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL,
                    MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT,
-                   W_KIAUTO)
+                   W_KIAUTO, W_VARSCH, NO_SCH_FILE, NO_PCB_FILE, W_VARPCB)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .pre_base import BasePreFlight
 from .kicad.v5_sch import Schematic, SchFileError, SchError
@@ -562,6 +563,211 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
                 f.write('{} -s all "{}"{}\n\n'.format(kibot_cmd, ori_names[name], log_action))
         # Mark all outputs as PHONY
         f.write('.PHONY: '+' '.join(extra_targets+list(targets.keys()))+'\n')
+
+
+def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None):
+    schematic = a_schematic
+    if not schematic and a_board_file:
+        base = os.path.splitext(a_board_file)[0]
+        sch = os.path.join(base_dir, base+'.sch')
+        if os.path.isfile(sch):
+            schematic = sch
+        else:
+            sch = os.path.join(base_dir, base+'.kicad_sch')
+            if os.path.isfile(sch):
+                schematic = sch
+    if not schematic:
+        schematics = glob(os.path.join(base_dir, '*.sch'))+glob(os.path.join(base_dir, '*.kicad_sch'))
+        if len(schematics) == 1:
+            schematic = schematics[0]
+            logger.info('Using SCH file: '+schematic)
+        elif len(schematics) > 1:
+            # Look for a schematic with the same name as the config
+            if config:
+                if config[0] == '.':
+                    # Unhide hidden config
+                    config = config[1:]
+                # Remove any extension
+                while '.' in config:
+                    config = os.path.splitext(config)[0]
+                # Try KiCad 5
+                sch = os.path.join(base_dir, config+'.sch')
+                if os.path.isfile(sch):
+                    schematic = sch
+                else:
+                    # Try KiCad 6
+                    sch = os.path.join(base_dir, config+'.kicad_sch')
+                    if os.path.isfile(sch):
+                        schematic = sch
+            if not schematic:
+                # Look for a schematic with a PCB and/or project
+                for sch in schematics:
+                    base = os.path.splitext(sch)[0]
+                    if (os.path.isfile(os.path.join(base_dir, base+'.pro')) or
+                       os.path.isfile(os.path.join(base_dir, base+'.kicad_pro')) or
+                       os.path.isfile(os.path.join(base_dir, base+'.kicad_pcb'))):
+                        schematic = sch
+                        break
+                else:
+                    # No way to select one, just take the first
+                    schematic = schematics[0]
+            logger.warning(W_VARSCH + 'More than one SCH file found in current directory.\n'
+                           '  Using '+schematic+' if you want to use another use -e option.')
+    if schematic and not os.path.isfile(schematic):
+        logger.error("Schematic file not found: "+schematic)
+        exit(NO_SCH_FILE)
+    if schematic:
+        schematic = os.path.abspath(schematic)
+        logger.debug('Using schematic: `{}`'.format(schematic))
+    else:
+        logger.debug('No schematic file found')
+    return schematic
+
+
+def check_board_file(board_file):
+    if board_file and not os.path.isfile(board_file):
+        logger.error("Board file not found: "+board_file)
+        exit(NO_PCB_FILE)
+
+
+def solve_board_file(base_dir, a_board_file=None):
+    schematic = GS.sch_file
+    board_file = a_board_file
+    if not board_file and schematic:
+        pcb = os.path.join(base_dir, os.path.splitext(schematic)[0]+'.kicad_pcb')
+        if os.path.isfile(pcb):
+            board_file = pcb
+    if not board_file:
+        board_files = glob(os.path.join(base_dir, '*.kicad_pcb'))
+        if len(board_files) == 1:
+            board_file = board_files[0]
+            logger.info('Using PCB file: '+board_file)
+        elif len(board_files) > 1:
+            board_file = board_files[0]
+            logger.warning(W_VARPCB + 'More than one PCB file found in current directory.\n'
+                           '  Using '+board_file+' if you want to use another use -b option.')
+    check_board_file(board_file)
+    if board_file:
+        logger.debug('Using PCB: `{}`'.format(board_file))
+    else:
+        logger.debug('No PCB file found')
+    return board_file
+
+
+def solve_project_file():
+    if GS.pcb_file:
+        pro_name = GS.pcb_no_ext+GS.pro_ext
+        if os.path.isfile(pro_name):
+            return pro_name
+    if GS.sch_file:
+        pro_name = GS.sch_no_ext+GS.pro_ext
+        if os.path.isfile(pro_name):
+            return pro_name
+    return None
+
+
+def look_for_used_layers():
+    layers = set()
+    components = {}
+    # Look inside the modules
+    for m in GS.get_modules():
+        layer = m.GetLayer()
+        components[layer] = components.get(layer, 0)+1
+        for gi in m.GraphicalItems():
+            layers.add(gi.GetLayer())
+        for pad in m.Pads():
+            for id in pad.GetLayerSet().Seq():
+                layers.add(id)
+    # All drawings in the PCB
+    for e in GS.board.GetDrawings():
+        layers.add(e.GetLayer())
+    # Zones
+    for e in list(GS.board.Zones()):
+        layers.add(e.GetLayer())
+    # Tracks and vias
+    via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
+    for e in GS.board.GetTracks():
+        if e.GetClass() == via_type:
+            for id in e.GetLayerSet().Seq():
+                layers.add(id)
+        else:
+            layers.add(e.GetLayer())
+    # Now filter the pads and vias potential layers
+    from .layer import Layer
+    declared_layers = {la._id for la in Layer.solve('all')}
+    layers = sorted(declared_layers.intersection(layers))
+    logger.debug('- Detected layers: {}'.format(layers))
+    layers = Layer.solve(layers)
+    for la in layers:
+        la.components = components.get(la._id, 0)
+    return layers
+
+
+def generate_examples():
+    # Set default global options
+    glb = GS.global_opts_class()
+    glb.set_tree({})
+    glb.config(None)
+
+    outs = RegOutput.get_registered()
+    fname = 'kibot_generated.kibot.yaml'
+    GS.set_sch(solve_schematic('.'))
+    GS.set_pcb(solve_board_file('.'))
+    GS.set_pro(solve_project_file())
+    if not GS.pcb_file and not GS.sch_file:
+        return
+    GS.board = None
+    GS.sch = None
+    with open(fname, 'wt') as f:
+        logger.info('Creating {} example configuration'.format(fname))
+        f.write("# This is a working example.\n")
+        f.write("# For a more complete reference use `--example`\n")
+        f.write('kibot:\n  version: 1\n\n')
+        # Outputs
+        outs = RegOutput.get_registered()
+        # List of layers
+        layers = []
+        if GS.pcb_file:
+            load_board(GS.pcb_file)
+            layers = look_for_used_layers()
+        if GS.sch_file:
+            load_sch()
+        # A helper for the JLCPCB stuff
+        fil = {'name': 'only_jlc_parts'}
+        fil['comment'] = 'Only parts with JLC (LCSC) code'
+        fil['type'] = 'generic'
+        fil['include_only'] = [{'column': 'LCSC#', 'regex': r'^C\d+'}]
+        f.write(yaml.dump({'filters': [fil]}, sort_keys=False))
+        f.write('\n')
+        # A helper for KiCost demo
+        var = {'name': 'place_holder'}
+        var['comment'] = 'Just a place holder for pre_transform filters'
+        var['type'] = 'kicost'
+        var['pre_transform'] = ['_kicost_rename', '_rot_footprint']
+        f.write(yaml.dump({'variants': [var]}, sort_keys=False))
+        f.write('\n')
+        # All the outputs
+        outputs = []
+        for n, cls in OrderedDict(sorted(outs.items())).items():
+            o = cls()
+            if not(o.is_pcb() and GS.pcb_file) and not(o.is_sch() and GS.sch_file):
+                logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
+                continue
+            # Look for templates
+            tpls = glob(os.path.join(os.path.dirname(__file__), 'config_templates', n, '*.kibot.yaml'))
+            if tpls:
+                # Load the templates
+                tpl_names = tpls
+                tpls = [yaml.safe_load(open(t))['outputs'] for t in tpls]
+            tree = cls.get_conf_examples(n, layers, tpls)
+            if tree:
+                logger.debug('- {}, generated'.format(n))
+                if tpls:
+                    logger.debug(' - Templates: {}'.format(tpl_names))
+                outputs.extend(tree)
+            else:
+                logger.debug('- {}, nothing to do'.format(n))
+        f.write(yaml.dump({'outputs': outputs}, sort_keys=False))
 
 
 # To avoid circular dependencies: Optionable needs it, but almost everything needs Optionable

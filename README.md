@@ -1705,6 +1705,7 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `add_background`: [boolean=false] Add a background to the pages, see `background_color`.
         - `background_color`: [string='#FFFFFF'] Color for the background when `add_background` is enabled.
+        - `background_image`: [string=''] Background image, must be an SVG, only when `add_background` is enabled.
         - `blind_via_color`: [string=''] Color used for blind/buried `colored_vias`.
         - `color_theme`: [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
                          To use the KiCad 6 default colors select `_builtin_default`.
@@ -2195,7 +2196,8 @@ Next time you need this list just use an alias, like this:
                         In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`.
         - `eurocircuits_class_target`: [string='10F'] Which Eurocircuits class are we aiming at.
         - `output`: [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options.
-        - `template`: [string='full'] Name for one of the internal templates (full, simple) or a custom template file.
+        - `template`: [string='full'] Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+                      Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
@@ -2812,6 +2814,7 @@ Usage:
          [-q | -v...] [-i] [-C] [-m MKFILE] [-g DEF]... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
+  kibot [-v...] --quick-start
   kibot [-v...] --help-filters
   kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs

@@ -20,6 +20,7 @@ from . import log
 logger = log.get_logger()
 SVG2PNG = 'rsvg-convert'
 CONVERT = 'convert'
+MIN_VERSION = '0.6.0'
 
 
 class PcbDrawStyle(Optionable):
@@ -256,7 +257,7 @@ class PcbDrawOptions(VariantOptions):
 
     def run(self, name):
         super().run(name)
-        check_script(PCBDRAW, URL_PCBDRAW, '0.6.0')
+        check_script(PCBDRAW, URL_PCBDRAW, MIN_VERSION)
         # Base command with overwrite
         cmd = [PCBDRAW]
         # Add user options
@@ -331,3 +332,34 @@ class PcbDraw(BaseOutput):  # noqa: F821
         if isinstance(self.options.style, str) and os.path.isfile(self.options.style):
             files.append(self.options.style)
         return files
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        enabled = True
+        try:
+            check_script(PCBDRAW, URL_PCBDRAW, MIN_VERSION)
+        except SystemExit:
+            enabled = False
+        if not enabled:
+            return None
+        outs = []
+        for la in layers:
+            is_top = la.is_top()
+            is_bottom = la.is_bottom()
+            if not is_top and not is_bottom:
+                continue
+            id = 'top' if is_top else 'bottom'
+            for style in ['jlcpcb-green-enig', 'set-blue-enig', 'set-red-hasl']:
+                style_2 = style.replace('-', '_')
+                for fmt in ['svg', 'png', 'jpg']:
+                    gb = {}
+                    gb['name'] = 'basic_{}_{}_{}_{}'.format(name, fmt, style_2, id)
+                    gb['comment'] = 'PCB 2D render in {} format, using {} style'.format(fmt.upper(), style)
+                    gb['type'] = name
+                    gb['dir'] = os.path.join('PCB', '2D_render', style_2)
+                    ops = {'style': style, 'format': fmt}
+                    if is_bottom:
+                        ops['bottom'] = True
+                    gb['options'] = ops
+                    outs.append(gb)
+        return outs

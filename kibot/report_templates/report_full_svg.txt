@@ -1,0 +1,123 @@
+# PCB
+
+Board size: ${bb_w_mm}x${bb_h_mm} mm (${bb_w_in}x${bb_h_in} inches)
+
+- This is the size of the rectangle that contains the board
+- Thickness: ${thickness_mm} mm (${thickness_mils} mils)
+- Material: ${pcb_material}
+- Finish: ${pcb_finish}
+- Layers: ${layers}
+- Copper thickness: ${copper_thickness} µm
+
+Solder mask: ${solder_mask}
+
+- Color: ${solder_mask_color_text}
+
+Silk screen: ${silk_screen}
+
+- Color: ${silk_screen_color_text}
+
+#?edge_connector or castellated_pads or edge_plating
+Special features:
+#?edge_connector or castellated_pads or edge_plating
+
+#?edge_connector
+- Edge connector: ${edge_connector}
+#?castellated_pads
+- Castellated pads
+#?edge_plating
+- Edge plating
+
+#?stackup
+Stackup:
+#?stackup and impedance_controlled
+
+#?stackup and impedance_controlled
+Impedance controlled: YES
+#?stackup
+
+#?stackup
+| Name                 | Type                 | Color    | Thickness | Material        | Epsilon_r | Loss tangent |
+#?stackup
+|----------------------|----------------------|----------|-----------|-----------------|-----------|--------------|
+#?stackup
+#stackup:| ${%-20s,name} | ${%-20s,type} | ${%-8s,color} | ${%9d,thickness} | ${%-15s,material} | ${%9.1f,epsilon_r} | ${%12.2f,loss_tangent} |
+#?stackup
+
+# Important sizes
+
+Clearance: ${clearance_mm} mm (${clearance_mils} mils)
+
+Track width: ${track_mm} mm (${track_mils} mils)
+
+- By design rules: ${track_d_mm} mm (${track_d_mils} mils)
+
+Drill: ${drill_real_mm} mm (${drill_real_mils} mils)
+
+- Vias: ${via_drill_real_mm} mm (${via_drill_real_mils} mils) [Design: ${via_drill_real_d_mm} mm (${via_drill_real_d_mils} mils)]
+- Pads: ${pad_drill_real_mm} mm (${pad_drill_real_mils} mils)
+- The above values are real drill sizes, they add ${extra_pth_drill_mm} mm (${extra_pth_drill_mils} mils) to plated holes (PTH)
+
+Via: ${via_pad_mm}/${via_drill_mm} mm (${via_pad_mils}/${via_drill_mils} mils)
+
+- By design rules: ${via_pad_d_mm}/${via_drill_d_mm} mm (${via_pad_d_mils}/${via_drill_d_mils} mils)
+- Micro via: ${micro_vias} [${uvia_pad_mm}/${uvia_drill_mm} mm (${uvia_pad_mils}/${uvia_drill_mils} mils)]
+- Burried/blind via: ${blind_vias}
+
+Outer Annular Ring: ${oar_mm} mm (${oar_mils} mils)
+
+- By design rules: ${oar_d_mm} mm (${oar_d_mils} mils)
+
+Eurocircuits class: ${pattern_class}${drill_class}
+
+
+# General stats
+
+Components count: (SMD/THT)
+
+- Top: ${top_smd}/${top_tht} (${top_comp_type})
+- Bottom: ${bot_smd}/${bot_tht} (${bot_comp_type})
+
+Defined tracks:
+
+#defined_tracks:- ${track_mm} mm (${track_mils} mils)
+
+Used tracks:
+
+#used_tracks:- ${track_mm} mm (${track_mils} mils) (${count}) defined: ${defined}
+
+Defined vias:
+
+#defined_vias:- ${pad_mm}/${drill_mm} mm (${pad_mils}/${drill_mils} mils)
+
+Used vias:
+
+#used_vias:- ${pad_mm}/${drill_mm} mm (${pad_mils}/${drill_mils} mils) (Count: ${count}, Aspect: ${aspect} ${producibility_level}) defined: ${defined}
+
+Holes (excluding vias):
+
+#hole_sizes_no_vias:- ${drill_mm} mm (${drill_mils} mils) (${count})
+
+Oval holes:
+
+#oval_hole_sizes:- ${drill_1_mm}x${drill_2_mm} mm (${drill_1_mils}x${drill_2_mils} mils) (${count})
+
+Drill tools (including vias and computing adjusts and rounding):
+
+#drill_tools:- ${drill_mm} mm (${drill_mils} mils) (${count})
+
+
+#?schematic_svgs
+# Schematic
+#?schematic_svgs
+
+#?schematic_svgs
+#schematic_svgs:![${comment}](${path}){ width=16.5cm height=11.7cm }${new_line}
+
+
+#?layer_svgs
+# PCB Layers
+#?layer_svgs
+
+#?layer_svgs
+#layer_svgs:![${comment}](${path}){ width=16.5cm height=11.7cm }${new_line}

@@ -300,3 +300,26 @@ class Position(BaseOutput):  # noqa: F821
         with document:
             self.options = PositionOptions
             """ [dict] Options for the `position` output """
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        outs = []
+        has_top = False
+        has_bottom = False
+        for la in layers:
+            if la.is_top():
+                has_top = la.components
+            elif la.is_bottom():
+                has_bottom = la.components
+        for fmt in ['ASCII', 'CSV']:
+            gb = {}
+            gb['name'] = 'basic_position_{}'.format(fmt)
+            gb['comment'] = 'Components position for Pick & Place'
+            gb['type'] = name
+            gb['dir'] = 'Position'
+            ops = {'format': fmt, 'only_smd': False}
+            if not has_top or not has_bottom:
+                ops['separate_files_for_front_and_back'] = False
+            gb['options'] = ops
+            outs.append(gb)
+        return outs

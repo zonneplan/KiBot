@@ -12,6 +12,7 @@ Usage:
          [-q | -v...] [-i] [-C] [-m MKFILE] [-g DEF]... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
+  kibot [-v...] --quick-start
   kibot [-v...] --help-filters
   kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs
@@ -87,12 +88,12 @@ if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
         os.environ['PYTHONPATH'] = pcbnew_path
     nightly = True
 from .gs import (GS)
-from .misc import (NO_PCB_FILE, NO_SCH_FILE, EXIT_BAD_ARGS, W_VARSCH, W_VARCFG, W_VARPCB, NO_PCBNEW_MODULE,
-                   W_NOKIVER, hide_stderr)
+from .misc import (EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr)
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help, print_global_options_help)
-from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile)
+from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
+                     solve_board_file, solve_project_file, check_board_file)
 GS.kibot_version = __version__
 
 
@@ -110,59 +111,6 @@ def list_pre_and_outs(logger, outputs):
             # load the schematic and the PCB.
             config_output(o, dry=False)
             logger.info('- '+str(o))
-
-
-def solve_schematic(a_schematic, a_board_file, config):
-    schematic = a_schematic
-    if not schematic and a_board_file:
-        base = os.path.splitext(a_board_file)[0]
-        sch = base+'.sch'
-        if os.path.isfile(sch):
-            schematic = sch
-        else:
-            sch = base+'.kicad_sch'
-            if os.path.isfile(sch):
-                schematic = sch
-    if not schematic:
-        schematics = glob('*.sch')+glob('*.kicad_sch')
-        if len(schematics) == 1:
-            schematic = schematics[0]
-            logger.info('Using SCH file: '+schematic)
-        elif len(schematics) > 1:
-            # Look for a schematic with the same name as the config
-            if config[0] == '.':
-                # Unhide hidden config
-                config = config[1:]
-            while '.' in config:
-                config = os.path.splitext(config)[0]
-            sch = config+'.sch'
-            if os.path.isfile(sch):
-                schematic = sch
-            else:
-                sch = config+'.kicad_sch'
-                if os.path.isfile(sch):
-                    schematic = sch
-                else:
-                    # Look for a schematic with a PCB and/or project
-                    for sch in schematics:
-                        base = os.path.splitext(sch)[0]
-                        if (os.path.isfile(base+'.pro') or os.path.isfile(base+'.kicad_pro') or
-                           os.path.isfile(base+'.kicad_pcb')):
-                            schematic = sch
-                            break
-                    else:
-                        schematic = schematics[0]
-            logger.warning(W_VARSCH + 'More than one SCH file found in current directory.\n'
-                           '  Using '+schematic+' if you want to use another use -e option.')
-    if schematic and not os.path.isfile(schematic):
-        logger.error("Schematic file not found: "+schematic)
-        sys.exit(NO_SCH_FILE)
-    if schematic:
-        schematic = os.path.abspath(schematic)
-        logger.debug('Using schematic: `{}`'.format(schematic))
-    else:
-        logger.debug('No schematic file found')
-    return schematic
 
 
 def solve_config(a_plot_config):
@@ -184,35 +132,6 @@ def solve_config(a_plot_config):
         sys.exit(EXIT_BAD_ARGS)
     logger.debug('Using configuration file: `{}`'.format(plot_config))
     return plot_config
-
-
-def check_board_file(board_file):
-    if board_file and not os.path.isfile(board_file):
-        logger.error("Board file not found: "+board_file)
-        sys.exit(NO_PCB_FILE)
-
-
-def solve_board_file(schematic, a_board_file):
-    board_file = a_board_file
-    if not board_file and schematic:
-        pcb = os.path.splitext(schematic)[0]+'.kicad_pcb'
-        if os.path.isfile(pcb):
-            board_file = pcb
-    if not board_file:
-        board_files = glob('*.kicad_pcb')
-        if len(board_files) == 1:
-            board_file = board_files[0]
-            logger.info('Using PCB file: '+board_file)
-        elif len(board_files) > 1:
-            board_file = board_files[0]
-            logger.warning(W_VARPCB + 'More than one PCB file found in current directory.\n'
-                           '  Using '+board_file+' if you want to use another use -b option.')
-    check_board_file(board_file)
-    if board_file:
-        logger.debug('Using PCB: `{}`'.format(board_file))
-    else:
-        logger.debug('No PCB file found')
-    return board_file
 
 
 def set_locale():
@@ -305,18 +224,6 @@ def detect_kicad():
         logger.debug('KiCad config path {}'.format(GS.kicad_conf_path))
 
 
-def solve_project_file():
-    if GS.pcb_file:
-        pro_name = GS.pcb_no_ext+GS.pro_ext
-        if os.path.isfile(pro_name):
-            return pro_name
-    if GS.sch_file:
-        pro_name = GS.sch_no_ext+GS.pro_ext
-        if os.path.isfile(pro_name):
-            return pro_name
-    return None
-
-
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -366,13 +273,17 @@ def main():
             sys.exit(EXIT_BAD_ARGS)
         create_example(args.board_file, GS.out_dir, args.copy_options, args.copy_and_expand)
         sys.exit(0)
+    if args.quick_start:
+        # Some kind of wizard to get usable examples
+        generate_examples()
+        sys.exit(0)
 
     # Determine the YAML file
     plot_config = solve_config(args.plot_config)
     # Determine the SCH file
-    GS.set_sch(solve_schematic(args.schematic, args.board_file, plot_config))
+    GS.set_sch(solve_schematic('.', args.schematic, args.board_file, plot_config))
     # Determine the PCB file
-    GS.set_pcb(solve_board_file(GS.sch_file, args.board_file))
+    GS.set_pcb(solve_board_file('.', args.board_file))
     # Determine the project file
     GS.set_pro(solve_project_file())
 

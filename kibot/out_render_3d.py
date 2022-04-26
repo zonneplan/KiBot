@@ -199,3 +199,40 @@ class Render_3D(Base3D):  # noqa: F821
         with document:
             self.options = Render3DOptions
             """ [dict] Options for the `render_3d` output """
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        outs = []
+        has_top = False
+        has_bottom = False
+        for la in layers:
+            if la.is_top() or la.layer.startswith('F.'):
+                has_top = True
+            elif la.is_bottom() or la.layer.startswith('B.'):
+                has_bottom = True
+        if has_top:
+            gb = {}
+            gb['name'] = 'basic_{}_top'.format(name)
+            gb['comment'] = '3D view from top'
+            gb['type'] = name
+            gb['dir'] = '3D'
+            gb['options'] = {'ray_tracing': True, 'orthographic': True}
+            outs.append(gb)
+            if GS.ki6():
+                gb = {}
+                gb['name'] = 'basic_{}_30deg'.format(name)
+                gb['comment'] = '3D view from 30 degrees'
+                gb['type'] = name
+                gb['dir'] = '3D'
+                gb['output_id'] = '30deg'
+                gb['options'] = {'ray_tracing': True, 'rotate_x': 3, 'rotate_z': -2}
+                outs.append(gb)
+        if has_bottom:
+            gb = {}
+            gb['name'] = 'basic_{}_bottom'.format(name)
+            gb['comment'] = '3D view from bottom'
+            gb['type'] = name
+            gb['dir'] = '3D'
+            gb['options'] = {'ray_tracing': True, 'orthographic': True, 'view': 'bottom'}
+            outs.append(gb)
+        return outs

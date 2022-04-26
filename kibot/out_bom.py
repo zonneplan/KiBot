@@ -9,16 +9,19 @@ This is somehow compatible with KiBoM.
 """
 import os
 import re
+from copy import deepcopy
 from .gs import GS
-from .misc import W_BADFIELD, W_NEEDSPCB
+from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
 from .kiplot import get_board_comps_data, load_any_sch
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
+from .bom.xlsx_writer import KICOST_SUPPORT
 from .var_kibom import KiBoM
-from .fil_base import BaseFilter, apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, reset_filters
+from .fil_base import (BaseFilter, apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, reset_filters,
+                       KICOST_NAME_TRANSLATIONS)
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 # To debug the `with document` we can use:
@@ -479,7 +482,8 @@ class BoMOptions(BaseOptions):
     def _get_columns():
         """ Create a list of valid columns """
         if GS.sch:
-            return (GS.sch.get_field_names(ColumnList.COLUMNS_DEFAULT), ColumnList.COLUMNS_EXTRA)
+            cols = deepcopy(ColumnList.COLUMNS_DEFAULT)
+            return (GS.sch.get_field_names(cols), ColumnList.COLUMNS_EXTRA)
         return (ColumnList.COLUMNS_DEFAULT, ColumnList.COLUMNS_EXTRA)
 
     def _guess_format(self):
@@ -744,3 +748,124 @@ class BoM(BaseOutput):  # noqa: F821
             self.options = BoMOptions
             """ [dict] Options for the `bom` output """
         self._sch_related = True
+
+    @staticmethod
+    def create_bom(fmt, subd, group_fields, join_fields, fld_names, cols=None):
+        gb = {}
+        gb['name'] = subd.lower()+'_bom_'+fmt.lower()
+        gb['comment'] = '{} Bill of Materials in {} format'.format(subd, fmt)
+        gb['type'] = 'bom'
+        gb['dir'] = os.path.join('BoM', subd)
+        ops = {'format': fmt}
+        if group_fields:
+            ops['group_fields'] = group_fields
+        if join_fields:
+            columns = []
+            for c in fld_names:
+                if c.lower() == 'value':
+                    columns.append({'field': c, 'join': list(join_fields)})
+                else:
+                    columns.append(c)
+            ops['columns'] = columns
+        if cols:
+            ops['columns'] = cols
+        if GS.board:
+            ops['count_smd_tht'] = True
+        gb['options'] = ops
+        return gb
+
+    @staticmethod
+    def process_templates(templates, outs, mpn_fields, dists):
+        for tpl in templates:
+            for out in tpl:
+                if out['type'] == 'bom':
+                    # Use the KiCost + rotate variant
+                    out['options']['variant'] = 'place_holder'
+                    columns = out['options'].get('columns', None)
+                    if columns:
+                        # Rename MPN for something we have, or just remove it
+                        to_remove = None
+                        for c in columns:
+                            fld = c.get('field', '')
+                            if fld.lower() == 'mpn':
+                                if mpn_fields:
+                                    c['field'] = 'manf#'
+                                elif dists:
+                                    c['field'] = list(dists)[0]+'#'
+                                else:
+                                    to_remove = c
+                        if to_remove:
+                            columns.remove(to_remove)
+                # Currently we have a position example (XYRS)
+                out['dir'] = 'Position'
+                outs.append(out)
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        outs = []
+        # Make a list of available fields
+        fld_names, extra_names = BoMOptions._get_columns()
+        fld_names_l = [f.lower() for f in fld_names]
+        fld_set = set(fld_names_l)
+        logger.debug(' - Available fields {}'.format(fld_names_l))
+        # Look for the manufaturer part number
+        mpn_set = {k for k, v in KICOST_NAME_TRANSLATIONS.items() if v == 'manf#'}
+        mpn_set.add('manf#')
+        mpn_fields = fld_set.intersection(mpn_set)
+        # Look for distributor part number
+        dpn_set = set()
+        for stub in ['part#', '#', 'p#', 'pn', 'vendor#', 'vp#', 'vpn', 'num']:
+            for dist in DISTRIBUTORS:
+                dpn_set.add(dist+stub)
+                if stub != '#':
+                    dpn_set.add(dist+'_'+stub)
+                    dpn_set.add(dist+'-'+stub)
+        dpn_fields = fld_set.intersection(dpn_set)
+        # Collect the used distributors
+        dists = set()
+        for dist in DISTRIBUTORS:
+            for fld in dpn_fields:
+                if dist in fld:
+                    dists.add(dist)
+                    break
+        # Add it to the group_fields
+        xpn_fields = mpn_fields | dpn_fields
+        group_fields = None
+        if xpn_fields:
+            group_fields = GroupFields.get_default().copy()
+            group_fields.extend(list(xpn_fields))
+            logger.debug(' - Adding grouping fields {}'.format(xpn_fields))
+        # Look for fields to join to the value
+        joinable_set = {'tolerance', 'voltage', 'power', 'current'}
+        join_fields = fld_set.intersection(joinable_set)
+        if join_fields:
+            logger.debug(' - Fields to join with Value: {}'.format(join_fields))
+        # Create a generic version
+        for fmt in ['HTML', 'CSV', 'TXT', 'TSV', 'XML', 'XLSX']:
+            outs.append(BoM.create_bom(fmt, 'Generic', group_fields, join_fields, fld_names))
+        if GS.board:
+            # Create an example showing the positional fields
+            cols = ColumnList.COLUMNS_DEFAULT + ColumnList.COLUMNS_EXTRA
+            for fmt in ['HTML', 'XLSX']:
+                gb = BoM.create_bom(fmt, 'Positional', group_fields, None, fld_names, cols)
+                gb['options'][fmt.lower()] = {'style': 'modern-red'}
+                outs.append(gb)
+        # Create a costs version
+        if KICOST_SUPPORT:  # and dists?
+            logger.debug(' - KiCost distributors {}'.format(dists))
+            grp = group_fields
+            if group_fields:
+                # We will apply KiCost rename rules, so we must use their names
+                grp = GroupFields.get_default().copy()
+                if mpn_fields:
+                    grp.append('manf#')
+                for d in dists:
+                    grp.append(d+'#')
+            gb = BoM.create_bom('XLSX', 'Costs', grp, join_fields, fld_names)
+            gb['options']['xlsx'] = {'style': 'modern-green', 'kicost': True, 'specs': True}
+            gb['options']['variant'] = 'place_holder'
+            # gb['options']['distributors'] = list(dists)
+            outs.append(gb)
+        # Add the list of layers to the templates
+        BoM.process_templates(templates, outs, mpn_fields, dists)
+        return outs

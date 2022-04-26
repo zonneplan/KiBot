@@ -55,3 +55,15 @@ class Excellon(BaseOutput):  # noqa: F821
         with document:
             self.options = ExcellonOptions
             """ [dict] Options for the `excellon` output """
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        gb = {}
+        outs = [gb]
+        name_u = name.upper()
+        gb['name'] = 'basic_'+name
+        gb['comment'] = 'Drill files in '+name_u+' format'
+        gb['type'] = name
+        gb['dir'] = 'Gerbers_and_Drill'
+        gb['options'] = {'map': 'pdf'}
+        return outs

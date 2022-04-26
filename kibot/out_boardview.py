@@ -178,3 +178,7 @@ class BoardView(BaseOutput):  # noqa: F821
         with document:
             self.options = BoardViewOptions
             """ [dict] Options for the `boardview` output """
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        return BaseOutput.simple_conf_examples(name, 'Board View export', 'Assembly')  # noqa: F821

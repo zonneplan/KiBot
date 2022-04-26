@@ -17,6 +17,10 @@ logger = log.get_logger()
 USER_AGENT = 'Mozilla/5.0 (Windows NT 5.2; rv:2.0.1) Gecko/20100101 Firefox/4.0.1'
 
 
+def is_url(ds):
+    return ds.startswith('http://') or ds.startswith('https://')
+
+
 class Download_Datasheets_Options(VariantOptions):
     _vars_regex = re.compile(r'\$\{([^\}]+)\}')
 
@@ -110,7 +114,7 @@ class Download_Datasheets_Options(VariantOptions):
                 field_used = True
             if not c.included or (not c.fitted and not self.dnf):
                 continue
-            if ds:
+            if ds and is_url(ds):
                 known = self._urls.get(ds, None)
                 if known is None or self.repeated:
                     name = self.out_name(c)
@@ -150,3 +154,14 @@ class Download_Datasheets(BaseOutput):  # noqa: F821
     def run(self, output_dir):
         # No output member, just a dir
         self.options.run(output_dir)
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        has_urls = False
+        for c in GS.sch.get_components():
+            if c.datasheet and is_url(c.datasheet):
+                has_urls = True
+                break
+        if not has_urls:
+            return None
+        return BaseOutput.simple_conf_examples(name, 'Download the datasheets', 'Datasheets')  # noqa: F821

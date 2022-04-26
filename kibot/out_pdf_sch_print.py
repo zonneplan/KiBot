@@ -34,3 +34,7 @@ class PDF_SCH_Print(BaseOutput):  # noqa: F821
             self.options = PDF_SCH_PrintOptions
             """ [dict] Options for the `pdf_sch_print` output """
         self._sch_related = True
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        return BaseOutput.simple_conf_examples(name, 'Schematic in PDF format', 'Schematic')  # noqa: F821

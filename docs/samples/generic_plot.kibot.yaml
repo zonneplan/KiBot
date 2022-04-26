@@ -970,6 +970,8 @@ outputs:
       add_background: false
       # [string='#FFFFFF'] Color for the background when `add_background` is enabled
       background_color: '#FFFFFF'
+      # [string=''] Background image, must be an SVG, only when `add_background` is enabled
+      background_image: ''
       # [string=''] Color used for blind/buried `colored_vias`
       blind_via_color: ''
       # [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
@@ -1514,7 +1516,8 @@ outputs:
       eurocircuits_class_target: '10F'
       # [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options
       output: '%f-%i%I%v.%x'
-      # [string='full'] Name for one of the internal templates (full, simple) or a custom template file
+      # [string='full'] Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+      # Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`)
       template: 'full'
   # Schematic with variant generator:
   # This copy isn't intended for development.

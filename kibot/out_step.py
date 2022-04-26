@@ -106,7 +106,7 @@ class STEPOptions(Base3DOptions):
 
 
 @output_class
-class STEP(Base3D):  # noqa: F821
+class STEP(Base3D):
     """ STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
         Exports the PCB as a 3D model.
         This is the most common 3D format for exchange purposes.
@@ -116,3 +116,7 @@ class STEP(Base3D):  # noqa: F821
         with document:
             self.options = STEPOptions
             """ [dict] Options for the `step` output """
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        return Base3D.simple_conf_examples(name, '3D model in STEP format', '3D')

@@ -1,0 +1,65 @@
+# MacroFab compatible XYRS
+# https://help.macrofab.com/knowledge/macrofab-required-design-files
+kibot:
+  version: 1
+
+filters:
+  - name: fix_rotation
+    comment: 'Adjust rotation for JLC'
+    type: rot_footprint
+
+  - name: only_smd
+    comment: 'Only SMD parts'
+    type: generic
+    exclude_virtual: true
+    exclude_tht: true
+
+variants:
+  - name: rotated
+    comment: 'Just a place holder for the rotation filter'
+    type: kibom
+    variant: rotated
+    pre_transform: fix_rotation
+    dnf_filter: only_smd
+
+outputs:
+  - name: 'macrofab_xyrs'
+    comment: "Pick and place file, XYRS style"
+    type: bom
+    options:
+      variant: rotated
+      output: '%f_MacroFab.XYRS'
+      units: mils
+      group_fields: []
+      sort_style: ref
+      use_aux_axis_as_origin: true
+      ignore_dnf: false
+      footprint_populate_values: '0,1'
+      footprint_type_values: '1,2,0'
+      csv:
+        separator: '	'
+        hide_pcb_info: true
+        hide_stats_info: true
+        hide_header: true
+      columns:
+        - field: References
+          name: Designator
+        - field: Footprint X
+          name: X-Loc
+        - field: Footprint Y
+          name: Y-Loc
+        - field: Footprint Rot
+          name: Rotation
+        - field: Footprint Side
+          name: Side
+        - field: Footprint Type
+          name: Type
+        - field: Footprint X-Size
+          name: X-Size
+        - field: Footprint Y-Size
+          name: Y-Size
+        - field: Value
+        - field: Footprint
+        - field: Footprint Populate
+          name: Populate
+        - field: MPN

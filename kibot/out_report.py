@@ -7,10 +7,11 @@ import os
 import re
 import pcbnew
 from subprocess import check_output, STDOUT, CalledProcessError
+from shutil import which
 
 from .gs import GS
 from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, PANDOC, MISSING_TOOL,
-                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST)
+                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST, W_MISSTOOL)
 from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
@@ -788,3 +789,29 @@ class Report(BaseOutput):  # noqa: F821
         with document:
             self.options = ReportOptions
             """ [dict] Options for the `report` output """
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        if which(PANDOC) is None:
+            logger.warning((W_MISSTOOL+'Missing {} tool, disabling report in PDF format\n'+PANDOC_INSTALL).format(PANDOC))
+            pandoc = False
+        else:
+            pandoc = True
+        gb = {}
+        outs = [gb]
+        gb['name'] = 'report_simple'
+        gb['comment'] = 'Simple design report'
+        gb['type'] = name
+        gb['output_id'] = '_simple'
+        gb['options'] = {'template': 'simple_ASCII'}
+        if pandoc:
+            gb['options']['do_convert'] = True
+        gb = {}
+        gb['name'] = 'report_full'
+        gb['comment'] = 'Full design report'
+        gb['type'] = name
+        gb['options'] = {'template': 'full_SVG'}
+        if pandoc:
+            gb['options']['do_convert'] = True
+        outs.append(gb)
+        return outs

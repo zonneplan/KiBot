@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -14,6 +14,12 @@ from . import log
 
 logger = log.get_logger()
 WARNING_MIX = "Avoid using it in conjunction with with IBoM native filtering options"
+
+
+def check_tool():
+    tool = search_as_plugin(CMD_IBOM, ['InteractiveHtmlBom', 'InteractiveHtmlBom/InteractiveHtmlBom'])
+    check_script(tool, URL_IBOM)
+    return tool
 
 
 class IBoMOptions(VariantOptions):
@@ -136,8 +142,7 @@ class IBoMOptions(VariantOptions):
 
     def run(self, name):
         super().run(name)
-        tool = search_as_plugin(CMD_IBOM, ['InteractiveHtmlBom', 'InteractiveHtmlBom/InteractiveHtmlBom'])
-        check_script(tool, URL_IBOM)
+        tool = check_tool()
         logger.debug('Doing Interactive BoM')
         # Tell ibom we don't want to use the screen
         os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = ''
@@ -205,3 +210,14 @@ class IBoM(BaseOutput):  # noqa: F821
 
     def get_dependencies(self):
         return self.options.get_dependencies()
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        enabled = True
+        try:
+            check_tool()
+        except SystemExit:
+            enabled = False
+        if not enabled:
+            return None
+        return BaseOutput.simple_conf_examples(name, 'Interactive HTML BoM', 'Assembly')  # noqa: F821

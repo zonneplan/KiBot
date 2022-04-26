@@ -350,3 +350,16 @@ class GS(object):
     def load_sch():
         """ Will be repplaced by kiplot.py """
         raise AssertionError()
+
+    @staticmethod
+    def get_useful_layers(useful, layers, include_copper=False):
+        """ Filters layers selecting the ones from useful """
+        from .layer import Layer
+        if include_copper:
+            # This is a list of layers that we could add
+            useful = {la._id for la in Layer.solve(useful)}
+            # Now filter the list of layers using the ones we are interested on
+            return [la for la in layers if (include_copper and la.is_copper()) or la._id in useful]
+        # Similar but keeping the sorting of useful
+        use = {la._id for la in layers}
+        return [la for la in Layer.solve(useful) if la._id in use]

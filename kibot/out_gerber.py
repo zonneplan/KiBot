@@ -5,11 +5,16 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
+import os
 from pcbnew import (PLOT_FORMAT_GERBER, FromMM, ToMM)
 from .gs import GS
 from .out_any_layer import (AnyLayer, AnyLayerOptions)
 from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
+from . import log
+
+logger = log.get_logger()
+USEFUL_LAYERS = ['F.SilkS', 'B.SilkS', 'F.Mask', 'B.Mask', 'F.Paste', 'B.Paste', 'Edge.Cuts']
 
 
 class GerberOptions(AnyLayerOptions):
@@ -101,3 +106,32 @@ class Gerber(AnyLayer):
         with document:
             self.options = GerberOptions
             """ [dict] Options for the `gerber` output """
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        gb = {}
+        outs = [gb]
+        # Create a generic version
+        gb['name'] = 'gerber_modern'
+        gb['comment'] = 'Gerbers in modern format, recommended by the standard'
+        gb['type'] = 'gerber'
+        gb['dir'] = 'Gerbers_and_Drill'
+        gb['layers'] = [AnyLayer.layer2dict(la) for la in layers]
+        # Process the templates
+        # Filter the list of layers using the ones we are interested on
+        useful = GS.get_useful_layers(USEFUL_LAYERS, layers, include_copper=True)
+        tpl_layers = [AnyLayer.layer2dict(la) for la in useful]
+        # Add the list of layers to the templates
+        for tpl in templates:
+            for out in tpl:
+                if out['type'] == 'gerber':
+                    out['layers'] = tpl_layers
+                elif out['type'] == 'position':
+                    out['options']['variant'] = 'place_holder'
+                if out['type'] == 'compress':
+                    out['dir'] = 'Manufacturers'
+                    out['options']['move_files'] = True
+                else:
+                    out['dir'] = os.path.join('Manufacturers', out['dir'])
+                outs.append(out)
+        return outs

@@ -71,3 +71,7 @@ class GenCAD(BaseOutput):  # noqa: F821
         with document:
             self.options = GenCADOptions
             """ [dict] Options for the `gencad` output """
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        return BaseOutput.simple_conf_examples(name, 'PCB in GenCAD format', 'Export')  # noqa: F821
