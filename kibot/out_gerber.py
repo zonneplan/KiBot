@@ -124,14 +124,18 @@ class Gerber(AnyLayer):
         # Add the list of layers to the templates
         for tpl in templates:
             for out in tpl:
+                skip = False
                 if out['type'] == 'gerber':
                     out['layers'] = tpl_layers
                 elif out['type'] == 'position':
                     out['options']['variant'] = 'place_holder'
+                if out['type'] == 'bom' and not GS.sch_file:
+                    skip = True
                 if out['type'] == 'compress':
                     out['dir'] = 'Manufacturers'
                     out['options']['move_files'] = True
                 else:
                     out['dir'] = os.path.join('Manufacturers', out['dir'])
-                outs.append(out)
+                if not skip:
+                    outs.append(out)
         return outs

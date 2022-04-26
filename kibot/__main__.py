@@ -12,7 +12,7 @@ Usage:
          [-q | -v...] [-i] [-C] [-m MKFILE] [-g DEF]... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
-  kibot [-v...] --quick-start
+  kibot [-v...] [--start PATH] --quick-start
   kibot [-v...] --help-filters
   kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs
@@ -32,8 +32,10 @@ Options:
   -C, --cli-order                  Generate outputs using the indicated order
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
+  --start PATH                     Starting point for --quick-start
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   --help-filters                   List supported filters and details
+  --help-global-options            List supported global variables
   --help-list-outputs              List supported outputs
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details
@@ -44,10 +46,11 @@ Options:
   -p, --copy-options               Copy plot options from the PCB file
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
+  --quick-start                    Generates demo config files and their outputs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
   -v, --verbose                    Show debugging information
   -V, --version                    Show program's version number and exit
-  -x, --example                    Create a template configuration file.
+  -x, --example                    Create a template configuration file
 
 """
 __author__ = 'Salvador E. Tropea, John Beard'
@@ -275,7 +278,7 @@ def main():
         sys.exit(0)
     if args.quick_start:
         # Some kind of wizard to get usable examples
-        generate_examples()
+        generate_examples(args.start)
         sys.exit(0)
 
     # Determine the YAML file

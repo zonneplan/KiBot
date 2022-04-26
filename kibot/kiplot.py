@@ -25,7 +25,7 @@ from .registrable import RegOutput
 from .misc import (PLOT_ERROR, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
                    EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL,
                    MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT,
-                   W_KIAUTO, W_VARSCH, NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE)
+                   W_KIAUTO, W_VARSCH, NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .pre_base import BasePreFlight
 from .kicad.v5_sch import Schematic, SchFileError, SchError
@@ -571,7 +571,21 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
         f.write('.PHONY: '+' '.join(extra_targets+list(targets.keys()))+'\n')
 
 
-def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None):
+def guess_ki6_sch(schematics):
+    schematics = list(filter(lambda x: x.endswith('.kicad_sch'), schematics))
+    if len(schematics) == 1:
+        return schematics[0]
+    if len(schematics) == 0:
+        return None
+    for fname in schematics:
+        with open(fname, 'rt') as f:
+            text = f.read()
+        if 'sheet_instances' in text:
+            return fname
+    return None
+
+
+def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, sug_e=True):
     schematic = a_schematic
     if not schematic and a_board_file:
         base = os.path.splitext(a_board_file)[0]
@@ -583,7 +597,9 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None):
             if os.path.isfile(sch):
                 schematic = sch
     if not schematic:
-        schematics = glob(os.path.join(base_dir, '*.sch'))+glob(os.path.join(base_dir, '*.kicad_sch'))
+        schematics = glob(os.path.join(base_dir, '*.sch'))
+        if GS.ki6():
+            schematics += glob(os.path.join(base_dir, '*.kicad_sch'))
         if len(schematics) == 1:
             schematic = schematics[0]
             logger.info('Using SCH file: '+os.path.relpath(schematic))
@@ -600,7 +616,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None):
                 sch = os.path.join(base_dir, config+'.sch')
                 if os.path.isfile(sch):
                     schematic = sch
-                else:
+                elif GS.ki6():
                     # Try KiCad 6
                     sch = os.path.join(base_dir, config+'.kicad_sch')
                     if os.path.isfile(sch):
@@ -616,9 +632,13 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None):
                         break
                 else:
                     # No way to select one, just take the first
-                    schematic = schematics[0]
-            logger.warning(W_VARSCH + 'More than one SCH file found in current directory.\n'
-                           '  Using '+schematic+' if you want to use another use -e option.')
+                    if GS.ki6():
+                        schematic = guess_ki6_sch(schematics)
+                    if not schematic:
+                        schematic = schematics[0]
+            msg = ' if you want to use another use -e option' if sug_e else ''
+            logger.warning(W_VARSCH + 'More than one SCH file found in `'+base_dir+'`.\n'
+                           '  Using '+schematic+msg+'.')
     if schematic and not os.path.isfile(schematic):
         logger.error("Schematic file not found: "+schematic)
         exit(NO_SCH_FILE)
@@ -636,13 +656,14 @@ def check_board_file(board_file):
         exit(NO_PCB_FILE)
 
 
-def solve_board_file(base_dir, a_board_file=None):
+def solve_board_file(base_dir, a_board_file=None, sug_b=True):
     schematic = GS.sch_file
     board_file = a_board_file
     if not board_file and schematic:
         pcb = os.path.join(base_dir, os.path.splitext(schematic)[0]+'.kicad_pcb')
         if os.path.isfile(pcb):
             board_file = pcb
+            logger.info('Using PCB file: '+os.path.relpath(board_file))
     if not board_file:
         board_files = glob(os.path.join(base_dir, '*.kicad_pcb'))
         if len(board_files) == 1:
@@ -650,8 +671,9 @@ def solve_board_file(base_dir, a_board_file=None):
             logger.info('Using PCB file: '+os.path.relpath(board_file))
         elif len(board_files) > 1:
             board_file = board_files[0]
-            logger.warning(W_VARPCB + 'More than one PCB file found in current directory.\n'
-                           '  Using '+board_file+' if you want to use another use -b option.')
+            msg = ' if you want to use another use -b option' if sug_b else ''
+            logger.warning(W_VARPCB + 'More than one PCB file found in `'+base_dir+'`.\n'
+                           '  Using '+board_file+msg+'.')
     check_board_file(board_file)
     if board_file:
         logger.debug('Using PCB: `{}`'.format(board_file))
@@ -709,23 +731,23 @@ def look_for_used_layers():
     return layers
 
 
-def generate_examples():
-    # Set default global options
-    glb = GS.global_opts_class()
-    glb.set_tree({})
-    glb.config(None)
-
-    outs = RegOutput.get_registered()
-    fname = 'kibot_generated.kibot.yaml'
-    GS.set_sch(solve_schematic('.'))
-    GS.set_pcb(solve_board_file('.'))
+def generate_one_example(dest_dir):
+    GS.pcb_file = None
+    GS.sch_file = None
+    # Check if we have useful files
+    fname = os.path.join(dest_dir, 'kibot_generated.kibot.yaml')
+    GS.set_sch(solve_schematic(dest_dir, sug_e=False))
+    GS.set_pcb(solve_board_file(dest_dir, sug_b=False))
     GS.set_pro(solve_project_file())
+    # Abort if none
     if not GS.pcb_file and not GS.sch_file:
-        return
+        return None
+    # Reset the board and schematic
     GS.board = None
     GS.sch = None
+    # Create the config
     with open(fname, 'wt') as f:
-        logger.info('Creating {} example configuration'.format(fname))
+        logger.info('- Creating {} example configuration'.format(fname))
         f.write("# This is a working example.\n")
         f.write("# For a more complete reference use `--example`\n")
         f.write('kibot:\n  version: 1\n\n')
@@ -774,6 +796,45 @@ def generate_examples():
             else:
                 logger.debug('- {}, nothing to do'.format(n))
         f.write(yaml.dump({'outputs': outputs}, sort_keys=False))
+    return fname
+
+
+def _walk(path, depth):
+    """ Recursively list files and directories up to a certain depth """
+    depth -= 1
+    with os.scandir(path) as p:
+        for entry in p:
+            yield entry.path
+            if entry.is_dir() and depth > 0:
+                yield from _walk(entry.path, depth)
+
+
+def generate_examples(start_dir):
+    if not start_dir:
+        start_dir = '.'
+    else:
+        if not os.path.isdir(start_dir):
+            logger.error('Invalid dir {} to quick start'.format(start_dir))
+            exit(WRONG_ARGUMENTS)
+    # Set default global options
+    glb = GS.global_opts_class()
+    glb.set_tree({})
+    glb.config(None)
+    # Look for candidate dirs
+    k_files_regex = re.compile(r'([^/]+)\.(kicad_pcb|kicad_sch|sch)$')
+    candidates = set()
+    for f in _walk(start_dir, 6):
+        if k_files_regex.search(f):
+            candidates.add(os.path.dirname(f))
+    # Try to generate the configs in the candidate places
+    confs = []
+    for c in candidates:
+        logger.info('Analyzing `{}` dir'.format(c))
+        res = generate_one_example(c)
+        if res:
+            confs.append(res)
+        logger.info('')
+    logger.debug(confs)
 
 
 # To avoid circular dependencies: Optionable needs it, but almost everything needs Optionable

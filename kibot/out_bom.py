@@ -798,7 +798,8 @@ class BoM(BaseOutput):  # noqa: F821
                             columns.remove(to_remove)
                 # Currently we have a position example (XYRS)
                 out['dir'] = 'Position'
-                outs.append(out)
+                if not out['name'].endswith('_xyrs') or GS.pcb_file:
+                    outs.append(out)
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
