@@ -128,6 +128,7 @@ class CompressOptions(BaseOptions):
         files = OrderedDict()
         out_dir_cwd = os.getcwd()
         out_dir_default = self.expand_filename_sch(GS.out_dir)
+        dirs_list = []
         for f in self.files:
             # Get the list of candidates
             files_list = None
@@ -135,7 +136,10 @@ class CompressOptions(BaseOptions):
                 out = RegOutput.get_output(f.from_output)
                 if out is not None:
                     config_output(out)
-                    files_list = out.get_targets(get_output_dir(out.dir, out, dry=True))
+                    out_dir = get_output_dir(out.dir, out, dry=True)
+                    files_list = out.get_targets(out_dir)
+                    if out_dir not in dirs_list:
+                        dirs_list.append(out_dir)
                 else:
                     logger.error('Unknown output `{}` selected in {}'.format(f.from_output, self._parent))
                     exit(WRONG_ARGUMENTS)
@@ -168,21 +172,21 @@ class CompressOptions(BaseOptions):
                     out_dir = out_dir_cwd if f.from_cwd else out_dir_default
                     dest = os.path.relpath(dest, out_dir)
                 files[fname_real] = dest
-        return files
+        return files, dirs_list
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
 
     def get_dependencies(self):
         output = self.get_targets(self.expand_filename_sch(GS.out_dir))[0]
-        files = self.get_files(output, no_out_run=True)
+        files, _ = self.get_files(output, no_out_run=True)
         return files.keys()
 
     def run(self, output):
         # Output file name
         logger.debug('Collecting files')
         # Collect the files
-        files = self.get_files(output)
+        files, dirs_outs = self.get_files(output)
         logger.debug('Generating `{}` archive'.format(output))
         if self.format == 'ZIP':
             self.create_zip(output, files)
@@ -191,7 +195,7 @@ class CompressOptions(BaseOptions):
         elif self.format == 'RAR':
             self.create_rar(output, files)
         if self.move_files:
-            dirs = []
+            dirs = dirs_outs
             for fname in files.keys():
                 if os.path.isfile(fname):
                     os.remove(fname)
@@ -219,6 +223,7 @@ class Compress(BaseOutput):  # noqa: F821
         with document:
             self.options = CompressOptions
             """ [dict] Options for the `compress` output """
+        self._none_related = True
 
     def get_dependencies(self):
         return self.options.get_dependencies()
