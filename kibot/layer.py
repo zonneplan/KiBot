@@ -71,22 +71,41 @@ class Layer(Optionable):
         'B.Cu': 'Bottom copper',
         'F.Adhes': 'Front adhesive (glue)',
         'B.Adhes': 'Bottom adhesive (glue)',
+        'F.Adhesive': 'Front adhesive (glue)',
+        'B.Adhesive': 'Bottom adhesive (glue)',
         'F.Paste': 'Front solder paste',
         'B.Paste': 'Bottom solder paste',
         'F.SilkS': 'Front silkscreen (artwork)',
         'B.SilkS': 'Bottom silkscreen (artwork)',
+        'F.Silkscreen': 'Front silkscreen (artwork)',
+        'B.Silkscreen': 'Bottom silkscreen (artwork)',
         'F.Mask': 'Front soldermask (negative)',
         'B.Mask': 'Bottom soldermask (negative)',
         'Dwgs.User': 'User drawings',
+        'User.Drawings': 'User drawings',
         'Cmts.User': 'User comments',
+        'User.Comments': 'User comments',
         'Eco1.User': 'For user usage 1',
         'Eco2.User': 'For user usage 2',
+        'User.Eco1': 'For user usage 1',
+        'User.Eco2': 'For user usage 2',
         'Edge.Cuts': 'Board shape',
         'Margin': 'Margin relative to edge cut',
         'F.CrtYd': 'Front courtyard area',
         'B.CrtYd': 'Bottom courtyard area',
+        'F.Courtyard': 'Front courtyard area',
+        'B.Courtyard': 'Bottom courtyard area',
         'F.Fab': 'Front documentation',
         'B.Fab': 'Bottom documentation',
+        'User.1': 'User layer 1',
+        'User.2': 'User layer 2',
+        'User.3': 'User layer 3',
+        'User.4': 'User layer 4',
+        'User.5': 'User layer 5',
+        'User.6': 'User layer 6',
+        'User.7': 'User layer 7',
+        'User.8': 'User layer 8',
+        'User.9': 'User layer 9',
     }
     KICAD6_RENAME = {
         'F.Adhes': 'F.Adhesive',
@@ -303,8 +322,15 @@ class Layer(Optionable):
         return pcbnew.LayerName(id)
 
 
+# Add all the Inner layers
 for i in range(1, 30):
     name = 'In'+str(i)+'.Cu'
     Layer.DEFAULT_LAYER_NAMES[name] = pcbnew.In1_Cu+i-1
     Layer.DEFAULT_LAYER_DESC[name] = 'Inner layer '+str(i)
+if GS.ki6():
+    # Add all the User.N layers
+    for i in range(1, 10):
+        name = 'User.'+str(i)
+        Layer.DEFAULT_LAYER_NAMES[name] = pcbnew.User_1+i-1
+        Layer.DEFAULT_LAYER_DESC[name] = 'User layer '+str(i)
 Layer.ID_2_DEFAULT_NAME = {v: k for k, v in Layer.DEFAULT_LAYER_NAMES.items()}
