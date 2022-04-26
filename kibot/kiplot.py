@@ -11,7 +11,6 @@ Main KiBot code
 
 import os
 import re
-import yaml
 from sys import exit
 from sys import path as sys_path
 from shutil import which
@@ -26,7 +25,7 @@ from .registrable import RegOutput
 from .misc import (PLOT_ERROR, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
                    EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL,
                    MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT,
-                   W_KIAUTO, W_VARSCH, NO_SCH_FILE, NO_PCB_FILE, W_VARPCB)
+                   W_KIAUTO, W_VARSCH, NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .pre_base import BasePreFlight
 from .kicad.v5_sch import Schematic, SchFileError, SchError
@@ -38,6 +37,13 @@ logger = log.get_logger()
 # Cache to avoid running external many times to check their versions
 script_versions = {}
 actions_loaded = False
+
+try:
+    import yaml
+except ImportError:
+    log.init()
+    logger.error('No yaml module for Python, install python3-yaml')
+    exit(NO_YAML_MODULE)
 
 
 def _import(name, path):
@@ -580,7 +586,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None):
         schematics = glob(os.path.join(base_dir, '*.sch'))+glob(os.path.join(base_dir, '*.kicad_sch'))
         if len(schematics) == 1:
             schematic = schematics[0]
-            logger.info('Using SCH file: '+schematic)
+            logger.info('Using SCH file: '+os.path.relpath(schematic))
         elif len(schematics) > 1:
             # Look for a schematic with the same name as the config
             if config:
@@ -641,7 +647,7 @@ def solve_board_file(base_dir, a_board_file=None):
         board_files = glob(os.path.join(base_dir, '*.kicad_pcb'))
         if len(board_files) == 1:
             board_file = board_files[0]
-            logger.info('Using PCB file: '+board_file)
+            logger.info('Using PCB file: '+os.path.relpath(board_file))
         elif len(board_files) > 1:
             board_file = board_files[0]
             logger.warning(W_VARPCB + 'More than one PCB file found in current directory.\n'
