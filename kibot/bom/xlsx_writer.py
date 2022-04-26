@@ -619,6 +619,7 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
         dnf = ws == 1
         # Should we generate the DNF?
         if dnf and (not cfg.xlsx.generate_dnf or cfg.n_total == cfg.n_fitted):
+            used_parts.append([])
             break
         # Create the parts structure from the groups
         parts = []
