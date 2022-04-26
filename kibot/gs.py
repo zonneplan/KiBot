@@ -274,6 +274,12 @@ class GS(object):
         return pcbnew.ZONES() if GS.ki6() else pcbnew.ZONE_CONTAINERS()
 
     @staticmethod
+    def layers_contains(layers, id):
+        if GS.ki6():
+            return layers.Contains(id)
+        return id in layers.Seq()
+
+    @staticmethod
     def expand_text_variables(text, extra_vars=None):
         vars = GS.load_pro_variables()
         new_text = ''

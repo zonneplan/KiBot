@@ -532,7 +532,7 @@ class PCB_PrintOptions(VariantOptions):
                 if dr.x:
                     continue
                 layers = pad.GetLayerSet()
-                if layers.Contains(id):
+                if GS.layers_contains(layers, id):
                     layers.removeLayer(id)
                     pad.SetLayerSet(layers)
                     removed.append(pad)
@@ -592,7 +592,7 @@ class PCB_PrintOptions(VariantOptions):
                     moved.append(gi)
             for pad in m.Pads():
                 layers = pad.GetLayerSet()
-                if layers.Contains(id):
+                if GS.layers_contains(layers, id):
                     layers.removeLayer(id)
                     pad.SetLayerSet(layers)
                     removed.append(pad)
