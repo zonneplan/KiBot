@@ -23,12 +23,12 @@ variants:
     dnf_filter: only_smd
 
 outputs:
-  - name: 'position'
+  - name: 'macrofab_xyrs'
     comment: "Pick and place file, XYRS style"
     type: bom
     options:
       variant: rotated
-      output: '%f.XYRS'
+      output: '%f_MacroFab.XYRS'
       units: mils
       group_fields: []
       sort_style: ref
