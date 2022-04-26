@@ -270,6 +270,10 @@ class GS(object):
         return GS.kicad_version_n < KICAD_VERSION_5_99
 
     @staticmethod
+    def zones():
+        return pcbnew.ZONES() if GS.ki6() else pcbnew.ZONE_CONTAINERS()
+
+    @staticmethod
     def expand_text_variables(text, extra_vars=None):
         vars = GS.load_pro_variables()
         new_text = ''

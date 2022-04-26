@@ -8,8 +8,7 @@
 import re
 import os
 import subprocess
-from pcbnew import (B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask, ZONE_FILLER,
-                    ZONES)
+from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask, ZONE_FILLER
 from shutil import rmtree, which
 from tempfile import NamedTemporaryFile, mkdtemp
 from .svgutils.transform import fromstring, RectElement, fromfile
@@ -521,7 +520,7 @@ class PCB_PrintOptions(VariantOptions):
         moved = []
         removed = []
         vias = []
-        zones = ZONES()
+        zones = GS.zones()
         wxSize(0, 0)
         for m in GS.get_modules():
             for gi in m.GraphicalItems():
@@ -584,7 +583,7 @@ class PCB_PrintOptions(VariantOptions):
         moved = []
         removed = []
         vias = []
-        zones = ZONES()
+        zones = GS.zones()
         wxSize(0, 0)
         for m in GS.get_modules():
             for gi in m.GraphicalItems():
