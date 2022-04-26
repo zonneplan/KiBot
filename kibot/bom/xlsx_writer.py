@@ -432,22 +432,19 @@ def adapt_extra_cost_columns(cfg):
 def apply_join_requests(join, adapted, original):
     if not join:
         return
-    for key, val in original.items():
+    for join_l in join:
+        # Each list is "target, source..." so we need at least 2 elements
+        elements = len(join_l)
+        target = join_l[0]
         append = ''
-        for join_l in join:
-            # Each list is "target, source..." so we need at least 2 elements
-            elements = len(join_l)
-            target = join_l[0]
-            if elements > 1 and target == key:
-                # Append data from the other fields
-                for source in join_l[1:]:
-                    v = source.get_text(original.get)
-                    if v:
-                        append += v
+        if elements > 1:
+            # Append data from the other fields
+            for source in join_l[1:]:
+                v = source.get_text(original.get)
+                if v:
+                    append += v
         if append:
-            if val is None:
-                val = ''
-            adapted[key] = val + append
+            adapted[target] = original.get(target, '') + append
 
 
 def remove_unknown_distributors(distributors, available, silent):
