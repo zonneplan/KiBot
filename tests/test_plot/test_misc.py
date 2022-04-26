@@ -209,7 +209,7 @@ def test_miss_yaml_2(test_dir):
     ctx.clean_up()
 
 
-def test_auto_pcb_and_cfg(test_dir):
+def test_auto_pcb_and_cfg_1(test_dir):
     """ Test guessing the PCB and config file.
         Only one them is there. """
     prj = '3Rs'
@@ -270,8 +270,8 @@ def test_auto_pcb_and_cfg_3(test_dir):
 
     ctx.run(extra=['-s', 'all', '-i'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
 
-    assert ctx.search_out('Using SCH file: '+sch)
-    assert ctx.search_out('Using config file: '+yaml_file)
+    ctx.search_out('Using SCH file: '+sch)
+    ctx.search_out('Using config file: '+yaml_file)
 
     ctx.clean_up()
 
@@ -293,8 +293,8 @@ def test_auto_pcb_and_cfg_4(test_dir):
 
     ctx.run(extra=['-s', 'all', '-i'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
 
-    assert ctx.search_err('Using '+sch)
-    assert ctx.search_out('Using config file: '+yaml_file)
+    ctx.search_err('Using ./'+sch)
+    ctx.search_out('Using config file: '+yaml_file)
 
     ctx.clean_up()
 
@@ -313,7 +313,7 @@ def test_auto_pcb_and_cfg_5(test_dir):
 
     ctx.run(extra=['-s', 'all', '-i'], no_out_dir=True, no_board_file=True, no_yaml_file=True, chdir_out=True)
 
-    assert ctx.search_err('Using (b_)?'+sch)
+    assert ctx.search_err('Using ./(b_)?'+sch)
     assert ctx.search_out('Using config file: '+yaml_file)
 
     ctx.clean_up()

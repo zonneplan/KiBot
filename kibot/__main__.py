@@ -119,7 +119,7 @@ def solve_config(a_plot_config):
         plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')+glob('*.kibot.yaml.gz')
         if len(plot_configs) == 1:
             plot_config = plot_configs[0]
-            logger.info('Using config file: '+plot_config)
+            logger.info('Using config file: '+os.path.relpath(plot_config))
         elif len(plot_configs) > 1:
             plot_config = plot_configs[0]
             logger.warning(W_VARCFG + 'More than one config file found in current directory.\n'
