@@ -155,7 +155,8 @@ class ReportOptions(BaseOptions):
             self.output = GS.def_global_output
             """ Output file name (%i='report', %x='txt') """
             self.template = 'full'
-            """ Name for one of the internal templates (full, simple) or a custom template file """
+            """ Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+                Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`) """
             self.convert_from = 'markdown'
             """ Original format for the report conversion. Current templates are `markdown`. See `do_convert` """
             self.convert_to = 'pdf'
@@ -180,7 +181,11 @@ class ReportOptions(BaseOptions):
 
     def config(self, parent):
         super().config(parent)
-        if self.template.lower() in ('full', 'simple'):
+        self.to_ascii = False
+        if self.template.endswith('_ASCII'):
+            self.template = self.template[:-6]
+            self.to_ascii = True
+        if self.template.lower() in ('full', 'simple', 'full_svg'):
             self.template = os.path.abspath(os.path.join(os.path.dirname(__file__), 'report_templates',
                                             'report_'+self.template.lower()+'.txt'))
         if not os.path.isfile(self.template):
@@ -673,6 +678,9 @@ class ReportOptions(BaseOptions):
                     line = self.do_replacements(line, self.__dict__)
                 text += line
         logger.debug("Report output: `{}`".format(output_file))
+        if self.to_ascii:
+            # PanDoc has problems with this Unicode
+            text = text.replace('≥', '>=')
         with open(output_file, "wt") as f:
             f.write(text)
 
@@ -750,10 +758,18 @@ class ReportOptions(BaseOptions):
             if dest is not None:
                 if not o._configured:
                     config_output(o)
+                if o.type == 'pcb_print' and o.options.format != 'PDF':
+                    if o.options.format == 'SVG':
+                        dest = self._layer_svgs
+                    else:
+                        continue
                 out_files = o.get_targets(o.expand_dirname(os.path.join(GS.out_dir, o.dir)))
-                for of in out_files:
+                for n, of in enumerate(out_files):
                     rel_path = os.path.relpath(of, base_dir)
-                    dest.append((rel_path, o.comment, o.name))
+                    comment = o.comment
+                    if o.type == 'pcb_print' and o.options.pages[n].sheet:
+                        comment += ' '+o.options.pages[n].sheet
+                    dest.append((rel_path, comment, o.name))
         self.layer_pdfs = len(self._layer_pdfs) > 0
         self.layer_svgs = len(self._layer_svgs) > 0
         self.schematic_pdfs = len(self._schematic_pdfs) > 0
