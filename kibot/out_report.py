@@ -139,6 +139,8 @@ def get_pad_info(pad):
 
 def adjust_drill(val, is_pth=True, pad=None):
     """ Add drill_size_increment if this is a PTH hole and round it to global_extra_pth_drill """
+    if val == INF:
+        return val
     step = GS.global_drill_size_increment*pcbnew.IU_PER_MM
     if is_pth:
         val += GS.global_extra_pth_drill*pcbnew.IU_PER_MM
@@ -277,6 +279,8 @@ class ReportOptions(BaseOptions):
     def context_used_vias(self, line):
         """ Replace iterator for the `used_vias` context """
         text = ''
+        if not self._vias_m:
+            return text
         for v in self._vias_m:
             d = v[1]
             h = v[0]
@@ -567,12 +571,12 @@ class ReportOptions(BaseOptions):
         self._vias_m = sorted(self._vias.keys())
         # Via Pad size
         self.via_pad_d = ds.m_ViasMinSize
-        self.via_pad = self._vias_m[0][1]
+        self.via_pad = self._vias_m[0][1] if self._vias_m else INF
         self.via_pad_min = min(self.via_pad_d, self.via_pad)
         # Via Drill size
         self._vias_m = sorted(self._vias.keys())
         self.via_drill_d = ds.m_ViasMinDrill if GS.ki5() else ds.m_MinThroughDrill
-        self.via_drill = self._vias_m[0][0]
+        self.via_drill = self._vias_m[0][0] if self._vias_m else INF
         self.via_drill_min = min(self.via_drill_d, self.via_drill)
         # Via Drill size before platting
         self.via_drill_real_d = adjust_drill(self.via_drill_d)
