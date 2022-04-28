@@ -695,6 +695,8 @@ def solve_project_file():
 
 
 def look_for_used_layers():
+    from .layer import Layer
+    Layer.reset()
     layers = set()
     components = {}
     # Look inside the modules
@@ -721,7 +723,6 @@ def look_for_used_layers():
         else:
             layers.add(e.GetLayer())
     # Now filter the pads and vias potential layers
-    from .layer import Layer
     declared_layers = {la._id for la in Layer.solve('all')}
     layers = sorted(declared_layers.intersection(layers))
     logger.debug('- Detected layers: {}'.format(layers))

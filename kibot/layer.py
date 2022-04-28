@@ -162,6 +162,11 @@ class Layer(Optionable):
             self.suffix = self.layer.replace('.', '_')
         self.clean_suffix()
 
+    @staticmethod
+    def reset():
+        Layer._pcb_layers = None
+        Layer._plot_layers = None
+
     def clean_suffix(self):
         filtered_suffix = ''.join(char for char in self.suffix if ord(char) < 128)
         if filtered_suffix != self.suffix:
