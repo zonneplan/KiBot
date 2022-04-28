@@ -27,6 +27,7 @@ from .misc import (PLOT_ERROR, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, C
                    MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT,
                    W_KIAUTO, W_VARSCH, NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
+from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
 from .kicad.v5_sch import Schematic, SchFileError, SchError
 from .kicad.v6_sch import SchematicV6
@@ -358,7 +359,7 @@ def get_output_dir(o_dir, obj, dry=False):
     return outdir
 
 
-def config_output(out, dry=False):
+def config_output(out, dry=False, dont_stop=False):
     if out._configured:
         return
     # Should we load the PCB?
@@ -367,13 +368,20 @@ def config_output(out, dry=False):
             load_board()
         if out.is_sch():
             load_sch()
+    ok = True
     try:
         out.config(None)
     except KiPlotConfigurationError as e:
-        config_error("In section '"+out.name+"' ("+out.type+"): "+str(e))
+        msg = "In section '"+out.name+"' ("+out.type+"): "+str(e)
+        if dont_stop:
+            logger.error(msg)
+        else:
+            config_error(msg)
+        ok = False
+    return ok
 
 
-def run_output(out):
+def run_output(out, dont_stop=False):
     if out._done:
         return
     GS.current_output = out.name
@@ -382,19 +390,24 @@ def run_output(out):
         out._done = True
     except PlotError as e:
         logger.error("In output `"+str(out)+"`: "+str(e))
-        exit(PLOT_ERROR)
+        if not dont_stop:
+            exit(PLOT_ERROR)
     except KiPlotConfigurationError as e:
-        config_error("In section '"+out.name+"' ("+out.type+"): "+str(e))
+        msg = "In section '"+out.name+"' ("+out.type+"): "+str(e)
+        if dont_stop:
+            logger.error(msg)
+        else:
+            config_error(msg)
 
 
-def generate_outputs(outputs, target, invert, skip_pre, cli_order):
+def generate_outputs(outputs, target, invert, skip_pre, cli_order, dont_stop=False):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
     preflight_checks(skip_pre)
     # Check if the preflights pulled options
     for out in RegOutput.get_prioritary_outputs():
-        config_output(out)
-        logger.info('- '+str(out))
-        run_output(out)
+        if config_output(out, dont_stop=dont_stop):
+            logger.info('- '+str(out))
+            run_output(out)
     # Check if all must be skipped
     n = len(target)
     if n == 0 and invert:
@@ -412,17 +425,17 @@ def generate_outputs(outputs, target, invert, skip_pre, cli_order):
         # Use the CLI order
         for name in target:
             out = RegOutput.get_output(name)
-            config_output(out)
-            logger.info('- '+str(out))
-            run_output(out)
+            if config_output(out, dont_stop=dont_stop):
+                logger.info('- '+str(out))
+                run_output(out, dont_stop)
     else:
         # Use the declaration order
         for out in RegOutput.get_outputs():
             if (((n == 0 or ((out.name not in target) and invert)) and out.run_by_default) or
                ((out.name in target) and not invert)):
-                config_output(out)
-                logger.info('- '+str(out))
-                run_output(out)
+                if config_output(out, dont_stop=dont_stop):
+                    logger.info('- '+str(out))
+                    run_output(out, dont_stop)
             else:
                 logger.debug('Skipping `%s` output', str(out))
 
@@ -732,7 +745,9 @@ def look_for_used_layers():
     return layers
 
 
-def generate_one_example(dest_dir):
+def discover_files(dest_dir):
+    """ Look for schematic and PCBs at the dest_dir.
+        Return the name of the example file to generate. """
     GS.pcb_file = None
     GS.sch_file = None
     # Check if we have useful files
@@ -740,6 +755,12 @@ def generate_one_example(dest_dir):
     GS.set_sch(solve_schematic(dest_dir, sug_e=False))
     GS.set_pcb(solve_board_file(dest_dir, sug_b=False))
     GS.set_pro(solve_project_file())
+    return fname
+
+
+def generate_one_example(dest_dir):
+    """ Generate a example config for dest_dir """
+    fname = discover_files(dest_dir)
     # Abort if none
     if not GS.pcb_file and not GS.sch_file:
         return None
@@ -761,6 +782,14 @@ def generate_one_example(dest_dir):
             layers = look_for_used_layers()
         if GS.sch_file:
             load_sch()
+        # Filter some warnings
+        fil = [{'number': 1007},  # No information for a component in a distributor
+               {'number': 1015},  # More than one component in a search for a distributor
+               {'number': 58},    # Missing project file
+               ]
+        glb = {'filters': fil}
+        f.write(yaml.dump({'global': glb}, sort_keys=False))
+        f.write('\n')
         # A helper for the JLCPCB stuff
         fil = {'name': 'only_jlc_parts'}
         fil['comment'] = 'Only parts with JLC (LCSC) code'
@@ -800,6 +829,21 @@ def generate_one_example(dest_dir):
     return fname
 
 
+def generate_targets(config_file):
+    """ Generate all possible targets for the configuration file """
+    # Reset the board and schematic
+    GS.board = None
+    GS.sch = None
+    # Reset the list of outputs
+    RegOutput.reset()
+    # Read the config file
+    cr = CfgYamlReader()
+    with open(config_file) as cf_file:
+        outputs = cr.read(cf_file)
+    # Do all the job
+    generate_outputs(outputs, [], False, None, False, dont_stop=True)
+
+
 def _walk(path, depth):
     """ Recursively list files and directories up to a certain depth """
     depth -= 1
@@ -810,7 +854,7 @@ def _walk(path, depth):
                 yield from _walk(entry.path, depth)
 
 
-def generate_examples(start_dir):
+def generate_examples(start_dir, dry):
     if not start_dir:
         start_dir = '.'
     else:
@@ -818,7 +862,7 @@ def generate_examples(start_dir):
             logger.error('Invalid dir {} to quick start'.format(start_dir))
             exit(WRONG_ARGUMENTS)
     # Set default global options
-    glb = GS.global_opts_class()
+    glb = GS.class_for_global_opts()
     glb.set_tree({})
     glb.config(None)
     # Look for candidate dirs
@@ -829,13 +873,43 @@ def generate_examples(start_dir):
             candidates.add(os.path.dirname(f))
     # Try to generate the configs in the candidate places
     confs = []
-    for c in candidates:
+    for c in sorted(candidates):
         logger.info('Analyzing `{}` dir'.format(c))
         res = generate_one_example(c)
         if res:
             confs.append(res)
         logger.info('')
-    logger.debug(confs)
+    confs.sort()
+    # Just the configs, not the targets
+    if dry:
+        return
+    # Try to generate all the stuff
+    if GS.out_dir_in_cmd_line:
+        out_dir = GS.out_dir
+    else:
+        out_dir = 'Generated'
+    for n, c in enumerate(confs):
+        conf_dir = os.path.dirname(c)
+        if len(confs) > 1:
+            subdir = '%03d-%s' % (n+1, conf_dir.replace('/', ',').replace(' ', '_'))
+            dest = os.path.join(out_dir, subdir)
+        else:
+            dest = out_dir
+        GS.out_dir = dest
+        logger.info('Generating targets for `{}`, destination: `{}`'.format(c, dest))
+        os.makedirs(dest, exist_ok=True)
+        # Create a log file with all the debug we can
+        fl = log.set_file_log(os.path.join(dest, 'kibot.log'))
+        old_lvl = GS.debug_level
+        GS.debug_level = 10
+        # Detect the SCH and PCB again
+        discover_files(conf_dir)
+        # Generate all targets
+        generate_targets(c)
+        # Close the debug file
+        log.remove_file_log(fl)
+        GS.debug_level = old_lvl
+        logger.info('')
 
 
 # To avoid circular dependencies: Optionable needs it, but almost everything needs Optionable

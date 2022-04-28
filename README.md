@@ -131,7 +131,7 @@ This section is used to specify tasks that will be executed before generating an
     - `filter`: [string=''] Name for the filter, for documentation purposes.
     - *filter_msg*: Alias for filter.
     - `number`: [number=0] Error number we want to exclude. KiCad 5 only.
-    - `regex`: [string='None'] Regular expression to match the text for the error we want to exclude.
+    - `regex`: [string=''] Regular expression to match the text for the error we want to exclude.
     - *regexp*: Alias for regex.
 - `ignore_unconnected`: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
 - `pcb_replace`: [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
@@ -421,6 +421,7 @@ global:
     - `extra_pth_drill`: [number=0.1] How many millimeters the manufacturer will add to plated holes.
                          This is because the plating reduces the hole, so you need to use a bigger drill.
                          For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/.
+    - `field_3D_model`: [string='_3D_model'] Name for the field controlling the 3D models used for a component.
     - `filters`: [list(dict)] KiBot warnings to be ignored.
       * Valid keys:
         - `error`: [string=''] Error id we want to exclude. A name for KiCad 6 or a number for KiCad 5, but always a string.
@@ -428,14 +429,14 @@ global:
         - `filter`: [string=''] Name for the filter, for documentation purposes.
         - *filter_msg*: Alias for filter.
         - `number`: [number=0] Error number we want to exclude. KiCad 5 only.
-        - `regex`: [string='None'] Regular expression to match the text for the error we want to exclude.
+        - `regex`: [string=''] Regular expression to match the text for the error we want to exclude.
         - *regexp*: Alias for regex.
     - `impedance_controlled`: [boolean=false] The PCB needs specific dielectric characteristics.
                               KiCad 6: you should set this in the Board Setup -> Physical Stackup.
     - `kiauto_time_out_scale`: [number=0.0] Time-out multiplier for KiAuto operations.
     - `kiauto_wait_start`: [number=0] Time to wait for KiCad in KiAuto operations.
     - `out_dir`: [string=''] Base output dir, same as command line `--out-dir`.
-    - `output`: [string=''] Default pattern for output file names.
+    - `output`: [string='%f-%i%I%v.%x'] Default pattern for output file names. Affected by global options.
     - `pcb_finish`: [string='HAL'] Finishing used to protect pads. Currently used for documentation and to choose default colors.
                     KiCad 6: you should set this in the Board Setup -> Board Finish -> Copper Finish option.
                     Currently known are None, HAL, HASL, HAL SnPb, HAL lead-free, ENIG, ENEPIG, Hard gold, ImAg, Immersion Silver,
@@ -2814,7 +2815,7 @@ Usage:
          [-q | -v...] [-i] [-C] [-m MKFILE] [-g DEF]... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
-  kibot [-v...] --quick-start
+  kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] --quick-start
   kibot [-v...] --help-filters
   kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs
@@ -2828,18 +2829,12 @@ Arguments:
   TARGET    Outputs to generate, default is all
 
 Options:
-  -h, --help                       Show this help message and exit
   -b BOARD, --board-file BOARD     The PCB .kicad-pcb board file
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -C, --cli-order                  Generate outputs using the indicated order
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
-  --help-filters                   List supported filters and details
-  --help-list-outputs              List supported outputs
-  --help-output HELP_OUTPUT        Help for this particular output
-  --help-outputs                   List supported outputs and details
-  --help-preflights                List supported preflights and details
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
   -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
@@ -2849,7 +2844,21 @@ Options:
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
   -v, --verbose                    Show debugging information
   -V, --version                    Show program's version number and exit
-  -x, --example                    Create a template configuration file.
+  -x, --example                    Create a template configuration file
+
+Quick start options:
+  --quick-start                    Generates demo config files and their outputs
+  --start PATH                     Starting point for the search [default: .]
+  --dry                            Just generate the config files
+
+Help options:
+  -h, --help                       Show this help message and exit
+  --help-filters                   List supported filters and details
+  --help-global-options            List supported global variables
+  --help-list-outputs              List supported outputs
+  --help-output HELP_OUTPUT        Help for this particular output
+  --help-outputs                   List supported outputs and details
+  --help-preflights                List supported preflights and details
 
 ```
 

@@ -51,6 +51,17 @@ class RegOutput(Optionable, Registrable):
         super().__init__()
 
     @staticmethod
+    def reset():
+        # List of defined filters
+        RegOutput._def_filters = {}
+        # List of defined variants
+        RegOutput._def_variants = {}
+        # List of defined outputs
+        RegOutput._def_outputs = OrderedDict()
+        # List of priority outputs
+        RegOutput._prio_outputs = OrderedDict()
+
+    @staticmethod
     def add_variants(variants):
         RegOutput._def_variants.update(variants)
 
