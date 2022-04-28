@@ -122,6 +122,7 @@ class Gerber(AnyLayer):
         useful = GS.get_useful_layers(USEFUL_LAYERS, layers, include_copper=True)
         tpl_layers = [AnyLayer.layer2dict(la) for la in useful]
         # Add the list of layers to the templates
+        skipped = []
         for tpl in templates:
             for out in tpl:
                 skip = False
@@ -129,13 +130,21 @@ class Gerber(AnyLayer):
                     out['layers'] = tpl_layers
                 elif out['type'] == 'position':
                     out['options']['variant'] = 'place_holder'
+                    if not GS.sch:
+                        # We need the schematic for the variant
+                        skip = True
                 if out['type'] == 'bom' and not GS.sch_file:
                     skip = True
                 if out['type'] == 'compress':
                     out['dir'] = 'Manufacturers'
                     out['options']['move_files'] = True
+                    if skipped:
+                        # Compress only the ones we didn't skip
+                        out['options']['files'] = [f for f in out['options']['files'] if f['from_output'] not in skipped]
                 else:
                     out['dir'] = os.path.join('Manufacturers', out['dir'])
-                if not skip:
+                if skip:
+                    skipped.append(out['name'])
+                else:
                     outs.append(out)
         return outs
