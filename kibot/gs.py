@@ -83,43 +83,48 @@ class GS(object):
     outputs = None
     # Name for the output we are generating
     current_output = None
+    test_boolean = True
+    stackup = None
+    #
     # Global defaults
+    #
+    # Options from command line
+    cli_global_defs = {}
+    # The variant value, but already solved
+    solved_global_variant = None
     #  This is used as default value for classes supporting "output" option
     def_global_output = '%f-%i%I%v.%x'
+    # The class that controls the global options
+    class_for_global_opts = None
+    global_castellated_pads = None
+    global_copper_thickness = None
+    global_date_format = None
+    global_date_time_format = None
+    global_dir = None
+    global_drill_size_increment = None
+    global_edge_connector = None
+    global_edge_plating = None
+    global_extra_pth_drill = None
+    global_field_3D_model = None
+    global_kiauto_time_out_scale = None
+    global_kiauto_wait_start = None
+    global_impedance_controlled = None
     #  This value will overwrite GS.def_global_output if defined
     #  Classes supporting global "output" option must call super().__init__()
     #  after defining its own options to allow Optionable do the overwrite.
-    global_from_cli = {}
     global_output = None
-    global_dir = None
-    global_variant = None
-    global_units = None
-    solved_global_variant = None
-    global_kiauto_wait_start = None
-    global_kiauto_time_out_scale = None
-    global_opts_class = None
-    global_3D_model_field = '_3D_model'
-    global_date_time_format = None
-    global_date_format = None
+    global_pcb_finish = None
+    global_pcb_material = None
+    global_silk_screen_color = None
+    global_silk_screen_color_bottom = None
+    global_silk_screen_color_top = None
+    global_solder_mask_color = None
+    global_solder_mask_color_bottom = None
+    global_solder_mask_color_top = None
     global_time_format = None
     global_time_reformat = None
-    global_pcb_material = None
-    global_solder_mask_color = None
-    global_solder_mask_color_top = None
-    global_solder_mask_color_bottom = None
-    global_silk_screen_color = None
-    global_silk_screen_color_top = None
-    global_silk_screen_color_bottom = None
-    global_pcb_finish = None
-    global_copper_thickness = None
-    global_edge_connector = None
-    global_castellated_pads = None
-    global_edge_plating = None
-    global_impedance_controlled = None
-    global_extra_pth_drill = None
-    global_drill_size_increment = None
-    test_boolean = True
-    stackup = None
+    global_units = None
+    global_variant = None
 
     @staticmethod
     def set_sch(name):

@@ -244,7 +244,7 @@ def main():
             logger.error('Malformed global-redef option, must be VARIABLE=VALUE ({})'.format(redef))
             sys.exit(EXIT_BAD_ARGS)
         var = redef.split('=')[0]
-        GS.global_from_cli[var] = redef[len(var)+1:]
+        GS.cli_global_defs[var] = redef[len(var)+1:]
 
     # Output dir: relative to CWD (absolute path overrides)
     GS.out_dir = os.path.join(os.getcwd(), args.out_dir)

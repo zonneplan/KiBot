@@ -282,7 +282,7 @@ class Base3DOptions(VariantOptions):
                     rem_models.append(rem_m_models)
                 else:
                     # Fitted
-                    new_model = c.get_field_value(GS.global_3D_model_field)
+                    new_model = c.get_field_value(GS.global_field_3D_model)
                     if new_model:
                         # We will change the 3D model
                         self.replace_models(models, new_model, c)

@@ -184,7 +184,7 @@ class CfgYamlReader(object):
             gb.update(self.imported_globals)
             logger.debug("Global options + imported: {}".format(gb))
         # Parse all keys inside it
-        glb = GS.global_opts_class()
+        glb = GS.class_for_global_opts()
         glb.set_tree(gb)
         try:
             glb.config(None)
@@ -374,20 +374,6 @@ class CfgYamlReader(object):
         :param fstream: file stream of a config YAML file
         """
         data = self.load_yaml(fstream)
-        # Transfer command line global overwrites
-        GS.global_output = GS.global_from_cli.get('output', None)
-        GS.global_dir = GS.global_from_cli.get('dir', None)
-        GS.global_variant = GS.global_from_cli.get('variant', None)
-        GS.global_units = GS.global_from_cli.get('units', None)
-        GS.global_date_time_format = GS.global_from_cli.get('date_time_format', None)
-        GS.global_date_format = GS.global_from_cli.get('date_format', None)
-        GS.global_time_format = GS.global_from_cli.get('time_format', None)
-        GS.global_kiauto_wait_start = GS.global_from_cli.get('kiauto_wait_start', None)
-        GS.global_kiauto_time_out_scale = GS.global_from_cli.get('kiauto_time_out_scale', None)
-        GS.global_pcb_material = GS.global_from_cli.get('pcb_material', None)
-        GS.global_solder_mask_color = GS.global_from_cli.get('solder_mask_color', None)
-        GS.global_silk_screen_color = GS.global_from_cli.get('silk_screen_color', None)
-        GS.global_pcb_finish = GS.global_from_cli.get('pcb_finish', None)
         # List of outputs
         version = None
         globals_found = False
@@ -562,7 +548,7 @@ def print_filters_help():
 
 
 def print_global_options_help():
-    print_output_options('Global options', GS.global_opts_class, 2)
+    print_output_options('Global options', GS.class_for_global_opts, 2)
 
 
 def quoted(val):
