@@ -70,7 +70,6 @@ import re
 import gzip
 import locale
 from glob import glob
-from logging import DEBUG
 
 # Import log first to set the domain
 from . import log
@@ -234,8 +233,7 @@ def main():
     args = docopt(__doc__, version=ver, options_first=True)
 
     # Set the specified verbosity
-    log.set_verbosity(logger, args.verbose, args.quiet)
-    GS.debug_enabled = logger.getEffectiveLevel() <= DEBUG
+    GS.debug_enabled = log.set_verbosity(logger, args.verbose, args.quiet)
     GS.debug_level = args.verbose
     # Now we have the debug level set we can check (and optionally inform) KiCad info
     detect_kicad()

@@ -54,7 +54,12 @@ try:
     from kicost.config import load_config
     # Progress mechanism: use the one declared in __main__ (TQDM)
     from kicost.__main__ import ProgressConsole
-    set_distributors_progress(ProgressConsole)
+
+    class ProgressConsole2(ProgressConsole):
+        def __init__(self, total, logger):
+            super().__init__(total, logger)
+            self.logTqdmHandler.addFilter(log.FilterNoInfo())
+    set_distributors_progress(ProgressConsole2)
     KICOST_SUPPORT = True
 except ModuleNotFoundError:
     KICOST_SUPPORT = False

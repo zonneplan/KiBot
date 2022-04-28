@@ -24,6 +24,8 @@ else:
 # Default domain, base name for the tool
 domain = 'kilog'
 filters = None
+root_logger = None
+visual_level = None
 
 
 def get_logger(name=None):
@@ -117,16 +119,25 @@ def set_verbosity(logger, verbose, quiet):
         log_level = logging.DEBUG
     if quiet:
         log_level = logging.WARNING
-    logger.setLevel(log_level)
+    # We use debug level but we then filter according to the desired level (visual_level)
+    # In this way we can log debug to files and only the user level to the console
+    logger.setLevel(logging.DEBUG)
+    global visual_level
+    visual_level = log_level
+    return log_level <= logging.DEBUG
 
 
 class FilterOnlyInfo(object):
     def filter(self, record):
+        if visual_level is not None and record.levelno < visual_level:
+            return False
         return record.levelno == logging.INFO
 
 
 class FilterNoInfo(object):
     def filter(self, record):
+        if visual_level is not None and record.levelno < visual_level:
+            return False
         return record.levelno != logging.INFO
 
 
@@ -141,21 +152,23 @@ def init():
     ch.addFilter(FilterNoInfo())
     ch.setFormatter(CustomFormatter(sys.stderr))
     logger.addHandler(ch)
-    # Handler for t info.
+    # Handler for info.
     # Outputs to stdout
     ch = logging.StreamHandler(sys.stdout)
     ch.addFilter(FilterOnlyInfo())
     ch.setFormatter(CustomFormatter(sys.stdout))
     logger.addHandler(ch)
+    global root_logger
+    root_logger = logger
     return logger
 
 
 class CustomFormatter(logging.Formatter):
     """Logging Formatter to add colors"""
 
-    def __init__(self, stream):
+    def __init__(self, stream=None):
         super(logging.Formatter, self).__init__()
-        if stream.isatty():
+        if stream is not None and stream.isatty():
             white = Fore.WHITE
             yellow = Fore.YELLOW + Style.BRIGHT
             red = Fore.RED + Style.BRIGHT
@@ -186,3 +199,15 @@ class CustomFormatter(logging.Formatter):
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
+
+
+def set_file_log(fname):
+    fh = logging.FileHandler(fname)
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(CustomFormatter())
+    root_logger.addHandler(fh)
+    return fh
+
+
+def remove_file_log(fh):
+    root_logger.removeHandler(fh)
