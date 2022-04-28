@@ -314,13 +314,6 @@ def test_filter_no_regex_1(test_dir):
     ctx.clean_up()
 
 
-def test_filter_no_regex_2(test_dir):
-    ctx = context.TestContext(test_dir, 'FilterNoRegex2', PRJ, 'error_filter_no_regex_2', '')
-    ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Missing .?regex.?")
-    ctx.clean_up()
-
-
 def test_filter_wrong_entry(test_dir):
     ctx = context.TestContext(test_dir, 'FilterWrongEntry', PRJ, 'error_filter_wrong_entry', '')
     ctx.run(EXIT_BAD_CONFIG)
