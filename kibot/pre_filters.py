@@ -32,7 +32,7 @@ class FilterOptions(Optionable):
             """ Error number we want to exclude. KiCad 5 only """
             self.error_number = None
             """ {number} """
-            self.regex = 'None'
+            self.regex = ''
             """ Regular expression to match the text for the error we want to exclude """
             self.regexp = None
             """ {regex} """
