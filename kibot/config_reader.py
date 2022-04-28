@@ -14,7 +14,6 @@ from sys import (exit, maxsize)
 from collections import OrderedDict
 
 from .error import (KiPlotConfigurationError, config_error)
-from .kiplot import (load_board)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
                    W_NOVARIANTS, W_NOGLOBALS)
 from .gs import GS
@@ -668,7 +667,7 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         layers = 'all'
         if pcb_file:
             # We have a PCB to take as reference
-            board = load_board(pcb_file)
+            board = GS.load_board(pcb_file)
             if copy_options or copy_expand:
                 # Layers and plot options from the PCB
                 layers = 'selected'
