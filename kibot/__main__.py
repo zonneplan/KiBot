@@ -12,7 +12,8 @@ Usage:
          [-q | -v...] [-i] [-C] [-m MKFILE] [-g DEF]... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
-  kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] --quick-start
+  kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
+         --quick-start
   kibot [-v...] --help-filters
   kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs
@@ -45,8 +46,9 @@ Options:
 
 Quick start options:
   --quick-start                    Generates demo config files and their outputs
-  --start PATH                     Starting point for the search [default: .]
   --dry                            Just generate the config files
+  --start PATH                     Starting point for the search [default: .]
+  --type TYPE                      Generate examples only for the indicated type/s
 
 Help options:
   -h, --help                       Show this help message and exit
@@ -281,7 +283,7 @@ def main():
         sys.exit(0)
     if args.quick_start:
         # Some kind of wizard to get usable examples
-        generate_examples(args.start, args.dry)
+        generate_examples(args.start, args.dry, args.type)
         sys.exit(0)
 
     # Determine the YAML file

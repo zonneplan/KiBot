@@ -758,7 +758,7 @@ def discover_files(dest_dir):
     return fname
 
 
-def generate_one_example(dest_dir):
+def generate_one_example(dest_dir, types):
     """ Generate a example config for dest_dir """
     fname = discover_files(dest_dir)
     # Abort if none
@@ -808,6 +808,9 @@ def generate_one_example(dest_dir):
         outputs = []
         for n, cls in OrderedDict(sorted(outs.items())).items():
             o = cls()
+            if types and n not in types:
+                logger.debug('- {}, not selected (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
+                continue
             if ((not(o.is_pcb() and GS.pcb_file) and not(o.is_sch() and GS.sch_file)) or
                ((o.is_pcb() and o.is_sch()) and (not GS.pcb_file or not GS.sch_file))):
                 logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
@@ -826,7 +829,10 @@ def generate_one_example(dest_dir):
                 outputs.extend(tree)
             else:
                 logger.debug('- {}, nothing to do'.format(n))
-        f.write(yaml.dump({'outputs': outputs}, sort_keys=False))
+        if outputs:
+            f.write(yaml.dump({'outputs': outputs}, sort_keys=False))
+        else:
+            return None
     return fname
 
 
@@ -855,7 +861,7 @@ def _walk(path, depth):
                 yield from _walk(entry.path, depth)
 
 
-def generate_examples(start_dir, dry):
+def generate_examples(start_dir, dry, types):
     if not start_dir:
         start_dir = '.'
     else:
@@ -876,7 +882,7 @@ def generate_examples(start_dir, dry):
     confs = []
     for c in sorted(candidates):
         logger.info('Analyzing `{}` dir'.format(c))
-        res = generate_one_example(c)
+        res = generate_one_example(c, types)
         if res:
             confs.append(res)
         logger.info('')
