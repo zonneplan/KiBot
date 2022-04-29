@@ -17,6 +17,7 @@
 ## Index
 
 * [Introduction](#introduction)
+* [Installation](#installation)
 * [Configuration](#configuration)
   * [The header](#the-header)
   * [The *preflight* section](#the-preflight-section)
@@ -48,7 +49,6 @@
     * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
     * [Importing filters and variants from another file](#importing-filters-and-variants-from-another-file)
 * [Usage](#usage)
-* [Installation](#installation)
 * [Usage for CI/CD](#usage-for-cicd)
   * [Github Actions](#usage-of-github-actions)
 * [Notes about Gerber format](#notes-about-gerber-format)
@@ -61,7 +61,7 @@
 KiBot is a program which helps you to generate the fabrication and
 documentation files for your KiCad projects easily, repeatable, and
 most of all, scriptably. This means you can use a Makefile to export
-your KiCad PCBs just as needed.
+your KiCad PCBs just as needed, or do it in a CI/CD environment.
 
 For example, it's common that you might want for each board rev:
 
@@ -81,6 +81,98 @@ KiBot lets you do this. The following picture depicts the data flow:
 ![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Esquema.png)
 
 If you want to see this concept applied to a real world project visit the [Spora CI/CD](https://github.com/INTI-CMNB/kicad-ci-test-spora) example.
+
+## Installation
+
+KiBot main target is Linux, but some user successfully use it on Windows. For Windows you'll need to install tools to mimic a Linux environment.
+Running KiBot on MacOSX should be possible now that KiCad migrated to Python 3.x.
+
+You can also run KiBot using docker images in a CI/CD environment like GitHub or GitLab. In this case you don't need to install anything locally.
+
+### Dependencies
+
+- For ERC, DRC, BoM XML update and SCH print install [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/)
+- BoM files (HTML/CSV/TSV/TXT/XML/XLSX) can be generated using the internal BoM generator or using [KiBoM](https://github.com/INTI-CMNB/KiBoM).
+- For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
+- For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw). Also install the convert (from imagemagick) and rsvg-convert (from librsvg2-bin) tools.
+- For BoMs with costs information install [KiCost](https://github.com/hildogjr/KiCost/)
+- To create RAR files install the rar tool.
+- To generate reports in PDF format (also ODF, DOCX, etc.) install [Pandoc](https://pandoc.org/)
+- If you need to generate the PCB prints in postscript format install ghostscript
+- The following Python modules are also used: (Note that using pip or the Debian package they will be installed automatically)
+  - `colorama`
+  - `distutils`. This is part of Python, but on debian systems this is in a separated package: `python3-distutils`
+  - `qrcodegen`. Only to generate QR code symbols and footprints.
+  - `requests`
+  - `xlsxwriter`. If you need BoMs in XLSX format.
+  - `yaml`
+
+### Installation on Ubuntu/Debian
+
+Get the Debian package from the [releases section](https://github.com/INTI-CMNB/KiBot/releases) and run:
+```shell
+sudo apt install ./kibot*_all.deb
+```
+
+**Important note**: Sometimes the release needs another packages that aren't part of the stable Debian distribution.
+In this case the packages are also included in the release page. As an example version 0.6.0 needs:
+
+```shell
+sudo apt install ./python3-mcpy_2.0.2-1_all.deb ./kibot_0.6.0-1_all.deb
+```
+
+**Important note**: The [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/) packages are a mandatory dependency.
+The [KiBoM](https://github.com/INTI-CMNB/KiBoM), [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom) and [PcbDraw](https://github.com/INTI-CMNB/PcbDraw) are recommended.
+
+### Installation using pip
+
+```shell
+pip install --no-compile kibot
+```
+
+Note that `pip` has the dubious idea of compiling everything it downloads.
+There is no advantage in doing it and it interferes with the `mcpy` macros.
+Also note that in modern Linux systems `pip` was renamed to `pip3`, to avoid confusion with `pip` from Python 2.
+
+If you are installing at system level I recommend generating the compilation caches after installing.
+As `root` just run:
+
+```shell
+kibot --help-outputs > /dev/null
+```
+
+Note that `pip` will automatically install all the needed Python dependencies.
+But it won't install other interesting dependencies.
+In particular you should take a look at the [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/) dependencies.
+If you have a Debian based OS I strongly recommend trying to use the `.deb` packages for all the tools.
+
+If you want to install the code only for the current user add the `--user` option.
+
+If you want to install the last git code from GitHub using pip use:
+
+```shell
+pip3 install --user git+https://github.com/INTI-CMNB/KiBot.git
+```
+
+You can also clone the repo, change to its directory and install using:
+
+```shell
+pip3 install --user -e .
+```
+
+In this way you can change the code and you won't need to install again.
+
+### Notes about virtualenv
+
+If you try to use a Python virtual environment you'll need to find a way to make the KiCad module (`pcbnew`) available on it.
+I don't know how to make it.
+
+### Installation on other targets
+
+- Install KiCad 5.1.6 or newer
+- Install Python 3.5 or newer
+- Install the Python Yaml and requests modules
+- Run the script *src/kibot*
 
 ## Configuration
 
@@ -2863,65 +2955,6 @@ Help options:
   --help-preflights                List supported preflights and details
 
 ```
-
-## Installation
-
-### Dependencies
-
-- For ERC, DRC, BoM XML update and PCB/SCH print install [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/)
-- BoM files (HTML/CSV/TSV/TXT/XML/XLSX) can be generated using the internal BoM generator or using [KiBoM](https://github.com/INTI-CMNB/KiBoM).
-- For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
-- For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw). Also install the convert (from imagemagick) and rsvg-convert (from librsvg2-bin) tools.
-- To create RAR files install the rar tool.
-- The `distutils` module. This is part of Python, but on debian systems this is in a separated package: `python3-distutils`
-
-### Installation on Ubuntu/Debian
-
-Get the Debian package from the [releases section](https://github.com/INTI-CMNB/KiBot/releases) and run:
-```shell
-sudo apt install ./kibot*_all.deb
-```
-
-**Important note**: Sometimes the release needs another packages that aren't part of the stable Debian distribution.
-In this case the packages are also included in the release page. As an example version 0.6.0 needs:
-
-```shell
-sudo apt install ./python3-mcpy_2.0.2-1_all.deb ./kibot_0.6.0-1_all.deb
-```
-
-### Installation using pip
-
-```shell
-pip install --no-compile kibot
-```
-
-Note that `pip` has the dubious idea of compiling everything it downloads.
-There is no advantage in doing it and it interferes with the `mcpy` macros.
-
-If you are installing at system level I recommend generating the compilation caches after installing.
-As `root` just run:
-
-```shell
-kibot --help-outputs > /dev/null
-```
-
-Note that `pip` will automatically install all the needed Python dependencies.
-But it won't install other interesting dependencies.
-In particular you should take a look at the [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/) dependencies.
-If you have a Debian based OS I strongly recommend trying to use the `.deb` packages for all the tools.
-
-### Notes about virtualenv
-
-If you try to use a Python virtual environment you'll need to find a way to make the KiCad module (`pcbnew`) available on it.
-I don't know how to make it.
-
-### Installation on other targets
-
-- Install KiCad 5.1.6 or newer
-- Install Python 3.5 or newer
-- Install the Python Yaml and requests modules
-- Run the script *src/kibot*
-
 
 ## Usage for CI/CD
 
