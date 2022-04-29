@@ -84,7 +84,6 @@ class QRCodeOptions(Optionable):
             self.pcb_negative = False
             """ Generate a negative image for the PCB """
         self._unkown_is_error = True
-        self._update_mode = False
 
     def config(self, parent):
         super().config(parent)
@@ -531,3 +530,4 @@ class QR_Lib(BaseOutput):  # noqa: F821
             self.options = QR_LibOptions
             """ [dict] Options for the `boardview` output """
         self._both_related = True
+        self._update_mode = False
