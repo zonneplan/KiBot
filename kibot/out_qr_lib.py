@@ -531,3 +531,15 @@ class QR_Lib(BaseOutput):  # noqa: F821
             """ [dict] Options for the `boardview` output """
         self._both_related = True
         self._update_mode = False
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        gb = {}
+        gb['name'] = 'basic_qr_lib_example'
+        gb['comment'] = 'QR code symbol and footprint example'
+        gb['type'] = name
+        gb['dir'] = 'QR_libs'
+        qr1 = {'correction_level': 'medium', 'name': 'QR_data', 'pcb_negative': True}
+        qr2 = {'correction_level': 'medium', 'name': 'QR_kibot', 'text': 'https://github.com/INTI-CMNB/KiBot/'}
+        gb['options'] = {'qrs': [qr1, qr2], 'use_sch_dir': False}
+        return [gb]
