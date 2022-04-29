@@ -48,7 +48,7 @@ Quick start options:
   --quick-start                    Generates demo config files and their outputs
   --dry                            Just generate the config files
   --start PATH                     Starting point for the search [default: .]
-  --type TYPE                      Generate examples only for the indicated type/s
+  -t, --type TYPE                  Generate examples only for the indicated type/s
 
 Help options:
   -h, --help                       Show this help message and exit
