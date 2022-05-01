@@ -64,7 +64,11 @@ class Download_Datasheets_Options(VariantOptions):
         elif not os.path.isfile(dest):
             # Download
             if not self._dry:
-                r = requests.get(ds, allow_redirects=True, headers={'User-Agent': USER_AGENT})
+                try:
+                    r = requests.get(ds, allow_redirects=True, headers={'User-Agent': USER_AGENT}, timeout=20)
+                except requests.exceptions.ReadTimeout:
+                    logger.warning(W_FAILDL+'Timeout during download `{}`'.format(ds))
+                    return None
                 if r.status_code != 200:
                     logger.warning(W_FAILDL+'Failed to download `{}`'.format(ds))
                     return None
