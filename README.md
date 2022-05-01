@@ -177,7 +177,8 @@ I don't know how to make it.
 ## Configuration
 
 KiBot uses a configuration file where you can specify what *outputs* to
-generate. By default you'll generate all of them, but you can specify which
+generate and which pre-flight (before *launching* the outputs generation)
+actions to perform. By default you'll generate all of them, but you can specify which
 ones from the command line.
 
 The configuration file should be named using the **.kibot.yaml** suffix,
@@ -187,6 +188,41 @@ This file can be compressed using *gzip* file format.
 
 If you never used YAML read the following [explanation](https://github.com/INTI-CMNB/KiBot/blob/master/docs/KiPlotYAML.md).
 Note that the explanation could be useful even if you know YAML.
+
+### Quick start
+
+If you want to *learn by examples*, or you just want to take a look a what
+KiBot can do, you can use the `--quick-start` command line option.
+
+First change to the directory where your project (or projects) is located.
+Now run KiBot like this:
+
+```shell
+kibot --quick-start
+```
+
+This will look for KiCad projects starting from the current directory and
+going down the directory structure. For each project found KiBot will
+generate a configuration file showing some common outputs. After cerating
+the configuration files KiBot will start the outputs generation.
+
+You can use the generated files as example of how to configure KiBot.
+If you want to just generate the configuration files and not the outputs
+use:
+
+```shell
+kibot --quick-start --dry
+```
+
+If you want to know about all the possible options for all the available
+outputs you can try:
+
+```shell
+kibot --example
+```
+
+This will generate a configuration file with all the available outputs
+and all their options.
 
 ### The header
 
@@ -2816,7 +2852,20 @@ Also note that imported globals has more precedence than the ones defined in the
 
 ## Usage
 
-If you need a template for the configuration file try:
+For a quick start just go to the project's dir and run:
+
+```shell
+kibot --quick-start
+```
+
+This will generate a configuration and generate outputs.
+If you want to just generate the configuration, and not the outputs, use:
+
+```shell
+kibot --quick-start --dry
+```
+
+If you need a more exhaustive configuration file try:
 
 ```shell
 kibot --example
