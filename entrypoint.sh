@@ -11,6 +11,7 @@ SKIP=""
 DIR=""
 VARIANT=""
 TARGETS=""
+QUICKSTART=""
 
 # Exit error code
 EXIT_ERROR=1
@@ -26,7 +27,7 @@ function msg_usage {
 function msg_disclaimer {
     echo -e "This is free software: you are free to change and redistribute it"
     echo -e "There is NO WARRANTY, to the extent permitted by law.\n"
-	echo -e "See <https://github.com/INTI-CMNB/KiBot>."
+    echo -e "See <https://github.com/INTI-CMNB/KiBot>."
 }
 
 function msg_illegal_arg {
@@ -34,18 +35,17 @@ function msg_illegal_arg {
 }
 
 function msg_help {
-	echo -e "Mandatory arguments:"
+    echo -e "\nOptional control arguments:"
     echo -e "  -c, --config FILE .kibot.yaml config file"
-
-	echo -e "\nOptional control arguments:"
     echo -e "  -d, --dir DIR output path. Default: current dir, will be used as prefix of dir configured in config file"
     echo -e "  -b, --board FILE .kicad_pcb board file. Use __SCAN__ to get the first board file found in current folder."
     echo -e "  -e, --schema FILE .sch schematic file.  Use __SCAN__ to get the first schematic file found in current folder."
+    echo -e "  -q, --quick-start YES generate configs and outputs automagically (-b, -e, -s, -V, -c are ignored)."
     echo -e "  -s, --skip Skip preflights, comma separated or 'all'"
     echo -e "  -t, --targets List of targets to generate separated by spaces. To only run preflights use __NONE__."
     echo -e "  -V, --variant Global variant"
 
-	echo -e "\nMiscellaneous:"
+    echo -e "\nMiscellaneous:"
     echo -e "  -v, --verbose annotate program execution"
     echo -e "  -h, --help display this message and exit"
 }
@@ -125,6 +125,9 @@ function args_process {
            -d | --dir) shift
                DIR="-d $1"
                ;;
+           -q | --quick-start) shift
+               QUICKSTART="$1"
+               ;;
            -s | --skip) shift
                if [ "$1" == "__NONE__" ]; then
                    SKIP=""
@@ -163,8 +166,13 @@ function run {
         /usr/bin/kicad-git-filters.py
     fi
 
-    echo $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
-    kibot $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
+    if [ QUICKSTART == "YES" ]; then
+        echo $DIR $VERBOSE --quick-start
+        kibot $DIR $VERBOSE --quick-start
+    else
+        echo $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
+        kibot $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
+    fi
 }
 
 function main {

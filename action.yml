@@ -23,6 +23,10 @@ inputs:
     description: 'The schematic file (.sch) [default: first *.*sch found]'
     required: false
     default: '__SCAN__'
+  quickstart:
+    description: 'Scans for projects and generates configs and outputs, use YES [default: NO]'
+    required: false
+    default: 'NO'
   skip:
     description: 'Skip preflights, comma separated or "all" [default: no skip]'
     required: false
@@ -47,6 +51,7 @@ runs:
     -  -d ${{ inputs.dir }}
     -  -b ${{ inputs.board }}
     -  -e ${{ inputs.schema }}
+    -  -q ${{ inputs.quickstart }}
     -  -s ${{ inputs.skip }}
     -  -t ${{ inputs.targets }}
     -  -v ${{ inputs.verbose }}
