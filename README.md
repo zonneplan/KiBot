@@ -3026,6 +3026,8 @@ For more information about the docker images visit [kicad_debian](https://github
 
 ### Usage of Github Actions
 
+Note: You can also use --quick-start functionality with GitHub actions, and example is this [workflow](https://github.com/INTI-CMNB/kibot_variants_arduprog/blob/master/.github/workflows/kibot_action_quick_start.yml)
+
 You need to put a [config.kibot.yaml](#configuration) file into the KiCad project folder.
 
 Here is an example of workflow file using the GitHub Action:
@@ -3078,6 +3080,7 @@ The available options are:
 - **config**: The KiBot config file to use. The first file that matches `*.kibot.yaml` is used when omitted.
 - **dir**: Output directory for the generated files. The current directory is used when omitted.
 - **board**: Name of the PCB file. The first file that matches `*.kicad_pcb` is used when omitted.
+- **quickstart**: When `YES` ignores all the other options and runs in `--quick-start` mode. No configuration needed.
 - **schema**: Name of the schematic file. The first file that matches `*.*sch` is used when omitted.
 - **skip**: Skip preflights, comma separated or *all*. Nothing is skipped when omitted.
 - **targets**: List of targets to generate separated by spaces. To only run preflights use __NONE__. All targets are generated when omitted.
