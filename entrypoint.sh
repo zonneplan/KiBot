@@ -166,8 +166,7 @@ function run {
         /usr/bin/kicad-git-filters.py
     fi
 
-    echo QUICKSTART: $QUICKSTART
-    if [ QUICKSTART == "YES" ]; then
+    if [ $QUICKSTART == "YES" ]; then
         echo Quick-start options: $DIR $VERBOSE --quick-start
         kibot $DIR $VERBOSE --quick-start
     else
