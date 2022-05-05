@@ -31,6 +31,8 @@ except ModuleNotFoundError:
 
     class Workbook():
         pass
+# Init the logger first
+logger = log.get_logger()
 # KiCost support
 try:
     # Give priority to submodules
@@ -39,27 +41,22 @@ try:
         rel_path = op.abspath(op.join(op.dirname(__file__), rel_path))
         if rel_path not in sys.path:
             sys.path.insert(0, rel_path)
-    # Init the logger first
-    logger = log.get_logger()
-    from kicost.global_vars import set_logger, KiCostError
-    set_logger(logger)
+    from kicost.global_vars import KiCostError
     from kicost import PartGroup
     from kicost.kicost import query_part_info
     from kicost.spreadsheet import create_worksheet, Spreadsheet
-    from kicost.distributors import (init_distributor_dict, set_distributors_logger, get_distributors_list,
+    from kicost.distributors import (init_distributor_dict, get_distributors_list,
                                      get_dist_name_from_label, set_distributors_progress, is_valid_api,
                                      configure_from_environment, configure_apis)
-    from kicost.edas import set_edas_logger
     from kicost.edas.tools import partgroup_qty
     from kicost.config import load_config
     # Progress mechanism: use the one declared in __main__ (TQDM)
-    from kicost.__main__ import ProgressConsole
+    from kicost.__main__ import ProgressConsole, init_all_loggers
 
     class ProgressConsole2(ProgressConsole):
         def __init__(self, total, logger):
             super().__init__(total, logger)
             self.logTqdmHandler.addFilter(log.FilterNoInfo())
-    set_distributors_progress(ProgressConsole2)
     KICOST_SUPPORT = True
 except ModuleNotFoundError:
     KICOST_SUPPORT = False
@@ -553,8 +550,8 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
             for c in g.components:
                 logger.debug(pprint.pformat(c.__dict__))
     # Force KiCost to use our logger
-    set_distributors_logger(logger)
-    set_edas_logger(logger)
+    init_all_loggers(log.get_logger('kicost'), log.get_logger('kicost.dist'), log.get_logger('kicost.eda'))
+    set_distributors_progress(ProgressConsole2)
     if GS.debug_enabled:
         logger.setLevel(logging.DEBUG+1-GS.debug_level)
     # Load KiCost config (includes APIs config)
@@ -671,7 +668,7 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
             ss.col_widths[col1] = column_widths[col1]
             ss.col_widths[col1+1] = column_widths[col1+1]
         # Add a worksheet with costs to the spreadsheet
-        create_worksheet(ss, logger, parts)
+        create_worksheet(ss, parts)
         # Title
         if cfg.xlsx.title:
             wks.set_row(0, 32)
