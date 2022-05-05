@@ -15,7 +15,6 @@ import sys
 import logging
 from textwrap import wrap
 from base64 import b64decode
-from math import ceil
 from .columnlist import ColumnList
 from .kibot_logo import KIBOT_LOGO
 from .. import log
@@ -41,29 +40,19 @@ try:
         rel_path = op.abspath(op.join(op.dirname(__file__), rel_path))
         if rel_path not in sys.path:
             sys.path.insert(0, rel_path)
-    from kicost.global_vars import KiCostError
-    from kicost import PartGroup
-    from kicost.kicost import query_part_info
-    from kicost.spreadsheet import create_worksheet, Spreadsheet
-    from kicost.distributors import (init_distributor_dict, get_distributors_list,
-                                     get_dist_name_from_label, set_distributors_progress, is_valid_api,
-                                     configure_from_environment, configure_apis)
-    from kicost.edas.tools import partgroup_qty
-    from kicost.config import load_config
-    # Progress mechanism: use the one declared in __main__ (TQDM)
-    from kicost.__main__ import ProgressConsole, init_all_loggers
-
-    class ProgressConsole2(ProgressConsole):
-        def __init__(self, total, logger):
-            super().__init__(total, logger)
-            self.logTqdmHandler.addFilter(log.FilterNoInfo())
+    # Import all needed stuff
+    from kicost import (PartGroup, KiCostError, query_part_info, solve_parts_qtys, configure_kicost_apis, ProgressConsole,
+                        init_all_loggers, create_worksheet, Spreadsheet, get_distributors_list, get_dist_name_from_label,
+                        set_distributors_progress, is_valid_api)
     KICOST_SUPPORT = True
 except ModuleNotFoundError:
     KICOST_SUPPORT = False
+    ProgressConsole = object
 except ImportError:
     logger.error("Installed KiCost is older than the version we support.")
     logger.error("Try installing the last release or the current GIT code.")
     KICOST_SUPPORT = False
+    ProgressConsole = object
 
 BG_GEN = "#E6FFEE"  # "#C6DFCE"
 BG_KICAD = "#FFE6B3"  # "#DFC693"
@@ -84,6 +73,15 @@ KICOST_COLUMNS = {'refs': ColumnList.COL_REFERENCE,
                   'desc': ColumnList.COL_DESCRIPTION,
                   'qty': ColumnList.COL_GRP_BUILD_QUANTITY}
 SPECS_GENERATED = {ColumnList.COL_REFERENCE_L, ColumnList.COL_ROW_NUMBER_L, 'sep'}
+
+
+# Progress bar for KiCost, we just add a filter to the logger
+# This filter is needed because we have full debug enabled and we filter the log_level manually
+# So we can generate a full log when in --quick-start mode (using a file)
+class ProgressConsole2(ProgressConsole):
+    def __init__(self, total, logger):
+        super().__init__(total, logger)
+        self.logTqdmHandler.addFilter(log.FilterNoInfo())
 
 
 def bg_color(col):
@@ -538,6 +536,17 @@ def adapt_column_names(cfg):
             v['label'] = cfg.column_rename[id]
 
 
+def dis_enable_apis(api_options, cfg):
+    """ Callback used during KiCost initialization to dis/enable APIs """
+    # Filter which APIs we want
+    for api in cfg.xlsx.kicost_api_disable:
+        if is_valid_api(api):
+            api_options[api]['enable'] = False
+    for api in cfg.xlsx.kicost_api_enable:
+        if is_valid_api(api):
+            api_options[api]['enable'] = True
+
+
 def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg):
     if not KICOST_SUPPORT:
         logger.warning(W_NOKICOST, 'KiCost sheet requested but failed to load KiCost support')
@@ -555,20 +564,7 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
     if GS.debug_enabled:
         logger.setLevel(logging.DEBUG+1-GS.debug_level)
     # Load KiCost config (includes APIs config)
-    api_options = load_config(cfg.xlsx.kicost_config)
-    # Environment with overwrite
-    configure_from_environment(api_options, True)
-    # Filter which APIs we want
-    for api in cfg.xlsx.kicost_api_disable:
-        if is_valid_api(api):
-            api_options[api]['enable'] = False
-    for api in cfg.xlsx.kicost_api_enable:
-        if is_valid_api(api):
-            api_options[api]['enable'] = True
-    # Configure the APIs
-    configure_apis(api_options)
-    # Start with a clean list of available distributors
-    init_distributor_dict()
+    configure_kicost_apis(cfg.xlsx.kicost_config, True, dis_enable_apis, cfg)
     # Create the projects information structure
     prj_info = [{'title': p.name, 'company': p.sch.company, 'date': p.sch.date, 'qty': p.number} for p in cfg.aggregate]
     # Create the worksheets
@@ -630,19 +626,11 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
             part.refs = [c.ref for c in g.components]
             part.fields = g.fields
             part.fields['manf#_qty'] = compute_qtys(cfg, g)
-            # Solve the QTYs
-            part.qty_str, part.qty = partgroup_qty(part)
-            # Total for all boards
-            if multi_prj:
-                total = 0
-                for i_prj, p_info in enumerate(prj_info):
-                    total += part.qty[i_prj] * p_info['qty']
-            else:
-                total = part.qty * prj_info[0]['qty']
-            part.qty_total_spreadsheet = ceil(total)
             parts.append(part)
             # Process any "join" request
             apply_join_requests(cfg.join_ce, part.fields, g.fields)
+        # Fill the quantity members of the parts
+        solve_parts_qtys(parts, multi_prj, prj_info)
         # Distributors
         dist_list = solve_distributors(cfg)
         # Get the prices
