@@ -378,6 +378,10 @@ def config_output(out, dry=False, dont_stop=False):
         else:
             config_error(msg)
         ok = False
+    except SystemExit:
+        if not dont_stop:
+            raise
+        ok = False
     return ok
 
 
@@ -398,6 +402,9 @@ def run_output(out, dont_stop=False):
             logger.error(msg)
         else:
             config_error(msg)
+    except SystemExit:
+        if not dont_stop:
+            raise
 
 
 def generate_outputs(outputs, target, invert, skip_pre, cli_order, dont_stop=False):
@@ -407,7 +414,7 @@ def generate_outputs(outputs, target, invert, skip_pre, cli_order, dont_stop=Fal
     for out in RegOutput.get_prioritary_outputs():
         if config_output(out, dont_stop=dont_stop):
             logger.info('- '+str(out))
-            run_output(out)
+            run_output(out, dont_stop=dont_stop)
     # Check if all must be skipped
     n = len(target)
     if n == 0 and invert:
