@@ -20,7 +20,8 @@ from . import log
 logger = log.get_logger()
 SVG2PNG = 'rsvg-convert'
 CONVERT = 'convert'
-MIN_VERSION = '0.6.0'
+# 0.9.0 implements KiCad 6 support
+MIN_VERSION = '0.9.0'
 
 
 class PcbDrawStyle(Optionable):
