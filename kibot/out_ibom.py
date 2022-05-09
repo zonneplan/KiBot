@@ -189,7 +189,7 @@ class IBoMOptions(VariantOptions):
             logger.error('Failed to create BoM, error %d', e.returncode)
             if e.output:
                 logger.debug('Output from command: '+e.output.decode())
-                if "'PCB_SHAPE' object has no attribute 'GetAngle'" in e.output:
+                if "'PCB_SHAPE' object has no attribute 'GetAngle'" in e.output.decode():
                     logger.error("Update Interactive HTML BoM your version doesn't support KiCad 6 files")
             exit(BOM_ERROR)
         logger.debug('Output from command:\n'+cmd_output_dec+'\n')
