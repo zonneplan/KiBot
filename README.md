@@ -109,6 +109,8 @@ You can also run KiBot using docker images in a CI/CD environment like GitHub or
 
 ### Installation on Ubuntu/Debian
 
+The easiest way is to use the [repo](https://set-soft.github.io/debian/), but if you want to manually install the individual `.deb` files you can:
+
 Get the Debian package from the [releases section](https://github.com/INTI-CMNB/KiBot/releases) and run:
 ```shell
 sudo apt install ./kibot*_all.deb
