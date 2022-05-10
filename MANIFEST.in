@@ -4,5 +4,5 @@ include README.md
 include kibot/report_templates/*.txt
 include kibot/kicad_colors/*.json
 include kibot/kicad_layouts/*.kicad_wks
-include kibot/config_templates/gerbers/*.yaml
+include kibot/config_templates/gerber/*.yaml
 include kibot/config_templates/bom/*.yaml
