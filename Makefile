@@ -22,6 +22,9 @@ endif
 deb:
 	fakeroot dpkg-buildpackage -uc -b
 
+deb_sig:
+	fakeroot dpkg-buildpackage -b
+
 lint: doc
 	# flake8 --filename is broken
 	ln -sf src/kiplot kiplot.py
