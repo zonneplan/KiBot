@@ -8,10 +8,9 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
 
 **Important for KiCad 6 users**:
-- Only the code in the git repo supports KiCad 6 (no stable release yet)
-- The docker images tagged `ki6` has KiCad 6, but you need to use the KiBot from the repo, not the one in the images.
-- The docker image with KiCad 6 and KiBot that supports it is tagged as `dev_k6`
-- The GitHub action with KiCad 6 support is tagged as `v1_k6`
+- You need KiBot 1.0.0 or newer
+- The docker images tagged `ki6` and `dev_k6` has KiCad 6.
+- The GitHub action with KiCad 6 support are tagged as `v2_k6` and `v2_dev_k6`.
 - When using KiCad 6 you must migrate the whole project and pass the migrated files to KiBot.
 
 ## Index
