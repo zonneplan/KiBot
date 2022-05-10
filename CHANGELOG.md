@@ -5,13 +5,57 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.0] - 2022-05-10
 ### Added
-- Options to better control the rotation filter (#60 and #67):
-  - invert_bottom: bottom angles are inverted.
-  - skip_top: top components aren't rotated.
-  - skip_bottom: bottom components aren't rotated.
+- General stuff:
+  - KiCad 6 support
+  - Import mechanism for filters, variants and globals (#88)
+  - Outputs can use the options of other outputs as base (extend them). (#112)
+  - A mechanism to avoid running some outputs by default. (#112)
+  - `--cli-order` option to generate outputs in arbitrary order. (#106)
+- Filters and variants:
+  - Options to better control the rotation filter (#60 and #67):
+    - invert_bottom: bottom angles are inverted.
+    - skip_top: top components aren't rotated.
+    - skip_bottom: bottom components aren't rotated.
+  - Generic filter: options to match if a field is/isn't defined.
+  - Another experimental mechanism to change 3D models according to the variant.
+    (#103)
+  - Support for variants on KiCost output. (#106)
+- Expansion patterns:
+  - **%g** the `file_id` of the global variant.
+  - **%G** the `name` of the global variant.
+  - **%C1**, **%C2**, **%C3** and **%C4** the comments in the sch/pcb title
+    block.
+  - **%bc**, **%bC1**, **%bC2**, **%bC3**, **%bC4**, **%bd**, **%bf**,
+    **%bF**, **%bp** and **%br** board data
+  - **%sc**, **%sC1**, **%sC2**, **%sC3**, **%sC4**, **%sd**, **%sf**,
+    **%sF**, **%sp** and **%sr** schematic data
+  - **%V** the variant name
+  - **%I** user defined ID for this output
+  - Now patterns are also expanded in the out_dir name.
+- Global options:
+  - Default global `dir` option.
+  - Default global `units` option.
+  - Global option to specify `out_dir` (like -d command line option)
+  - Global options to control the date format.
+  - Added global options to define the PCB details (`pcb_material`,
+    `solder_mask_color`, `silk_screen_color` and `pcb_finish`)
+- New preflights:
+  - Commands to replace tags in the schematic and PCB (KiCad 5). (#93)
+    Also a mechanism to define variables in KiCad 6. (#161)
+  - Annotate power components. (#76)
+  - Annotate according to PCB coordinates (#93)
+- New outputs:
+  - 3D view render
+  - Report generation (for design house) (#93)
+  - QR codes generation and update: symbols and footprints. (#93)
+  - Print PCB layers in SVG/PDF/PS/EPS/PNG format.
+  - Join PDFs. (#156)
+  - Export PCB in GENCAD format. (#159)
+  - Datasheet downloader. (#119)
 - XLSX BoM: option to control the logo scale (#84)
-- Import mechanism for filters, variants and globals (#88)
 - PDF/SVG PCB Print:
   - option `hide_excluded` to hide components marked by the `exclude_filter`.
     https://forum.kicad.info/t/fab-drawing-for-only-through-hole-parts/
@@ -29,56 +73,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - two other options for the sorting criteria.
   - XYRS support (you can generate position files using it)
   - CSV `hide_header` option
-- Generic filter: options to match if a field is/isn't defined.
 - Drill:
   - Excellon: added `route_mode_for_oval_holes` option.
   - Support for blind/buried vias. (#166)
-- Default global `dir` option.
-- Default global `units` option.
-- Global option to specify `out_dir` (like -d command line option)
-- 3D view render
 - SCH PDF Print: monochrome and no frame options.
-- New expansion patterns:
-  - **%g** the `file_id` of the global variant.
-  - **%G** the `name` of the global variant.
-  - **%C1**, **%C2**, **%C3** and **%C4** the comments in the sch/pcb title
-    block.
-  - **%bc**, **%bC1**, **%bC2**, **%bC3**, **%bC4**, **%bd**, **%bf**,
-    **%bF**, **%bp** and **%br** board data
-  - **%sc**, **%sC1**, **%sC2**, **%sC3**, **%sC4**, **%sd**, **%sf**,
-    **%sF**, **%sp** and **%sr** schematic data
-  - **%V** the variant name
-  - **%I** user defined ID for this output
-- Now patterns are also expanded in the out_dir name.
-- Global options to control the date format.
-- Outputs can use the options of other outputs as base (extend them). (#112)
-- Another experimental mechanism to change 3D models according to the variant.
-  (#103)
-- A mechanism to avoid running some outputs by default. (#112)
-- New preflights:
-  - Commands to replace tags in the schematic and PCB (KiCad 5). (#93)
-    Also a mechanism to define variables in KiCad 6. (#161)
-  - Annotate power components. (#76)
-  - Annotate according to PCB coordinates (#93)
 - Compress:
   - Now you can compress files relative to the current working directory.
     So you can create a compressed file containing the source schematic and
     PCB files. (#93)
   - Added an option to remove the files we compressed. (#192)
 - Support for new KiCost options `split_extra_fields` and `board_qty`. (#120)
-- Datasheet downloader. (#119)
 - Position files now can include virtual components. (#106)
-- Support for variants on KiCost output. (#106)
-- `--cli-order` option to generate outputs in arbitrary order. (#106)
-- QR codes generation and update: symbols and footprints. (#93)
 - Support for `--subst-models` option for KiCad 6's kicad2step. (#137)
-- Added global options to define the PCB details (`pcb_material`,
-  `solder_mask_color`, `silk_screen_color` and `pcb_finish`)
-- Report generation (for design house) (#93)
-- New outputs:
-  - Print PCB layers in SVG format.
-  - Join PDFs. (#156)
-  - Export PCB in GENCAD format. (#159)
 
 ### Changed
 - Internal BoM: now components with different Tolerance, Voltage, Current

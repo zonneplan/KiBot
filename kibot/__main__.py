@@ -61,13 +61,13 @@ Help options:
 
 """
 __author__ = 'Salvador E. Tropea, John Beard'
-__copyright__ = 'Copyright 2018-2021, Salvador E. Tropea/INTI/John Beard'
+__copyright__ = 'Copyright 2018-2022, Salvador E. Tropea/INTI/John Beard'
 __credits__ = ['Salvador E. Tropea', 'John Beard']
 __license__ = 'GPL v3+'
 __email__ = 'stropea@inti.gob.ar'
 __url__ = 'https://github.com/INTI-CMNB/KiBot/'
 __status__ = 'stable'
-__version__ = '0.11.0'
+__version__ = '1.0.0'
 
 
 import os

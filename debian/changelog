@@ -1,3 +1,49 @@
+kibot (1.0.0-1) stable; urgency=medium
+
+  * KiCad 6 support
+  * Import mechanism for filters, variants and globals
+  * Outputs can use the options of other outputs as base (extend them).
+  * A mechanism to avoid running some outputs by default.
+  * `--cli-order` option to generate outputs in arbitrary order.
+  * New preflights:
+    - Commands to replace tags in the schematic and PCB (KiCad 5).
+      Also a mechanism to define variables in KiCad 6.
+    - Annotate power components.
+    - Annotate according to PCB coordinates
+  * New outputs:
+    - 3D view render
+    - QR codes generation and update: symbols and footprints.
+    - Print PCB layers in SVG/PDF/PS/EPS/PNG format.
+    - Join PDFs.
+    - Export PCB in GENCAD format.
+    - Report generation (for design house)
+    - Datasheet downloader.
+  * Filters and Variants:
+    - New 3D model variant mechanism
+    - Support for variants on KiCost output.
+    - Generic filter: options to match if a field is/isn't defined.
+  * Global options:
+    - Default global `dir` option.
+    - Default global `units` option.
+    - Global option to specify `out_dir` (like -d command line option)
+    - Global options to control the date format.
+    - Added global options to define the PCB details (`pcb_material`,
+      `solder_mask_color`, `silk_screen_color` and `pcb_finish`)
+  * Expansion patterns:
+    - **%g** the `file_id` of the global variant.
+    - **%G** the `name` of the global variant.
+    - **%C1**, **%C2**, **%C3** and **%C4** the comments in the sch/pcb title
+      block.
+    - **%bc**, **%bC1**, **%bC2**, **%bC3**, **%bC4**, **%bd**, **%bf**,
+      **%bF**, **%bp** and **%br** board data
+    - **%sc**, **%sC1**, **%sC2**, **%sC3**, **%sC4**, **%sd**, **%sf**,
+      **%sF**, **%sp** and **%sr** schematic data
+    - **%V** the variant name
+    - **%I** user defined ID for this output
+    - Now patterns are also expanded in the out_dir name.
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Tue, 10 May 2022 09:58:05 -0300
+
 kibot (0.11.0-1) stable; urgency=medium
 
   * Most relevant:
