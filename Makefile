@@ -20,7 +20,7 @@ $(error Revert tests/board_samples/bom.xml-bak)
 endif
 
 deb:
-	fakeroot dpkg-buildpackage -uc -b
+	DEB_BUILD_OPTIONS=nocheck fakeroot dpkg-buildpackage -uc -b
 
 deb_sig:
 	fakeroot dpkg-buildpackage -b
