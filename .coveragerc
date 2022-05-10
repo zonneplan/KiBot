@@ -5,6 +5,8 @@ source =
 omit = */kibot/docopt.py
        */kibot/mcpy/*
        */kibot/mcpyrate/*
+       */kibot/PyPDF2/*
+       */kibot/svgutils/*
 
 [report]
 exclude_lines =
