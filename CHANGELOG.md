@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Outputs can use the options of other outputs as base (extend them). (#112)
   - A mechanism to avoid running some outputs by default. (#112)
   - `--cli-order` option to generate outputs in arbitrary order. (#106)
+  - `--quick-start` option to create usable configs and outputs.
 - Filters and variants:
   - Options to better control the rotation filter (#60 and #67):
     - invert_bottom: bottom angles are inverted.
