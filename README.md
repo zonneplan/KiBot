@@ -10,7 +10,7 @@
 **Important for KiCad 6 users**:
 - You need KiBot 1.0.0 or newer
 - The docker images tagged `ki6` and `dev_k6` has KiCad 6.
-- The GitHub action with KiCad 6 support are tagged as `v2_k6` and `v2_dev_k6`.
+- The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
 - When using KiCad 6 you must migrate the whole project and pass the migrated files to KiBot.
 
 ## Index
@@ -3022,6 +3022,15 @@ This image is based on [setsoft/kicad_debian:latest](https://hub.docker.com/repo
 
 If you need to run the current development version of KiBot you can use the following docker image: [setsoft/kicad_auto:dev](https://hub.docker.com/repository/docker/setsoft/kicad_auto).
 
+The most important images are:
+
+| Name   | KiBot        | KiCad |
+| :------| ------------ | ----: |
+| latest | last release | 5.1.9 |
+| ki6    | last release | 6.x   |
+| dev    | git code     | 5.1.9 |
+| dev_k6 | git code     | 6.x   |
+
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
 
@@ -3069,6 +3078,7 @@ jobs:
 ```
 
 For KiCad 6 use `v2_k6` instead of `v2`.
+These actions use the last KiBot stable release, to use the current development code use `v2_dk6` (KiCad 6) and `v2_d` (KiCad 5).
 
 A working example applied to a repo can be found [here](https://github.com/INTI-CMNB/kicad-ci-test-spora/tree/test_gh_action)
 ([spora_main.yml](https://github.com/INTI-CMNB/kicad-ci-test-spora/blob/test_gh_action/.github/workflows/spora_main.yml)).
