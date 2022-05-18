@@ -79,7 +79,7 @@ class KiCost(BaseVariant):  # noqa: F821
             return comps
         # Apply to all the components
         for c in comps:
-            logger.debug("{} {} {}".format(c.ref, c.fitted, c.included))
+            logger.debug("{} fitted: {} included: {}".format(c.ref, c.fitted, c.included))
             if not (c.fitted and c.included):
                 # Don't check if we already discarded it
                 continue

@@ -152,6 +152,7 @@ class KiCostOptions(VariantOptions):
             # Write a custom netlist to a temporal dir
             net_dir = mkdtemp(prefix='tmp-kibot-kicost-')
             netlist = os.path.join(net_dir, GS.sch_basename+'.xml')
+            logger.debug('Creating variant netlist `{}`'.format(netlist))
             with open(netlist, 'wb') as f:
                 GS.sch.save_netlist(f, self._comps, no_field=var_fields)
         else:

@@ -34,7 +34,7 @@ def convert2csv(xlsx, skip_empty=False, sheet=None):
     subprocess.check_output(cmd)
     with open(csv, 'rt') as f:
         content = f.read()
-    content = re.sub(r'\$ date:,[^,]+', '$ date:,', content, 1)
+    content = re.sub(r'(\$|Prj) date:,[^,]+', r'\1 date:,', content, 2)
     content = re.sub(r'KiCost[^,]+', 'KiCost', content, 1)
     content = re.sub(r'KiCad Version:,[^,]+', 'KiCad Version:,', content)
     content = re.sub(r'Created:,[^,]+', 'Created:,', content, 1)
@@ -57,6 +57,18 @@ def test_kicost_simple(test_dir):
     prj = 'kibom-variant_kicost'
     ctx = context.TestContextSCH(test_dir, 'test_kicost_simple', prj, 'kicost_simple', OUT_DIR)
     ctx.run()
+    check_simple(ctx, '')
+    check_simple(ctx, 'default')
+    check_simple(ctx, 'production')
+    check_simple(ctx, 'test')
+    ctx.clean_up()
+
+
+def test_kicost_int_variant(test_dir):
+    """ External KiCost using internal variants """
+    prj = 'kibom-variant_kicost'
+    ctx = context.TestContextSCH(test_dir, 'test_kicost_int_variant', prj, 'kicost_int_variant', OUT_DIR)
+    ctx.run(extra_debug=True)
     check_simple(ctx, '')
     check_simple(ctx, 'default')
     check_simple(ctx, 'production')

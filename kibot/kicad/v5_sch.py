@@ -1907,7 +1907,7 @@ class Schematic(object):
             if user_fields:
                 fields = SubElement(comp, 'fields')
                 for fname, fvalue in user_fields:
-                    if fname in no_field:
+                    if fname.lower() in no_field:
                         continue
                     fld = SubElement(fields, 'field')
                     fld.set('name', fname)
@@ -2026,5 +2026,5 @@ class Schematic(object):
         SubElement(root, 'nets')
         # Make it look nice
         rough_string = tostring(root, encoding='utf8')
-        reparsed = minidom.parseString(rough_string)
+        reparsed = minidom.parseString(rough_string.decode('utf8'))
         fhandle.write(reparsed.toprettyxml(indent="  ", encoding='UTF-8'))

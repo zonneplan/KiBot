@@ -5,9 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
 - New outputs:
   - KiCad netlist generation
-  - IPC-D-356 netlist generation
+  - IPC-D-356 netlist generation (#197)
+
+### Fixed
+- KiCost+Internal variants: UTF-8 problems
+- KiCost+Internal variants: problem with `variant` field capitalization
 
 ## [1.0.0] - 2022-05-10
 ### Added
