@@ -1817,6 +1817,28 @@ Next time you need this list just use an alias, like this:
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* Netlist
+  * Type: `netlist`
+  * Description: Generates the list of connections for the project.
+                 The netlist can be generated in the classic format and in IPC-D-356 format,
+                 useful for board testing
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `netlist` output.
+      * Valid keys:
+        - `format`: [string='classic'] [classic,ipc] The `classic` format is the KiCad internal format, and is generated
+                    from the schematic. The `ipc` format is the IPC-D-356 format, useful for PCB
+                    testing, is generated from the PCB.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=netlist/IPC-D-356, %x=net/d356). Affected by global options.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * PCB Print
   * Type: `pcb_print`
   * Description: Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
