@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Salvador E. Tropea
-# Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2022 Salvador E. Tropea
+# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -9,7 +9,8 @@ from subprocess import check_output, STDOUT, CalledProcessError
 from tempfile import mkdtemp
 from shutil import rmtree
 from .misc import (CMD_KICOST, URL_KICOST, BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE,
-                   W_KICOSTFLD, W_MIXVARIANT)
+                   W_KICOSTFLD, W_MIXVARIANT, ToolDependency, ToolDependencyRole)
+from .registrable import RegDependency
 from .error import KiPlotConfigurationError
 from .optionable import Optionable
 from .gs import GS
@@ -21,6 +22,8 @@ from . import log
 
 logger = log.get_logger()
 WARNING_MIX = ("Don't use the `kicost_variant` when using internal variants/filters")
+RegDependency.register(ToolDependency('kicost', 'KiCost', URL_KICOST, url_down=URL_KICOST+'/releases', in_debian=False,
+                                      roles=ToolDependencyRole(version=(1, 1, 7))))
 
 
 class Aggregate(Optionable):

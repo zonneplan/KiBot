@@ -21,7 +21,7 @@ from .. import log
 from ..misc import W_NOKICOST, W_UNKDIST, KICOST_ERROR, W_BADFIELD
 from ..error import trace_dump
 from ..gs import GS
-from ..__main__ import __version__
+from .. import __version__
 try:
     from xlsxwriter import Workbook
     XLSX_SUPPORT = True
@@ -549,7 +549,7 @@ def dis_enable_apis(api_options, cfg):
 
 def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg):
     if not KICOST_SUPPORT:
-        logger.warning(W_NOKICOST, 'KiCost sheet requested but failed to load KiCost support')
+        logger.warning(W_NOKICOST+'KiCost sheet requested but failed to load KiCost support')
         return
     if cfg.debug_level > 2:
         logger.debug("Groups exported to KiCost:")

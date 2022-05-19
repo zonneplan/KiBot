@@ -15,6 +15,7 @@ Usage:
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
          --quick-start
   kibot [-v...] --help-filters
+  kibot [-v...] [--markdown] --help-dependencies
   kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs
   kibot [-v...] --help-output=HELP_OUTPUT
@@ -52,6 +53,7 @@ Quick start options:
 
 Help options:
   -h, --help                       Show this help message and exit
+  --help-dependencies              List dependencies in human readable format
   --help-filters                   List supported filters and details
   --help-global-options            List supported global variables
   --help-list-outputs              List supported outputs
@@ -60,16 +62,6 @@ Help options:
   --help-preflights                List supported preflights and details
 
 """
-__author__ = 'Salvador E. Tropea, John Beard'
-__copyright__ = 'Copyright 2018-2022, Salvador E. Tropea/INTI/John Beard'
-__credits__ = ['Salvador E. Tropea', 'John Beard']
-__license__ = 'GPL v3+'
-__email__ = 'stropea@inti.gob.ar'
-__url__ = 'https://github.com/INTI-CMNB/KiBot/'
-__status__ = 'stable'
-__version__ = '1.0.0'
-
-
 import os
 import sys
 from sys import path as sys_path
@@ -77,7 +69,7 @@ import re
 import gzip
 import locale
 from glob import glob
-
+from . import __version__, __copyright__, __license__
 # Import log first to set the domain
 from . import log
 log.set_domain('kibot')
@@ -100,7 +92,7 @@ from .gs import (GS)
 from .misc import (EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr)
 from .pre_base import (BasePreFlight)
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
-                            print_filters_help, print_global_options_help)
+                            print_filters_help, print_global_options_help, print_dependencies)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
                      solve_board_file, solve_project_file, check_board_file)
 GS.kibot_version = __version__
@@ -273,6 +265,9 @@ def main():
         sys.exit(0)
     if args.help_global_options:
         print_global_options_help()
+        sys.exit(0)
+    if args.help_dependencies:
+        print_dependencies(args.markdown)
         sys.exit(0)
     if args.example:
         check_board_file(args.board_file)

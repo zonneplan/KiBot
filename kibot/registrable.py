@@ -6,6 +6,7 @@
 from collections import OrderedDict
 from .optionable import Optionable
 from .error import KiPlotConfigurationError
+from .misc import ToolDependency, ToolDependencyRole
 
 
 class Registrable(object):
@@ -148,3 +149,29 @@ class RegFilter(Optionable, Registrable):
 
     def __init__(self):
         super().__init__()
+
+
+class RegDependency(Registrable):
+    """ Used to register output tools dependencies """
+    _registered = {}
+
+    def __init__(self):
+        super().__init__()
+
+    @classmethod
+    def register(cl, aclass):
+        name = aclass.name
+        if name in cl._registered:
+            # Already registered, add the roles
+            old_reg = cl._registered[name]
+            old_reg.roles.extend(aclass.roles)
+        else:
+            cl._registered[name] = aclass
+
+
+# Here we register some global dependencies
+RegDependency.register(ToolDependency('global', 'colorama', is_python=True,
+                       roles=ToolDependencyRole(desc='get color messages in a portable way')))
+RegDependency.register(ToolDependency('global', 'distutils', is_python=True))
+RegDependency.register(ToolDependency('global', 'requests', is_python=True))
+RegDependency.register(ToolDependency('global', 'PyYAML', is_python=True, deb='python3-yaml'))

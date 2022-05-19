@@ -5,15 +5,19 @@
 # Project: KiBot (formerly KiPlot)
 import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
-from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR, W_EXTNAME, W_NONETLIST)
+from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR, W_EXTNAME, ToolDependency, ToolDependencyRole, W_NONETLIST)
 from .gs import (GS)
 from .kiplot import check_script, search_as_plugin
 from .out_base import VariantOptions
+from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-WARNING_MIX = "Avoid using it in conjunction with with IBoM native filtering options"
+WARNING_MIX = "Avoid using it in conjunction with IBoM native filtering options"
+RegDependency.register(ToolDependency('ibom', 'Interactive HTML BoM', URL_IBOM, url_down=URL_IBOM+'/releases',
+                                      is_kicad_plugin=True, command=CMD_IBOM, in_debian=False,
+                                      roles=ToolDependencyRole(version=(2, 4, 1, 3))))
 
 
 def check_tool():

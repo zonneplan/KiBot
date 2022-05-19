@@ -9,13 +9,18 @@ from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import check_script, exec_with_retry, add_extra_options
-from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT
+from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, kiauto_dependency
 from .out_base import VariantOptions
+from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
 from . import log
 
 logger = log.get_logger()
+
+
+def register_deps(pre):
+    RegDependency.register(kiauto_dependency(pre+'_pcb_print', (1, 6, 7)))
 
 
 class Any_PCB_PrintOptions(VariantOptions):

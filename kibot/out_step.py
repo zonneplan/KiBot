@@ -9,14 +9,16 @@ import re
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from shutil import rmtree
 from .error import KiPlotConfigurationError
-from .misc import KICAD2STEP, KICAD2STEP_ERR, URL_PCBNEW_RUN_DRC
+from .misc import KICAD2STEP, KICAD2STEP_ERR, URL_PCBNEW_RUN_DRC, kiauto_dependency
 from .gs import (GS)
 from .out_base_3d import Base3DOptions, Base3D
 from .kiplot import check_script, add_extra_options
+from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+RegDependency.register(kiauto_dependency('step', (1, 6, 1)))
 
 
 class STEPOptions(Base3DOptions):

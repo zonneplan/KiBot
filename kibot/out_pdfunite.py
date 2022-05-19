@@ -14,8 +14,8 @@ from .kiplot import config_output, get_output_dir, run_output
 from .misc import MISSING_TOOL, WRONG_INSTALL, WRONG_ARGUMENTS, INTERNAL_ERROR, W_NOTPDF
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
+from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
-from .out_pcb_print import create_pdf_from_pages
 from . import log
 
 logger = log.get_logger()

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from setuptools import setup, find_packages
 # Package meta-data, mostly from the package
-from kibot.__main__ import __author__, __email__, __url__, __doc__, __version__
+from kibot import __author__, __email__, __url__, __doc__, __version__, __pypi_deps__
 
 # Use the README.md as a long description.
 # Note this is also included in the MANIFEST.in
@@ -20,7 +20,7 @@ setup(name='kibot',
       # Packages are marked using __init__.py
       packages=find_packages(),
       scripts=['src/kibot', 'src/kiplot'],
-      install_requires=['kiauto', 'pyyaml', 'xlsxwriter', 'colorama', 'requests', 'qrcodegen'],
+      install_requires=__pypi_deps__,
       include_package_data=True,
       classifiers=['Development Status :: 5 - Production/Stable',
                    'Environment :: Console',

@@ -1,24 +1,26 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
 from re import search
 from tempfile import NamedTemporaryFile
 from subprocess import (check_output, STDOUT, CalledProcessError)
-from .misc import (CMD_KIBOM, URL_KIBOM, BOM_ERROR, W_EXTNAME)
+from .misc import (CMD_KIBOM, URL_KIBOM, BOM_ERROR, ToolDependency, ToolDependencyRole, W_EXTNAME)
 from .kiplot import (check_script)
 from .gs import (GS)
 from .optionable import Optionable, BaseOptions
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
+from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-
 CONFIG_FILENAME = 'config.kibom.ini'
+RegDependency.register(ToolDependency('kibom', 'KiBoM', URL_KIBOM, url_down=URL_KIBOM+'/releases',
+                                      command=CMD_KIBOM, in_debian=False, roles=ToolDependencyRole(version=(1, 8, 0))))
 
 
 class KiBoMRegex(Optionable):

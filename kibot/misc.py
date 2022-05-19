@@ -293,3 +293,63 @@ def hide_stderr():
     os.close(devnull)
     yield
     os.dup2(newstderr, 2)
+
+
+class ToolDependencyRole(object):
+    """ Class used to define the role of a tool """
+    def __init__(self, desc=None, version=None, output=None):
+        # Is this tool mandatory
+        self.mandatory = desc is None
+        # If not mandatory, for what?
+        self.desc = desc
+        # Which version is needed?
+        self.version = version
+        # Which output needs it?
+        self.output = output
+
+
+class ToolDependency(object):
+    """ Class used to define tools needed for an output """
+    def __init__(self, output, name, url=None, url_down=None, is_python=False, deb=None, in_debian=True, extra_deb=None,
+                 roles=None, is_kicad_plugin=False, command=None, pypi_name=None):
+        # The associated output
+        self.output = output
+        # Name of the tool
+        self.name = name
+        # Name of the .deb
+        if deb is None:
+            if is_python:
+                self.deb_package = 'python3-'+name.lower()
+            else:
+                self.deb_package = name.lower()
+        else:
+            self.deb_package = deb
+        self.is_python = is_python
+        # If this tool has an official Debian package
+        self.in_debian = in_debian
+        # Name at PyPi, can be fake for things that aren't at PyPi
+        # Is used just to indicate if a dependency will we installed from PyPi
+        self.pypi_name = pypi_name if pypi_name is not None else name
+        # Extra Debian packages needed to complement it
+        self.extra_deb = extra_deb
+        # URLs
+        self.url = url
+        self.url_down = url_down
+        # Can be installed as a KiCad plug-in?
+        self.is_kicad_plugin = is_kicad_plugin
+        # Command we run
+        self.command = command
+        # Roles
+        if roles is None:
+            roles = [ToolDependencyRole()]
+        elif not isinstance(roles, list):
+            roles = [roles]
+        for r in roles:
+            r.output = output
+        self.roles = roles
+
+
+def kiauto_dependency(output, version=None):
+    role = None if version is None else ToolDependencyRole(version=version)
+    return ToolDependency(output, 'KiCad Automation tools', URL_EESCHEMA_DO, url_down=URL_EESCHEMA_DO+'/releases',
+                          in_debian=False, pypi_name='kiauto', roles=role)

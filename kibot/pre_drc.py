@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-from sys import (exit)
+from sys import exit
 from .macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
-from .gs import (GS)
+from .gs import GS
 from .optionable import Optionable
 from .kiplot import check_script, exec_with_retry, load_board, add_extra_options
-from .misc import (CMD_PCBNEW_RUN_DRC, URL_PCBNEW_RUN_DRC, DRC_ERROR)
-from .log import (get_logger)
+from .misc import CMD_PCBNEW_RUN_DRC, URL_PCBNEW_RUN_DRC, DRC_ERROR, kiauto_dependency
+from .registrable import RegDependency
+from .log import get_logger
 
 logger = get_logger(__name__)
+RegDependency.register(kiauto_dependency('run_drc'))
 
 
 @pre_class

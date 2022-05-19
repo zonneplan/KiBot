@@ -23,12 +23,13 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL, W_PDMASKFAIL,
-                   KICAD5_SVG_SCALE, W_MISSTOOL)
+                   KICAD5_SVG_SCALE, W_MISSTOOL, ToolDependency, ToolDependencyRole)
 from .kiplot import check_script, exec_with_retry, add_extra_options
+from .registrable import RegDependency
+from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer, get_priority
-from .__main__ import __version__
-from . import PyPDF2
+from . import __version__
 from . import log
 
 logger = log.get_logger()
@@ -41,6 +42,13 @@ POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stro
                    "stroke-linejoin:round;fill-rule:evenodd;")
 DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
 EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
+RegDependency.register(ToolDependency('pcb_print', 'RSVG tools',
+                                      'https://cran.r-project.org/web/packages/rsvg/index.html', deb='librsvg2-bin',
+                                      roles=ToolDependencyRole(desc='Create PDF, PNG, EPS and PS formats')))
+RegDependency.register(ToolDependency('pcb_print', 'Ghostscript', 'https://www.ghostscript.com/',
+                                      url_down='https://github.com/ArtifexSoftware/ghostpdl-downloads/releases',
+                                      roles=ToolDependencyRole(desc='Create PS files')))
+RegDependency.register(ToolDependency('pcb_print', 'lxml', is_python=True))
 
 
 def _run_command(cmd):
@@ -100,40 +108,6 @@ def get_size(svg):
     """ Finds the width and height in viewBox units """
     view_box = svg.root.get('viewBox').split(' ')
     return float(view_box[2]), float(view_box[3])
-
-
-def create_pdf_from_pages(input_files, output_fn):
-    output = PyPDF2.PdfFileWriter()
-    # Collect all pages
-    open_files = []
-    er = None
-    for filename in input_files:
-        try:
-            file = open(filename, 'rb')
-            open_files.append(file)
-            pdf_reader = PyPDF2.PdfFileReader(file)
-            page_obj = pdf_reader.getPage(0)
-            page_obj.compressContentStreams()
-            output.addPage(page_obj)
-        except (IOError, ValueError, EOFError) as e:
-            er = str(e)
-        if er:
-            raise KiPlotConfigurationError('Error reading `{}` ({})'.format(filename, er))
-    # Write all pages to a file
-    pdf_output = None
-    try:
-        pdf_output = open(output_fn, 'wb')
-        output.write(pdf_output)
-    except (IOError, ValueError, EOFError) as e:
-        er = str(e)
-    finally:
-        if pdf_output:
-            pdf_output.close()
-    if er:
-        raise KiPlotConfigurationError('Error creating `{}` ({})'.format(output_fn, er))
-    # Close the files
-    for f in open_files:
-        f.close()
 
 
 def svg_to_pdf(input_folder, svg_file, pdf_file):

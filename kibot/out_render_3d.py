@@ -7,14 +7,16 @@
 import os
 from shutil import rmtree
 from .misc import (CMD_PCBNEW_3D, URL_PCBNEW_3D, RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
-                   KICAD_VERSION_6_0_2, MISSING_TOOL)
+                   KICAD_VERSION_6_0_2, MISSING_TOOL, kiauto_dependency)
 from .gs import (GS)
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .out_base_3d import Base3DOptions, Base3D
+from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+RegDependency.register(kiauto_dependency('render_3d', (1, 6, 8)))
 
 
 class Render3DOptions(Base3DOptions):

@@ -11,8 +11,8 @@ from shutil import which
 
 from .gs import GS
 from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, PANDOC, MISSING_TOOL,
-                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST, W_MISSTOOL)
-from .registrable import RegOutput
+                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST, W_MISSTOOL, ToolDependency, ToolDependencyRole)
+from .registrable import RegOutput, RegDependency
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
 from .kiplot import config_output
@@ -23,6 +23,10 @@ logger = log.get_logger()
 INF = float('inf')
 PANDOC_INSTALL = ("In CI/CD environments: the `kicad_auto_test` docker image contains it.\n"
                   "In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`")
+RegDependency.register(ToolDependency('report', 'Pandoc', 'https://pandoc.org/',
+                                      url_down='https://github.com/jgm/pandoc/releases',
+                                      extra_deb=['texlive-latex-base', 'texlive-latex-recommended'],
+                                      roles=ToolDependencyRole(desc='Create PDF/ODF/DOCX files')))
 
 
 def do_round(v, dig):

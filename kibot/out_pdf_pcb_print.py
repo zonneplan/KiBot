@@ -4,13 +4,14 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
-from .out_any_pcb_print import Any_PCB_PrintOptions
+from .out_any_pcb_print import Any_PCB_PrintOptions, register_deps
 from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
 from . import log
 
 logger = log.get_logger()
+register_deps('pdf')
 
 
 class PDF_PCB_PrintOptions(Any_PCB_PrintOptions):

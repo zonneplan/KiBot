@@ -5,6 +5,7 @@ $cmd_help=`../src/kibot --help`;
 $preflight=`../src/kibot --help-preflights`;
 $filters=`../src/kibot --help-filters`;
 $global_options=`../src/kibot --help-global-options`;
+$dependencies=`../src/kibot --help-dependencies --markdown`;
 
 while (<>)
   {
@@ -13,6 +14,7 @@ while (<>)
    $_ =~ s/\@preflight\@/$preflight/;
    $_ =~ s/\@filters\@/$filters/;
    $_ =~ s/\@global_options\@/$global_options/;
+   $_ =~ s/\@dependencies\@/$dependencies/;
    print $_;
   }
 

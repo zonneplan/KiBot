@@ -6,12 +6,15 @@
 import os
 from .gs import GS
 from .optionable import BaseOptions
-from .misc import CMD_PCBNEW_IPC_NETLIST, URL_PCBNEW_IPC_NETLIST, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, FAILED_EXECUTE
+from .misc import (CMD_PCBNEW_IPC_NETLIST, URL_PCBNEW_IPC_NETLIST, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, FAILED_EXECUTE,
+                   kiauto_dependency)
 from .kiplot import check_script, exec_with_retry, add_extra_options
+from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+RegDependency.register(kiauto_dependency('netlist', (1, 6, 11)))
 
 
 class NetlistOptions(BaseOptions):

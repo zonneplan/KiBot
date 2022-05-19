@@ -12,6 +12,8 @@ from .error import KiPlotConfigurationError
 from .kicad.sexpdata import Symbol, dumps, Sep, load, SExpData, sexp_iter
 from .kicad.v6_sch import DrawRectangleV6, PointXY, Stroke, Fill, SchematicFieldV6, FontEffects
 from .kiplot import load_board
+from .misc import ToolDependency, ToolDependencyRole
+from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -22,6 +24,7 @@ QR_ECCS = {'low': QrCode.Ecc.LOW,
 logger = log.get_logger()
 TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
                'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
+RegDependency.register(ToolDependency('qr_lib', 'qrcodegen', is_python=True, roles=ToolDependencyRole()))
 
 
 def is_symbol(name, sexp):

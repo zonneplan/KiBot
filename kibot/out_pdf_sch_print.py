@@ -4,12 +4,13 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
-from .out_any_sch_print import Any_SCH_PrintOptions
+from .out_any_sch_print import Any_SCH_PrintOptions, register_deps
 from .misc import PDF_SCH_PRINT
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+register_deps('pdf')
 
 
 class PDF_SCH_PrintOptions(Any_SCH_PrintOptions):

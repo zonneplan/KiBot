@@ -90,21 +90,65 @@ You can also run KiBot using docker images in a CI/CD environment like GitHub or
 
 ### Dependencies
 
-- For ERC, DRC, BoM XML update and SCH print install [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/)
-- BoM files (HTML/CSV/TSV/TXT/XML/XLSX) can be generated using the internal BoM generator or using [KiBoM](https://github.com/INTI-CMNB/KiBoM).
-- For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
-- For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw). Also install the convert (from imagemagick) and rsvg-convert (from librsvg2-bin) tools.
-- For BoMs with costs information install [KiCost](https://github.com/hildogjr/KiCost/)
-- To create RAR files install the rar tool.
-- To generate reports in PDF format (also ODF, DOCX, etc.) install [Pandoc](https://pandoc.org/)
-- If you need to generate the PCB prints in postscript format install ghostscript
-- The following Python modules are also used: (Note that using pip or the Debian package they will be installed automatically)
-  - `colorama`
-  - `distutils`. This is part of Python, but on debian systems this is in a separated package: `python3-distutils`
-  - `qrcodegen`. Only to generate QR code symbols and footprints.
-  - `requests`
-  - `xlsxwriter`. If you need BoMs in XLSX format.
-  - `yaml`
+Notes:
+- When installing from the Debian repo you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
+- When installing using `pip` the dependencies marked as **PyPi dependency** will be automatically installed.
+
+[**distutils**](https://pypi.org/project/distutils/) (python module) [Debian](https://packages.debian.org/bullseye/python3-distutils)
+- Mandatory
+
+[**PyYAML**](https://pypi.org/project/PyYAML/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-yaml)
+- Mandatory
+
+[**requests**](https://pypi.org/project/requests/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-requests)
+- Mandatory
+
+[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v1.6.11 (tool) (PyPi dependency)
+- Mandatory for: `gencad`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`
+
+[**KiCost**](https://github.com/INTI-CMNB/KiCost) v1.1.8 (tool)
+- Mandatory for `kicost`
+- Optional to find components costs and specs for `bom`
+
+[**Interactive HTML BoM**](https://github.com/INTI-CMNB/InteractiveHtmlBom) v2.4.1.3 (tool)
+- Mandatory for `ibom`
+
+[**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 (tool)
+- Mandatory for `kibom`
+
+[**lxml**](https://pypi.org/project/lxml/) (python module) [Debian](https://packages.debian.org/bullseye/python3-lxml)
+- Mandatory for `pcb_print`
+
+[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0 (tool)
+- Mandatory for `pcbdraw`
+
+[**qrcodegen**](https://pypi.org/project/qrcodegen/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-qrcodegen)
+- Mandatory for `qr_lib`
+
+[**colorama**](https://pypi.org/project/colorama/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-colorama)
+- Optional to get color messages in a portable way for general use
+
+[**RSVG tools**](https://cran.r-project.org/web/packages/rsvg/index.html) (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
+- Optional to:
+  - Create PDF, PNG, EPS and PS formats for `pcb_print`
+  - Create PNG and JPG images for `pcbdraw`
+
+[**Ghostscript**](https://www.ghostscript.com/) (tool) [Debian](https://packages.debian.org/bullseye/ghostscript)
+- Optional to create PS files for `pcb_print`
+
+[**ImageMagick**](https://imagemagick.org/) (tool) [Debian](https://packages.debian.org/bullseye/imagemagick)
+- Optional to create JPG images for `pcbdraw`
+
+[**Pandoc**](https://pandoc.org/) (tool) [Debian](https://packages.debian.org/bullseye/pandoc)
+- Optional to create PDF/ODF/DOCX files for `report`
+
+[**RAR**](https://www.rarlab.com/) (tool) [Debian](https://packages.debian.org/bullseye/rar)
+- Optional to compress in RAR format for `compress`
+
+[**xlsxwriter**](https://pypi.org/project/xlsxwriter/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-xlsxwriter)
+- Optional to create XLSX files for `bom`
+
+
 
 ### Installation on Ubuntu/Debian
 
@@ -1622,7 +1666,7 @@ Next time you need this list just use an alias, like this:
         - `dark_mode`: [boolean=false] Default to dark mode.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-                        Avoid using it in conjunction with with IBoM native filtering options.
+                        Avoid using it in conjunction with IBoM native filtering options.
         - `dnp_field`: [string=''] Name of the extra field that indicates do not populate status.
                        Components with this field not empty will be blacklisted.
                        IBoM option, avoid using in conjunction with KiBot variants/filters.
@@ -1660,7 +1704,7 @@ Next time you need this list just use an alias, like this:
                          Value and Footprint are displayed when nothing is specified.
         - `sort_order`: [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once.
         - `variant`: [string=''] Board variant to apply.
-                     Avoid using it in conjunction with with IBoM native filtering options.
+                     Avoid using it in conjunction with IBoM native filtering options.
         - `variant_field`: [string=''] Name of the extra field that stores board variant for component.
                            IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `variants_blacklist`: [string=''] List of board variants to exclude from the BOM.
@@ -2982,6 +3026,7 @@ Usage:
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
          --quick-start
   kibot [-v...] --help-filters
+  kibot [-v...] [--markdown] --help-dependencies
   kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs
   kibot [-v...] --help-output=HELP_OUTPUT
@@ -3019,6 +3064,7 @@ Quick start options:
 
 Help options:
   -h, --help                       Show this help message and exit
+  --help-dependencies              List dependencies in human readable format
   --help-filters                   List supported filters and details
   --help-global-options            List supported global variables
   --help-list-outputs              List supported outputs

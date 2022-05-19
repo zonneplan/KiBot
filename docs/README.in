@@ -90,21 +90,11 @@ You can also run KiBot using docker images in a CI/CD environment like GitHub or
 
 ### Dependencies
 
-- For ERC, DRC, BoM XML update and SCH print install [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/)
-- BoM files (HTML/CSV/TSV/TXT/XML/XLSX) can be generated using the internal BoM generator or using [KiBoM](https://github.com/INTI-CMNB/KiBoM).
-- For interactive BoM install [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom)
-- For SVG/PNG/JPG beauty PCB render [PcbDraw](https://github.com/INTI-CMNB/PcbDraw). Also install the convert (from imagemagick) and rsvg-convert (from librsvg2-bin) tools.
-- For BoMs with costs information install [KiCost](https://github.com/hildogjr/KiCost/)
-- To create RAR files install the rar tool.
-- To generate reports in PDF format (also ODF, DOCX, etc.) install [Pandoc](https://pandoc.org/)
-- If you need to generate the PCB prints in postscript format install ghostscript
-- The following Python modules are also used: (Note that using pip or the Debian package they will be installed automatically)
-  - `colorama`
-  - `distutils`. This is part of Python, but on debian systems this is in a separated package: `python3-distutils`
-  - `qrcodegen`. Only to generate QR code symbols and footprints.
-  - `requests`
-  - `xlsxwriter`. If you need BoMs in XLSX format.
-  - `yaml`
+Notes:
+- When installing from the Debian repo you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
+- When installing using `pip` the dependencies marked as **PyPi dependency** will be automatically installed.
+
+@dependencies@
 
 ### Installation on Ubuntu/Debian
 

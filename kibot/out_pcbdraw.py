@@ -4,14 +4,15 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-from tempfile import (NamedTemporaryFile)
+from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 import subprocess
 import shutil
 from .misc import (PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK, PCB_MAT_COLORS,
-                   PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS)
+                   PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, ToolDependency, ToolDependencyRole)
 from .kiplot import check_script
-from .gs import (GS)
+from .registrable import RegDependency
+from .gs import GS
 from .optionable import Optionable
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
@@ -22,6 +23,13 @@ SVG2PNG = 'rsvg-convert'
 CONVERT = 'convert'
 # 0.9.0 implements KiCad 6 support
 MIN_VERSION = '0.9.0'
+RegDependency.register(ToolDependency('pcbdraw', 'RSVG tools', 'https://cran.r-project.org/web/packages/rsvg/index.html',
+                                      deb='librsvg2-bin',
+                                      roles=ToolDependencyRole(desc='Create PNG and JPG images')))
+RegDependency.register(ToolDependency('pcbdraw', 'ImageMagick', 'https://imagemagick.org/',
+                                      roles=ToolDependencyRole(desc='Create JPG images')))
+RegDependency.register(ToolDependency('pcbdraw', 'PcbDraw', URL_PCBDRAW, url_down=URL_PCBDRAW+'/releases', in_debian=False,
+                                      roles=ToolDependencyRole(version=(0, 9, 0))))
 
 
 class PcbDrawStyle(Optionable):

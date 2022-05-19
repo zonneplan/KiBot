@@ -17,13 +17,18 @@ from .error import (KiPlotConfigurationError, config_error)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
                    W_NOVARIANTS, W_NOGLOBALS)
 from .gs import GS
-from .registrable import RegOutput, RegVariant, RegFilter
+from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
-
+from . import __pypi_deps__
 # Logger
 from . import log
 
 logger = log.get_logger()
+LOCAL_OPTIONAL = 1
+GLOBAL_OPTIONAL = LOCAL_OPTIONAL*100
+LOCAL_MANDATORY = GLOBAL_OPTIONAL*100
+GLOBAL_MANDATORY = LOCAL_MANDATORY*100
+
 
 try:
     import yaml
@@ -683,3 +688,69 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
                             f.write("        description: '{}'\n".format(layer.description))
                 else:
                     f.write('    layers: {}\n'.format(layers))
+
+
+def global2human(name):
+    return '`'+name+'`' if name != 'global' else 'general use'
+
+
+def print_dependencies(markdown=True):
+    # Compute the importance of each dependency
+    for dep in RegDependency.get_registered().values():
+        importance = 0
+        for r in dep.roles:
+            local = r.output != 'global'
+            if r.mandatory:
+                importance += LOCAL_MANDATORY if local else GLOBAL_MANDATORY
+            else:
+                importance += LOCAL_OPTIONAL if local else GLOBAL_OPTIONAL
+        dep.importance = importance
+    # Now print them sorted by importance (and by name as a second criteria)
+    for name, dep in sorted(sorted(RegDependency.get_registered().items(), key=lambda x: x[0].lower()),   # noqa C414
+                            key=lambda x: x[1].importance, reverse=True):
+        dtype = 'python module' if dep.is_python else 'tool'
+        is_pypi_dep = ' (PyPi dependency)' if dep.pypi_name.lower() in __pypi_deps__ else ''
+        deb = ''
+        if markdown:
+            if dep.is_python:
+                url = 'https://pypi.org/project/{}/'.format(name)
+            else:
+                url = dep.url
+            name = '[**{}**]({})'.format(name, url)
+            if dep.in_debian:
+                deb = ' [Debian](https://packages.debian.org/bullseye/{})'.format(dep.deb_package)
+        needed = []
+        optional = []
+        version = None
+        for r in dep.roles:
+            if r.mandatory:
+                needed.append(global2human(r.output))
+            else:
+                optional.append(r)
+            if r.version and (version is None or r.version > version):
+                version = r.version
+        ver = ''
+        if version:
+            ver = 'v'+'.'.join(map(str, version))+' '
+        print("{} {}({}){}{}".format(name, ver, dtype, is_pypi_dep, deb))
+        if needed:
+            if len(needed) == 1:
+                if needed[0] == 'general use':
+                    print('- Mandatory')
+                else:
+                    print('- Mandatory for '+needed[0])
+            else:
+                print('- Mandatory for: '+', '.join(sorted(needed)))
+        if optional:
+            if len(optional) == 1:
+                o = optional[0]
+                desc = o.desc[0].lower()+o.desc[1:]
+                print('- Optional to {} for {}'.format(desc, global2human(o.output)))
+            else:
+                print('- Optional to:')
+                for o in optional:
+                    ver = ''
+                    if o.version:
+                        ver = ' (v'+'.'.join(map(str, o.version))+')'
+                    print('  - {} for {}{}'.format(o.desc, global2human(o.output), ver))
+        print()

@@ -8,13 +8,18 @@ from tempfile import mkdtemp
 from shutil import rmtree, copy2
 from .gs import GS
 from .kiplot import check_eeschema_do, exec_with_retry, add_extra_options
-from .misc import CMD_EESCHEMA_DO
+from .misc import CMD_EESCHEMA_DO, kiauto_dependency
 from .out_base import VariantOptions
 from .kicad.config import KiConf
+from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+
+
+def register_deps(pre):
+    RegDependency.register(kiauto_dependency(pre+'_sch_print'))
 
 
 def copy_project(sch_dir):

@@ -14,13 +14,16 @@ from tarfile import open as tar_open
 from collections import OrderedDict
 from .gs import GS
 from .kiplot import config_output, get_output_dir, run_output
-from .misc import MISSING_TOOL, WRONG_INSTALL, W_EMPTYZIP, WRONG_ARGUMENTS, INTERNAL_ERROR
+from .misc import MISSING_TOOL, WRONG_INSTALL, W_EMPTYZIP, WRONG_ARGUMENTS, INTERNAL_ERROR, ToolDependency, ToolDependencyRole
 from .optionable import Optionable, BaseOptions
-from .registrable import RegOutput
+from .registrable import RegOutput, RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+RegDependency.register(ToolDependency('compress', 'RAR', 'https://www.rarlab.com/',
+                                      url_down='https://www.rarlab.com/download.htm',
+                                      roles=ToolDependencyRole(desc='Compress in RAR format')))
 
 
 class FilesList(Optionable):

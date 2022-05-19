@@ -11,9 +11,9 @@ import os
 import re
 from copy import deepcopy
 from .gs import GS
-from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS
+from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, ToolDependency, ToolDependencyRole, URL_KICOST
 from .optionable import Optionable, BaseOptions
-from .registrable import RegOutput
+from .registrable import RegOutput, RegDependency
 from .error import KiPlotConfigurationError
 from .kiplot import get_board_comps_data, load_any_sch
 from .bom.columnlist import ColumnList, BoMError
@@ -37,6 +37,10 @@ DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
                    ['zener', 'zenersmall'],
                    ['d', 'diode', 'd_small'],
                    ]
+RegDependency.register(ToolDependency('bom', 'KiCost', URL_KICOST, url_down=URL_KICOST+'/releases', in_debian=False,
+                                      roles=ToolDependencyRole(desc='Find components costs and specs', version=(1, 1, 8))))
+RegDependency.register(ToolDependency('bom', 'xlsxwriter', is_python=True,
+                                      roles=ToolDependencyRole(desc='Create XLSX files')))
 
 
 class BoMJoinField(Optionable):
