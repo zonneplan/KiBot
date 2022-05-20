@@ -322,8 +322,9 @@ def test_int_bom_simple_txt(test_dir):
     ctx.clean_up()
 
 
-def simple_html_test(ctx, rows, headers, sh_head, prj, do_title=True, do_logo=True, do_info=True, do_stats=True):
-    title = DEF_TITLE if do_title else None
+def simple_html_test(ctx, rows, headers, sh_head, prj, do_title=True, do_logo=True, do_info=True, do_stats=True,
+                     a_title=DEF_TITLE):
+    title = a_title if do_title else None
     info = KIBOM_PRJ_INFO if do_info else None
     stats = None
     if do_stats:
@@ -373,7 +374,7 @@ def test_int_bom_simple_html_2(test_dir):
 def test_int_bom_simple_html_3(test_dir):
     """ No logo """
     (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_3')
-    simple_html_test(ctx, rows, headers, sh_head, prj, do_logo=False)
+    simple_html_test(ctx, rows, headers, sh_head, prj, do_logo=False, a_title=prj+' BOM')
 
 
 def test_int_bom_simple_html_4(test_dir):
@@ -441,12 +442,12 @@ def test_int_bom_simple_xml(test_dir):
     ctx.clean_up()
 
 
-def simple_xlsx_verify(ctx, prj, dnf=True):
+def simple_xlsx_verify(ctx, prj, dnf=True, title=DEF_TITLE):
     ext = 'xlsx'
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
-    check_head_xlsx(sh_head, KIBOM_PRJ_INFO, KIBOM_STATS)
+    check_head_xlsx(sh_head, KIBOM_PRJ_INFO, KIBOM_STATS, title=title)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     status_column = header.index(STATUS_COLUMN_NAME)
@@ -1020,7 +1021,7 @@ def test_int_bom_simple_xlsx_3(test_dir):
     """ No logo """
     prj = 'kibom-test'
     ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx_3', prj, 'int_bom_simple_xlsx_3', BOM_DIR)
-    simple_xlsx_verify(ctx, prj)
+    simple_xlsx_verify(ctx, prj, title=prj+' BOM')
 
 
 def test_int_bom_simple_xlsx_4(test_dir):
