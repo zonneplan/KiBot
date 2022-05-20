@@ -93,6 +93,7 @@ You can also run KiBot using docker images in a CI/CD environment like GitHub or
 Notes:
 - When installing from the Debian repo you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
 - When installing using `pip` the dependencies marked as **PyPi dependency** will be automatically installed.
+- The `kibot-check` tool can help you to know which dependencies are missing.
 
 @dependencies@
 

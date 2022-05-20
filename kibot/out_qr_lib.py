@@ -24,7 +24,7 @@ QR_ECCS = {'low': QrCode.Ecc.LOW,
 logger = log.get_logger()
 TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
                'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
-RegDependency.register(ToolDependency('qr_lib', 'qrcodegen', is_python=True, roles=ToolDependencyRole()))
+RegDependency.register(ToolDependency('qr_lib', 'QRCodeGen', is_python=True, roles=ToolDependencyRole()))
 
 
 def is_symbol(name, sexp):

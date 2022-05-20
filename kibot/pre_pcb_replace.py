@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Salvador E. Tropea
-# Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2022 Salvador E. Tropea
+# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
 from .pre_any_replace import TagReplaceBase, Base_ReplaceOptions, Base_Replace
+from .registrable import RegDependency
+from .misc import git_dependency
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+RegDependency.register(git_dependency('pcb_replace'))
 
 
 class TagReplacePCB(TagReplaceBase):

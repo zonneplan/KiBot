@@ -23,7 +23,7 @@ from collections import OrderedDict
 from .gs import GS
 from .registrable import RegOutput
 from .misc import (PLOT_ERROR, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
-                   EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL,
+                   EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK,
                    MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT,
                    W_KIAUTO, W_VARSCH, NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
@@ -44,6 +44,7 @@ try:
 except ImportError:
     log.init()
     logger.error('No yaml module for Python, install python3-yaml')
+    logger.error(TRY_INSTALL_CHECK)
     exit(NO_YAML_MODULE)
 
 
@@ -122,6 +123,7 @@ def check_script(cmd, url, version=None):
     if which(cmd) is None:
         logger.error('No `'+cmd+'` command found.\n'
                      'Please install it, visit: '+url)
+        logger.error(TRY_INSTALL_CHECK)
         exit(MISSING_TOOL)
     if version is not None:
         check_version(cmd, version)

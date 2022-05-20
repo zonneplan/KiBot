@@ -95,6 +95,7 @@ PANDOC = 'pandoc'
 KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_6_0_0 = 6000000
 KICAD_VERSION_6_0_2 = 6000002
+TRY_INSTALL_CHECK = 'Try running the installation checker: kibot-check'
 
 # Internal filter names
 IFILT_MECHANICAL = '_mechanical'
@@ -311,7 +312,8 @@ class ToolDependencyRole(object):
 class ToolDependency(object):
     """ Class used to define tools needed for an output """
     def __init__(self, output, name, url=None, url_down=None, is_python=False, deb=None, in_debian=True, extra_deb=None,
-                 roles=None, is_kicad_plugin=False, command=None, pypi_name=None):
+                 roles=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
+                 help_option=None, no_cmd_line_version_old=False):
         # The associated output
         self.output = output
         # Name of the tool
@@ -325,6 +327,8 @@ class ToolDependency(object):
         else:
             self.deb_package = deb
         self.is_python = is_python
+        if is_python:
+            self.module_name = module_name if module_name is not None else name.lower()
         # If this tool has an official Debian package
         self.in_debian = in_debian
         # Name at PyPi, can be fake for things that aren't at PyPi
@@ -336,9 +340,13 @@ class ToolDependency(object):
         self.url = url
         self.url_down = url_down
         # Can be installed as a KiCad plug-in?
-        self.is_kicad_plugin = is_kicad_plugin
+        self.is_kicad_plugin = plugin_dirs is not None
+        self.plugin_dirs = plugin_dirs
         # Command we run
-        self.command = command
+        self.command = command if command is not None else name.lower()
+        self.no_cmd_line_version = no_cmd_line_version
+        self.no_cmd_line_version_old = no_cmd_line_version_old  # An old version doesn't have version
+        self.help_option = help_option if help_option is not None else '--version'
         # Roles
         if roles is None:
             roles = [ToolDependencyRole()]
@@ -352,4 +360,9 @@ class ToolDependency(object):
 def kiauto_dependency(output, version=None):
     role = None if version is None else ToolDependencyRole(version=version)
     return ToolDependency(output, 'KiCad Automation tools', URL_EESCHEMA_DO, url_down=URL_EESCHEMA_DO+'/releases',
-                          in_debian=False, pypi_name='kiauto', roles=role)
+                          in_debian=False, pypi_name='kiauto', command='pcbnew_do', roles=role)
+
+
+def git_dependency(output):
+    return ToolDependency(output, 'Git', 'https://git-scm.com/',
+                          roles=ToolDependencyRole(desc='Find commit hash and/or date'))

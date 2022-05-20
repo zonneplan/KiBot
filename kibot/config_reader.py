@@ -10,12 +10,13 @@ Class to read KiBot config files
 """
 
 import os
+import json
 from sys import (exit, maxsize)
 from collections import OrderedDict
 
 from .error import (KiPlotConfigurationError, config_error)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
-                   W_NOVARIANTS, W_NOGLOBALS)
+                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
@@ -35,6 +36,7 @@ try:
 except ImportError:
     log.init()
     logger.error('No yaml module for Python, install python3-yaml')
+    logger.error(TRY_INSTALL_CHECK)
     exit(NO_YAML_MODULE)
 
 
@@ -694,7 +696,13 @@ def global2human(name):
     return '`'+name+'`' if name != 'global' else 'general use'
 
 
-def print_dependencies(markdown=True):
+class MyEncoder(json.JSONEncoder):
+    """ Simple JSON encoder for objects """
+    def default(self, o):
+        return o.__dict__
+
+
+def print_dependencies(markdown=True, jsn=False):
     # Compute the importance of each dependency
     for dep in RegDependency.get_registered().values():
         importance = 0
@@ -705,6 +713,10 @@ def print_dependencies(markdown=True):
             else:
                 importance += LOCAL_OPTIONAL if local else GLOBAL_OPTIONAL
         dep.importance = importance
+    # The JSON output is just a dump
+    if jsn:
+        print(json.dumps(RegDependency.get_registered(), cls=MyEncoder, indent=4, sort_keys=True))
+        return
     # Now print them sorted by importance (and by name as a second criteria)
     for name, dep in sorted(sorted(RegDependency.get_registered().items(), key=lambda x: x[0].lower()),   # noqa C414
                             key=lambda x: x[1].importance, reverse=True):

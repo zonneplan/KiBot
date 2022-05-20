@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- `kibot-check` tool to check the installation
 - New outputs:
   - KiCad netlist generation
   - IPC-D-356 netlist generation (#197)

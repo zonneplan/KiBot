@@ -18,7 +18,7 @@ from base64 import b64decode
 from .columnlist import ColumnList
 from .kibot_logo import KIBOT_LOGO
 from .. import log
-from ..misc import W_NOKICOST, W_UNKDIST, KICOST_ERROR, W_BADFIELD
+from ..misc import W_NOKICOST, W_UNKDIST, KICOST_ERROR, W_BADFIELD, TRY_INSTALL_CHECK
 from ..error import trace_dump
 from ..gs import GS
 from .. import __version__
@@ -51,6 +51,7 @@ except ModuleNotFoundError:
 except ImportError:
     logger.error("Installed KiCost is older than the version we support.")
     logger.error("Try installing the last release or the current GIT code.")
+    logger.error(TRY_INSTALL_CHECK)
     KICOST_SUPPORT = False
     ProgressConsole = object
 

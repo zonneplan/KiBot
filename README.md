@@ -93,14 +93,15 @@ You can also run KiBot using docker images in a CI/CD environment like GitHub or
 Notes:
 - When installing from the Debian repo you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
 - When installing using `pip` the dependencies marked as **PyPi dependency** will be automatically installed.
+- The `kibot-check` tool can help you to know which dependencies are missing.
 
-[**distutils**](https://pypi.org/project/distutils/) (python module) [Debian](https://packages.debian.org/bullseye/python3-distutils)
+[**Distutils**](https://pypi.org/project/Distutils/) (python module) [Debian](https://packages.debian.org/bullseye/python3-distutils)
 - Mandatory
 
 [**PyYAML**](https://pypi.org/project/PyYAML/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-yaml)
 - Mandatory
 
-[**requests**](https://pypi.org/project/requests/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-requests)
+[**Requests**](https://pypi.org/project/Requests/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-requests)
 - Mandatory
 
 [**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v1.6.11 (tool) (PyPi dependency)
@@ -110,23 +111,34 @@ Notes:
 - Mandatory for `kicost`
 - Optional to find components costs and specs for `bom`
 
-[**Interactive HTML BoM**](https://github.com/INTI-CMNB/InteractiveHtmlBom) v2.4.1.3 (tool)
+[**Interactive HTML BoM**](https://github.com/INTI-CMNB/InteractiveHtmlBom) v2.4.1.4 (tool)
 - Mandatory for `ibom`
 
 [**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 (tool)
 - Mandatory for `kibom`
 
-[**lxml**](https://pypi.org/project/lxml/) (python module) [Debian](https://packages.debian.org/bullseye/python3-lxml)
+[**LXML**](https://pypi.org/project/LXML/) (python module) [Debian](https://packages.debian.org/bullseye/python3-lxml)
 - Mandatory for `pcb_print`
 
 [**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0 (tool)
 - Mandatory for `pcbdraw`
 
-[**qrcodegen**](https://pypi.org/project/qrcodegen/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-qrcodegen)
+[**QRCodeGen**](https://pypi.org/project/QRCodeGen/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-qrcodegen)
 - Mandatory for `qr_lib`
 
-[**colorama**](https://pypi.org/project/colorama/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-colorama)
+[**Colorama**](https://pypi.org/project/Colorama/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-colorama)
 - Optional to get color messages in a portable way for general use
+
+[**Git**](https://git-scm.com/) (tool) [Debian](https://packages.debian.org/bullseye/git)
+- Optional to:
+  - Find commit hash and/or date for `pcb_replace`
+  - Find commit hash and/or date for `sch_replace`
+  - Find commit hash and/or date for `set_text_variables`
+
+[**ImageMagick**](https://imagemagick.org/) (tool) [Debian](https://packages.debian.org/bullseye/imagemagick)
+- Optional to:
+  - Create monochrome prints for `pcb_print`
+  - Create JPG images for `pcbdraw`
 
 [**RSVG tools**](https://cran.r-project.org/web/packages/rsvg/index.html) (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
 - Optional to:
@@ -136,16 +148,13 @@ Notes:
 [**Ghostscript**](https://www.ghostscript.com/) (tool) [Debian](https://packages.debian.org/bullseye/ghostscript)
 - Optional to create PS files for `pcb_print`
 
-[**ImageMagick**](https://imagemagick.org/) (tool) [Debian](https://packages.debian.org/bullseye/imagemagick)
-- Optional to create JPG images for `pcbdraw`
-
 [**Pandoc**](https://pandoc.org/) (tool) [Debian](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`
 
 [**RAR**](https://www.rarlab.com/) (tool) [Debian](https://packages.debian.org/bullseye/rar)
 - Optional to compress in RAR format for `compress`
 
-[**xlsxwriter**](https://pypi.org/project/xlsxwriter/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-xlsxwriter)
+[**XLSXWriter**](https://pypi.org/project/XLSXWriter/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-xlsxwriter)
 - Optional to create XLSX files for `bom`
 
 
@@ -3026,7 +3035,7 @@ Usage:
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
          --quick-start
   kibot [-v...] --help-filters
-  kibot [-v...] [--markdown] --help-dependencies
+  kibot [-v...] [--markdown|--json] --help-dependencies
   kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs
   kibot [-v...] --help-output=HELP_OUTPUT

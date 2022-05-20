@@ -15,7 +15,7 @@ Usage:
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
          --quick-start
   kibot [-v...] --help-filters
-  kibot [-v...] [--markdown] --help-dependencies
+  kibot [-v...] [--markdown|--json] --help-dependencies
   kibot [-v...] --help-global-options
   kibot [-v...] --help-list-outputs
   kibot [-v...] --help-output=HELP_OUTPUT
@@ -88,9 +88,9 @@ if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
     else:
         os.environ['PYTHONPATH'] = pcbnew_path
     nightly = True
-from .gs import (GS)
-from .misc import (EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr)
-from .pre_base import (BasePreFlight)
+from .gs import GS
+from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK
+from .pre_base import BasePreFlight
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help, print_global_options_help, print_dependencies)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
@@ -157,6 +157,7 @@ def detect_kicad():
         logger.error("Failed to import pcbnew Python module."
                      " Is KiCad installed?"
                      " Do you need to add it to PYTHONPATH?")
+        logger.error(TRY_INSTALL_CHECK)
         sys.exit(NO_PCBNEW_MODULE)
     try:
         GS.kicad_version = pcbnew.GetBuildVersion()
@@ -267,7 +268,7 @@ def main():
         print_global_options_help()
         sys.exit(0)
     if args.help_dependencies:
-        print_dependencies(args.markdown)
+        print_dependencies(args.markdown, args.json)
         sys.exit(0)
     if args.example:
         check_board_file(args.board_file)

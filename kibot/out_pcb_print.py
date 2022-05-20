@@ -23,7 +23,7 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL, W_PDMASKFAIL,
-                   KICAD5_SVG_SCALE, W_MISSTOOL, ToolDependency, ToolDependencyRole)
+                   KICAD5_SVG_SCALE, W_MISSTOOL, ToolDependency, ToolDependencyRole, TRY_INSTALL_CHECK)
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .registrable import RegDependency
 from .create_pdf import create_pdf_from_pages
@@ -44,11 +44,14 @@ DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
 EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
 RegDependency.register(ToolDependency('pcb_print', 'RSVG tools',
                                       'https://cran.r-project.org/web/packages/rsvg/index.html', deb='librsvg2-bin',
+                                      command=SVG2PDF,
                                       roles=ToolDependencyRole(desc='Create PDF, PNG, EPS and PS formats')))
 RegDependency.register(ToolDependency('pcb_print', 'Ghostscript', 'https://www.ghostscript.com/',
                                       url_down='https://github.com/ArtifexSoftware/ghostpdl-downloads/releases',
                                       roles=ToolDependencyRole(desc='Create PS files')))
-RegDependency.register(ToolDependency('pcb_print', 'lxml', is_python=True))
+RegDependency.register(ToolDependency('pcb_print', 'ImageMagick', 'https://imagemagick.org/', command='convert',
+                                      roles=ToolDependencyRole(desc='Create monochrome prints')))
+RegDependency.register(ToolDependency('pcb_print', 'LXML', is_python=True))
 
 
 def _run_command(cmd):
@@ -636,6 +639,7 @@ class PCB_PrintOptions(VariantOptions):
         if monochrome:
             if which('convert') is None:
                 logger.error('`convert` not installed. install `imagemagick` or equivalent')
+                logger.error(TRY_INSTALL_CHECK)
                 exit(MISSING_TOOL)
             for img in self.last_worksheet.images:
                 with NamedTemporaryFile(mode='wb', suffix='.png', delete=False) as f:
@@ -771,6 +775,7 @@ class PCB_PrintOptions(VariantOptions):
         # Check PcbDraw is available
         if which('pcbdraw') is None:
             logger.error('`pcbdraw` not installed, needed for `realistic_solder_mask`')
+            logger.error(TRY_INSTALL_CHECK)
             exit(MISSING_TOOL)
         # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
         pcbdraw_file = os.path.join(temp_dir, out_file.replace('.svg', '-pcbdraw.svg'))
@@ -864,10 +869,12 @@ class PCB_PrintOptions(VariantOptions):
     def generate_output(self, output):
         if self.format != 'SVG' and which(SVG2PDF) is None:
             logger.error('`{}` not installed. Install `librsvg2-bin` or equivalent'.format(SVG2PDF))
+            logger.error(TRY_INSTALL_CHECK)
             exit(MISSING_TOOL)
         if self.format == 'PS' and which(PDF2PS) is None:
             logger.error('`{}` not installed. '.format(PDF2PS))
             logger.error('Install `librsvg2-bin` or equivalent')
+            logger.error(TRY_INSTALL_CHECK)
             exit(MISSING_TOOL)
         output_dir = os.path.dirname(output)
         if self.keep_temporal_files:

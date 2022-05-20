@@ -6,6 +6,8 @@ $preflight=`../src/kibot --help-preflights`;
 $filters=`../src/kibot --help-filters`;
 $global_options=`../src/kibot --help-global-options`;
 $dependencies=`../src/kibot --help-dependencies --markdown`;
+$json_dep=`../src/kibot --help-dependencies --json`;
+$json_dep=~s/\n/\\\n/g;
 
 while (<>)
   {
@@ -15,6 +17,7 @@ while (<>)
    $_ =~ s/\@filters\@/$filters/;
    $_ =~ s/\@global_options\@/$global_options/;
    $_ =~ s/\@dependencies\@/$dependencies/;
+   $_ =~ s/\@json_dep\@/$json_dep/;
    print $_;
   }
 

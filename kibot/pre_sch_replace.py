@@ -7,10 +7,13 @@ import os
 from .gs import GS
 from .kiplot import load_sch
 from .pre_any_replace import TagReplaceBase, Base_ReplaceOptions, Base_Replace
+from .registrable import RegDependency
+from .misc import git_dependency
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+RegDependency.register(git_dependency('sch_replace'))
 
 
 class TagReplaceSCH(TagReplaceBase):

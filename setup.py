@@ -18,7 +18,7 @@ setup(name='kibot',
       url=__url__,
       # Packages are marked using __init__.py
       packages=find_packages(),
-      scripts=['src/kibot', 'src/kiplot'],
+      scripts=['src/kibot', 'src/kiplot', 'src/kibot-check'],
       install_requires=__pypi_deps__,
       include_package_data=True,
       classifiers=['Development Status :: 5 - Production/Stable',

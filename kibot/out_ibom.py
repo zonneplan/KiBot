@@ -16,8 +16,9 @@ from . import log
 logger = log.get_logger()
 WARNING_MIX = "Avoid using it in conjunction with IBoM native filtering options"
 RegDependency.register(ToolDependency('ibom', 'Interactive HTML BoM', URL_IBOM, url_down=URL_IBOM+'/releases',
-                                      is_kicad_plugin=True, command=CMD_IBOM, in_debian=False,
-                                      roles=ToolDependencyRole(version=(2, 4, 1, 3))))
+                                      command=CMD_IBOM, in_debian=False, no_cmd_line_version_old=True,
+                                      plugin_dirs=['InteractiveHtmlBom', 'InteractiveHtmlBom/InteractiveHtmlBom'],
+                                      roles=ToolDependencyRole(version=(2, 4, 1, 4))))
 
 
 def check_tool():

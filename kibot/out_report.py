@@ -11,7 +11,8 @@ from shutil import which
 
 from .gs import GS
 from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, PANDOC, MISSING_TOOL,
-                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST, W_MISSTOOL, ToolDependency, ToolDependencyRole)
+                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST, W_MISSTOOL, ToolDependency, ToolDependencyRole,
+                   TRY_INSTALL_CHECK)
 from .registrable import RegOutput, RegDependency
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
@@ -722,6 +723,7 @@ class ReportOptions(BaseOptions):
         except FileNotFoundError:
             logger.error("Unable to convert the report, `{}` must be installed.".format(PANDOC))
             logger.error(PANDOC_INSTALL)
+            logger.error(TRY_INSTALL_CHECK)
             exit(MISSING_TOOL)
         except CalledProcessError as e:
             logger.error('{} error: {}'.format(PANDOC, e.returncode))
@@ -803,6 +805,7 @@ class Report(BaseOutput):  # noqa: F821
     def get_conf_examples(name, layers, templates):
         if which(PANDOC) is None:
             logger.warning((W_MISSTOOL+'Missing {} tool, disabling report in PDF format\n'+PANDOC_INSTALL).format(PANDOC))
+            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
             pandoc = False
         else:
             pandoc = True

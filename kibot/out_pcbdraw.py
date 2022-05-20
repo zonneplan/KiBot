@@ -9,7 +9,7 @@ from tempfile import NamedTemporaryFile
 import subprocess
 import shutil
 from .misc import (PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK, PCB_MAT_COLORS,
-                   PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, ToolDependency, ToolDependencyRole)
+                   PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, ToolDependency, ToolDependencyRole, TRY_INSTALL_CHECK)
 from .kiplot import check_script
 from .registrable import RegDependency
 from .gs import GS
@@ -24,9 +24,9 @@ CONVERT = 'convert'
 # 0.9.0 implements KiCad 6 support
 MIN_VERSION = '0.9.0'
 RegDependency.register(ToolDependency('pcbdraw', 'RSVG tools', 'https://cran.r-project.org/web/packages/rsvg/index.html',
-                                      deb='librsvg2-bin',
+                                      deb='librsvg2-bin', command=SVG2PNG,
                                       roles=ToolDependencyRole(desc='Create PNG and JPG images')))
-RegDependency.register(ToolDependency('pcbdraw', 'ImageMagick', 'https://imagemagick.org/',
+RegDependency.register(ToolDependency('pcbdraw', 'ImageMagick', 'https://imagemagick.org/', command='convert',
                                       roles=ToolDependencyRole(desc='Create JPG images')))
 RegDependency.register(ToolDependency('pcbdraw', 'PcbDraw', URL_PCBDRAW, url_down=URL_PCBDRAW+'/releases', in_debian=False,
                                       roles=ToolDependencyRole(version=(0, 9, 0))))
@@ -251,10 +251,12 @@ class PcbDrawOptions(VariantOptions):
             if shutil.which(SVG2PNG) is None:
                 logger.warning(W_UNRETOOL + '`{}` not installed, using unreliable PNG/JPG conversion'.format(SVG2PNG))
                 logger.warning(W_USESVG2 + 'If you experiment problems install `librsvg2-bin` or equivalent')
+                logger.warning(W_USESVG2 + TRY_INSTALL_CHECK)
                 cmd.append(output)
             elif shutil.which(CONVERT) is None:
                 logger.warning(W_UNRETOOL + '`{}` not installed, using unreliable PNG/JPG conversion'.format(CONVERT))
                 logger.warning(W_USEIMAGICK + 'If you experiment problems install `imagemagick` or equivalent')
+                logger.warning(W_USEIMAGICK + TRY_INSTALL_CHECK)
                 cmd.append(output)
             else:
                 svg = _get_tmp_name('.svg')

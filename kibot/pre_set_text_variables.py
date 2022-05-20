@@ -8,14 +8,16 @@ import sys
 import json
 from subprocess import run, PIPE
 from .error import KiPlotConfigurationError
-from .misc import FAILED_EXECUTE, W_EMPTREP
+from .misc import FAILED_EXECUTE, W_EMPTREP, git_dependency
 from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .gs import GS
+from .registrable import RegDependency
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+RegDependency.register(git_dependency('set_text_variables'))
 
 
 class KiCadVariable(Optionable):
