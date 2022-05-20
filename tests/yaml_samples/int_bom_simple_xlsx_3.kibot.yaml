@@ -10,4 +10,5 @@ outputs:
     options:
       format: XLSX
       xlsx:
+        title: "%f BOM"
         logo: false

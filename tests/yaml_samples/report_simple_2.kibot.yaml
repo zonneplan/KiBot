@@ -22,7 +22,7 @@ outputs:
     dir: Layers
     output_id: -front
     options:
-      title: 'Fake title for front copper and silk'
+      title: 'Fake title for front copper and silk (%f)'
       pages:
         - scaling: 2.0
           layers:

@@ -39,7 +39,7 @@ DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
                    ]
 RegDependency.register(ToolDependency('bom', 'KiCost', URL_KICOST, url_down=URL_KICOST+'/releases', in_debian=False,
                                       roles=ToolDependencyRole(desc='Find components costs and specs', version=(1, 1, 8))))
-RegDependency.register(ToolDependency('bom', 'xlsxwriter', is_python=True,
+RegDependency.register(ToolDependency('bom', 'XLSXWriter', is_python=True,
                                       roles=ToolDependencyRole(desc='Create XLSX files')))
 
 
@@ -600,6 +600,12 @@ class BoMOptions(BaseOptions):
             # If no options get the defaults
             self.xlsx = BoMXLSX()
             self.xlsx.config(self)
+        # Do title %X and ${var} expansions on the BoMLinkable titles
+        # Here because some variables needs our parent
+        if self.format == 'html' and self.html.title:
+            self.html.title = self.expand_filename_both(self.html.title, make_safe=False)
+        if self.format == 'xlsx' and self.xlsx.title:
+            self.xlsx.title = self.expand_filename_both(self.xlsx.title, make_safe=False)
         # group_fields
         if isinstance(self.group_fields, type):
             self.group_fields = GroupFields.get_default()

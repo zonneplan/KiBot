@@ -10,4 +10,5 @@ outputs:
     options:
       html:
         logo: false
+        title: "%f BOM"
         style: 'modern-green'
