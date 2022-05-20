@@ -218,7 +218,7 @@ def create_col_fmt(col_fields, col_colors, fmt_cols):
 
 def create_fmt_info(workbook, cfg):
     """ Formats for the PCB and stats info """
-    if cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info:
+    if cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info and not cfg.xlsx.extra_info:
         return None
     # Data left justified
     fmt_data = workbook.add_format({'align': 'left'})
@@ -806,7 +806,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         # Logo
         col1 = insert_logo(worksheet, image_data, cfg.xlsx.logo_scale)
         # Title
-        do_title(cfg, worksheet, col1, len(column_widths)-1, fmt_title, fmt_info[0])
+        do_title(cfg, worksheet, col1, len(column_widths)-1, fmt_title, fmt_info[0] if fmt_info else None)
         # PCB & Stats Info
         if not (cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info):
             write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_subtitle)
