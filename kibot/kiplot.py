@@ -361,7 +361,7 @@ def get_output_dir(o_dir, obj, dry=False):
 
 def config_output(out, dry=False, dont_stop=False):
     if out._configured:
-        return
+        return True
     # Should we load the PCB?
     if not dry:
         if out.is_pcb():

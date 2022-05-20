@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - IPC-D-356 netlist generation (#197)
 
 ### Fixed
+- Already configured outputs not created (i.e. when creating reports)
 - KiCost+Internal variants: UTF-8 problems
 - KiCost+Internal variants: problem with `variant` field capitalization
 
