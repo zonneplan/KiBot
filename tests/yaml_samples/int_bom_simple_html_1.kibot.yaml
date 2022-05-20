@@ -8,5 +8,8 @@ outputs:
     type: bom
     dir: BoM
     options:
-      format: HTML
       variant: ''
+      html:
+        extra_info:
+          - 'Extra 1: %f'
+          - 'Extra 2: %d'

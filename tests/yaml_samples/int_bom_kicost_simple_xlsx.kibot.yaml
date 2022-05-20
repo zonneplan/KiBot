@@ -37,3 +37,4 @@ outputs:
       xlsx:
         kicost: true
         kicost_config: tests/data/kicost_default_config.yaml
+        extra_info: ['%f', ' %d']

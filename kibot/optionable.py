@@ -330,7 +330,7 @@ class Optionable(object):
         return Optionable.expand_filename_both(self, name)
 
     @staticmethod
-    def force_list(val):
+    def force_list(val, comma_sep=True):
         """ Used for values that accept a string or a list of strings.
             The string can be a comma separated list """
         if isinstance(val, type):
@@ -339,7 +339,10 @@ class Optionable(object):
         elif isinstance(val, str):
             # A string
             if val:
-                val = [v.strip() for v in val.split(',')]
+                if comma_sep:
+                    val = [v.strip() for v in val.split(',')]
+                else:
+                    val = [val]
             else:
                 # Empty string
                 val = []

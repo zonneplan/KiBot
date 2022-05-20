@@ -147,20 +147,20 @@ deps = '{\
         "name": "ImageMagick",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "pcb_print",\
+        "output": "pcbdraw",\
         "plugin_dirs": null,\
         "pypi_name": "ImageMagick",\
         "roles": [\
             {\
-                "desc": "Create monochrome prints",\
-                "mandatory": false,\
-                "output": "pcb_print",\
-                "version": null\
-            },\
-            {\
                 "desc": "Create JPG images",\
                 "mandatory": false,\
                 "output": "pcbdraw",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create monochrome prints",\
+                "mandatory": false,\
+                "output": "pcb_print",\
                 "version": null\
             }\
         ],\
@@ -243,62 +243,10 @@ deps = '{\
         "name": "KiCad Automation tools",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "step",\
+        "output": "svg_pcb_print",\
         "plugin_dirs": null,\
         "pypi_name": "kiauto",\
         "roles": [\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "output": "step",\
-                "version": [\
-                    1,\
-                    6,\
-                    1\
-                ]\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "output": "netlist",\
-                "version": [\
-                    1,\
-                    6,\
-                    11\
-                ]\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "output": "render_3d",\
-                "version": [\
-                    1,\
-                    6,\
-                    8\
-                ]\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "output": "svg_sch_print",\
-                "version": null\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "output": "pdf_pcb_print",\
-                "version": [\
-                    1,\
-                    6,\
-                    7\
-                ]\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "output": "pdf_sch_print",\
-                "version": null\
-            },\
             {\
                 "desc": null,\
                 "mandatory": true,\
@@ -322,19 +270,71 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "output": "svg_sch_print",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "output": "pdf_sch_print",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "output": "pdf_pcb_print",\
+                "version": [\
+                    1,\
+                    6,\
+                    7\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "output": "netlist",\
+                "version": [\
+                    1,\
+                    6,\
+                    11\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "output": "step",\
+                "version": [\
+                    1,\
+                    6,\
+                    1\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "output": "render_3d",\
+                "version": [\
+                    1,\
+                    6,\
+                    8\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
                 "output": "run_erc",\
                 "version": null\
             },\
             {\
                 "desc": null,\
                 "mandatory": true,\
-                "output": "run_drc",\
+                "output": "update_xml",\
                 "version": null\
             },\
             {\
                 "desc": null,\
                 "mandatory": true,\
-                "output": "update_xml",\
+                "output": "run_drc",\
                 "version": null\
             }\
         ],\
@@ -353,20 +353,10 @@ deps = '{\
         "name": "KiCost",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "bom",\
+        "output": "kicost",\
         "plugin_dirs": null,\
         "pypi_name": "KiCost",\
         "roles": [\
-            {\
-                "desc": "Find components costs and specs",\
-                "mandatory": false,\
-                "output": "bom",\
-                "version": [\
-                    1,\
-                    1,\
-                    8\
-                ]\
-            },\
             {\
                 "desc": null,\
                 "mandatory": true,\
@@ -375,6 +365,16 @@ deps = '{\
                     1,\
                     1,\
                     7\
+                ]\
+            },\
+            {\
+                "desc": "Find components costs and specs",\
+                "mandatory": false,\
+                "output": "bom",\
+                "version": [\
+                    1,\
+                    1,\
+                    8\
                 ]\
             }\
         ],\
@@ -559,20 +559,20 @@ deps = '{\
         "name": "RSVG tools",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "pcb_print",\
+        "output": "pcbdraw",\
         "plugin_dirs": null,\
         "pypi_name": "RSVG tools",\
         "roles": [\
             {\
-                "desc": "Create PDF, PNG, EPS and PS formats",\
-                "mandatory": false,\
-                "output": "pcb_print",\
-                "version": null\
-            },\
-            {\
                 "desc": "Create PNG and JPG images",\
                 "mandatory": false,\
                 "output": "pcbdraw",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create PDF, PNG, EPS and PS formats",\
+                "mandatory": false,\
+                "output": "pcb_print",\
                 "version": null\
             }\
         ],\

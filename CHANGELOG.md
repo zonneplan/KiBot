@@ -10,7 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New outputs:
   - KiCad netlist generation
   - IPC-D-356 netlist generation (#197)
-- Pattern and text variables expansion on internal BoM title (#198)
+- Internal BoM:
+  - Pattern and text variables expansion in the title (#198)
+  - Customizable extra info after the title (#199)
 
 ### Fixed
 - Already configured outputs not created (i.e. when creating reports)

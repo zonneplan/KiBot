@@ -137,13 +137,13 @@ Notes:
 
 [**ImageMagick**](https://imagemagick.org/) (tool) [Debian](https://packages.debian.org/bullseye/imagemagick)
 - Optional to:
-  - Create monochrome prints for `pcb_print`
   - Create JPG images for `pcbdraw`
+  - Create monochrome prints for `pcb_print`
 
 [**RSVG tools**](https://cran.r-project.org/web/packages/rsvg/index.html) (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
 - Optional to:
-  - Create PDF, PNG, EPS and PS formats for `pcb_print`
   - Create PNG and JPG images for `pcbdraw`
+  - Create PDF, PNG, EPS and PS formats for `pcb_print`
 
 [**Ghostscript**](https://www.ghostscript.com/) (tool) [Debian](https://packages.debian.org/bullseye/ghostscript)
 - Optional to create PS files for `pcb_print`
@@ -1263,6 +1263,7 @@ Next time you need this list just use an alias, like this:
             - `col_colors`: [boolean=true] Use colors to show the field type.
             - `datasheet_as_link`: [string=''] Column with links to the datasheet.
             - `digikey_link`: [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page.
+            - `extra_info`: [string|list(string)=''] Information to put after the title and before the pcb and stats info.
             - `generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
@@ -1299,6 +1300,7 @@ Next time you need this list just use an alias, like this:
             - `col_colors`: [boolean=true] Use colors to show the field type.
             - `datasheet_as_link`: [string=''] Column with links to the datasheet.
             - `digikey_link`: [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page.
+            - `extra_info`: [string|list(string)=''] Information to put after the title and before the pcb and stats info.
             - `generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.

@@ -175,6 +175,8 @@ class BoMLinkable(Optionable):
             """ [string|boolean=''] PNG file to use as logo, use false to remove """
             self.title = 'KiBot Bill of Materials'
             """ BoM title """
+            self.extra_info = Optionable
+            """ [string|list(string)=''] Information to put after the title and before the pcb and stats info """
 
     def config(self, parent):
         super().config(parent)
@@ -192,6 +194,8 @@ class BoMLinkable(Optionable):
             self.logo = os.path.abspath(self.logo)
             if not os.path.isfile(self.logo):
                 raise KiPlotConfigurationError('Missing logo file `{}`'.format(self.logo))
+        # Extra info lines
+        self.extra_info = Optionable.force_list(self.extra_info, comma_sep=False)
         # Datasheet as link
         self.datasheet_as_link = self.datasheet_as_link.lower()
 
@@ -313,14 +317,8 @@ class BoMXLSX(BoMLinkable):
         if not self.kicost_config:
             self.kicost_config = None
         # KiCost APIs
-        if isinstance(self.kicost_api_enable, type):
-            self.kicost_api_enable = []
-        elif isinstance(self.kicost_api_enable, str):
-            self.kicost_api_enable = [self.kicost_api_enable]
-        if isinstance(self.kicost_api_disable, type):
-            self.kicost_api_disable = []
-        elif isinstance(self.kicost_api_disable, str):
-            self.kicost_api_disable = [self.kicost_api_disable]
+        self.kicost_api_enable = Optionable.force_list(self.kicost_api_enable)
+        self.kicost_api_disable = Optionable.force_list(self.kicost_api_disable)
         # Specs columns
         (self.s_columns, self.s_levels, self.s_comments, self.s_rename,
          self.s_join) = self.process_columns_config(self.specs_columns)
@@ -604,8 +602,10 @@ class BoMOptions(BaseOptions):
         # Here because some variables needs our parent
         if self.format == 'html' and self.html.title:
             self.html.title = self.expand_filename_both(self.html.title, make_safe=False)
+            self.html.extra_info = [self.expand_filename_both(t, make_safe=False) for t in self.html.extra_info]
         if self.format == 'xlsx' and self.xlsx.title:
             self.xlsx.title = self.expand_filename_both(self.xlsx.title, make_safe=False)
+            self.xlsx.extra_info = [self.expand_filename_both(t, make_safe=False) for t in self.xlsx.extra_info]
         # group_fields
         if isinstance(self.group_fields, type):
             self.group_fields = GroupFields.get_default()

@@ -591,6 +591,15 @@ class TestContext(object):
                         inf_entries.append(val)
                     if inf_entries:
                         sh_head['info'] = inf_entries
+                # Extract extra info
+                m = re.search(r'<td colspan="2" class="cell-extra-info">((?:\s+.*?)+)</td>', body, re.MULTILINE)
+                if m:
+                    info = m.group(1)
+                    inf_entries = []
+                    for val in re.findall('<b>(.*?)</b><br>', info):
+                        inf_entries.append(val)
+                    if inf_entries:
+                        sh_head['extra_info'] = inf_entries
                 # Extract stats
                 m = re.search(r'<td class="cell-stats">((?:\s+.*?)+)</td>', body, re.MULTILINE)
                 if m:

@@ -110,9 +110,13 @@ def add_info(worksheet, column_widths, row, col_offset, formats, text, value):
     return row + 1
 
 
+def title_rows(cfg):
+    return (1 if cfg.xlsx.title else 0)+len(cfg.xlsx.extra_info)
+
+
 def compute_head_size(cfg):
     col_logo = 0 if cfg.xlsx.logo is None else 6
-    col_info = 1 if cfg.xlsx.title else 0
+    col_info = title_rows(cfg)
     if not (cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info):
         col_info += 5
         if len(cfg.aggregate) > 1:
@@ -548,6 +552,16 @@ def dis_enable_apis(api_options, cfg):
             api_options[api]['enable'] = True
 
 
+def do_title(cfg, worksheet, col1, length, fmt_title, fmt_info):
+    r_extra = 0
+    if cfg.xlsx.title:
+        worksheet.set_row(0, 32)
+        worksheet.merge_range(0, col1, 0, length, cfg.xlsx.title, fmt_title)
+        r_extra = 1
+    for c, text in enumerate(cfg.xlsx.extra_info):
+        worksheet.merge_range(c+r_extra, col1, c+r_extra, length, text, fmt_info)
+
+
 def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg):
     if not KICOST_SUPPORT:
         logger.warning(W_NOKICOST+'KiCost sheet requested but failed to load KiCost support')
@@ -571,7 +585,7 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
     # Create the worksheets
     ws_names = ['Costs', 'Costs (DNF)']
     Spreadsheet.PRJ_INFO_ROWS = 5 if len(cfg.aggregate) == 1 else 6
-    Spreadsheet.PRJ_INFO_START = 1 if len(cfg.aggregate) == 1 else 4
+    Spreadsheet.PRJ_INFO_START = (1 if len(cfg.aggregate) == 1 else 4)+len(cfg.xlsx.extra_info)
     Spreadsheet.ADJUST_ROW_AND_COL_SIZE = True
     Spreadsheet.MAX_COL_WIDTH = cfg.xlsx.max_col_width
     Spreadsheet.PART_NSEQ_SEPRTR = cfg.ref_separator
@@ -648,7 +662,7 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
             col1 += 1
         # PCB & Stats Info
         if not (cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info):
-            r_info_start = 1 if cfg.xlsx.title else 0
+            r_info_start = title_rows(cfg)
             column_widths = [0]*5  # Column 1 to 5
             old_stats = cfg.xlsx.hide_stats_info
             cfg.xlsx.hide_stats_info = True
@@ -659,9 +673,7 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
         # Add a worksheet with costs to the spreadsheet
         create_worksheet(ss, parts)
         # Title
-        if cfg.xlsx.title:
-            wks.set_row(0, 32)
-            wks.merge_range(0, col1, 0, ss.globals_width, cfg.xlsx.title, fmt_title)
+        do_title(cfg, wks, col1, ss.globals_width, fmt_title, fmt_info[0])
         used_parts.append(parts)
     # Specs sheets
     create_meta_sheets(workbook, used_parts, fmt_head, fmt_cols, cfg, ss)
@@ -698,6 +710,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     """
     if not XLSX_SUPPORT:
         logger.error('Python xlsxwriter module not installed (Debian: python3-xlsxwriter)')
+        logger.error(TRY_INSTALL_CHECK)
         return False
 
     link_datasheet = -1
@@ -712,8 +725,8 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
 
     # Leave space for the logo, title and info
     head_size = compute_head_size(cfg)
-    # First rowe for the information
-    r_info_start = 1 if cfg.xlsx.title else 0
+    # First row for the information
+    r_info_start = title_rows(cfg)
     max_width = cfg.xlsx.max_col_width
 
     # #######################
@@ -793,9 +806,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         # Logo
         col1 = insert_logo(worksheet, image_data, cfg.xlsx.logo_scale)
         # Title
-        if cfg.xlsx.title:
-            worksheet.set_row(0, 32)
-            worksheet.merge_range(0, col1, 0, len(column_widths)-1, cfg.xlsx.title, fmt_title)
+        do_title(cfg, worksheet, col1, len(column_widths)-1, fmt_title, fmt_info[0])
         # PCB & Stats Info
         if not (cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info):
             write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_subtitle)

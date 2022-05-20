@@ -156,13 +156,18 @@ def check_path(rows, comp, ref, sp, val):
             return
 
 
-def check_head_xlsx(r, info, stats, title=DEF_TITLE):
+def check_head_xlsx(r, info, stats, title=DEF_TITLE, extra_info=None):
     rn = 0
     if title:
         # First row is just the title
         assert r[rn][0] == title
         rn += 1
         logging.debug('Title Ok')
+    if extra_info:
+        for e in extra_info:
+            assert r[rn][0] == e
+            rn += 1
+            logging.debug('Extra `{}` Ok'.format(e))
     if info:
         info_col = 0
         for i, txt in enumerate(info):
@@ -180,7 +185,7 @@ def check_head_xlsx(r, info, stats, title=DEF_TITLE):
         logging.debug('Stats block Ok')
 
 
-def check_head_html(r, info, stats, title, logo):
+def check_head_html(r, info, stats, title, logo, extra_info):
     if title:
         assert 'title' in r
         assert r['title'] == title
@@ -194,6 +199,15 @@ def check_head_html(r, info, stats, title, logo):
     else:
         assert 'logo' not in r
         logging.debug('No logo Ok')
+    if extra_info:
+        assert 'extra_info' in r
+        extra = r['extra_info']
+        for i, val in enumerate(extra_info):
+            assert extra[i] == val
+        logging.debug('Extra info Ok')
+    else:
+        assert 'extra_info' not in r
+        logging.debug('No extra info Ok')
     if info:
         assert 'info' in r
         for i, tit in enumerate(INFO_ROWS):
@@ -323,13 +337,13 @@ def test_int_bom_simple_txt(test_dir):
 
 
 def simple_html_test(ctx, rows, headers, sh_head, prj, do_title=True, do_logo=True, do_info=True, do_stats=True,
-                     a_title=DEF_TITLE):
+                     a_title=DEF_TITLE, extra_info=None):
     title = a_title if do_title else None
     info = KIBOM_PRJ_INFO if do_info else None
     stats = None
     if do_stats:
         stats = KIBOM_STATS
-    check_head_html(sh_head, info, stats, title=title, logo=do_logo)
+    check_head_html(sh_head, info, stats, title=title, logo=do_logo, extra_info=extra_info)
     # Test we got the normal and DNF tables
     assert len(rows) == 2
     assert len(headers) == 2
@@ -362,7 +376,7 @@ def simple_html_setup(test_dir, name, ret_val=0):
 
 def test_int_bom_simple_html_1(test_dir):
     (rows, headers, sh_head), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_1')
-    simple_html_test(ctx, rows, headers, sh_head, prj)
+    simple_html_test(ctx, rows, headers, sh_head, prj, extra_info=['Extra 1: '+prj, 'Extra 2: 2020-03-12'])
 
 
 def test_int_bom_simple_html_2(test_dir):
@@ -442,12 +456,12 @@ def test_int_bom_simple_xml(test_dir):
     ctx.clean_up()
 
 
-def simple_xlsx_verify(ctx, prj, dnf=True, title=DEF_TITLE):
+def simple_xlsx_verify(ctx, prj, dnf=True, title=DEF_TITLE, extra_info=None):
     ext = 'xlsx'
     ctx.run()
     out = prj + '-bom.' + ext
     rows, header, sh_head = ctx.load_xlsx(out)
-    check_head_xlsx(sh_head, KIBOM_PRJ_INFO, KIBOM_STATS, title=title)
+    check_head_xlsx(sh_head, KIBOM_PRJ_INFO, KIBOM_STATS, title=title, extra_info=extra_info)
     assert header == KIBOM_TEST_HEAD
     ref_column = header.index(REF_COLUMN_NAME)
     status_column = header.index(STATUS_COLUMN_NAME)
@@ -464,7 +478,7 @@ def simple_xlsx_verify(ctx, prj, dnf=True, title=DEF_TITLE):
 def test_int_bom_simple_xlsx_1(test_dir):
     prj = 'kibom-test'
     ctx = context.TestContextSCH(test_dir, 'test_int_bom_simple_xlsx', prj, 'int_bom_simple_xlsx', BOM_DIR)
-    simple_xlsx_verify(ctx, prj)
+    simple_xlsx_verify(ctx, prj, extra_info=['Extra 1: '+prj, 'Extra 2: 2020-03-12'])
 
 
 def get_column(rows, col, split=True):

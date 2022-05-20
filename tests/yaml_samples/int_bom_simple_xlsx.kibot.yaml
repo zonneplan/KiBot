@@ -8,4 +8,7 @@ outputs:
     type: bom
     dir: BoM
     options:
-      format: XLSX
+      xlsx:
+        extra_info:
+          - 'Extra 1: %f'
+          - 'Extra 2: %d'

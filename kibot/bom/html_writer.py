@@ -30,6 +30,7 @@ HEAD_COLOR_B = "#0e4e8e"
 HEAD_COLOR_B_L = "#3e7ebe"
 STYLE_COMMON = (" .cell-title { vertical-align: bottom; }\n"
                 " .cell-info { vertical-align: top; padding: 1em;}\n"
+                " .cell-extra-info { vertical-align: top; padding: 1em;}\n"
                 " .cell-stats { vertical-align: top; padding: 1em;}\n"
                 " .title { font-size:2.5em; font-weight: bold; }\n"
                 " .subtitle { font-size:1.5em; font-weight: bold; }\n"
@@ -344,6 +345,17 @@ def write_stats(html, cfg):
             html.write('</tr>\n')
 
 
+def write_extra_info(html, cfg):
+    if not cfg.html.extra_info:
+        return
+    html.write('<tr>\n')
+    html.write(' <td colspan="2" class="cell-extra-info">\n')
+    for e in cfg.html.extra_info:
+        html.write("   <b>{}</b><br>\n".format(e))
+    html.write(' </td>\n')
+    html.write('</tr>\n')
+
+
 def write_html(filename, groups, headings, head_names, cfg):
     """
     Write BoM out to a HTML file
@@ -413,6 +425,8 @@ def write_html(filename, groups, headings, head_names, cfg):
             n = 2
             if len(cfg.aggregate) > 1:
                 n += 2*len(cfg.aggregate)
+            if len(cfg.html.extra_info):
+                n += 1
             html.write(' <td rowspan="{}">\n'.format(n))
             if img:
                 html.write('  <img src="'+img+'" alt="Logo" width="'+str(img_w)+'" height="'+str(img_h)+'">\n')
@@ -422,6 +436,7 @@ def write_html(filename, groups, headings, head_names, cfg):
                 html.write('  <div class="title">'+cfg.html.title+'</div>\n')
             html.write(' </td>\n')
             html.write('</tr>\n')
+            write_extra_info(html, cfg)
             write_stats(html, cfg)
             html.write('</table>\n')
 
