@@ -72,8 +72,9 @@ def search_as_plugin(cmd, names):
     for dir in kicad_plugins_dirs:
         for name in names:
             fname = os.path.join(dir, name, cmd)
+            # print('Trying '+fname)
             if os.path.isfile(fname):
-                logger.debug('Using `{}` for `{}` ({})'.format(fname, cmd, name))
+                # print('Using `{}` for `{}` ({})'.format(fname, cmd, name))
                 return fname
     return cmd
 
@@ -244,6 +245,7 @@ else:
     sev = 4
 print('Python: '+do_color(sys.version.replace('\n', ' '), sev))
 # KiCad
+home = None
 try:
     import pcbnew
     kicad_ok = True
@@ -260,6 +262,7 @@ try:
     # /usr/share/kicad/*
     kicad_plugins_dirs.append(os.path.join(kicad_share_path, 'scripting'))
     kicad_plugins_dirs.append(os.path.join(kicad_share_path, 'scripting', 'plugins'))
+    kicad_plugins_dirs.append(os.path.join(kicad_share_path, '3rdparty', 'plugins'))  # KiCad 6.0 PCM
     # ~/.config/kicad/*
     if kicad_conf_path:
         kicad_plugins_dirs.append(os.path.join(kicad_conf_path, 'scripting'))
@@ -282,6 +285,10 @@ if kicad_ok:
             error("Unable to detect KiCad version, got: `{}`".format(version))
         else:
             kicad_version = (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+            if kicad_version[0] >= 6 and home:
+                # KiCad 6.0 PCM
+                ver_dir = str(kicad_version[0])+'.'+str(kicad_version[1])
+                kicad_plugins_dirs.append(os.path.join(home, '.local', 'share', 'kicad', ver_dir, '3rdparty', 'plugins'))
     except:
         version = 'Older than 5.1.6'
 else:
@@ -338,7 +345,10 @@ for name, d in dependencies.items():
     if d['no_cmd_line_version']:
         version = 'Ok ({})'.format(command) if which(command) is not None else NOT_AVAIL
     else:
-        version = run_command([command, d['help_option']], no_err_2=d['no_cmd_line_version_old'])
+        cmd = [command, d['help_option']]
+        if d['is_kicad_plugin']:
+            cmd.insert(0, 'python3')
+        version = run_command(cmd, no_err_2=d['no_cmd_line_version_old'])
     sev, ver = check_version(version, d['roles'])
     d['sev'] = sev
     print(name+': '+do_color(version, sev, version=ver))
