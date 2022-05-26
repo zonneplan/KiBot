@@ -102,7 +102,7 @@ def check_version(command, version):
     if command in script_versions:
         return
     cmd = [command, '--version']
-    if not os.access(command, os.X_OK) and command.endswith('.py'):
+    if not which(command) and not os.access(command, os.X_OK) and command.endswith('.py'):
         cmd.insert(0, 'python3')
     logger.debug('Running: '+str(cmd))
     result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
