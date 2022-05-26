@@ -21,7 +21,7 @@ DEFAULT_EXCLUDE = [{'column': ColumnList.COL_REFERENCE, 'regex': '^TP[0-9]*'},
                    {'column': ColumnList.COL_PART, 'regex': 'solder.*jump'},
                    {'column': ColumnList.COL_PART, 'regex': 'test.*point'},
                    {'column': ColumnList.COL_FP, 'regex': 'test.*point'},
-                   {'column': ColumnList.COL_FP, 'regex': 'mount.*hole'},
+                   {'column': ColumnList.COL_FP, 'regex': '^mount.*hole'},
                    {'column': ColumnList.COL_FP, 'regex': 'fiducial'},
                    ]
 KICOST_NAME_TRANSLATIONS = {
