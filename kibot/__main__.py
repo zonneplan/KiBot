@@ -213,6 +213,7 @@ def detect_kicad():
     # /usr/share/kicad/*
     GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_share_path, 'scripting'))
     GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_share_path, 'scripting', 'plugins'))
+    GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_share_path, '3rdparty', 'plugins'))  # KiCad 6.0 PCM
     # ~/.config/kicad/*
     GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_conf_path, 'scripting'))
     GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_conf_path, 'scripting', 'plugins'))
@@ -222,6 +223,10 @@ def detect_kicad():
         GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad_plugins'))
         GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting'))
         GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting', 'plugins'))
+        if GS.kicad_version_major >= 6:
+            # KiCad 6.0 PCM
+            ver_dir = str(GS.kicad_version_major)+'.'+str(GS.kicad_version_minor)
+            GS.kicad_plugins_dirs.append(os.path.join(home, '.local', 'share', 'kicad', ver_dir, '3rdparty', 'plugins'))
     if GS.debug_level > 1:
         logger.debug('KiCad config path {}'.format(GS.kicad_conf_path))
 

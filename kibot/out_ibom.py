@@ -15,14 +15,15 @@ from . import log
 
 logger = log.get_logger()
 WARNING_MIX = "Avoid using it in conjunction with IBoM native filtering options"
+PLUGIN_NAMES = ['InteractiveHtmlBom', 'InteractiveHtmlBom/InteractiveHtmlBom',
+                'org_openscopeproject_InteractiveHtmlBom/InteractiveHtmlBom']
 RegDependency.register(ToolDependency('ibom', 'Interactive HTML BoM', URL_IBOM, url_down=URL_IBOM+'/releases',
                                       command=CMD_IBOM, in_debian=False, no_cmd_line_version_old=True,
-                                      plugin_dirs=['InteractiveHtmlBom', 'InteractiveHtmlBom/InteractiveHtmlBom'],
-                                      roles=ToolDependencyRole(version=(2, 4, 1, 4))))
+                                      plugin_dirs=PLUGIN_NAMES, roles=ToolDependencyRole(version=(2, 4, 1, 4))))
 
 
 def check_tool():
-    tool = search_as_plugin(CMD_IBOM, ['InteractiveHtmlBom', 'InteractiveHtmlBom/InteractiveHtmlBom'])
+    tool = search_as_plugin(CMD_IBOM, PLUGIN_NAMES)
     check_script(tool, URL_IBOM)
     return tool
 
@@ -161,6 +162,9 @@ class IBoMOptions(VariantOptions):
         else:
             output_dir = name
         cmd = [tool, GS.pcb_file, '--dest-dir', output_dir, '--no-browser', ]
+        if not os.access(tool, os.X_OK):
+            # Plugin could be installed without execute flags
+            cmd.insert(0, 'python3')
         # Check if the user wants extra_fields but there is no data about them (#68)
         if self.need_extra_fields() and not os.path.isfile(self.extra_data_file):
             logger.warning(W_NONETLIST+'iBoM needs information about user defined fields and no netlist provided')

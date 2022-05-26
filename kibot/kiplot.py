@@ -102,6 +102,8 @@ def check_version(command, version):
     if command in script_versions:
         return
     cmd = [command, '--version']
+    if not os.access(command, os.X_OK) and command.endswith('.py'):
+        cmd.insert(0, 'python3')
     logger.debug('Running: '+str(cmd))
     result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     z = re.match(command + r' (\d+\.\d+\.\d+)', result.stdout, re.IGNORECASE)
@@ -120,7 +122,7 @@ def check_version(command, version):
 
 
 def check_script(cmd, url, version=None):
-    if which(cmd) is None:
+    if which(cmd) is None and not os.path.isfile(cmd):
         logger.error('No `'+cmd+'` command found.\n'
                      'Please install it, visit: '+url)
         logger.error(TRY_INSTALL_CHECK)
