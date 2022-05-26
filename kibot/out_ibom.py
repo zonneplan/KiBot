@@ -5,6 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
+from shutil import which
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR, W_EXTNAME, ToolDependency, ToolDependencyRole, W_NONETLIST)
 from .gs import (GS)
 from .kiplot import check_script, search_as_plugin
@@ -162,7 +163,7 @@ class IBoMOptions(VariantOptions):
         else:
             output_dir = name
         cmd = [tool, GS.pcb_file, '--dest-dir', output_dir, '--no-browser', ]
-        if not os.access(tool, os.X_OK):
+        if not which(tool) and not os.access(tool, os.X_OK):
             # Plugin could be installed without execute flags
             cmd.insert(0, 'python3')
         # Check if the user wants extra_fields but there is no data about them (#68)
