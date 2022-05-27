@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="Слой_1"
+   data-name="Слой 1"
+   viewBox="0 0 24 24"
+   version="1.1"
+   sodipodi:docname="file_eps.svg"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="983"
+     id="namedview30"
+     showgrid="true"
+     inkscape:zoom="19.771793"
+     inkscape:cx="-2.6627717"
+     inkscape:cy="3.1257755"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="Слой_1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid_kicad"
+       spacingx="0.5"
+       spacingy="0.5"
+       color="#9999ff"
+       opacity="0.13"
+       empspacing="2" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata43">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/" />
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>add_arc</dc:title>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#ShareAlike" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs27305">
+    <style
+       id="style27303">.cls-1{fill:#b9b9b9;}.cls-2{fill:#1a81c4;}.cls-3{fill:#fff;}</style>
+  </defs>
+  <title
+     id="title27307">svg_file</title>
+  <rect
+     class="cls-1"
+     x="3"
+     y="0"
+     width="21"
+     height="24"
+     rx="3.5044518"
+     id="rect27309"
+     style="stroke-width:0.999998" />
+  <g
+     id="g875"
+     transform="translate(-1.6418913,-0.001699)">
+    <path
+       class="cls-2"
+       d="m 9.9181016,18.701498 a 5.4038,5.4038 0 0 0 1.3330004,-3.244199 l 5.2506,-0.9556 -0.9591,5.247099 a 5.4038,5.4038 0 0 0 -3.2442,1.333"
+       id="path157899"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+    <rect
+       class="cls-2"
+       x="19.586359"
+       y="6.1656432"
+       width="4.6677999"
+       height="2.1094999"
+       transform="rotate(45.0009)"
+       id="rect157901"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+    <path
+       class="cls-2"
+       d="m 12.564602,17.179998 a 0.8876,0.8876 0 1 1 0,1.2553 0.8874,0.8874 0 0 1 0,-1.2553 z"
+       id="path157903"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+    <path
+       class="cls-2"
+       d="m 17.678902,12.065699 a 0.8876,0.8876 0 1 1 0,1.2553 0.8875,0.8875 0 0 1 0,-1.2553 z"
+       id="path157905"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+    <path
+       class="cls-2"
+       d="m 9.1874016,12.005899 a 0.8877,0.8877 0 1 1 0,1.2554 0.8877,0.8877 0 0 1 0,-1.2554 z"
+       id="path157907"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+    <path
+       class="cls-2"
+       d="m 17.731402,20.549898 a 0.8877,0.8877 0 1 1 0,1.2553 0.8876,0.8876 0 0 1 0,-1.2553 z"
+       id="path157909"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+    <path
+       class="cls-2"
+       d="m 18.927402,20.506698 a 6.0423,6.0423 0 0 0 -0.0043,-7.097799 l 4.7706,4.770599"
+       id="path157911"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+    <path
+       class="cls-2"
+       d="m 10.450402,12.104499 a 6.0416,6.0416 0 0 1 7.1871,0.0068 l -4.7883,-4.7883003"
+       id="path157913"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+    <line
+       class="cls-2"
+       x1="16.5"
+       y1="14.5"
+       x2="13.851202"
+       y2="17.148699"
+       id="line157915"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+    <rect
+       class="cls-2"
+       x="14.438107"
+       y="-4.6257401"
+       width="1.476"
+       height="1.476"
+       transform="rotate(45)"
+       id="rect157917"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+    <rect
+       class="cls-2"
+       x="27.942106"
+       y="-4.6270676"
+       width="1.4762"
+       height="1.476"
+       transform="rotate(45.0027)"
+       id="rect157919"
+       style="fill:none;stroke:#545454;stroke-width:0.9528px;stroke-miterlimit:10" />
+  </g>
+  <rect
+     class="cls-2"
+     x="0"
+     y="2"
+     width="19"
+     height="9"
+     id="rect27311"
+     style="stroke-width:0.999998" />
+  <path
+     class="cls-3"
+     d="M 2.0688,7.9416479 H 0.99590004 V 6.8772203 H 2.0688 Z"
+     id="path27313"
+     style="stroke-width:1" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;"
+     x="3.1426811"
+     y="8.0476418"
+     id="text909"><tspan
+       sodipodi:role="line"
+       id="tspan1694">eps</tspan></text>
+</svg>

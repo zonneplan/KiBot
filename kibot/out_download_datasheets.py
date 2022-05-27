@@ -154,6 +154,7 @@ class Download_Datasheets(BaseOutput):  # noqa: F821
             self.options = Download_Datasheets_Options
             """ [dict] Options for the `download_datasheets` output """
         self._sch_related = True
+        self._category = 'Schematic/docs'
 
     def run(self, output_dir):
         # No output member, just a dir

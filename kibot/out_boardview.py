@@ -175,6 +175,7 @@ class BoardView(BaseOutput):  # noqa: F821
         The output can be loaded using Open Board View (https://openboardview.org/) """
     def __init__(self):
         super().__init__()
+        self._category = ['PCB/repair', 'PCB/fabrication/assembly']
         with document:
             self.options = BoardViewOptions
             """ [dict] Options for the `boardview` output """

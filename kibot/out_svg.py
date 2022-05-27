@@ -51,3 +51,4 @@ class SVG(AnyLayer):
         with document:
             self.options = SVGOptions
             """ [dict] Options for the `svg` output """
+        self._category = 'PCB/docs'

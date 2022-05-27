@@ -37,6 +37,7 @@ class KiBoMRegex(Optionable):
             """ {column} """
             self.regexp = None
             """ {regex} """
+        self._category = 'Schematic/BoM'
 
     def __str__(self):
         return self.column+'\t'+self.regex

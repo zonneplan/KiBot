@@ -106,6 +106,7 @@ class Gerber(AnyLayer):
         with document:
             self.options = GerberOptions
             """ [dict] Options for the `gerber` output """
+        self._category = 'PCB/fabrication/gerber'
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
@@ -137,7 +138,8 @@ class Gerber(AnyLayer):
                     skip = True
                 if out['type'] == 'compress':
                     out['dir'] = 'Manufacturers'
-                    out['options']['move_files'] = True
+                    # Moving files makes the `navigate_results` less powerful
+                    # out['options']['move_files'] = True
                     if skipped:
                         # Compress only the ones we didn't skip
                         out['options']['files'] = [f for f in out['options']['files'] if f['from_output'] not in skipped]

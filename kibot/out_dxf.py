@@ -54,6 +54,7 @@ class DXF(AnyLayer):
     This output is what you get from the File/Plot menu in pcbnew. """
     def __init__(self):
         super().__init__()
+        self._category = 'PCB/export'
         with document:
             self.options = DXFOptions
             """ [dict] Options for the `dxf` output """

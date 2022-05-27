@@ -758,6 +758,7 @@ class BoM(BaseOutput):  # noqa: F821
             self.options = BoMOptions
             """ [dict] Options for the `bom` output """
         self._sch_related = True
+        self._category = 'Schematic/BoM'
 
     @staticmethod
     def create_bom(fmt, subd, group_fields, join_fields, fld_names, cols=None):

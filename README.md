@@ -137,13 +137,13 @@ Notes:
 
 [**ImageMagick**](https://imagemagick.org/) (tool) [Debian](https://packages.debian.org/bullseye/imagemagick)
 - Optional to:
-  - Create JPG images for `pcbdraw`
   - Create monochrome prints for `pcb_print`
+  - Create JPG images for `pcbdraw`
 
 [**RSVG tools**](https://cran.r-project.org/web/packages/rsvg/index.html) (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
 - Optional to:
-  - Create PNG and JPG images for `pcbdraw`
   - Create PDF, PNG, EPS and PS formats for `pcb_print`
+  - Create PNG and JPG images for `pcbdraw`
 
 [**Ghostscript**](https://www.ghostscript.com/) (tool) [Debian](https://packages.debian.org/bullseye/ghostscript)
 - Optional to create PS files for `pcb_print`
@@ -1872,6 +1872,24 @@ Next time you need this list just use an alias, like this:
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* Navigate Results
+  * Type: `navigate_results`
+  * Description: Generates a web page to navigate the generated outputs
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `name`: [string=''] Used to identify this particular output definition.
+    - `options`: [dict] Options for the `navigate_results` output.
+      * Valid keys:
+        - `link_from_root`: [string=''] The name of a file to create at the main output directory linking to the home page.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * Netlist
   * Type: `netlist`
   * Description: Generates the list of connections for the project.
@@ -3492,3 +3510,6 @@ Additionally we support:
   - **pimpmykicadbom**: Anton Savov (@antto)
 - **Others**:
   - **Robot in the logo**: Christian Plaza (from pixabay)
+  - **Robot arm in assembly_simple.svg**: [Pixlok](https://pixlok.com/)
+  - **Chip in assembly_simple.svg**: [oNline Web Fonts](https://www.onlinewebfonts.com/)
+  - **Most icons for the navigate_results output**: The KiCad project

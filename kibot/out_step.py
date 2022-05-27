@@ -118,6 +118,7 @@ class STEP(Base3D):
         with document:
             self.options = STEPOptions
             """ [dict] Options for the `step` output """
+        self._category = 'PCB/3D'
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

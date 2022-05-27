@@ -52,6 +52,7 @@ class Excellon(BaseOutput):  # noqa: F821
         This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew. """
     def __init__(self):
         super().__init__()
+        self._category = 'PCB/fabrication/drill'
         with document:
             self.options = ExcellonOptions
             """ [dict] Options for the `excellon` output """

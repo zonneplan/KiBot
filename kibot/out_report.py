@@ -800,6 +800,7 @@ class Report(BaseOutput):  # noqa: F821
         with document:
             self.options = ReportOptions
             """ [dict] Options for the `report` output """
+        self._category = 'PCB/docs'
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

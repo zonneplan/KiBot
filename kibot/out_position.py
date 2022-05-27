@@ -300,6 +300,7 @@ class Position(BaseOutput):  # noqa: F821
         with document:
             self.options = PositionOptions
             """ [dict] Options for the `position` output """
+        self._category = 'PCB/fabrication/assembly'
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

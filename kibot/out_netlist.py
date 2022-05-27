@@ -33,9 +33,11 @@ class NetlistOptions(BaseOptions):
         if self.format == 'classic':
             self._expand_id = 'netlist'
             self._expand_ext = 'net'
+            self._category = 'PCB/export'
         else:
             self._expand_id = 'IPC-D-356'
             self._expand_ext = 'd356'
+            self._category = 'PCB/fabrication/verification'
 
     def run(self, name):
         if self.format == 'ipc':

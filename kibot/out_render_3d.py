@@ -201,6 +201,7 @@ class Render_3D(Base3D):  # noqa: F821
         with document:
             self.options = Render3DOptions
             """ [dict] Options for the `render_3d` output """
+        self._category = 'PCB/3D'
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

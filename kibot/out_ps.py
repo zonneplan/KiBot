@@ -85,3 +85,4 @@ class PS(AnyLayer):
         with document:
             self.options = PSOptions
             """ [dict] Options for the `ps` output """
+        self._category = 'PCB/docs'

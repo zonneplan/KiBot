@@ -38,6 +38,7 @@ class Aggregate(Optionable):
             """ Number of boards to build (components multiplier) """
             self.board_qty = None
             """ {number} """
+        self._category = 'Schematic/BoM'
 
     def config(self, parent):
         super().config(parent)

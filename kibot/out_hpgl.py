@@ -63,6 +63,7 @@ class HPGL(AnyLayer):
         This output is what you get from the File/Plot menu in pcbnew. """
     def __init__(self):
         super().__init__()
+        self._category = 'PCB/docs'
         with document:
             self.options = HPGLOptions
             """ [dict] Options for the `hpgl` output """

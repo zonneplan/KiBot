@@ -1008,6 +1008,7 @@ class PCB_Print(BaseOutput):  # noqa: F821
         with document:
             self.options = PCB_PrintOptions
             """ [dict] Options for the `pcb_print` output """
+        self._category = 'PCB/docs'
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

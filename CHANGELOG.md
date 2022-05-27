@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Components with mounting hole where excluded (#201)
+- New outputs:
+  - `navigate_results` creates web pages to browse the generated outputs.
 
 ## [1.1.0] - 2022-05-24
 ### Added

@@ -14,7 +14,7 @@ import re
 from sys import exit
 from sys import path as sys_path
 from shutil import which
-from subprocess import run, PIPE
+from subprocess import run, PIPE, Popen
 from glob import glob
 from distutils.version import StrictVersion
 from importlib.util import (spec_from_file_location, module_from_spec)
@@ -928,6 +928,9 @@ def generate_examples(start_dir, dry, types):
         log.remove_file_log(fl)
         GS.debug_level = old_lvl
         logger.info('')
+    # Try to open a browser
+    if os.environ.get('DISPLAY') and which('x-www-browser'):
+        Popen(['x-www-browser', os.path.join(GS.out_dir, 'index.html')])
 
 
 # To avoid circular dependencies: Optionable needs it, but almost everything needs Optionable

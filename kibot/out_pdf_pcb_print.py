@@ -38,6 +38,7 @@ class PDF_PCB_Print(BaseOutput):  # noqa: F821
             self.layers = Layer
             """ [list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to include in the PDF """
+        self._category = 'PCB/docs'
 
     def config(self, parent):
         super().config(parent)

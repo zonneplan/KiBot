@@ -59,6 +59,7 @@ class BaseOutput(RegOutput):
         self._none_related = False
         self._unkown_is_error = True
         self._done = False
+        self._category = None
 
     @staticmethod
     def attr2longopt(attr):
