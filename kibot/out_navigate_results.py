@@ -164,6 +164,7 @@ class Navigate_ResultsOptions(BaseOptions):
             f.write('<head>\n')
             f.write(' <meta charset="UTF-8">\n')  # UTF-8 encoding for unicode support
             f.write(' <link rel="stylesheet" href="styles.css">\n')
+            f.write(' <link rel="icon" href="favicon.ico">\n')
             f.write('</head>\n')
             f.write('<body>\n')
             name, ext = os.path.splitext(name)
@@ -193,6 +194,7 @@ class Navigate_ResultsOptions(BaseOptions):
             f.write('<head>\n')
             f.write(' <meta charset="UTF-8">\n')  # UTF-8 encoding for unicode support
             f.write(' <link rel="stylesheet" href="styles.css">\n')
+            f.write(' <link rel="icon" href="favicon.ico">\n')
             f.write('</head>\n')
             f.write('<body>\n')
             name, ext = os.path.splitext(name)
@@ -250,6 +252,7 @@ class Navigate_ResultsOptions(BaseOptions):
         self.home = name
         self.copy('images/back.svg')
         self.copy('images/home.svg')
+        copy2(os.path.join(self.img_src_dir, 'images', 'favicon.ico'), os.path.join(self.out_dir, 'favicon.ico'))
         self.generate_page_for(o_tree, name)
         # Link it?
         if self.link_from_root:

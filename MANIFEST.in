@@ -7,3 +7,4 @@ include kibot/kicad_layouts/*.kicad_wks
 include kibot/config_templates/gerber/*.yaml
 include kibot/config_templates/bom/*.yaml
 include kibot/images/*.svg
+include kibot/images/*.ico
