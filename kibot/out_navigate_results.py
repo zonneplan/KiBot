@@ -70,34 +70,34 @@ MID_ICON = 64
 OUT_COLS = 10
 
 STYLE = """
- .cat-table { margin-left: auto; margin-right: auto; }
- .cat-table td { padding: 20px 24px; }
- .nav-table { margin-left: auto; margin-right: auto; }
- .nav-table td { padding: 20px 24px; }
- .output-table {
-   width: 1280px;
-   margin-left: auto;
-   margin-right: auto;
-   border-collapse:
-   collapse;
-   margin-top: 5px;
-   margin-bottom: 4em;
-   font-size: 0.9em;
-   font-family: sans-serif;
-   min-width: 400px;
-   border-radius: 5px 5px 0 0;
-   overflow: hidden;
-   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
- }
- .output-table thead tr { background-color: #0e4e8e; color: #ffffff; text-align: left; }
- .output-table th { padding: 10px 12px; }
- .output-table td { padding: 5px 7px; }
- .out-cell { width: 128px; text-align: center }
- .out-img { text-align: center; margin-left: auto; margin-right: auto; }
- .cat-img { text-align: center; margin-left: auto; margin-right: auto; }
- .td-small { text-align: center; font-size: 0.6em; }
- a:link, a:visited { text-decoration: none;}
- a:hover, a:active { text-decoration: underline;}
+.cat-table { margin-left: auto; margin-right: auto; }
+.cat-table td { padding: 20px 24px; }
+.nav-table { margin-left: auto; margin-right: auto; }
+.nav-table td { padding: 20px 24px; }
+.output-table {
+  width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse:
+  collapse;
+  margin-top: 5px;
+  margin-bottom: 4em;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  border-radius: 5px 5px 0 0;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+.output-table thead tr { background-color: #0e4e8e; color: #ffffff; text-align: left; }
+.output-table th { padding: 10px 12px; }
+.output-table td { padding: 5px 7px; }
+.out-cell { width: 128px; text-align: center }
+.out-img { text-align: center; margin-left: auto; margin-right: auto; }
+.cat-img { text-align: center; margin-left: auto; margin-right: auto; }
+.td-small { text-align: center; font-size: 0.6em; }
+a:link, a:visited { text-decoration: none;}
+a:hover, a:active { text-decoration: underline;}
 """
 
 
@@ -163,9 +163,8 @@ class Navigate_ResultsOptions(BaseOptions):
             f.write('<html>\n')
             f.write('<head>\n')
             f.write(' <meta charset="UTF-8">\n')  # UTF-8 encoding for unicode support
-            f.write('<style>\n')
-            f.write(STYLE)
-            f.write('</style>\n')
+            f.write(' <link rel="stylesheet" href="styles.css">\n')
+            f.write('</head>\n')
             f.write('<body>\n')
             name, ext = os.path.splitext(name)
             # Limit to 5 categories by row
@@ -193,9 +192,8 @@ class Navigate_ResultsOptions(BaseOptions):
             f.write('<html>\n')
             f.write('<head>\n')
             f.write(' <meta charset="UTF-8">\n')  # UTF-8 encoding for unicode support
-            f.write('<style>\n')
-            f.write(STYLE)
-            f.write('</style>\n')
+            f.write(' <link rel="stylesheet" href="styles.css">\n')
+            f.write('</head>\n')
             f.write('<body>\n')
             name, ext = os.path.splitext(name)
             for oname, out in node.items():
@@ -246,6 +244,8 @@ class Navigate_ResultsOptions(BaseOptions):
             for c in cat:
                 self.add_to_tree(c, o, o_tree)
         logger.debug('Collected outputs:\n'+pprint.pformat(o_tree))
+        with open(os.path.join(self.out_dir, 'styles.css'), 'wt') as f:
+            f.write(STYLE)
         # Create the pages
         self.home = name
         self.copy('images/back.svg')
