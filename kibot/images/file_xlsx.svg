@@ -5,44 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="Слой_1"
    data-name="Слой 1"
    viewBox="0 0 24 24"
-   version="1.1"
-   sodipodi:docname="file_xlsx.svg"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="983"
-     id="namedview30"
-     showgrid="true"
-     inkscape:zoom="19.771793"
-     inkscape:cx="23.772688"
-     inkscape:cy="13.090989"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="g905">
-    <inkscape:grid
-       type="xygrid"
-       id="grid_kicad"
-       spacingx="0.5"
-       spacingy="0.5"
-       color="#9999ff"
-       opacity="0.13"
-       empspacing="2" />
-  </sodipodi:namedview>
+   version="1.1">
   <metadata
      id="metadata43">
     <rdf:RDF>
@@ -160,13 +126,9 @@
        ry="1.4861572" />
   </g>
   <g
-     inkscape:groupmode="layer"
-     id="layer1"
-     inkscape:label="Layer 1" />
+     id="layer1" />
   <g
-     inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="Layer 2">
+     id="layer2">
     <g
        id="g905"
        transform="translate(-1,18)">
@@ -183,14 +145,23 @@
          d="m 3.0692009,-9.0631 h -1.0733 v -1.0361 h 1.0733 z"
          id="path26647"
          style="fill:#ffffff" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;"
-         x="4.060039"
-         y="-9.2215052"
-         id="text909"><tspan
-           sodipodi:role="line"
-           id="tspan1924">xlsx</tspan></text>
+      <g
+         aria-label="xlsx"
+         id="text909"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none">
+        <path
+           d="m 5.580039,-11.453505 -1.408,-2.136 h 1.352 l 0.848,1.392 0.856,-1.392 h 1.352 l -1.424,2.136 1.488,2.2319998 h -1.352 l -0.92,-1.4959998 -0.92,1.4959998 h -1.352 z"
+           id="path19195" />
+        <path
+           d="m 10.500032,-9.2215052 h -1.192 v -6.0799998 h 1.192 z"
+           id="path19197" />
+        <path
+           d="m 14.796019,-10.517505 q 0,0.6639998 -0.472,1.0239998 -0.464,0.352 -1.392,0.352 -0.456,0 -0.784,-0.064 -0.328,-0.056 -0.656,-0.192 v -0.9839998 q 0.352,0.16 0.76,0.264 0.408,0.104 0.72,0.104 0.352,0 0.496,-0.104 0.152,-0.104 0.152,-0.272 0,-0.112 -0.064,-0.2 -0.056,-0.088 -0.256,-0.2 -0.2,-0.112 -0.624,-0.288 -0.408,-0.176 -0.672,-0.344 -0.264,-0.176 -0.392,-0.416 -0.128,-0.248 -0.128,-0.616 0,-0.608 0.472,-0.912 0.472,-0.304 1.256,-0.304 0.408,0 0.776,0.08 0.368,0.08 0.76,0.264 l -0.36,0.856 q -0.32,-0.136 -0.608,-0.224 -0.288,-0.096 -0.584,-0.096 -0.528,0 -0.528,0.288 0,0.104 0.064,0.192 0.072,0.08 0.264,0.176 0.2,0.096 0.584,0.256 0.376,0.152 0.648,0.32 0.272,0.16 0.416,0.408 0.152,0.24 0.152,0.632 z"
+           id="path19199" />
+        <path
+           d="m 16.620017,-11.453505 -1.408,-2.136 h 1.352 l 0.848,1.392 0.856,-1.392 h 1.352 l -1.424,2.136 1.488,2.2319998 h -1.352 l -0.92,-1.4959998 -0.92,1.4959998 h -1.352 z"
+           id="path19201" />
+      </g>
     </g>
   </g>
 </svg>

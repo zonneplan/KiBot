@@ -5,47 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="Слой_1"
    data-name="Слой 1"
    viewBox="0 0 24 24"
-   version="1.1"
-   sodipodi:docname="file_brd.svg"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
-   inkscape:export-filename="/Users/jeff/kicad_dev/kicad/bitmaps_png/png_26/post_gerber.svg.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="983"
-     id="namedview30"
-     showgrid="true"
-     inkscape:zoom="19.771793"
-     inkscape:cx="10.367189"
-     inkscape:cy="10.405756"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="g1941">
-    <inkscape:grid
-       type="xygrid"
-       id="grid_kicad"
-       spacingx="0.5"
-       spacingy="0.5"
-       color="#9999ff"
-       opacity="0.13"
-       empspacing="2" />
-  </sodipodi:namedview>
+   version="1.1">
   <metadata
      id="metadata43">
     <rdf:RDF>
@@ -165,8 +128,7 @@
     <path
        style="fill:none;stroke:#1a81c4;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 26.70993,36.805941 7,-3.5"
-       id="path1943"
-       sodipodi:nodetypes="cc" />
+       id="path1943" />
   </g>
   <rect
      class="cls-2"
@@ -186,16 +148,21 @@
      x="3.5"
      y="5"
      id="text855"><tspan
-       sodipodi:role="line"
        id="tspan853"
        x="3.5"
        y="5" /></text>
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;"
-     x="3.0502629"
-     y="9.1732826"
-     id="text859"><tspan
-       sodipodi:role="line"
-       id="tspan1783">brd</tspan></text>
+  <g
+     aria-label="brd"
+     id="text859"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none">
+    <path
+       d="m 4.8662629,4.5092826 q 0,0.248 -0.016,0.488 -0.016,0.24 -0.032,0.376 h 0.048 q 0.176,-0.272 0.472,-0.456 0.296,-0.192 0.768,-0.192 0.736,0 1.192,0.576 0.456,0.568 0.456,1.68 0,1.12 -0.464,1.696 -0.464,0.576 -1.216,0.576 -0.48,0 -0.76,-0.168 -0.272,-0.176 -0.448,-0.392 h -0.08 l -0.2,0.48 h -0.912 v -6.08 h 1.192 z m 0.856,1.168 q -0.464,0 -0.656,0.288 -0.184,0.288 -0.2,0.88 v 0.128 q 0,0.632 0.184,0.976 0.192,0.336 0.688,0.336 0.368,0 0.584,-0.336 0.216,-0.344 0.216,-0.984 0,-0.64 -0.224,-0.96 -0.216,-0.328 -0.592,-0.328 z"
+       id="path5712" />
+    <path
+       d="m 11.178258,4.7252826 q 0.088,0 0.208,0.008 0.12,0.008 0.192,0.024 l -0.088,1.12 q -0.056,-0.016 -0.168,-0.024 -0.104,-0.016 -0.184,-0.016 -0.304,0 -0.584,0.112 -0.28,0.104 -0.456,0.344 -0.1679997,0.24 -0.1679997,0.656 v 2.224 h -1.192 v -4.368 h 0.904 l 0.176,0.736 h 0.056 q 0.1919997,-0.336 0.5279997,-0.576 0.336,-0.24 0.776,-0.24 z"
+       id="path5714" />
+    <path
+       d="m 13.594243,9.2532826 q -0.728,0 -1.192,-0.568 -0.456,-0.576 -0.456,-1.688 0,-1.12 0.464,-1.696 0.464,-0.576 1.216,-0.576 0.472,0 0.776,0.184 0.304,0.184 0.48,0.456 h 0.04 q -0.024,-0.128 -0.056,-0.368 -0.032,-0.248 -0.032,-0.504 v -1.4 h 1.192 v 6.08 h -0.912 l -0.232,-0.568 h -0.048 q -0.176,0.272 -0.472,0.464 -0.296,0.184 -0.768,0.184 z m 0.416,-0.952 q 0.496,0 0.696,-0.288 0.2,-0.296 0.208,-0.88 v -0.128 q 0,-0.64 -0.2,-0.976 -0.192,-0.336 -0.72,-0.336 -0.392,0 -0.616,0.344 -0.224,0.336 -0.224,0.976 0,0.64 0.224,0.968 0.224,0.32 0.632,0.32 z"
+       id="path5716" />
+  </g>
 </svg>

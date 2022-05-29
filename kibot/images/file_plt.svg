@@ -5,44 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="Слой_1"
    data-name="Слой 1"
    viewBox="0 0 24 24"
-   version="1.1"
-   sodipodi:docname="file_plt.svg"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="983"
-     id="namedview30"
-     showgrid="true"
-     inkscape:zoom="9.8858965"
-     inkscape:cx="-6.9561269"
-     inkscape:cy="-6.2427859"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="layer3">
-    <inkscape:grid
-       type="xygrid"
-       id="grid_kicad"
-       spacingx="0.5"
-       spacingy="0.5"
-       color="#9999ff"
-       opacity="0.13"
-       empspacing="2" />
-  </sodipodi:namedview>
+   version="1.1">
   <metadata
      id="metadata43">
     <rdf:RDF>
@@ -89,37 +55,32 @@
      id="rect27309"
      style="stroke-width:0.999998" />
   <g
-     inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="Layer 1">
+     id="layer3">
     <path
        id="polygon26469"
-       sodipodi:nodetypes="cccccc"
        class="st0"
        d="m 10.15,6.7499992 h 7.7 v 7.3499998 l -1.05,1.4 h -6.65 z"
        style="fill:#f3f3f3;stroke:#545454;stroke-width:0.7" />
     <polygon
        id="polygon26471"
        class="st1"
-       points="16,10 18,10 16,12 "
+       points="18,10 16,12 16,10 "
        style="fill:#1a81c4"
        transform="matrix(0.7,0,0,0.7,5.6000004,5.6999992)" />
     <path
        id="path26473"
-       inkscape:connector-curvature="0"
        class="st2"
        d="M 6.3700004,8.4999992 H 21.63 c 0.42,0 0.77,0.35 0.77,0.77 v 4.0599998 c 0,0.42 -0.35,0.77 -0.77,0.77 v 0 H 6.3700004 c -0.42,0 -0.77,-0.35 -0.77,-0.77 V 9.2699992 c 0,-0.42 0.35,-0.77 0.77,-0.77 z"
        style="fill:#545454;fill-opacity:1;stroke-width:0.7" />
     <path
        id="polygon26475"
-       sodipodi:nodetypes="cccccc"
        class="st0"
        d="m 10.15,11.649999 c 2.8,0 0.21,0 7.7,0 v 5.6 l -1.4,1.4 h -6.3 z"
        style="fill:#f3f3f3;stroke:#545454;stroke-width:0.7" />
     <polygon
        id="polygon26477"
        class="st3"
-       points="15,16 17.5,16 15,18.6 "
+       points="17.5,16 15,18.6 15,16 "
        style="fill:#545454;fill-opacity:1"
        transform="matrix(0.7,0,0,0.7,5.6000004,5.6999992)" />
     <rect
@@ -164,9 +125,7 @@
        style="fill:#545454;fill-opacity:1;stroke-width:0.7" />
   </g>
   <g
-     inkscape:groupmode="layer"
      id="layer4"
-     inkscape:label="Layer 2"
      style="display:inline">
     <rect
        class="cls-2"
@@ -181,13 +140,19 @@
        d="M 2.0688,7.9416479 H 0.99590004 V 6.8772203 H 2.0688 Z"
        id="path27313"
        style="stroke-width:1" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;"
-       x="3.1426811"
-       y="8.0476418"
-       id="text909"><tspan
-         sodipodi:role="line"
-         id="tspan1802">plt</tspan></text>
+    <g
+       aria-label="plt"
+       id="text909"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none">
+      <path
+         d="m 6.1986811,3.5996418 q 0.736,0 1.192,0.576 0.456,0.568 0.456,1.68 0,1.112 -0.472,1.696 -0.472,0.576 -1.208,0.576 -0.472,0 -0.752,-0.168 -0.28,-0.176 -0.456,-0.392 h -0.064 q 0.064,0.336 0.064,0.64 v 1.76 h -1.192 v -6.288 h 0.968 l 0.168,0.568 h 0.056 q 0.176,-0.264 0.472,-0.456 0.296,-0.192 0.768,-0.192 z m -0.384,0.952 q -0.464,0 -0.656,0.288 -0.184,0.288 -0.2,0.88 v 0.128 q 0,0.632 0.184,0.976 0.192,0.336 0.688,0.336 0.408,0 0.6,-0.336 0.2,-0.344 0.2,-0.984 0,-1.288 -0.816,-1.288 z"
+         id="path13617" />
+      <path
+         d="M 10.022676,8.0476418 H 8.8306765 v -6.08 h 1.1919995 z"
+         id="path13619" />
+      <path
+         d="m 13.110664,7.1756418 q 0.2,0 0.384,-0.04 0.184,-0.04 0.368,-0.096 v 0.888 q -0.192,0.08 -0.48,0.136 -0.28,0.064 -0.616,0.064 -0.392,0 -0.704,-0.128 -0.304,-0.128 -0.488,-0.44 -0.176,-0.32 -0.176,-0.88 v -2.104 h -0.568 v -0.504 l 0.656,-0.4 0.344,-0.92 h 0.76 v 0.928 h 1.224 v 0.896 h -1.224 v 2.104 q 0,0.248 0.144,0.376 0.144,0.12 0.376,0.12 z"
+         id="path13621" />
+    </g>
   </g>
 </svg>

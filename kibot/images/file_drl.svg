@@ -5,44 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="Слой_1"
    data-name="Слой 1"
    viewBox="0 0 24 24"
-   version="1.1"
-   sodipodi:docname="file_drl.svg"
-   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="2279"
-     inkscape:window-height="1737"
-     id="namedview30"
-     showgrid="true"
-     inkscape:zoom="32"
-     inkscape:cx="20.181049"
-     inkscape:cy="8.936224"
-     inkscape:window-x="0"
-     inkscape:window-y="37"
-     inkscape:window-maximized="0"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="g868">
-    <inkscape:grid
-       type="xygrid"
-       id="grid_kicad"
-       spacingx="0.5"
-       spacingy="0.5"
-       color="#9999ff"
-       opacity="0.13"
-       empspacing="2" />
-  </sodipodi:namedview>
+   version="1.1">
   <metadata
      id="metadata43">
     <rdf:RDF>
@@ -99,21 +65,20 @@
     <path
        style="fill:none;stroke:#545454;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 9.5,16.5 h 12"
-       id="path861"
-       sodipodi:nodetypes="cc" />
+       id="path861" />
     <path
        style="fill:none;stroke:#545454;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 15.5,22.5 V 9.5"
-       id="path863"
-       sodipodi:nodetypes="cc" />
+       id="path863" />
   </g>
   <rect
      class="cls-2"
      x="0"
      y="2"
-     width="18.709999"
+     width="15"
      height="9.2298002"
-     id="rect26589" />
+     id="rect26589"
+     style="stroke-width:0.895383" />
   <path
      class="cls-3"
      d="M 2.0733,10.036 H 1 V 9 h 1.0733 z"

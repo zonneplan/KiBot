@@ -5,35 +5,11 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="72.764"
    height="74.43"
    version="1.1"
    viewBox="0 0 72.764 74.43"
-   id="svg28"
-   sodipodi:docname="assembly_simple.svg"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="983"
-     id="namedview30"
-     showgrid="false"
-     inkscape:zoom="5.5085315"
-     inkscape:cx="28.961875"
-     inkscape:cy="8.518646"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="Robot-Icon-09iujcdf" />
+   id="svg28">
   <metadata
      id="metadata2">
     <rdf:RDF>
@@ -42,7 +18,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -59,8 +35,7 @@
     </clipPath>
   </defs>
   <g
-     id="Robot-Icon-09iujcdf"
-     transform="translate(0)">
+     id="Robot-Icon-09iujcdf">
     <path
        d="m 63.268,10.462 a 9.092,9.092 0 0 1 -8.3,5.41 h -4.467 l 2.929,9.736 13.2,-3.974 z"
        data-name="Path 134875"

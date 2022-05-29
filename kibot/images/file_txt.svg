@@ -5,44 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="Слой_1"
    data-name="Слой 1"
    viewBox="0 0 24 24"
-   version="1.1"
-   sodipodi:docname="file_txt.svg"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15)">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="983"
-     id="namedview30"
-     showgrid="true"
-     inkscape:zoom="13.980769"
-     inkscape:cx="-14.533153"
-     inkscape:cy="0.042662953"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="g905">
-    <inkscape:grid
-       type="xygrid"
-       id="grid_kicad"
-       spacingx="0.5"
-       spacingy="0.5"
-       color="#9999ff"
-       opacity="0.13"
-       empspacing="2" />
-  </sodipodi:namedview>
+   version="1.1">
   <metadata
      id="metadata43">
     <rdf:RDF>
@@ -53,7 +19,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>add_arc</dc:title>
+        <dc:title>export_footprint_names</dc:title>
       </cc:Work>
       <cc:License
          rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
@@ -128,15 +94,19 @@
        d="m 3.0692009,-9.0631 h -1.0733 v -1.0361 h 1.0733 z"
        id="path26647"
        style="fill:#ffffff" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none"
-       x="4.060039"
-       y="-9.2215052"
-       id="text909"><tspan
-         sodipodi:role="line"
-         id="tspan907"
-         x="4.060039"
-         y="-9.2215052">txt</tspan></text>
+    <g
+       aria-label="txt"
+       id="text909"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none">
+      <path
+         d="m 6.524039,-10.093505 q 0.2,0 0.384,-0.04 0.184,-0.04 0.368,-0.096 v 0.8879998 q -0.192,0.08 -0.48,0.136 -0.28,0.064 -0.616,0.064 -0.392,0 -0.704,-0.128 -0.304,-0.128 -0.488,-0.44 -0.176,-0.3199998 -0.176,-0.8799998 v -2.104 h -0.568 v -0.504 l 0.656,-0.4 0.344,-0.92 h 0.76 v 0.928 h 1.224 v 0.896 h -1.224 v 2.104 q 0,0.248 0.144,0.376 0.144,0.12 0.376,0.12 z"
+         id="path18496" />
+      <path
+         d="m 9.0520239,-11.453505 -1.408,-2.136 h 1.352 l 0.848,1.392 0.8560001,-1.392 h 1.352 l -1.424,2.136 1.488,2.2319998 h -1.352 l -0.9200001,-1.4959998 -0.92,1.4959998 h -1.352 z"
+         id="path18498" />
+      <path
+         d="m 14.620017,-10.093505 q 0.2,0 0.384,-0.04 0.184,-0.04 0.368,-0.096 v 0.8879998 q -0.192,0.08 -0.48,0.136 -0.28,0.064 -0.616,0.064 -0.392,0 -0.704,-0.128 -0.304,-0.128 -0.488,-0.44 -0.176,-0.3199998 -0.176,-0.8799998 v -2.104 h -0.568 v -0.504 l 0.656,-0.4 0.344,-0.92 h 0.76 v 0.928 h 1.224 v 0.896 h -1.224 v 2.104 q 0,0.248 0.144,0.376 0.144,0.12 0.376,0.12 z"
+         id="path18500" />
+    </g>
   </g>
 </svg>
