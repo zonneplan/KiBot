@@ -209,17 +209,23 @@ class Navigate_ResultsOptions(BaseOptions):
                 config_output(out)
                 out_dir = get_output_dir(out.dir, out, dry=True)
                 f.write('<tbody><tr>\n')
-                c = 0
-                for tg in out.get_targets(out_dir):
-                    if c == OUT_COLS:
-                        f.write('</tr>\n<tr>\n')
-                        c = 0
-                    tg = os.path.relpath(os.path.abspath(tg), start=self.out_dir)
-                    f.write('<td class="out-cell"><a href="{}">{}</a></td>\n'.
-                            format(tg, self.get_image_for_file(os.path.basename(tg))))
-                    c = c+1
-                for _ in range(c, OUT_COLS):
-                    f.write('<td class="out-cell"></td>\n')
+                targets = out.get_targets(out_dir)
+                if len(targets) == 1:
+                    tg = os.path.relpath(os.path.abspath(targets[0]), start=self.out_dir)
+                    f.write('<td class="out-cell" colspan="{}"><a href="{}">{}</a></td>\n'.
+                            format(OUT_COLS, tg, self.get_image_for_file(os.path.basename(tg))))
+                else:
+                    c = 0
+                    for tg in targets:
+                        if c == OUT_COLS:
+                            f.write('</tr>\n<tr>\n')
+                            c = 0
+                        tg = os.path.relpath(os.path.abspath(tg), start=self.out_dir)
+                        f.write('<td class="out-cell"><a href="{}">{}</a></td>\n'.
+                                format(tg, self.get_image_for_file(os.path.basename(tg))))
+                        c = c+1
+                    for _ in range(c, OUT_COLS):
+                        f.write('<td class="out-cell"></td>\n')
                 f.write('</tr></tbody>\n')
                 f.write('</table>\n')
             self.add_back_home(f, prev)
