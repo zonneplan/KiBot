@@ -6,7 +6,8 @@
 # The Assembly image is a composition from Pixlok and oNline Web Fonts
 # The rest are KiCad icons
 import os
-from shutil import copy2
+import subprocess
+from shutil import copy2, which
 from math import ceil
 from .gs import GS
 import pprint
@@ -17,58 +18,58 @@ from .macros import macros, document, output_class  # noqa: F401
 from . import log, __version__
 
 logger = log.get_logger()
-CAT_IMAGE = {'PCB': 'pcbnew.svg',
-             'Schematic': 'eeschema.svg',
-             'fabrication': 'fabrication.svg',
-             'export': 'export.svg',
-             'assembly': 'assembly_simple.svg',
-             'repair': 'repair.svg',
-             'docs': 'project.svg',
-             'BoM': 'bom.svg',
-             '3D': '3d.svg',
-             'gerber': 'gerber.svg',
-             'drill': 'load_drill.svg'}
-EXT_IMAGE = {'gbr': 'file_gbr.svg',
-             'gtl': 'file_gbr.svg',
-             'gtp': 'file_gbr.svg',
-             'gbo': 'file_gbr.svg',
-             'gto': 'file_gbr.svg',
-             'gbs': 'file_gbr.svg',
-             'gbl': 'file_gbr.svg',
-             'gts': 'file_gbr.svg',
-             'gml': 'file_gbr.svg',
-             'gm1': 'file_gbr.svg',
-             'gbrjob': 'file_gerber_job.svg',
-             'brd': 'file_brd.svg',
-             'dxf': 'file_dxf.svg',
-             'cad': 'file_cad.svg',
-             'drl': 'file_drl.svg',
-             'pdf': 'file_pdf.svg',
-             'txt': 'file_txt.svg',
-             'pos': 'file_pos.svg',
-             'csv': 'file_csv.svg',
-             'svg': 'file_svg.svg',
-             'eps': 'file_eps.svg',
-             'png': 'file_png.svg',
-             'jpg': 'file_jpg.svg',
-             'plt': 'file_plt.svg',
-             'ps': 'file_ps.svg',
-             'step': 'file_stp.svg',
-             'stp': 'file_stp.svg',
-             'html': 'file_html.svg',
-             'xml': 'file_xml.svg',
-             'tsv': 'file_tsv.svg',
-             'xlsx': 'file_xlsx.svg',
-             'xyrs': 'file_xyrs.svg'}
+CAT_IMAGE = {'PCB': 'pcbnew',
+             'Schematic': 'eeschema',
+             'fabrication': 'fabrication',
+             'export': 'export',
+             'assembly': 'assembly_simple',
+             'repair': 'repair',
+             'docs': 'project',
+             'BoM': 'bom',
+             '3D': '3d',
+             'gerber': 'gerber',
+             'drill': 'load_drill'}
+EXT_IMAGE = {'gbr': 'file_gbr',
+             'gtl': 'file_gbr',
+             'gtp': 'file_gbr',
+             'gbo': 'file_gbr',
+             'gto': 'file_gbr',
+             'gbs': 'file_gbr',
+             'gbl': 'file_gbr',
+             'gts': 'file_gbr',
+             'gml': 'file_gbr',
+             'gm1': 'file_gbr',
+             'gbrjob': 'file_gerber_job',
+             'brd': 'file_brd',
+             'dxf': 'file_dxf',
+             'cad': 'file_cad',
+             'drl': 'file_drl',
+             'pdf': 'file_pdf',
+             'txt': 'file_txt',
+             'pos': 'file_pos',
+             'csv': 'file_csv',
+             'svg': 'file_svg',
+             'eps': 'file_eps',
+             'png': 'file_png',
+             'jpg': 'file_jpg',
+             'plt': 'file_plt',
+             'ps': 'file_ps',
+             'step': 'file_stp',
+             'stp': 'file_stp',
+             'html': 'file_html',
+             'xml': 'file_xml',
+             'tsv': 'file_tsv',
+             'xlsx': 'file_xlsx',
+             'xyrs': 'file_xyrs'}
 for i in range(31):
     n = str(i)
-    EXT_IMAGE['gl'+n] = 'file_gbr.svg'
-    EXT_IMAGE['g'+n] = 'file_gbr.svg'
-    EXT_IMAGE['gp'+n] = 'file_gbr.svg'
+    EXT_IMAGE['gl'+n] = 'file_gbr'
+    EXT_IMAGE['g'+n] = 'file_gbr'
+    EXT_IMAGE['gp'+n] = 'file_gbr'
 BIG_ICON = 256
 MID_ICON = 64
 OUT_COLS = 10
-
+SVGCONV = 'rsvg-convert'
 STYLE = """
 .cat-table { margin-left: auto; margin-right: auto; }
 .cat-table td { padding: 20px 24px; }
@@ -102,6 +103,25 @@ a:hover, a:active { text-decoration: underline;}
 """
 
 
+def _run_command(cmd):
+    logger.debug('- Executing: '+str(cmd))
+    try:
+        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
+        if e.output:
+            logger.debug('Output from command: '+e.output.decode())
+        return False
+    if cmd_output.strip():
+        logger.debug('- Output from command:\n'+cmd_output.decode())
+    return True
+
+
+def svg_to_png(svg_file, png_file, width):
+    cmd = [SVGCONV, '-w', str(width), '-f', 'png', '-o', png_file, svg_file]
+    return _run_command(cmd)
+
+
 class Navigate_ResultsOptions(BaseOptions):
     def __init__(self):
         with document:
@@ -124,25 +144,30 @@ class Navigate_ResultsOptions(BaseOptions):
             node = node[c]
         node[out.name] = out
 
-    def copy(self, img):
-        copy2(os.path.join(self.img_src_dir, img), os.path.join(self.out_dir, img))
+    def copy(self, img, width):
+        src = os.path.join(self.img_src_dir, 'images', img+'.svg')
+        dst = os.path.join(self.out_dir, 'images', img)
+        if self.svg2png_avail and svg_to_png(src, dst+'.png', width):
+            img += '.png'
+        else:
+            copy2(src, dst+'.svg')
+            img += '.svg'
+        return os.path.join('images', img)
 
     def get_image_for_cat(self, cat):
         if cat in CAT_IMAGE:
-            img = 'images/'+CAT_IMAGE[cat]
+            img = self.copy(CAT_IMAGE[cat], BIG_ICON)
             cat_img = '<img src="{}" alt="{}" width="{}" height="{}">'.format(img, cat, BIG_ICON, BIG_ICON)
             cat = ('<table class="cat-img"><tr><td>{}<br>{}</td></tr></table>'.
                    format(cat_img, cat))
-            self.copy(img)
         return cat
 
     def get_image_for_file(self, file):
         ext = os.path.splitext(file)[1][1:].lower()
-        img = 'images/'+EXT_IMAGE.get(ext, 'unknown.svg')
+        img = self.copy(EXT_IMAGE.get(ext, 'unknown'), MID_ICON)
         ext_img = '<img src="{}" alt="{}" width="{}" height="{}">'.format(img, file, MID_ICON, MID_ICON)
         file = ('<table class="out-img"><tr><td>{}</td></tr><tr><td class="td-small">{}</td></tr></table>'.
                 format(ext_img, file))
-        self.copy(img)
         return file
 
     def add_back_home(self, f, prev):
@@ -150,10 +175,10 @@ class Navigate_ResultsOptions(BaseOptions):
             prev += '.html'
             f.write('<table class="nav-table">')
             f.write(' <tr>')
-            f.write('  <td><a href="{}"><img src="images/back.svg" width="{}" height="{}" alt="go back"></a></td>'.
-                    format(prev, MID_ICON, MID_ICON))
-            f.write('  <td><a href="{}"><img src="images/home.svg" width="{}" height="{}" alt="go home"></a></td>'.
-                    format(self.home, MID_ICON, MID_ICON))
+            f.write('  <td><a href="{}"><img src="{}" width="{}" height="{}" alt="go back"></a></td>'.
+                    format(prev, self.back_img, MID_ICON, MID_ICON))
+            f.write('  <td><a href="{}"><img src="{}" width="{}" height="{}" alt="go home"></a></td>'.
+                    format(self.home, self.home_img, MID_ICON, MID_ICON))
             f.write(' </tr>')
             f.write('</table>')
         f.write('<p class="generator">Generated by <a href="https://github.com/INTI-CMNB/KiBot/">KiBot</a> v{}</p>'.
@@ -257,10 +282,11 @@ class Navigate_ResultsOptions(BaseOptions):
         logger.debug('Collected outputs:\n'+pprint.pformat(o_tree))
         with open(os.path.join(self.out_dir, 'styles.css'), 'wt') as f:
             f.write(STYLE)
+        self.svg2png_avail = which(SVGCONV) is not None
         # Create the pages
         self.home = name
-        self.copy('images/back.svg')
-        self.copy('images/home.svg')
+        self.back_img = self.copy('back', MID_ICON)
+        self.home_img = self.copy('home', MID_ICON)
         copy2(os.path.join(self.img_src_dir, 'images', 'favicon.ico'), os.path.join(self.out_dir, 'favicon.ico'))
         self.generate_page_for(o_tree, name)
         # Link it?
