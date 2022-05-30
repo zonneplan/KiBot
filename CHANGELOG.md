@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New outputs:
   - `navigate_results` creates web pages to browse the generated outputs.
 
+### Changed
+- KiCad environment variables: more variables detected, native KiCad 6 names,
+  all exported to the environment (#205)
+
 ## [1.1.0] - 2022-05-24
 ### Added
 - `kibot-check` tool to check the installation

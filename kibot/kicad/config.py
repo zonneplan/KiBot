@@ -68,8 +68,6 @@ def expand_env(val, env, extra_env, used_extra=None):
             val = val.replace('${'+var+'}', extra_env[var])
             used_extra[0] = True
         else:
-            logger.error(env)
-            logger.error(extra_env)
             logger.error('Unable to expand `{}` in `{}`'.format(var, val))
     return val
 
@@ -114,6 +112,7 @@ class KiConf(object):
     dirname = None
     sym_lib_dir = None
     template_dir = None
+    footprint_dir = None
     kicad_env = {}
     lib_aliases = {}
 
@@ -144,12 +143,9 @@ class KiConf(object):
         logger.warning(W_NOCONFIG + 'Unable to find KiCad configuration file ({})'.format(cfg))
         return None
 
-    def guess_kicad_data_dir(data_dir, env_var):
+    def _guess_kicad_data_dir(data_dir):
         """ Tries to figure out where libraries are.
             Only used if we failed to find the kicad_common file. """
-        dir = os.environ.get(env_var)
-        if dir and os.path.isdir(dir):
-            return dir
         system = platform.system()
         share = os.path.join('share', GS.kicad_dir, data_dir)
         if system == 'Linux':
@@ -192,9 +188,9 @@ class KiConf(object):
             order = ['library', 'symbols']
         else:
             order = ['symbols', 'library']
-        guess = KiConf.guess_kicad_data_dir(order[0], 'KICAD_SYMBOL_DIR')
+        guess = KiConf._guess_kicad_data_dir(order[0])
         if guess is None:
-            guess = KiConf.guess_kicad_data_dir(order[1], 'KICAD_SYMBOL_DIR')
+            guess = KiConf._guess_kicad_data_dir(order[1])
         return guess
 
     def guess_footprint_dir():
@@ -202,13 +198,13 @@ class KiConf(object):
             order = ['modules', 'footprints']
         else:
             order = ['footprints', 'modules']
-        guess = KiConf.guess_kicad_data_dir(order[0], 'KICAD_FOOTPRINT_DIR')
+        guess = KiConf._guess_kicad_data_dir(order[0])
         if guess is None:
-            guess = KiConf.guess_kicad_data_dir(order[1], 'KICAD_FOOTPRINT_DIR')
+            guess = KiConf._guess_kicad_data_dir(order[1])
         return guess
 
     def guess_template_dir():
-        return KiConf.guess_kicad_data_dir('template', 'KICAD_TEMPLATE_DIR')
+        return KiConf._guess_kicad_data_dir('template')
 
     def guess_3d_dir():
         modules3d = os.path.join('modules', 'packages3d')
@@ -216,10 +212,48 @@ class KiConf(object):
             order = [modules3d, '3dmodels']
         else:
             order = ['3dmodels', modules3d]
-        guess = KiConf.guess_kicad_data_dir(order[0], 'KISYS3DMOD')
+        guess = KiConf._guess_kicad_data_dir(order[0])
         if guess is None:
-            guess = KiConf.guess_kicad_data_dir(order[1], 'KISYS3DMOD')
+            guess = KiConf._guess_kicad_data_dir(order[1])
         return guess
+
+    def guess_user_template_dir():
+        system = platform.system()
+        if system == 'Linux':
+            home = os.environ.get('HOME')
+            if home is None:
+                return None
+            if GS.ki6():
+                name = os.path.join(home, '.local', 'share', 'kicad', '6.0', 'template')
+                if os.path.isdir(name):
+                    return name
+            name = os.path.join(home, 'kicad', 'template')
+            if os.path.isdir(name):
+                return name
+            return None
+        elif system == 'Darwin':  # pragma: no cover (Darwin)
+            home = os.environ.get('HOME')
+            if home is None:
+                return None
+            name = os.path.join(home, 'Documents', 'kicad', 'template')
+            if os.path.isdir(name):
+                return name
+            return None
+        elif system == 'Windows':  # pragma: no cover (Windows)
+            username = os.environ.get('username')
+            dir = os.path.join('C:', 'Documents and Settings', username, 'My Documents', 'kicad', 'template')
+            if os.path.isdir(dir):
+                return dir
+            dir = os.path.join('C:', 'Users', username, 'Documents', 'kicad', 'template')
+            if os.path.isdir(dir):
+                return dir
+            return None
+
+    def guess_3rd_dir():
+        home = os.environ.get('HOME')
+        if home is None:
+            return None
+        return os.path.join(home, '.local', 'share', 'kicad', '6.0', '3rdparty')
 
     def load_ki5_env(cfg):
         """ Environment vars from KiCad 5 configuration """
@@ -243,6 +277,11 @@ class KiConf(object):
 
     def load_ki6_env(cfg):
         """ Environment vars from KiCad 6 configuration """
+        # Notes about KiCad 6 environment vars:
+        # 1) KiCad has some hardcoded internal values
+        # 2) Only the values that the user modifies are stored in the config file
+        # 3) Any value defined in the environment will have priority over internal definitions
+        # It means that we currently don't know the real value unless the user modifies it or defines in the env
         with open(cfg, 'rt') as f:
             data = json.load(f)
         if "environment" in data and 'vars' in data['environment'] and (data['environment']['vars'] is not None):
@@ -253,85 +292,91 @@ class KiConf(object):
         else:
             logger.warning(W_NOKIENV + 'KiCad config without environment.vars section')
 
+    def _look_env_var(base_name, old, only_old, ki6_diff, no_dir):
+        """ Looks for a KiCad variable definition.
+            First in the OS environment, then in the config.
+            Sync the other source. """
+        if not no_dir:
+            base_name += '_DIR'
+        if GS.ki6() and ki6_diff:
+            names = ['KICAD6_'+base_name]
+        else:
+            if only_old:
+                names = [old]
+            else:
+                names = ['KICAD_'+base_name]
+                if old:
+                    names.append(old)
+        for n in names:
+            # OS environment has more priority
+            if n in os.environ:
+                val = os.environ[n]
+                KiConf.kicad_env[n] = val
+                logger.debug('Using {}="{}" (from environment)'.format(n, val))
+                return val
+            # Then the file
+            if n in KiConf.kicad_env:
+                val = KiConf.kicad_env[n]
+                os.environ[n] = val
+                logger.debug('Using {}="{}" (from KiCad config)'.format(n, val))
+                return val
+        return None
+
+    def _set_env_var(base_name, val, ki6_diff, no_dir):
+        """ Sets the environment and the internal list """
+        if not no_dir:
+            base_name += '_DIR'
+        if GS.ki6() and ki6_diff:
+            name = 'KICAD6_'+base_name
+        else:
+            name = 'KICAD_'+base_name
+        KiConf.kicad_env[name] = val
+        os.environ[name] = val
+        logger.debug('Using {}="{}" (guessed)'.format(name, val))
+
+    def _solve_var(name, member, desc, guesser, old=None, only_old=False, ki6_diff=True, only_k6=False, no_dir=False):
+        if only_k6 and GS.ki5():
+            return
+        val = KiConf._look_env_var(name, old, only_old, ki6_diff, no_dir)
+        if val is not None:
+            setattr(KiConf, member, val)
+        else:
+            val = guesser()
+            if val:
+                setattr(KiConf, member, val)
+                KiConf._set_env_var(name, val, ki6_diff, no_dir)
+                if old:
+                    KiConf.kicad_env[old] = val
+                    os.environ[old] = val
+            else:
+                logger.warning(W_NOLIBS + 'Unable to find KiCad '+desc)
+
     def load_kicad_common():
         # Try to figure out KiCad configuration file
         cfg = KiConf.find_kicad_common()
         if cfg and os.path.isfile(cfg):
+            # Get the environment variables
             logger.debug('Reading KiCad config from `{}`'.format(cfg))
             KiConf.config_dir = os.path.dirname(cfg)
             if GS.ki5():
+                # All environment vars should be here
                 KiConf.load_ki5_env(cfg)
             else:
+                # Only the user defined environment vars are here
                 KiConf.load_ki6_env(cfg)
-        if 'KICAD_SYMBOL_DIR' in KiConf.kicad_env:
-            KiConf.sym_lib_dir = KiConf.kicad_env['KICAD_SYMBOL_DIR']
-        else:
-            sym_dir = KiConf.guess_symbol_dir()
-            if sym_dir:
-                KiConf.kicad_env['KICAD_SYMBOL_DIR'] = sym_dir
-                KiConf.sym_lib_dir = sym_dir
-                logger.debug('Detected KICAD_SYMBOL_DIR="{}"'.format(sym_dir))
-            else:
-                logger.warning(W_NOLIBS + 'Unable to find KiCad libraries')
-        if 'KICAD_TEMPLATE_DIR' in KiConf.kicad_env:
-            KiConf.template_dir = KiConf.kicad_env['KICAD_TEMPLATE_DIR']
-        else:
-            template_dir = KiConf.guess_template_dir()
-            if template_dir:
-                KiConf.kicad_env['KICAD_TEMPLATE_DIR'] = template_dir
-                KiConf.template_dir = template_dir
-                logger.debug('Detected KICAD_TEMPLATE_DIR="{}"'.format(template_dir))
-            else:
-                logger.warning(W_NOLIBS + 'Unable to find KiCad templates')
-        # If we couldn't get KISYS3DMOD from configuration and KISYS3DMOD isn't defined in the environment
-        # OR the 3D config dir is missing.
-        if (('KISYS3DMOD' not in KiConf.kicad_env and 'KISYS3DMOD' not in os.environ) or
-           (cfg is not None and not os.path.isdir(cfg.replace(KICAD_COMMON, '3d')))):
-            ki_sys_3d_mod = None
-            try:
-                ki_sys_3d_mod = KiConf.kicad_env['KISYS3DMOD']
-            except KeyError:
-                ki_sys_3d_mod = KiConf.guess_3d_dir()
-            if ki_sys_3d_mod is not None:
-                os.environ['KISYS3DMOD'] = ki_sys_3d_mod
-                KiConf.kicad_env['KISYS3DMOD'] = ki_sys_3d_mod
-                logger.debug('Exporting KISYS3DMOD="{}"'.format(ki_sys_3d_mod))
-            else:
-                logger.warning(W_NOLIBS + 'Unable to find KiCad 3D modules')
-        # Extra magic variables defined by KiCad 6
-        if GS.ki6():
-            # Schematic symbols
-            aux = os.environ.get('KICAD6_SYMBOL_DIR')
-            if aux is None:
-                aux = KiConf.kicad_env.get('KICAD_SYMBOL_DIR')
-            if aux is not None:
-                KiConf.kicad_env['KICAD6_SYMBOL_DIR'] = aux
-                logger.debug('Exporting KICAD6_SYMBOL_DIR="{}"'.format(aux))
-                os.environ['KICAD6_SYMBOL_DIR'] = aux
-            # 3D models
-            aux = os.environ.get('KICAD6_3DMODEL_DIR')
-            if aux is None:
-                aux = KiConf.kicad_env.get('KISYS3DMOD')
-            if aux is not None:
-                KiConf.kicad_env['KICAD6_3DMODEL_DIR'] = aux
-                logger.debug('Exporting KICAD6_3DMODEL_DIR="{}"'.format(aux))
-                os.environ['KICAD6_3DMODEL_DIR'] = aux
-            # Templates
-            aux = os.environ.get('KICAD6_TEMPLATE_DIR')
-            if aux is None:
-                aux = KiConf.kicad_env.get('KICAD_TEMPLATE_DIR')
-            if aux is not None:
-                KiConf.kicad_env['KICAD6_TEMPLATE_DIR'] = aux
-                logger.debug('Exporting KICAD6_TEMPLATE_DIR="{}"'.format(aux))
-                os.environ['KICAD6_TEMPLATE_DIR'] = aux
-            # Footprints
-            aux = os.environ.get('KICAD6_FOOTPRINT_DIR')
-            if aux is None:
-                aux = KiConf.guess_footprint_dir()
-            if aux is not None:
-                KiConf.kicad_env['KICAD6_FOOTPRINT_DIR'] = aux
-                logger.debug('Exporting KICAD6_FOOTPRINT_DIR="{}"'.format(aux))
-                os.environ['KICAD6_FOOTPRINT_DIR'] = aux
+        # Now make sure we have all the needed variables
+        KiConf._solve_var('SYMBOL', 'sym_lib_dir', 'libraries', KiConf.guess_symbol_dir)
+        KiConf._solve_var('TEMPLATE', 'template_dir', 'templates', KiConf.guess_template_dir)
+        KiConf._solve_var('USER_TEMPLATE', 'user_template_dir', 'user templates', KiConf.guess_user_template_dir,
+                          ki6_diff=False)
+        KiConf._solve_var('FOOTPRINT', 'footprint_dir', 'footprints', KiConf.guess_footprint_dir, old='KISYSMOD')
+        KiConf._solve_var('3DMODEL', 'models_3d_dir', '3D models', KiConf.guess_3d_dir, old='KISYS3DMOD', only_old=True)
+        KiConf._solve_var('3RD_PARTY', 'party_3rd_dir', '3rd party', KiConf.guess_3rd_dir, only_k6=True, no_dir=True)
+        # Export the rest. KiCad2Step needs them
+        for k, v in KiConf.kicad_env.items():
+            if k not in os.environ:
+                os.environ[k] = v
+                logger.debug('Exporting {}="{}"'.format(k, v))
 
     def load_lib_aliases(fname):
         if not os.path.isfile(fname):

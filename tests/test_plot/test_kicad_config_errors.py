@@ -101,15 +101,23 @@ def test_kicad_conf_guess_libs(monkeypatch):
     """ Check no HOME and fail to load kicad_common.
         Also check we correctly guess the libs dir. """
     res = check_load_conf(fail=True, no_conf_path=True)
-    assert 'Detected KICAD_SYMBOL_DIR="/usr/share/kicad/' in res, res
+    if context.ki6():
+        name = "KICAD6_SYMBOL_DIR"
+    else:
+        name = "KICAD_SYMBOL_DIR"
+    assert 'Using {}="/usr/share/kicad/'.format(name) in res, res
 
 
 def test_kicad_conf_lib_env(monkeypatch):
     """ Check we can use KICAD_SYMBOL_DIR as fallback """
+    if context.ki6():
+        name = "KICAD6_SYMBOL_DIR"
+    else:
+        name = "KICAD_SYMBOL_DIR"
     with monkeypatch.context() as m:
-        m.setenv("KICAD_SYMBOL_DIR", 'tests')
+        m.setenv(name, 'tests')
         res = check_load_conf(fail=True, no_conf_path=True)
-    assert 'Detected KICAD_SYMBOL_DIR="tests"' in res, res
+    assert 'Using {}="tests"'.format(name) in res, res
 
 
 def test_kicad_conf_sym_err_1(monkeypatch):
