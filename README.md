@@ -129,6 +129,13 @@ Notes:
 [**Colorama**](https://pypi.org/project/Colorama/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-colorama)
 - Optional to get color messages in a portable way for general use
 
+[**RSVG tools**](https://cran.r-project.org/web/packages/rsvg/index.html) (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
+- Optional to:
+  - Create PDF, PNG, EPS and PS formats for `pcb_print`
+  - Create outputs preview for `navigate_results`
+  - Create PNG icons for `navigate_results`
+  - Create PNG and JPG images for `pcbdraw`
+
 [**Git**](https://git-scm.com/) (tool) [Debian](https://packages.debian.org/bullseye/git)
 - Optional to:
   - Find commit hash and/or date for `pcb_replace`
@@ -138,15 +145,13 @@ Notes:
 [**ImageMagick**](https://imagemagick.org/) (tool) [Debian](https://packages.debian.org/bullseye/imagemagick)
 - Optional to:
   - Create monochrome prints for `pcb_print`
+  - Create outputs preview for `navigate_results`
   - Create JPG images for `pcbdraw`
 
-[**RSVG tools**](https://cran.r-project.org/web/packages/rsvg/index.html) (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
-- Optional to:
-  - Create PDF, PNG, EPS and PS formats for `pcb_print`
-  - Create PNG and JPG images for `pcbdraw`
-
 [**Ghostscript**](https://www.ghostscript.com/) (tool) [Debian](https://packages.debian.org/bullseye/ghostscript)
-- Optional to create PS files for `pcb_print`
+- Optional to:
+  - Create PS files for `pcb_print`
+  - Create outputs preview for `navigate_results`
 
 [**Pandoc**](https://pandoc.org/) (tool) [Debian](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`

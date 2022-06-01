@@ -76,7 +76,7 @@ deps = '{\
         "deb_package": "ghostscript",\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 1,\
+        "importance": 2,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -91,6 +91,12 @@ deps = '{\
                 "desc": "Create PS files",\
                 "mandatory": false,\
                 "output": "pcb_print",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create outputs preview",\
+                "mandatory": false,\
+                "output": "navigate_results",\
                 "version": null\
             }\
         ],\
@@ -140,7 +146,7 @@ deps = '{\
         "deb_package": "imagemagick",\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 2,\
+        "importance": 3,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -155,6 +161,12 @@ deps = '{\
                 "desc": "Create monochrome prints",\
                 "mandatory": false,\
                 "output": "pcb_print",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create outputs preview",\
+                "mandatory": false,\
+                "output": "navigate_results",\
                 "version": null\
             },\
             {\
@@ -553,7 +565,7 @@ deps = '{\
         "deb_package": "librsvg2-bin",\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 2,\
+        "importance": 4,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -568,6 +580,18 @@ deps = '{\
                 "desc": "Create PDF, PNG, EPS and PS formats",\
                 "mandatory": false,\
                 "output": "pcb_print",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create outputs preview",\
+                "mandatory": false,\
+                "output": "navigate_results",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create PNG icons",\
+                "mandatory": false,\
+                "output": "navigate_results",\
                 "version": null\
             },\
             {\

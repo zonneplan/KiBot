@@ -7,16 +7,32 @@
 # The rest are KiCad icons
 import os
 import subprocess
+import pprint
 from shutil import copy2, which
 from math import ceil
+from struct import unpack
+from tempfile import NamedTemporaryFile
 from .gs import GS
-import pprint
 from .optionable import BaseOptions
 from .kiplot import config_output, get_output_dir
-from .registrable import RegOutput
+from .misc import W_NOTYET, W_MISSTOOL, TRY_INSTALL_CHECK, ToolDependencyRole, ToolDependency
+from .registrable import RegOutput, RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log, __version__
 
+SVGCONV = 'rsvg-convert'
+CONVERT = 'convert'
+PS2IMG = 'ghostscript'
+RegDependency.register(ToolDependency('navigate_results', 'RSVG tools',
+                                      'https://cran.r-project.org/web/packages/rsvg/index.html', deb='librsvg2-bin',
+                                      command=SVGCONV,
+                                      roles=[ToolDependencyRole(desc='Create outputs preview'),
+                                             ToolDependencyRole(desc='Create PNG icons')]))
+RegDependency.register(ToolDependency('navigate_results', 'Ghostscript', 'https://www.ghostscript.com/',
+                                      url_down='https://github.com/ArtifexSoftware/ghostpdl-downloads/releases',
+                                      roles=ToolDependencyRole(desc='Create outputs preview')))
+RegDependency.register(ToolDependency('navigate_results', 'ImageMagick', 'https://imagemagick.org/', command='convert',
+                                      roles=ToolDependencyRole(desc='Create outputs preview')))
 logger = log.get_logger()
 CAT_IMAGE = {'PCB': 'pcbnew',
              'Schematic': 'eeschema',
@@ -68,8 +84,9 @@ for i in range(31):
     EXT_IMAGE['gp'+n] = 'file_gbr'
 BIG_ICON = 256
 MID_ICON = 64
-OUT_COLS = 10
-SVGCONV = 'rsvg-convert'
+OUT_COLS = 12
+BIG_2_MID_REL = int(ceil(BIG_ICON/MID_ICON))
+IMAGEABLES = {'png', 'jpg', 'pdf', 'eps', 'svg', 'ps'}
 STYLE = """
 .cat-table { margin-left: auto; margin-right: auto; }
 .cat-table td { padding: 20px 24px; }
@@ -122,6 +139,15 @@ def svg_to_png(svg_file, png_file, width):
     return _run_command(cmd)
 
 
+def get_png_size(file):
+    with open(file, 'rb') as f:
+        s = f.read()
+    if not (s[:8] == b'\x89PNG\r\n\x1a\n' and (s[12:16] == b'IHDR')):
+        return 0, 0
+    w, h = unpack('>LL', s[16:24])
+    return int(w), int(h)
+
+
 class Navigate_ResultsOptions(BaseOptions):
     def __init__(self):
         with document:
@@ -145,14 +171,23 @@ class Navigate_ResultsOptions(BaseOptions):
         node[out.name] = out
 
     def copy(self, img, width):
+        """ Copy an SVG icon to the images/ dir.
+            Tries to convert it to PNG. """
+        img_w = "{}_{}".format(img, width)
+        if img_w in self.copied_images:
+            # Already copied, just return its name
+            return self.copied_images[img_w]
         src = os.path.join(self.img_src_dir, 'images', img+'.svg')
-        dst = os.path.join(self.out_dir, 'images', img)
+        dst = os.path.join(self.out_dir, 'images', img_w)
+        id = img_w
         if self.svg2png_avail and svg_to_png(src, dst+'.png', width):
-            img += '.png'
+            img_w += '.png'
         else:
             copy2(src, dst+'.svg')
-            img += '.svg'
-        return os.path.join('images', img)
+            img_w += '.svg'
+        name = os.path.join('images', img_w)
+        self.copied_images[id] = name
+        return name
 
     def get_image_for_cat(self, cat):
         if cat in CAT_IMAGE:
@@ -162,13 +197,76 @@ class Navigate_ResultsOptions(BaseOptions):
                    format(cat_img, cat))
         return cat
 
-    def get_image_for_file(self, file):
+    def compose_image(self, file, ext, img, out_name):
+        if not os.path.isfile(file):
+            logger.warning(W_NOTYET+"{} not yet generated, using an icon".format(os.path.relpath(file)))
+            return False, None, None
+        if ext == 'svg' and not self.svg2png_avail:
+            logger.warning(W_MISSTOOL+"Missing SVG to PNG converter: {}"+SVGCONV)
+            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
+            return False, None, None
+        if ext == 'ps' and not self.ps2img_avail:
+            logger.warning(W_MISSTOOL+"Missing PS to PNG converter: {}"+PS2IMG)
+            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
+            return False, None, None
+        # Create a unique name using the output name and the generated file name
+        bfname = os.path.splitext(os.path.basename(file))[0]
+        fname = os.path.join(self.out_dir, 'images', out_name+'_'+bfname+'.png')
+        # Full path for the icon image
+        icon = os.path.join(self.out_dir, img)
+        if ext == 'pdf':
+            # Only page 1
+            file += '[0]'
+        if ext == 'svg':
+            with NamedTemporaryFile(mode='w', suffix='.png', delete=False) as f:
+                tmp_name = f.name
+            logger.debug('Temporal convert: {} -> {}'.format(file, tmp_name))
+            if not svg_to_png(file, tmp_name, BIG_ICON):
+                return False, None, None
+            file = tmp_name
+        cmd = [CONVERT, file,
+               # Size for the big icons (width)
+               '-resize', str(BIG_ICON)+'x',
+               # Add the file type icon
+               icon,
+               # At the bottom right
+               '-gravity', 'south-east',
+               # This is a composition, not 2 images
+               '-composite',
+               fname]
+        res = _run_command(cmd)
+        if ext == 'svg':
+            logger.debug('Removing temporal {}'.format(tmp_name))
+            os.remove(tmp_name)
+        return res, fname, os.path.relpath(fname, start=self.out_dir)
+
+    def get_image_for_file(self, file, out_name, use_big=False):
         ext = os.path.splitext(file)[1][1:].lower()
+        wide = False
+        # Copy the icon for this file extension
         img = self.copy(EXT_IMAGE.get(ext, 'unknown'), MID_ICON)
-        ext_img = '<img src="{}" alt="{}" width="{}" height="{}">'.format(img, file, MID_ICON, MID_ICON)
+        # Full name for the file
+        file_full = file
+        # Just the file, to display it
+        file = os.path.basename(file)
+        # The icon size
+        height = width = MID_ICON
+        # Check if this file can be represented by an image
+        if use_big and self.convert_avail and ext in IMAGEABLES:
+            # Try to compose the image of the file with the icon
+            ok, fimg, new_img = self.compose_image(file_full, ext, img, out_name)
+            if ok:
+                # It was converted, replace the icon by the composited image
+                img = new_img
+                # Compute its size
+                width, height = get_png_size(fimg)
+                # We are using the big size
+                wide = True
+        # Now add the image with its file name as caption
+        ext_img = '<img src="{}" alt="{}" width="{}" height="{}">'.format(img, file, width, height)
         file = ('<table class="out-img"><tr><td>{}</td></tr><tr><td class="td-small">{}</td></tr></table>'.
                 format(ext_img, file))
-        return file
+        return file, wide
 
     def add_back_home(self, f, prev):
         if prev is not None:
@@ -226,6 +324,7 @@ class Navigate_ResultsOptions(BaseOptions):
             name, ext = os.path.splitext(name)
             for oname, out in node.items():
                 f.write('<table class="output-table">\n')
+                out_name = oname.replace(' ', '_')
                 oname = oname.replace('_', ' ')
                 oname = oname[0].upper()+oname[1:]
                 if out.comment:
@@ -236,22 +335,37 @@ class Navigate_ResultsOptions(BaseOptions):
                 f.write('<tbody><tr>\n')
                 targets = out.get_targets(out_dir)
                 if len(targets) == 1:
-                    tg = os.path.relpath(os.path.abspath(targets[0]), start=self.out_dir)
+                    tg_rel = os.path.relpath(os.path.abspath(targets[0]), start=self.out_dir)
+                    img, _ = self.get_image_for_file(targets[0], out_name, use_big=True)
                     f.write('<td class="out-cell" colspan="{}"><a href="{}">{}</a></td>\n'.
-                            format(OUT_COLS, tg, self.get_image_for_file(os.path.basename(tg))))
+                            format(OUT_COLS, tg_rel, img))
                 else:
                     c = 0
                     for tg in targets:
                         if c == OUT_COLS:
                             f.write('</tr>\n<tr>\n')
                             c = 0
-                        tg = os.path.relpath(os.path.abspath(tg), start=self.out_dir)
-                        f.write('<td class="out-cell"><a href="{}">{}</a></td>\n'.
-                                format(tg, self.get_image_for_file(os.path.basename(tg))))
-                        c = c+1
-                    for _ in range(c, OUT_COLS):
-                        f.write('<td class="out-cell"></td>\n')
-                f.write('</tr></tbody>\n')
+                        tg_rel = os.path.relpath(os.path.abspath(tg), start=self.out_dir)
+                        img, wide = self.get_image_for_file(tg, out_name, use_big=True)
+                        # Check if we need to break this row
+                        span = 1
+                        if wide:
+                            span = BIG_2_MID_REL
+                            remain = OUT_COLS-c
+                            if span > remain:
+                                f.write('<td class="out-cell" colspan="{}"></td></tr>\n<tr>\n'.format(remain))
+                        # Add a new cell
+                        f.write('<td class="out-cell" colspan="{}"><a href="{}">{}</a></td>\n'.format(span, tg_rel, img))
+                        c = c+span
+                    if c < OUT_COLS:
+                        f.write('<td class="out-cell" colspan="{}"></td>\n'.format(OUT_COLS-c))
+                f.write('</tr>\n')
+                # This row is just to ensure we have at least 1 cell in each column
+                f.write('<tr>\n')
+                for _ in range(OUT_COLS):
+                    f.write('<td></td>\n')
+                f.write('</tr>\n')
+                f.write('</tbody>\n')
                 f.write('</table>\n')
             self.add_back_home(f, prev)
             f.write('</body>\n</html>\n')
@@ -268,6 +382,7 @@ class Navigate_ResultsOptions(BaseOptions):
         self.img_src_dir = os.path.dirname(__file__)
         self.img_dst_dir = os.path.join(self.out_dir, 'images')
         os.makedirs(self.img_dst_dir, exist_ok=True)
+        self.copied_images = {}
         name = os.path.basename(name)
         # Create a tree with all the outputs
         o_tree = {}
@@ -283,6 +398,8 @@ class Navigate_ResultsOptions(BaseOptions):
         with open(os.path.join(self.out_dir, 'styles.css'), 'wt') as f:
             f.write(STYLE)
         self.svg2png_avail = which(SVGCONV) is not None
+        self.convert_avail = which(CONVERT) is not None
+        self.ps2img_avail = which(PS2IMG) is not None
         # Create the pages
         self.home = name
         self.back_img = self.copy('back', MID_ICON)
