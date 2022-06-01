@@ -82,6 +82,8 @@ for i in range(31):
     EXT_IMAGE['gl'+n] = 'file_gbr'
     EXT_IMAGE['g'+n] = 'file_gbr'
     EXT_IMAGE['gp'+n] = 'file_gbr'
+CAT_REP = {'PCB': ['pdf_pcb_print', 'svg_pcb_print', 'pcb_print'],
+           'Schematic': ['pdf_sch_print', 'svg_sch_print']}
 BIG_ICON = 256
 MID_ICON = 64
 OUT_COLS = 12
@@ -190,14 +192,36 @@ class Navigate_ResultsOptions(BaseOptions):
         return name
 
     def get_image_for_cat(self, cat):
-        if cat in CAT_IMAGE:
+        img = None
+        # Check if we have an output that can represent this category
+        if cat in CAT_REP and self.convert_avail:
+            outs_rep = CAT_REP[cat]
+            rep_file = None
+            # Look in all outputs
+            for o in RegOutput.get_outputs():
+                # Is this one that can be used to represent it?
+                if o.type in outs_rep:
+                    config_output(o)
+                    out_dir = get_output_dir(o.dir, o, dry=True)
+                    targets = o.get_targets(out_dir)
+                    # Look the output targets
+                    for tg in targets:
+                        ext = os.path.splitext(tg)[1][1:].lower()
+                        # Can be converted to an image?
+                        if ext in IMAGEABLES and os.path.isfile(tg):
+                            rep_file = tg
+                            break
+                    if rep_file:
+                        break
+            cat, _ = self.get_image_for_file(rep_file, 'cat_'+cat, no_icon=True)
+        elif cat in CAT_IMAGE:
             img = self.copy(CAT_IMAGE[cat], BIG_ICON)
             cat_img = '<img src="{}" alt="{}" width="{}" height="{}">'.format(img, cat, BIG_ICON, BIG_ICON)
             cat = ('<table class="cat-img"><tr><td>{}<br>{}</td></tr></table>'.
                    format(cat_img, cat))
         return cat
 
-    def compose_image(self, file, ext, img, out_name):
+    def compose_image(self, file, ext, img, out_name, no_icon=False):
         if not os.path.isfile(file):
             logger.warning(W_NOTYET+"{} not yet generated, using an icon".format(os.path.relpath(file)))
             return False, None, None
@@ -205,8 +229,8 @@ class Navigate_ResultsOptions(BaseOptions):
             logger.warning(W_MISSTOOL+"Missing SVG to PNG converter: {}"+SVGCONV)
             logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
             return False, None, None
-        if ext == 'ps' and not self.ps2img_avail:
-            logger.warning(W_MISSTOOL+"Missing PS to PNG converter: {}"+PS2IMG)
+        if ext in ('ps', 'pdf') and not self.ps2img_avail:
+            logger.warning(W_MISSTOOL+"Missing PS/PDF to PNG converter: {}"+PS2IMG)
             logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
             return False, None, None
         # Create a unique name using the output name and the generated file name
@@ -226,21 +250,22 @@ class Navigate_ResultsOptions(BaseOptions):
             file = tmp_name
         cmd = [CONVERT, file,
                # Size for the big icons (width)
-               '-resize', str(BIG_ICON)+'x',
-               # Add the file type icon
-               icon,
-               # At the bottom right
-               '-gravity', 'south-east',
-               # This is a composition, not 2 images
-               '-composite',
-               fname]
+               '-resize', str(BIG_ICON)+'x']
+        if not no_icon:
+            cmd.extend([  # Add the file type icon
+                        icon,
+                        # At the bottom right
+                        '-gravity', 'south-east',
+                        # This is a composition, not 2 images
+                        '-composite'])
+        cmd.append(fname)
         res = _run_command(cmd)
         if ext == 'svg':
             logger.debug('Removing temporal {}'.format(tmp_name))
             os.remove(tmp_name)
         return res, fname, os.path.relpath(fname, start=self.out_dir)
 
-    def get_image_for_file(self, file, out_name, use_big=False):
+    def get_image_for_file(self, file, out_name, no_icon=False):
         ext = os.path.splitext(file)[1][1:].lower()
         wide = False
         # Copy the icon for this file extension
@@ -252,9 +277,9 @@ class Navigate_ResultsOptions(BaseOptions):
         # The icon size
         height = width = MID_ICON
         # Check if this file can be represented by an image
-        if use_big and self.convert_avail and ext in IMAGEABLES:
+        if self.convert_avail and ext in IMAGEABLES:
             # Try to compose the image of the file with the icon
-            ok, fimg, new_img = self.compose_image(file_full, ext, img, out_name)
+            ok, fimg, new_img = self.compose_image(file_full, ext, img, out_name, no_icon)
             if ok:
                 # It was converted, replace the icon by the composited image
                 img = new_img
@@ -336,7 +361,7 @@ class Navigate_ResultsOptions(BaseOptions):
                 targets = out.get_targets(out_dir)
                 if len(targets) == 1:
                     tg_rel = os.path.relpath(os.path.abspath(targets[0]), start=self.out_dir)
-                    img, _ = self.get_image_for_file(targets[0], out_name, use_big=True)
+                    img, _ = self.get_image_for_file(targets[0], out_name)
                     f.write('<td class="out-cell" colspan="{}"><a href="{}">{}</a></td>\n'.
                             format(OUT_COLS, tg_rel, img))
                 else:
@@ -346,7 +371,7 @@ class Navigate_ResultsOptions(BaseOptions):
                             f.write('</tr>\n<tr>\n')
                             c = 0
                         tg_rel = os.path.relpath(os.path.abspath(tg), start=self.out_dir)
-                        img, wide = self.get_image_for_file(tg, out_name, use_big=True)
+                        img, wide = self.get_image_for_file(tg, out_name)
                         # Check if we need to break this row
                         span = 1
                         if wide:
