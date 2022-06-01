@@ -298,29 +298,35 @@ class KiConf(object):
             Sync the other source. """
         if not no_dir:
             base_name += '_DIR'
+        names = []
         if GS.ki6() and ki6_diff:
-            names = ['KICAD6_'+base_name]
-        else:
-            if only_old:
-                names = [old]
-            else:
-                names = ['KICAD_'+base_name]
-                if old:
-                    names.append(old)
+            # KiCad 6 specific name goes first when using KiCad 6
+            names.append('KICAD6_'+base_name)
+        # KiCad 5 names, allowed even when using KiCad 6
+        if not only_old:
+            # A KICAD_* is valid
+            names.append('KICAD_'+base_name)
+        if old:
+            # A specific legacy name
+            names.append(old)
+        ret_val = None
+        # Look for the above names
+        # The first we find is the one we use, but we export all the ones we found
         for n in names:
+            val = None
             # OS environment has more priority
             if n in os.environ:
                 val = os.environ[n]
                 KiConf.kicad_env[n] = val
                 logger.debug('Using {}="{}" (from environment)'.format(n, val))
-                return val
             # Then the file
-            if n in KiConf.kicad_env:
+            elif n in KiConf.kicad_env:
                 val = KiConf.kicad_env[n]
                 os.environ[n] = val
                 logger.debug('Using {}="{}" (from KiCad config)'.format(n, val))
-                return val
-        return None
+            if val is not None and ret_val is None:
+                ret_val = val
+        return ret_val
 
     def _set_env_var(base_name, val, ki6_diff, no_dir):
         """ Sets the environment and the internal list """
