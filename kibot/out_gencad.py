@@ -35,6 +35,9 @@ class GenCADOptions(BaseOptions):
         self._expand_id = 'gencad'
         self._expand_ext = 'cad'
 
+    def get_targets(self, out_dir):
+        return [self._parent.expand_filename(out_dir, self.output)]
+
     def run(self, name):
         check_script(CMD_PCBNEW_GENCAD, URL_PCBNEW_GENCAD, '1.6.5')
         # Output file name
@@ -70,6 +73,7 @@ class GenCAD(BaseOutput):  # noqa: F821
         manufacturers """
     def __init__(self):
         super().__init__()
+        self._category = 'PCB/export'
         with document:
             self.options = GenCADOptions
             """ [dict] Options for the `gencad` output """

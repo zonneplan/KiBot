@@ -5,10 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Fixed
-- Components with mounting hole where excluded (#201)
+### Added
 - New outputs:
   - `navigate_results` creates web pages to browse the generated outputs.
+
+### Fixed
+- Components with mounting hole where excluded (#201)
+- GenCAD output targets.
 
 ### Changed
 - KiCad environment variables: more variables detected, native KiCad 6 names,
