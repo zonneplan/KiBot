@@ -104,7 +104,7 @@ Notes:
 [**Requests**](https://pypi.org/project/Requests/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-requests)
 - Mandatory
 
-[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v1.6.11 (tool) (PyPi dependency)
+[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v1.6.13 (tool) (PyPi dependency)
 - Mandatory for: `gencad`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`
 
 [**KiCost**](https://github.com/INTI-CMNB/KiCost) v1.1.8 (tool)
@@ -1146,6 +1146,8 @@ Next time you need this list just use an alias, like this:
                  This format allows simple pads and connections navigation, mainly for circuit debug.
                  The output can be loaded using Open Board View (https://openboardview.org/)
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1170,6 +1172,8 @@ Next time you need this list just use an alias, like this:
                  - The `Component` column is named `Row` and works just like any other column.
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1352,6 +1356,8 @@ Next time you need this list just use an alias, like this:
   * Description: Generates a compressed file containing output files.
                  This is used to generate groups of files in compressed file format.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1383,6 +1389,8 @@ Next time you need this list just use an alias, like this:
   * Type: `download_datasheets`
   * Description: Downloads the datasheets for the project
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1410,6 +1418,8 @@ Next time you need this list just use an alias, like this:
   * Description: Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1461,6 +1471,8 @@ Next time you need this list just use an alias, like this:
                  You can create a map file for documentation purposes.
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1500,6 +1512,8 @@ Next time you need this list just use an alias, like this:
                  This format is interpreted by some CADCAM software and helps certain
                  manufacturers
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1524,6 +1538,8 @@ Next time you need this list just use an alias, like this:
                  You can create a map file for documentation purposes.
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1554,6 +1570,8 @@ Next time you need this list just use an alias, like this:
   * Description: This is the main fabrication format for the PCB.
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1610,6 +1628,8 @@ Next time you need this list just use an alias, like this:
   * Description: Exports the PCB for plotters and laser printers.
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1663,6 +1683,8 @@ Next time you need this list just use an alias, like this:
                  For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
                  This output is what you get from the InteractiveHtmlBom plug-in (pcbnew).
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1738,6 +1760,8 @@ Next time you need this list just use an alias, like this:
                  We recommend using the `bom` output instead.
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1835,6 +1859,8 @@ Next time you need this list just use an alias, like this:
                  For more information: https://github.com/INTI-CMNB/KiCost
                  This output is what you get from the KiCost plug-in (eeschema).
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1881,6 +1907,8 @@ Next time you need this list just use an alias, like this:
   * Type: `navigate_results`
   * Description: Generates a web page to navigate the generated outputs
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1901,6 +1929,8 @@ Next time you need this list just use an alias, like this:
                  The netlist can be generated in the classic format and in IPC-D-356 format,
                  useful for board testing
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1924,6 +1954,8 @@ Next time you need this list just use an alias, like this:
                  KiCad 5: including the frame is slow.
                  KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2009,6 +2041,8 @@ Next time you need this list just use an alias, like this:
                  Uses configurable colors.
                  Can also render the components if the 2D models are available
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2057,6 +2091,8 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
       * Valid keys:
@@ -2131,6 +2167,8 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'File/Print' menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2175,6 +2213,8 @@ Next time you need this list just use an alias, like this:
                  This is the main format to document your schematic.
                  This output is what you get from the 'File/Print' menu in eeschema.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2199,6 +2239,8 @@ Next time you need this list just use an alias, like this:
   * Description: Generates a new PDF from other outputs.
                  This is just a PDF joiner, using `pdfunite` from Poppler Utils.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2227,6 +2269,8 @@ Next time you need this list just use an alias, like this:
   * Description: Generates the file with position information for the PCB components, used by the pick and place machine.
                  This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2260,6 +2304,8 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2321,6 +2367,8 @@ Next time you need this list just use an alias, like this:
                  - Use them in your schematic and PCB.
                  - To keep them updated add the `update_qr` preflight
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2351,6 +2399,8 @@ Next time you need this list just use an alias, like this:
   * Type: `render_3d`
   * Description: Exports the image generated by KiCad's 3D viewer.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2390,10 +2440,11 @@ Next time you need this list just use an alias, like this:
         - `solder_paste`: [string='#808080'] Color for the solder paste.
         - `variant`: [string=''] Board variant to apply.
         - `view`: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
-        - `wait_ray_tracing`: [number=-600] How many seconds we must wait before capturing the ray tracing render.
-                              Lamentably KiCad can save an unfinished image. Enlarge it if your image looks partially rendered.
-                              Use negative values to enable the auto-detect using CPU load.
-                              In this case the value is interpreted as a time-out..
+        - *wait_ray_tracing*: Alias for wait_render.
+        - `wait_render`: [number=-600] How many seconds we must wait before capturing the render (ray tracing or normal).
+                         Lamentably KiCad can save an unfinished image. Enlarge it if your image looks partially rendered.
+                         Use negative values to enable the auto-detect using CPU load.
+                         In this case the value is interpreted as a time-out..
         - `width`: [number=1280] Image width (aprox.).
         - `zoom`: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                   Same result as using the mouse wheel in the 3D viewer.
@@ -2405,6 +2456,8 @@ Next time you need this list just use an alias, like this:
   * Description: Generates a report about the design.
                  Mainly oriented to be sent to the manufacturer or check PCB details.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2437,6 +2490,8 @@ Next time you need this list just use an alias, like this:
                  This copy isn't intended for development.
                  Is just a tweaked version of the original where you can look at the results.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2458,6 +2513,8 @@ Next time you need this list just use an alias, like this:
                  This is the most common 3D format for exchange purposes.
                  This output is what you get from the 'File/Export/STEP' menu in pcbnew.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2490,6 +2547,8 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2540,6 +2599,8 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'File/Print' menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2585,6 +2646,8 @@ Next time you need this list just use an alias, like this:
   * Description: Exports the PCB. Suitable for printing.
                  This is a format to document your schematic.
   * Valid keys:
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `comment`: [string=''] A comment for documentation purposes.
     - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
