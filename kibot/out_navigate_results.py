@@ -116,6 +116,7 @@ STYLE = """
 .out-img { text-align: center; margin-left: auto; margin-right: auto; }
 .cat-img { text-align: center; margin-left: auto; margin-right: auto; }
 .td-small { text-align: center; font-size: 0.6em; }
+.td-normal { text-align: center; }
 .generator { text-align: right; font-size: 0.6em; }
 a:link, a:visited { text-decoration: none;}
 a:hover, a:active { text-decoration: underline;}
@@ -212,7 +213,7 @@ class Navigate_ResultsOptions(BaseOptions):
                             break
                     if rep_file:
                         break
-            cat, _ = self.get_image_for_file(rep_file, 'cat_'+cat, no_icon=True)
+            cat, _ = self.get_image_for_file(rep_file, cat, no_icon=True)
         elif cat in CAT_IMAGE:
             img = self.copy(CAT_IMAGE[cat], BIG_ICON)
             cat_img = '<img src="{}" alt="{}" width="{}" height="{}">'.format(img, cat, BIG_ICON, BIG_ICON)
@@ -278,7 +279,7 @@ class Navigate_ResultsOptions(BaseOptions):
         # Check if this file can be represented by an image
         if self.convert_avail and ext in IMAGEABLES:
             # Try to compose the image of the file with the icon
-            ok, fimg, new_img = self.compose_image(file_full, ext, img, out_name, no_icon)
+            ok, fimg, new_img = self.compose_image(file_full, ext, img, 'cat_'+out_name, no_icon)
             if ok:
                 # It was converted, replace the icon by the composited image
                 img = new_img
@@ -288,8 +289,8 @@ class Navigate_ResultsOptions(BaseOptions):
                 wide = True
         # Now add the image with its file name as caption
         ext_img = '<img src="{}" alt="{}" width="{}" height="{}">'.format(img, file, width, height)
-        file = ('<table class="out-img"><tr><td>{}</td></tr><tr><td class="td-small">{}</td></tr></table>'.
-                format(ext_img, file))
+        file = ('<table class="out-img"><tr><td>{}</td></tr><tr><td class="{}">{}</td></tr></table>'.
+                format(ext_img, 'td-normal' if no_icon else 'td-small', out_name if no_icon else file))
         return file, wide
 
     def add_back_home(self, f, prev):
