@@ -52,6 +52,9 @@ class BaseOutput(RegOutput):
                 Use the boolean true value to disable the output you are extending """
             self.output_id = ''
             """ Text to use for the %I expansion content. To differentiate variations of this output """
+            self.category = Optionable
+            """ [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                Categories looks like file system paths, i.e. PCB/fabrication/gerber """
         if GS.global_dir:
             self.dir = GS.global_dir
         self._sch_related = False
@@ -122,6 +125,9 @@ class BaseOutput(RegOutput):
             self.options = self.options()
             # Configure them using an empty tree
             self.options.config(self)
+        self.category = self.force_list(self.category)
+        if not self.category:
+            self.category = self._category
 
     def expand_dirname(self, out_dir):
         return self.options.expand_filename_both(out_dir, is_sch=self._sch_related)

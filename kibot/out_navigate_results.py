@@ -201,7 +201,6 @@ class Navigate_ResultsOptions(BaseOptions):
             for o in RegOutput.get_outputs():
                 # Is this one that can be used to represent it?
                 if o.type in outs_rep:
-                    config_output(o)
                     out_dir = get_output_dir(o.dir, o, dry=True)
                     targets = o.get_targets(out_dir)
                     # Look the output targets
@@ -330,6 +329,8 @@ class Navigate_ResultsOptions(BaseOptions):
             acc = 0
             f.write('<table class="cat-table">\n<tr>\n')
             for cat, content in node.items():
+                if not isinstance(content, dict):
+                    continue
                 if acc >= by_row:
                     # Flush the table and create another
                     acc = 0
@@ -339,59 +340,64 @@ class Navigate_ResultsOptions(BaseOptions):
                 f.write(' <td><a href="{}">{}</a></td>\n'.format(pname, self.get_image_for_cat(cat)))
                 acc += 1
             f.write('</tr>\n</table>\n')
+            self.generate_outputs(f, node)
             self.add_back_home(f, prev)
             f.write('</body>\n</html>\n')
+
+    def generate_outputs(self, f, node):
+        for oname, out in node.items():
+            if isinstance(out, dict):
+                continue
+            f.write('<table class="output-table">\n')
+            out_name = oname.replace(' ', '_')
+            oname = oname.replace('_', ' ')
+            oname = oname[0].upper()+oname[1:]
+            if out.comment:
+                oname += ': '+out.comment
+            f.write('<thead><tr><th colspan="{}">{}</th></tr></thead>\n'.format(OUT_COLS, oname))
+            out_dir = get_output_dir(out.dir, out, dry=True)
+            f.write('<tbody><tr>\n')
+            targets = out.get_targets(out_dir)
+            if len(targets) == 1:
+                tg_rel = os.path.relpath(os.path.abspath(targets[0]), start=self.out_dir)
+                img, _ = self.get_image_for_file(targets[0], out_name)
+                f.write('<td class="out-cell" colspan="{}"><a href="{}">{}</a></td>\n'.
+                        format(OUT_COLS, tg_rel, img))
+            else:
+                c = 0
+                for tg in targets:
+                    if c == OUT_COLS:
+                        f.write('</tr>\n<tr>\n')
+                        c = 0
+                    tg_rel = os.path.relpath(os.path.abspath(tg), start=self.out_dir)
+                    img, wide = self.get_image_for_file(tg, out_name)
+                    # Check if we need to break this row
+                    span = 1
+                    if wide:
+                        span = BIG_2_MID_REL
+                        remain = OUT_COLS-c
+                        if span > remain:
+                            f.write('<td class="out-cell" colspan="{}"></td></tr>\n<tr>\n'.format(remain))
+                    # Add a new cell
+                    f.write('<td class="out-cell" colspan="{}"><a href="{}">{}</a></td>\n'.format(span, tg_rel, img))
+                    c = c+span
+                if c < OUT_COLS:
+                    f.write('<td class="out-cell" colspan="{}"></td>\n'.format(OUT_COLS-c))
+            f.write('</tr>\n')
+            # This row is just to ensure we have at least 1 cell in each column
+            f.write('<tr>\n')
+            for _ in range(OUT_COLS):
+                f.write('<td></td>\n')
+            f.write('</tr>\n')
+            f.write('</tbody>\n')
+            f.write('</table>\n')
 
     def generate_end_page_for(self, name, node, prev, category):
         logger.debug('- Outputs: '+str(node.keys()))
         with open(os.path.join(self.out_dir, name), 'wt') as f:
             self.write_head(f, category)
             name, ext = os.path.splitext(name)
-            for oname, out in node.items():
-                f.write('<table class="output-table">\n')
-                out_name = oname.replace(' ', '_')
-                oname = oname.replace('_', ' ')
-                oname = oname[0].upper()+oname[1:]
-                if out.comment:
-                    oname += ': '+out.comment
-                f.write('<thead><tr><th colspan="{}">{}</th></tr></thead>\n'.format(OUT_COLS, oname))
-                config_output(out)
-                out_dir = get_output_dir(out.dir, out, dry=True)
-                f.write('<tbody><tr>\n')
-                targets = out.get_targets(out_dir)
-                if len(targets) == 1:
-                    tg_rel = os.path.relpath(os.path.abspath(targets[0]), start=self.out_dir)
-                    img, _ = self.get_image_for_file(targets[0], out_name)
-                    f.write('<td class="out-cell" colspan="{}"><a href="{}">{}</a></td>\n'.
-                            format(OUT_COLS, tg_rel, img))
-                else:
-                    c = 0
-                    for tg in targets:
-                        if c == OUT_COLS:
-                            f.write('</tr>\n<tr>\n')
-                            c = 0
-                        tg_rel = os.path.relpath(os.path.abspath(tg), start=self.out_dir)
-                        img, wide = self.get_image_for_file(tg, out_name)
-                        # Check if we need to break this row
-                        span = 1
-                        if wide:
-                            span = BIG_2_MID_REL
-                            remain = OUT_COLS-c
-                            if span > remain:
-                                f.write('<td class="out-cell" colspan="{}"></td></tr>\n<tr>\n'.format(remain))
-                        # Add a new cell
-                        f.write('<td class="out-cell" colspan="{}"><a href="{}">{}</a></td>\n'.format(span, tg_rel, img))
-                        c = c+span
-                    if c < OUT_COLS:
-                        f.write('<td class="out-cell" colspan="{}"></td>\n'.format(OUT_COLS-c))
-                f.write('</tr>\n')
-                # This row is just to ensure we have at least 1 cell in each column
-                f.write('<tr>\n')
-                for _ in range(OUT_COLS):
-                    f.write('<td></td>\n')
-                f.write('</tr>\n')
-                f.write('</tbody>\n')
-                f.write('</table>\n')
+            self.generate_outputs(f, node)
             self.add_back_home(f, prev)
             f.write('</body>\n</html>\n')
 
@@ -412,7 +418,8 @@ class Navigate_ResultsOptions(BaseOptions):
         # Create a tree with all the outputs
         o_tree = {}
         for o in RegOutput.get_outputs():
-            cat = o._category
+            config_output(o)
+            cat = o.category
             if cat is None:
                 continue
             if isinstance(cat, str):
