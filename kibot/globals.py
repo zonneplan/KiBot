@@ -5,12 +5,75 @@
 # Project: KiBot (formerly KiPlot)
 import os
 from .gs import GS
+from .optionable import Optionable
+from .kicad.config import expand_env
 from .macros import macros, document  # noqa: F401
 from .pre_filters import FiltersOptions
 from .log import get_logger, set_filters
 from .misc import W_MUSTBEINT
 from .kicad.sexpdata import load, SExpData, sexp_iter, Symbol
 from .kicad.v6_sch import PCBLayer
+
+
+class Environment(Optionable):
+    """ Used to define the KiCad environment vars """
+    def __init__(self):
+        super().__init__()
+        self._unkown_is_error = True
+        with document:
+            self.symbols = ''
+            """ System level symbols dir. KiCad 5: KICAD_SYMBOL_DIR. KiCad 6: KICAD6_SYMBOL_DIR """
+            self.footprints = ''
+            """ System level footprints (aka modules) dir. KiCad 5: KICAD_FOOTPRINT_DIR and KISYSMOD.
+                KiCad 6: KICAD6_FOOTPRINT_DIR """
+            self.models_3d = ''
+            """ System level 3D models dir. KiCad 5: KISYS3DMOD. KiCad 6: KICAD6_3DMODEL_DIR """
+            self.templates = ''
+            """ System level templates dir. KiCad 5: KICAD_TEMPLATE_DIR. KiCad 6: KICAD6_TEMPLATE_DIR """
+            self.user_templates = ''
+            """ User level templates dir. KiCad 5/6: KICAD_USER_TEMPLATE_DIR """
+            self.third_party = ''
+            """ 3rd party dir. KiCad 6: KICAD6_3RD_PARTY """
+
+    def config(self, parent):
+        super().config(parent)
+        defs = {}
+        if GS.ki5():
+            if self.symbols:
+                defs['KICAD_SYMBOL_DIR'] = self.symbols
+            if self.footprints:
+                defs['KICAD_FOOTPRINT_DIR'] = self.symbols
+                defs['KISYSMOD'] = self.symbols
+            if self.models_3d:
+                defs['KISYS3DMOD'] = self.models_3d
+            if self.templates:
+                defs['KICAD_TEMPLATE_DIR'] = self.templates
+            if self.user_templates:
+                defs['KICAD_USER_TEMPLATE_DIR'] = self.user_templates
+        else:
+            if self.symbols:
+                defs['KICAD6_SYMBOL_DIR'] = self.symbols
+            if self.footprints:
+                defs['KICAD6_FOOTPRINT_DIR'] = self.symbols
+            if self.models_3d:
+                defs['KICAD6_3DMODEL_DIR'] = self.models_3d
+            if self.templates:
+                defs['KICAD6_TEMPLATE_DIR'] = self.templates
+            if self.user_templates:
+                defs['KICAD_USER_TEMPLATE_DIR'] = self.user_templates
+            if self.third_party:
+                defs['KICAD6_3RD_PARTY'] = self.third_party
+        if len(defs):
+            logger.debug('Defining environment vars from the global section')
+            env = {}
+            if GS.pcb_file:
+                env['KIPRJMOD'] = os.path.dirname(GS.pcb_file)
+            elif GS.sch_file:
+                env['KIPRJMOD'] = os.path.dirname(GS.sch_file)
+            for n, v in defs.items():
+                v = expand_env(v, env, os.environ)
+                logger.debug('- {} = "{}"'.format(n, v))
+                os.environ[n] = v
 
 
 class Globals(FiltersOptions):
@@ -97,6 +160,12 @@ class Globals(FiltersOptions):
             """ Default variant to apply to all outputs """
             self.out_dir = ''
             """ Base output dir, same as command line `--out-dir` """
+            self.environment = Environment
+            """ [dict] Used to define environment variables used by KiCad.
+                The values defined here are exported as environment variables and has
+                more precedence than KiCad paths defined in the GUI.
+                You can make reference to any OS environment variable using ${VARIABLE}.
+                The KIPRJMOD is also available for expansion """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self._unkown_is_error = True

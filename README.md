@@ -605,6 +605,19 @@ global:
                         KiCad 6: you should set this in the Board Setup -> Board Finish -> Edge card connectors.
     - `edge_plating`: [boolean=false] Has the PCB a plated board edge?
                       KiCad 6: you should set this in the Board Setup -> Board Finish -> Plated board edge.
+    - `environment`: [dict] Used to define environment variables used by KiCad.
+                     The values defined here are exported as environment variables and has
+                     more precedence than KiCad paths defined in the GUI.
+                     You can make reference to any OS environment variable using ${VARIABLE}.
+                     The KIPRJMOD is also available for expansion.
+      * Valid keys:
+        - `footprints`: [string=''] System level footprints (aka modules) dir. KiCad 5: KICAD_FOOTPRINT_DIR and KISYSMOD.
+                        KiCad 6: KICAD6_FOOTPRINT_DIR.
+        - `models_3d`: [string=''] System level 3D models dir. KiCad 5: KISYS3DMOD. KiCad 6: KICAD6_3DMODEL_DIR.
+        - `symbols`: [string=''] System level symbols dir. KiCad 5: KICAD_SYMBOL_DIR. KiCad 6: KICAD6_SYMBOL_DIR.
+        - `templates`: [string=''] System level templates dir. KiCad 5: KICAD_TEMPLATE_DIR. KiCad 6: KICAD6_TEMPLATE_DIR.
+        - `third_party`: [string=''] 3rd party dir. KiCad 6: KICAD6_3RD_PARTY.
+        - `user_templates`: [string=''] User level templates dir. KiCad 5/6: KICAD_USER_TEMPLATE_DIR.
     - `extra_pth_drill`: [number=0.1] How many millimeters the manufacturer will add to plated holes.
                          This is because the plating reduces the hole, so you need to use a bigger drill.
                          For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/.

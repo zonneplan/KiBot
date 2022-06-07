@@ -8,10 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - New outputs:
   - `navigate_results` creates web pages to browse the generated outputs.
+- New globals:
+  - `environment` section allows defining KiCad environment variables.
+    (See INTI-CMNB/KiAuto#21)
 
 ### Fixed
 - Components with mounting hole where excluded (#201)
 - GenCAD output targets.
+- Problems expanding multiple KiCad variables in the same value.
 
 ### Changed
 - KiCad environment variables: more variables detected, native KiCad 6 names,
