@@ -55,6 +55,9 @@ class BaseOutput(RegOutput):
             self.category = Optionable
             """ [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                 Categories looks like file system paths, i.e. PCB/fabrication/gerber """
+            self.priority = 50
+            """ [0,100] Priority for this output. High priority outputs are created first.
+                Internally we use 10 for low priority, 90 for high priority and 50 for most outputs """
         if GS.global_dir:
             self.dir = GS.global_dir
         self._sch_related = False
@@ -149,6 +152,9 @@ class BaseOutput(RegOutput):
         gb['type'] = name
         gb['dir'] = dir
         return outs
+
+    def fix_priority_help(self):
+        self._help_priority = self._help_priority.replace('[number=50]', '[number={}]'.format(self.priority))
 
     def run(self, output_dir):
         self.output_dir = output_dir

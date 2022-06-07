@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- General stuff:
+  - Outputs now can have priorities, by default is applied.
+    Use `-n` to disable it.
 - New outputs:
   - `navigate_results` creates web pages to browse the generated outputs.
 - New globals:
@@ -20,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - KiCad environment variables: more variables detected, native KiCad 6 names,
   all exported to the environment (#205)
+- Consequences of the priorities implementation:
+  - `qr_lib` outputs are created before others
+  - `navigate_results` and `compress` outputs are created after others
 
 ## [1.1.0] - 2022-05-24
 ### Added

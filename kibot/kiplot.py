@@ -326,7 +326,7 @@ def get_board_comps_data(comps):
                 c.virtual = True
 
 
-def preflight_checks(skip_pre):
+def preflight_checks(skip_pre, targets):
     logger.debug("Preflight checks")
 
     if skip_pre is not None:
@@ -350,7 +350,7 @@ def preflight_checks(skip_pre):
                     else:
                         logger.debug('Skipping `{}`'.format(skip))
                         o_pre.disable()
-    BasePreFlight.run_enabled()
+    BasePreFlight.run_enabled(targets)
 
 
 def get_output_dir(o_dir, obj, dry=False):
@@ -411,44 +411,63 @@ def run_output(out, dont_stop=False):
             raise
 
 
-def generate_outputs(outputs, target, invert, skip_pre, cli_order, dont_stop=False):
+def generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop=False):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
-    preflight_checks(skip_pre)
-    # Check if the preflights pulled options
-    for out in RegOutput.get_prioritary_outputs():
+    # Make a list of target outputs
+    n = len(targets)
+    if n == 0:
+        # No targets means all
+        if invert:
+            # Skip all targets
+            logger.debug('Skipping all outputs')
+        else:
+            targets = [out for out in RegOutput.get_outputs() if out.run_by_default]
+    else:
+        # Check we got a valid list of outputs
+        for name in targets:
+            out = RegOutput.get_output(name)
+            if out is None:
+                logger.error('Unknown output `{}`'.format(name))
+                exit(EXIT_BAD_ARGS)
+        # Check for CLI+invert inconsistency
+        if cli_order and invert:
+            logger.error("CLI order and invert options can't be used simultaneously")
+            exit(EXIT_BAD_ARGS)
+        # Now convert the list of names into a list of output objects
+        if cli_order:
+            # Add them in the same order found at the command line
+            targets = [RegOutput.get_output(name) for name in targets]
+        else:
+            # Add them in the declared order
+            new_targets = []
+            if invert:
+                # Invert the selection
+                for out in RegOutput.get_outputs():
+                    if (out.name not in targets) and out.run_by_default:
+                        new_targets.append(out)
+                    else:
+                        logger.debug('Skipping `{}` output'.format(out.name))
+            else:
+                # Normal list
+                for out in RegOutput.get_outputs():
+                    if out.name in targets:
+                        new_targets.append(out)
+                    else:
+                        logger.debug('Skipping `{}` output'.format(out.name))
+            targets = new_targets
+    logger.debug('Outputs before preflights: {}'.format(targets))
+    # Run the preflights
+    preflight_checks(skip_pre, targets)
+    logger.debug('Outputs after preflights: {}'.format(targets))
+    if not cli_order and not no_priority:
+        # Sort by priority
+        targets = sorted(targets, key=lambda o: o.priority, reverse=True)
+        logger.debug('Outputs after sorting: {}'.format(targets))
+    # Configure and run the outputs
+    for out in targets:
         if config_output(out, dont_stop=dont_stop):
             logger.info('- '+str(out))
-            run_output(out, dont_stop=dont_stop)
-    # Check if all must be skipped
-    n = len(target)
-    if n == 0 and invert:
-        # Skip all targets
-        logger.debug('Skipping all outputs')
-        return
-    # Check we got a valid list of outputs
-    for name in target:
-        out = RegOutput.get_output(name)
-        if out is None:
-            logger.error('Unknown output `{}`'.format(name))
-            exit(EXIT_BAD_ARGS)
-    # Generate outputs
-    if cli_order and not invert:
-        # Use the CLI order
-        for name in target:
-            out = RegOutput.get_output(name)
-            if config_output(out, dont_stop=dont_stop):
-                logger.info('- '+str(out))
-                run_output(out, dont_stop)
-    else:
-        # Use the declaration order
-        for out in RegOutput.get_outputs():
-            if (((n == 0 or ((out.name not in target) and invert)) and out.run_by_default) or
-               ((out.name in target) and not invert)):
-                if config_output(out, dont_stop=dont_stop):
-                    logger.info('- '+str(out))
-                    run_output(out, dont_stop)
-            else:
-                logger.debug('Skipping `%s` output', str(out))
+            run_output(out, dont_stop)
 
 
 def adapt_file_name(name):
@@ -859,7 +878,7 @@ def generate_targets(config_file):
     with open(config_file) as cf_file:
         outputs = cr.read(cf_file)
     # Do all the job
-    generate_outputs(outputs, [], False, None, False, dont_stop=True)
+    generate_outputs(outputs, [], False, None, False, False, dont_stop=True)
 
 
 def _walk(path, depth):

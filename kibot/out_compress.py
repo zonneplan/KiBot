@@ -225,10 +225,14 @@ class Compress(BaseOutput):  # noqa: F821
         This is used to generate groups of files in compressed file format. """
     def __init__(self):
         super().__init__()
+        # Make it low priority so it gets created after all the other outputs
+        self.priority = 10
         with document:
             self.options = CompressOptions
             """ [dict] Options for the `compress` output """
         self._none_related = True
+        # The help is inherited and already mentions the default priority
+        self.fix_priority_help()
 
     def get_dependencies(self):
         return self.options.get_dependencies()

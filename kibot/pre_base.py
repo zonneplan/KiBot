@@ -17,6 +17,7 @@ class BasePreFlight(Registrable):
     _registered = {}
     _in_use = {}
     _options = {}
+    _targets = None
 
     def __init__(self, name, value):
         super().__init__()
@@ -49,7 +50,18 @@ class BasePreFlight(Registrable):
         return BasePreFlight._options.get(name)
 
     @staticmethod
-    def run_enabled():
+    def insert_target(out):
+        """ Add a target, at the beginning of the list and with high priority """
+        try:
+            del BasePreFlight._targets[BasePreFlight._targets.index(out)]
+        except ValueError:
+            pass
+        BasePreFlight._targets.insert(0, out)
+        out.priority = 90
+
+    @staticmethod
+    def run_enabled(targets):
+        BasePreFlight._targets = targets
         try:
             for k, v in BasePreFlight._in_use.items():
                 if v._enabled:

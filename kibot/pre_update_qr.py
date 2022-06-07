@@ -25,8 +25,8 @@ class Update_QR(BasePreFlight):  # noqa: F821
         self._pcb_related = True
 
     def run(self):
-        for o in list(RegOutput.get_outputs()):  # We convert it to a list because we will mutate the dict
+        for o in RegOutput.get_outputs():
             if o.type == 'qr_lib':
-                RegOutput.make_prioritary(o.name)
+                BasePreFlight.insert_target(o)  # noqa: F821
                 o._update_mode = True
                 logger.debug('Making {} prioritary'.format(o))

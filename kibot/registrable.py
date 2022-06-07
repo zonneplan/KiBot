@@ -45,8 +45,6 @@ class RegOutput(Optionable, Registrable):
     _def_variants = {}
     # List of defined outputs
     _def_outputs = OrderedDict()
-    # List of priority outputs
-    _prio_outputs = OrderedDict()
 
     def __init__(self):
         super().__init__()
@@ -59,8 +57,6 @@ class RegOutput(Optionable, Registrable):
         RegOutput._def_variants = {}
         # List of defined outputs
         RegOutput._def_outputs = OrderedDict()
-        # List of priority outputs
-        RegOutput._prio_outputs = OrderedDict()
 
     @staticmethod
     def add_variants(variants):
@@ -109,18 +105,8 @@ class RegOutput(Optionable, Registrable):
         return RegOutput._def_outputs.values()
 
     @staticmethod
-    def get_prioritary_outputs():
-        return RegOutput._prio_outputs.values()
-
-    @staticmethod
     def get_output(name):
         return RegOutput._def_outputs.get(name, None)
-
-    @staticmethod
-    def make_prioritary(name):
-        out = RegOutput._def_outputs[name]
-        del RegOutput._def_outputs[name]
-        RegOutput._prio_outputs[name] = out
 
     @staticmethod
     def check_variant(variant):

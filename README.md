@@ -1172,6 +1172,8 @@ Next time you need this list just use an alias, like this:
       * Valid keys:
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * BoM (Bill of Materials)
@@ -1362,6 +1364,8 @@ Next time you need this list just use an alias, like this:
             - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
             - `title`: [string='KiBot Bill of Materials'] BoM title.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Archiver (files compressor)
@@ -1396,6 +1400,8 @@ Next time you need this list just use an alias, like this:
         - `output`: [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
         - *remove_files*: Alias for move_files.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Datasheets downloader
@@ -1424,6 +1430,8 @@ Next time you need this list just use an alias, like this:
                       It only makes sense if the `output` field makes their output different.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * DXF (Drawing Exchange Format)
@@ -1476,6 +1484,8 @@ Next time you need this list just use an alias, like this:
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Excellon drill format
@@ -1517,6 +1527,8 @@ Next time you need this list just use an alias, like this:
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `zeros_format`: [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * GenCAD
@@ -1543,6 +1555,8 @@ Next time you need this list just use an alias, like this:
         - `save_origin`: [boolean=false] Save the origin coordinates in the file.
         - `unique_pin_names`: [boolean=false] Generate unique pin names.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Gerber drill format
@@ -1576,6 +1590,8 @@ Next time you need this list just use an alias, like this:
                           (%i='drill_report' %x='txt').
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Gerber format
@@ -1634,6 +1650,8 @@ Next time you need this list just use an alias, like this:
         - `use_protel_extensions`: [boolean=false] Use legacy Protel file extensions.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * HPGL (Hewlett & Packard Graphics Language)
@@ -1688,6 +1706,8 @@ Next time you need this list just use an alias, like this:
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * IBoM (Interactive HTML BoM)
@@ -1763,6 +1783,8 @@ Next time you need this list just use an alias, like this:
         - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * KiBoM (KiCad Bill of Materials)
@@ -1864,6 +1886,8 @@ Next time you need this list just use an alias, like this:
                      variants with the ';' (semicolon) character.
                      This isn't related to the KiBot concept of variants.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * KiCost (KiCad Cost calculator)
@@ -1914,6 +1938,8 @@ Next time you need this list just use an alias, like this:
         - `variant`: [string=''] Board variant to apply.
                      Don't use the `kicost_variant` when using internal variants/filters.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Navigate Results
@@ -1934,6 +1960,8 @@ Next time you need this list just use an alias, like this:
         - `link_from_root`: [string=''] The name of a file to create at the main output directory linking to the home page.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Netlist
@@ -1958,6 +1986,8 @@ Next time you need this list just use an alias, like this:
                     testing, is generated from the PCB.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=netlist/IPC-D-356, %x=net/d356). Affected by global options.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PCB Print
@@ -2046,6 +2076,8 @@ Next time you need this list just use an alias, like this:
         - `variant`: [string=''] Board variant to apply.
         - `via_color`: [string=''] Color used for through-hole `colored_vias`.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PcbDraw - Beautiful 2D PCB render
@@ -2095,6 +2127,8 @@ Next time you need this list just use an alias, like this:
         - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
         - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PDF (Portable Document Format)
@@ -2168,6 +2202,8 @@ Next time you need this list just use an alias, like this:
     - `plot_footprint_values`: [boolean=true] Include the footprint values.
     - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
                               The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
     - `tent_vias`: [boolean=true] Cover the vias.
     - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
@@ -2218,6 +2254,8 @@ Next time you need this list just use an alias, like this:
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PDF Schematic Print (Portable Document Format)
@@ -2245,6 +2283,8 @@ Next time you need this list just use an alias, like this:
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PDF joiner
@@ -2275,6 +2315,8 @@ Next time you need this list just use an alias, like this:
                         See the `from_cwd` option.
         - `use_external_command`: [boolean=false] Use the `pdfunite` tool instead of PyPDF2 Python module.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Pick & place
@@ -2309,6 +2351,8 @@ Next time you need this list just use an alias, like this:
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * PS (Postscript)
@@ -2368,6 +2412,8 @@ Next time you need this list just use an alias, like this:
         - `width_adjust`: [number=0] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * QR_Lib
@@ -2406,6 +2452,8 @@ Next time you need this list just use an alias, like this:
         - `reference`: [string='QR'] The reference prefix.
         - `use_sch_dir`: [boolean=true] Generate the libs relative to the schematic/PCB dir.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=90] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * 3D render of the PCB
@@ -2462,6 +2510,8 @@ Next time you need this list just use an alias, like this:
         - `zoom`: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                   Same result as using the mouse wheel in the 3D viewer.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Design report
@@ -2495,6 +2545,8 @@ Next time you need this list just use an alias, like this:
         - `template`: [string='full'] Name for one of the internal templates (full, full_svg, simple) or a custom template file.
                       Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * Schematic with variant generator
@@ -2518,6 +2570,8 @@ Next time you need this list just use an alias, like this:
                         A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)
@@ -2551,6 +2605,8 @@ Next time you need this list just use an alias, like this:
         - `subst_models`: [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * SVG (Scalable Vector Graphics)
@@ -2604,6 +2660,8 @@ Next time you need this list just use an alias, like this:
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * SVG PCB Print (Scalable Vector Graphics)
@@ -2652,6 +2710,8 @@ Next time you need this list just use an alias, like this:
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * SVG Schematic Print
@@ -2678,6 +2738,8 @@ Next time you need this list just use an alias, like this:
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 
@@ -3130,7 +3192,7 @@ KiBot: KiCad automation tool for documents generation
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
-         [-q | -v...] [-i] [-C] [-m MKFILE] [-g DEF]... [TARGET...]
+         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-g DEF]... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
@@ -3158,6 +3220,7 @@ Options:
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
   -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
+  -n, --no-priority                Don't sort targets by priority
   -p, --copy-options               Copy plot options from the PCB file
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs

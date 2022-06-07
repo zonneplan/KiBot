@@ -529,11 +529,15 @@ class QR_Lib(BaseOutput):  # noqa: F821
         - To keep them updated add the `update_qr` preflight """
     def __init__(self):
         super().__init__()
+        # Make it high priority so it gets created before all the other outputs
+        self.priority = 90
         with document:
             self.options = QR_LibOptions
             """ [dict] Options for the `boardview` output """
         self._both_related = True
         self._update_mode = False
+        # The help is inherited and already mentions the default priority
+        self.fix_priority_help()
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

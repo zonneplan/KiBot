@@ -9,7 +9,7 @@
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
-         [-q | -v...] [-i] [-C] [-m MKFILE] [-g DEF]... [TARGET...]
+         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-g DEF]... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
@@ -37,6 +37,7 @@ Options:
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
   -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
+  -n, --no-priority                Don't sort targets by priority
   -p, --copy-options               Copy plot options from the PCB file
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
@@ -319,7 +320,7 @@ def main():
         generate_makefile(args.makefile, plot_config, outputs)
     else:
         # Do all the job (preflight + outputs)
-        generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre, args.cli_order)
+        generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority)
     # Print total warnings
     logger.log_totals()
 

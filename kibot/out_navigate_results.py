@@ -455,9 +455,13 @@ class Navigate_Results(BaseOutput):  # noqa: F821
         Generates a web page to navigate the generated outputs """
     def __init__(self):
         super().__init__()
+        # Make it low priority so it gets created after all the other outputs
+        self.priority = 10
         with document:
             self.options = Navigate_ResultsOptions
             """ [dict] Options for the `navigate_results` output """
+        # The help is inherited and already mentions the default priority
+        self.fix_priority_help()
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
