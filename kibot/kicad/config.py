@@ -61,7 +61,7 @@ def expand_env(val, env, extra_env, used_extra=None):
     if used_extra is None:
         used_extra = [False]
     used_extra[0] = False
-    for var in re.findall(r'\$\{(\S+)\}', val):
+    for var in re.findall(r'\$\{(\S+?)\}', val):
         if var in env:
             val = val.replace('${'+var+'}', env[var])
         elif var in extra_env:
