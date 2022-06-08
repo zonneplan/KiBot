@@ -382,7 +382,7 @@ class TestContext(object):
 
     def search_out(self, text):
         m = re.search(text, self.out, re.MULTILINE)
-        assert m is not None
+        assert m is not None, text
         logging.debug('output match: `{}` OK'.format(text))
         return m
 

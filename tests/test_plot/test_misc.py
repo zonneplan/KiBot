@@ -1162,3 +1162,29 @@ def test_gencad_1(test_dir):
         f.write(text)
     ctx.compare_txt(o)
     ctx.clean_up()
+
+
+def test_quick_start_1(test_dir):
+    """ Very naive test to see if it doesn't crash """
+    prj = 'light_control'
+    dir_o = 'navigate'
+    ctx = context.TestContext(test_dir, 'test_quick_start_1', prj, 'pre_and_position', dir_o)
+    board_file = os.path.basename(ctx.board_file)
+    dest_dir = ctx.get_out_path(dir_o)
+    dest_file = os.path.join(dest_dir, board_file)
+    os.makedirs(dest_dir, exist_ok=True)
+    shutil.copy2(ctx.board_file, dest_file)
+    sch_file = os.path.basename(ctx.sch_file)
+    dest_file_sch = os.path.join(dest_dir, sch_file)
+    shutil.copy2(ctx.sch_file, dest_file_sch)
+    ctx.run(extra=['--quick-start', '--dry', '--start', dest_dir], no_board_file=True, no_yaml_file=True)
+    dest_conf = os.path.join(dir_o, 'kibot_generated.kibot.yaml')
+    ctx.expect_out_file(dest_conf)
+    dest_conf_f = os.path.join(dest_dir, 'kibot_generated.kibot.yaml')
+    ctx.run(extra=['-c', dest_conf_f, '-l'], no_out_dir=True, no_yaml_file=True)
+    OUTS = ('boardview', 'dxf', 'excellon', 'gencad', 'gerb_drill', 'gerber', 'compress', 'hpgl', 'ibom',
+            'navigate_results', 'netlist', 'pcb_print', 'pcbdraw', 'pdf', 'position', 'ps', 'render_3d',
+            'report', 'step', 'svg',
+            'bom', 'download_datasheets', 'pdf_sch_print', 'svg_sch_print')
+    for o in OUTS:
+        ctx.search_out(r'\['+o+r'\]')
