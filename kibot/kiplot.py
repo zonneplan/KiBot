@@ -788,6 +788,14 @@ def discover_files(dest_dir):
     return fname
 
 
+def yaml_dump(f, tree):
+    if StrictVersion(yaml.__version__) < StrictVersion('3.14'):
+        f.write(yaml.dump(tree))
+    else:
+        # sort_keys was introduced after 3.13
+        f.write(yaml.dump(tree, sort_keys=False))
+
+
 def generate_one_example(dest_dir, types):
     """ Generate a example config for dest_dir """
     fname = discover_files(dest_dir)
@@ -818,21 +826,21 @@ def generate_one_example(dest_dir, types):
                {'number': 58},    # Missing project file
                ]
         glb = {'filters': fil}
-        f.write(yaml.dump({'global': glb}, sort_keys=False))
+        yaml_dump(f, {'global': glb})
         f.write('\n')
         # A helper for the JLCPCB stuff
         fil = {'name': 'only_jlc_parts'}
         fil['comment'] = 'Only parts with JLC (LCSC) code'
         fil['type'] = 'generic'
         fil['include_only'] = [{'column': 'LCSC#', 'regex': r'^C\d+'}]
-        f.write(yaml.dump({'filters': [fil]}, sort_keys=False))
+        yaml_dump(f, {'filters': [fil]})
         f.write('\n')
         # A helper for KiCost demo
         var = {'name': 'place_holder'}
         var['comment'] = 'Just a place holder for pre_transform filters'
         var['type'] = 'kicost'
         var['pre_transform'] = ['_kicost_rename', '_rot_footprint']
-        f.write(yaml.dump({'variants': [var]}, sort_keys=False))
+        yaml_dump(f, {'variants': [var]})
         f.write('\n')
         # All the outputs
         outputs = []
@@ -860,7 +868,7 @@ def generate_one_example(dest_dir, types):
             else:
                 logger.debug('- {}, nothing to do'.format(n))
         if outputs:
-            f.write(yaml.dump({'outputs': outputs}, sort_keys=False))
+            yaml_dump(f, {'outputs': outputs})
         else:
             return None
     return fname
