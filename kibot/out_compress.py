@@ -187,6 +187,20 @@ class CompressOptions(BaseOptions):
         files, _ = self.get_files(output, no_out_run=True)
         return files.keys()
 
+    def get_categories(self):
+        cats = set()
+        for f in self.files:
+            if f.from_output:
+                out = RegOutput.get_output(f.from_output)
+                if out is not None and out.category:
+                    if isinstance(out.category, str):
+                        cats.add(out.category)
+                    else:
+                        cats.update(out.category)
+            else:
+                cats.add('Compress')
+        return list(cats)
+
     def run(self, output):
         # Output file name
         logger.debug('Collecting files')
@@ -233,6 +247,11 @@ class Compress(BaseOutput):  # noqa: F821
         self._none_related = True
         # The help is inherited and already mentions the default priority
         self.fix_priority_help()
+
+    def config(self, parent):
+        super().config(parent)
+        if self.category is None and not isinstance(self.options, type):
+            self.category = self.options.get_categories()
 
     def get_dependencies(self):
         return self.options.get_dependencies()

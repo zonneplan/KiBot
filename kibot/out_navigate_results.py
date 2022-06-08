@@ -36,6 +36,7 @@ RegDependency.register(ToolDependency('navigate_results', 'ImageMagick', 'https:
 logger = log.get_logger()
 CAT_IMAGE = {'PCB': 'pcbnew',
              'Schematic': 'eeschema',
+             'Compress': 'zip',
              'fabrication': 'fabrication',
              'export': 'export',
              'assembly': 'assembly_simple',
@@ -57,6 +58,7 @@ EXT_IMAGE = {'gbr': 'file_gbr',
              'gm1': 'file_gbr',
              'gbrjob': 'file_gerber_job',
              'brd': 'file_brd',
+             'bz2': 'file_bz2',
              'dxf': 'file_dxf',
              'cad': 'file_cad',
              'drl': 'file_drl',
@@ -70,13 +72,18 @@ EXT_IMAGE = {'gbr': 'file_gbr',
              'jpg': 'file_jpg',
              'plt': 'file_plt',
              'ps': 'file_ps',
+             'rar': 'file_rar',
              'step': 'file_stp',
              'stp': 'file_stp',
              'html': 'file_html',
              'xml': 'file_xml',
              'tsv': 'file_tsv',
              'xlsx': 'file_xlsx',
-             'xyrs': 'file_xyrs'}
+             'xyrs': 'file_xyrs',
+             'xz': 'file_xz',
+             'gz': 'file_gz',
+             'tar': 'file_tar',
+             'zip': 'file_zip'}
 for i in range(31):
     n = str(i)
     EXT_IMAGE['gl'+n] = 'file_gbr'

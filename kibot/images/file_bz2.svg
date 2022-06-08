@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="Слой_1"
+   data-name="Слой 1"
+   viewBox="0 0 16.000001 17"
+   version="1.1"
+   width="16"
+   height="17">
+  <metadata
+     id="metadata43">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/" />
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>zip</dc:title>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#ShareAlike" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs27736">
+    <style
+       id="style27734">.cls-1{fill:#545454;}.cls-2{fill:#e49435;}.cls-3{fill:#9e9e9e;}.cls-4{fill:#b9b9b9;}</style>
+  </defs>
+  <title
+     id="title27738">zip</title>
+  <polygon
+     class="cls-1"
+     points="23.989,20.14 12.883,25 12.883,10.331 24,5.82 "
+     id="polygon27740"
+     transform="matrix(0.72727273,0,0,0.70833333,-1.4545455,-0.70833333)"
+     style="stroke-width:1.39326" />
+  <polygon
+     class="cls-2"
+     points="2,20.084 12.883,25 12.883,10.05 2,5.46 "
+     id="polygon27742"
+     transform="matrix(0.72727273,0,0,0.70833333,-1.4545455,-0.70833333)"
+     style="stroke-width:1.39326" />
+  <polygon
+     class="cls-3"
+     points="24,5.82 17.927,3.3 7.369,7.895 12.894,10.41 23.761,5.92 "
+     id="polygon27744"
+     transform="matrix(0.72727273,0,0,0.70833333,-1.4545455,-0.70833333)"
+     style="stroke-width:1.39326" />
+  <polygon
+     class="cls-4"
+     points="7.369,7.895 17.927,3.3 12.384,1 2,5.46 "
+     id="polygon27746"
+     transform="matrix(0.72727273,0,0,0.70833333,-1.4545455,-0.70833333)"
+     style="stroke-width:1.39326" />
+  <g
+     id="g5473"
+     transform="translate(-3.1406462,0.49999997)">
+    <g
+       id="g5499"
+       transform="translate(5.4999997,2.0000001)">
+      <rect
+         class="cls-2"
+         x="0"
+         y="6.0574999"
+         width="11.132647"
+         height="6"
+         id="rect27311"
+         style="fill:#1a81c4;stroke-width:0.624994" />
+      <path
+         class="cls-3"
+         d="M 1.158115,11 H 0.56205953 V 10.408651 H 1.158115 Z"
+         id="path27313"
+         style="fill:#ffffff;stroke-width:0.555556" />
+      <g
+         aria-label="bz2"
+         id="text4813"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.33333px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none">
+        <path
+           d="m 3.1097103,7.9018742 q 0,0.1653332 -0.010667,0.3253331 -0.010667,0.1599999 -0.021333,0.2506665 h 0.032 Q 3.2270436,8.2965406 3.4243768,8.173874 3.62171,8.0458741 3.9363765,8.0458741 q 0.4906664,0 0.7946662,0.3839998 0.3039998,0.3786664 0.3039998,1.1199993 0,0.7466658 -0.3093331,1.1306658 -0.3093332,0.384 -0.8106662,0.384 -0.3199998,0 -0.5066664,-0.112 Q 3.2270436,10.835206 3.1097103,10.691206 H 3.056377 l -0.1333332,0.32 H 2.3150441 V 6.9578748 h 0.7946662 z m 0.5706664,0.7786662 q -0.3093332,0 -0.4373331,0.1919999 Q 3.120377,9.0645402 3.1097103,9.4592066 v 0.085333 q 0,0.4213331 0.1226666,0.6506661 0.128,0.224 0.4586664,0.224 0.2453332,0 0.3893331,-0.224 0.1439999,-0.229333 0.1439999,-0.6559994 0,-0.4266665 -0.1493332,-0.6399997 Q 3.9310432,8.6805404 3.6803767,8.6805404 Z"
+           id="path842" />
+        <path
+           d="M 7.6643701,11.011206 H 5.3657048 V 10.541873 L 6.7150373,8.707207 H 5.4457047 V 8.0992074 h 2.1706654 v 0.517333 L 6.3043709,10.403206 h 1.3599992 z"
+           id="path844" />
+        <path
+           d="M 10.699029,11.011206 H 8.0376973 v -0.56 L 8.9923634,9.4858732 Q 9.2803632,9.1872068 9.4563631,8.9898735 9.632363,8.787207 9.7123629,8.6272071 q 0.08,-0.1653332 0.08,-0.3519998 0,-0.2293332 -0.1279999,-0.3413331 -0.1226666,-0.112 -0.3359998,-0.112 -0.2186666,0 -0.4266664,0.1013333 Q 8.6936969,8.0245408 8.4643637,8.2112073 L 8.0270306,7.6938743 Q 8.1923638,7.5498744 8.3736971,7.4272078 8.5603636,7.3045412 8.8003635,7.2298746 q 0.2453332,-0.08 0.5866663,-0.08 0.3733331,0 0.6399992,0.1386666 0.272,0.1333333 0.416,0.3679998 0.149333,0.2293332 0.149333,0.5226664 0,0.3146664 -0.128,0.5759996 Q 10.341696,9.0165402 10.101696,9.27254 9.8670295,9.5285399 9.5310297,9.837873 l -0.4906664,0.458666 v 0.03733 h 1.6586657 z"
+           id="path846" />
+      </g>
+    </g>
+  </g>
+</svg>
