@@ -889,11 +889,11 @@ outputs:
         test_regex: true
         # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
         use_alt: false
-      # [string='HTML'] [HTML,CSV,XML,XLSX] format for the BoM
+      # [string='HTML'] [HTML,CSV,XML,XLSX] Format for the BoM
       format: 'HTML'
       # [number=1] Number of boards to build (components multiplier)
       number: 1
-      # [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options
+      # [string='%f-%i%I%v.%x'] Filename for the output (%i=bom). Affected by global options
       output: '%f-%i%I%v.%x'
       # [string=','] CSV Separator
       separator: ','
@@ -1142,25 +1142,25 @@ outputs:
       show_components: none
       # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
       style:
-        # [string='#208b47'] color for the board without copper (covered by solder mask)
+        # [string='#208b47'] Color for the board without copper (covered by solder mask)
         board: '#208b47'
-        # [string='#cabb3e'] color for the PCB core (not covered by solder mask)
+        # [string='#cabb3e'] Color for the PCB core (not covered by solder mask)
         clad: '#cabb3e'
-        # [string='#285e3a'] color for the copper zones (covered by solder mask)
+        # [string='#285e3a'] Color for the copper zones (covered by solder mask)
         copper: '#285e3a'
-        # [boolean=false] highlight over the component (not under)
+        # [boolean=false] Highlight over the component (not under)
         highlight_on_top: false
         # [number=1.5] [0,1000] how much the highlight extends around the component [mm]
         highlight_padding: 1.5
         # [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style
         highlight_style: 'stroke:none;fill:#ff0000;opacity:0.5;'
-        # [string='#000000'] color for the outline
+        # [string='#000000'] Color for the outline
         outline: '#000000'
-        # [string='#8b898c'] color for the exposed pads (metal finish)
+        # [string='#8b898c'] Color for the exposed pads (metal finish)
         pads: '#8b898c'
-        # [string='#d5dce4'] color for the silk screen
+        # [string='#d5dce4'] Color for the silk screen
         silk: '#d5dce4'
-        # [string='#bf2600'] color for the V-CUTS
+        # [string='#bf2600'] Color for the V-CUTS
         vcut: '#bf2600'
       # [string=''] Board variant to apply
       variant: ''
@@ -1352,7 +1352,7 @@ outputs:
     type: 'ps'
     dir: 'Example/ps_dir'
     options:
-      # [boolean=true] force A4 paper size
+      # [boolean=true] Force A4 paper size
       a4_output: true
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:

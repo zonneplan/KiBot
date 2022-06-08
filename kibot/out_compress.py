@@ -32,13 +32,13 @@ class FilesList(Optionable):
         super().__init__()
         with document:
             self.source = '*'
-            """ File names to add, wildcards allowed. Use ** for recursive match.
+            """ *File names to add, wildcards allowed. Use ** for recursive match.
                 By default this pattern is applied to the output dir specified with `-d` command line option.
                 See the `from_cwd` option """
             self.from_cwd = False
             """ Use the current working directory instead of the dir specified by `-d` """
             self.from_output = ''
-            """ Collect files from the selected output.
+            """ *Collect files from the selected output.
                 When used the `source` option is ignored """
             self.filter = '.*'
             """ A regular expression that source files must match """
@@ -61,13 +61,13 @@ class CompressOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Name for the generated archive (%i=name of the output %x=according to format) """
+            """ *Name for the generated archive (%i=name of the output %x=according to format) """
             self.format = 'ZIP'
-            """ [ZIP,TAR,RAR] Output file format """
+            """ *[ZIP,TAR,RAR] Output file format """
             self.compression = 'auto'
             """ [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one """
             self.files = FilesList
-            """ [list(dict)] Which files will be included """
+            """ *[list(dict)] Which files will be included """
             self.move_files = False
             """ Move the files to the archive. In other words: remove the files after adding them to the archive """
             self.remove_files = None
@@ -229,7 +229,7 @@ class Compress(BaseOutput):  # noqa: F821
         self.priority = 10
         with document:
             self.options = CompressOptions
-            """ [dict] Options for the `compress` output """
+            """ *[dict] Options for the `compress` output """
         self._none_related = True
         # The help is inherited and already mentions the default priority
         self.fix_priority_help()

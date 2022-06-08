@@ -53,5 +53,5 @@ class PDF(AnyLayer, DrillMarks):
         super().__init__()
         with document:
             self.options = PDFOptions
-            """ [dict] Options for the `pdf` output """
+            """ *[dict] Options for the `pdf` output """
         self._category = 'PCB/docs'

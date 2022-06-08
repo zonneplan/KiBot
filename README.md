@@ -1153,24 +1153,29 @@ Next time you need this list just use an alias, like this:
 
 #### Supported outputs:
 
+Notes:
+1. Most relevant options are listed first and in **bold**. Which ones are more relevant is quite arbitrary, comments are welcome.
+2. Aliases are listed in *italics*.
+
 * BoardView
   * Type: `boardview`
   * Description: Exports the PCB in board view format.
                  This format allows simple pads and connections navigation, mainly for circuit debug.
                  The output can be loaded using Open Board View (https://openboardview.org/)
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `boardview` output.
+      * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `boardview` output.
-      * Valid keys:
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1187,33 +1192,21 @@ Next time you need this list just use an alias, like this:
                  - The `Component` column is named `Row` and works just like any other column.
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `bom` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `bom` output.
       * Valid keys:
-        - `aggregate`: [list(dict)] Add components from other projects.
+        - **`columns`**: [list(dict)|list(string)] List of columns to display.
+                         Can be just the name of the field.
           * Valid keys:
-            - `file`: [string=''] Name of the schematic to aggregate.
-            - `name`: [string=''] Name to identify this source. If empty we use the name of the schematic.
-            - `number`: [number=1] Number of boards to build (components multiplier). Use negative to subtract.
-            - `ref_id`: [string=''] A prefix to add to all the references from this project.
-        - `angle_positive`: [boolean=true] Always use positive values for the footprint rotation.
-        - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS).
-        - `columns`: [list(dict)|list(string)] List of columns to display.
-                     Can be just the name of the field.
-          * Valid keys:
+            - **`field`**: [string=''] Name of the field to use for this column.
+            - **`name`**: [string=''] Name to display in the header. The field is used when empty.
             - `comment`: [string=''] Used as explanation for this column. The XLSX output uses it.
-            - `field`: [string=''] Name of the field to use for this column.
             - `join`: [list(dict)|list(string)|string=''] List of fields to join to this column.
               * Valid keys:
-                - `field`: [string=''] Name of the field.
+                - **`field`**: [string=''] Name of the field.
                 - `text`: [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
                           Any space to separate it should be added in the text.
                           Use \n for newline and \t for tab.
@@ -1224,7 +1217,93 @@ Next time you need this list just use an alias, like this:
                                  Any space to separate it should be added in the text.
                                  Use \n for newline and \t for tab.
             - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
-            - `name`: [string=''] Name to display in the header. The field is used when empty.
+        - **`csv`**: [dict] Options for the CSV, TXT and TSV formats.
+          * Valid keys:
+            - **`quote_all`**: [boolean=false] Enclose all values using double quotes.
+            - **`separator`**: [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
+            - `hide_header`: [boolean=false] Hide the header line (names of the columns).
+            - `hide_pcb_info`: [boolean=false] Hide project information.
+            - `hide_stats_info`: [boolean=false] Hide statistics information.
+        - **`format`**: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
+                        Defaults to CSV or a guess according to the options..
+        - **`group_fields`**: [list(string)] List of fields used for sorting individual components into groups.
+                              Components which match (comparing *all* fields) will be grouped together.
+                              Field names are case-insensitive.
+                              If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
+                                         'Voltage', 'Tolerance', 'Current', 'Power'] is used.
+        - **`html`**: [dict] Options for the HTML format.
+          * Valid keys:
+            - **`datasheet_as_link`**: [string=''] Column with links to the datasheet.
+            - **`generate_dnf`**: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
+            - **`logo`**: [string|boolean=''] PNG file to use as logo, use false to remove.
+            - **`title`**: [string='KiBot Bill of Materials'] BoM title.
+            - `col_colors`: [boolean=true] Use colors to show the field type.
+            - `digikey_link`: [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page.
+            - `extra_info`: [string|list(string)=''] Information to put after the title and before the pcb and stats info.
+            - `hide_pcb_info`: [boolean=false] Hide project information.
+            - `hide_stats_info`: [boolean=false] Hide statistics information.
+            - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
+            - `style`: [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
+                       Or you can provide a CSS file name. Please use .css as file extension..
+        - **`ignore_dnf`**: [boolean=true] Exclude DNF (Do Not Fit) components.
+        - **`normalize_values`**: [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.
+        - **`number`**: [number=1] Number of boards to build (components multiplier).
+        - **`output`**: [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options.
+        - **`sort_style`**: [string='type_value'] [type_value,type_value_ref,ref] Sorting criteria.
+        - **`units`**: [string='millimeters'] [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
+                       Affected by global options.
+        - **`xlsx`**: [dict] Options for the XLSX format.
+          * Valid keys:
+            - **`datasheet_as_link`**: [string=''] Column with links to the datasheet.
+            - **`generate_dnf`**: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
+            - **`kicost`**: [boolean=false] Enable KiCost worksheet creation.
+            - **`logo`**: [string|boolean=''] PNG file to use as logo, use false to remove.
+            - **`specs`**: [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
+                           Works with only some KiCost APIs.
+            - **`title`**: [string='KiBot Bill of Materials'] BoM title.
+            - `col_colors`: [boolean=true] Use colors to show the field type.
+            - `digikey_link`: [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page.
+            - `extra_info`: [string|list(string)=''] Information to put after the title and before the pcb and stats info.
+            - `hide_pcb_info`: [boolean=false] Hide project information.
+            - `hide_stats_info`: [boolean=false] Hide statistics information.
+            - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
+            - `kicost_api_disable`: [string|list(string)=''] List of KiCost APIs to disable.
+            - `kicost_api_enable`: [string|list(string)=''] List of KiCost APIs to enable.
+            - `kicost_config`: [string=''] KiCost configuration file. It contains the keys for the different distributors APIs.
+                               The regular KiCost config is used when empty.
+            - `kicost_dist_desc`: [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component.
+            - `logo_scale`: [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
+            - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
+            - `specs_columns`: [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
+                               'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
+                               Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
+                               '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'.
+              * Valid keys:
+                - **`field`**: [string=''] Name of the field to use for this column.
+                - **`name`**: [string=''] Name to display in the header. The field is used when empty.
+                - `comment`: [string=''] Used as explanation for this column. The XLSX output uses it.
+                - `join`: [list(dict)|list(string)|string=''] List of fields to join to this column.
+                  * Valid keys:
+                    - **`field`**: [string=''] Name of the field.
+                    - `text`: [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+                              Any space to separate it should be added in the text.
+                              Use \n for newline and \t for tab.
+                    - `text_after`: [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+                                    Any space to separate it should be added in the text.
+                                    Use \n for newline and \t for tab.
+                    - `text_before`: [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+                                     Any space to separate it should be added in the text.
+                                     Use \n for newline and \t for tab.
+                - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
+            - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
+        - `aggregate`: [list(dict)] Add components from other projects.
+          * Valid keys:
+            - `file`: [string=''] Name of the schematic to aggregate.
+            - `name`: [string=''] Name to identify this source. If empty we use the name of the schematic.
+            - `number`: [number=1] Number of boards to build (components multiplier). Use negative to subtract.
+            - `ref_id`: [string=''] A prefix to add to all the references from this project.
+        - `angle_positive`: [boolean=true] Always use positive values for the footprint rotation.
+        - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS).
         - `component_aliases`: [list(list(string))] A series of values which are considered to be equivalent for the part name.
                                Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
                                will ensure the equivalent capacitor symbols can be grouped together.
@@ -1238,11 +1317,12 @@ Next time you need this list just use an alias, like this:
         - `cost_extra_columns`: [list(dict)|list(string)] List of columns to add to the global section of the cost.
                                 Can be just the name of the field.
           * Valid keys:
+            - **`field`**: [string=''] Name of the field to use for this column.
+            - **`name`**: [string=''] Name to display in the header. The field is used when empty.
             - `comment`: [string=''] Used as explanation for this column. The XLSX output uses it.
-            - `field`: [string=''] Name of the field to use for this column.
             - `join`: [list(dict)|list(string)|string=''] List of fields to join to this column.
               * Valid keys:
-                - `field`: [string=''] Name of the field.
+                - **`field`**: [string=''] Name of the field.
                 - `text`: [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
                           Any space to separate it should be added in the text.
                           Use \n for newline and \t for tab.
@@ -1253,15 +1333,7 @@ Next time you need this list just use an alias, like this:
                                  Any space to separate it should be added in the text.
                                  Use \n for newline and \t for tab.
             - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
-            - `name`: [string=''] Name to display in the header. The field is used when empty.
         - `count_smd_tht`: [boolean=false] Show the stats about how many of the components are SMD/THT. You must provide the PCB.
-        - `csv`: [dict] Options for the CSV, TXT and TSV formats.
-          * Valid keys:
-            - `hide_header`: [boolean=false] Hide the header line (names of the columns).
-            - `hide_pcb_info`: [boolean=false] Hide project information.
-            - `hide_stats_info`: [boolean=false] Hide statistics information.
-            - `quote_all`: [boolean=false] Enclose all values using double quotes.
-            - `separator`: [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
         - `distributors`: [string|list(string)] Include this distributors list. Default is all the available.
         - `dnc_filter`: [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
                         The default filter marks components with a DNC value or DNC in the Config field.
@@ -1272,31 +1344,9 @@ Next time you need this list just use an alias, like this:
         - `fit_field`: [string='Config'] Field name used for internal filters.
         - `footprint_populate_values`: [string|list(string)='no,yes'] Values for the `Footprint Populate` column.
         - `footprint_type_values`: [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column.
-        - `format`: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
-                    Defaults to CSV or a guess according to the options..
         - `group_connectors`: [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector.
-        - `group_fields`: [list(string)] List of fields used for sorting individual components into groups.
-                          Components which match (comparing *all* fields) will be grouped together.
-                          Field names are case-insensitive.
-                          If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
-                                     'Voltage', 'Tolerance', 'Current', 'Power'] is used.
         - `group_fields_fallbacks`: [list(string)] List of fields to be used when the fields in `group_fields` are empty.
                                     The first field in this list is the fallback for the first in `group_fields`, and so on.
-        - `html`: [dict] Options for the HTML format.
-          * Valid keys:
-            - `col_colors`: [boolean=true] Use colors to show the field type.
-            - `datasheet_as_link`: [string=''] Column with links to the datasheet.
-            - `digikey_link`: [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page.
-            - `extra_info`: [string|list(string)=''] Information to put after the title and before the pcb and stats info.
-            - `generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
-            - `hide_pcb_info`: [boolean=false] Hide project information.
-            - `hide_stats_info`: [boolean=false] Hide statistics information.
-            - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
-            - `logo`: [string|boolean=''] PNG file to use as logo, use false to remove.
-            - `style`: [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
-                       Or you can provide a CSS file name. Please use .css as file extension..
-            - `title`: [string='KiBot Bill of Materials'] BoM title.
-        - `ignore_dnf`: [boolean=true] Exclude DNF (Do Not Fit) components.
         - `int_qtys`: [boolean=true] Component quantities are always expressed as integers. Using the ceil() function.
         - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
         - `merge_both_blank`: [boolean=true] When creating groups two components with empty/missing field will be interpreted as with the same value.
@@ -1306,63 +1356,19 @@ Next time you need this list just use an alias, like this:
                          the field `part` are excluded.
         - `no_distributors`: [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`.
         - `normalize_locale`: [boolean=false] When normalizing values use the locale decimal point.
-        - `normalize_values`: [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.
-        - `number`: [number=1] Number of boards to build (components multiplier).
-        - `output`: [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options.
         - `ref_id`: [string=''] A prefix to add to all the references from this project. Used for multiple projects.
         - `ref_separator`: [string=' '] Separator used for the list of references.
-        - `sort_style`: [string='type_value'] [type_value,type_value_ref,ref] Sorting criteria.
         - `source_by_id`: [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name.
-        - `units`: [string='millimeters'] [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
-                   Affected by global options.
         - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS).
         - `variant`: [string=''] Board variant, used to determine which components
                      are output to the BoM..
-        - `xlsx`: [dict] Options for the XLSX format.
-          * Valid keys:
-            - `col_colors`: [boolean=true] Use colors to show the field type.
-            - `datasheet_as_link`: [string=''] Column with links to the datasheet.
-            - `digikey_link`: [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page.
-            - `extra_info`: [string|list(string)=''] Information to put after the title and before the pcb and stats info.
-            - `generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
-            - `hide_pcb_info`: [boolean=false] Hide project information.
-            - `hide_stats_info`: [boolean=false] Hide statistics information.
-            - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
-            - `kicost`: [boolean=false] Enable KiCost worksheet creation.
-            - `kicost_api_disable`: [string|list(string)=''] List of KiCost APIs to disable.
-            - `kicost_api_enable`: [string|list(string)=''] List of KiCost APIs to enable.
-            - `kicost_config`: [string=''] KiCost configuration file. It contains the keys for the different distributors APIs.
-                               The regular KiCost config is used when empty.
-            - `kicost_dist_desc`: [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component.
-            - `logo`: [string|boolean=''] PNG file to use as logo, use false to remove.
-            - `logo_scale`: [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
-            - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
-            - `specs`: [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
-                       Works with only some KiCost APIs.
-            - `specs_columns`: [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
-                               'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
-                               Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
-                               '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'.
-              * Valid keys:
-                - `comment`: [string=''] Used as explanation for this column. The XLSX output uses it.
-                - `field`: [string=''] Name of the field to use for this column.
-                - `join`: [list(dict)|list(string)|string=''] List of fields to join to this column.
-                  * Valid keys:
-                    - `field`: [string=''] Name of the field.
-                    - `text`: [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
-                              Any space to separate it should be added in the text.
-                              Use \n for newline and \t for tab.
-                    - `text_after`: [string=''] Text to add after the field content. Will be added only if the field isn't empty.
-                                    Any space to separate it should be added in the text.
-                                    Use \n for newline and \t for tab.
-                    - `text_before`: [string=''] Text to add before the field content. Will be added only if the field isn't empty.
-                                     Any space to separate it should be added in the text.
-                                     Use \n for newline and \t for tab.
-                - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
-                - `name`: [string=''] Name to display in the header. The field is used when empty.
-            - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
-            - `title`: [string='KiBot Bill of Materials'] BoM title.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1373,32 +1379,33 @@ Next time you need this list just use an alias, like this:
   * Description: Generates a compressed file containing output files.
                  This is used to generate groups of files in compressed file format.
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `compress` output.
+      * Valid keys:
+        - **`files`**: [list(dict)] Which files will be included.
+          * Valid keys:
+            - **`from_output`**: [string=''] Collect files from the selected output.
+                                 When used the `source` option is ignored.
+            - **`source`**: [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
+                            By default this pattern is applied to the output dir specified with `-d` command line option.
+                            See the `from_cwd` option.
+            - `dest`: [string=''] Destination directory inside the archive, empty means the same of the file.
+            - `filter`: [string='.*'] A regular expression that source files must match.
+            - `from_cwd`: [boolean=false] Use the current working directory instead of the dir specified by `-d`.
+        - **`format`**: [string='ZIP'] [ZIP,TAR,RAR] Output file format.
+        - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
+        - `compression`: [string='auto'] [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one.
+        - `move_files`: [boolean=false] Move the files to the archive. In other words: remove the files after adding them to the archive.
+        - *remove_files*: Alias for move_files.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `compress` output.
-      * Valid keys:
-        - `compression`: [string='auto'] [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one.
-        - `files`: [list(dict)] Which files will be included.
-          * Valid keys:
-            - `dest`: [string=''] Destination directory inside the archive, empty means the same of the file.
-            - `filter`: [string='.*'] A regular expression that source files must match.
-            - `from_cwd`: [boolean=false] Use the current working directory instead of the dir specified by `-d`.
-            - `from_output`: [string=''] Collect files from the selected output.
-                             When used the `source` option is ignored.
-            - `source`: [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
-                        By default this pattern is applied to the output dir specified with `-d` command line option.
-                        See the `from_cwd` option.
-        - `format`: [string='ZIP'] [ZIP,TAR,RAR] Output file format.
-        - `move_files`: [boolean=false] Move the files to the archive. In other words: remove the files after adding them to the archive.
-        - `output`: [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
-        - *remove_files*: Alias for move_files.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1408,27 +1415,28 @@ Next time you need this list just use an alias, like this:
   * Type: `download_datasheets`
   * Description: Downloads the datasheets for the project
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `download_datasheets` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `download_datasheets` output.
       * Valid keys:
+        - **`field`**: [string='Datasheet'] Name of the field containing the URL.
         - `dnf`: [boolean=false] Include the DNF components.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `field`: [string='Datasheet'] Name of the field containing the URL.
         - `link_repeated`: [boolean=true] Instead of download things we already downloaded use symlinks.
         - `output`: [string='${VALUE}.pdf'] Name used for the downloaded datasheet.
                     ${FIELD} will be replaced by the FIELD content.
         - `repeated`: [boolean=false] Download URLs that we already downloaded.
                       It only makes sense if the `output` field makes their output different.
         - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1439,23 +1447,21 @@ Next time you need this list just use an alias, like this:
   * Description: Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
-                List of PCB layers to plot.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                    List of PCB layers to plot.
       * Valid keys:
         - `description`: [string=''] A description for the layer, for documentation purposes.
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `dxf` output.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `dxf` output.
       * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                      The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -1472,17 +1478,20 @@ Next time you need this list just use an alias, like this:
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
         - `metric_units`: [boolean=false] Use mm instead of inches.
-        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
-                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `polygon_mode`: [boolean=true] Plot using the contour, instead of the center line.
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1494,29 +1503,24 @@ Next time you need this list just use an alias, like this:
                  You can create a map file for documentation purposes.
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `excellon` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `excellon` output.
       * Valid keys:
+        - **`metric_units`**: [boolean=true] Use metric units instead of inches.
+        - **`mirror_y_axis`**: [boolean=false] Invert the Y axis.
+        - **`output`**: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
+        - **`pth_and_npth_single_file`**: [boolean=true] Generate one file for both, plated holes and non-plated holes, instead of two separated files.
         - `left_digits`: [number=0] number of digits for integer part of coordinates (0 is auto).
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
-            - `output`: [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
+            - **`output`**: [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
             - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
-        - `metric_units`: [boolean=true] Use metric units instead of inches.
         - `minimal_header`: [boolean=false] Use a minimal header in the file.
-        - `mirror_y_axis`: [boolean=false] Invert the Y axis.
         - `npth_id`: [string] Force this replacement for %i when generating NPTH files.
-        - `output`: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
-        - `pth_and_npth_single_file`: [boolean=true] Generate one file for both, plated holes and non-plated holes, instead of two separated files.
         - `pth_id`: [string] Force this replacement for %i when generating PTH and unified files.
         - `report`: [dict|string] Name of the drill report. Not generated unless a name is specified.
           * Valid keys:
@@ -1526,6 +1530,12 @@ Next time you need this list just use an alias, like this:
         - `route_mode_for_oval_holes`: [boolean=true] Use route command for oval holes (G00), otherwise use G85.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `zeros_format`: [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1537,23 +1547,24 @@ Next time you need this list just use an alias, like this:
                  This format is interpreted by some CADCAM software and helps certain
                  manufacturers
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `gencad` output.
+      * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=gencad, %x=cad). Affected by global options.
+        - `aux_origin`: [boolean=false] Use auxiliary axis as origin.
+        - `flip_bottom_padstacks`: [boolean=false] Flip bottom footprint padstacks.
+        - `no_reuse_shapes`: [boolean=false] Generate a new shape for each footprint instance (Do not reuse shapes).
+        - `save_origin`: [boolean=false] Save the origin coordinates in the file.
+        - `unique_pin_names`: [boolean=false] Generate unique pin names.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `gencad` output.
-      * Valid keys:
-        - `aux_origin`: [boolean=false] Use auxiliary axis as origin.
-        - `flip_bottom_padstacks`: [boolean=false] Flip bottom footprint padstacks.
-        - `no_reuse_shapes`: [boolean=false] Generate a new shape for each footprint instance (Do not reuse shapes).
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=gencad, %x=cad). Affected by global options.
-        - `save_origin`: [boolean=false] Save the origin coordinates in the file.
-        - `unique_pin_names`: [boolean=false] Generate unique pin names.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1565,30 +1576,31 @@ Next time you need this list just use an alias, like this:
                  You can create a map file for documentation purposes.
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `gerb_drill` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `gerb_drill` output.
       * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
-            - `output`: [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
+            - **`output`**: [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
             - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
         - `npth_id`: [string] Force this replacement for %i when generating NPTH files.
-        - `output`: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
         - `pth_id`: [string] Force this replacement for %i when generating PTH and unified files.
         - `report`: [dict|string] Name of the drill report. Not generated unless a name is specified.
           * Valid keys:
             - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1599,25 +1611,27 @@ Next time you need this list just use an alias, like this:
   * Description: This is the main fabrication format for the PCB.
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
-                List of PCB layers to plot.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                    List of PCB layers to plot.
       * Valid keys:
         - `description`: [string=''] A description for the layer, for documentation purposes.
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `gerber` output.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `gerber` output.
       * Valid keys:
-        - `create_gerber_job_file`: [boolean=true] Creates a file with information about all the generated gerbers.
-                                    You can use it in gerbview to load all gerbers at once.
+        - **`create_gerber_job_file`**: [boolean=true] Creates a file with information about all the generated gerbers.
+                                        You can use it in gerbview to load all gerbers at once.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                      The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+        - **`subtract_mask_from_silk`**: [boolean=false] Subtract the solder mask from the silk screen.
+        - **`use_gerber_net_attributes`**: [boolean=true] Include netlist metadata.
+        - **`use_gerber_x2_attributes`**: [boolean=true] Use the extended X2 format (otherwise use X1 formerly RS-274X).
+        - **`use_protel_extensions`**: [boolean=false] Use legacy Protel file extensions.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -1636,19 +1650,18 @@ Next time you need this list just use an alias, like this:
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
         - `line_width`: [number=0.1] [0.02,2] Line_width for objects without width [mm] (KiCad 5).
-        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
-                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
-        - `subtract_mask_from_silk`: [boolean=false] Subtract the solder mask from the silk screen.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
-        - `use_gerber_net_attributes`: [boolean=true] Include netlist metadata.
-        - `use_gerber_x2_attributes`: [boolean=true] Use the extended X2 format (otherwise use X1 formerly RS-274X).
-        - `use_protel_extensions`: [boolean=false] Use legacy Protel file extensions.
         - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1659,23 +1672,21 @@ Next time you need this list just use an alias, like this:
   * Description: Exports the PCB for plotters and laser printers.
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
-                List of PCB layers to plot.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                    List of PCB layers to plot.
       * Valid keys:
         - `description`: [string=''] A description for the layer, for documentation purposes.
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `hpgl` output.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `hpgl` output.
       * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                      The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -1692,19 +1703,22 @@ Next time you need this list just use an alias, like this:
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
         - `mirror_plot`: [boolean=false] Plot mirrored.
-        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `pen_number`: [number=1] [1,16] Pen number.
         - `pen_speed`: [number=20] [1,99] Pen speed.
         - `pen_width`: [number=15] [0,100] Pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
-                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `scaling`: [number=0] Scale factor (0 means autoscaling).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1716,23 +1730,26 @@ Next time you need this list just use an alias, like this:
                  For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
                  This output is what you get from the InteractiveHtmlBom plug-in (pcbnew).
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `ibom` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `ibom` output.
       * Valid keys:
+        - **`board_rotation`**: [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
+        - **`bom_view`**: [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view.
+        - **`extra_fields`**: [string=''] Comma separated list of extra fields to pull from netlist or xml file.
+                              Using 'X,Y' is a shortcut for `show_fields` and `group_fields` with values 'Value,Footprint,X,Y'.
+        - **`include_tracks`**: [boolean=false] Include track/zone information in output. F.Cu and B.Cu layers only.
+        - **`layer_view`**: [string='FB'] [F,FB,B] Default layer view.
+        - **`normalize_field_case`**: [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
+        - **`show_fields`**: [string=''] Comma separated list of fields to show in the BOM.
+                             Value and Footprint are displayed when nothing is specified.
         - `blacklist`: [string=''] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
                        IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `blacklist_empty_val`: [boolean=false] Blacklist components with empty value.
                                  IBoM option, avoid using in conjunction with KiBot variants/filters.
-        - `board_rotation`: [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
-        - `bom_view`: [string='left-right'] [bom-only,left-right,top-bottom] Default BOM view.
         - `checkboxes`: [string='Sourced,Placed'] Comma separated list of checkbox columns.
         - `dark_mode`: [boolean=false] Default to dark mode.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
@@ -1743,16 +1760,12 @@ Next time you need this list just use an alias, like this:
                        IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `extra_data_file`: [string=''] Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
                              Leave it blank for most uses, data will be extracted from the PCB.
-        - `extra_fields`: [string=''] Comma separated list of extra fields to pull from netlist or xml file.
-                          Using 'X,Y' is a shortcut for `show_fields` and `group_fields` with values 'Value,Footprint,X,Y'.
         - `group_fields`: [string=''] Comma separated list of fields that components will be grouped by.
                           Value and Footprint are used when nothing is specified.
         - `hide_pads`: [boolean=false] Hide footprint pads by default.
         - `hide_silkscreen`: [boolean=false] Hide silkscreen by default.
         - `highlight_pin1`: [boolean=false] Highlight pin1 by default.
         - `include_nets`: [boolean=false] Include netlist information in output..
-        - `include_tracks`: [boolean=false] Include track/zone information in output. F.Cu and B.Cu layers only.
-        - `layer_view`: [string='FB'] [F,FB,B] Default layer view.
         - `name_format`: [string='ibom'] Output file name format supports substitutions:
                          %f : original pcb file name without extension.
                          %p : pcb/project title from pcb metadata.
@@ -1768,11 +1781,7 @@ Next time you need this list just use an alias, like this:
                                   IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `no_compression`: [boolean=false] Disable compression of pcb data.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
-        - `normalize_field_case`: [boolean=false] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
         - `show_fabrication`: [boolean=false] Show fabrication layer by default.
-        - `show_fields`: [string=''] Comma separated list of fields to show in the BOM.
-                         Value and Footprint are displayed when nothing is specified.
         - `sort_order`: [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once.
         - `variant`: [string=''] Board variant to apply.
                      Avoid using it in conjunction with IBoM native filtering options.
@@ -1782,6 +1791,12 @@ Next time you need this list just use an alias, like this:
                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1795,26 +1810,31 @@ Next time you need this list just use an alias, like this:
                  We recommend using the `bom` output instead.
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `kibom` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `kibom` output.
       * Valid keys:
+        - **`format`**: [string='HTML'] [HTML,CSV,XML,XLSX] Format for the BoM.
+        - **`number`**: [number=1] Number of boards to build (components multiplier).
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=bom). Affected by global options.
         - `conf`: [string|dict] BoM configuration file, relative to PCB.
                   You can also define the configuration here, will be stored in `config.kibom.ini`.
           * Valid keys:
-            - `columns`: [list(dict)|list(string)] List of columns to display.
-                         Can be just the name of the field.
+            - **`columns`**: [list(dict)|list(string)] List of columns to display.
+                             Can be just the name of the field.
               * Valid keys:
-                - `field`: [string=''] Name of the field to use for this column.
+                - **`field`**: [string=''] Name of the field to use for this column.
+                - **`name`**: [string=''] Name to display in the header. The field is used when empty.
                 - `join`: [list(string)|string=''] List of fields to join to this column.
-                - `name`: [string=''] Name to display in the header. The field is used when empty.
+            - **`fit_field`**: [string='Config'] Field name used to determine if a particular part is to be fitted (also DNC and variants).
+            - **`group_fields`**: [list(string)] List of fields used for sorting individual components into groups.
+                                  Components which match (comparing *all* fields) will be grouped together.
+                                  Field names are case-insensitive.
+                                  If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used.
+            - **`ignore_dnf`**: [boolean=true] Exclude DNF (Do Not Fit) components.
+            - **`number_rows`**: [boolean=true] First column is the row number.
             - `component_aliases`: [list(list(string))] A series of values which are considered to be equivalent for the part name.
                                    Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
                                    will ensure the equivalent capacitor symbols can be grouped together.
@@ -1852,16 +1872,10 @@ Next time you need this list just use an alias, like this:
                 - *field*: Alias for column.
                 - `regex`: [string=''] Regular expression to match.
                 - *regexp*: Alias for regex.
-            - `fit_field`: [string='Config'] Field name used to determine if a particular part is to be fitted (also DNC and variants).
             - `group_connectors`: [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector.
-            - `group_fields`: [list(string)] List of fields used for sorting individual components into groups.
-                              Components which match (comparing *all* fields) will be grouped together.
-                              Field names are case-insensitive.
-                              If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used.
             - `hide_headers`: [boolean=false] Hide column headers.
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `html_generate_dnf`: [boolean=true] Generate a separated section for DNF (Do Not Fit) components (HTML only).
-            - `ignore_dnf`: [boolean=true] Exclude DNF (Do Not Fit) components.
             - `include_only`: [list(dict)] A series of regular expressions used to select included parts.
                               If there are any regex defined here, only components that match against ANY of them will be included.
                               Column names are case-insensitive.
@@ -1872,19 +1886,21 @@ Next time you need this list just use an alias, like this:
                 - `regex`: [string=''] Regular expression to match.
                 - *regexp*: Alias for regex.
             - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
-            - `number_rows`: [boolean=true] First column is the row number.
             - `ref_separator`: [string=' '] Separator used for the list of references.
             - `test_regex`: [boolean=true] Each component group will be tested against a number of regular-expressions (see ``)..
             - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
-        - `format`: [string='HTML'] [HTML,CSV,XML,XLSX] format for the BoM.
-        - `number`: [number=1] Number of boards to build (components multiplier).
-        - `output`: [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options.
         - `separator`: [string=','] CSV Separator.
         - `variant`: [string=''] Board variant(s), used to determine which components
                      are output to the BoM. To specify multiple variants,
                      with a BOM file exported for each variant, separate
                      variants with the ';' (semicolon) character.
                      This isn't related to the KiBot concept of variants.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1896,26 +1912,25 @@ Next time you need this list just use an alias, like this:
                  For more information: https://github.com/INTI-CMNB/KiCost
                  This output is what you get from the KiCost plug-in (eeschema).
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `kicost` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `kicost` output.
       * Valid keys:
+        - *board_qty*: Alias for number.
+        - **`currency`**: [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR).
+        - **`distributors`**: [string|list(string)] Include this distributors list. Default is all the available.
+        - **`no_distributors`**: [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`.
+        - **`no_price`**: [boolean=false] Do not look for components price. For testing purposes.
+        - **`number`**: [number=100] Number of boards to build (components multiplier).
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=kicost, %x=xlsx). Affected by global options.
         - `aggregate`: [list(dict)] Add components from other projects.
           * Valid keys:
             - *board_qty*: Alias for number.
-            - `file`: [string=''] Name of the XML to aggregate.
-            - `number`: [number=100] Number of boards to build (components multiplier).
+            - **`file`**: [string=''] Name of the XML to aggregate.
+            - **`number`**: [number=100] Number of boards to build (components multiplier).
             - `variant`: [string=' '] Variant for this project.
-        - *board_qty*: Alias for number.
-        - `currency`: [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR).
-        - `distributors`: [string|list(string)] Include this distributors list. Default is all the available.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
                         Don't use the `kicost_variant` when using internal variants/filters.
@@ -1925,10 +1940,6 @@ Next time you need this list just use an alias, like this:
         - `ignore_fields`: [string|list(string)] List of fields to be ignored.
         - `kicost_variant`: [string=''] Regular expression to match the variant field (KiCost option, not internal variants).
         - `no_collapse`: [boolean=false] Do not collapse the part references (collapse=R1-R4).
-        - `no_distributors`: [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`.
-        - `no_price`: [boolean=false] Do not look for components price. For testing purposes.
-        - `number`: [number=100] Number of boards to build (components multiplier).
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=kicost, %x=xlsx). Affected by global options.
         - `show_cat_url`: [boolean=false] Include the catalogue links in the catalogue code.
         - `split_extra_fields`: [string|list(string)] Declare part fields to include in multipart split process.
         - `translate_fields`: [list(dict)] Fields to rename (KiCost option, not internal filters).
@@ -1937,6 +1948,12 @@ Next time you need this list just use an alias, like this:
             - `name`: [string=''] New name.
         - `variant`: [string=''] Board variant to apply.
                      Don't use the `kicost_variant` when using internal variants/filters.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1946,19 +1963,20 @@ Next time you need this list just use an alias, like this:
   * Type: `navigate_results`
   * Description: Generates a web page to navigate the generated outputs
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `navigate_results` output.
+      * Valid keys:
+        - **`link_from_root`**: [string=''] The name of a file to create at the main output directory linking to the home page.
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `navigate_results` output.
-      * Valid keys:
-        - `link_from_root`: [string=''] The name of a file to create at the main output directory linking to the home page.
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1970,21 +1988,22 @@ Next time you need this list just use an alias, like this:
                  The netlist can be generated in the classic format and in IPC-D-356 format,
                  useful for board testing
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `netlist` output.
+      * Valid keys:
+        - **`format`**: [string='classic'] [classic,ipc] The `classic` format is the KiCad internal format, and is generated
+                        from the schematic. The `ipc` format is the IPC-D-356 format, useful for PCB
+                        testing, is generated from the PCB.
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=netlist/IPC-D-356, %x=net/d356). Affected by global options.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `netlist` output.
-      * Valid keys:
-        - `format`: [string='classic'] [classic,ipc] The `classic` format is the KiCad internal format, and is generated
-                    from the schematic. The `ipc` format is the IPC-D-356 format, useful for PCB
-                    testing, is generated from the PCB.
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=netlist/IPC-D-356, %x=net/d356). Affected by global options.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1997,32 +2016,58 @@ Next time you need this list just use an alias, like this:
                  KiCad 5: including the frame is slow.
                  KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `pcb_print` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `pcb_print` output.
       * Valid keys:
+        - **`color_theme`**: [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
+                             To use the KiCad 6 default colors select `_builtin_default`.
+                             Usually user colors are stored as `user`, but you can give it another name.
+        - **`force_edge_cuts`**: [boolean=false] Add the `Edge.Cuts` to all the pages.
+        - **`format`**: [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
+                        Note that for PS you need `ghostscript` which isn't part of the default docker images.
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg). Affected by global options.
+        - *output_name*: Alias for output.
+        - **`pages`**: [list(dict)] List of pages to include in the output document.
+                       Each page contains one or more layers of the PCB.
+          * Valid keys:
+            - **`layers`**: [list(dict)|list(string)|string] List of layers printed in this page.
+                            Order is important, the last goes on top.
+              * Valid keys:
+                - `color`: [string=''] Color used for this layer.
+                - `description`: [string=''] A description for the layer, for documentation purposes.
+                - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+                - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+                - `plot_footprint_refs`: [boolean=true] Include the footprint references.
+                - `plot_footprint_values`: [boolean=true] Include the footprint values.
+                - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+            - **`scaling`**: [number=1.0] Scale factor (0 means autoscaling).
+            - **`sort_layers`**: [boolean=false] Try to sort the layers in the same order that uses KiCad for printing.
+            - `colored_holes`: [boolean=true] Change the drill holes to be colored instead of white.
+            - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
+            - `holes_color`: [string='#000000'] Color used for the holes when `colored_holes` is enabled.
+            - `line_width`: [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5).
+            - `mirror`: [boolean=false] Print mirrored (X axis inverted).
+            - `monochrome`: [boolean=false] Print in gray scale.
+            - `negative_plot`: [boolean=false] Invert black and white. Only useful for a single layer.
+            - `sheet`: [string='Assembly'] Text to use for the `sheet` in the title block.
+            - `sheet_reference_color`: [string=''] Color to use for the frame and title block.
+            - `tent_vias`: [boolean=true] Cover the vias.
+            - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                       If it starts with `+` the text is concatenated.
+        - **`plot_sheet_reference`**: [boolean=true] Include the title-block (worksheet, frame, etc.).
+        - **`scaling`**: [number=1.0] Default scale factor (0 means autoscaling).
         - `add_background`: [boolean=false] Add a background to the pages, see `background_color`.
         - `background_color`: [string='#FFFFFF'] Color for the background when `add_background` is enabled.
         - `background_image`: [string=''] Background image, must be an SVG, only when `add_background` is enabled.
         - `blind_via_color`: [string=''] Color used for blind/buried `colored_vias`.
-        - `color_theme`: [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
-                         To use the KiCad 6 default colors select `_builtin_default`.
-                         Usually user colors are stored as `user`, but you can give it another name.
         - `colored_pads`: [boolean=true] Plot through-hole in a different color. Like KiCad GUI does.
         - `colored_vias`: [boolean=true] Plot vias in a different color. Like KiCad GUI does.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
-        - `force_edge_cuts`: [boolean=false] Add the `Edge.Cuts` to all the pages.
-        - `format`: [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
-                    Note that for PS you need `ghostscript` which isn't part of the default docker images.
         - `frame_plot_mechanism`: [string='internal'] [gui,internal,plot] Plotting the frame from Python is problematic.
                                   This option selects a workaround strategy.
                                   gui: uses KiCad GUI to do it. Is slow but you get the correct frame.
@@ -2034,47 +2079,22 @@ Next time you need this list just use an alias, like this:
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
         - `keep_temporal_files`: [boolean=false] Store the temporal page and layer files in the output dir and don't delete them.
         - `micro_via_color`: [string=''] Color used for micro `colored_vias`.
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg). Affected by global options.
-        - *output_name*: Alias for output.
         - `pad_color`: [string=''] Color used for `colored_pads`.
-        - `pages`: [list(dict)] List of pages to include in the output document.
-                   Each page contains one or more layers of the PCB.
-          * Valid keys:
-            - `colored_holes`: [boolean=true] Change the drill holes to be colored instead of white.
-            - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
-            - `holes_color`: [string='#000000'] Color used for the holes when `colored_holes` is enabled.
-            - `layers`: [list(dict)|list(string)|string] List of layers printed in this page.
-                        Order is important, the last goes on top.
-              * Valid keys:
-                - `color`: [string=''] Color used for this layer.
-                - `description`: [string=''] A description for the layer, for documentation purposes.
-                - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
-                - `layer`: [string=''] Name of the layer. As you see it in KiCad.
-                - `plot_footprint_refs`: [boolean=true] Include the footprint references.
-                - `plot_footprint_values`: [boolean=true] Include the footprint values.
-                - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
-            - `line_width`: [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5).
-            - `mirror`: [boolean=false] Print mirrored (X axis inverted).
-            - `monochrome`: [boolean=false] Print in gray scale.
-            - `negative_plot`: [boolean=false] Invert black and white. Only useful for a single layer.
-            - `scaling`: [number=1.0] Scale factor (0 means autoscaling).
-            - `sheet`: [string='Assembly'] Text to use for the `sheet` in the title block.
-            - `sheet_reference_color`: [string=''] Color to use for the frame and title block.
-            - `sort_layers`: [boolean=false] Try to sort the layers in the same order that uses KiCad for printing.
-            - `tent_vias`: [boolean=true] Cover the vias.
-            - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
-                       If it starts with `+` the text is concatenated.
-        - `plot_sheet_reference`: [boolean=true] Include the title-block (worksheet, frame, etc.).
         - `png_width`: [number=1280] Width of the PNG in pixels.
         - `realistic_solder_mask`: [boolean=true] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
                                    In order to get a good looking select a color with transparency, i.e. '#14332440'.
                                    PcbDraw must be installed in order to use this option.
-        - `scaling`: [number=1.0] Default scale factor (0 means autoscaling).
         - `sheet_reference_layout`: [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
         - `via_color`: [string=''] Color used for through-hole `colored_vias`.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2086,46 +2106,47 @@ Next time you need this list just use an alias, like this:
                  Uses configurable colors.
                  Can also render the components if the 2D models are available
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `pcbdraw` output.
+      * Valid keys:
+        - **`bottom`**: [boolean=false] Render the bottom side of the board (default is top side).
+        - **`format`**: [string='svg'] [svg,png,jpg] Output format. Only used if no `output` is specified.
+        - **`mirror`**: [boolean=false] Mirror the board.
+        - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated file. Affected by global options.
+        - **`show_components`**: [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
+                                 The default is none.
+        - **`style`**: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
+          * Valid keys:
+            - **`board`**: [string='#208b47'] Color for the board without copper (covered by solder mask).
+            - **`clad`**: [string='#cabb3e'] Color for the PCB core (not covered by solder mask).
+            - **`copper`**: [string='#285e3a'] Color for the copper zones (covered by solder mask).
+            - **`outline`**: [string='#000000'] Color for the outline.
+            - **`pads`**: [string='#8b898c'] Color for the exposed pads (metal finish).
+            - **`silk`**: [string='#d5dce4'] Color for the silk screen.
+            - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
+            - `highlight_padding`: [number=1.5] [0,1000] how much the highlight extends around the component [mm].
+            - `highlight_style`: [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style.
+            - `vcut`: [string='#bf2600'] Color for the V-CUTS.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
+        - `highlight`: [list(string)=[]] List of components to highlight.
+        - `libs`: [list(string)=[]] List of libraries.
+        - `no_drillholes`: [boolean=false] Do not make holes transparent.
+        - `placeholder`: [boolean=false] Show placeholder for missing components.
+        - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
+        - `variant`: [string=''] Board variant to apply.
+        - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
+        - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `pcbdraw` output.
-      * Valid keys:
-        - `bottom`: [boolean=false] Render the bottom side of the board (default is top side).
-        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
-                        A short-cut to use for simple cases where a variant is an overkill.
-        - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
-        - `format`: [string='svg'] [svg,png,jpg] Output format. Only used if no `output` is specified.
-        - `highlight`: [list(string)=[]] List of components to highlight.
-        - `libs`: [list(string)=[]] List of libraries.
-        - `mirror`: [boolean=false] Mirror the board.
-        - `no_drillholes`: [boolean=false] Do not make holes transparent.
-        - `output`: [string='%f-%i%I%v.%x'] Name for the generated file. Affected by global options.
-        - `placeholder`: [boolean=false] Show placeholder for missing components.
-        - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
-        - `show_components`: [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
-                             The default is none.
-        - `style`: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
-          * Valid keys:
-            - `board`: [string='#208b47'] color for the board without copper (covered by solder mask).
-            - `clad`: [string='#cabb3e'] color for the PCB core (not covered by solder mask).
-            - `copper`: [string='#285e3a'] color for the copper zones (covered by solder mask).
-            - `highlight_on_top`: [boolean=false] highlight over the component (not under).
-            - `highlight_padding`: [number=1.5] [0,1000] how much the highlight extends around the component [mm].
-            - `highlight_style`: [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style.
-            - `outline`: [string='#000000'] color for the outline.
-            - `pads`: [string='#8b898c'] color for the exposed pads (metal finish).
-            - `silk`: [string='#d5dce4'] color for the silk screen.
-            - `vcut`: [string='#bf2600'] color for the V-CUTS.
-        - `variant`: [string=''] Board variant to apply.
-        - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
-        - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2138,38 +2159,21 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
-      * Valid keys:
-        - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
-                     Use ${filename(LAYER)} for the file corresponding to LAYER.
-        - `output`: [string='Custom_report.txt'] File name for the custom report.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
-                    A short-cut to use for simple cases where a variant is an overkill.
-    - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
-    - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
-    - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
-    - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
-    - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
-                                 The replacement pattern can contain %n for the inner layer number and %N for the layer number.
-                                 Example '.g%n'.
-    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
-                List of PCB layers to plot.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                    List of PCB layers to plot.
       * Valid keys:
         - `description`: [string=''] A description for the layer, for documentation purposes.
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `pdf` output.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `pdf` output.
       * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                      The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -2188,20 +2192,38 @@ Next time you need this list just use an alias, like this:
         - `line_width`: [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5).
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `negative_plot`: [boolean=false] Invert black and white.
-        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
-                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
-    - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+    - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+    - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
+      * Valid keys:
+        - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
+                     Use ${filename(LAYER)} for the file corresponding to LAYER.
+        - `output`: [string='Custom_report.txt'] File name for the custom report.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                    A short-cut to use for simple cases where a variant is an overkill.
+    - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+    - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
+    - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
+    - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+    - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
+                                 The replacement pattern can contain %n for the inner layer number and %N for the layer number.
+                                 Example '.g%n'.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `plot_footprint_refs`: [boolean=true] Include the footprint references.
     - `plot_footprint_values`: [boolean=true] Include the footprint values.
-    - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
-                              The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
@@ -2216,23 +2238,21 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'File/Print' menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
-                List of PCB layers to include in the PDF.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                    List of PCB layers to include in the PDF.
       * Valid keys:
         - `description`: [string=''] A description for the layer, for documentation purposes.
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `pdf_pcb_print` output.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `pdf_pcb_print` output.
       * Valid keys:
+        - **`plot_sheet_reference`**: [boolean=true] Include the title-block.
+        - **`scaling`**: [number=1.0] Scale factor (0 means autoscaling).
+        - **`separated`**: [boolean=false] Print layers in separated pages.
         - `color_theme`: [string='_builtin_classic'] Selects the color theme. Onlyu applies to KiCad 6.
                          To use the KiCad 6 default colors select `_builtin_default`.
                          Usually user colors are stored as `user`, but you can give it another name.
@@ -2247,12 +2267,15 @@ Next time you need this list just use an alias, like this:
         - `monochrome`: [boolean=false] Print in black and white.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
         - *output_name*: Alias for output.
-        - `plot_sheet_reference`: [boolean=true] Include the title-block.
-        - `scaling`: [number=1.0] Scale factor (0 means autoscaling).
-        - `separated`: [boolean=false] Print layers in separated pages.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2264,24 +2287,25 @@ Next time you need this list just use an alias, like this:
                  This is the main format to document your schematic.
                  This output is what you get from the 'File/Print' menu in eeschema.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `pdf_sch_print` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `pdf_sch_print` output.
       * Valid keys:
+        - **`frame`**: [boolean=true] Include the frame and title block.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `frame`: [boolean=true] Include the frame and title block.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2292,28 +2316,29 @@ Next time you need this list just use an alias, like this:
   * Description: Generates a new PDF from other outputs.
                  This is just a PDF joiner, using `pdfunite` from Poppler Utils.
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `pdfunite` output.
+      * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated PDF (%i=name of the output %x=pdf). Affected by global options.
+        - **`outputs`**: [list(dict)] Which files will be included.
+          * Valid keys:
+            - **`from_output`**: [string=''] Collect files from the selected output.
+                                 When used the `source` option is ignored.
+            - **`source`**: [string='*.pdf'] File names to add, wildcards allowed. Use ** for recursive match.
+                            By default this pattern is applied to the output dir specified with `-d` command line option.
+                            See the `from_cwd` option.
+            - `filter`: [string='.*\.pdf'] A regular expression that source files must match.
+            - `from_cwd`: [boolean=false] Use the current working directory instead of the dir specified by `-d`.
+        - `use_external_command`: [boolean=false] Use the `pdfunite` tool instead of PyPDF2 Python module.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `pdfunite` output.
-      * Valid keys:
-        - `output`: [string='%f-%i%I%v.%x'] Name for the generated PDF (%i=name of the output %x=pdf). Affected by global options.
-        - `outputs`: [list(dict)] Which files will be included.
-          * Valid keys:
-            - `filter`: [string='.*\.pdf'] A regular expression that source files must match.
-            - `from_cwd`: [boolean=false] Use the current working directory instead of the dir specified by `-d`.
-            - `from_output`: [string=''] Collect files from the selected output.
-                             When used the `source` option is ignored.
-            - `source`: [string='*.pdf'] File names to add, wildcards allowed. Use ** for recursive match.
-                        By default this pattern is applied to the output dir specified with `-d` command line option.
-                        See the `from_cwd` option.
-        - `use_external_command`: [boolean=false] Use the `pdfunite` tool instead of PyPDF2 Python module.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2324,32 +2349,33 @@ Next time you need this list just use an alias, like this:
   * Description: Generates the file with position information for the PCB components, used by the pick and place machine.
                  This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew.
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `position` output.
+      * Valid keys:
+        - **`format`**: [string='ASCII'] [ASCII,CSV] Format for the position file.
+        - **`only_smd`**: [boolean=true] Only include the surface mount components.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
+        - **`separate_files_for_front_and_back`**: [boolean=true] Generate two separated files, one for the top and another for the bottom.
+        - **`units`**: [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
+        - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer.
+        - `columns`: [list(dict)|list(string)] Which columns are included in the output.
+          * Valid keys:
+            - **`id`**: [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name.
+            - `name`: [string=''] Name to use in the output file. The id is used when empty.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `include_virtual`: [boolean=false] Include virtual components. For special purposes, not pick & place.
+        - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
+        - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `position` output.
-      * Valid keys:
-        - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer.
-        - `columns`: [list(dict)|list(string)] Which columns are included in the output.
-          * Valid keys:
-            - `id`: [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name.
-            - `name`: [string=''] Name to use in the output file. The id is used when empty.
-        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
-                        A short-cut to use for simple cases where a variant is an overkill.
-        - `format`: [string='ASCII'] [ASCII,CSV] Format for the position file.
-        - `include_virtual`: [boolean=false] Include virtual components. For special purposes, not pick & place.
-        - `only_smd`: [boolean=true] Only include the surface mount components.
-        - `output`: [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
-        - `separate_files_for_front_and_back`: [boolean=true] Generate two separated files, one for the top and another for the bottom.
-        - `units`: [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
-        - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
-        - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2361,24 +2387,23 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
-                List of PCB layers to plot.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                    List of PCB layers to plot.
       * Valid keys:
         - `description`: [string=''] A description for the layer, for documentation purposes.
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `ps` output.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `ps` output.
       * Valid keys:
-        - `a4_output`: [boolean=true] force A4 paper size.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                      The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+        - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
+        - `a4_output`: [boolean=true] Force A4 paper size.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -2397,20 +2422,22 @@ Next time you need this list just use an alias, like this:
         - `line_width`: [number=0.15] [0.02,2] For objects without width [mm] (KiCad 5).
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `negative_plot`: [boolean=false] Invert black and white.
-        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
-                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `scale_adjust_x`: [number=1.0] Fine grain adjust for the X scale (floating point multiplier).
         - `scale_adjust_y`: [number=1.0] Fine grain adjust for the Y scale (floating point multiplier).
-        - `scaling`: [number=1] Scale factor (0 means autoscaling).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
         - `width_adjust`: [number=0] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2426,29 +2453,30 @@ Next time you need this list just use an alias, like this:
                  - Use them in your schematic and PCB.
                  - To keep them updated add the `update_qr` preflight
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
     - `options`: [dict] Options for the `boardview` output.
       * Valid keys:
-        - `lib`: [string='QR'] Short name for the library.
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output (%i=qr, %x=lib). Affected by global options.
-        - `qrs`: [list(dict)] QR codes to include in the library.
+        - **`lib`**: [string='QR'] Short name for the library.
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=qr, %x=lib). Affected by global options.
+        - **`qrs`**: [list(dict)] QR codes to include in the library.
           * Valid keys:
+            - **`layer`**: [string='silk'] [silk,copper] Layer for the footprint.
+            - **`name`**: [string='QR'] Name for the symbol/footprint.
+            - **`size_pcb`**: [number=15] Size of the QR footprint.
+            - **`size_sch`**: [number=15] Size of the QR symbol.
+            - **`text`**: [string='%p %r'] Text to encode as QR.
             - `correction_level`: [string='low'] [low,medium,quartile,high] Error correction level.
-            - `layer`: [string='silk'] [silk,copper] Layer for the footprint.
-            - `name`: [string='QR'] Name for the symbol/footprint.
             - `pcb_negative`: [boolean=false] Generate a negative image for the PCB.
-            - `size_pcb`: [number=15] Size of the QR footprint.
-            - `size_sch`: [number=15] Size of the QR symbol.
             - `size_units`: [string='millimeters'] [millimeters,inches] Units used for the size.
-            - `text`: [string='%p %r'] Text to encode as QR.
         - `reference`: [string='QR'] The reference prefix.
         - `use_sch_dir`: [boolean=true] Generate the libs relative to the schematic/PCB dir.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
@@ -2460,55 +2488,56 @@ Next time you need this list just use an alias, like this:
   * Type: `render_3d`
   * Description: Exports the image generated by KiCad's 3D viewer.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `render_3d` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `render_3d` output.
       * Valid keys:
+        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+        - **`move_x`**: [number=0] Steps to move in the X axis, positive is to the right.
+                        Just like pressing the right arrow in the 3D viewer.
+        - **`move_y`**: [number=0] Steps to move in the Y axis, positive is up.
+                        Just like pressing the up arrow in the 3D viewer.
+        - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
+        - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated image file (%i='3D_$VIEW' %x='png'). Affected by global options.
+        - **`ray_tracing`**: [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`.
+        - **`rotate_x`**: [number=0] Steps to rotate around the X axis, positive is clockwise.
+                          Each step is currently 10 degrees. Only for KiCad 6.
+        - **`rotate_y`**: [number=0] Steps to rotate around the Y axis, positive is clockwise.
+                          Each step is currently 10 degrees. Only for KiCad 6.
+        - **`rotate_z`**: [number=0] Steps to rotate around the Z axis, positive is clockwise.
+                          Each step is currently 10 degrees. Only for KiCad 6.
+        - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
+        - **`zoom`**: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
+                      Same result as using the mouse wheel in the 3D viewer.
         - `background1`: [string='#66667F'] First color for the background gradient.
         - `background2`: [string='#CCCCE5'] Second color for the background gradient.
         - `board`: [string='#332B16'] Color for the board without copper or solder mask.
         - `copper`: [string='#8b898c'] Color for the copper.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `download`: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
         - `height`: [number=720] Image height (aprox.).
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
-        - `move_x`: [number=0] Steps to move in the X axis, positive is to the right.
-                    Just like pressing the right arrow in the 3D viewer.
-        - `move_y`: [number=0] Steps to move in the Y axis, positive is up.
-                    Just like pressing the up arrow in the 3D viewer.
         - `no_smd`: [boolean=false] Used to exclude 3D models for surface mount components.
         - `no_tht`: [boolean=false] Used to exclude 3D models for through hole components.
-        - `no_virtual`: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
         - `orthographic`: [boolean=false] Enable the orthographic projection mode (top view looks flat).
-        - `output`: [string='%f-%i%I%v.%x'] Name for the generated image file (%i='3D_$VIEW' %x='png'). Affected by global options.
-        - `ray_tracing`: [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`.
-        - `rotate_x`: [number=0] Steps to rotate around the X axis, positive is clockwise.
-                      Each step is currently 10 degrees. Only for KiCad 6.
-        - `rotate_y`: [number=0] Steps to rotate around the Y axis, positive is clockwise.
-                      Each step is currently 10 degrees. Only for KiCad 6.
-        - `rotate_z`: [number=0] Steps to rotate around the Z axis, positive is clockwise.
-                      Each step is currently 10 degrees. Only for KiCad 6.
         - `silk`: [string='#d5dce4'] Color for the silk screen.
         - `solder_mask`: [string='#208b47'] Color for the solder mask.
         - `solder_paste`: [string='#808080'] Color for the solder paste.
         - `variant`: [string=''] Board variant to apply.
-        - `view`: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
         - *wait_ray_tracing*: Alias for wait_render.
         - `wait_render`: [number=-600] How many seconds we must wait before capturing the render (ray tracing or normal).
                          Lamentably KiCad can save an unfinished image. Enlarge it if your image looks partially rendered.
                          Use negative values to enable the auto-detect using CPU load.
                          In this case the value is interpreted as a time-out..
         - `width`: [number=1280] Image width (aprox.).
-        - `zoom`: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
-                  Same result as using the mouse wheel in the 3D viewer.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2519,31 +2548,32 @@ Next time you need this list just use an alias, like this:
   * Description: Generates a report about the design.
                  Mainly oriented to be sent to the manufacturer or check PCB details.
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `report` output.
+      * Valid keys:
+        - **`convert_to`**: [string='pdf'] Target format for the report conversion. See `do_convert`.
+        - **`do_convert`**: [boolean=false] Run `Pandoc` to convert the report. Note that Pandoc must be installed.
+                            The conversion is done assuming the report is in `convert_from` format.
+                            The output file will be in `convert_to` format.
+                            The available formats depends on the `Pandoc` installation.
+                            In CI/CD environments: the `kicad_auto_test` docker image contains it.
+                            In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options.
+        - **`template`**: [string='full'] Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+                          Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
+        - `convert_from`: [string='markdown'] Original format for the report conversion. Current templates are `markdown`. See `do_convert`.
+        - `converted_output`: [string='%f-%i%I%v.%x'] Converted output file name (%i='report', %x=`convert_to`).
+                              Note that the extension should match the `convert_to` value. Affected by global options.
+        - `eurocircuits_class_target`: [string='10F'] Which Eurocircuits class are we aiming at.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `report` output.
-      * Valid keys:
-        - `convert_from`: [string='markdown'] Original format for the report conversion. Current templates are `markdown`. See `do_convert`.
-        - `convert_to`: [string='pdf'] Target format for the report conversion. See `do_convert`.
-        - `converted_output`: [string='%f-%i%I%v.%x'] Converted output file name (%i='report', %x=`convert_to`).
-                              Note that the extension should match the `convert_to` value. Affected by global options.
-        - `do_convert`: [boolean=false] Run `Pandoc` to convert the report. Note that Pandoc must be installed.
-                        The conversion is done assuming the report is in `convert_from` format.
-                        The output file will be in `convert_to` format.
-                        The available formats depends on the `Pandoc` installation.
-                        In CI/CD environments: the `kicad_auto_test` docker image contains it.
-                        In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`.
-        - `eurocircuits_class_target`: [string='10F'] Which Eurocircuits class are we aiming at.
-        - `output`: [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options.
-        - `template`: [string='full'] Name for one of the internal templates (full, full_svg, simple) or a custom template file.
-                      Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2555,20 +2585,21 @@ Next time you need this list just use an alias, like this:
                  This copy isn't intended for development.
                  Is just a tweaked version of the original where you can look at the results.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `sch_variant` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `sch_variant` output.
       * Valid keys:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2580,30 +2611,31 @@ Next time you need this list just use an alias, like this:
                  This is the most common 3D format for exchange purposes.
                  This output is what you get from the 'File/Export/STEP' menu in pcbnew.
   * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `step` output.
+      * Valid keys:
+        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+        - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
+        - **`origin`**: [string='grid'] Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
+                        The drill option uses the auxiliary reference defined by the user.
+                        You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
+        - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `metric_units`: [boolean=true] Use metric units instead of inches.
+        - `min_distance`: [number=-1] The minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
+        - `subst_models`: [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models.
+        - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `step` output.
-      * Valid keys:
-        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
-                        A short-cut to use for simple cases where a variant is an overkill.
-        - `download`: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
-        - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
-        - `metric_units`: [boolean=true] Use metric units instead of inches.
-        - `min_distance`: [number=-1] The minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
-        - `no_virtual`: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
-        - `origin`: [string='grid'] Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
-                    The drill option uses the auxiliary reference defined by the user.
-                    You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
-        - `output`: [string='%f-%i%I%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
-        - `subst_models`: [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models.
-        - `variant`: [string=''] Board variant to apply.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2616,23 +2648,21 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
-                List of PCB layers to plot.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                    List of PCB layers to plot.
       * Valid keys:
         - `description`: [string=''] A description for the layer, for documentation purposes.
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `svg` output.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `svg` output.
       * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                                      The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -2651,14 +2681,17 @@ Next time you need this list just use an alias, like this:
         - `line_width`: [number=0.25] [0.02,2] For objects without width [mm] (KiCad 5).
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `negative_plot`: [boolean=false] Invert black and white.
-        - `output`: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
-        - `plot_sheet_reference`: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
-                                  The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2670,23 +2703,23 @@ Next time you need this list just use an alias, like this:
                  This output is what you get from the 'File/Print' menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `layers`: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
-                List of PCB layers to include in the PDF.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                    List of PCB layers to include in the PDF.
       * Valid keys:
         - `description`: [string=''] A description for the layer, for documentation purposes.
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `pdf_pcb_print` output.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `pdf_pcb_print` output.
       * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=layers, %x=svg). Affected by global options.
+        - *output_name*: Alias for output.
+        - **`plot_sheet_reference`**: [boolean=true] Include the title-block.
+        - **`scaling`**: [number=1.0] Scale factor (0 means autoscaling).
+        - **`separated`**: [boolean=false] Print layers in separated pages.
         - `color_theme`: [string='_builtin_classic'] Selects the color theme. Onlyu applies to KiCad 6.
                          To use the KiCad 6 default colors select `_builtin_default`.
                          Usually user colors are stored as `user`, but you can give it another name.
@@ -2701,14 +2734,15 @@ Next time you need this list just use an alias, like this:
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
         - `mirror`: [boolean=false] Print mirrored (X axis inverted). ONLY for KiCad 6.
         - `monochrome`: [boolean=false] Print in black and white.
-        - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=layers, %x=svg). Affected by global options.
-        - *output_name*: Alias for output.
-        - `plot_sheet_reference`: [boolean=true] Include the title-block.
-        - `scaling`: [number=1.0] Scale factor (0 means autoscaling).
-        - `separated`: [boolean=false] Print layers in separated pages.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2719,24 +2753,25 @@ Next time you need this list just use an alias, like this:
   * Description: Exports the PCB. Suitable for printing.
                  This is a format to document your schematic.
   * Valid keys:
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `dir`: [string='./'] Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `name`: [string=''] Used to identify this particular output definition.
-    - `options`: [dict] Options for the `svg_sch_print` output.
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `svg_sch_print` output.
       * Valid keys:
+        - **`frame`**: [boolean=true] Include the frame and title block.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `frame`: [boolean=true] Include the frame and title block.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.

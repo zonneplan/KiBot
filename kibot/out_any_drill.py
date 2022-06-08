@@ -20,7 +20,7 @@ class DrillMap(Optionable):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Name for the map file, KiCad defaults if empty (%i='PTH_drill_map') """
+            """ *Name for the map file, KiCad defaults if empty (%i='PTH_drill_map') """
             self.type = 'pdf'
             """ [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map """
         super().__init__()
@@ -47,7 +47,7 @@ class AnyDrill(BaseOptions):
             """ [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                 Not generated unless a format is specified """
             self.output = GS.def_global_output
-            """ name for the drill file, KiCad defaults if empty (%i='PTH_drill') """
+            """ *name for the drill file, KiCad defaults if empty (%i='PTH_drill') """
             self.report = DrillReport
             """ [dict|string] Name of the drill report. Not generated unless a name is specified """
             self.pth_id = None

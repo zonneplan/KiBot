@@ -50,9 +50,9 @@ class KiBoMColumns(Optionable):
         self._unkown_is_error = True
         with document:
             self.field = ''
-            """ Name of the field to use for this column """
+            """ *Name of the field to use for this column """
             self.name = ''
-            """ Name to display in the header. The field is used when empty """
+            """ *Name to display in the header. The field is used when empty """
             self.join = Optionable
             """ [list(string)|string=''] List of fields to join to this column """
         self._field_example = 'Row'
@@ -94,13 +94,13 @@ class KiBoMConfig(Optionable):
         super().__init__()
         with document:
             self.ignore_dnf = True
-            """ Exclude DNF (Do Not Fit) components """
+            """ *Exclude DNF (Do Not Fit) components """
             self.html_generate_dnf = True
             """ Generate a separated section for DNF (Do Not Fit) components (HTML only) """
             self.use_alt = False
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
             self.number_rows = True
-            """ First column is the row number """
+            """ *First column is the row number """
             self.group_connectors = True
             """ Connectors with the same footprints will be grouped together, independent of the name of the connector """
             self.test_regex = True
@@ -108,7 +108,7 @@ class KiBoMConfig(Optionable):
             self.merge_blank_fields = True
             """ Component groups with blank fields will be merged into the most compatible group, where possible """
             self.fit_field = 'Config'
-            """ Field name used to determine if a particular part is to be fitted (also DNC and variants) """
+            """ *Field name used to determine if a particular part is to be fitted (also DNC and variants) """
             self.datasheet_as_link = ''
             """ Column with links to the datasheet (HTML only) """
             self.hide_headers = False
@@ -120,7 +120,7 @@ class KiBoMConfig(Optionable):
             self.digikey_link = Optionable
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only) """
             self.group_fields = GroupFields
-            """ [list(string)] List of fields used for sorting individual components into groups.
+            """ *[list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
                 Field names are case-insensitive.
                 If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used """
@@ -162,7 +162,7 @@ class KiBoMConfig(Optionable):
                 - column: Footprint
                 ..regex: 'fiducial' """
             self.columns = KiBoMColumns
-            """ [list(dict)|list(string)] List of columns to display.
+            """ *[list(dict)|list(string)] List of columns to display.
                 Can be just the name of the field """
 
     @staticmethod
@@ -327,7 +327,7 @@ class KiBoMOptions(BaseOptions):
     def __init__(self):
         with document:
             self.number = 1
-            """ Number of boards to build (components multiplier) """
+            """ *Number of boards to build (components multiplier) """
             self.variant = ''
             """ Board variant(s), used to determine which components
                 are output to the BoM. To specify multiple variants,
@@ -340,9 +340,9 @@ class KiBoMOptions(BaseOptions):
             self.separator = ','
             """ CSV Separator """
             self.output = GS.def_global_output
-            """ filename for the output (%i=bom)"""
+            """ *Filename for the output (%i=bom)"""
             self.format = 'HTML'
-            """ [HTML,CSV,XML,XLSX] format for the BoM """
+            """ *[HTML,CSV,XML,XLSX] Format for the BoM """
         super().__init__()
         self._expand_id = 'bom'
 
@@ -422,7 +422,7 @@ class KiBoM(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = KiBoMOptions
-            """ [dict] Options for the `kibom` output """
+            """ *[dict] Options for the `kibom` output """
         self._sch_related = True
 
     def get_dependencies(self):

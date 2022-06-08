@@ -42,7 +42,7 @@ class Any_SCH_PrintOptions(VariantOptions):
             self.monochrome = False
             """ Generate a monochromatic PDF """
             self.frame = True
-            """ Include the frame and title block """
+            """ *Include the frame and title block """
         super().__init__()
         self.add_to_doc('variant', "Not fitted components are crossed")
         self._expand_id = 'schematic'

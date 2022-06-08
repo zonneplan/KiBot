@@ -178,7 +178,7 @@ class PagesOptions(Optionable):
             self.monochrome = False
             """ Print in gray scale """
             self.scaling = None
-            """ [number=1.0] Scale factor (0 means autoscaling)"""
+            """ *[number=1.0] Scale factor (0 means autoscaling)"""
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
@@ -199,9 +199,9 @@ class PagesOptions(Optionable):
             self.holes_color = '#000000'
             """ Color used for the holes when `colored_holes` is enabled """
             self.sort_layers = False
-            """ Try to sort the layers in the same order that uses KiCad for printing """
+            """ *Try to sort the layers in the same order that uses KiCad for printing """
             self.layers = LayerOptions
-            """ [list(dict)|list(string)|string] List of layers printed in this page.
+            """ *[list(dict)|list(string)|string] List of layers printed in this page.
                 Order is important, the last goes on top """
         self._scaling_example = 1.0
 
@@ -234,17 +234,17 @@ class PCB_PrintOptions(VariantOptions):
             self.output_name = None
             """ {output} """
             self.output = GS.def_global_output
-            """ Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg)"""
+            """ *Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg)"""
             self.hide_excluded = False
             """ Hide components in the Fab layer that are marked as excluded by a variant """
             self._drill_marks = 'full'
             """ What to use to indicate the drill places, can be none, small or full (for real scale) """
             self.color_theme = '_builtin_classic'
-            """ Selects the color theme. Only applies to KiCad 6.
+            """ *Selects the color theme. Only applies to KiCad 6.
                 To use the KiCad 6 default colors select `_builtin_default`.
                 Usually user colors are stored as `user`, but you can give it another name """
             self.plot_sheet_reference = True
-            """ Include the title-block (worksheet, frame, etc.) """
+            """ *Include the title-block (worksheet, frame, etc.) """
             self.sheet_reference_layout = ''
             """ Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project """
             self.frame_plot_mechanism = 'internal'
@@ -257,13 +257,13 @@ class PCB_PrintOptions(VariantOptions):
                 plot: uses KiCad Python API. Only available for KiCad 6.
                 You get the default frame and some substitutions doesn't work """
             self.pages = PagesOptions
-            """ [list(dict)] List of pages to include in the output document.
+            """ *[list(dict)] List of pages to include in the output document.
                 Each page contains one or more layers of the PCB """
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
             self.format = 'PDF'
-            """ [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
+            """ *[PDF,SVG,PNG,EPS,PS] Format for the output file/s.
                 Note that for PS you need `ghostscript` which isn't part of the default docker images """
             self.png_width = 1280
             """ Width of the PNG in pixels """
@@ -282,9 +282,9 @@ class PCB_PrintOptions(VariantOptions):
             self.keep_temporal_files = False
             """ Store the temporal page and layer files in the output dir and don't delete them """
             self.force_edge_cuts = False
-            """ Add the `Edge.Cuts` to all the pages """
+            """ *Add the `Edge.Cuts` to all the pages """
             self.scaling = 1.0
-            """ Default scale factor (0 means autoscaling)"""
+            """ *Default scale factor (0 means autoscaling)"""
             self.realistic_solder_mask = True
             """ Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
                 In order to get a good looking select a color with transparency, i.e. '#14332440'.
@@ -1007,7 +1007,7 @@ class PCB_Print(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PCB_PrintOptions
-            """ [dict] Options for the `pcb_print` output """
+            """ *[dict] Options for the `pcb_print` output """
         self._category = 'PCB/docs'
 
     @staticmethod

@@ -66,4 +66,4 @@ class HPGL(AnyLayer):
         self._category = 'PCB/docs'
         with document:
             self.options = HPGLOptions
-            """ [dict] Options for the `hpgl` output """
+            """ *[dict] Options for the `hpgl` output """

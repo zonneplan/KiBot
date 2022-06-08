@@ -50,5 +50,5 @@ class SVG(AnyLayer):
         super().__init__()
         with document:
             self.options = SVGOptions
-            """ [dict] Options for the `svg` output """
+            """ *[dict] Options for the `svg` output """
         self._category = 'PCB/docs'

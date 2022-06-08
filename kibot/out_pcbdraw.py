@@ -37,21 +37,21 @@ class PcbDrawStyle(Optionable):
         super().__init__()
         with document:
             self.copper = "#285e3a"
-            """ color for the copper zones (covered by solder mask) """
+            """ *Color for the copper zones (covered by solder mask) """
             self.board = "#208b47"
-            """ color for the board without copper (covered by solder mask) """
+            """ *Color for the board without copper (covered by solder mask) """
             self.silk = "#d5dce4"
-            """ color for the silk screen """
+            """ *Color for the silk screen """
             self.pads = "#8b898c"
-            """ color for the exposed pads (metal finish) """
+            """ *Color for the exposed pads (metal finish) """
             self.outline = "#000000"
-            """ color for the outline """
+            """ *Color for the outline """
             self.clad = "#cabb3e"
-            """ color for the PCB core (not covered by solder mask) """
+            """ *Color for the PCB core (not covered by solder mask) """
             self.vcut = "#bf2600"
-            """ color for the V-CUTS """
+            """ Color for the V-CUTS """
             self.highlight_on_top = False
-            """ highlight over the component (not under) """
+            """ Highlight over the component (not under) """
             self.highlight_style = "stroke:none;fill:#ff0000;opacity:0.5;"
             """ SVG code for the highlight style """
             self.highlight_padding = 1.5
@@ -133,7 +133,7 @@ class PcbDrawOptions(VariantOptions):
     def __init__(self):
         with document:
             self.style = PcbDrawStyle
-            """ [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options """
+            """ *[string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options """
             self.libs = Optionable
             """ [list(string)=[]] List of libraries """
             self.placeholder = False
@@ -143,13 +143,13 @@ class PcbDrawOptions(VariantOptions):
             self.no_drillholes = False
             """ Do not make holes transparent """
             self.bottom = False
-            """ Render the bottom side of the board (default is top side) """
+            """ *Render the bottom side of the board (default is top side) """
             self.mirror = False
-            """ Mirror the board """
+            """ *Mirror the board """
             self.highlight = Optionable
             """ [list(string)=[]] List of components to highlight """
             self.show_components = Optionable
-            """ [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
+            """ *[list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
                 The default is none """
             self.vcuts = False
             """ Render V-CUTS on the Cmts.User layer """
@@ -158,9 +158,9 @@ class PcbDrawOptions(VariantOptions):
             self.dpi = 300
             """ [10,1200] Dots per inch (resolution) of the generated image """
             self.format = 'svg'
-            """ [svg,png,jpg] Output format. Only used if no `output` is specified """
+            """ *[svg,png,jpg] Output format. Only used if no `output` is specified """
             self.output = GS.def_global_output
-            """ Name for the generated file """
+            """ *Name for the generated file """
         super().__init__()
 
     def config(self, parent):
@@ -336,7 +336,7 @@ class PcbDraw(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PcbDrawOptions
-            """ [dict] Options for the `pcbdraw` output """
+            """ *[dict] Options for the `pcbdraw` output """
         self._category = 'PCB/docs'
 
     def get_dependencies(self):

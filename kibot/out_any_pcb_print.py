@@ -32,15 +32,15 @@ class Any_PCB_PrintOptions(VariantOptions):
             self.output_name = None
             """ {output} """
             self.scaling = 1.0
-            """ Scale factor (0 means autoscaling)"""
+            """ *Scale factor (0 means autoscaling)"""
             self._drill_marks = 'full'
             """ What to use to indicate the drill places, can be none, small or full (for real scale) """
             self.plot_sheet_reference = True
-            """ Include the title-block """
+            """ *Include the title-block """
             self.monochrome = False
             """ Print in black and white """
             self.separated = False
-            """ Print layers in separated pages """
+            """ *Print layers in separated pages """
             self.mirror = False
             """ Print mirrored (X axis inverted). ONLY for KiCad 6 """
             self.hide_excluded = False

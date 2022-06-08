@@ -18,13 +18,13 @@ class ExcellonOptions(AnyDrill):
         super().__init__()
         with document:
             self.metric_units = True
-            """ Use metric units instead of inches """
+            """ *Use metric units instead of inches """
             self.pth_and_npth_single_file = True
-            """ Generate one file for both, plated holes and non-plated holes, instead of two separated files """
+            """ *Generate one file for both, plated holes and non-plated holes, instead of two separated files """
             self.minimal_header = False
             """ Use a minimal header in the file """
             self.mirror_y_axis = False
-            """ Invert the Y axis """
+            """ *Invert the Y axis """
             self.zeros_format = 'DECIMAL_FORMAT'
             """ [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros """
             self.left_digits = 0
@@ -55,7 +55,7 @@ class Excellon(BaseOutput):  # noqa: F821
         self._category = 'PCB/fabrication/drill'
         with document:
             self.options = ExcellonOptions
-            """ [dict] Options for the `excellon` output """
+            """ *[dict] Options for the `excellon` output """
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

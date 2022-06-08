@@ -161,16 +161,16 @@ class ReportOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Output file name (%i='report', %x='txt') """
+            """ *Output file name (%i='report', %x='txt') """
             self.template = 'full'
-            """ Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+            """ *Name for one of the internal templates (full, full_svg, simple) or a custom template file.
                 Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`) """
             self.convert_from = 'markdown'
             """ Original format for the report conversion. Current templates are `markdown`. See `do_convert` """
             self.convert_to = 'pdf'
-            """ Target format for the report conversion. See `do_convert` """
+            """ *Target format for the report conversion. See `do_convert` """
             self.do_convert = False
-            """ Run `Pandoc` to convert the report. Note that Pandoc must be installed.
+            """ *Run `Pandoc` to convert the report. Note that Pandoc must be installed.
                 The conversion is done assuming the report is in `convert_from` format.
                 The output file will be in `convert_to` format.
                 The available formats depends on the `Pandoc` installation """
@@ -799,7 +799,7 @@ class Report(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = ReportOptions
-            """ [dict] Options for the `report` output """
+            """ *[dict] Options for the `report` output """
         self._category = 'PCB/docs'
 
     @staticmethod

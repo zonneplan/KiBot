@@ -49,7 +49,7 @@ class AnyLayerOptions(VariantOptions):
             self.exclude_pads_from_silkscreen = False
             """ Do not plot the component pads in the silk screen (KiCad 5.x only) """
             self.plot_sheet_reference = False
-            """ Include the frame and title block. Only available for KiCad 6 and you get a poor result
+            """ *Include the frame and title block. Only available for KiCad 6 and you get a poor result
                 The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs """
             self.plot_footprint_refs = True
             """ Include the footprint references """
@@ -58,7 +58,7 @@ class AnyLayerOptions(VariantOptions):
             self.force_plot_invisible_refs_vals = False
             """ Include references and values even when they are marked as invisible """
             self.output = GS.def_global_output
-            """ Output file name, the default KiCad name if empty """
+            """ *Output file name, the default KiCad name if empty """
             self.tent_vias = True
             """ Cover the vias """
             self.uppercase_extensions = False
@@ -241,7 +241,7 @@ class AnyLayer(BaseOutput):
         super().__init__()
         with document:
             self.layers = Layer
-            """ [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to plot """
 
     def config(self, parent):

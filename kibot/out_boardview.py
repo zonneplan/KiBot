@@ -154,7 +154,7 @@ class BoardViewOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Filename for the output (%i=boardview, %x=brd) """
+            """ *Filename for the output (%i=boardview, %x=brd) """
         super().__init__()
         self._expand_id = 'boardview'
         self._expand_ext = 'brd'
@@ -178,7 +178,7 @@ class BoardView(BaseOutput):  # noqa: F821
         self._category = ['PCB/repair', 'PCB/fabrication/assembly']
         with document:
             self.options = BoardViewOptions
-            """ [dict] Options for the `boardview` output """
+            """ *[dict] Options for the `boardview` output """
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

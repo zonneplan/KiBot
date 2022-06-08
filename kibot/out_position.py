@@ -38,7 +38,7 @@ class PosColumns(Optionable):
         self._unkown_is_error = True
         with document:
             self.id = ''
-            """ [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name """
+            """ *[Ref,Val,Package,PosX,PosY,Rot,Side] Internal name """
             self.name = ''
             """ Name to use in the output file. The id is used when empty """
         self._id_example = 'Ref'
@@ -54,15 +54,15 @@ class PositionOptions(VariantOptions):
     def __init__(self):
         with document:
             self.format = 'ASCII'
-            """ [ASCII,CSV] Format for the position file """
+            """ *[ASCII,CSV] Format for the position file """
             self.separate_files_for_front_and_back = True
-            """ Generate two separated files, one for the top and another for the bottom """
+            """ *Generate two separated files, one for the top and another for the bottom """
             self.only_smd = True
-            """ Only include the surface mount components """
+            """ *Only include the surface mount components """
             self.output = GS.def_global_output
-            """ Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
+            """ *Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
             self.units = 'millimeters'
-            """ [millimeters,inches,mils] Units used for the positions. Affected by global options """
+            """ *[millimeters,inches,mils] Units used for the positions. Affected by global options """
             self.columns = PosColumns
             """ [list(dict)|list(string)] Which columns are included in the output """
             self.bottom_negative_x = False
@@ -299,7 +299,7 @@ class Position(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PositionOptions
-            """ [dict] Options for the `position` output """
+            """ *[dict] Options for the `position` output """
         self._category = 'PCB/fabrication/assembly'
 
     @staticmethod

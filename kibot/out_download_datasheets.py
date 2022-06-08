@@ -28,7 +28,7 @@ class Download_Datasheets_Options(VariantOptions):
         super().__init__()
         with document:
             self.field = 'Datasheet'
-            """ Name of the field containing the URL """
+            """ *Name of the field containing the URL """
             self.output = '${VALUE}.pdf'
             """ Name used for the downloaded datasheet.
                 ${FIELD} will be replaced by the FIELD content """
@@ -152,7 +152,7 @@ class Download_Datasheets(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = Download_Datasheets_Options
-            """ [dict] Options for the `download_datasheets` output """
+            """ *[dict] Options for the `download_datasheets` output """
         self._sch_related = True
         self._category = 'Schematic/docs'
 

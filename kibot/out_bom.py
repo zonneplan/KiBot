@@ -56,7 +56,7 @@ class BoMJoinField(Optionable):
         self._unkown_is_error = True
         with document:
             self.field = ''
-            """ Name of the field """
+            """ *Name of the field """
             self.text = ''
             """ Text to use instead of a field. This option is incompatible with the `field` option.
                 Any space to separate it should be added in the text.
@@ -116,9 +116,9 @@ class BoMColumns(Optionable):
         self._unkown_is_error = True
         with document:
             self.field = ''
-            """ Name of the field to use for this column """
+            """ *Name of the field to use for this column """
             self.name = ''
-            """ Name to display in the header. The field is used when empty """
+            """ *Name to display in the header. The field is used when empty """
             self.join = BoMJoinField
             """ [list(dict)|list(string)|string=''] List of fields to join to this column """
             self.level = 0
@@ -160,11 +160,11 @@ class BoMLinkable(Optionable):
             self.col_colors = True
             """ Use colors to show the field type """
             self.datasheet_as_link = ''
-            """ Column with links to the datasheet """
+            """ *Column with links to the datasheet """
             self.digikey_link = Optionable
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page """
             self.generate_dnf = True
-            """ Generate a separated section for DNF (Do Not Fit) components """
+            """ *Generate a separated section for DNF (Do Not Fit) components """
             self.hide_pcb_info = False
             """ Hide project information """
             self.hide_stats_info = False
@@ -172,9 +172,9 @@ class BoMLinkable(Optionable):
             self.highlight_empty = True
             """ Use a color for empty cells. Applies only when `col_colors` is `true` """
             self.logo = Optionable
-            """ [string|boolean=''] PNG file to use as logo, use false to remove """
+            """ *[string|boolean=''] PNG file to use as logo, use false to remove """
             self.title = 'KiBot Bill of Materials'
-            """ BoM title """
+            """ *BoM title """
             self.extra_info = Optionable
             """ [string|list(string)=''] Information to put after the title and before the pcb and stats info """
 
@@ -226,7 +226,7 @@ class BoMCSV(Optionable):
         super().__init__()
         with document:
             self.separator = ','
-            """ CSV Separator. TXT and TSV always use tab as delimiter """
+            """ *CSV Separator. TXT and TSV always use tab as delimiter """
             self.hide_header = False
             """ Hide the header line (names of the columns) """
             self.hide_pcb_info = False
@@ -234,7 +234,7 @@ class BoMCSV(Optionable):
             self.hide_stats_info = False
             """ Hide statistics information """
             self.quote_all = False
-            """ Enclose all values using double quotes """
+            """ *Enclose all values using double quotes """
 
 
 class BoMXLSX(BoMLinkable):
@@ -247,7 +247,7 @@ class BoMXLSX(BoMLinkable):
             self.style = 'modern-blue'
             """ Head style: modern-blue, modern-green, modern-red and classic """
             self.kicost = False
-            """ Enable KiCost worksheet creation """
+            """ *Enable KiCost worksheet creation """
             self.kicost_api_enable = Optionable
             """ [string|list(string)=''] List of KiCost APIs to enable """
             self.kicost_api_disable = Optionable
@@ -258,7 +258,7 @@ class BoMXLSX(BoMLinkable):
             """ KiCost configuration file. It contains the keys for the different distributors APIs.
                 The regular KiCost config is used when empty """
             self.specs = False
-            """ Enable Specs worksheet creation. Contains specifications for the components.
+            """ *Enable Specs worksheet creation. Contains specifications for the components.
                 Works with only some KiCost APIs """
             self.specs_columns = BoMColumns
             """ [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
@@ -370,40 +370,40 @@ class BoMOptions(BaseOptions):
     def __init__(self):
         with document:
             self.number = 1
-            """ Number of boards to build (components multiplier) """
+            """ *Number of boards to build (components multiplier) """
             self.variant = ''
             """ Board variant, used to determine which components
                 are output to the BoM. """
             self.output = GS.def_global_output
-            """ filename for the output (%i=bom)"""
+            """ *filename for the output (%i=bom)"""
             self.format = ''
-            """ [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
+            """ *[HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
                 Defaults to CSV or a guess according to the options. """
             # Equivalent to KiBoM INI:
             self.ignore_dnf = True
-            """ Exclude DNF (Do Not Fit) components """
+            """ *Exclude DNF (Do Not Fit) components """
             self.fit_field = 'Config'
             """ Field name used for internal filters """
             self.use_alt = False
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
             self.columns = BoMColumns
-            """ [list(dict)|list(string)] List of columns to display.
+            """ *[list(dict)|list(string)] List of columns to display.
                 Can be just the name of the field """
             self.cost_extra_columns = BoMColumns
             """ [list(dict)|list(string)] List of columns to add to the global section of the cost.
                 Can be just the name of the field """
             self.normalize_values = False
-            """ Try to normalize the R, L and C values, producing uniform units and prefixes """
+            """ *Try to normalize the R, L and C values, producing uniform units and prefixes """
             self.normalize_locale = False
             """ When normalizing values use the locale decimal point """
             self.ref_separator = ' '
             """ Separator used for the list of references """
             self.html = BoMHTML
-            """ [dict] Options for the HTML format """
+            """ *[dict] Options for the HTML format """
             self.xlsx = BoMXLSX
-            """ [dict] Options for the XLSX format """
+            """ *[dict] Options for the XLSX format """
             self.csv = BoMCSV
-            """ [dict] Options for the CSV, TXT and TSV formats """
+            """ *[dict] Options for the CSV, TXT and TSV formats """
             # * Filters
             self.exclude_filter = Optionable
             """ [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
@@ -422,7 +422,7 @@ class BoMOptions(BaseOptions):
             self.merge_both_blank = True
             """ When creating groups two components with empty/missing field will be interpreted as with the same value """
             self.group_fields = GroupFields
-            """ [list(string)] List of fields used for sorting individual components into groups.
+            """ *[list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
                 Field names are case-insensitive.
                 If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
@@ -461,7 +461,7 @@ class BoMOptions(BaseOptions):
             self.count_smd_tht = False
             """ Show the stats about how many of the components are SMD/THT. You must provide the PCB """
             self.units = 'millimeters'
-            """ [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
+            """ *[millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
                 Affected by global options """
             self.bottom_negative_x = False
             """ Use negative X coordinates for footprints on bottom layer (for XYRS) """
@@ -470,7 +470,7 @@ class BoMOptions(BaseOptions):
             self.angle_positive = True
             """ Always use positive values for the footprint rotation """
             self.sort_style = 'type_value'
-            """ [type_value,type_value_ref,ref] Sorting criteria """
+            """ *[type_value,type_value_ref,ref] Sorting criteria """
             self.footprint_populate_values = Optionable
             """ [string|list(string)='no,yes'] Values for the `Footprint Populate` column """
             self.footprint_type_values = Optionable
@@ -756,7 +756,7 @@ class BoM(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = BoMOptions
-            """ [dict] Options for the `bom` output """
+            """ *[dict] Options for the `bom` output """
         self._sch_related = True
         self._category = 'Schematic/BoM'
 

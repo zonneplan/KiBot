@@ -20,7 +20,7 @@ class SVG_PCB_PrintOptions(Any_PCB_PrintOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Filename for the output SVG (%i=layers, %x=svg)"""
+            """ *Filename for the output SVG (%i=layers, %x=svg)"""
             self.enable_ki6_page_fix = True
             """ Enable workaround for KiCad 6 bug #11033 """
             self.enable_ki5_page_fix = True
@@ -48,9 +48,9 @@ class SVG_PCB_Print(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = SVG_PCB_PrintOptions
-            """ [dict] Options for the `pdf_pcb_print` output """
+            """ *[dict] Options for the `pdf_pcb_print` output """
             self.layers = Layer
-            """ [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user]
                 List of PCB layers to include in the PDF """
         self._category = 'PCB/docs'
 

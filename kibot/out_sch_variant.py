@@ -31,7 +31,7 @@ class Sch_Variant(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = Sch_Variant_Options
-            """ [dict] Options for the `sch_variant` output """
+            """ *[dict] Options for the `sch_variant` output """
         self._sch_related = True
 
     def run(self, output_dir):

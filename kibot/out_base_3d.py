@@ -23,9 +23,9 @@ class Base3DOptions(VariantOptions):
     def __init__(self):
         with document:
             self.no_virtual = False
-            """ Used to exclude 3D models for components with 'virtual' attribute """
+            """ *Used to exclude 3D models for components with 'virtual' attribute """
             self.download = True
-            """ Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD """
+            """ *Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD """
             self.kicad_3d_url = 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
             """ Base URL for the KiCad 3D models """
         # Temporal dir used to store the downloaded files

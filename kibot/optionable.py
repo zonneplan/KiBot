@@ -78,7 +78,7 @@ class Optionable(object):
         if not isinstance(val, bool):
             raise KiPlotConfigurationError("Option `{}` must be true/false".format(key))
 
-    def get_doc(self, name):
+    def get_doc(self, name, no_basic=False):
         try:
             doc = getattr(self, '_help_'+name).strip()
         except AttributeError:
@@ -86,7 +86,14 @@ class Optionable(object):
         if doc[0] == '{':
             alias = doc[1:-1]
             return getattr(self, '_help_'+alias).strip(), alias, True
+        if no_basic and doc[0] == '*':
+            # Remove the 'basic' indicator
+            doc = doc[1:]
         return doc, name, False
+
+    def is_basic_option(self, name):
+        help, _, _ = self.get_doc(name)
+        return help and help[0] == '*'
 
     def add_to_doc(self, name, text):
         doc = getattr(self, '_help_'+name).strip()
@@ -122,7 +129,7 @@ class Optionable(object):
                 logger.warning(W_UNKOPS + "Unknown {}option `{}`".format(self._error_context, k))
                 continue
             # Check the data type
-            cur_doc, alias, is_alias = self.get_doc(k)
+            cur_doc, alias, is_alias = self.get_doc(k, no_basic=True)
             cur_val = getattr(self, alias)
             if cur_doc[0] == '[':
                 # Separate the valid types for this key

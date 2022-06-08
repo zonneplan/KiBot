@@ -26,7 +26,7 @@ class PSOptions(DrillMarks):
             self.sketch_plot = False
             """ Don't fill objects, just draw the outline """
             self.scaling = 1
-            """ Scale factor (0 means autoscaling)"""
+            """ *Scale factor (0 means autoscaling)"""
             self.scale_adjust_x = 1.0
             """ Fine grain adjust for the X scale (floating point multiplier) """
             self.scale_adjust_y = 1.0
@@ -35,7 +35,7 @@ class PSOptions(DrillMarks):
             """ This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                 Only used to plot pads and tracks """
             self.a4_output = True
-            """ force A4 paper size """
+            """ Force A4 paper size """
         self._plot_format = PLOT_FORMAT_POST
 
     def _configure_plot_ctrl(self, po, output_dir):
@@ -84,5 +84,5 @@ class PS(AnyLayer):
         super().__init__()
         with document:
             self.options = PSOptions
-            """ [dict] Options for the `ps` output """
+            """ *[dict] Options for the `ps` output """
         self._category = 'PCB/docs'

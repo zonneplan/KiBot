@@ -20,7 +20,7 @@ class GenCADOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Filename for the output (%i=gencad, %x=cad) """
+            """ *Filename for the output (%i=gencad, %x=cad) """
             self.flip_bottom_padstacks = False
             """ Flip bottom footprint padstacks """
             self.unique_pin_names = False
@@ -76,7 +76,7 @@ class GenCAD(BaseOutput):  # noqa: F821
         self._category = 'PCB/export'
         with document:
             self.options = GenCADOptions
-            """ [dict] Options for the `gencad` output """
+            """ *[dict] Options for the `gencad` output """
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

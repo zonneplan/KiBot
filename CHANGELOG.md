@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- The outputs help now display the more relevant options first and highlighted.
+  Which ones are more relevant is somehow arbitrary, comments are welcome.
 - General stuff:
   - Outputs now can have priorities, by default is applied.
     Use `-n` to disable it.

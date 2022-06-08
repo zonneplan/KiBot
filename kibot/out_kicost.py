@@ -31,11 +31,11 @@ class Aggregate(Optionable):
         super().__init__()
         with document:
             self.file = ''
-            """ Name of the XML to aggregate """
+            """ *Name of the XML to aggregate """
             self.variant = ' '
             """ Variant for this project """
             self.number = 100
-            """ Number of boards to build (components multiplier) """
+            """ *Number of boards to build (components multiplier) """
             self.board_qty = None
             """ {number} """
         self._category = 'Schematic/BoM'
@@ -50,19 +50,19 @@ class KiCostOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Filename for the output (%i=kicost, %x=xlsx) """
+            """ *Filename for the output (%i=kicost, %x=xlsx) """
             self.no_price = False
-            """ Do not look for components price. For testing purposes """
+            """ *Do not look for components price. For testing purposes """
             self.no_collapse = False
             """ Do not collapse the part references (collapse=R1-R4) """
             self.show_cat_url = False
             """ Include the catalogue links in the catalogue code """
             self.distributors = Optionable
-            """ [string|list(string)] Include this distributors list. Default is all the available """
+            """ *[string|list(string)] Include this distributors list. Default is all the available """
             self.no_distributors = Optionable
-            """ [string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
+            """ *[string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
             self.currency = Optionable
-            """ [string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR) """
+            """ *[string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR) """
             self.group_fields = Optionable
             """ [string|list(string)] List of fields that can be different for a group.
                 Parts with differences in these fields are grouped together, but displayed individually """
@@ -79,7 +79,7 @@ class KiCostOptions(VariantOptions):
             self.aggregate = Aggregate
             """ [list(dict)] Add components from other projects """
             self.number = 100
-            """ Number of boards to build (components multiplier) """
+            """ *Number of boards to build (components multiplier) """
             self.board_qty = None
             """ {number} """
 
@@ -240,4 +240,4 @@ class KiCost(BaseOutput):  # noqa: F821
         self._sch_related = True
         with document:
             self.options = KiCostOptions
-            """ [dict] Options for the `kicost` output """
+            """ *[dict] Options for the `kicost` output """

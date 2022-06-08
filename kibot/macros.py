@@ -81,6 +81,11 @@ def document(sentences, **kw):
                               doc_str.startswith(' [boolean')):
                 # Hardcoded type hint, don't add one
                 type_hint = ''
+            # The * marks this option as a basic (not advanced) option
+            if doc_str.startswith(' *'):
+                # Move the marker to the beginning
+                doc_str = ' '+doc_str[2:]
+                type_hint = '*'+type_hint
             help_str.s = type_hint+doc_str+post_hint
             sentences[n] = Assign(targets=[target], value=help_str)
             # Copy the line number from the original docstring

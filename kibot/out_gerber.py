@@ -25,20 +25,20 @@ class GerberOptions(AnyLayerOptions):
             self.line_width = 0.1
             """ [0.02,2] Line_width for objects without width [mm] (KiCad 5) """
             self.subtract_mask_from_silk = False
-            """ Subtract the solder mask from the silk screen """
+            """ *Subtract the solder mask from the silk screen """
             self.use_protel_extensions = False
-            """ Use legacy Protel file extensions """
+            """ *Use legacy Protel file extensions """
             self._gerber_precision = 4.6
             """ This the gerber coordinate format, can be 4.5 or 4.6 """
             self.create_gerber_job_file = True
-            """ Creates a file with information about all the generated gerbers.
+            """ *Creates a file with information about all the generated gerbers.
                 You can use it in gerbview to load all gerbers at once """
             self.gerber_job_file = GS.def_global_output
             """ Name for the gerber job file (%i='job', %x='gbrjob') """
             self.use_gerber_x2_attributes = True
-            """ Use the extended X2 format (otherwise use X1 formerly RS-274X) """
+            """ *Use the extended X2 format (otherwise use X1 formerly RS-274X) """
             self.use_gerber_net_attributes = True
-            """ Include netlist metadata """
+            """ *Include netlist metadata """
             self.disable_aperture_macros = False
             """ Disable aperture macros (workaround for buggy CAM software) (KiCad 6) """
         super().__init__()
@@ -105,7 +105,7 @@ class Gerber(AnyLayer):
         super().__init__()
         with document:
             self.options = GerberOptions
-            """ [dict] Options for the `gerber` output """
+            """ *[dict] Options for the `gerber` output """
         self._category = 'PCB/fabrication/gerber'
 
     @staticmethod

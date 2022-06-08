@@ -459,7 +459,7 @@ def print_output_options(name, cl, indent):
     ind_str = indent*' '
     obj = cl()
     num_opts = 0
-    for k, v in obj.get_attrs_gen():
+    for k, v in sorted(obj.get_attrs_gen(), key=lambda x: not obj.is_basic_option(x[0])):
         if k == 'type' and indent == 2:
             # Type is fixed for an output
             continue
@@ -467,9 +467,15 @@ def print_output_options(name, cl, indent):
             # We found one, put the title
             print(ind_str+'* Valid keys:')
         help, alias, is_alias = obj.get_doc(k)
+        is_basic = False
+        if help and help[0] == '*':
+            help = help[1:]
+            is_basic = True
         if is_alias:
             help = 'Alias for '+alias
             entry = '  - *{}*: '
+        elif is_basic:
+            entry = '  - **`{}`**: '
         else:
             entry = '  - `{}`: '
         if help is None:
@@ -516,6 +522,10 @@ def print_outputs_help(details=False):
     outs = RegOutput.get_registered()
     logger.debug('{} supported outputs'.format(len(outs)))
     print('Supported outputs:')
+    print('\nNotes:')
+    print('1. Most relevant options are listed first and in **bold**. '
+          'Which ones are more relevant is quite arbitrary, comments are welcome.')
+    print('2. Aliases are listed in *italics*.')
     for n, o in OrderedDict(sorted(outs.items())).items():
         if details:
             print()
@@ -571,7 +581,7 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
     if po:
         obj.read_vals_from_po(po)
     for k, _ in obj.get_attrs_gen():
-        help, alias, is_alias = obj.get_doc(k)
+        help, alias, is_alias = obj.get_doc(k, no_basic=True)
         if is_alias:
             f.write(ind_str+'# `{}` is an alias for `{}`\n'.format(k, alias))
             continue

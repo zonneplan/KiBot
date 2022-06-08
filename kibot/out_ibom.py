@@ -33,7 +33,7 @@ class IBoMOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html) """
+            """ *Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html) """
             self.dark_mode = False
             """ Default to dark mode """
             self.hide_pads = False
@@ -47,13 +47,13 @@ class IBoMOptions(VariantOptions):
             self.no_redraw_on_drag = False
             """ Do not redraw pcb on drag by default """
             self.board_rotation = 0
-            """ Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5 """
+            """ *Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5 """
             self.checkboxes = 'Sourced,Placed'
             """ Comma separated list of checkbox columns """
             self.bom_view = 'left-right'
-            """ [bom-only,left-right,top-bottom] Default BOM view """
+            """ *[bom-only,left-right,top-bottom] Default BOM view """
             self.layer_view = 'FB'
-            """ [F,FB,B] Default layer view """
+            """ *[F,FB,B] Default layer view """
             self.no_compression = False
             """ Disable compression of pcb data """
             self.name_format = 'ibom'
@@ -68,7 +68,7 @@ class IBoMOptions(VariantOptions):
                 Extension .html will be added automatically.
                 Note that this name is used only when output is '' """
             self.include_tracks = False
-            """ Include track/zone information in output. F.Cu and B.Cu layers only """
+            """ *Include track/zone information in output. F.Cu and B.Cu layers only """
             self.include_nets = False
             """ Include netlist information in output. """
             self.sort_order = 'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'
@@ -79,16 +79,16 @@ class IBoMOptions(VariantOptions):
             """ Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
                 Leave it blank for most uses, data will be extracted from the PCB """
             self.extra_fields = ''
-            """ Comma separated list of extra fields to pull from netlist or xml file.
+            """ *Comma separated list of extra fields to pull from netlist or xml file.
                 Using 'X,Y' is a shortcut for `show_fields` and `group_fields` with values 'Value,Footprint,X,Y' """
             self.show_fields = ''
-            """ Comma separated list of fields to show in the BOM.
+            """ *Comma separated list of fields to show in the BOM.
                 Value and Footprint are displayed when nothing is specified """
             self.group_fields = ''
             """ Comma separated list of fields that components will be grouped by.
                 Value and Footprint are used when nothing is specified """
             self.normalize_field_case = False
-            """ Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field """
+            """ *Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field """
             self.blacklist = ''
             """ List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
                 IBoM option, avoid using in conjunction with KiBot variants/filters """
@@ -218,7 +218,7 @@ class IBoM(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = IBoMOptions
-            """ [dict] Options for the `ibom` output """
+            """ *[dict] Options for the `ibom` output """
 
     def get_dependencies(self):
         return self.options.get_dependencies()

@@ -155,9 +155,9 @@ class Navigate_ResultsOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Filename for the output (%i=html, %x=navigate) """
+            """ *Filename for the output (%i=html, %x=navigate) """
             self.link_from_root = ''
-            """ The name of a file to create at the main output directory linking to the home page """
+            """ *The name of a file to create at the main output directory linking to the home page """
         super().__init__()
         self._expand_id = 'navigate'
         self._expand_ext = 'html'
@@ -459,7 +459,7 @@ class Navigate_Results(BaseOutput):  # noqa: F821
         self.priority = 10
         with document:
             self.options = Navigate_ResultsOptions
-            """ [dict] Options for the `navigate_results` output """
+            """ *[dict] Options for the `navigate_results` output """
         # The help is inherited and already mentions the default priority
         self.fix_priority_help()
 

@@ -33,7 +33,7 @@ class Render3DOptions(Base3DOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Name for the generated image file (%i='3D_$VIEW' %x='png') """
+            """ *Name for the generated image file (%i='3D_$VIEW' %x='png') """
             self.no_tht = False
             """ Used to exclude 3D models for through hole components """
             self.no_smd = False
@@ -53,22 +53,22 @@ class Render3DOptions(Base3DOptions):
             self.solder_paste = "#808080"
             """ Color for the solder paste """
             self.move_x = 0
-            """ Steps to move in the X axis, positive is to the right.
+            """ *Steps to move in the X axis, positive is to the right.
                 Just like pressing the right arrow in the 3D viewer """
             self.move_y = 0
-            """ Steps to move in the Y axis, positive is up.
+            """ *Steps to move in the Y axis, positive is up.
                 Just like pressing the up arrow in the 3D viewer """
             self.rotate_x = 0
-            """ Steps to rotate around the X axis, positive is clockwise.
+            """ *Steps to rotate around the X axis, positive is clockwise.
                 Each step is currently 10 degrees. Only for KiCad 6 """
             self.rotate_y = 0
-            """ Steps to rotate around the Y axis, positive is clockwise.
+            """ *Steps to rotate around the Y axis, positive is clockwise.
                 Each step is currently 10 degrees. Only for KiCad 6 """
             self.rotate_z = 0
-            """ Steps to rotate around the Z axis, positive is clockwise.
+            """ *Steps to rotate around the Z axis, positive is clockwise.
                 Each step is currently 10 degrees. Only for KiCad 6 """
             self.ray_tracing = False
-            """ Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt` """
+            """ *Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt` """
             self.wait_render = -600
             """ How many seconds we must wait before capturing the render (ray tracing or normal).
                 Lamentably KiCad can save an unfinished image. Enlarge it if your image looks partially rendered.
@@ -77,9 +77,9 @@ class Render3DOptions(Base3DOptions):
             self.wait_ray_tracing = None
             """ {wait_render} """
             self.view = 'top'
-            """ [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view """
+            """ *[top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view """
             self.zoom = 0
-            """ Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
+            """ *Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                 Same result as using the mouse wheel in the 3D viewer """
             self.width = 1280
             """ Image width (aprox.) """
@@ -202,7 +202,7 @@ class Render_3D(Base3D):  # noqa: F821
         super().__init__()
         with document:
             self.options = Render3DOptions
-            """ [dict] Options for the `render_3d` output """
+            """ *[dict] Options for the `render_3d` output """
         self._category = 'PCB/3D'
 
     @staticmethod

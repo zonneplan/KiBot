@@ -26,13 +26,13 @@ class FilesList(Optionable):
         super().__init__()
         with document:
             self.source = '*.pdf'
-            """ File names to add, wildcards allowed. Use ** for recursive match.
+            """ *File names to add, wildcards allowed. Use ** for recursive match.
                 By default this pattern is applied to the output dir specified with `-d` command line option.
                 See the `from_cwd` option """
             self.from_cwd = False
             """ Use the current working directory instead of the dir specified by `-d` """
             self.from_output = ''
-            """ Collect files from the selected output.
+            """ *Collect files from the selected output.
                 When used the `source` option is ignored """
             self.filter = r'.*\.pdf'
             """ A regular expression that source files must match """
@@ -42,9 +42,9 @@ class PDFUniteOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Name for the generated PDF (%i=name of the output %x=pdf) """
+            """ *Name for the generated PDF (%i=name of the output %x=pdf) """
             self.outputs = FilesList
-            """ [list(dict)] Which files will be included """
+            """ *[list(dict)] Which files will be included """
             self.use_external_command = False
             """ Use the `pdfunite` tool instead of PyPDF2 Python module """
         super().__init__()
@@ -146,7 +146,7 @@ class PDFUnite(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PDFUniteOptions
-            """ [dict] Options for the `pdfunite` output """
+            """ *[dict] Options for the `pdfunite` output """
         self._none_related = True
 
     def get_dependencies(self):

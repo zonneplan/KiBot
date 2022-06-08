@@ -35,13 +35,14 @@ class BaseOutput(RegOutput):
         super().__init__()
         with document:
             self.name = ''
-            """ Used to identify this particular output definition """
+            """ *Used to identify this particular output definition """
             self.type = ''
-            """ Type of output """
+            """ *Type of output """
             self.dir = './'
-            """ Output directory for the generated files. If it starts with `+` the rest is concatenated to the default dir """
+            """ *Output directory for the generated files.
+                If it starts with `+` the rest is concatenated to the default dir """
             self.comment = ''
-            """ A comment for documentation purposes """
+            """ *A comment for documentation purposes """
             self.extends = ''
             """ Copy the `options` section from the indicated output """
             self.run_by_default = True

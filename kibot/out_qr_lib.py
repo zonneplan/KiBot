@@ -71,19 +71,19 @@ class QRCodeOptions(Optionable):
         super().__init__()
         with document:
             self.name = 'QR'
-            """ Name for the symbol/footprint """
+            """ *Name for the symbol/footprint """
             self.text = '%p %r'
-            """ Text to encode as QR """
+            """ *Text to encode as QR """
             self.correction_level = 'low'
             """ [low,medium,quartile,high] Error correction level """
             self.size_sch = 15
-            """ Size of the QR symbol """
+            """ *Size of the QR symbol """
             self.size_pcb = 15
-            """ Size of the QR footprint """
+            """ *Size of the QR footprint """
             self.size_units = 'millimeters'
             """ [millimeters,inches] Units used for the size """
             self.layer = 'silk'
-            """ [silk,copper] Layer for the footprint """
+            """ *[silk,copper] Layer for the footprint """
             self.pcb_negative = False
             """ Generate a negative image for the PCB """
         self._unkown_is_error = True
@@ -98,15 +98,15 @@ class QR_LibOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Filename for the output (%i=qr, %x=lib) """
+            """ *Filename for the output (%i=qr, %x=lib) """
             self.lib = 'QR'
-            """ Short name for the library """
+            """ *Short name for the library """
             self.reference = 'QR'
             """ The reference prefix """
             self.use_sch_dir = True
             """ Generate the libs relative to the schematic/PCB dir """
             self.qrs = QRCodeOptions
-            """ [list(dict)] QR codes to include in the library """
+            """ *[list(dict)] QR codes to include in the library """
         super().__init__()
         self._expand_id = 'qr'
         self._expand_ext = 'lib'

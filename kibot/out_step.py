@@ -27,13 +27,13 @@ class STEPOptions(Base3DOptions):
             self.metric_units = True
             """ Use metric units instead of inches """
             self._origin = 'grid'
-            """ Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
+            """ *Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
                 The drill option uses the auxiliary reference defined by the user.
                 You can define any other origin using the format 'X,Y', i.e. '3.2,-10' """
             self.min_distance = -1
             """ The minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm) """
             self.output = GS.def_global_output
-            """ Name for the generated STEP file (%i='3D' %x='step') """
+            """ *Name for the generated STEP file (%i='3D' %x='step') """
             self.subst_models = True
             """ Substitute STEP or IGS models with the same name in place of VRML models """
         # Temporal dir used to store the downloaded files
@@ -117,7 +117,7 @@ class STEP(Base3D):
         super().__init__()
         with document:
             self.options = STEPOptions
-            """ [dict] Options for the `step` output """
+            """ *[dict] Options for the `step` output """
         self._category = 'PCB/3D'
 
     @staticmethod

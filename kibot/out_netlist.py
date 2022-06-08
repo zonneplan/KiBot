@@ -21,9 +21,9 @@ class NetlistOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ Filename for the output (%i=netlist/IPC-D-356, %x=net/d356) """
+            """ *Filename for the output (%i=netlist/IPC-D-356, %x=net/d356) """
             self.format = 'classic'
-            """ [classic,ipc] The `classic` format is the KiCad internal format, and is generated
+            """ *[classic,ipc] The `classic` format is the KiCad internal format, and is generated
                 from the schematic. The `ipc` format is the IPC-D-356 format, useful for PCB
                 testing, is generated from the PCB """
         super().__init__()
@@ -84,7 +84,7 @@ class Netlist(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = NetlistOptions
-            """ [dict] Options for the `netlist` output """
+            """ *[dict] Options for the `netlist` output """
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
