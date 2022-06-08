@@ -192,12 +192,13 @@ class CompressOptions(BaseOptions):
         for f in self.files:
             if f.from_output:
                 out = RegOutput.get_output(f.from_output)
-                config_output(out)
-                if out is not None and out.category:
-                    if isinstance(out.category, str):
-                        cats.add(out.category)
-                    else:
-                        cats.update(out.category)
+                if out is not None:
+                    config_output(out)
+                    if out.category:
+                        if isinstance(out.category, str):
+                            cats.add(out.category)
+                        else:
+                            cats.update(out.category)
             else:
                 cats.add('Compress')
         return list(cats)
