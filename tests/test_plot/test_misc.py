@@ -1188,3 +1188,19 @@ def test_quick_start_1(test_dir):
             'bom', 'download_datasheets', 'pdf_sch_print', 'svg_sch_print')
     for o in OUTS:
         ctx.search_out(r'\['+o+r'\]')
+
+
+def test_netlist_classic_1(test_dir):
+    prj = 'light_control'
+    dir_o = 'Export'
+    ctx = context.TestContext(test_dir, 'test_netlist_classic_1', prj, 'netlist_classic_1', dir_o)
+    ctx.run()
+    ctx.expect_out_file(os.path.join(dir_o, prj+'-netlist.net'))
+
+
+def test_netlist_ipc_1(test_dir):
+    prj = 'light_control'
+    dir_o = 'Export'
+    ctx = context.TestContext(test_dir, 'test_netlist_ipc_1', prj, 'netlist_ipc_1', dir_o)
+    ctx.run()
+    ctx.expect_out_file(os.path.join(dir_o, prj+'-IPC-D-356.d356'))
