@@ -744,7 +744,6 @@ class PCB_PrintOptions(VariantOptions):
                 scale = base_width/width
                 if scale != 1.0:
                     logger.debug(' - Scaling {} by {}'.format(file, scale))
-                    logger.error('Este')
                     for e in root:
                         e.scale(scale)
                 svg_out.append([root])
