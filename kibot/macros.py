@@ -82,7 +82,7 @@ def document(sentences, **kw):
                 # Hardcoded type hint, don't add one
                 type_hint = ''
             # The * marks this option as a basic (not advanced) option
-            if doc_str.startswith(' *'):
+            if doc_str.startswith(' *') and type_hint:
                 # Move the marker to the beginning
                 doc_str = ' '+doc_str[2:]
                 type_hint = '*'+type_hint
