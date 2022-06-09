@@ -1,0 +1,15 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'print_front'
+    comment: "Print F.Cu+F.SilkS"
+    type: svg_pcb_print
+    options:
+      title: 'Fake title for front copper and silk'
+      scaling: 12
+      plot_sheet_reference: false
+    layers:
+      - layer: F.Cu
+      - layer: F.SilkS

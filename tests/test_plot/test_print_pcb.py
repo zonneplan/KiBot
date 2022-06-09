@@ -33,6 +33,17 @@ def test_print_pcb_simple(test_dir):
     ctx.clean_up()
 
 
+def test_print_pcb_svg_simple(test_dir):
+    prj = 'bom'
+    ctx = context.TestContext(test_dir, 'print_pcb_svg_simple', prj, 'print_pcb_svg', '')
+    ctx.run()
+    # Check all outputs are there
+    file = PDF_FILE.replace('.pdf', '.svg')
+    ctx.expect_out_file(file)
+    ctx.compare_image(file)
+    ctx.clean_up()
+
+
 def test_print_pcb_refill_1(test_dir):
     prj = 'zone-refill'
     ctx = context.TestContext(test_dir, 'print_pcb_refill', prj, 'print_pcb_zone-refill', '')
