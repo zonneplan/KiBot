@@ -32,7 +32,7 @@ class Any_PCB_PrintOptions(VariantOptions):
             self.output_name = None
             """ {output} """
             self.scaling = 1.0
-            """ *Scale factor (0 means autoscaling)"""
+            """ *Scale factor (0 means autoscaling). You should disable `plot_sheet_reference` when using it """
             self._drill_marks = 'full'
             """ What to use to indicate the drill places, can be none, small or full (for real scale) """
             self.plot_sheet_reference = True
