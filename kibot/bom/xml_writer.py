@@ -63,8 +63,8 @@ def write_xml(filename, groups, headings, head_names, cfg):
         ElementTree.SubElement(xml, "group", attrib=attrib)
 
     with open(filename, "wb") as output:
-        out = ElementTree.tostring(xml, encoding="utf8")
-        reparsed = minidom.parseString(out.decode('utf8'))
-        output.write(reparsed.toprettyxml(indent="\t", encoding="utf8"))
+        out = ElementTree.tostring(xml, encoding="utf-8")
+        reparsed = minidom.parseString(out.decode('utf-8'))
+        output.write(reparsed.toprettyxml(indent="\t", encoding="utf-8"))
 
     return True
