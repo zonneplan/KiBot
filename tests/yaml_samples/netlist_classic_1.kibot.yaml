@@ -1,0 +1,10 @@
+# This is a working example.
+# For a more complete reference use `--example`
+kibot:
+  version: 1
+
+outputs:
+  - name: classic_netlist
+    comment: Schematic netlist in KiCad format
+    type: netlist
+    dir: Export
