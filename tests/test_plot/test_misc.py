@@ -34,6 +34,7 @@ import re
 import shutil
 import logging
 import subprocess
+import json
 # Look for the 'utils' module from where the script is running
 prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if prev_dir not in sys.path:
@@ -1211,3 +1212,16 @@ def test_netlist_ipc_1(test_dir):
     ctx = context.TestContext(test_dir, 'test_netlist_ipc_1', prj, 'netlist_ipc_1', dir_o)
     ctx.run()
     ctx.expect_out_file(os.path.join(dir_o, prj+'-IPC-D-356.d356'))
+
+
+def test_dependencies_1(test_dir):
+    dep = 'KiCad Automation tools'
+    ctx = context.TestContext(test_dir, 'test_dependencies_1', 'bom', 'netlist_ipc_1', '')
+    ctx.run(extra=['--help-dependencies'], no_board_file=True, no_out_dir=True, no_yaml_file=True)
+    ctx.search_out(dep)
+    ctx.run(extra=['--help-dependencies', '--markdown'], no_board_file=True, no_out_dir=True, no_yaml_file=True)
+    ctx.search_out(r'\*\*'+dep+r'\*\*')
+    ctx.run(extra=['--help-dependencies', '--json'], no_board_file=True, no_out_dir=True, no_yaml_file=True)
+    with open(ctx.get_out_path('output.txt'), 'rt') as f:
+        data = json.load(f)
+    assert dep in data
