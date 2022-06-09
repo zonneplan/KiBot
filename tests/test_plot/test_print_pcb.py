@@ -96,3 +96,10 @@ def test_print_wrong_paste(test_dir):
     ctx.expect_out_file(fname)
     ctx.search_err(r'Pad with solder paste, but no copper')
     ctx.clean_up()
+
+
+def test_pcb_print_simple_1(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, 'test_pcb_print_simple_1', prj, 'pcb_print_2', '')
+    ctx.run()
+    ctx.expect_out_file(prj+'-assembly_page_01.png')
