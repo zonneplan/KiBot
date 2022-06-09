@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Components with mounting hole where excluded (#201)
 - GenCAD output targets.
 - Problems expanding multiple KiCad variables in the same value.
+- XML BoM: Fixed problems with fields containing / (#206)
 
 ### Changed
 - KiCad environment variables: more variables detected, native KiCad 6 names,

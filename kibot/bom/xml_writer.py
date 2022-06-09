@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -55,16 +55,16 @@ def write_xml(filename, groups, headings, head_names, cfg):
         for i, h in enumerate(head_names):
             # Adapt the column name to a valid XML attribute name
             h = h.replace(' ', '_')
+            h = h.replace('/', '_')
             h = h.replace('"', '')
             h = h.replace("'", '')
             h = h.replace('#', '_num')
             attrib[h] = str(row[i])
         ElementTree.SubElement(xml, "group", attrib=attrib)
 
-    # Most of the UTF-8 enforcement here is for Windows
-    # Selecting it in the tostring  call is enough for Linux
-    with open(filename, "wt", encoding="utf-8") as output:
-        out = ElementTree.tostring(xml, encoding="utf-8")
-        output.write(minidom.parseString(out).toprettyxml(indent="\t", encoding="utf-8").decode("utf-8"))
+    with open(filename, "wb") as output:
+        out = ElementTree.tostring(xml, encoding="utf8")
+        reparsed = minidom.parseString(out.decode('utf8'))
+        output.write(reparsed.toprettyxml(indent="\t", encoding="utf8"))
 
     return True
