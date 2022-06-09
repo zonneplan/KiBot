@@ -220,8 +220,10 @@ class Navigate_ResultsOptions(BaseOptions):
                             break
                     if rep_file:
                         break
-            cat, _ = self.get_image_for_file(rep_file, cat, no_icon=True)
-        elif cat in CAT_IMAGE:
+            if rep_file:
+                cat, _ = self.get_image_for_file(rep_file, cat, no_icon=True)
+                return cat
+        if cat in CAT_IMAGE:
             img = self.copy(CAT_IMAGE[cat], BIG_ICON)
             cat_img = '<img src="{}" alt="{}" width="{}" height="{}">'.format(img, cat, BIG_ICON, BIG_ICON)
             cat = ('<table class="cat-img"><tr><td>{}<br>{}</td></tr></table>'.
