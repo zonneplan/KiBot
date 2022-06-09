@@ -26,3 +26,10 @@ outputs:
               color: '#14332440'
             - layer: Edge.Cuts
               color: "#004040"
+        - monochrome: true
+          layers:
+            - layer: F.Cu
+            - layer: F.Mask
+              color: '#14332440'
+            - layer: Edge.Cuts
+              color: "#004040"

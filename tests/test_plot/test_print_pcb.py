@@ -103,3 +103,4 @@ def test_pcb_print_simple_1(test_dir):
     ctx = context.TestContext(test_dir, 'test_pcb_print_simple_1', prj, 'pcb_print_2', '')
     ctx.run()
     ctx.expect_out_file(prj+'-assembly_page_01.png')
+    ctx.expect_out_file(prj+'-assembly_page_02.png')
