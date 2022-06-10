@@ -104,3 +104,5 @@ def test_pcb_print_simple_1(test_dir):
     ctx.run()
     ctx.expect_out_file(prj+'-assembly_page_01.png')
     ctx.expect_out_file(prj+'-assembly_page_02.png')
+    ctx.expect_out_file(prj+'-assembly_page_01.eps')
+    ctx.expect_out_file(prj+'-assembly_page_01.svg')

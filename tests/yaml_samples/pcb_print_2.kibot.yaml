@@ -33,3 +33,44 @@ outputs:
               color: '#14332440'
             - layer: Edge.Cuts
               color: "#004040"
+
+  - name: 'print_bottom'
+    comment: "Experiment"
+    type: pcb_print
+    options:
+      plot_sheet_reference: true
+      dnf_filter: _mechanical
+      format: 'EPS'
+      scaling: 0
+      sheet_reference_layout: '${KIPRJMOD}/../../data/test_img.kicad_wks'
+      # frame_plot_mechanism: gui slow
+      # frame_plot_mechanism: plot only k6
+      drill_marks: small
+      force_edge_cuts: true
+      pages:
+        - layers:
+            - layer: B.Cu
+            - layer: B.Mask
+              color: '#14332440'
+          sort_layers: true
+          monochrome: true
+          mirror: true
+          sheet_reference_color: "#A02020"
+
+  - name: 'print_bottom_2'
+    comment: "Experiment"
+    type: pcb_print
+    options:
+      plot_sheet_reference: true
+      dnf_filter: _mechanical
+      format: 'SVG'
+      # frame_plot_mechanism: gui slow
+      # frame_plot_mechanism: plot only k6
+      drill_marks: none
+      force_edge_cuts: true
+      pages:
+        - layers:
+            - layer: B.Cu
+            - layer: B.Mask
+              color: '#14332440'
+          sheet_reference_color: "#A02020"
