@@ -1469,7 +1469,7 @@ Notes:
             - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
@@ -1694,7 +1694,7 @@ Notes:
             - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
@@ -2067,7 +2067,7 @@ Notes:
         - `colored_vias`: [boolean=true] Plot vias in a different color. Like KiCad GUI does.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
+        - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `frame_plot_mechanism`: [string='internal'] [gui,internal,plot] Plotting the frame from Python is problematic.
                                   This option selects a workaround strategy.
                                   gui: uses KiCad GUI to do it. Is slow but you get the correct frame.
@@ -2181,7 +2181,7 @@ Notes:
             - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
@@ -2212,7 +2212,7 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                     A short-cut to use for simple cases where a variant is an overkill.
-    - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+    - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
     - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
     - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
@@ -2251,14 +2251,14 @@ Notes:
     - **`options`**: [dict] Options for the `pdf_pcb_print` output.
       * Valid keys:
         - **`plot_sheet_reference`**: [boolean=true] Include the title-block.
-        - **`scaling`**: [number=1.0] Scale factor (0 means autoscaling).
+        - **`scaling`**: [number=1.0] Scale factor (0 means autoscaling). You should disable `plot_sheet_reference` when using it.
         - **`separated`**: [boolean=false] Print layers in separated pages.
         - `color_theme`: [string='_builtin_classic'] Selects the color theme. Onlyu applies to KiCad 6.
                          To use the KiCad 6 default colors select `_builtin_default`.
                          Usually user colors are stored as `user`, but you can give it another name.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
+        - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `force_edge_cuts`: [boolean=true] Only useful for KiCad 6 when printing in one page, you can disable the edge here.
                              KiCad 5 forces it by default, and you can't control it from config files.
                              Same for KiCad 6 when printing to separated pages.
@@ -2411,7 +2411,7 @@ Notes:
             - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
@@ -2457,13 +2457,7 @@ Notes:
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
-    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
-    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
-                                Useful when this output extends another and you don't want to generate the original.
-                                Use the boolean true value to disable the output you are extending.
-    - `extends`: [string=''] Copy the `options` section from the indicated output.
-    - `options`: [dict] Options for the `boardview` output.
+    - **`options`**: [dict] Options for the `boardview` output.
       * Valid keys:
         - **`lib`**: [string='QR'] Short name for the library.
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=qr, %x=lib). Affected by global options.
@@ -2479,6 +2473,12 @@ Notes:
             - `size_units`: [string='millimeters'] [millimeters,inches] Units used for the size.
         - `reference`: [string='QR'] The reference prefix.
         - `use_sch_dir`: [boolean=true] Generate the libs relative to the schematic/PCB dir.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=90] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2670,7 +2670,7 @@ Notes:
             - `output`: [string='Custom_report.txt'] File name for the custom report.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `drill_marks`: [string='full'] what to use to indicate the drill places, can be none, small or full (for real scale).
+        - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `edge_cut_extension`: [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
@@ -2718,14 +2718,14 @@ Notes:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=layers, %x=svg). Affected by global options.
         - *output_name*: Alias for output.
         - **`plot_sheet_reference`**: [boolean=true] Include the title-block.
-        - **`scaling`**: [number=1.0] Scale factor (0 means autoscaling).
+        - **`scaling`**: [number=1.0] Scale factor (0 means autoscaling). You should disable `plot_sheet_reference` when using it.
         - **`separated`**: [boolean=false] Print layers in separated pages.
         - `color_theme`: [string='_builtin_classic'] Selects the color theme. Onlyu applies to KiCad 6.
                          To use the KiCad 6 default colors select `_builtin_default`.
                          Usually user colors are stored as `user`, but you can give it another name.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `drill_marks`: [string='full'] What to use to indicate the drill places, can be none, small or full (for real scale).
+        - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `enable_ki5_page_fix`: [boolean=true] Enable workaround for KiCad 5 bug.
         - `enable_ki6_page_fix`: [boolean=true] Enable workaround for KiCad 6 bug #11033.
         - `force_edge_cuts`: [boolean=true] Only useful for KiCad 6 when printing in one page, you can disable the edge here.

@@ -28,6 +28,7 @@ from .kiplot import check_script, exec_with_retry, add_extra_options
 from .registrable import RegDependency
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
+from .drill_marks import DRILL_MARKS_MAP, drill_marks_setter, drill_marks_help
 from .layer import Layer, get_priority
 from . import __version__
 from . import log
@@ -223,7 +224,6 @@ class PagesOptions(Optionable):
 
 class PCB_PrintOptions(VariantOptions):
     # Mappings to KiCad config values. They should be the same used in drill_marks.py
-    _drill_marks_map = {'none': 0, 'small': 1, 'full': 2}
     _pad_colors = {'pad_color': 'pad_through_hole',
                    'via_color': 'via_through',
                    'micro_via_color': 'via_micro',
@@ -237,8 +237,6 @@ class PCB_PrintOptions(VariantOptions):
             """ *Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg)"""
             self.hide_excluded = False
             """ Hide components in the Fab layer that are marked as excluded by a variant """
-            self._drill_marks = 'full'
-            """ What to use to indicate the drill places, can be none, small or full (for real scale) """
             self.color_theme = '_builtin_classic'
             """ *Selects the color theme. Only applies to KiCad 6.
                 To use the KiCad 6 default colors select `_builtin_default`.
@@ -295,6 +293,7 @@ class PCB_PrintOptions(VariantOptions):
             """ Color for the background when `add_background` is enabled """
             self.background_image = ''
             """ Background image, must be an SVG, only when `add_background` is enabled """
+        drill_marks_help(self)
         super().__init__()
         self._expand_id = 'assembly'
 
@@ -304,9 +303,7 @@ class PCB_PrintOptions(VariantOptions):
 
     @drill_marks.setter
     def drill_marks(self, val):
-        if val not in self._drill_marks_map:
-            raise KiPlotConfigurationError("Unknown drill mark type: {}".format(val))
-        self._drill_marks = val
+        self._drill_marks = drill_marks_setter(val)
 
     def config(self, parent):
         super().config(parent)
@@ -324,7 +321,7 @@ class PCB_PrintOptions(VariantOptions):
                         la.color = layer_id2color[la._id]
                     else:
                         la.color = "#000000"
-        self._drill_marks = PCB_PrintOptions._drill_marks_map[self._drill_marks]
+        self._drill_marks = DRILL_MARKS_MAP[self._drill_marks]
         self._expand_ext = self.format.lower()
         for member, color in self._pad_colors.items():
             if getattr(self, member):

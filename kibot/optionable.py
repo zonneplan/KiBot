@@ -16,7 +16,7 @@ from . import log
 logger = log.get_logger()
 
 
-def filter(v):
+def do_filter(v):
     return inspect.isclass(v) or not (callable(v) or isinstance(v, (dict, list)))
 
 
@@ -125,7 +125,9 @@ class Optionable(object):
             # Map known attributes and avoid mapping private ones
             if (k[0] == '_') or (k not in attrs):
                 if self._unkown_is_error:
-                    raise KiPlotConfigurationError("Unknown {}option `{}`".format(self._error_context, k))
+                    valid = list(filter(lambda x: x[0] != '_', attrs.keys()))
+                    raise KiPlotConfigurationError("Unknown {}option `{}`. Valid options: {}".
+                                                   format(self._error_context, k, valid))
                 logger.warning(W_UNKOPS + "Unknown {}option `{}`".format(self._error_context, k))
                 continue
             # Check the data type
@@ -203,7 +205,7 @@ class Optionable(object):
 
     def get_attrs_for(self):
         """ Returns all attributes """
-        return dict(inspect.getmembers(self, filter))
+        return dict(inspect.getmembers(self, do_filter))
 
     def get_attrs_gen(self):
         """ Returns a (key, val) iterator on public attributes """

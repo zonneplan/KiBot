@@ -6,13 +6,13 @@
 import os
 from shutil import rmtree
 from .pre_base import BasePreFlight
-from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, kiauto_dependency
 from .out_base import VariantOptions
 from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
+from .drill_marks import drill_marks_help, drill_marks_setter
 from .layer import Layer
 from . import log
 
@@ -24,17 +24,12 @@ def register_deps(pre):
 
 
 class Any_PCB_PrintOptions(VariantOptions):
-    # Mappings to KiCad config values. They should be the same used in drill_marks.py
-    _drill_marks_map = {'none': 0, 'small': 1, 'full': 2}
-
     def __init__(self):
         with document:
             self.output_name = None
             """ {output} """
             self.scaling = 1.0
             """ *Scale factor (0 means autoscaling). You should disable `plot_sheet_reference` when using it """
-            self._drill_marks = 'full'
-            """ What to use to indicate the drill places, can be none, small or full (for real scale) """
             self.plot_sheet_reference = True
             """ *Include the title-block """
             self.monochrome = False
@@ -56,6 +51,7 @@ class Any_PCB_PrintOptions(VariantOptions):
             """ Selects the color theme. Onlyu applies to KiCad 6.
                 To use the KiCad 6 default colors select `_builtin_default`.
                 Usually user colors are stored as `user`, but you can give it another name """
+        drill_marks_help(self)
         super().__init__()
 
     @property
@@ -64,13 +60,11 @@ class Any_PCB_PrintOptions(VariantOptions):
 
     @drill_marks.setter
     def drill_marks(self, val):
-        if val not in self._drill_marks_map:
-            raise KiPlotConfigurationError("Unknown drill mark type: {}".format(val))
-        self._drill_marks = val
+        self._drill_marks = drill_marks_setter(val)
 
     def config(self, parent):
         super().config(parent)
-        self._drill_marks = Any_PCB_PrintOptions._drill_marks_map[self._drill_marks]
+        self._drill_marks = Any_PCB_PrintOptions.DRILL_MARKS_MAP[self._drill_marks]
 
     def filter_components(self, board, force_copy):
         if not self._comps and not force_copy:
