@@ -12,22 +12,12 @@ pytest-3 --log-cli-level debug
 """
 
 import os
-import sys
 import pytest
 import coverage
 import logging
 import sysconfig
 from subprocess import run, STDOUT, PIPE
-# Look for the 'utils' module from where the script is running
-prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
-# Utils import
-from utils import context
-# One more level for the project
-prev_dir = os.path.dirname(prev_dir)
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
+from . import context
 from kibot.misc import EXIT_BAD_CONFIG
 from kibot.kicad.config import KiConf
 from kibot.gs import GS
@@ -44,7 +34,7 @@ def test_kicad_conf_bad_sym_lib_table(test_dir):
         # All data is in the Schematic file.
         return
     sch = 'sym-lib-table_errors/kibom-test'
-    ctx = context.TestContextSCH(test_dir, sch, 'int_bom_simple_csv', None)
+    ctx = context.TestContextSCH(test_dir, sch, 'int_bom_simple_csv')
     ctx.run(EXIT_BAD_CONFIG, extra_debug=True)
     ctx.search_err('Malformed lib entry')
     ctx.search_err(r'Unable to expand .?BOGUS.? in')

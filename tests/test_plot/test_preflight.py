@@ -13,20 +13,13 @@ For debug information use:
 pytest-3 --log-cli-level debug
 
 """
-
 import os
-import sys
 import logging
 import re
 import json
 from subprocess import run, PIPE
-# Look for the 'utils' module from where the script is running
-prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
-# Utils import
-from utils import context
-from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH, EXIT_BAD_CONFIG)
+from . import context
+from kibot.misc import DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH, EXIT_BAD_CONFIG
 
 
 def test_erc_1(test_dir):

@@ -9,22 +9,12 @@ For debug information use:
 pytest-3 --log-cli-level debug
 
 """
-
 import os
-import sys
 import re
 import json
 import logging
-# Look for the 'utils' module from where the script is running
-prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
-# Utils import
-from utils import context
+from . import context
 from utils.lzstring import LZString
-prev_dir = os.path.dirname(prev_dir)
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
 from kibot.misc import (BOM_ERROR)
 
 BOM_DIR = 'BoM'
@@ -58,9 +48,7 @@ def test_ibom_1(test_dir):
     ctx.run()
     # Check all outputs are there
     # We use this format: %f_iBoM
-    name = os.path.join(BOM_DIR, prj+'_iBoM')
-    html = name+'.html'
-    ctx.expect_out_file(html)
+    ctx.expect_out_file_d(prj+'_iBoM.html')
     ctx.clean_up()
 
 
@@ -68,14 +56,13 @@ def test_ibom_no_ops(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'ibom_no_ops', BOM_DIR)
     ctx.run()
-    fname = os.path.join(BOM_DIR, IBOM_OUT)
-    ctx.expect_out_file(fname)
+    ctx.expect_out_file_d(IBOM_OUT)
     check_modules(ctx, IBOM_OUT, ['C1', 'R1', 'R2'])
     ctx.clean_up()
 
 
 def test_ibom_fail(test_dir):
-    ctx = context.TestContext(test_dir, 'ibom_fail', 'ibom', BOM_DIR)
+    ctx = context.TestContext(test_dir, 'ibom_fail', 'ibom')
     ctx.run(BOM_ERROR)
     ctx.clean_up()
 
@@ -84,20 +71,19 @@ def test_ibom_all_ops(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'ibom_all_ops', BOM_DIR, add_cfg_kmajor=True)
     ctx.run()
-    out = os.path.join(BOM_DIR, IBOM_OUT)
-    ctx.expect_out_file(out)
+    ctx.expect_out_file_d(IBOM_OUT)
     # These options are transferred as defaults:
-    ctx.search_in_file(out, [r'"dark_mode": true',
-                             r'"show_pads": false',
-                             r'"show_fabrication": true',
-                             r'"show_silkscreen": false',
-                             r'"highlight_pin1": true',
-                             r'"redraw_on_drag": false',
-                             r'"board_rotation": 18.0',  # 90/5
-                             r'"checkboxes": "Sourced,Placed,Bogus"',
-                             r'"bom_view": "top-bottom"',
-                             r'"layer_view": "B"',
-                             r'"fields": \["Value", "Footprint", "EF"\]'])
+    ctx.search_in_file_d(IBOM_OUT, [r'"dark_mode": true',
+                                    r'"show_pads": false',
+                                    r'"show_fabrication": true',
+                                    r'"show_silkscreen": false',
+                                    r'"highlight_pin1": true',
+                                    r'"redraw_on_drag": false',
+                                    r'"board_rotation": 18.0',  # 90/5
+                                    r'"checkboxes": "Sourced,Placed,Bogus"',
+                                    r'"bom_view": "top-bottom"',
+                                    r'"layer_view": "B"',
+                                    r'"fields": \["Value", "Footprint", "EF"\]'])
     ctx.clean_up()
 
 

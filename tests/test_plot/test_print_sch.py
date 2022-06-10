@@ -10,19 +10,13 @@ pytest-3 --log-cli-level debug
 """
 
 import os
-import sys
 import logging
 import coverage
-# Look for the 'utils' module from where the script is running
-prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
+from . import context
 from kibot.misc import (PDF_SCH_PRINT, SVG_SCH_PRINT)
 from kibot.kicad.v5_sch import Schematic, SchFileError, DrawPoligon, Pin
 from kibot.kicad.v6_sch import SchematicV6
 from kibot.globals import Globals
-# Utils import
-from utils import context
 
 PDF_DIR = ''
 PDF_FILE = 'Schematic.pdf'

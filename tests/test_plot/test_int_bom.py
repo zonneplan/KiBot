@@ -49,18 +49,9 @@ pytest-3 --log-cli-level debug
 """
 
 import os
-import sys
 import logging
 from base64 import b64decode
-# Look for the 'utils' module from where the script is running
-prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
-# Utils import
-from utils import context
-prev_dir = os.path.dirname(prev_dir)
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
+from . import context
 from kibot.misc import EXIT_BAD_CONFIG
 
 BOM_DIR = 'BoM'
@@ -270,7 +261,7 @@ def kibom_setup(test_dir, test, ext='csv'):
     prj = 'kibom-test'
     ctx = context.TestContextSCH(test_dir, prj, test, BOM_DIR, test_name=test)
     ctx.run()
-    out = prj + '-bom.' + ext
+    out = prj+'-bom.'+ext
     return ctx, out
 
 
@@ -280,7 +271,7 @@ def test_int_bom_simple_csv(test_dir):
     check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
     kibom_verif(rows, header)
     # Check not quoted and comma as delimiter
-    ctx.search_in_file(os.path.join(BOM_DIR, out), [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
+    ctx.search_in_file_d(out, [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
     ctx.clean_up()
 
 
@@ -291,7 +282,7 @@ def test_int_bom_csv_no_info(test_dir):
     check_csv_info(info, None, KIBOM_STATS)
     kibom_verif(rows, header)
     # Check not quoted and comma as delimiter
-    ctx.search_in_file(os.path.join(BOM_DIR, out), [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
+    ctx.search_in_file_d(out, [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
     ctx.clean_up()
 
 
@@ -302,7 +293,7 @@ def test_int_bom_csv_no_stats(test_dir):
     check_csv_info(info, KIBOM_PRJ_INFO, None)
     kibom_verif(rows, header)
     # Check not quoted and comma as delimiter
-    ctx.search_in_file(os.path.join(BOM_DIR, out), [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
+    ctx.search_in_file_d(out, [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
     ctx.clean_up()
 
 
@@ -313,7 +304,7 @@ def test_int_bom_csv_no_extra(test_dir):
     assert len(info) == 0
     kibom_verif(rows, header)
     # Check not quoted and comma as delimiter
-    ctx.search_in_file(os.path.join(BOM_DIR, out), [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
+    ctx.search_in_file_d(out, [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
     ctx.clean_up()
 
 
@@ -322,7 +313,7 @@ def test_int_bom_refuse_no_sep(test_dir):
     rows, header, info = ctx.load_csv(out)
     kibom_verif(rows, header)
     # Check not quoted and comma as delimiter
-    ctx.search_in_file(os.path.join(BOM_DIR, out), ['"'+KIBOM_TEST_HEAD[0]+'","'+KIBOM_TEST_HEAD[1]+'"'])
+    ctx.search_in_file_d(out, ['"'+KIBOM_TEST_HEAD[0]+'","'+KIBOM_TEST_HEAD[1]+'"'])
     ctx.clean_up()
 
 
@@ -332,7 +323,7 @@ def test_int_bom_simple_txt(test_dir):
     kibom_verif(rows, header)
     check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
     # Check all quoted and tab as delimiter
-    ctx.search_in_file(os.path.join(BOM_DIR, out), ['"'+KIBOM_TEST_HEAD[0]+'"\t"'+KIBOM_TEST_HEAD[1]+'"'])
+    ctx.search_in_file_d(out, ['"'+KIBOM_TEST_HEAD[0]+'"\t"'+KIBOM_TEST_HEAD[1]+'"'])
     ctx.clean_up()
 
 
@@ -1611,7 +1602,7 @@ def test_int_bom_merge_xml_1(test_dir):
 
 def test_int_bom_subparts_1(test_dir):
     prj = 'subparts'
-    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_subparts_1', '')
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_subparts_1')
     ctx.run(extra_debug=True)
     output = prj+'-bom.csv'
     ctx.expect_out_file(output)
@@ -1621,7 +1612,7 @@ def test_int_bom_subparts_1(test_dir):
 
 def test_int_bom_subparts_2(test_dir):
     prj = 'subparts_rename'
-    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_subparts_2', '')
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_subparts_2')
     ctx.run(extra_debug=True)
     output = prj+'-bom.csv'
     ctx.expect_out_file(output)
@@ -1631,7 +1622,7 @@ def test_int_bom_subparts_2(test_dir):
 
 def test_int_bom_subparts_3(test_dir):
     prj = 'subparts_rename'
-    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_subparts_3', '')
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_subparts_3')
     ctx.run(extra_debug=True)
     output = prj+'-bom.csv'
     ctx.expect_out_file(output)

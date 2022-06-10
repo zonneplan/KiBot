@@ -8,13 +8,7 @@ pytest-3 --log-cli-level debug
 """
 
 import os
-import sys
-# Look for the 'utils' module from where the script is running
-prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
-# Utils import
-from utils import context
+from . import context
 from kibot.misc import PLOT_ERROR
 from kibot.layer import Layer
 from kibot.gs import GS
@@ -101,7 +95,7 @@ def test_gerber_2layer(test_dir):
         r"R,2.000000X2.000000",
         r"C,1.000000"])
 
-    # expect a flash for the square pad
+    # Expect a flash for the square pad
     ctx.expect_gerber_flash_at(f_cu, 5, (140, -100))
 
     ctx.clean_up()
@@ -114,16 +108,15 @@ def test_gerber_inner_ok(test_dir):
     ctx.create_dummy_out_file(rarfile)
     ctx.run()
     files = [prj+'_GND_Cu.gbr', prj+'_Signal1.gbr', 'test-'+prj+'.gbrjob']
-    files = [os.path.join(GERBER_DIR, f) for f in files]
     for f in files:
-        ctx.expect_out_file(f)
-    ctx.test_compress(rarfile, files)
+        ctx.expect_out_file_d(f)
+    ctx.test_compress_d(rarfile, files)
     ctx.clean_up()
 
 
 def test_gerber_inner_wrong(test_dir):
     prj = 'good-project'
-    ctx = context.TestContext(test_dir, prj, 'gerber_inner_wrong', GERBER_DIR)
+    ctx = context.TestContext(test_dir, prj, 'gerber_inner_wrong')
     ctx.run(PLOT_ERROR)
     assert ctx.search_err('is not valid for this board')
     ctx.clean_up()
@@ -152,7 +145,7 @@ def check_components(ctx, dir, prefix, layers, suffix, exclude, include):
 
 def test_gerber_variant_1(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContext(test_dir, prj, 'gerber_variant_1', GERBER_DIR)
+    ctx = context.TestContext(test_dir, prj, 'gerber_variant_1')
     ctx.run()
     # R3 is a component added to the PCB, included in all cases
     # variant: default     directory: gerber      components: R1, R2 and R3
@@ -173,7 +166,7 @@ def test_gerber_protel_1(test_dir):
     ctx.run()
     exts = ALL_EXTS+INNER_EXTS
     for n, suf in enumerate(ALL_LAYERS+INNER_LAYERS):
-        ctx.expect_out_file(os.path.join(GERBER_DIR, prj+'_'+suf+'.'+exts[n]))
+        ctx.expect_out_file_d(prj+'_'+suf+'.'+exts[n])
     ctx.clean_up()
 
 
@@ -188,11 +181,10 @@ def test_gerber_protel_2(test_dir):
         ext = exts[n]
         if ext == 'gm1':
             ext = 'e_cut'
-        file = os.path.join(GERBER_DIR, prj+'_'+suf+'.'+ext.upper())
-        ctx.expect_out_file(file)
+        file = prj+'_'+suf+'.'+ext.upper()
+        ctx.expect_out_file_d(file)
         files.append(file)
     assert ctx.search_err('Layer "Inner layer 6" isn\'t used')
-    ctx.search_in_file(os.path.join(GERBER_DIR, 'Report.txt'),
-                       ['Top layer: good-project_F_Cu.GTL', 'Basename: good-project'])
-    ctx.test_compress(prj+'-result.tar.gz', files)
+    ctx.search_in_file_d('Report.txt', ['Top layer: good-project_F_Cu.GTL', 'Basename: good-project'])
+    ctx.test_compress_d(prj+'-result.tar.gz', files)
     ctx.clean_up()

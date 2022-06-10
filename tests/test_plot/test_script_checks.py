@@ -6,13 +6,9 @@ pytest-3 --log-cli-level debug
 
 """
 
-import os
-import sys
 import pytest
 import coverage
-prev_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
+from . import context   # noqa: F401
 from kibot.misc import (MISSING_TOOL, CMD_EESCHEMA_DO)
 from kibot.kiplot import (check_script, check_version)
 import kibot.kiplot

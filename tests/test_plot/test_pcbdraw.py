@@ -6,19 +6,9 @@ pytest-3 --log-cli-level debug
 """
 
 import os
-import sys
 import coverage
 from shutil import which
-# Look for the 'utils' module from where the script is running
-prev_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
-# Utils import
-from utils import context
-# One more level for the project
-prev_dir = os.path.dirname(prev_dir)
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
+from . import context
 from kibot.mcpyrate import activate  # noqa: F401
 from kibot.out_pcbdraw import PcbDrawOptions
 

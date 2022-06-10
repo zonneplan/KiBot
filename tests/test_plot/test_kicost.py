@@ -4,24 +4,17 @@ Tests for the KiCost output.
 For debug information use:
 pytest-3 --log-cli-level debug
 """
-
 import os.path as op
-import sys
 import re
-# Look for the 'utils' module from where the script is running
-prev_dir = op.dirname(op.dirname(op.abspath(__file__)))
-if prev_dir not in sys.path:
-    sys.path.insert(0, prev_dir)
-# Utils import
-from utils import context
+from . import context
 import logging
 import subprocess
-
 
 OUT_DIR = 'KiCost'
 
 
-def convert2csv(xlsx, skip_empty=False, sheet=None):
+def convert2csv(ctx, xlsx, skip_empty=False, sheet=None):
+    xlsx = ctx.get_out_path(op.join(OUT_DIR, xlsx))
     csv = xlsx[:-4]+'csv'
     logging.debug('Converting to CSV')
     cmd = ['xlsx2csv']
@@ -45,11 +38,10 @@ def convert2csv(xlsx, skip_empty=False, sheet=None):
 def check_simple(ctx, variant):
     if variant:
         variant = '_'+variant
-    name = op.join(OUT_DIR, 'simple'+variant+'.xlsx')
-    ctx.expect_out_file(name)
-    xlsx = ctx.get_out_path(name)
-    convert2csv(xlsx, skip_empty=True)
-    ctx.compare_txt(name[:-4]+'csv')
+    name = 'simple'+variant+'.xlsx'
+    ctx.expect_out_file_d(name)
+    convert2csv(ctx, name, skip_empty=True)
+    ctx.compare_txt_d2(name[:-4]+'csv')
 
 
 def test_kicost_simple(test_dir):
@@ -81,17 +73,17 @@ def test_kicost_bom_simple(test_dir):
     prj = 'kibom-variant_2c'
     ctx = context.TestContextSCH(test_dir, prj, 'int_bom_kicost_simple_xlsx', OUT_DIR)
     ctx.run(kicost=True)  # , extra_debug=True
-    output = op.join(OUT_DIR, prj+'-bom.xlsx')
-    ctx.expect_out_file(output)
-    convert2csv(ctx.get_out_path(output), sheet='Costs')
+    output = prj+'-bom.xlsx'
+    ctx.expect_out_file_d(output)
+    convert2csv(ctx, output, sheet='Costs')
     csv = output[:-4]+'csv'
-    ctx.compare_txt(csv)
-    convert2csv(ctx.get_out_path(output), sheet='Costs (DNF)')
-    ctx.compare_txt(csv, output[:-5]+'_dnf.csv')
-    convert2csv(ctx.get_out_path(output), sheet='Specs')
-    ctx.compare_txt(csv, output[:-5]+'_spec.csv')
-    convert2csv(ctx.get_out_path(output), sheet='Specs (DNF)')
-    ctx.compare_txt(csv, output[:-5]+'_spec_dnf.csv')
+    ctx.compare_txt_d2(csv)
+    convert2csv(ctx, output, sheet='Costs (DNF)')
+    ctx.compare_txt_d2(csv, output[:-5]+'_dnf.csv')
+    convert2csv(ctx, output, sheet='Specs')
+    ctx.compare_txt_d2(csv, output[:-5]+'_spec.csv')
+    convert2csv(ctx, output, sheet='Specs (DNF)')
+    ctx.compare_txt_d2(csv, output[:-5]+'_spec_dnf.csv')
     ctx.clean_up()
 
 
@@ -100,13 +92,13 @@ def test_kicost_bom_sel_dist_1(test_dir):
     prj = 'kibom-variant_2c'
     ctx = context.TestContextSCH(test_dir, prj, 'int_bom_kicost_sel_dist_1_xlsx', OUT_DIR)
     ctx.run(kicost=True, extra_debug=True)  # , extra_debug=True
-    output = op.join(OUT_DIR, prj+'-bom.xlsx')
-    ctx.expect_out_file(output)
-    convert2csv(ctx.get_out_path(output), sheet='Costs')
+    output = prj+'-bom.xlsx'
+    ctx.expect_out_file_d(output)
+    convert2csv(ctx, output, sheet='Costs')
     csv = output[:-4]+'csv'
-    ctx.compare_txt(csv, output[:-5]+'_dk_mou.csv')
-    convert2csv(ctx.get_out_path(output), sheet='Costs (DNF)')
-    ctx.compare_txt(csv, output[:-5]+'_dk_mou_dnf.csv')
+    ctx.compare_txt_d2(csv, output[:-5]+'_dk_mou.csv')
+    convert2csv(ctx, output, sheet='Costs (DNF)')
+    ctx.compare_txt_d2(csv, output[:-5]+'_dk_mou_dnf.csv')
     ctx.clean_up()
 
 
@@ -118,8 +110,8 @@ def test_kicost_bom_merge_1(test_dir):
         yaml += '_k6'
     ctx = context.TestContextSCH(test_dir, prj, yaml, OUT_DIR)
     ctx.run(kicost=True)  # , extra_debug=True
-    output = op.join(OUT_DIR, prj+'-bom.xlsx')
-    ctx.expect_out_file(output)
-    convert2csv(ctx.get_out_path(output), sheet='Costs')
+    output = prj+'-bom.xlsx'
+    ctx.expect_out_file_d(output)
+    convert2csv(ctx, output, sheet='Costs')
     csv = output[:-4]+'csv'
-    ctx.compare_txt(csv)
+    ctx.compare_txt_d2(csv)
