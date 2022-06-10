@@ -23,7 +23,7 @@ from kibot.misc import CORRUPTED_SCH
 def setup_ctx(test_dir, test, error):
     sch = ('v5' if context.ki5() else 'v6')+'_errors/error_'+test
     test = 'test_sch_errors_'+test
-    ctx = context.TestContextSCH(test_dir, test, sch, 'int_bom_simple_csv', None)
+    ctx = context.TestContextSCH(test_dir, sch, 'int_bom_simple_csv', None, test_name='sch_'+test)
     ctx.run(CORRUPTED_SCH)
     ctx.search_err(error)
     ctx.clean_up()
@@ -320,5 +320,5 @@ def test_imported_k6(test_dir):
     """ Test we can load an schematic with an imported sub-sheet (#178) """
     if context.ki6():
         prj = 'imported_top'
-        ctx = context.TestContextSCH(test_dir, 'test_imported_k6', prj, 'int_bom_simple_csv', None)
+        ctx = context.TestContextSCH(test_dir, prj, 'int_bom_simple_csv', None)
         ctx.run()

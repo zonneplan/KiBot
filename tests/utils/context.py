@@ -98,7 +98,11 @@ def cover_it(cov):
 
 class TestContext(object):
 
-    def __init__(self, test_dir, test_name, board_name, yaml_name, sub_dir, yaml_compressed=False, add_cfg_kmajor=False):
+    def __init__(self, test_dir, board_name, yaml_name, sub_dir, yaml_compressed=False, add_cfg_kmajor=False, test_name=None):
+        if test_name is None:
+            test_name = sys._getframe(1).f_code.co_name
+        if test_name.startswith('test_'):
+            test_name = test_name[5:]
         self.kicad_version = kicad_version
         if add_cfg_kmajor:
             major = kicad_major
@@ -769,6 +773,8 @@ class TestContext(object):
 
 class TestContextSCH(TestContext):
 
-    def __init__(self, test_dir, test_name, board_name, yaml_name, sub_dir):
+    def __init__(self, test_dir, board_name, yaml_name, sub_dir, test_name=None):
         self.mode = MODE_SCH
-        super().__init__(test_dir, test_name, board_name, yaml_name, sub_dir)
+        if test_name is None:
+            test_name = sys._getframe(1).f_code.co_name
+        super().__init__(test_dir, board_name, yaml_name, sub_dir, test_name=test_name)

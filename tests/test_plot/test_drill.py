@@ -23,8 +23,8 @@ DRILL_DIR = 'Drill'
 positions = {'R1': (105, 35, 'top'), 'R2': (110, 35, 'bottom'), 'R3': (110, 45, 'top')}
 
 
-def do_3Rs(test_dir, conf, dir, modern, single=False):
-    ctx = context.TestContext(test_dir, dir, '3Rs_bv', conf, DRILL_DIR)
+def do_3Rs(test_dir, conf, modern, single=False):
+    ctx = context.TestContext(test_dir, '3Rs_bv', conf, DRILL_DIR, test_name=sys._getframe(1).f_code.co_name)
     ctx.run()
     # Check all outputs are there
     pth_drl = ctx.get_pth_drl_filename()
@@ -91,16 +91,16 @@ def do_3Rs(test_dir, conf, dir, modern, single=False):
 
 
 def test_drill_3Rs(test_dir):
-    do_3Rs(test_dir, 'drill', 'test_drill_3Rs', True)
+    do_3Rs(test_dir, 'drill', True)
 
 
 def test_drill_single_3Rs(test_dir):
-    do_3Rs(test_dir, 'drill_single', 'test_drill_single_3Rs', True, True)
+    do_3Rs(test_dir, 'drill_single', True, True)
 
 
 def test_drill_legacy_3Rs(test_dir):
-    do_3Rs(test_dir, 'drill_legacy', 'test_drill_legacy_3Rs', False)
+    do_3Rs(test_dir, 'drill_legacy', False)
 
 
 def test_drill_legacy_s_3Rs(test_dir):
-    do_3Rs(test_dir, 'drill_legacy_s', 'test_drill_legacy_s_3Rs', False, True)
+    do_3Rs(test_dir, 'drill_legacy_s', False, True)

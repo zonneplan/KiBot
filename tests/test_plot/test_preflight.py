@@ -31,7 +31,7 @@ from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTE
 
 def test_erc_1(test_dir):
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'ERC', prj, 'erc', '')
+    ctx = context.TestContext(test_dir, prj, 'erc', '')
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt')
@@ -41,7 +41,7 @@ def test_erc_1(test_dir):
 def test_erc_fail_1(test_dir):
     """ Using an SCH with ERC errors """
     prj = 'fail-erc'
-    ctx = context.TestContext(test_dir, 'ERCFail1', prj, 'erc', '')
+    ctx = context.TestContext(test_dir, prj, 'erc', '')
     ctx.run(ERC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt')
@@ -51,7 +51,7 @@ def test_erc_fail_1(test_dir):
 def test_erc_fail_2(test_dir):
     """ Using a dummy SCH """
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'ERCFail2', prj, 'erc', '')
+    ctx = context.TestContext(test_dir, prj, 'erc', '')
     ctx.run(CORRUPTED_SCH)
     ctx.clean_up()
 
@@ -59,7 +59,7 @@ def test_erc_fail_2(test_dir):
 def test_erc_warning_1(test_dir):
     """ Using an SCH with ERC warnings """
     prj = 'warning-project'
-    ctx = context.TestContextSCH(test_dir, 'test_erc_warning_1', 'erc_warning/'+prj, 'erc', '')
+    ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc', '')
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt')
@@ -70,7 +70,7 @@ def test_erc_warning_1(test_dir):
 def test_erc_warning_2(test_dir):
     """ Using an SCH with ERC warnings as errors """
     prj = 'warning-project'
-    ctx = context.TestContextSCH(test_dir, 'test_erc_warning_2', 'erc_warning/'+prj, 'erc_no_w', '')
+    ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc_no_w', '')
     ctx.run(ERC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt')
@@ -80,7 +80,7 @@ def test_erc_warning_2(test_dir):
 
 def test_drc_1(test_dir):
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'DRC', prj, 'drc', '')
+    ctx = context.TestContext(test_dir, prj, 'drc', '')
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt')
@@ -89,7 +89,7 @@ def test_drc_1(test_dir):
 
 def test_drc_filter(test_dir):
     prj = 'fail-project'
-    ctx = context.TestContext(test_dir, 'DRC_Filter', prj, 'drc_filter', '')
+    ctx = context.TestContext(test_dir, prj, 'drc_filter', '')
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt')
@@ -100,7 +100,7 @@ def test_drc_filter(test_dir):
 def test_drc_unco(test_dir):
     """ Check we can ignore unconnected nets """
     prj = 'warning-project'
-    ctx = context.TestContext(test_dir, 'DRCUnco', prj, 'drc_unco', '')
+    ctx = context.TestContext(test_dir, prj, 'drc_unco', '')
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt')
@@ -110,7 +110,7 @@ def test_drc_unco(test_dir):
 def test_drc_error(test_dir):
     """ Check we catch DRC errors """
     prj = 'warning-project'
-    ctx = context.TestContext(test_dir, 'DRCError', prj, 'drc', '')
+    ctx = context.TestContext(test_dir, prj, 'drc', '')
     ctx.run(DRC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt')
@@ -120,7 +120,7 @@ def test_drc_error(test_dir):
 def test_drc_fail(test_dir):
     """ Check we dummy PCB """
     prj = 'bom_no_xml'
-    ctx = context.TestContext(test_dir, 'DRCFail', prj, 'drc', '')
+    ctx = context.TestContext(test_dir, prj, 'drc', '')
     ctx.run(CORRUPTED_PCB)
     ctx.clean_up()
 
@@ -130,7 +130,7 @@ def test_drc_time_out(test_dir):
         # KiCad 6 has Python binding, no time-out problems!
         return
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'test_drc_time_out', prj, 'drc_time_out', '')
+    ctx = context.TestContext(test_dir, prj, 'drc_time_out', '')
     ctx.run(DRC_ERROR)
     ctx.search_err('Time out detected')
     ctx.search_err('kiauto_wait_start must be integer')
@@ -139,7 +139,7 @@ def test_drc_time_out(test_dir):
 
 def test_update_xml_1(test_dir):
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'Update_XML', prj, 'update_xml', '')
+    ctx = context.TestContext(test_dir, prj, 'update_xml', '')
     # The XML should be created where the schematic is located
     xml = os.path.abspath(os.path.join(ctx.get_board_dir(), prj+'.xml'))
     os.rename(xml, xml+'-bak')
@@ -159,7 +159,7 @@ def test_update_xml_1(test_dir):
 def test_update_xml_fail(test_dir):
     """ Using a dummy SCH """
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'Update_XMLFail', prj, 'update_xml', '')
+    ctx = context.TestContext(test_dir, prj, 'update_xml', '')
     ctx.run(BOM_ERROR)
     ctx.clean_up()
 
@@ -167,7 +167,7 @@ def test_update_xml_fail(test_dir):
 def test_sch_replace_1(test_dir):
     """ Tags replacements in an schematic """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_sch_replace_1', prj, 'sch_replace_1', '')
+    ctx = context.TestContext(test_dir, prj, 'sch_replace_1', '')
     ctx.run(extra=[])
     files = {}
     file = ctx.sch_file
@@ -209,7 +209,7 @@ def test_sch_replace_1(test_dir):
 def test_pcb_replace_1(test_dir):
     """ Tags replacements in a PCB """
     prj = 'light_control'
-    ctx = context.TestContext(test_dir, 'test_pcb_replace_1', prj, 'pcb_replace_1', '')
+    ctx = context.TestContext(test_dir, prj, 'pcb_replace_1', '')
     ctx.run(extra=[])
     file = ctx.board_file
     file_back = file + '-bak'
@@ -239,7 +239,7 @@ def test_pcb_replace_1(test_dir):
 def test_set_text_variables_1(test_dir):
     """ KiCad 6 variables """
     prj = 'test_vars'
-    ctx = context.TestContextSCH(test_dir, 'test_set_text_variables_1', prj, 'set_text_variables_1', '')
+    ctx = context.TestContextSCH(test_dir, prj, 'set_text_variables_1', '')
     if context.ki5():
         ctx.run(EXIT_BAD_CONFIG)
     else:

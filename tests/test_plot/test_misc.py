@@ -56,7 +56,7 @@ MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_
 
 def test_skip_pre_and_outputs(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'SkipPreAndPos', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(extra=['-s', 'all', '-i'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -68,7 +68,7 @@ def test_skip_pre_and_outputs(test_dir):
 
 def test_skip_pre_and_outputs_2(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'SkipPreAndPos2', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(extra=['-s', 'run_erc,update_xml,run_drc', '-i'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -82,7 +82,7 @@ def test_skip_pre_and_outputs_2(test_dir):
 
 def test_skip_pre_and_outputs_3(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'SkipPreAndPos3', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'all,run_drc'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -93,7 +93,7 @@ def test_skip_pre_and_outputs_3(test_dir):
 
 def test_skip_pre_and_outputs_4(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'SkipPreAndPos4', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'bogus'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -104,7 +104,7 @@ def test_skip_pre_and_outputs_4(test_dir):
 
 def test_skip_pre_and_outputs_5(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'SkipPreAndPos4', prj, 'pre_skip', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_skip', POS_DIR)
     ctx.run(extra=['-s', 'run_erc,run_drc'])
     assert ctx.search_err('no need to skip')
     ctx.clean_up()
@@ -112,7 +112,7 @@ def test_skip_pre_and_outputs_5(test_dir):
 
 def test_unknown_out_type(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'test_unknown_out_type', prj, 'unknown_out', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'unknown_out', POS_DIR)
     ctx.run(EXIT_BAD_CONFIG)
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -123,7 +123,7 @@ def test_unknown_out_type(test_dir):
 
 def test_unknown_out_name_1(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'test_unknown_out_name_1', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'all', '-C', 'pp'])
     assert ctx.search_err("Unknown output .?pp")
     ctx.clean_up()
@@ -131,7 +131,7 @@ def test_unknown_out_name_1(test_dir):
 
 def test_unknown_out_name_2(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'test_unknown_out_name_1', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'all', 'pp'])
     assert ctx.search_err("Unknown output .?pp")
     ctx.clean_up()
@@ -139,7 +139,7 @@ def test_unknown_out_name_2(test_dir):
 
 def test_select_output(test_dir):
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'DoASCIISkipCSV', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(extra=['-s', 'all', 'pos_ascii'])
 
     ctx.dont_expect_out_file(ctx.get_pos_both_csv_filename())
@@ -151,7 +151,7 @@ def test_select_output(test_dir):
 
 def test_miss_sch(test_dir):
     prj = 'fail-project'
-    ctx = context.TestContext(test_dir, 'MissingSCH', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['pos_ascii'])
 
     assert ctx.search_err('No SCH file found')
@@ -161,7 +161,7 @@ def test_miss_sch(test_dir):
 
 def test_miss_sch_2(test_dir):
     prj = 'fail-project'
-    ctx = context.TestContext(test_dir, 'MissingSCH_2', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(NO_SCH_FILE, no_board_file=True, extra=['-e', 'bogus', 'pos_ascii'])
 
     assert ctx.search_err('Schematic file not found')
@@ -171,7 +171,7 @@ def test_miss_sch_2(test_dir):
 
 def test_miss_pcb(test_dir):
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'MissingPCB', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.board_file = 'bogus'
     ctx.run(NO_PCB_FILE, extra=['-s', 'run_erc,update_xml', 'pos_ascii'])
 
@@ -181,7 +181,7 @@ def test_miss_pcb(test_dir):
 
 
 def test_miss_pcb_2(test_dir):
-    ctx = context.TestContext(test_dir, 'MissingPCB_2', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, no_board_file=True, extra=['-s', 'run_erc,update_xml', 'pos_ascii'])
 
     assert ctx.search_err('No PCB file found')
@@ -191,7 +191,7 @@ def test_miss_pcb_2(test_dir):
 
 def test_miss_yaml(test_dir):
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'MissingYaml', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, no_yaml_file=True)
 
     assert ctx.search_err('No config file')
@@ -201,7 +201,7 @@ def test_miss_yaml(test_dir):
 
 def test_miss_yaml_2(test_dir):
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'MissingYaml_wrong', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.yaml_file = 'bogus'
     ctx.run(EXIT_BAD_ARGS)
 
@@ -214,7 +214,7 @@ def test_auto_pcb_and_cfg_1(test_dir):
     """ Test guessing the PCB and config file.
         Only one them is there. """
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'GuessPCB_cfg', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
 
     board_file = os.path.basename(ctx.board_file)
     shutil.copy2(ctx.board_file, ctx.get_out_path(board_file))
@@ -235,7 +235,7 @@ def test_auto_pcb_and_cfg_2(test_dir):
     """ Test guessing the PCB and config file.
         Two of them are there. """
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'GuessPCB_cfg_rep', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
 
     board_file = os.path.basename(ctx.board_file)
     shutil.copy2(ctx.board_file, ctx.get_out_path(board_file))
@@ -262,7 +262,7 @@ def test_auto_pcb_and_cfg_3(test_dir):
     """ Test guessing the SCH and config file.
         Only one them is there. """
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'GuessSCH_cfg', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
 
     sch = os.path.basename(ctx.sch_file)
     shutil.copy2(ctx.sch_file, ctx.get_out_path(sch))
@@ -282,7 +282,7 @@ def test_auto_pcb_and_cfg_4(test_dir):
         Two SCHs and one PCB.
         The SCH with same name as the PCB should be selected. """
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'GuessSCH_cfg_2', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
 
     sch = os.path.basename(ctx.sch_file)
     shutil.copy2(ctx.sch_file, ctx.get_out_path(sch))
@@ -304,7 +304,7 @@ def test_auto_pcb_and_cfg_5(test_dir):
     """ Test guessing the SCH and config file.
         Two SCHs. """
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, 'GuessSCH_cfg_3', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
 
     sch = os.path.basename(ctx.sch_file)
     shutil.copy2(ctx.sch_file, ctx.get_out_path(sch))
@@ -321,7 +321,7 @@ def test_auto_pcb_and_cfg_5(test_dir):
 
 
 def test_list(test_dir):
-    ctx = context.TestContext(test_dir, 'List', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--list'], no_verbose=True, no_out_dir=True)
 
     assert ctx.search_out('run_erc: True')
@@ -334,7 +334,7 @@ def test_list(test_dir):
 
 
 def test_help(test_dir):
-    ctx = context.TestContext(test_dir, 'Help', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help'], no_verbose=True, no_out_dir=True, no_yaml_file=True)
     assert ctx.search_out('Usage:')
     assert ctx.search_out('Arguments:')
@@ -343,7 +343,7 @@ def test_help(test_dir):
 
 
 def test_help_list_outputs(test_dir):
-    ctx = context.TestContext(test_dir, 'HelpListOutputs', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-list-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Supported outputs:')
     assert ctx.search_out('Gerber format')
@@ -351,7 +351,7 @@ def test_help_list_outputs(test_dir):
 
 
 def test_help_output(test_dir):
-    ctx = context.TestContext(test_dir, 'HelpOutput', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-output', 'gerber'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Gerber format')
     assert ctx.search_out('Type: .?gerber.?')
@@ -359,7 +359,7 @@ def test_help_output(test_dir):
 
 
 def test_help_output_unk(test_dir):
-    ctx = context.TestContext(test_dir, 'HelpOutputUnk', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['--help-output', 'bogus'], no_verbose=True, no_out_dir=True, no_yaml_file=True,
             no_board_file=True)
     assert ctx.search_err('Unknown output type')
@@ -367,14 +367,14 @@ def test_help_output_unk(test_dir):
 
 
 def test_help_filters(test_dir):
-    ctx = context.TestContext(test_dir, 'test_help_filters', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-filters'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Generic filter')
     ctx.clean_up()
 
 
 def test_help_output_plugin_1(test_dir, monkeypatch):
-    ctx = context.TestContext(test_dir, 'test_help_output_plugin_1', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
@@ -390,7 +390,7 @@ def test_help_output_plugin_1(test_dir, monkeypatch):
 
 
 def test_help_output_plugin_2(test_dir, monkeypatch):
-    ctx = context.TestContext(test_dir, 'test_help_output_plugin_2', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
@@ -404,7 +404,7 @@ def test_help_output_plugin_2(test_dir, monkeypatch):
 
 
 def test_help_output_plugin_3(test_dir, monkeypatch):
-    ctx = context.TestContext(test_dir, 'test_help_output_plugin_3', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
@@ -415,7 +415,7 @@ def test_help_output_plugin_3(test_dir, monkeypatch):
 
 
 def test_help_output_plugin_4(test_dir, monkeypatch):
-    ctx = context.TestContext(test_dir, 'test_help_output_plugin_4', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
@@ -426,7 +426,7 @@ def test_help_output_plugin_4(test_dir, monkeypatch):
 
 
 def test_help_outputs(test_dir):
-    ctx = context.TestContext(test_dir, 'HelpOutputs', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Gerber format')
     assert ctx.search_out('Type: .?gerber.?')
@@ -434,7 +434,7 @@ def test_help_outputs(test_dir):
 
 
 def test_help_preflights(test_dir):
-    ctx = context.TestContext(test_dir, 'HelpPreflights', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Supported preflight options')
     ctx.clean_up()
@@ -442,7 +442,7 @@ def test_help_preflights(test_dir):
 
 def test_example_1(test_dir):
     """ Example without board """
-    ctx = context.TestContext(test_dir, 'Example1', '3Rs', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True, no_board_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.clean_up()
@@ -450,7 +450,7 @@ def test_example_1(test_dir):
 
 def test_example_2(test_dir):
     """ Example with board """
-    ctx = context.TestContext(test_dir, 'Example2', 'good-project', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.search_in_file(EXAMPLE_CFG, ['layers: all'])
@@ -459,7 +459,7 @@ def test_example_2(test_dir):
 
 def test_example_3(test_dir):
     """ Overwrite error """
-    ctx = context.TestContext(test_dir, 'Example3', 'good-project', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.run(WONT_OVERWRITE, extra=['--example'], no_verbose=True, no_yaml_file=True)
@@ -468,7 +468,7 @@ def test_example_3(test_dir):
 
 def test_example_4(test_dir):
     """ Expand copied layers """
-    ctx = context.TestContext(test_dir, 'Example4', 'good-project', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'good-project', 'pre_and_position', '')
     ctx.run(extra=['--example', '-P'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.search_in_file(EXAMPLE_CFG, ['GND.Cu', 'pen_width: 35.0'])
@@ -478,7 +478,7 @@ def test_example_4(test_dir):
 
 def test_example_5(test_dir):
     """ Copy setting from PCB """
-    ctx = context.TestContext(test_dir, 'Example5', 'good-project', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'good-project', 'pre_and_position', '')
     output_dir = os.path.join(ctx.output_dir, 'pp')
     ctx.run(extra=['--example', '-p', '-d', output_dir], no_verbose=True, no_yaml_file=True, no_out_dir=True)
     file = os.path.join('pp', EXAMPLE_CFG)
@@ -489,7 +489,7 @@ def test_example_5(test_dir):
 
 def test_example_6(test_dir):
     """ Copy setting but no PCB """
-    ctx = context.TestContext(test_dir, 'Example6', 'good-project', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, 'good-project', 'pre_and_position', '')
     ctx.run(EXIT_BAD_ARGS, extra=['--example', '-p'], no_verbose=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_err('no PCB specified')
     ctx.clean_up()
@@ -497,7 +497,7 @@ def test_example_6(test_dir):
 
 def test_example_7(test_dir, monkeypatch):
     """ With dummy plug-ins """
-    ctx = context.TestContext(test_dir, 'Example7', '3Rs', 'pre_and_position', '')
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', '')
     ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
@@ -509,7 +509,7 @@ def test_example_7(test_dir, monkeypatch):
 
 def test_corrupted_pcb(test_dir):
     prj = 'bom_no_xml'
-    ctx = context.TestContext(test_dir, 'Corrupted', prj, 'print_pcb', '')
+    ctx = context.TestContext(test_dir, prj, 'print_pcb', '')
     ctx.run(CORRUPTED_PCB)
     assert ctx.search_err('Error loading PCB file')
     ctx.clean_up()
@@ -517,7 +517,7 @@ def test_corrupted_pcb(test_dir):
 
 def test_pcbdraw_fail(test_dir):
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'PcbDrawFail', prj, 'pcbdraw_fail', '')
+    ctx = context.TestContext(test_dir, prj, 'pcbdraw_fail', '')
     ctx.run(PCBDRAW_ERR)
     assert ctx.search_err('Failed to run')
     ctx.clean_up()
@@ -526,7 +526,7 @@ def test_pcbdraw_fail(test_dir):
 # This test was designed for `mcpy`.
 # `mcpyrate` can pass it using Python 3.8.6, but seems to have problems on the docker image.
 # def test_import_fail(test_dir):
-#     ctx = context.TestContext(test_dir, 'test_import_fail', '3Rs', 'pre_and_position', POS_DIR)
+#     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
 #     # Create a read only cache entry that we should delete
 #     call(['py3compile', 'kibot/out_any_layer.py'])
 #     cache_dir = os.path.join('kibot', '__pycache__')
@@ -551,7 +551,7 @@ def test_pcbdraw_fail(test_dir):
 #
 #
 # def test_import_no_fail(test_dir):
-#     ctx = context.TestContext(test_dir, 'test_import_no_fail', '3Rs', 'pre_and_position', POS_DIR)
+#     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
 #     # Create a cache entry that we should delete
 #     call(['py3compile', 'kibot/out_any_layer.py'])
 #     cache_dir = os.path.join('kibot', '__pycache__')
@@ -569,14 +569,14 @@ def test_pcbdraw_fail(test_dir):
 
 
 def test_wrong_global_redef(test_dir):
-    ctx = context.TestContext(test_dir, 'test_wrong_global_redef', '3Rs', 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position', POS_DIR)
     ctx.run(EXIT_BAD_ARGS, extra=['--global-redef', 'bogus'])
     assert ctx.search_err('Malformed global-redef option')
     ctx.clean_up()
 
 
 def test_no_pcbnew(test_dir):
-    ctx = context.TestContext(test_dir, 'test_no_pcbnew', 'bom', 'bom', '')
+    ctx = context.TestContext(test_dir, 'bom', 'bom', '')
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_pcbnew_error.py')]
     ctx.do_run(cmd, NO_PCBNEW_MODULE)
     ctx.search_err('Failed to import pcbnew Python module.')
@@ -584,21 +584,21 @@ def test_no_pcbnew(test_dir):
 
 
 def test_old_pcbnew(test_dir):
-    ctx = context.TestContext(test_dir, 'test_old_pcbnew', 'bom', 'bom', '')
+    ctx = context.TestContext(test_dir, 'bom', 'bom', '')
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_pcbnew_error.py'), 'fake']
     ctx.do_run(cmd)
     ctx.search_err('Unknown KiCad version, please install KiCad 5.1.6 or newer')
 
 
 def test_no_yaml(test_dir):
-    ctx = context.TestContext(test_dir, 'test_no_yaml', 'bom', 'bom', '')
+    ctx = context.TestContext(test_dir, 'bom', 'bom', '')
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_yaml_error.py')]
     ctx.do_run(cmd, NO_YAML_MODULE)
     ctx.search_err('No yaml module for Python, install python3-yaml')
 
 
 def test_no_colorama(test_dir):
-    ctx = context.TestContext(test_dir, 'test_no_colorama', 'bom', 'bom', '')
+    ctx = context.TestContext(test_dir, 'bom', 'bom', '')
     cmd = [os.path.abspath(os.path.dirname(os.path.abspath(__file__))+'/force_colorama_error.py')]
     ctx.do_run(cmd, use_a_tty=True)
     ctx.search_err(r'\[31m.\[1mERROR:Testing 1 2 3')
@@ -800,7 +800,7 @@ def check_makefile(ctx, mkfile, prj, dbg, txt):
 
 def test_makefile_1(test_dir):
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_makefile_1', prj, 'makefile_1', '')
+    ctx = context.TestContext(test_dir, prj, 'makefile_1', '')
     mkfile = ctx.get_out_path('Makefile')
     ctx.run(extra=['-s', 'all', 'archive'])
     ctx.run(extra=['-m', mkfile])
@@ -810,7 +810,7 @@ def test_makefile_1(test_dir):
 
 def test_makefile_2(test_dir):
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_makefile_2', prj, 'makefile_1', '')
+    ctx = context.TestContext(test_dir, prj, 'makefile_1', '')
     mkfile = ctx.get_out_path('Makefile')
     ctx.run(extra=['-s', 'all', 'archive'])
     ctx.run(extra=['-m', mkfile], no_verbose=True)
@@ -820,7 +820,7 @@ def test_makefile_2(test_dir):
 
 def test_empty_zip(test_dir):
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_empty_zip', prj, 'empty_zip', '')
+    ctx = context.TestContext(test_dir, prj, 'empty_zip', '')
     ctx.run()
     ctx.expect_out_file(prj+'-result.zip')
     ctx.search_err('No files provided, creating an empty archive')
@@ -828,7 +828,7 @@ def test_empty_zip(test_dir):
 
 
 def test_compress_fail_deps(test_dir, monkeypatch):
-    ctx = context.TestContext(test_dir, 'test_compress_fail_deps', '3Rs', 'compress_fail_deps', 'Test')
+    ctx = context.TestContext(test_dir, '3Rs', 'compress_fail_deps', 'Test')
     ctx.home_local_link()
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
@@ -840,7 +840,7 @@ def test_compress_fail_deps(test_dir, monkeypatch):
 def test_import_1(test_dir):
     """ Import some outputs """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_import_1', prj, 'import_test_1', '')
+    ctx = context.TestContext(test_dir, prj, 'import_test_1', '')
     ctx.run(extra=['-i'])
     ctx.search_err(r'Outputs loaded from `tests/yaml_samples/gerber_inner.kibot.yaml`: \[\'gerbers\', \'result\'\]')
     ctx.search_err(r'Outputs loaded from `tests/yaml_samples/ibom.kibot.yaml`: \[\'interactive_bom\'\]')
@@ -850,7 +850,7 @@ def test_import_1(test_dir):
 def test_import_2(test_dir):
     """ Import a global option """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_import_2', prj, 'import_test_2', '')
+    ctx = context.TestContext(test_dir, prj, 'import_test_2', '')
     ctx.run()
     ctx.expect_out_file(POS_DIR+'/test_v5_(bottom_pos).pos')
     ctx.expect_out_file(POS_DIR+'/test_v5_(top_pos).pos')
@@ -860,7 +860,7 @@ def test_import_2(test_dir):
 def test_import_3(test_dir):
     """ Import an output and change it """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_import_3', prj, 'import_test_3', '')
+    ctx = context.TestContext(test_dir, prj, 'import_test_3', '')
     ctx.run(extra=['position_mine'])
     ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
     ctx.clean_up()
@@ -869,7 +869,7 @@ def test_import_3(test_dir):
 def test_import_4(test_dir):
     """ Import an output and change it, also disable the original """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_import_4', prj, 'import_test_4', '')
+    ctx = context.TestContext(test_dir, prj, 'import_test_4', '')
     ctx.run(extra=[])
     ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
     ctx.dont_expect_out_file(POS_DIR+'/test_v5_(bottom_pos).csv')
@@ -879,7 +879,7 @@ def test_import_4(test_dir):
 def test_disable_default_1(test_dir):
     """ Disable in the same file and out-of-order """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_disable_default_1', prj, 'disable_default_1', '')
+    ctx = context.TestContext(test_dir, prj, 'disable_default_1', '')
     ctx.run(extra=[])
     ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos_test).csv')
     ctx.dont_expect_out_file(POS_DIR+'/test_v5_(bottom_pos).csv')
@@ -889,7 +889,7 @@ def test_disable_default_1(test_dir):
 def test_expand_comment_1(test_dir):
     """ Disable in the same file and out-of-order """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_expand_comment_1', prj, 'expand_comment_1', '')
+    ctx = context.TestContext(test_dir, prj, 'expand_comment_1', '')
     ctx.run(extra=[])
     ctx.expect_out_file(POS_DIR+'/test_v5_(Comment 1)_(The_C2).csv')
     ctx.clean_up()
@@ -898,7 +898,7 @@ def test_expand_comment_1(test_dir):
 def test_compress_sources_1(test_dir):
     """ Disable in the same file and out-of-order """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_compress_sources_1', prj, 'compress_sources_1', '')
+    ctx = context.TestContext(test_dir, prj, 'compress_sources_1', '')
     ctx.run()
     files = ['source/'+prj+'.kicad_pcb', 'source/'+prj+'.sch', 'source/deeper.sch', 'source/sub-sheet.sch']
     ctx.test_compress(prj + '-result.tar.bz2', files)
@@ -908,7 +908,7 @@ def test_compress_sources_1(test_dir):
 def test_date_format_1(test_dir):
     """ Date from SCH reformated """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, 'test_date_format_1', prj, 'date_format_1', '')
+    ctx = context.TestContext(test_dir, prj, 'date_format_1', '')
     ctx.run(extra=[])
     ctx.expect_out_file(POS_DIR+'/test_v5_20200812.csv')
     ctx.clean_up()
@@ -917,7 +917,7 @@ def test_date_format_1(test_dir):
 def test_date_format_2(test_dir):
     """ Date from SCH reformated """
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'test_date_format_2', prj, 'date_format_1', '')
+    ctx = context.TestContext(prj, 'date_format_1', '')
     ctx.run(extra=[])
     ctx.expect_out_file(POS_DIR+'/bom_13_07_2020.csv')
     assert ctx.search_err('Trying to reformat SCH time, but not in ISO format')
@@ -926,7 +926,7 @@ def test_date_format_2(test_dir):
 
 def test_download_datasheets_1(test_dir):
     prj = 'kibom-variant_2ds'
-    ctx = context.TestContextSCH(test_dir, 'test_download_datasheets_1', prj, 'download_datasheets_1', '')
+    ctx = context.TestContextSCH(test_dir, prj, 'download_datasheets_1', '')
     # We use a fake server to avoid needing good URLs and reliable internet connection
     ctx.run(kicost=True)
     ctx.expect_out_file('DS/C0805C102J4GAC7800.pdf')
@@ -940,7 +940,7 @@ def test_download_datasheets_1(test_dir):
 
 def test_cli_order(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'test_cli_order', prj, 'pre_and_position', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', POS_DIR)
     ctx.run(extra=['-s', 'all', '-C', 'pos_ascii', 'position'])
 
     csv = ctx.get_pos_both_csv_filename()
@@ -956,7 +956,7 @@ def test_cli_order(test_dir):
 
 def test_qr_lib_1(test_dir):
     prj = 'qr_test/qr_test'
-    ctx = context.TestContext(test_dir, 'test_qr_lib_1', prj, 'qr_lib_1', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'qr_lib_1', POS_DIR)
     ctx.run()  # extra_debug=True
     # Check the schematic
     fname = 'Schematic.pdf'
@@ -1006,7 +1006,7 @@ def test_qr_lib_1(test_dir):
 
 def test_report_simple_1(test_dir):
     prj = 'light_control'
-    ctx = context.TestContext(test_dir, 'test_report_simple_1', prj, 'report_simple_1', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'report_simple_1', POS_DIR)
     ctx.run(extra=['report_full', 'report_simple'])
     ctx.expect_out_file(prj+'-report.txt')
     ctx.expect_out_file(prj+'-report_simple.txt')
@@ -1017,7 +1017,7 @@ def test_report_simple_1(test_dir):
 
 def test_report_simple_2(test_dir):
     prj = 'light_control'
-    ctx = context.TestContext(test_dir, 'test_report_simple_2', prj, 'report_simple_2', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'report_simple_2', POS_DIR)
     ctx.run()
     ctx.expect_out_file(prj+'-report.txt')
     ctx.expect_out_file(prj+'-report_simple.txt')
@@ -1030,7 +1030,7 @@ def test_report_simple_2(test_dir):
 def test_report_edge_1(test_dir):
     """ Meassures the PCB size when using a component that contains the real PCB edges #164 """
     prj = 'comp_edge'
-    ctx = context.TestContext(test_dir, 'test_report_edge_1', prj, 'report_edge_1', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'report_edge_1', POS_DIR)
     ctx.run()
     ctx.expect_out_file(prj+'-report.txt')
     ctx.compare_txt(prj+'-report.txt')
@@ -1039,7 +1039,7 @@ def test_report_edge_1(test_dir):
 
 def test_board_view_1(test_dir):
     prj = 'glasgow'
-    ctx = context.TestContext(test_dir, 'test_board_view_1', prj, 'boardview', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'boardview', POS_DIR)
     ctx.run()
     o = prj+'-boardview.brd'
     ctx.expect_out_file(o)
@@ -1049,7 +1049,7 @@ def test_board_view_1(test_dir):
 
 def test_annotate_power_1(test_dir):
     prj = 'test_v5'
-    ctx = context.TestContextSCH(test_dir, 'test_annotate_power_1', prj, 'annotate_power', POS_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'annotate_power', POS_DIR)
     # Copy test_v5 schematic, but replacing all #PWRxx references by #PWR?
     sch_file = os.path.basename(ctx.sch_file)
     sch_base = ctx.get_out_path(sch_file)
@@ -1077,7 +1077,7 @@ def test_annotate_power_1(test_dir):
 
 def test_pdfunite_1(test_dir):
     prj = 'light_control'
-    ctx = context.TestContext(test_dir, 'test_pdfunite_1', prj, 'pdfunite_1', POS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pdfunite_1', POS_DIR)
     ctx.run()
     o = prj+'-PDF_Joined.pdf'
     ctx.expect_out_file(o)
@@ -1094,7 +1094,7 @@ def check_refs(ctx, refs):
 
 def check_anno_pcb(test_dir, type, refs):
     prj = 'ano_pcb'
-    ctx = context.TestContext(test_dir, 'test_annotate_pcb_'+type, prj, 'annotate_pcb_'+type, '')
+    ctx = context.TestContext(test_dir, prj, 'annotate_pcb_'+type, '', test_name='annotate_pcb_'+type)
     pcb_file = ctx.get_out_path(os.path.basename(ctx.board_file))
     sch_file = ctx.get_out_path(os.path.basename(ctx.sch_file))
     shutil.copy2(ctx.board_file, pcb_file)
@@ -1151,7 +1151,7 @@ def test_annotate_pcb_tbrl_small_grid(test_dir):
 
 def test_gencad_1(test_dir):
     prj = 'gencad'
-    ctx = context.TestContext(test_dir, 'test_gencad_1', prj, 'gencad_1', '')
+    ctx = context.TestContext(test_dir, prj, 'gencad_1', '')
     ctx.run()
     o = prj+'-gencad.cad'
     ctx.expect_out_file(o)
@@ -1171,7 +1171,7 @@ def test_quick_start_1(test_dir):
     dir_o = 'navigate'
     generated = 'kibot_generated.kibot.yaml'
     # 1) Run the quick-start
-    ctx = context.TestContext(test_dir, 'test_quick_start_1', prj, 'pre_and_position', dir_o)
+    ctx = context.TestContext(test_dir, prj, 'pre_and_position', dir_o)
     board_file = os.path.basename(ctx.board_file)
     dest_dir = ctx.get_out_path(dir_o)
     dest_file = os.path.join(dest_dir, board_file)
@@ -1201,7 +1201,7 @@ def test_quick_start_1(test_dir):
 def test_netlist_classic_1(test_dir):
     prj = 'light_control'
     dir_o = 'Export'
-    ctx = context.TestContext(test_dir, 'test_netlist_classic_1', prj, 'netlist_classic_1', dir_o)
+    ctx = context.TestContext(test_dir, prj, 'netlist_classic_1', dir_o)
     ctx.run()
     ctx.expect_out_file(os.path.join(dir_o, prj+'-netlist.net'))
 
@@ -1209,14 +1209,14 @@ def test_netlist_classic_1(test_dir):
 def test_netlist_ipc_1(test_dir):
     prj = 'light_control'
     dir_o = 'Export'
-    ctx = context.TestContext(test_dir, 'test_netlist_ipc_1', prj, 'netlist_ipc_1', dir_o)
+    ctx = context.TestContext(test_dir, prj, 'netlist_ipc_1', dir_o)
     ctx.run()
     ctx.expect_out_file(os.path.join(dir_o, prj+'-IPC-D-356.d356'))
 
 
 def test_dependencies_1(test_dir):
     dep = 'KiCad Automation tools'
-    ctx = context.TestContext(test_dir, 'test_dependencies_1', 'bom', 'netlist_ipc_1', '')
+    ctx = context.TestContext(test_dir, 'bom', 'netlist_ipc_1', '')
     ctx.run(extra=['--help-dependencies'], no_board_file=True, no_out_dir=True, no_yaml_file=True)
     ctx.search_out(dep)
     ctx.run(extra=['--help-dependencies', '--markdown'], no_board_file=True, no_out_dir=True, no_yaml_file=True)

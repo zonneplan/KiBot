@@ -93,7 +93,7 @@ def test_no_rar(test_dir, caplog, monkeypatch):
     global mocked_check_output_FNF
     mocked_check_output_FNF = True
     # Create a silly context to get the output path
-    ctx = context.TestContext(test_dir, 'test_no_rar', 'test_v5', 'empty_zip', '')
+    ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
     # The file we pretend to compress
     ctx.create_dummy_out_file('Test.txt')
     # We will patch subprocess.check_output to make rar fail
@@ -110,7 +110,7 @@ def test_rar_fail(test_dir, caplog, monkeypatch):
     global mocked_check_output_FNF
     mocked_check_output_FNF = False
     # Create a silly context to get the output path
-    ctx = context.TestContext(test_dir, 'test_no_rar', 'test_v5', 'empty_zip', '')
+    ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
     # The file we pretend to compress
     ctx.create_dummy_out_file('Test.txt')
     # We will patch subprocess.check_output to make rar fail
@@ -213,7 +213,7 @@ def test_bom_no_sch():
 
 
 def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
-    ctx = context.TestContext(test_dir, 'test_pre_xrc_fail', 'test_v5', 'empty_zip', '')
+    ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
     global mocked_call_enabled
     mocked_call_enabled = True
     with monkeypatch.context() as m:
@@ -259,7 +259,7 @@ def test_step_fail(test_dir, caplog, monkeypatch):
     global mocked_check_output_FNF
     mocked_check_output_FNF = False
     # Create a silly context to get the output path
-    ctx = context.TestContext(test_dir, 'test_step_fail', 'test_v5', 'empty_zip', '')
+    ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
     # We will patch subprocess.check_output to make rar fail
     with monkeypatch.context() as m:
         patch_functions(m)
@@ -290,7 +290,7 @@ def test_unknown_prefix(caplog):
 
 
 def test_search_as_plugin_ok(test_dir, caplog):
-    ctx = context.TestContext(test_dir, 'test_search_as_plugin_ok', 'test_v5', 'empty_zip', '')
+    ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
     with context.cover_it(cov):
         detect_kicad()
         load_actions()
@@ -330,7 +330,7 @@ def test_layer_no_id():
 
 
 def test_makefile_kibot_sys(test_dir):
-    ctx = context.TestContext(test_dir, 'test_makefile_kibot_sys', 'test_v5', 'empty_zip', '')
+    ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
     GS.sch_file = 'foo.sch'
     GS.pcb_file = 'bar.kicad_pcb'
     GS.out_dir = ctx.get_out_path('')

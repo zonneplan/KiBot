@@ -28,7 +28,7 @@ BOM_DIR = 'BoM'
 
 def test_bom_ok(test_dir):
     prj = 'bom'
-    ctx = context.TestContextSCH(test_dir, 'test_bom_ok', prj, prj, BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, prj, BOM_DIR)
     ctx.run()
     # Check all outputs are there
     # Default format is PRJ_bom_REVISION
@@ -43,14 +43,14 @@ def test_bom_ok(test_dir):
 
 
 def test_bom_fail(test_dir):
-    ctx = context.TestContext(test_dir, 'test_bom_fail', 'bom_no_xml', 'bom', BOM_DIR)
+    ctx = context.TestContext(test_dir, 'bom_no_xml', 'bom', BOM_DIR)
     ctx.run(BOM_ERROR)
     ctx.clean_up()
 
 
 def test_bom_cfg_1(test_dir):
     prj = 'bom'
-    ctx = context.TestContextSCH(test_dir, 'test_bom_cfg_1', prj, 'bom_cfg', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'bom_cfg', BOM_DIR)
     ctx.run()
     name = os.path.join(BOM_DIR, prj)
     csv = name+'-bom.csv'
@@ -61,7 +61,7 @@ def test_bom_cfg_1(test_dir):
 
 def test_bom_cfg_2(test_dir):
     prj = 'bom'
-    ctx = context.TestContextSCH(test_dir, 'test_bom_cfg_2', prj, 'bom_cfg2', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'bom_cfg2', BOM_DIR)
     ctx.run()
     name = os.path.join(BOM_DIR, prj)
     csv = name+'-bom.csv'
@@ -74,7 +74,7 @@ def test_bom_cfg_2(test_dir):
 def test_bom_cfg_3(test_dir):
     """ Without any column """
     prj = 'bom'
-    ctx = context.TestContextSCH(test_dir, 'test_bom_cfg_3', prj, 'bom_cfg3', BOM_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'bom_cfg3', BOM_DIR)
     ctx.run()
     name = os.path.join(BOM_DIR, prj)
     csv = name+'-bom.csv'
@@ -86,7 +86,7 @@ def test_bom_cfg_3(test_dir):
 def test_bom_cfg_4(test_dir):
     """ Without join """
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'test_bom_cfg_4', prj, 'bom_cfg4', BOM_DIR)
+    ctx = context.TestContext(test_dir, prj, 'bom_cfg4', BOM_DIR)
     ctx.run()
     name = os.path.join(BOM_DIR, prj)
     csv = name+'-bom.csv'

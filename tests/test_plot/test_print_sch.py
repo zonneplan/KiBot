@@ -33,7 +33,7 @@ cov = coverage.Coverage()
 
 def test_print_sch_ok(test_dir):
     prj = 'bom_no_xml'  # bom has meta data, here we test no meta-data
-    ctx = context.TestContext(test_dir, 'PrSCH', prj, 'print_sch', PDF_DIR)
+    ctx = context.TestContext(test_dir, prj, 'print_sch', PDF_DIR)
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(PDF_FILE)
@@ -42,7 +42,7 @@ def test_print_sch_ok(test_dir):
 
 def test_print_sch_fail(test_dir):
     prj = 'print_err'
-    ctx = context.TestContextSCH(test_dir, 'PrSCHFail', prj, 'print_sch', PDF_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'print_sch', PDF_DIR)
     ctx.run(PDF_SCH_PRINT, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(),
             'print_err'+context.KICAD_SCH_EXT)])
     ctx.clean_up()
@@ -50,7 +50,7 @@ def test_print_sch_fail(test_dir):
 
 def test_print_sch_svg_ok(test_dir):
     prj = 'bom_no_xml'  # bom has meta data, here we test no meta-data
-    ctx = context.TestContext(test_dir, 'PrSCH_SVG', prj, 'print_sch_svg', PDF_DIR)
+    ctx = context.TestContext(test_dir, prj, 'print_sch_svg', PDF_DIR)
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(SVG_FILE)
@@ -59,7 +59,7 @@ def test_print_sch_svg_ok(test_dir):
 
 def test_print_sch_svg_fail(test_dir):
     prj = 'print_err'
-    ctx = context.TestContext(test_dir, 'PrSCHFail_SVG', prj, 'print_sch_svg', PDF_DIR)
+    ctx = context.TestContext(test_dir, prj, 'print_sch_svg', PDF_DIR)
     ctx.run(SVG_SCH_PRINT, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(),
             'print_err'+context.KICAD_SCH_EXT)])
     ctx.clean_up()
@@ -92,21 +92,21 @@ def check_l1(ctx):
 def test_sch_variant_ni_1(test_dir):
     """ Using a variant """
     prj = 'test_v5'  # Is the most complete, contains every KiCad object I know
-    ctx = context.TestContextSCH(test_dir, 'test_sch_variant_ni_1', prj, 'sch_no_inductors_1', PDF_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'sch_no_inductors_1', PDF_DIR)
     check_l1(ctx)
 
 
 def test_sch_variant_ni_2(test_dir):
     """ Using a filter """
     prj = 'test_v5'  # Is the most complete, contains every KiCad object I know
-    ctx = context.TestContextSCH(test_dir, 'test_sch_variant_ni_2', prj, 'sch_no_inductors_2', PDF_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'sch_no_inductors_2', PDF_DIR)
     check_l1(ctx)
 
 
 def test_print_sch_variant_ni_1(test_dir):
     """ Using a variant """
     prj = 'test_v5_wks'  # Is the most complete, contains every KiCad object I know
-    ctx = context.TestContextSCH(test_dir, 'test_print_sch_variant_ni_1', prj, 'print_pdf_no_inductors_1', PDF_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'print_pdf_no_inductors_1', PDF_DIR)
     ctx.run()
     r_name = 'test_v5_wks-schematic_(no_L).pdf'
     o_name = os.path.join(NI_DIR, r_name)
@@ -118,7 +118,7 @@ def test_print_sch_variant_ni_1(test_dir):
 def test_print_sch_svg_variant_ni_1(test_dir):
     """ SVG using a variant """
     prj = 'test_v5'  # Is the most complete, contains every KiCad object I know
-    ctx = context.TestContextSCH(test_dir, 'test_print_sch_svg_variant_ni_1', prj, 'print_svg_no_inductors_1', PDF_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'print_svg_no_inductors_1', PDF_DIR)
     ctx.run()
     r_name = 'test_v5-schematic_(no_L).svg'
     o_name = os.path.join(NI_DIR, r_name)
@@ -130,7 +130,7 @@ def test_print_sch_svg_variant_ni_1(test_dir):
 def test_print_sch_variant_ni_2(test_dir):
     """ Using a filter """
     prj = 'test_v5'  # Is the most complete, contains every KiCad object I know
-    ctx = context.TestContextSCH(test_dir, 'test_print_sch_variant_ni_2', prj, 'print_pdf_no_inductors_2', PDF_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'print_pdf_no_inductors_2', PDF_DIR)
     ctx.run()
     r_name = 'test_v5-schematic_(no_L).pdf'
     o_name = os.path.join(NI_DIR, 'test_v5-schematic.pdf')
@@ -143,7 +143,7 @@ def test_sch_missing_1(test_dir):
     """ R1 exists in l1.lib, but the lib isn't specified.
         R2 is bogus, completely missing """
     prj = 'missing'
-    ctx = context.TestContextSCH(test_dir, 'test_sch_missing_1', prj, 'sch_no_inductors_1', PDF_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'sch_no_inductors_1', PDF_DIR)
     ctx.run()
     o_name = os.path.join(NI_DIR, prj+context.KICAD_SCH_EXT)
     ctx.expect_out_file(o_name)
@@ -162,7 +162,7 @@ def test_sch_missing_filtered(test_dir):
     """ R1 exists in l1.lib, but the lib isn't specified.
         R2 is bogus, completely missing """
     prj = 'missing'
-    ctx = context.TestContextSCH(test_dir, 'test_sch_missing_filtered', prj, 'sch_no_inductors_1_filtered', PDF_DIR)
+    ctx = context.TestContextSCH(test_dir, prj, 'sch_no_inductors_1_filtered', PDF_DIR)
     ctx.run()
     o_name = os.path.join(NI_DIR, prj+context.KICAD_SCH_EXT)
     ctx.expect_out_file(o_name)

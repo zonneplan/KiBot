@@ -20,7 +20,7 @@ PS_DIR = 'HPGL'
 
 def test_hpgl(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'HPGL', prj, 'hpgl', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'hpgl', PS_DIR)
     ctx.run()
 
     f_cu = ctx.get_gerber_filename('F_Cu', '.plt')
@@ -34,7 +34,7 @@ def test_hpgl(test_dir):
 
 def test_hpgl_auto(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'HPGLAuto', prj, 'hpgl_auto', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'hpgl_auto', PS_DIR)
     ctx.run()
     f_cu = ctx.get_gerber_filename('F_Cu', '.plt')
     f_silk = ctx.get_gerber_filename('B_Silks', '.plt')

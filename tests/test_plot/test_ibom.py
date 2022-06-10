@@ -54,7 +54,7 @@ def check_modules(ctx, fname, expected):
 
 def test_ibom_1(test_dir):
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'BoM_interactive', prj, 'ibom', BOM_DIR)
+    ctx = context.TestContext(test_dir, prj, 'ibom', BOM_DIR)
     ctx.run()
     # Check all outputs are there
     # We use this format: %f_iBoM
@@ -66,7 +66,7 @@ def test_ibom_1(test_dir):
 
 def test_ibom_no_ops(test_dir):
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'BoM_interactiveNoOps', prj, 'ibom_no_ops', BOM_DIR)
+    ctx = context.TestContext(test_dir, prj, 'ibom_no_ops', BOM_DIR)
     ctx.run()
     fname = os.path.join(BOM_DIR, IBOM_OUT)
     ctx.expect_out_file(fname)
@@ -75,14 +75,14 @@ def test_ibom_no_ops(test_dir):
 
 
 def test_ibom_fail(test_dir):
-    ctx = context.TestContext(test_dir, 'BoM_interactiveFail', 'ibom_fail', 'ibom', BOM_DIR)
+    ctx = context.TestContext(test_dir, 'ibom_fail', 'ibom', BOM_DIR)
     ctx.run(BOM_ERROR)
     ctx.clean_up()
 
 
 def test_ibom_all_ops(test_dir):
     prj = 'bom'
-    ctx = context.TestContext(test_dir, 'BoM_interactiveAll', prj, 'ibom_all_ops', BOM_DIR, add_cfg_kmajor=True)
+    ctx = context.TestContext(test_dir, prj, 'ibom_all_ops', BOM_DIR, add_cfg_kmajor=True)
     ctx.run()
     out = os.path.join(BOM_DIR, IBOM_OUT)
     ctx.expect_out_file(out)
@@ -103,7 +103,7 @@ def test_ibom_all_ops(test_dir):
 
 def test_ibom_variant_1(test_dir):
     prj = 'kibom-variante'
-    ctx = context.TestContext(test_dir, 'test_ibom_variant_1', prj, 'ibom_variant_1', BOM_DIR)
+    ctx = context.TestContext(test_dir, prj, 'ibom_variant_1', BOM_DIR)
     ctx.run(extra_debug=True)
     # No variant
     logging.debug("* No variant")

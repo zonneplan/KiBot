@@ -20,7 +20,7 @@ PS_DIR = 'SVG'
 
 def test_svg(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'test_svg', prj, 'svg', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'svg', PS_DIR)
     ctx.run()
 
     f_cu = ctx.get_gerber_filename('F_Cu', '.svg')
@@ -34,7 +34,7 @@ def test_svg(test_dir):
 
 def test_svg_all(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'test_svg_all', prj, 'svg_all', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'svg_all', PS_DIR)
     ctx.run()
 
     ctx.expect_out_file(ctx.get_gerber_filename('B_'+context.DEF_ADHES, '.svg'))
@@ -64,7 +64,7 @@ def test_svg_all(test_dir):
 
 def test_svg_selected(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'test_svg_selected', prj, 'svg_selected', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'svg_selected', PS_DIR)
     ctx.run()
 
     ctx.dont_expect_out_file(ctx.get_gerber_filename('B_'+context.DEF_ADHES, '.svg'))
@@ -94,7 +94,7 @@ def test_svg_selected(test_dir):
 
 def test_svg_copper_and_user(test_dir):
     prj = 'good-project'
-    ctx = context.TestContext(test_dir, 'test_svg_copper_and_user', prj, 'svg_copper_and_user', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'svg_copper_and_user', PS_DIR)
     ctx.run()
 
     ctx.expect_out_file(ctx.get_gerber_filename('B_Cu', '.svg'))
@@ -128,7 +128,7 @@ def test_svg_copper_and_user(test_dir):
 
 def test_svg_copper_and_draw(test_dir):
     prj = 'good-project'
-    ctx = context.TestContext(test_dir, 'test_svg_copper_and_draw', prj, 'svg_copper_and_draw', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'svg_copper_and_draw', PS_DIR)
     ctx.run()
 
     ctx.expect_out_file(ctx.get_gerber_filename('B_Cu', '.svg'))
@@ -163,7 +163,7 @@ def test_svg_copper_and_draw(test_dir):
 
 def test_svg_copper_and_cmt(test_dir):
     prj = 'good-project'
-    ctx = context.TestContext(test_dir, 'SVGCopperCmt', prj, 'svg_copper_and_cmt', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'svg_copper_and_cmt', PS_DIR)
     ctx.run()
 
     ctx.expect_out_file(ctx.get_gerber_filename('B_Cu', '.svg'))
@@ -197,7 +197,7 @@ def test_svg_copper_and_cmt(test_dir):
 
 def test_svg_anchor(test_dir):
     prj = 'good-project'
-    ctx = context.TestContext(test_dir, 'test_svg_anchor', prj, 'svg_anchor', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'svg_anchor', PS_DIR)
     ctx.run(extra=['SVG'])
 
     assert ctx.search_out(r"- 'SVG files' \(SVG\) \[svg\]")
@@ -232,7 +232,7 @@ def test_svg_anchor(test_dir):
 
 def test_svg_technical(test_dir):
     prj = 'good-project'
-    ctx = context.TestContext(test_dir, 'test_svg_technical', prj, 'svg_technical', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'svg_technical', PS_DIR)
     ctx.run()
 
     ctx.dont_expect_out_file(ctx.get_gerber_filename('B_Cu', '.svg'))

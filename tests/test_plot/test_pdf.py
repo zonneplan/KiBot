@@ -20,7 +20,7 @@ PS_DIR = 'PDF'
 
 def test_pdf(test_dir):
     prj = 'simple_2layer'
-    ctx = context.TestContext(test_dir, 'Plot_PDF', prj, 'pdf', PS_DIR)
+    ctx = context.TestContext(test_dir, prj, 'pdf', PS_DIR)
     ctx.run()
     f_cu = ctx.get_gerber_filename('F_Cu', '.pdf')
     f_silk = ctx.get_gerber_filename('B_Silks', '.pdf')
@@ -32,7 +32,7 @@ def test_pdf(test_dir):
 
 def test_pdf_refill_1(test_dir):
     prj = 'zone-refill'
-    ctx = context.TestContext(test_dir, 'Plot_PDF_Refill', prj, 'pdf_zone-refill', '')
+    ctx = context.TestContext(test_dir, prj, 'pdf_zone-refill', '')
     ctx.run()
     b_cu = ctx.get_gerber_filename('B_Cu', '.pdf')
     ctx.expect_out_file(b_cu)
@@ -42,7 +42,7 @@ def test_pdf_refill_1(test_dir):
 
 def test_pdf_refill_2(test_dir):
     prj = 'zone-refill'
-    ctx = context.TestContext(test_dir, 'Plot_PDF_Refill', prj, 'pdf_zone-refill_2', '')
+    ctx = context.TestContext(test_dir, prj, 'pdf_zone-refill_2', '')
     ori = ctx.board_file
     bkp = ori+'-bak'
     try:
@@ -59,7 +59,7 @@ def test_pdf_refill_2(test_dir):
 
 def test_pdf_variant_1(test_dir):
     prj = 'kibom-variant_4'
-    ctx = context.TestContext(test_dir, 'test_pdf_variant_1', prj, 'pdf_variant_1', '')
+    ctx = context.TestContext(test_dir, prj, 'pdf_variant_1', '')
     ctx.run()
     fname = prj+'-F_Fab.pdf'
     ctx.expect_out_file(fname)
