@@ -4,6 +4,10 @@
 
   (paper "User" 297.002 210.007)
 
+  (title_block
+    (date " ")
+  )
+
   (lib_symbols
     (symbol "74xx:74LS04" (in_bom yes) (on_board yes)
       (property "Reference" "U" (id 0) (at 0 1.27 0)
