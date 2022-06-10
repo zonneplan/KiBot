@@ -12,7 +12,7 @@ from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRIN
 from .out_base import VariantOptions
 from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
-from .drill_marks import drill_marks_help, drill_marks_setter, DRILL_MARKS_MAP
+from .drill_marks import drill_marks_help, DRILL_MARKS_MAP
 from .layer import Layer
 from . import log
 
@@ -60,7 +60,7 @@ class Any_PCB_PrintOptions(VariantOptions):
 
     @drill_marks.setter
     def drill_marks(self, val):
-        self._drill_marks = drill_marks_setter(val)
+        self._drill_marks = val
 
     def config(self, parent):
         super().config(parent)

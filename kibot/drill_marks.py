@@ -4,7 +4,6 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from pcbnew import PCB_PLOT_PARAMS
-from .error import KiPlotConfigurationError
 from .out_any_layer import AnyLayerOptions
 from . import log
 
@@ -25,12 +24,6 @@ DRILL_MARKS_REV_MAP = {
 DRILL_MARKS_HELP = "[none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale)"
 
 
-def drill_marks_setter(val):
-    if val not in DRILL_MARKS_MAP:
-        raise KiPlotConfigurationError("Unknown drill mark type: {}".format(val))
-    return val
-
-
 def drill_marks_help(self):
     self._drill_marks = 'full'
     self.set_doc('drill_marks', " [string='full'] "+DRILL_MARKS_HELP)
@@ -49,7 +42,7 @@ class DrillMarks(AnyLayerOptions):
 
     @drill_marks.setter
     def drill_marks(self, val):
-        self._drill_marks = drill_marks_setter(val)
+        self._drill_marks = val
 
     def config(self, parent):
         super().config(parent)

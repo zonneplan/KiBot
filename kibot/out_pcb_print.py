@@ -28,7 +28,7 @@ from .kiplot import check_script, exec_with_retry, add_extra_options
 from .registrable import RegDependency
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
-from .drill_marks import DRILL_MARKS_MAP, drill_marks_setter, drill_marks_help
+from .drill_marks import DRILL_MARKS_MAP, drill_marks_help
 from .layer import Layer, get_priority
 from . import __version__
 from . import log
@@ -303,7 +303,7 @@ class PCB_PrintOptions(VariantOptions):
 
     @drill_marks.setter
     def drill_marks(self, val):
-        self._drill_marks = drill_marks_setter(val)
+        self._drill_marks = val
 
     def config(self, parent):
         super().config(parent)
