@@ -757,7 +757,6 @@ class PCB_PrintOptions(VariantOptions):
         if id >= F_Cu and id <= B_Cu:
             if self.colored_pads:
                 self.plot_pads(la, pc, p, filelist)
-            return
             if self.colored_vias:
                 self.plot_vias(la, pc, p, filelist, VIATYPE_THROUGH, self.via_color)
                 self.plot_vias(la, pc, p, filelist, VIATYPE_BLIND_BURIED, self.blind_via_color)
