@@ -120,10 +120,10 @@
     )
     (symbol "Device:R_US" (pin_numbers hide) (pin_names (offset 0)) (in_bom yes) (on_board yes)
       (property "Reference" "R" (id 0) (at 2.54 0 90)
-        (effects (font (size 1.27 1.27)))
+        (effects (font (size 1.27 1.27)) (justify right))
       )
       (property "Value" "R_US" (id 1) (at -2.54 0 90)
-        (effects (font (size 1.27 1.27)))
+        (effects (font (size 1.27 1.27)) (justify right))
       )
       (property "Footprint" "" (id 2) (at 1.016 -0.254 90)
         (effects (font (size 1.27 1.27)) hide)
@@ -140,7 +140,16 @@
       (property "ki_fp_filters" "R_*" (id 6) (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (symbol "R_US_0_1"
+      (symbol "R_US_0_0"
+        (bezier (pts
+            (xy 0 -0.762)
+            (xy 1.016 -1.143)
+            (xy 0 -1.524)
+            (xy -1.016 -1.905)
+          )
+          (stroke (width 0) (type default) (color 0 0 0 0))
+          (fill (type none))
+        )
         (polyline
           (pts
             (xy 0 -2.286)
@@ -153,17 +162,6 @@
           (pts
             (xy 0 2.286)
             (xy 0 2.54)
-          )
-          (stroke (width 0) (type default) (color 0 0 0 0))
-          (fill (type none))
-        )
-        (polyline
-          (pts
-            (xy 0 -0.762)
-            (xy 1.016 -1.143)
-            (xy 0 -1.524)
-            (xy -1.016 -1.905)
-            (xy 0 -2.286)
           )
           (stroke (width 0) (type default) (color 0 0 0 0))
           (fill (type none))
@@ -195,6 +193,18 @@
         (pin passive line (at 0 3.81 270) (length 1.27)
           (name "~" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
+          (alternate "Patita 1" passive line)
+        )
+        (pin passive line (at 0 -3.81 90) (length 1.27)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27))))
+        )
+      )
+      (symbol "R_US_1_2"
+        (pin passive line (at 0 3.81 270) (length 1.27)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))
+          (alternate "Patita 1" passive line)
         )
         (pin passive line (at 0 -3.81 90) (length 1.27)
           (name "~" (effects (font (size 1.27 1.27))))
@@ -1726,8 +1736,8 @@
     (pin "2" (uuid 15129e2c-3876-4c0d-83a8-7e8db04bdace))
   )
 
-  (symbol (lib_id "Device:R_US") (at 39.37 95.25 180) (unit 1)
-    (in_bom yes) (on_board yes)
+  (symbol (lib_id "Device:R_US") (at 39.37 95.25 180) (unit 1) (convert 2)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 00000000-0000-0000-0000-00005f3409f7)
     (property "Reference" "R2" (id 0) (at 41.0972 94.0816 0)
       (effects (font (size 1.27 1.27)) (justify right))
