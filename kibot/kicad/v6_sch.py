@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Salvador E. Tropea
-# Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2022 Salvador E. Tropea
+# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -547,7 +547,7 @@ class DrawCurve(object):
         data = [_symbol('pts', points), Sep()]
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
-        return _symbol('gr_curve', data)
+        return _symbol('bezier', data)
 
 
 class DrawPolyLine(object):
@@ -847,7 +847,8 @@ class LibComponent(object):
             elif i_type == 'circle':
                 vis_obj = DrawCircleV6.parse(i)
                 comp.draw.append(vis_obj)
-            elif i_type == 'gr_curve':
+            elif i_type == 'bezier':
+                # Wrongly documented, not implemented in the GUI 2022/06/10
                 vis_obj = DrawCurve.parse(i)
                 comp.draw.append(vis_obj)
             elif i_type == 'polyline':
