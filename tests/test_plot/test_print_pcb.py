@@ -106,3 +106,19 @@ def test_pcb_print_simple_1(test_dir):
     ctx.expect_out_file(prj+'-assembly_page_02.png')
     ctx.expect_out_file(prj+'-assembly_page_01.eps')
     ctx.expect_out_file(prj+'-assembly_page_01.svg')
+    ctx.expect_out_file(prj+'-assembly.ps')
+
+
+def test_pcb_print_simple_2(test_dir):
+    if context.ki6():
+        prj = 'pcb_print_rare'
+        ctx = context.TestContext(test_dir, 'test_pcb_print_simple_2', prj, 'pcb_print_3', '')
+        ctx.run()
+        ctx.expect_out_file(prj+'-assembly.pdf')
+        ctx.clean_up()
+    else:
+        prj = 'bom'
+        ctx = context.TestContext(test_dir, 'test_pcb_print_simple_2', prj, 'pcb_print_4', '')
+        ctx.run()
+        ctx.expect_out_file(prj+'-assembly.pdf')
+        ctx.clean_up()
