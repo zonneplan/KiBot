@@ -28,7 +28,7 @@ from .kiplot import check_script, exec_with_retry, add_extra_options
 from .registrable import RegDependency
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
-from .drill_marks import DRILL_MARKS_MAP, drill_marks_help
+from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
 from .layer import Layer, get_priority
 from . import __version__
 from . import log
@@ -293,17 +293,9 @@ class PCB_PrintOptions(VariantOptions):
             """ Color for the background when `add_background` is enabled """
             self.background_image = ''
             """ Background image, must be an SVG, only when `add_background` is enabled """
-        drill_marks_help(self)
+        add_drill_marks(self)
         super().__init__()
         self._expand_id = 'assembly'
-
-    @property
-    def drill_marks(self):
-        return self._drill_marks
-
-    @drill_marks.setter
-    def drill_marks(self, val):
-        self._drill_marks = val
 
     def config(self, parent):
         super().config(parent)
@@ -321,7 +313,7 @@ class PCB_PrintOptions(VariantOptions):
                         la.color = layer_id2color[la._id]
                     else:
                         la.color = "#000000"
-        self._drill_marks = DRILL_MARKS_MAP[self._drill_marks]
+        self.drill_marks = DRILL_MARKS_MAP[self.drill_marks]
         self._expand_ext = self.format.lower()
         for member, color in self._pad_colors.items():
             if getattr(self, member):
@@ -933,7 +925,7 @@ class PCB_PrintOptions(VariantOptions):
                 po.SetPlotValue(la.plot_footprint_values)
                 po.SetPlotInvisibleText(la.force_plot_invisible_refs_vals)
                 # Avoid holes on non-copper layers
-                po.SetDrillMarksType(self._drill_marks if IsCopperLayer(id) else 0)
+                po.SetDrillMarksType(self.drill_marks if IsCopperLayer(id) else 0)
                 pc.SetLayer(id)
                 pc.OpenPlotfile(la.suffix, PLOT_FORMAT_SVG, p.sheet)
                 pc.PlotLayer()

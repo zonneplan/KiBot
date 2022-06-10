@@ -21,12 +21,12 @@ DRILL_MARKS_REV_MAP = {
                        PCB_PLOT_PARAMS.SMALL_DRILL_SHAPE: 'small',
                        PCB_PLOT_PARAMS.FULL_DRILL_SHAPE: 'full',
                       }
-DRILL_MARKS_HELP = "[none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale)"
 
 
-def drill_marks_help(self):
-    self._drill_marks = 'full'
-    self.set_doc('drill_marks', " [string='full'] "+DRILL_MARKS_HELP)
+def add_drill_marks(self):
+    self.drill_marks = 'full'
+    self.set_doc('drill_marks', " [string='full'] [none,small,full] What to use to indicate the drill places, can be "
+                 "none, small or full (for real scale)")
 
 
 class DrillMarks(AnyLayerOptions):
@@ -34,25 +34,17 @@ class DrillMarks(AnyLayerOptions):
         Used by DXF, HPGL, PDF, PS and SVG formats. """
     def __init__(self):
         super().__init__()
-        drill_marks_help(self)
-
-    @property
-    def drill_marks(self):
-        return self._drill_marks
-
-    @drill_marks.setter
-    def drill_marks(self, val):
-        self._drill_marks = val
+        add_drill_marks(self)
 
     def config(self, parent):
         super().config(parent)
-        self._drill_marks = DRILL_MARKS_MAP[self._drill_marks]
+        self.drill_marks = DRILL_MARKS_MAP[self.drill_marks]
 
     def _configure_plot_ctrl(self, po, output_dir):
         super()._configure_plot_ctrl(po, output_dir)
         # How we draw drill marks
-        po.SetDrillMarksType(self._drill_marks)
+        po.SetDrillMarksType(self.drill_marks)
 
     def read_vals_from_po(self, po):
         super().read_vals_from_po(po)
-        self._drill_marks = DRILL_MARKS_REV_MAP[po.GetDrillMarksType()]
+        self.drill_marks = DRILL_MARKS_REV_MAP[po.GetDrillMarksType()]

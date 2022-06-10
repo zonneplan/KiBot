@@ -12,7 +12,7 @@ from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRIN
 from .out_base import VariantOptions
 from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
-from .drill_marks import drill_marks_help, DRILL_MARKS_MAP
+from .drill_marks import add_drill_marks, DRILL_MARKS_MAP
 from .layer import Layer
 from . import log
 
@@ -51,20 +51,12 @@ class Any_PCB_PrintOptions(VariantOptions):
             """ Selects the color theme. Onlyu applies to KiCad 6.
                 To use the KiCad 6 default colors select `_builtin_default`.
                 Usually user colors are stored as `user`, but you can give it another name """
-        drill_marks_help(self)
+        add_drill_marks(self)
         super().__init__()
-
-    @property
-    def drill_marks(self):
-        return self._drill_marks
-
-    @drill_marks.setter
-    def drill_marks(self, val):
-        self._drill_marks = val
 
     def config(self, parent):
         super().config(parent)
-        self._drill_marks = DRILL_MARKS_MAP[self._drill_marks]
+        self.drill_marks = DRILL_MARKS_MAP[self.drill_marks]
 
     def filter_components(self, board, force_copy):
         if not self._comps and not force_copy:
@@ -92,7 +84,7 @@ class Any_PCB_PrintOptions(VariantOptions):
         cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):
             cmd.append('-f')
-        cmd.extend(['--scaling', str(self.scaling), '--pads', str(self._drill_marks)])
+        cmd.extend(['--scaling', str(self.scaling), '--pads', str(self.drill_marks)])
         if not self.plot_sheet_reference:
             cmd.append('--no-title')
         if self.monochrome:
