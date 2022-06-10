@@ -98,7 +98,8 @@ def cover_it(cov):
 
 class TestContext(object):
 
-    def __init__(self, test_dir, board_name, yaml_name, sub_dir, yaml_compressed=False, add_cfg_kmajor=False, test_name=None):
+    def __init__(self, test_dir, board_name, yaml_name, sub_dir='', yaml_compressed=False, add_cfg_kmajor=False,
+                 test_name=None):
         if test_name is None:
             test_name = sys._getframe(1).f_code.co_name
         if test_name.startswith('test_'):
@@ -130,9 +131,11 @@ class TestContext(object):
         self.err = None
         self.proc = None
 
-    def get_board_dir(self):
+    def get_board_dir(self, file=None):
         this_dir = os.path.dirname(os.path.realpath(__file__))
-        return os.path.join(this_dir, BOARDS_DIR)
+        if file is None:
+            return os.path.join(this_dir, BOARDS_DIR)
+        return os.path.join(this_dir, BOARDS_DIR, file)
 
     def _get_board_file(self):
         self.board_file = os.path.abspath(os.path.join(self.get_board_dir(), self.board_name + KICAD_PCB_EXT))
@@ -254,6 +257,9 @@ class TestContext(object):
         assert os.path.getsize(file) > 0
         logging.debug(filename+' OK')
         return file
+
+    def expect_out_file_d(self, filename):
+        return self.expect_out_file(os.path.join(self.sub_dir, filename))
 
     def dont_expect_out_file(self, filename):
         file = self.get_out_path(filename)
@@ -426,6 +432,9 @@ class TestContext(object):
             res.append(m.groups())
         return res
 
+    def search_in_file_d(self, file, texts):
+        return self.search_in_file(os.path.join(self.sub_dir, file), texts)
+
     def search_not_in_file(self, file, texts):
         logging.debug('Searching not in "'+file+'" output')
         with open(self.get_out_path(file)) as f:
@@ -436,6 +445,9 @@ class TestContext(object):
             assert m is None, msg
             logging.debug(msg+' OK')
             # logging.debug(' '+m.group(0))
+
+    def search_not_in_file_d(self, file, texts):
+        return self.search_not_in_file(os.path.join(self.sub_dir, file), texts)
 
     def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False, fuzz='5%', tol=0, height='87%'):
         """ For images and single page PDFs """
@@ -515,6 +527,19 @@ class TestContext(object):
         logging.debug('Comparing texts with: '+usable_cmd(cmd))
         res = subprocess.call(cmd)
         assert res == 0, res
+
+    def compare_txt_d(self, text, reference=None, diff='diff.txt'):
+        if reference is None:
+            reference = text
+        text = os.path.join(self.sub_dir, text)
+        diff = os.path.join(self.sub_dir, diff)
+        self.compare_txt(text, reference, diff)
+
+    def compare_txt_d2(self, text, reference=None, diff='diff.txt'):
+        if reference is None:
+            reference = text
+        reference = os.path.join(self.sub_dir, reference)
+        self.compare_txt_d(text, reference, diff)
 
     def filter_txt(self, file, pattern, repl):
         fname = self.get_out_path(file)
@@ -751,6 +776,9 @@ class TestContext(object):
             assert f in text, f
             logging.debug('- `'+f+'` OK')
 
+    def test_compress_d(self, fname, files):
+        self.test_compress(fname, [os.path.join(self.sub_dir, f) for f in files])
+
     def read_mk_targets(self, mkfile):
         targets = {}
         with open(mkfile, 'rt') as f:
@@ -773,7 +801,7 @@ class TestContext(object):
 
 class TestContextSCH(TestContext):
 
-    def __init__(self, test_dir, board_name, yaml_name, sub_dir, test_name=None):
+    def __init__(self, test_dir, board_name, yaml_name, sub_dir='', test_name=None):
         self.mode = MODE_SCH
         if test_name is None:
             test_name = sys._getframe(1).f_code.co_name
