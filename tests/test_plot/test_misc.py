@@ -917,7 +917,7 @@ def test_date_format_1(test_dir):
 def test_date_format_2(test_dir):
     """ Date from SCH reformated """
     prj = 'bom'
-    ctx = context.TestContext(prj, 'date_format_1', '')
+    ctx = context.TestContext(test_dir, prj, 'date_format_1', '')
     ctx.run(extra=[])
     ctx.expect_out_file(POS_DIR+'/bom_13_07_2020.csv')
     assert ctx.search_err('Trying to reformat SCH time, but not in ISO format')
