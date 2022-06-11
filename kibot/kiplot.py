@@ -68,7 +68,7 @@ def _load_actions(path, load_internals=False):
     lst += glob(os.path.join(path, 'var_*.py')) + glob(os.path.join(path, 'fil_*.py'))
     if load_internals:
         lst += [os.path.join(path, 'globals.py')]
-    for p in lst:
+    for p in sorted(lst):
         name = os.path.splitext(os.path.basename(p))[0]
         logger.debug("- Importing "+name)
         _import(name, p)
