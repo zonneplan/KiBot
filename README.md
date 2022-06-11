@@ -131,9 +131,9 @@ Notes:
 
 [**RSVG tools**](https://cran.r-project.org/web/packages/rsvg/index.html) (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
 - Optional to:
-  - Create PDF, PNG, EPS and PS formats for `pcb_print`
   - Create outputs preview for `navigate_results`
   - Create PNG icons for `navigate_results`
+  - Create PDF, PNG, EPS and PS formats for `pcb_print`
   - Create PNG and JPG images for `pcbdraw`
 
 [**Git**](https://git-scm.com/) (tool) [Debian](https://packages.debian.org/bullseye/git)
@@ -144,14 +144,14 @@ Notes:
 
 [**ImageMagick**](https://imagemagick.org/) (tool) [Debian](https://packages.debian.org/bullseye/imagemagick)
 - Optional to:
-  - Create monochrome prints for `pcb_print`
   - Create outputs preview for `navigate_results`
+  - Create monochrome prints for `pcb_print`
   - Create JPG images for `pcbdraw`
 
 [**Ghostscript**](https://www.ghostscript.com/) (tool) [Debian](https://packages.debian.org/bullseye/ghostscript)
 - Optional to:
-  - Create PS files for `pcb_print`
   - Create outputs preview for `navigate_results`
+  - Create PS files for `pcb_print`
 
 [**Pandoc**](https://pandoc.org/) (tool) [Debian](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`

@@ -83,20 +83,20 @@ deps = '{\
         "name": "Ghostscript",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "pcb_print",\
+        "output": "navigate_results",\
         "plugin_dirs": null,\
         "pypi_name": "Ghostscript",\
         "roles": [\
             {\
-                "desc": "Create PS files",\
-                "mandatory": false,\
-                "output": "pcb_print",\
-                "version": null\
-            },\
-            {\
                 "desc": "Create outputs preview",\
                 "mandatory": false,\
                 "output": "navigate_results",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create PS files",\
+                "mandatory": false,\
+                "output": "pcb_print",\
                 "version": null\
             }\
         ],\
@@ -153,20 +153,20 @@ deps = '{\
         "name": "ImageMagick",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "pcb_print",\
+        "output": "navigate_results",\
         "plugin_dirs": null,\
         "pypi_name": "ImageMagick",\
         "roles": [\
             {\
-                "desc": "Create monochrome prints",\
-                "mandatory": false,\
-                "output": "pcb_print",\
-                "version": null\
-            },\
-            {\
                 "desc": "Create outputs preview",\
                 "mandatory": false,\
                 "output": "navigate_results",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create monochrome prints",\
+                "mandatory": false,\
+                "output": "pcb_print",\
                 "version": null\
             },\
             {\
@@ -256,18 +256,18 @@ deps = '{\
         "name": "KiCad Automation tools",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "step",\
+        "output": "gencad",\
         "plugin_dirs": null,\
         "pypi_name": "kiauto",\
         "roles": [\
             {\
                 "desc": null,\
                 "mandatory": true,\
-                "output": "step",\
+                "output": "gencad",\
                 "version": [\
                     1,\
                     6,\
-                    1\
+                    5\
                 ]\
             },\
             {\
@@ -279,22 +279,6 @@ deps = '{\
                     6,\
                     11\
                 ]\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "output": "render_3d",\
-                "version": [\
-                    1,\
-                    6,\
-                    13\
-                ]\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "output": "svg_sch_print",\
-                "version": null\
             },\
             {\
                 "desc": null,\
@@ -315,6 +299,26 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "output": "render_3d",\
+                "version": [\
+                    1,\
+                    6,\
+                    13\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "output": "step",\
+                "version": [\
+                    1,\
+                    6,\
+                    1\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
                 "output": "svg_pcb_print",\
                 "version": [\
                     1,\
@@ -325,23 +329,19 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
-                "output": "gencad",\
-                "version": [\
-                    1,\
-                    6,\
-                    5\
-                ]\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "output": "run_erc",\
+                "output": "svg_sch_print",\
                 "version": null\
             },\
             {\
                 "desc": null,\
                 "mandatory": true,\
                 "output": "run_drc",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "output": "run_erc",\
                 "version": null\
             },\
             {\
@@ -572,16 +572,10 @@ deps = '{\
         "name": "RSVG tools",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "pcb_print",\
+        "output": "navigate_results",\
         "plugin_dirs": null,\
         "pypi_name": "RSVG tools",\
         "roles": [\
-            {\
-                "desc": "Create PDF, PNG, EPS and PS formats",\
-                "mandatory": false,\
-                "output": "pcb_print",\
-                "version": null\
-            },\
             {\
                 "desc": "Create outputs preview",\
                 "mandatory": false,\
@@ -592,6 +586,12 @@ deps = '{\
                 "desc": "Create PNG icons",\
                 "mandatory": false,\
                 "output": "navigate_results",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create PDF, PNG, EPS and PS formats",\
+                "mandatory": false,\
+                "output": "pcb_print",\
                 "version": null\
             },\
             {\
