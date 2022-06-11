@@ -3,6 +3,7 @@ source =
     kibot
     src
 omit = */kibot/docopt.py
+       */kibot/kicad/sexpdata.py
        */kibot/mcpy/*
        */kibot/mcpyrate/*
        */kibot/PyPDF2/*
