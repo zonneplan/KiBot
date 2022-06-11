@@ -522,10 +522,11 @@ def print_outputs_help(details=False):
     outs = RegOutput.get_registered()
     logger.debug('{} supported outputs'.format(len(outs)))
     print('Supported outputs:')
-    print('\nNotes:')
-    print('1. Most relevant options are listed first and in **bold**. '
-          'Which ones are more relevant is quite arbitrary, comments are welcome.')
-    print('2. Aliases are listed in *italics*.')
+    if details:
+        print('\nNotes:')
+        print('1. Most relevant options are listed first and in **bold**. '
+              'Which ones are more relevant is quite arbitrary, comments are welcome.')
+        print('2. Aliases are listed in *italics*.')
     for n, o in OrderedDict(sorted(outs.items())).items():
         if details:
             print()
