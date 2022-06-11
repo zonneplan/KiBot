@@ -4,8 +4,6 @@ Tests for PcbDraw.
 For debug information use:
 pytest-3 --log-cli-level debug
 """
-
-import os
 import coverage
 from shutil import which
 from . import context
@@ -20,8 +18,8 @@ def test_pcbdraw_3Rs(test_dir):
     prj = '3Rs'
     ctx = context.TestContext(test_dir, prj, 'pcbdraw', OUT_DIR)
     ctx.run()
-    ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-top.svg'))
-    ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-bottom.svg'))
+    ctx.expect_out_file_d(prj+'-top.svg')
+    ctx.expect_out_file_d(prj+'-bottom.svg')
     ctx.clean_up()
 
 
@@ -29,8 +27,8 @@ def test_pcbdraw_simple(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'pcbdraw_simple', OUT_DIR)
     ctx.run()
-    ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-top.png'))
-    ctx.expect_out_file(os.path.join(OUT_DIR, prj+'-bottom.jpg'))
+    ctx.expect_out_file_d(prj+'-top.png')
+    ctx.expect_out_file_d(prj+'-bottom.jpg')
     ctx.clean_up()
 
 

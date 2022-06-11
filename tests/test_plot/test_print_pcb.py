@@ -8,10 +8,7 @@ For debug information use:
 pytest-3 --log-cli-level debug
 
 """
-
-import os
 from . import context
-
 PDF_DIR = 'Layers'
 PDF_FILE = 'bom-F_Cu+F_SilkS.pdf'
 PDF_FILE_B = 'PCB_Bot.pdf'
@@ -23,13 +20,13 @@ def test_print_pcb_simple(test_dir):
     ctx = context.TestContext(test_dir, prj, 'print_pcb', PDF_DIR)
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file(os.path.join(PDF_DIR, PDF_FILE))
+    ctx.expect_out_file_d(PDF_FILE)
     ctx.clean_up()
 
 
 def test_print_pcb_svg_simple(test_dir):
     prj = 'bom'
-    ctx = context.TestContext(test_dir, prj, 'print_pcb_svg', '')
+    ctx = context.TestContext(test_dir, prj, 'print_pcb_svg')
     ctx.run()
     # Check all outputs are there
     file = PDF_FILE.replace('.pdf', '.svg')
@@ -40,7 +37,7 @@ def test_print_pcb_svg_simple(test_dir):
 
 def test_print_pcb_refill_1(test_dir):
     prj = 'zone-refill'
-    ctx = context.TestContext(test_dir, prj, 'print_pcb_zone-refill', '')
+    ctx = context.TestContext(test_dir, prj, 'print_pcb_zone-refill')
     ctx.run()
     ctx.expect_out_file(PDF_FILE_B)
     ctx.compare_image(PDF_FILE_B)
@@ -52,7 +49,7 @@ def test_print_pcb_refill_2(test_dir):
     if context.ki5():
         return
     prj = 'zone-refill'
-    ctx = context.TestContext(test_dir, prj, 'print_pcb_zone-refill_def', '')
+    ctx = context.TestContext(test_dir, prj, 'print_pcb_zone-refill_def')
     ctx.run()
     ctx.expect_out_file(PDF_FILE_B)
     ctx.compare_image(PDF_FILE_B, PDF_FILE_C)
@@ -61,7 +58,7 @@ def test_print_pcb_refill_2(test_dir):
 
 def test_print_variant_1(test_dir):
     prj = 'kibom-variant_3_txt'
-    ctx = context.TestContext(test_dir, prj, 'print_pcb_variant_1', '')
+    ctx = context.TestContext(test_dir, prj, 'print_pcb_variant_1')
     ctx.run()
     # Check all outputs are there
     fname = prj+'-F_Fab.pdf'
@@ -86,33 +83,31 @@ def test_print_wrong_paste(test_dir):
     ctx = context.TestContext(test_dir, prj, 'wrong_paste', PDF_DIR)
     ctx.run()
     # Check all outputs are there
-    fname = prj+'-F_Fab.pdf'
-    ctx.expect_out_file(fname)
+    ctx.expect_out_file(prj+'-F_Fab.pdf')
     ctx.search_err(r'Pad with solder paste, but no copper')
     ctx.clean_up()
 
 
 def test_pcb_print_simple_1(test_dir):
     prj = 'light_control'
-    ctx = context.TestContext(test_dir, prj, 'pcb_print_2', '')
+    ctx = context.TestContext(test_dir, prj, 'pcb_print_2')
     ctx.run()
     ctx.expect_out_file(prj+'-assembly_page_01.png')
     ctx.expect_out_file(prj+'-assembly_page_02.png')
     ctx.expect_out_file(prj+'-assembly_page_01.eps')
     ctx.expect_out_file(prj+'-assembly_page_01.svg')
     ctx.expect_out_file(prj+'-assembly.ps')
+    ctx.clean_up(keep_project=True)
 
 
 def test_pcb_print_simple_2(test_dir):
     if context.ki6():
         prj = 'pcb_print_rare'
-        ctx = context.TestContext(test_dir, prj, 'pcb_print_3', '')
-        ctx.run()
-        ctx.expect_out_file(prj+'-assembly.pdf')
-        ctx.clean_up()
+        yaml = 'pcb_print_3'
     else:
         prj = 'bom'
-        ctx = context.TestContext(test_dir, prj, 'pcb_print_4', '')
-        ctx.run()
-        ctx.expect_out_file(prj+'-assembly.pdf')
-        ctx.clean_up()
+        yaml = 'pcb_print_4'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    ctx.run()
+    ctx.expect_out_file(prj+'-assembly.pdf')
+    ctx.clean_up()

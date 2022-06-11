@@ -22,10 +22,10 @@ def test_step_1(test_dir):
     ctx = context.TestContext(test_dir, prj, 'step_simple', STEP_DIR)
     ctx.run()
     # Check all outputs are there
-    name = os.path.join(STEP_DIR, prj+'-3D.step')
-    ctx.expect_out_file(name)
+    name = prj+'-3D.step'
+    ctx.expect_out_file_d(name)
     # Check the R and C 3D models are there
-    ctx.search_in_file(name, ['R_0805_2012Metric', 'C_0805_2012Metric'])
+    ctx.search_in_file_d(name, ['R_0805_2012Metric', 'C_0805_2012Metric'])
     ctx.search_err(['Missing 3D model for R1: `(.*)R_0805_2012Metrico',
                     'Failed to download `(.*)R_0805_2012Metrico'])
     ctx.clean_up()
@@ -39,7 +39,7 @@ def test_step_2(test_dir):
     ctx = context.TestContext(test_dir, prj, 'step_simple_2', STEP_DIR)
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file(os.path.join(STEP_DIR, prj+'-3D.step'))
+    ctx.expect_out_file_d(prj+'-3D.step')
     ctx.search_err(['Missing 3D model for C1', 'Could not add 3D model to C1'], invert=True)
     ctx.clean_up(keep_project=True)
 
@@ -49,13 +49,13 @@ def test_step_3(test_dir):
     ctx = context.TestContext(test_dir, prj, 'step_simple_3', STEP_DIR)
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file(os.path.join(STEP_DIR, prj+'.step'))
+    ctx.expect_out_file_d(prj+'.step')
     ctx.clean_up()
 
 
 def test_step_variant_1(test_dir):
     prj = 'kibom-variant_3'
-    ctx = context.TestContext(test_dir, prj, 'step_variant_1', '')
+    ctx = context.TestContext(test_dir, prj, 'step_variant_1')
     ctx.run(extra_debug=True)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-3D.step')
@@ -71,7 +71,7 @@ def test_render_3d_variant_1(test_dir):
     yaml = 'render_3d_variant_1'
     if context.ki5():
         yaml += '_k5'
-    ctx = context.TestContext(test_dir, prj, yaml, '')
+    ctx = context.TestContext(test_dir, prj, yaml)
     ctx.run()
     # Check all outputs are there
     name = prj+'-3D_top.png'
