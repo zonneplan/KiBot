@@ -34,35 +34,46 @@ class Environment(Optionable):
             """ User level templates dir. KiCad 5/6: KICAD_USER_TEMPLATE_DIR """
             self.third_party = ''
             """ 3rd party dir. KiCad 6: KICAD6_3RD_PARTY """
+            self.define_old = False
+            """ Also define legacy versions of the variables.
+                Useful when using KiCad 6 and some libs uses old KiCad 5 names """
+
+    def define_k5_vars(self, defs):
+        if self.symbols:
+            defs['KICAD_SYMBOL_DIR'] = self.symbols
+        if self.footprints:
+            defs['KICAD_FOOTPRINT_DIR'] = self.symbols
+            defs['KISYSMOD'] = self.symbols
+        if self.models_3d:
+            defs['KISYS3DMOD'] = self.models_3d
+        if self.templates:
+            defs['KICAD_TEMPLATE_DIR'] = self.templates
+        if self.user_templates:
+            defs['KICAD_USER_TEMPLATE_DIR'] = self.user_templates
+
+    def define_k6_vars(self, defs):
+        if self.symbols:
+            defs['KICAD6_SYMBOL_DIR'] = self.symbols
+        if self.footprints:
+            defs['KICAD6_FOOTPRINT_DIR'] = self.symbols
+        if self.models_3d:
+            defs['KICAD6_3DMODEL_DIR'] = self.models_3d
+        if self.templates:
+            defs['KICAD6_TEMPLATE_DIR'] = self.templates
+        if self.user_templates:
+            defs['KICAD_USER_TEMPLATE_DIR'] = self.user_templates
+        if self.third_party:
+            defs['KICAD6_3RD_PARTY'] = self.third_party
 
     def config(self, parent):
         super().config(parent)
         defs = {}
         if GS.ki5():
-            if self.symbols:
-                defs['KICAD_SYMBOL_DIR'] = self.symbols
-            if self.footprints:
-                defs['KICAD_FOOTPRINT_DIR'] = self.symbols
-                defs['KISYSMOD'] = self.symbols
-            if self.models_3d:
-                defs['KISYS3DMOD'] = self.models_3d
-            if self.templates:
-                defs['KICAD_TEMPLATE_DIR'] = self.templates
-            if self.user_templates:
-                defs['KICAD_USER_TEMPLATE_DIR'] = self.user_templates
+            self.define_k5_vars(defs)
         else:
-            if self.symbols:
-                defs['KICAD6_SYMBOL_DIR'] = self.symbols
-            if self.footprints:
-                defs['KICAD6_FOOTPRINT_DIR'] = self.symbols
-            if self.models_3d:
-                defs['KICAD6_3DMODEL_DIR'] = self.models_3d
-            if self.templates:
-                defs['KICAD6_TEMPLATE_DIR'] = self.templates
-            if self.user_templates:
-                defs['KICAD_USER_TEMPLATE_DIR'] = self.user_templates
-            if self.third_party:
-                defs['KICAD6_3RD_PARTY'] = self.third_party
+            self.define_k6_vars(defs)
+            if self.define_old:
+                self.define_k5_vars(defs)
         if len(defs):
             logger.debug('Defining environment vars from the global section')
             env = {}

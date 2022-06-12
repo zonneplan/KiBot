@@ -10,7 +10,7 @@ all: ../README.md  samples/generic_plot.kibot.yaml ../kibot/report_templates/rep
 ../kibot/config_templates/bom/%.kibot.yaml: samples/%.kibot.yaml
 	cp $< $@
 
-../README.md: README.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/fil_*.py ../kibot/__main__.py ../kibot/config_reader.py
+../README.md: README.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/fil_*.py ../kibot/__main__.py ../kibot/config_reader.py ../kibot/globals.py
 	cat README.in | perl replace_tags.pl > ../README.md
 
 ../src/kibot-check: ../src/kibot-check.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/registrable.py ../kibot/misc.py ../kibot/config_reader.py
