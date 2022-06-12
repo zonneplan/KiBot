@@ -1,7 +1,7 @@
 kiplot:
   version: 1
 
-global:
+globals:
   environment:
     symbols: '/test1'
     footprints: '/test2'

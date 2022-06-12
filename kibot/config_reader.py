@@ -335,16 +335,16 @@ class CfgYamlReader(object):
                             config_error("`import.file` must be a string ({})".format(str(v)))
                         fn = v
                     elif k == 'outputs':
-                        outs = self._parse_import_items('outputs', fn, v)
+                        outs = self._parse_import_items(k, fn, v)
                         explicit_outs = True
                     elif k == 'filters':
-                        filters = self._parse_import_items('filters', fn, v)
+                        filters = self._parse_import_items(k, fn, v)
                         explicit_fils = True
                     elif k == 'variants':
-                        vars = self._parse_import_items('variants', fn, v)
+                        vars = self._parse_import_items(k, fn, v)
                         explicit_vars = True
-                    elif k == 'global':
-                        globals = self._parse_import_items('global', fn, v)
+                    elif k in ['global', 'globals']:
+                        globals = self._parse_import_items(k, fn, v)
                         explicit_globals = True
                     else:
                         self._config_error_import(fn, "unknown import entry `{}`".format(str(v)))
@@ -372,6 +372,10 @@ class CfgYamlReader(object):
             data = yaml.safe_load(fstream)
         except yaml.YAMLError as e:
             config_error("Error loading YAML "+str(e))
+        # Accept `globals` for `global`
+        if 'globals' in data and 'global' not in data:
+            data['global'] = data['globals']
+            del data['globals']
         return data
 
     def read(self, fstream):
