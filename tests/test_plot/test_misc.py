@@ -1020,12 +1020,21 @@ def test_annotate_power_1(test_dir):
 
 
 def test_pdfunite_1(test_dir):
-    prj = 'light_control'
+    prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'pdfunite_1', POS_DIR)
     ctx.run()
     o = prj+'-PDF_Joined.pdf'
     ctx.expect_out_file(o)
-    ctx.clean_up(keep_project=True)
+    ctx.clean_up()
+
+
+def test_pdfunite_2(test_dir):
+    prj = 'bom'
+    ctx = context.TestContext(test_dir, prj, 'pdfunite_2', POS_DIR)
+    ctx.run()
+    o = prj+'-PDF_Joined.pdf'
+    ctx.expect_out_file(o)
+    ctx.clean_up()
 
 
 def check_refs(ctx, refs):
