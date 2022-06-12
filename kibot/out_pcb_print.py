@@ -476,7 +476,8 @@ class PCB_PrintOptions(VariantOptions):
             video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_screencast.ogv')
             if os.path.isfile(video_name):
                 os.remove(video_name)
-        patch_svg_file(output, remove_bkg=True)
+        # Rotate the paper size if needed and remove the background (or it will be over the drawings)
+        patch_svg_file(output, remove_bkg=True, is_portrait=self.paper_portrait)
 
     def plot_pads(self, la, pc, p, filelist):
         id = la._id
@@ -742,6 +743,7 @@ class PCB_PrintOptions(VariantOptions):
         pcb = PCB.load(GS.pcb_file)
         self.paper_w = pcb.paper_w
         self.paper_h = pcb.paper_h
+        self.paper_portrait = pcb.paper_portrait
         self.paper = pcb.paper
 
     def plot_extra_cu(self, id, la, pc, p, filelist):

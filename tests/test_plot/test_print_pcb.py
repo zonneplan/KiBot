@@ -116,5 +116,5 @@ def test_pcb_print_simple_2(test_dir):
     if context.ki6():
         assert abs(w-431.8) < 0.1 and abs(h-279.4) < 0.1
     else:
-        assert abs(w-297.0) < 0.1 and abs(h-210.0) < 0.1
+        assert abs(w-210.0) < 0.1 and abs(h-297.0) < 0.1
     ctx.clean_up()

@@ -13,15 +13,17 @@ from .. import log
 logger = log.get_logger()
 
 
-def patch_svg_file(file, remove_bkg=False):
+def patch_svg_file(file, remove_bkg=False, is_portrait=False):
+    """ KiCad always prints in portrait """
     logger.debug('Patching SVG file `{}`'.format(file))
     with open(file, 'rt') as f:
         text = f.read()
-    text = re.sub(r'<svg (.*) width="(.*)" height="(.*)" viewBox="(\S+) (\S+) (\S+) (\S+)"',
-                  r'<svg \1 width="\3" height="\2" viewBox="\4 \5 \7 \6"', text)
+    if not is_portrait:
+        text = re.sub(r'<svg (.*) width="(.*)" height="(.*)" viewBox="(\S+) (\S+) (\S+) (\S+)"',
+                      r'<svg \1 width="\3" height="\2" viewBox="\4 \5 \7 \6"', text)
     if remove_bkg:
         text = re.sub(r'<rect.*>', '', text)
-    else:
+    elif not is_portrait:
         text = re.sub(r'<rect x="(\S+)" y="(\S+)" width="(\S+)" height="(\S+)"',
                       r'<rect x="\1" y="\2" width="\4" height="\3"', text)
     with open(file, 'wt') as f:

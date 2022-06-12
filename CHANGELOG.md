@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Problems expanding multiple KiCad variables in the same value.
 - XML BoM: Fixed problems with fields containing / (#206)
 - pcb_print: vias processing was disabled.
+- pcb_print: frame orientation in GUI mode.
 
 ### Changed
 - KiCad environment variables: more variables detected, native KiCad 6 names,

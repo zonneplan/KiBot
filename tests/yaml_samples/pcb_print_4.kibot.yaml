@@ -10,6 +10,7 @@ outputs:
       plot_sheet_reference: true
       format: 'PDF'
       frame_plot_mechanism: gui
+      keep_temporal_files: true
       pages:
         - layers:
             - layer: F.Cu
