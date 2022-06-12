@@ -25,12 +25,24 @@ def test_print_pcb_simple(test_dir):
     ctx.clean_up()
 
 
-def test_print_pcb_svg_simple(test_dir):
+def test_print_pcb_svg_simple_1(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'print_pcb_svg')
     ctx.run()
     # Check all outputs are there
     file = PDF_FILE.replace('.pdf', '.svg')
+    ctx.expect_out_file(file)
+    ctx.compare_image(file)
+    ctx.clean_up()
+
+
+def test_print_pcb_svg_simple_2(test_dir):
+    """ Check the portrait version is OK """
+    prj = 'bom_portrait'
+    ctx = context.TestContext(test_dir, prj, 'print_pcb_svg')
+    ctx.run()
+    # Check all outputs are there
+    file = prj+'-F_Cu+F_SilkS.svg'
     ctx.expect_out_file(file)
     ctx.compare_image(file)
     ctx.clean_up()

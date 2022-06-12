@@ -8,6 +8,7 @@ from .gs import GS
 from .out_any_pcb_print import Any_PCB_PrintOptions, register_deps
 from .error import KiPlotConfigurationError
 from .kicad.patch_svg import patch_svg_file
+from .kicad.pcb import PCB
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
 from . import log
@@ -34,8 +35,9 @@ class SVG_PCB_PrintOptions(Any_PCB_PrintOptions):
             # KiCad 6.0.2 bug: https://gitlab.com/kicad/code/kicad/-/issues/11033
             o = self._parent
             out_files = o.get_targets(o.expand_dirname(os.path.join(GS.out_dir, o.dir)))
+            is_portrait = PCB.load(GS.pcb_file).paper_portrait
             for file in out_files:
-                patch_svg_file(file)
+                patch_svg_file(file, is_portrait=is_portrait)
 
 
 @output_class

@@ -15,6 +15,9 @@ logger = log.get_logger()
 
 def patch_svg_file(file, remove_bkg=False, is_portrait=False):
     """ KiCad always prints in portrait """
+    if is_portrait and not remove_bkg:
+        # Nothing to do
+        return
     logger.debug('Patching SVG file `{}`'.format(file))
     with open(file, 'rt') as f:
         text = f.read()
