@@ -53,6 +53,20 @@ def test_step_3(test_dir):
     ctx.clean_up()
 
 
+def test_step_gl_env(test_dir):
+    prj = 'bom'
+    ctx = context.TestContext(test_dir, prj, 'step_gl_env', STEP_DIR)
+    ctx.run()
+    # Check all outputs are there
+    name = prj+'-3D.step'
+    ctx.expect_out_file_d(name)
+    # Check the R and C 3D models are there
+    ctx.search_in_file_d(name, ['R_0805_2012Metric', 'R_0805_2012Metrico', 'C_0805_2012Metric'])
+    ctx.search_err(['Missing 3D model for R1: `(.*)R_0805_2012Metrico',
+                    'Failed to download `(.*)R_0805_2012Metrico'], invert=True)
+    ctx.clean_up()
+
+
 def test_step_variant_1(test_dir):
     prj = 'kibom-variant_3'
     ctx = context.TestContext(test_dir, prj, 'step_variant_1')
