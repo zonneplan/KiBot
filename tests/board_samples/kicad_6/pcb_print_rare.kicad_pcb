@@ -4,7 +4,7 @@
     (thickness 4.69)
   )
 
-  (paper "A4")
+  (paper "User" 431.8 279.4)
   (layers
     (0 "F.Cu" signal)
     (1 "In1.Cu" signal)

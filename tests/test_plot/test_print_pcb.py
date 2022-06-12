@@ -8,6 +8,7 @@ For debug information use:
 pytest-3 --log-cli-level debug
 
 """
+import logging
 from . import context
 PDF_DIR = 'Layers'
 PDF_FILE = 'bom-F_Cu+F_SilkS.pdf'
@@ -105,9 +106,15 @@ def test_pcb_print_simple_2(test_dir):
         prj = 'pcb_print_rare'
         yaml = 'pcb_print_3'
     else:
-        prj = 'bom'
+        prj = 'bom_portrait'
         yaml = 'pcb_print_4'
     ctx = context.TestContext(test_dir, prj, yaml)
     ctx.run()
-    ctx.expect_out_file(prj+'-assembly.pdf')
+    file = ctx.expect_out_file(prj+'-assembly.pdf')
+    w, h = ctx.get_pdf_size(file)
+    logging.debug('PDF size {} x {} mm'.format(w, h))
+    if context.ki6():
+        assert abs(w-431.8) < 0.1 and abs(h-279.4) < 0.1
+    else:
+        assert abs(w-297.0) < 0.1 and abs(h-210.0) < 0.1
     ctx.clean_up()
