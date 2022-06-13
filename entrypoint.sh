@@ -11,17 +11,17 @@ SKIP=""
 DIR=""
 VARIANT=""
 TARGETS=""
-QUICKSTART=""
+QUICKSTART="NO"
 
 # Exit error code
 EXIT_ERROR=1
 
 function msg_example {
-    echo -e "example: $SCRIPT -d docs -b example.kicad_pcb -e example.sch -c docs.kibot.yaml"
+    echo -e "example: $SCRIPT '-d docs' '-b example.kicad_pcb' '-e example.sch' '-c docs.kibot.yaml'"
 }
 
 function msg_usage {
-    echo -e "usage: $SCRIPT [OPTIONS]... -c <yaml-config-file>"
+    echo -e "usage: $SCRIPT [OPTIONS]..."
 }
 
 function msg_disclaimer {
@@ -36,22 +36,22 @@ function msg_illegal_arg {
 
 function msg_help {
     echo -e "\nOptional control arguments:"
-    echo -e "  -c, --config FILE .kibot.yaml config file"
-    echo -e "  -d, --dir DIR output path. Default: current dir, will be used as prefix of dir configured in config file"
-    echo -e "  -b, --board FILE .kicad_pcb board file. Use __SCAN__ to get the first board file found in current folder."
-    echo -e "  -e, --schema FILE .sch schematic file.  Use __SCAN__ to get the first schematic file found in current folder."
-    echo -e "  -q, --quick-start YES generate configs and outputs automagically (-b, -e, -s, -V, -c are ignored)."
-    echo -e "  -s, --skip Skip preflights, comma separated or 'all'"
-    echo -e "  -t, --targets List of targets to generate separated by spaces. To only run preflights use __NONE__."
-    echo -e "  -V, --variant Global variant"
+    echo -e "  '-c FILE' .kibot.yaml config file"
+    echo -e "  '-d DIR' output path. Default: current dir, will be used as prefix of dir configured in config file"
+    echo -e "  '-b FILE' .kicad_pcb board file. Use __SCAN__ to get the first board file found in current folder."
+    echo -e "  '-e FILE' .sch schematic file.  Use __SCAN__ to get the first schematic file found in current folder."
+    echo -e "  '-q YES' generate configs and outputs automagically (-b, -e, -s, -V, -c are ignored)."
+    echo -e "  '-s PRES' skip preflights, comma separated or 'all'"
+    echo -e "  '-t TARGETS' list of targets to generate separated by spaces. To only run preflights use __NONE__."
+    echo -e "  '-V VARIANT' global variant"
 
     echo -e "\nMiscellaneous:"
-    echo -e "  -v, --verbose annotate program execution"
-    echo -e "  -h, --help display this message and exit"
+    echo -e "  '-v LEVEL' annotate program execution"
+    echo -e "  -h display this message and exit"
 }
 
 function msg_more_info {
-    echo -e "Try '$SCRIPT --help' for more information."
+    echo -e "Try '$SCRIPT -h' for more information."
 }
 
 function help {
@@ -84,76 +84,67 @@ function usage {
 function args_process {
     while [ "$1" != "" ];
     do
-       case "$1" in
-           -c | --config ) shift
-               if [ "$1" == "__SCAN__" ]; then
+       ARG="$1"
+       VAL=${ARG:3:10000}
+       case ${ARG:0:2} in
+           -c) if [ "$VAL" == "__SCAN__" ]; then
                    CONFIG=""
                else
-                   CONFIG="-c $1"
+                   CONFIG="-c '$VAL'"
                fi
                ;;
-           -b | --board ) shift
-               if [ "$1" == "__SCAN__" ]; then
+           -b) if [ "$VAL" == "__SCAN__" ]; then
                    BOARD=""
                else
-                   BOARD="-b $1"
+                   BOARD="-b '$VAL'"
                fi
                ;;
-           -e | --schematic ) shift
-               if [ "$1" == "__SCAN__" ]; then
+           -e) if [ "$VAL" == "__SCAN__" ]; then
                    SCHEMA=""
                else
-                   SCHEMA="-e $1"
+                   SCHEMA="-e '$VAL'"
                fi
                ;;
-           -t | --targets ) shift
-               if [ "$1" == "__NONE__" ]; then
+           -t) if [ "$VAL" == "__NONE__" ]; then
                    TARGETS="-i"
-               elif [ "$1" == "__ALL__" ]; then
+               elif [ "$VAL" == "__ALL__" ]; then
                    TARGETS=""
                else
-                   TARGETS="$1"
+                   TARGETS="$VAL"
                fi
                ;;
-           -V | --variant ) shift
-               if [ "$1" == "__NONE__" ]; then
+           -V) if [ "$VAL" == "__NONE__" ]; then
                    VARIANT=""
                else
-                   VARIANT="-g variant=$1"
+                   VARIANT="-g variant=$VAL"
                fi
                ;;
-           -d | --dir) shift
-               DIR="-d $1"
+           -d) DIR="-d '$VAL'"
                ;;
-           -q | --quick-start) shift
-               QUICKSTART="$1"
+           -q) QUICKSTART="$VAL"
                ;;
-           -s | --skip) shift
-               if [ "$1" == "__NONE__" ]; then
+           -s) if [ "$VAL" == "__NONE__" ]; then
                    SKIP=""
                else
-                   SKIP="-s $1"
+                   SKIP="-s $VAL"
                fi
                ;;
-           -v | --verbose) shift
-               if [ "$1" == "0" ]; then
+           -v) if [ "$VAL" == "0" ]; then
                    VERBOSE=""
-               elif [ "$1" == "1" ]; then
+               elif [ "$VAL" == "1" ]; then
                    VERBOSE="-v"
-               elif [ "$1" == "2" ]; then
+               elif [ "$VAL" == "2" ]; then
                    VERBOSE="-vv"
-               elif [ "$1" == "3" ]; then
+               elif [ "$VAL" == "3" ]; then
                    VERBOSE="-vvv"
                else
                    VERBOSE="-vvvv"
                fi
                ;;
-           -h  | --help )
-               help
+           -h) help
                exit
                ;;
-           *)
-               illegal_arg "$@"
+           *)  illegal_arg "$@"
                exit $EXIT_ERROR
                ;;
         esac
@@ -168,10 +159,10 @@ function run {
 
     if [ $QUICKSTART == "YES" ]; then
         echo Quick-start options: $VERBOSE --quick-start
-        kibot $VERBOSE --quick-start
+        /bin/bash -c "kibot $VERBOSE --quick-start"
     else
         echo Options: $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
-        kibot $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
+        /bin/bash -c "kibot $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS"
     fi
 }
 
@@ -181,11 +172,4 @@ function main {
     run
 }
 
-# Removes quotes
-args=$(xargs <<<"$@")
-
-# Arguments as an array
-IFS=' ' read -a args <<< "$args"
-
-# Run main
-main "${args[@]}"
+main "$@"
