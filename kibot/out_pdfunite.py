@@ -11,7 +11,7 @@ from subprocess import check_output, STDOUT, CalledProcessError
 from .gs import GS
 from .error import KiPlotConfigurationError
 from .kiplot import config_output, get_output_dir, run_output
-from .misc import MISSING_TOOL, WRONG_INSTALL, WRONG_ARGUMENTS, INTERNAL_ERROR, W_NOTPDF
+from .misc import MISSING_TOOL, WRONG_INSTALL, WRONG_ARGUMENTS, INTERNAL_ERROR, W_NOTPDF, MISSING_FILES, W_NOMATCH
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .create_pdf import create_pdf_from_pages
@@ -88,12 +88,15 @@ class PDFUniteOptions(BaseOptions):
                 source = f.expand_filename_both(f.source, make_safe=False)
                 files_list = glob.iglob(os.path.join(out_dir, source), recursive=True)
             # Filter and adapt them
+            old_len = len(files)
             for fname in filter(re.compile(f.filter).match, files_list):
                 fname_real = os.path.realpath(fname)
                 # Avoid including the output
                 if fname_real == output_real:
                     continue
                 files.append(fname_real)
+            if len(files) == old_len:
+                logger.warning(W_NOMATCH+'No match found for `{}`'.format(f.from_output if f.from_output else f.source))
         return files
 
     def get_targets(self, out_dir):
@@ -128,6 +131,9 @@ class PDFUniteOptions(BaseOptions):
                 sig = f.read(4)
                 if sig != b'%PDF':
                     logger.warning(W_NOTPDF+'Joining a non PDF file `{}`, will most probably fail'.format(fn))
+        if len(files) < 2:
+            logger.error('At least two files must be joined ({})'.format(files))
+            exit(MISSING_FILES)
         logger.debug('Generating `{}` PDF'.format(output))
         if os.path.isfile(output):
             os.remove(output)

@@ -38,6 +38,7 @@ RENDER_3D_ERR = 24
 FAILED_EXECUTE = 25
 KICOST_ERROR = 26
 MISSING_WKS = 27
+MISSING_FILES = 28
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
@@ -241,6 +242,7 @@ W_ECCLASST = '(W088) '
 W_PDMASKFAIL = '(W089) '
 W_MISSTOOL = '(W090) '
 W_NOTYET = '(W091) '
+W_NOMATCH = '(W092) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",

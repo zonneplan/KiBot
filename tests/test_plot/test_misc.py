@@ -35,7 +35,7 @@ import subprocess
 import json
 from . import context
 from kibot.misc import (EXIT_BAD_ARGS, EXIT_BAD_CONFIG, NO_PCB_FILE, NO_SCH_FILE, EXAMPLE_CFG, WONT_OVERWRITE, CORRUPTED_PCB,
-                        PCBDRAW_ERR, NO_PCBNEW_MODULE, NO_YAML_MODULE, INTERNAL_ERROR)
+                        PCBDRAW_ERR, NO_PCBNEW_MODULE, NO_YAML_MODULE, INTERNAL_ERROR, MISSING_FILES)
 
 
 POS_DIR = 'positiondir'
@@ -1034,6 +1034,21 @@ def test_pdfunite_2(test_dir):
     ctx.run()
     o = prj+'-PDF_Joined.pdf'
     ctx.expect_out_file(o)
+    ctx.clean_up()
+
+
+def test_pdfunite_no_input(test_dir):
+    prj = 'bom'
+    ctx = context.TestContext(test_dir, prj, 'pdfunite_2', POS_DIR)
+    ctx.run(MISSING_FILES, extra=['PDF_Joined'])
+    ctx.clean_up()
+
+
+def test_pdfunite_wrong_input(test_dir):
+    prj = 'bom'
+    ctx = context.TestContext(test_dir, prj, 'error_pdfunite_wrong_files', POS_DIR)
+    ctx.run(MISSING_FILES, extra=['PDF_Joined'])
+    ctx.search_err('No match found for')
     ctx.clean_up()
 
 

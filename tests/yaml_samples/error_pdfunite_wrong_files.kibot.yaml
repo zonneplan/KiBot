@@ -1,0 +1,12 @@
+kiplot:
+  version: 1
+
+outputs:
+  - name: PDF_Joined
+    comment: "PDF files for top layer + mirrored bottom layer"
+    type: pdfunite
+    options:
+      use_external_command: false
+      outputs:
+        - source: PDF/a.pdf
+        - source: PDF/b.pdf
