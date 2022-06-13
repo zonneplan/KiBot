@@ -27,7 +27,7 @@ def convert2csv(ctx, xlsx, skip_empty=False, sheet=None):
     subprocess.check_output(cmd)
     with open(csv, 'rt') as f:
         content = f.read()
-    content = re.sub(r'(\$|Prj) date:,[^,]+', r'\1 date:,', content, 2)
+    content = re.sub(r'(\$|Prj) date:,[^,]+', r'\1 date:,', content, 3)
     content = re.sub(r'KiCost[^,]+', 'KiCost', content, 1)
     content = re.sub(r'KiCad Version:,[^,]+', 'KiCad Version:,', content)
     content = re.sub(r'Created:,[^,]+', 'Created:,', content, 1)
@@ -35,10 +35,10 @@ def convert2csv(ctx, xlsx, skip_empty=False, sheet=None):
         f.write(content)
 
 
-def check_simple(ctx, variant):
+def check_simple(ctx, variant, prj='simple'):
     if variant:
         variant = '_'+variant
-    name = 'simple'+variant+'.xlsx'
+    name = prj+variant+'.xlsx'
     ctx.expect_out_file_d(name)
     convert2csv(ctx, name, skip_empty=True)
     ctx.compare_txt_d2(name[:-4]+'csv')
@@ -65,6 +65,15 @@ def test_kicost_int_variant(test_dir):
     check_simple(ctx, 'default')
     check_simple(ctx, 'production')
     check_simple(ctx, 'test')
+    ctx.clean_up()
+
+
+def test_kicost_merge(test_dir):
+    """ External KiCost multiple projects and field translation """
+    prj = 'multipart'
+    ctx = context.TestContextSCH(test_dir, prj, 'kicost_merge', OUT_DIR)
+    ctx.run(extra_debug=True)
+    check_simple(ctx, '', prj)
     ctx.clean_up()
 
 

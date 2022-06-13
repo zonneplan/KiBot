@@ -1,0 +1,20 @@
+# KiCost basic test
+kibot:
+  version: 1
+
+outputs:
+  - name: 'Costs'
+    comment: "Components costs spreadsheet"
+    type: kicost
+    dir: KiCost
+    options:
+      output: 'multipart'
+      no_collapse: true
+      number: 1000
+      no_price: true
+      translate_fields:
+        - field: fabricante
+          name: manf
+      aggregate:
+        - file: tests/data/multipart2.xml
+          number: 1000
