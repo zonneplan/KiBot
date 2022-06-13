@@ -267,7 +267,9 @@ class KiBoMConfig(Optionable):
                         self.join.append(col.field+'\t'+col.join)
                 # Check this is a valid column
                 if new_col.lower() not in valid_columns_l:
-                    raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
+                    # Should we relax it? (as in out_bom)
+                    raise KiPlotConfigurationError('Invalid column name `{}`. Valid columns are {}.'.
+                                                   format(new_col, list(valid_columns_l.values())))
                 columns.append(new_col)
                 columns_l[new_col.lower()] = new_col
             # Create a list of the columns we don't want

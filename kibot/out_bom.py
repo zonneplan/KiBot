@@ -572,7 +572,8 @@ class BoMOptions(BaseOptions):
                 if new_col_l not in valid_columns_l:
                     # The Field_Rename filter can change this situation:
                     # raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
-                    logger.warning(W_BADFIELD+'Invalid column name `{}`'.format(new_col))
+                    logger.warning(W_BADFIELD+'Invalid column name `{}`. Valid columns are {}.'.
+                                   format(new_col, list(valid_columns_l.values())))
                 columns.append(new_col)
                 column_levels.append(level)
                 column_comments.append(comment)
