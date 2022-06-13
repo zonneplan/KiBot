@@ -37,7 +37,7 @@ ver_re = re.compile(r'(\d+)\.(\d+)(?:\.(\d+))?(?:[\.-](\d+))?')
 def run_command(cmd, only_first_line=True, pre_ver_text=None, no_err_2=False):
     global last_ok
     try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        cmd_output = subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
     except FileNotFoundError as e:
         last_ok = False
         return NOT_AVAIL
@@ -68,7 +68,7 @@ def simple_run_command(cmd):
 def search_as_plugin(cmd, names):
     """ If a command isn't in the path look for it in the KiCad plugins """
     if which(cmd) is not None:
-        return cmd
+        return which(cmd)
     for dir in kicad_plugins_dirs:
         for name in names:
             fname = os.path.join(dir, name, cmd)
