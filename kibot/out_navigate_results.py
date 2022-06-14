@@ -95,7 +95,9 @@ BIG_ICON = 256
 MID_ICON = 64
 OUT_COLS = 12
 BIG_2_MID_REL = int(ceil(BIG_ICON/MID_ICON))
-IMAGEABLES = {'png', 'jpg', 'pdf', 'eps', 'svg', 'ps'}
+IMAGEABLES_SIMPLE = {'png', 'jpg'}
+IMAGEABLES_GS = {'pdf', 'eps', 'ps'}
+IMAGEABLES_SVG = {'svg'}
 STYLE = """
 .cat-table { margin-left: auto; margin-right: auto; }
 .cat-table td { padding: 20px 24px; }
@@ -199,6 +201,21 @@ class Navigate_ResultsOptions(BaseOptions):
         self.copied_images[id] = name
         return name
 
+    def can_be_converted(self, ext):
+        if ext in IMAGEABLES_SVG and not self.svg2png_avail:
+            logger.warning(W_MISSTOOL+"Missing SVG to PNG converter: {}"+SVGCONV)
+            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
+            return False
+        if ext in IMAGEABLES_GS and not self.ps2img_avail:
+            logger.warning(W_MISSTOOL+"Missing PS/PDF to PNG converter: {}"+PS2IMG)
+            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
+            return False
+        if ext in IMAGEABLES_SIMPLE and not self.convert_avail:
+            logger.warning(W_MISSTOOL+"Missing Imagemagick converter: {}"+CONVERT)
+            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
+            return False
+        return True
+
     def get_image_for_cat(self, cat):
         img = None
         # Check if we have an output that can represent this category
@@ -215,7 +232,7 @@ class Navigate_ResultsOptions(BaseOptions):
                     for tg in targets:
                         ext = os.path.splitext(tg)[1][1:].lower()
                         # Can be converted to an image?
-                        if ext in IMAGEABLES and os.path.isfile(tg):
+                        if os.path.isfile(tg) and self.can_be_converted(ext):
                             rep_file = tg
                             break
                     if rep_file:
@@ -233,14 +250,6 @@ class Navigate_ResultsOptions(BaseOptions):
     def compose_image(self, file, ext, img, out_name, no_icon=False):
         if not os.path.isfile(file):
             logger.warning(W_NOTYET+"{} not yet generated, using an icon".format(os.path.relpath(file)))
-            return False, None, None
-        if ext == 'svg' and not self.svg2png_avail:
-            logger.warning(W_MISSTOOL+"Missing SVG to PNG converter: {}"+SVGCONV)
-            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
-            return False, None, None
-        if ext in ('ps', 'pdf') and not self.ps2img_avail:
-            logger.warning(W_MISSTOOL+"Missing PS/PDF to PNG converter: {}"+PS2IMG)
-            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
             return False, None, None
         # Create a unique name using the output name and the generated file name
         bfname = os.path.splitext(os.path.basename(file))[0]
@@ -286,7 +295,7 @@ class Navigate_ResultsOptions(BaseOptions):
         # The icon size
         height = width = MID_ICON
         # Check if this file can be represented by an image
-        if self.convert_avail and ext in IMAGEABLES:
+        if self.can_be_converted(ext):
             # Try to compose the image of the file with the icon
             ok, fimg, new_img = self.compose_image(file_full, ext, img, 'cat_'+out_name, no_icon)
             if ok:
