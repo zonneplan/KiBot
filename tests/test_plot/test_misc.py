@@ -1139,6 +1139,7 @@ def test_quick_start_1(test_dir):
     dir_o = 'navigate'
     generated = 'kibot_generated.kibot.yaml'
     # 1) Run the quick-start
+    logging.debug('Running with quick-start')
     ctx = context.TestContext(test_dir, prj, 'pre_and_position', dir_o)
     board_file = os.path.basename(ctx.board_file)
     dest_dir = ctx.get_out_path(dir_o)
@@ -1149,10 +1150,15 @@ def test_quick_start_1(test_dir):
     dest_file_sch = os.path.join(dest_dir, sch_file)
     shutil.copy2(ctx.sch_file, dest_file_sch)
     ctx.run(extra=['--quick-start', '--dry', '--start', dest_dir], no_board_file=True, no_yaml_file=True)
-    # 2) List the generated outputs
     dest_conf = os.path.join(dir_o, generated)
     ctx.expect_out_file(dest_conf)
+    # 2) Generate one output that we can use as image for a category
+    logging.debug('Creating `basic_pcb_print_pdf`')
     dest_conf_f = os.path.join(dest_dir, 'kibot_generated.kibot.yaml')
+    ctx.run(extra=['-c', dest_conf_f, 'basic_pcb_print_pdf'], no_yaml_file=True)
+    ctx.expect_out_file(os.path.join('PCB', 'PDF', prj+'-assembly.pdf'))
+    # 3) List the generated outputs
+    logging.debug('Creating the web pages')
     ctx.run(extra=['-c', dest_conf_f, '-l'], no_out_dir=True, no_yaml_file=True)
     OUTS = ('boardview', 'dxf', 'excellon', 'gencad', 'gerb_drill', 'gerber', 'compress', 'hpgl', 'ibom',
             'navigate_results', 'netlist', 'pcb_print', 'pcbdraw', 'pdf', 'position', 'ps', 'render_3d',
