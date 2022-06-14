@@ -3383,7 +3383,8 @@ If you find KiBot useful please consider contributing to the project. There vari
 Of course donations are welcome ([donate](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)), but there are other ways to contribute:
 
 - In general:
-  - Your workflow: What's missing in KiBot for your workflow? Comment it in the [issues](https://github.com/INTI-CMNB/KiBot/issues)
+  - Your workflow: What's missing in KiBot for your workflow? Comment it in the
+    [discussions](https://github.com/INTI-CMNB/KiBot/discussions/categories/missing-in-my-workflow)
   - Configuration for a manufacturer: If you have a configuration known to work for a manufacturer please consider contributing it.
     Even if this is a small manufacurer, this helps to know what are the most common options.
   - Mention KiBot: If your project or company uses KiBot you can mention it, so people know about KiBot.
@@ -3391,7 +3392,8 @@ Of course donations are welcome ([donate](https://www.paypal.com/donate/?hosted_
 - If you are a Windows/Mac OS X user:
   - If you managed to run it locally consider contributing a tutorial of how to do it.
   - If you run KiBot on CI/CD and want to run it locally: consider investing some time on tests.
-    Just open an [issues](https://github.com/INTI-CMNB/KiBot/issues) and I'll help you to run tests to adapt the code.
+    Just comment in the [discussions](https://github.com/INTI-CMNB/KiBot/discussions/categories/other-platforms)
+    and I'll help you to run tests to adapt the code.
     Now that KiCad 6 uses Python 3 most of KiBot functionality should work on Windows and Mac OS X.
     People is using WSL to run KiBot, but we don't have a tutorial about how to do it.
 - If you use a Linux that isn't derived from Debian:

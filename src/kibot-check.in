@@ -416,5 +416,5 @@ labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory
 text = ', '.join([sev2color(c)+l+RESET for c, l in enumerate(labels)])
 print(do_bright('\nColor reference:')+' '+text)
 
-print('\nDid this help? Please consider commenting it on https://github.com/INTI-CMNB/KiBot/issues/200')
+print('\nDid this help? Please consider commenting it on https://github.com/INTI-CMNB/KiBot/discussions/categories/kibot-check')
 
