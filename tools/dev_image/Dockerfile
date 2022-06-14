@@ -1,5 +1,5 @@
 FROM setsoft/kicad_auto:latest
-MAINTAINER Salvador E. Tropea <set@ieee.org>
+MAINTAINER Salvador E. Tropea <stropea@inti.gob.ar>
 LABEL Description="KiCad 5 with KiBot and other automation scripts"
 
 RUN     dpkg --remove kicost kibot && \
