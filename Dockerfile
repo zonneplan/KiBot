@@ -1,6 +1,6 @@
-FROM setsoft/kicad_auto:ki6
+FROM setsoft/kicad_auto:latest
 LABEL AUTHOR Salvador E. Tropea <stropea@inti.gob.ar>
-LABEL Description="Export various files from KiCad projects (KiCad 6)"
+LABEL Description="Export various files from KiCad projects (KiCad 5)"
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
