@@ -203,15 +203,15 @@ class Navigate_ResultsOptions(BaseOptions):
 
     def can_be_converted(self, ext):
         if ext in IMAGEABLES_SVG and not self.svg2png_avail:
-            logger.warning(W_MISSTOOL+"Missing SVG to PNG converter: {}"+SVGCONV)
+            logger.warning(W_MISSTOOL+"Missing SVG to PNG converter: "+SVGCONV)
             logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
             return False
         if ext in IMAGEABLES_GS and not self.ps2img_avail:
-            logger.warning(W_MISSTOOL+"Missing PS/PDF to PNG converter: {}"+PS2IMG)
+            logger.warning(W_MISSTOOL+"Missing PS/PDF to PNG converter: "+PS2IMG)
             logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
             return False
         if ext in IMAGEABLES_SIMPLE and not self.convert_avail:
-            logger.warning(W_MISSTOOL+"Missing Imagemagick converter: {}"+CONVERT)
+            logger.warning(W_MISSTOOL+"Missing Imagemagick converter: "+CONVERT)
             logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
             return False
         return True
