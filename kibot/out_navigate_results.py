@@ -214,7 +214,7 @@ class Navigate_ResultsOptions(BaseOptions):
             logger.warning(W_MISSTOOL+"Missing Imagemagick converter: "+CONVERT)
             logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
             return False
-        return True
+        return ext in IMAGEABLES_SVG or ext in IMAGEABLES_GS or ext in IMAGEABLES_SIMPLE
 
     def get_image_for_cat(self, cat):
         img = None
