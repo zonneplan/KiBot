@@ -1,3 +1,26 @@
+kibot (1.2.0-1) stable; urgency=medium
+
+  * The outputs help now display the more relevant options first and
+    highlighted.
+  * Outputs now can have priorities, by default is applied.
+  * New output navigate_results`.
+  * New global environment section.
+  * Fixed components with mounting hole where excluded.
+  * Fixed missing GenCAD output targets.
+  * Fixed problems expanding multiple KiCad variables in the same value.
+  * XML BoM: Fixed problems with fields containing /
+  * Fixed pcb_print: vias processing was disabled.
+  * Fixed pcb_print: problems with frame in GUI mode and portrait page
+    orientation.
+  * Fixed svg_pcb_print: page orientation for portrait.
+  * Changed KiCad environment variables: more variables detected, native
+    KiCad 6 names, all exported to the environment.
+  * Consequences of the priorities implementation: `qr_lib` outputs are
+    created before others and `navigate_results` and `compress` outputs are
+    created after others
+
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Tue, 14 Jun 2022 15:28:35 -0300
+
 kibot (1.1.0-1) stable; urgency=medium
 
   * `kibot-check` tool to check the installation

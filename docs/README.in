@@ -13,6 +13,10 @@
 - The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
 - When using KiCad 6 you must migrate the whole project and pass the migrated files to KiBot.
 
+**New on v1.2.0**
+- Navigate results output. Here is an [example](https://inti-cmnb.github.io/kibot_variants_arduprog_site/Browse/t1-navigate.html)
+  using the following [example repo](https://inti-cmnb.github.io/kibot_variants_arduprog/).
+
 ## Index
 
 * [Introduction](#introduction)
@@ -95,6 +99,8 @@ Notes:
 - When installing from the Debian repo you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
 - When installing using `pip` the dependencies marked as **PyPi dependency** will be automatically installed.
 - The `kibot-check` tool can help you to know which dependencies are missing.
+- Note that on some systems (i.e. Debian) ImageMagick disables PDF manipulation in its `policy.xml` file.
+  Comment or remove lines like this: `<policy domain="coder" rights="none" pattern="PDF" />` (On Debian: `/etc/ImageMagick-6/policy.xml`)
 
 @dependencies@
 
@@ -198,6 +204,9 @@ This will look for KiCad projects starting from the current directory and
 going down the directory structure. For each project found KiBot will
 generate a configuration file showing some common outputs. After cerating
 the configuration files KiBot will start the outputs generation.
+
+Here is an [example](https://inti-cmnb.github.io/kibot_variants_arduprog_site/Browse/t1-navigate.html)
+of what's generated using the following [example repo](https://inti-cmnb.github.io/kibot_variants_arduprog/).
 
 You can use the generated files as example of how to configure KiBot.
 If you want to just generate the configuration files and not the outputs

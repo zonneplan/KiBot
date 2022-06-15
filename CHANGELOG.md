@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.2.0] - 2022-06-15
 ### Added
 - The outputs help now display the more relevant options first and highlighted.
   Which ones are more relevant is somehow arbitrary, comments are welcome.
@@ -13,9 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Use `-n` to disable it.
 - New outputs:
   - `navigate_results` creates web pages to browse the generated outputs.
+     [Example](https://inti-cmnb.github.io/kibot_variants_arduprog_site/Browse/t1-navigate.html)
 - New globals:
   - `environment` section allows defining KiCad environment variables.
     (See INTI-CMNB/KiAuto#21)
+- GitHub discussions are now enabled. Comment about your KiBot experience
+  [here](https://github.com/INTI-CMNB/KiBot/discussions)
 
 ### Fixed
 - Components with mounting hole where excluded (#201)
