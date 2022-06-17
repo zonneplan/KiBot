@@ -326,6 +326,15 @@ class KiConf(object):
                 logger.debug('Using {}="{}" (from KiCad config)'.format(n, val))
             if val is not None and ret_val is None:
                 ret_val = val
+        # Make sure all the versions point to the same place
+        # It helps if we are using KiCad 6 but have the KiCad 5 names defined,
+        # KiCad will use them, but any mention to the KiCad 6 version won't be
+        # valid for KiBot unless we explicitly define it.
+        if ret_val is not None:
+            for n in names:
+                if n not in os.environ or n not in KiConf.kicad_env:
+                    os.environ[n] = ret_val
+                    KiConf.kicad_env[n] = ret_val
         return ret_val
 
     def _set_env_var(base_name, val, ki6_diff, no_dir):
