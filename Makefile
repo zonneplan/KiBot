@@ -23,7 +23,7 @@ deb:
 	DEB_BUILD_OPTIONS=nocheck fakeroot dpkg-buildpackage -uc -b
 
 deb_sig:
-	fakeroot dpkg-buildpackage -b
+	DEB_BUILD_OPTIONS=nocheck fakeroot dpkg-buildpackage -b
 
 lint: doc
 	# flake8 --filename is broken
