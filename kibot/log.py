@@ -29,6 +29,7 @@ domain = 'kilog'
 filters = None
 root_logger = None
 visual_level = None
+debug_level = 0
 
 
 def get_logger(name=None):
@@ -99,6 +100,18 @@ class MyLogger(logging.Logger):
 
     def log(self, level, msg, *args, **kwargs):
         if level < self.getEffectiveLevel():
+            return
+        if isinstance(msg, tuple):
+            msg = ' '.join(map(str, msg))
+        if sys.version_info >= (3, 8):
+            super(self.__class__, self).debug(msg, stacklevel=2, *args, **kwargs)  # pragma: no cover (Py38)
+        else:
+            super(self.__class__, self).debug(msg, *args, **kwargs)
+
+    def debugl(self, level, msg, *args, **kwargs):
+        # Similar to log() but using the debug_level (-vvvv) instead of the Python level
+        global debug_level
+        if level > debug_level:
             return
         if isinstance(msg, tuple):
             msg = ' '.join(map(str, msg))
