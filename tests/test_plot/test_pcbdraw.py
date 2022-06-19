@@ -44,6 +44,14 @@ def no_rsvg_convert(name):
     return which(name)
 
 
+def no_rsvg_convert_access(name, attrs):
+    logging.debug('no_rsvg_convert_access')
+    if name.endswith('/rsvg-convert'):
+        logging.debug('no_rsvg_convert_access returns False')
+        return False
+    return access(name, attrs)
+
+
 def no_convert(name):
     logging.debug('no_convert called')
     if name == 'convert':
@@ -60,15 +68,25 @@ def no_convert_access(name, attrs):
     return access(name, attrs)
 
 
-def no_run(cmd, stderr):
+def no_run(cmd, stderr, text=False):
     return b""
+
+
+def platform_system_bogus():
+    return 'Bogus'
 
 
 def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
     """ Check missing rsvg-convert """
     with monkeypatch.context() as m:
+        # Make which('rsvg-convert') fail
         m.setattr("shutil.which", no_rsvg_convert)
+        # Make the call to determine the version fail
         m.setattr("subprocess.check_output", no_run)
+        # Make os.access(...rsvg-convert', EXEC) fail
+        m.setattr("os.access", no_rsvg_convert_access)
+        # Make platform.system() return a bogus OS
+        m.setattr("platform.system", platform_system_bogus)
         # Reload the module so we get the above patches
         reload(kibot.dep_downloader)
         old_lev = kibot.log.debug_level
@@ -94,6 +112,8 @@ def test_pcbdraw_miss_convert(caplog, monkeypatch):
         m.setattr("shutil.which", no_convert)
         m.setattr("subprocess.check_output", no_run)
         m.setattr("os.access", no_convert_access)
+        # Make platform.system() return a bogus OS
+        m.setattr("platform.system", platform_system_bogus)
         # Reload the module so we get the above patches
         reload(kibot.dep_downloader)
         o = PcbDrawOptions()
