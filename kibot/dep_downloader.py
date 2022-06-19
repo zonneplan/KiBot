@@ -72,16 +72,14 @@ def try_download_tar_ball(dep, url, name, name_in_tar=None):
     return cmd
 
 
-def git_downloader(dep):
+def git_downloader(dep, system, plat):
     # Currently only for Linux x86_64/x86_32
     # arm, arm64, mips64el and mipsel are also there, just not implemented
-    system = platform.system()
-    plat = platform.platform()
-    if system != 'Linux' or 'x86_' not in plat:
+    if system != 'Linux' or not plat.startswith('x86_'):
         logger.debug('- No binary for this system')
         return None
     # Try to download it
-    arch = 'amd64' if 'x86_64' in plat else 'i386'
+    arch = 'amd64' if plat == 'x86_64' else 'i386'
     url = 'https://github.com/EXALAB/git-static/raw/master/output/'+arch+'/bin/git'
     content = download(url)
     if content is None:
@@ -102,11 +100,9 @@ def git_downloader(dep):
     return check_tool_binary_version(dest_bin, dep)
 
 
-def convert_downloader(dep):
+def convert_downloader(dep, system, plat):
     # Currently only for Linux x86_64
-    system = platform.system()
-    plat = platform.platform()
-    if system != 'Linux' or 'x86_64' not in plat:
+    if system != 'Linux' or plat != 'x86_64':
         logger.debug('- No binary for this system')
         return None
     # Get the download page
@@ -198,11 +194,9 @@ def convert_downloader(dep):
     return check_tool_binary_version(dest_bin, dep)
 
 
-def gs_downloader(dep):
+def gs_downloader(dep, system, plat):
     # Currently only for Linux x86
-    system = platform.system()
-    plat = platform.platform()
-    if system != 'Linux' or 'x86_' not in plat:
+    if system != 'Linux' or not plat.startswith('x86_'):
         logger.debug('- No binary for this system')
         return None
     # Get the download page
@@ -212,7 +206,7 @@ def gs_downloader(dep):
         logger.debug('- Failed to download `{}`'.format(dep.url_down))
         return None
     # Look for the valid tarball
-    arch = 'x86_64' if 'x86_64' in plat else 'x86'
+    arch = 'x86_64' if plat == 'x86_64' else 'x86'
     url = None
     pattern = 'ghostscript*linux-'+arch+'*'
     try:
@@ -235,11 +229,9 @@ def gs_downloader(dep):
     return res
 
 
-def rsvg_downloader(dep):
+def rsvg_downloader(dep, system, plat):
     # Currently only for Linux x86_64
-    system = platform.system()
-    plat = platform.platform()
-    if system != 'Linux' or 'x86_64' not in plat:
+    if system != 'Linux' or plat != 'x86_64':
         logger.debug('- No binary for this system')
         return None
     # Get the download page
@@ -264,25 +256,25 @@ def rsvg_downloader(dep):
     return try_download_tar_ball(dep, url, 'rsvg-convert')
 
 
-def rar_downloader(dep):
+def rar_downloader(dep, system, plat):
     # Get the download page
     r = requests.get(dep.url_down, allow_redirects=True)
     if r.status_code != 200:
         logger.debug('- Failed to download `{}`'.format(dep.url_down))
         return None
     # Try to figure out the right package
-    system = platform.system()
     OSs = {'Linux': 'rarlinux', 'Darwin': 'rarmacos'}
     if system not in OSs:
         return None
     name = OSs[system]
-    plat = platform.platform()
-    if 'arm64' in plat:
+    if plat == 'arm64':
         name += '-arm'
-    elif 'x86_64' in plat:
+    elif plat == 'x86_64':
         name += '-x64'
-    else:
+    elif plat == 'x86_32':
         name += '-x32'
+    else:
+        return None
     res = re.search('href="([^"]+{}[^"]+)"'.format(name), r.content.decode())
     if not res:
         return None
@@ -386,10 +378,22 @@ def try_download_tool_binary(dep):
         return None
     logger.info('- Trying to download {} ({})'.format(dep.name, dep.url_down))
     res = None
-    # res = dep.downloader(dep)
+    # Determine the platform
+    system = platform.system()
+    plat = platform.platform()
+    if 'x86_64' in plat or 'amd64' in plat:
+        plat = 'x86_64'
+    elif 'x86_32' in plat or 'i386' in plat:
+        plat = 'x86_32'
+    elif 'arm64' in plat:
+        plat = 'arm64'
+    else:
+        plat = 'unk'
+    logger.debug('- System: {} platform: {}'.format(system, plat))
+    # res = dep.downloader(dep, system, plat)
     # return res
     try:
-        res = dep.downloader(dep)
+        res = dep.downloader(dep, system, plat)
         if res:
             using_downloaded(dep)
     except Exception as e:
