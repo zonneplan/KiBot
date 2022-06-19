@@ -14,17 +14,17 @@ from tarfile import open as tar_open
 from collections import OrderedDict
 from .gs import GS
 from .kiplot import config_output, get_output_dir, run_output
-from .misc import (MISSING_TOOL, WRONG_INSTALL, W_EMPTYZIP, WRONG_ARGUMENTS, INTERNAL_ERROR, ToolDependency,
-                   ToolDependencyRole, TRY_INSTALL_CHECK)
+from .misc import (WRONG_INSTALL, W_EMPTYZIP, WRONG_ARGUMENTS, INTERNAL_ERROR, ToolDependency, ToolDependencyRole)
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput, RegDependency
 from .macros import macros, document, output_class  # noqa: F401
+from .dep_downloader import rar_downloader, check_tool
 from . import log
 
 logger = log.get_logger()
-RegDependency.register(ToolDependency('compress', 'RAR', 'https://www.rarlab.com/',
-                                      url_down='https://www.rarlab.com/download.htm', help_option='-?',
-                                      roles=ToolDependencyRole(desc='Compress in RAR format')))
+rar_dep = ToolDependency('compress', 'RAR', 'https://www.rarlab.com/', url_down='https://www.rarlab.com/download.htm',
+                         help_option='-?', downloader=rar_downloader, roles=ToolDependencyRole(desc='Compress in RAR format'))
+RegDependency.register(rar_dep)
 
 
 class FilesList(Optionable):
@@ -101,15 +101,15 @@ class CompressOptions(BaseOptions):
     def create_rar(self, output, files):
         if os.path.isfile(output):
             os.remove(output)
+        command = check_tool(rar_dep, fatal=True)
+        if command is None:
+            return
         for fname, dest in files.items():
-            logger.debug('Adding '+fname+' as '+dest)
-            cmd = ['rar', 'a', '-m5', '-ep', '-ap'+os.path.dirname(dest), output, fname]
+            logger.debugl(2, 'Adding '+fname+' as '+dest)
+            cmd = [command, 'a', '-m5', '-ep', '-ap'+os.path.dirname(dest), output, fname]
+            logger.debugl(2, '- Running {}'.format(cmd))
             try:
                 check_output(cmd, stderr=STDOUT)
-            except FileNotFoundError:
-                logger.error('Missing `rar` command, install it')
-                logger.error(TRY_INSTALL_CHECK)
-                exit(MISSING_TOOL)
             except CalledProcessError as e:
                 logger.error('Failed to invoke rar command, error {}'.format(e.returncode))
                 if e.output:
@@ -138,11 +138,13 @@ class CompressOptions(BaseOptions):
             # Get the list of candidates
             files_list = None
             if f.from_output:
+                logger.debugl(2, '- From output `{}`'.format(f.from_output))
                 out = RegOutput.get_output(f.from_output)
                 if out is not None:
                     config_output(out)
                     out_dir = get_output_dir(out.dir, out, dry=True)
                     files_list = out.get_targets(out_dir)
+                    logger.debugl(2, '- List of files: {}'.format(files_list))
                     if out_dir not in dirs_list:
                         dirs_list.append(out_dir)
                 else:
@@ -163,6 +165,9 @@ class CompressOptions(BaseOptions):
                 out_dir = out_dir_cwd if f.from_cwd else out_dir_default
                 source = f.expand_filename_both(f.source, make_safe=False)
                 files_list = glob.iglob(os.path.join(out_dir, source), recursive=True)
+                if GS.debug_level > 1:
+                    files_list = list(files_list)
+                    logger.debug('- Pattern {} list of files: {}'.format(source, files_list))
             # Filter and adapt them
             for fname in filter(re.compile(f.filter).match, files_list):
                 fname_real = os.path.realpath(fname)

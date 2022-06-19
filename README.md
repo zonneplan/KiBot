@@ -118,6 +118,10 @@ Notes:
 - Mandatory for `kicost`
 - Optional to find components costs and specs for `bom`
 
+[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0 (tool)
+- Mandatory for `pcbdraw`
+- Optional to create realistic solder masks for `pcb_print`
+
 [**Interactive HTML BoM**](https://github.com/INTI-CMNB/InteractiveHtmlBom) v2.4.1.4 (tool)
 - Mandatory for `ibom`
 
@@ -127,16 +131,13 @@ Notes:
 [**LXML**](https://pypi.org/project/LXML/) (python module) [Debian](https://packages.debian.org/bullseye/python3-lxml)
 - Mandatory for `pcb_print`
 
-[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0 (tool)
-- Mandatory for `pcbdraw`
-
 [**QRCodeGen**](https://pypi.org/project/QRCodeGen/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-qrcodegen)
 - Mandatory for `qr_lib`
 
 [**Colorama**](https://pypi.org/project/Colorama/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-colorama)
 - Optional to get color messages in a portable way for general use
 
-[**RSVG tools**](https://cran.r-project.org/web/packages/rsvg/index.html) (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
+[**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PNG icons for `navigate_results`

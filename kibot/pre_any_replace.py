@@ -12,10 +12,12 @@ from .misc import FAILED_EXECUTE, W_EMPTREP, W_BADCHARS
 from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .gs import GS
+from .dep_downloader import check_tool
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+re_git = re.compile(r'([^a-zA-Z_]|^)(git) ')
 
 
 class TagReplaceBase(Optionable):
@@ -86,7 +88,7 @@ class Base_Replace(BasePreFlight):  # noqa: F821
                 "\n        before: 'Git hash: <'"
                 "\n        after: '>'".format(cls._context, cls._context))
 
-    def replace(self, file):
+    def replace(self, file, git_dep):
         logger.debug('Applying replacements to `{}`'.format(file))
         with open(file, 'rt') as f:
             content = f.read()
@@ -95,7 +97,12 @@ class Base_Replace(BasePreFlight):  # noqa: F821
         for r in o.replace_tags:
             text = r.text
             if not text:
-                cmd = ['/bin/bash', '-c', r.command]
+                command = r.command
+                if re_git.search(command):
+                    git_command = check_tool(git_dep, fatal=True)
+                    command = re_git.sub(r'\1'+git_command+' ', command)
+                cmd = ['/bin/bash', '-c', command]
+                logger.debugl(2, 'Running: {}'.format(cmd))
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
                     logger.error('Failed to execute:\n{}\nreturn code {}'.format(r.command, result.returncode))

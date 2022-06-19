@@ -7,29 +7,27 @@ import os
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 import subprocess
-import shutil
 from .misc import (PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK, PCB_MAT_COLORS,
-                   PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, ToolDependency, ToolDependencyRole, TRY_INSTALL_CHECK)
+                   PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, ToolDependencyRole, rsvg_dependency, convert_dependency,
+                   pcbdraw_dependency)
 from .kiplot import check_script
 from .registrable import RegDependency
 from .gs import GS
 from .optionable import Optionable
 from .out_base import VariantOptions
+from .dep_downloader import check_tool, rsvg_downloader, convert_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-SVG2PNG = 'rsvg-convert'
-CONVERT = 'convert'
 # 0.9.0 implements KiCad 6 support
 MIN_VERSION = '0.9.0'
-RegDependency.register(ToolDependency('pcbdraw', 'RSVG tools', 'https://cran.r-project.org/web/packages/rsvg/index.html',
-                                      deb='librsvg2-bin', command=SVG2PNG,
-                                      roles=ToolDependencyRole(desc='Create PNG and JPG images')))
-RegDependency.register(ToolDependency('pcbdraw', 'ImageMagick', 'https://imagemagick.org/', command='convert',
-                                      roles=ToolDependencyRole(desc='Create JPG images')))
-RegDependency.register(ToolDependency('pcbdraw', 'PcbDraw', URL_PCBDRAW, url_down=URL_PCBDRAW+'/releases', in_debian=False,
-                                      roles=ToolDependencyRole(version=(0, 9, 0))))
+rsvg_dep = rsvg_dependency('pcbdraw', rsvg_downloader, roles=ToolDependencyRole(desc='Create PNG and JPG images'))
+convert_dep = convert_dependency('pcbdraw', convert_downloader, roles=ToolDependencyRole(desc='Create JPG images'))
+pcbdraw_dep = pcbdraw_dependency('pcbdraw', None, roles=ToolDependencyRole(version=(0, 9, 0)))
+RegDependency.register(rsvg_dep)
+RegDependency.register(convert_dep)
+RegDependency.register(pcbdraw_dep)
 
 
 class PcbDrawStyle(Optionable):
@@ -248,19 +246,21 @@ class PcbDrawOptions(VariantOptions):
             cmd.append(output)
         else:
             # PNG and JPG outputs are unreliable
-            if shutil.which(SVG2PNG) is None:
-                logger.warning(W_UNRETOOL + '`{}` not installed, using unreliable PNG/JPG conversion'.format(SVG2PNG))
-                logger.warning(W_USESVG2 + 'If you experiment problems install `librsvg2-bin` or equivalent')
-                logger.warning(W_USESVG2 + TRY_INSTALL_CHECK)
-                cmd.append(output)
-            elif shutil.which(CONVERT) is None:
-                logger.warning(W_UNRETOOL + '`{}` not installed, using unreliable PNG/JPG conversion'.format(CONVERT))
-                logger.warning(W_USEIMAGICK + 'If you experiment problems install `imagemagick` or equivalent')
-                logger.warning(W_USEIMAGICK + TRY_INSTALL_CHECK)
+            self.rsvg_command = check_tool(rsvg_dep)
+            if self.rsvg_command is None:
+                logger.warning(W_UNRETOOL + '`{}` not installed, using unreliable PNG/JPG conversion'.format(rsvg_dep.name))
+                logger.warning(W_USESVG2 + 'If you experiment problems install it')
                 cmd.append(output)
             else:
-                svg = _get_tmp_name('.svg')
-                cmd.append(svg)
+                self.convert_command = check_tool(convert_dep)
+                if self.convert_command is None:
+                    logger.warning(W_UNRETOOL + '`{}` not installed, using unreliable PNG/JPG conversion'.
+                                   format(convert_dep.name))
+                    logger.warning(W_USEIMAGICK + 'If you experiment problems install it')
+                    cmd.append(output)
+                else:
+                    svg = _get_tmp_name('.svg')
+                    cmd.append(svg)
         return svg
 
     def get_targets(self, out_dir):
@@ -318,8 +318,8 @@ class PcbDrawOptions(VariantOptions):
         if svg is not None:
             # Manually convert the SVG to PNG
             png = _get_tmp_name('.png')
-            _run_command([SVG2PNG, '-d', str(self.dpi), '-p', str(self.dpi), svg, '-o', png], svg)
-            cmd = [CONVERT, '-trim', png]
+            _run_command([self.rsvg_command, '-d', str(self.dpi), '-p', str(self.dpi), svg, '-o', png], svg)
+            cmd = [self.convert_command, '-trim', png]
             if self.format == 'jpg':
                 cmd += ['-quality', '85%']
             cmd.append(name)

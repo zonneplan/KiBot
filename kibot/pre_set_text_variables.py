@@ -6,6 +6,7 @@
 import os
 import sys
 import json
+import re
 from subprocess import run, PIPE
 from .error import KiPlotConfigurationError
 from .misc import FAILED_EXECUTE, W_EMPTREP, git_dependency
@@ -13,11 +14,14 @@ from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .gs import GS
 from .registrable import RegDependency
+from .dep_downloader import git_downloader, check_tool
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-RegDependency.register(git_dependency('set_text_variables'))
+git_dep = git_dependency('set_text_variables', git_downloader)
+RegDependency.register(git_dep)
+re_git = re.compile(r'([^a-zA-Z_]|^)(git) ')
 
 
 class KiCadVariable(Optionable):
@@ -112,7 +116,11 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         for r in o:
             text = r.text
             if not text:
-                cmd = ['/bin/bash', '-c', r.command]
+                command = r.command
+                if re_git.search(command):
+                    git_command = check_tool(git_dep, fatal=True)
+                    command = re_git.sub(r'\1'+git_command+' ', command)
+                cmd = ['/bin/bash', '-c', command]
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
                     logger.error('Failed to execute:\n{}\nreturn code {}'.format(r.command, result.returncode))

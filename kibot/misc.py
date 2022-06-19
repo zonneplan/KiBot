@@ -243,6 +243,7 @@ W_PDMASKFAIL = '(W089) '
 W_MISSTOOL = '(W090) '
 W_NOTYET = '(W091) '
 W_NOMATCH = '(W092) '
+W_DOWNTOOL = '(W093) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
@@ -260,6 +261,8 @@ SOLDER_COLORS = {'green': ("#285e3a", "#208b47"),
 SILK_COLORS = {'black': "0b1013", 'white': "d5dce4"}
 # KiCad 6 uses IUs for SVGs, but KiCad 5 uses a very different scale based on inches
 KICAD5_SVG_SCALE = 116930/297002200
+# Some browser name to pretend
+USER_AGENT = 'Mozilla/5.0 (Windows NT 5.2; rv:2.0.1) Gecko/20100101 Firefox/4.0.1'
 
 
 class Rect(object):
@@ -316,7 +319,7 @@ class ToolDependency(object):
     """ Class used to define tools needed for an output """
     def __init__(self, output, name, url=None, url_down=None, is_python=False, deb=None, in_debian=True, extra_deb=None,
                  roles=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
-                 help_option=None, no_cmd_line_version_old=False):
+                 help_option=None, no_cmd_line_version_old=False, downloader=None):
         # The associated output
         self.output = output
         # Name of the tool
@@ -342,6 +345,7 @@ class ToolDependency(object):
         # URLs
         self.url = url
         self.url_down = url_down
+        self.downloader = downloader
         # Can be installed as a KiCad plug-in?
         self.is_kicad_plugin = plugin_dirs is not None
         self.plugin_dirs = plugin_dirs
@@ -366,6 +370,28 @@ def kiauto_dependency(output, version=None):
                           in_debian=False, pypi_name='kiauto', command='pcbnew_do', roles=role)
 
 
-def git_dependency(output):
-    return ToolDependency(output, 'Git', 'https://git-scm.com/',
+def git_dependency(output, downloader):
+    return ToolDependency(output, 'Git', 'https://git-scm.com/', downloader=downloader,
                           roles=ToolDependencyRole(desc='Find commit hash and/or date'))
+
+
+def rsvg_dependency(output, downloader, roles=None):
+    return ToolDependency(output, 'RSVG tools', 'https://gitlab.gnome.org/GNOME/librsvg', deb='librsvg2-bin',
+                          command='rsvg-convert', downloader=downloader, roles=roles)
+
+
+def gs_dependency(output, downloader, roles=None):
+    return ToolDependency(output, 'Ghostscript', 'https://www.ghostscript.com/',
+                          url_down='https://github.com/ArtifexSoftware/ghostpdl-downloads/releases',
+                          downloader=downloader, roles=roles)
+
+
+def convert_dependency(output, downloader, roles=None):
+    return ToolDependency(output, 'ImageMagick', 'https://imagemagick.org/', command='convert',
+                          url_down='https://imagemagick.org/script/download.php',
+                          downloader=downloader, roles=roles)
+
+
+def pcbdraw_dependency(output, downloader, roles=None):
+    return ToolDependency(output, 'PcbDraw', URL_PCBDRAW, url_down=URL_PCBDRAW+'/releases', in_debian=False,
+                          downloader=downloader, roles=roles)

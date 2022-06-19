@@ -11,8 +11,7 @@ from kibot.out_base import BaseOutput
 from kibot.gs import GS
 from kibot.kiplot import load_actions, _import, load_board, search_as_plugin, generate_makefile
 from kibot.registrable import RegOutput, RegFilter
-from kibot.misc import (MISSING_TOOL, WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, CMD_PCBNEW_PRINT_LAYERS,
-                        KICAD2STEP_ERR)
+from kibot.misc import (WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, CMD_PCBNEW_PRINT_LAYERS, KICAD2STEP_ERR)
 from kibot.bom.columnlist import ColumnList
 from kibot.bom.units import get_prefix
 from kibot.__main__ import detect_kicad
@@ -80,21 +79,22 @@ def run_compress(ctx, test_import_fail=False):
     return pytest_wrapped_e
 
 
-def test_no_rar(test_dir, caplog, monkeypatch):
-    global mocked_check_output_FNF
-    mocked_check_output_FNF = True
-    # Create a silly context to get the output path
-    ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
-    # The file we pretend to compress
-    ctx.create_dummy_out_file('Test.txt')
-    # We will patch subprocess.check_output to make rar fail
-    with monkeypatch.context() as m:
-        patch_functions(m)
-        pytest_wrapped_e = run_compress(ctx)
-    # Check we exited because rar isn't installed
-    assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == MISSING_TOOL
-    assert "Missing `rar` command" in caplog.text
+# No longer possible, we trust in check_tool, it won't return an unexistent file name, so we don't catch FileNoFound
+# def test_no_rar(test_dir, caplog, monkeypatch):
+#     global mocked_check_output_FNF
+#     mocked_check_output_FNF = True
+#     # Create a silly context to get the output path
+#     ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
+#     # The file we pretend to compress
+#     ctx.create_dummy_out_file('Test.txt')
+#     # We will patch subprocess.check_output to make rar fail
+#     with monkeypatch.context() as m:
+#         patch_functions(m)
+#         pytest_wrapped_e = run_compress(ctx)
+#     # Check we exited because rar isn't installed
+#     assert pytest_wrapped_e.type == SystemExit
+#     assert pytest_wrapped_e.value.code == MISSING_TOOL
+#     assert "Missing `rar` command" in caplog.text
 
 
 def test_rar_fail(test_dir, caplog, monkeypatch):

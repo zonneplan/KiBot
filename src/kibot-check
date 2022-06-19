@@ -20,6 +20,7 @@ deps = '{\
     "Colorama": {\
         "command": "colorama",\
         "deb_package": "python3-colorama",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 100,\
@@ -47,6 +48,7 @@ deps = '{\
     "Distutils": {\
         "command": "distutils",\
         "deb_package": "python3-distutils",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 1000000,\
@@ -74,6 +76,7 @@ deps = '{\
     "Ghostscript": {\
         "command": "ghostscript",\
         "deb_package": "ghostscript",\
+        "downloader": {},\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 2,\
@@ -106,6 +109,7 @@ deps = '{\
     "Git": {\
         "command": "git",\
         "deb_package": "git",\
+        "downloader": {},\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 3,\
@@ -144,6 +148,7 @@ deps = '{\
     "ImageMagick": {\
         "command": "convert",\
         "deb_package": "imagemagick",\
+        "downloader": {},\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 3,\
@@ -177,11 +182,12 @@ deps = '{\
             }\
         ],\
         "url": "https://imagemagick.org/",\
-        "url_down": null\
+        "url_down": "https://imagemagick.org/script/download.php"\
     },\
     "Interactive HTML BoM": {\
         "command": "generate_interactive_bom.py",\
         "deb_package": "interactive html bom",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -217,6 +223,7 @@ deps = '{\
     "KiBoM": {\
         "command": "KiBOM_CLI.py",\
         "deb_package": "kibom",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -247,6 +254,7 @@ deps = '{\
     "KiCad Automation tools": {\
         "command": "pcbnew_do",\
         "deb_package": "kicad automation tools",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 110000,\
@@ -357,6 +365,7 @@ deps = '{\
     "KiCost": {\
         "command": "kicost",\
         "deb_package": "kicost",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10001,\
@@ -397,6 +406,7 @@ deps = '{\
     "LXML": {\
         "command": "lxml",\
         "deb_package": "python3-lxml",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -424,6 +434,7 @@ deps = '{\
     "Pandoc": {\
         "command": "pandoc",\
         "deb_package": "pandoc",\
+        "downloader": null,\
         "extra_deb": [\
             "texlive-latex-base",\
             "texlive-latex-recommended"\
@@ -453,19 +464,30 @@ deps = '{\
     "PcbDraw": {\
         "command": "pcbdraw",\
         "deb_package": "pcbdraw",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 10000,\
+        "importance": 10001,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
         "name": "PcbDraw",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "pcbdraw",\
+        "output": "pcb_print",\
         "plugin_dirs": null,\
         "pypi_name": "PcbDraw",\
         "roles": [\
+            {\
+                "desc": "Create realistic solder masks",\
+                "mandatory": false,\
+                "output": "pcb_print",\
+                "version": [\
+                    0,\
+                    9,\
+                    0\
+                ]\
+            },\
             {\
                 "desc": null,\
                 "mandatory": true,\
@@ -483,6 +505,7 @@ deps = '{\
     "PyYAML": {\
         "command": "pyyaml",\
         "deb_package": "python3-yaml",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 1000000,\
@@ -510,6 +533,7 @@ deps = '{\
     "QRCodeGen": {\
         "command": "qrcodegen",\
         "deb_package": "python3-qrcodegen",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -537,6 +561,7 @@ deps = '{\
     "RAR": {\
         "command": "rar",\
         "deb_package": "rar",\
+        "downloader": {},\
         "extra_deb": null,\
         "help_option": "-?",\
         "importance": 1,\
@@ -563,6 +588,7 @@ deps = '{\
     "RSVG tools": {\
         "command": "rsvg-convert",\
         "deb_package": "librsvg2-bin",\
+        "downloader": {},\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 4,\
@@ -601,12 +627,13 @@ deps = '{\
                 "version": null\
             }\
         ],\
-        "url": "https://cran.r-project.org/web/packages/rsvg/index.html",\
+        "url": "https://gitlab.gnome.org/GNOME/librsvg",\
         "url_down": null\
     },\
     "Requests": {\
         "command": "requests",\
         "deb_package": "python3-requests",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 1000000,\
@@ -634,6 +661,7 @@ deps = '{\
     "XLSXWriter": {\
         "command": "xlsxwriter",\
         "deb_package": "python3-xlsxwriter",\
+        "downloader": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 1,\

@@ -23,10 +23,12 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL, W_PDMASKFAIL,
-                   KICAD5_SVG_SCALE, W_MISSTOOL, ToolDependency, ToolDependencyRole, TRY_INSTALL_CHECK)
+                   KICAD5_SVG_SCALE, W_MISSTOOL, ToolDependency, ToolDependencyRole, TRY_INSTALL_CHECK, rsvg_dependency,
+                   gs_dependency, convert_dependency, pcbdraw_dependency)
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .registrable import RegDependency
 from .create_pdf import create_pdf_from_pages
+from .dep_downloader import check_tool, rsvg_downloader, gs_downloader, convert_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
 from .layer import Layer, get_priority
@@ -34,8 +36,6 @@ from . import __version__
 from . import log
 
 logger = log.get_logger()
-SVG2PDF = 'rsvg-convert'
-PDF2PS = 'pdf2ps'
 VIATYPE_THROUGH = 3
 VIATYPE_BLIND_BURIED = 2
 VIATYPE_MICROVIA = 1
@@ -43,15 +43,15 @@ POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stro
                    "stroke-linejoin:round;fill-rule:evenodd;")
 DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
 EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
-RegDependency.register(ToolDependency('pcb_print', 'RSVG tools',
-                                      'https://cran.r-project.org/web/packages/rsvg/index.html', deb='librsvg2-bin',
-                                      command=SVG2PDF,
-                                      roles=ToolDependencyRole(desc='Create PDF, PNG, EPS and PS formats')))
-RegDependency.register(ToolDependency('pcb_print', 'Ghostscript', 'https://www.ghostscript.com/',
-                                      url_down='https://github.com/ArtifexSoftware/ghostpdl-downloads/releases',
-                                      roles=ToolDependencyRole(desc='Create PS files')))
-RegDependency.register(ToolDependency('pcb_print', 'ImageMagick', 'https://imagemagick.org/', command='convert',
-                                      roles=ToolDependencyRole(desc='Create monochrome prints')))
+rsvg_dep = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRole(desc='Create PDF, PNG, EPS and PS formats'))
+gs_dep = gs_dependency('pcb_print', gs_downloader, roles=ToolDependencyRole(desc='Create PS files'))
+convert_dep = convert_dependency('pcb_print', convert_downloader, roles=ToolDependencyRole(desc='Create monochrome prints'))
+pcbdraw_dep = pcbdraw_dependency('pcb_print', None, roles=ToolDependencyRole(desc='Create realistic solder masks',
+                                 version=(0, 9, 0)))
+RegDependency.register(rsvg_dep)
+RegDependency.register(gs_dep)
+RegDependency.register(convert_dep)
+RegDependency.register(pcbdraw_dep)
 RegDependency.register(ToolDependency('pcb_print', 'LXML', is_python=True))
 
 
@@ -112,39 +112,6 @@ def get_size(svg):
     """ Finds the width and height in viewBox units """
     view_box = svg.root.get('viewBox').split(' ')
     return float(view_box[2]), float(view_box[3])
-
-
-def svg_to_pdf(input_folder, svg_file, pdf_file):
-    # Note: rsvg-convert uses 90 dpi but KiCad (and the docs I found) says SVG pt is 72 dpi
-    cmd = [SVG2PDF, '-d', '72', '-p', '72', '-f', 'pdf', '-o', os.path.join(input_folder, pdf_file),
-           os.path.join(input_folder, svg_file)]
-    _run_command(cmd)
-
-
-def svg_to_png(input_folder, svg_file, png_file, width):
-    cmd = [SVG2PDF, '-w', str(width), '-f', 'png', '-o', os.path.join(input_folder, png_file),
-           os.path.join(input_folder, svg_file)]
-    _run_command(cmd)
-
-
-def svg_to_eps(input_folder, svg_file, eps_file):
-    cmd = [SVG2PDF, '-d', '72', '-p', '72', '-f', 'eps', '-o', os.path.join(input_folder, eps_file),
-           os.path.join(input_folder, svg_file)]
-    _run_command(cmd)
-
-
-def pdf_to_ps(ps_file, output):
-    cmd = [PDF2PS, ps_file, output]
-    _run_command(cmd)
-
-
-def create_pdf_from_svg_pages(input_folder, input_files, output_fn):
-    svg_files = []
-    for svg_file in input_files:
-        pdf_file = svg_file.replace('.svg', '.pdf')
-        svg_to_pdf(input_folder, svg_file, pdf_file)
-        svg_files.append(os.path.join(input_folder, pdf_file))
-    create_pdf_from_pages(svg_files, output_fn)
 
 
 class LayerOptions(Layer):
@@ -627,16 +594,13 @@ class PCB_PrintOptions(VariantOptions):
            not self.last_worksheet.has_images):
             return
         if monochrome:
-            if which('convert') is None:
-                logger.error('`convert` not installed. install `imagemagick` or equivalent')
-                logger.error(TRY_INSTALL_CHECK)
-                exit(MISSING_TOOL)
+            convert_command = check_tool(convert_dep, fatal=True)
             for img in self.last_worksheet.images:
                 with NamedTemporaryFile(mode='wb', suffix='.png', delete=False) as f:
                     f.write(img.data)
                     fname = f.name
                 dest = fname.replace('.png', '_gray.png')
-                _run_command(['convert', fname, '-set', 'colorspace', 'Gray', '-separate', '-average', dest])
+                _run_command([convert_command, fname, '-set', 'colorspace', 'Gray', '-separate', '-average', dest])
                 with open(dest, 'rb') as f:
                     img.data = f.read()
                 os.remove(fname)
@@ -855,16 +819,40 @@ class PCB_PrintOptions(VariantOptions):
         logger.debug('- Autoscale: {}'.format(scale))
         return scale
 
+    def svg_to_pdf(self, input_folder, svg_file, pdf_file):
+        # Note: rsvg-convert uses 90 dpi but KiCad (and the docs I found) says SVG pt is 72 dpi
+        cmd = [self.rsvg_command, '-d', '72', '-p', '72', '-f', 'pdf', '-o', os.path.join(input_folder, pdf_file),
+               os.path.join(input_folder, svg_file)]
+        _run_command(cmd)
+
+    def svg_to_png(self, input_folder, svg_file, png_file, width):
+        cmd = [self.rsvg_command, '-w', str(width), '-f', 'png', '-o', os.path.join(input_folder, png_file),
+               os.path.join(input_folder, svg_file)]
+        _run_command(cmd)
+
+    def svg_to_eps(self, input_folder, svg_file, eps_file):
+        cmd = [self.rsvg_command, '-d', '72', '-p', '72', '-f', 'eps', '-o', os.path.join(input_folder, eps_file),
+               os.path.join(input_folder, svg_file)]
+        _run_command(cmd)
+
+    def pdf_to_ps(self, ps_file, output):
+        cmd = [self.gs_command, '-q', '-dNOPAUSE', '-dBATCH', '-P-', '-dSAFER', '-sDEVICE=ps2write', '-sOutputFile='+output,
+               '-c', 'save', 'pop', '-f', ps_file]
+        _run_command(cmd)
+
+    def create_pdf_from_svg_pages(self, input_folder, input_files, output_fn):
+        svg_files = []
+        for svg_file in input_files:
+            pdf_file = svg_file.replace('.svg', '.pdf')
+            self.svg_to_pdf(input_folder, svg_file, pdf_file)
+            svg_files.append(os.path.join(input_folder, pdf_file))
+        create_pdf_from_pages(svg_files, output_fn)
+
     def generate_output(self, output):
-        if self.format != 'SVG' and which(SVG2PDF) is None:
-            logger.error('`{}` not installed. Install `librsvg2-bin` or equivalent'.format(SVG2PDF))
-            logger.error(TRY_INSTALL_CHECK)
-            exit(MISSING_TOOL)
-        if self.format == 'PS' and which(PDF2PS) is None:
-            logger.error('`{}` not installed. '.format(PDF2PS))
-            logger.error('Install `librsvg2-bin` or equivalent')
-            logger.error(TRY_INSTALL_CHECK)
-            exit(MISSING_TOOL)
+        if self.format != 'SVG':
+            self.rsvg_command = check_tool(rsvg_dep, fatal=True)
+        if self.format == 'PS':
+            self.gs_command = check_tool(gs_dep, fatal=True)
         output_dir = os.path.dirname(output)
         if self.keep_temporal_files:
             temp_dir_base = output_dir
@@ -959,20 +947,20 @@ class PCB_PrintOptions(VariantOptions):
                 id = self._expand_id+('_page_'+page_str)
                 out_file = self.expand_filename(output_dir, self.output, id, self._expand_ext)
                 if self.format == 'PNG':
-                    svg_to_png(temp_dir, assembly_file, out_file, self.png_width)
+                    self.svg_to_png(temp_dir, assembly_file, out_file, self.png_width)
                 else:
-                    svg_to_eps(temp_dir, assembly_file, out_file)
+                    self.svg_to_eps(temp_dir, assembly_file, out_file)
             pages.append(os.path.join(page_str, assembly_file))
             self.restore_title()
         # Join all pages in one file
         if self.format in ['PDF', 'PS']:
             logger.debug('- Creating output file {}'.format(output))
             if self.format == 'PDF':
-                create_pdf_from_svg_pages(temp_dir_base, pages, output)
+                self.create_pdf_from_svg_pages(temp_dir_base, pages, output)
             else:
                 ps_file = os.path.join(temp_dir, GS.pcb_basename+'.ps')
-                create_pdf_from_svg_pages(temp_dir_base, pages, ps_file)
-                pdf_to_ps(ps_file, output)
+                self.create_pdf_from_svg_pages(temp_dir_base, pages, ps_file)
+                self.pdf_to_ps(ps_file, output)
         # Remove the temporal files
         if not self.keep_temporal_files:
             rmtree(temp_dir_base)
@@ -1011,12 +999,12 @@ class PCB_Print(BaseOutput):  # noqa: F821
         if not realistic_solder_mask:
             logger.warning(W_MISSTOOL+'Missing PcbDraw tool, disabling `realistic_solder_mask`')
         # Check we can convert SVGs
-        if which(SVG2PDF) is None:
-            logger.warning(W_MISSTOOL+'Missing {} tool, disabling most printed formats'.format(SVG2PDF))
+        if check_tool(rsvg_dep) is None:
+            logger.warning(W_MISSTOOL+'Disabling most printed formats')
             disabled |= {'PDF', 'PNG', 'EPS', 'PS'}
         # Check we can convert to PS
-        if which(PDF2PS) is None:
-            logger.warning(W_MISSTOOL+'Missing {} tool, disabling postscript printed format'.format(PDF2PS))
+        if check_tool(gs_dep) is None:
+            logger.warning(W_MISSTOOL+'Disabling postscript printed format')
             disabled.add('PS')
         # Generate one output for each format
         for fmt in ['PDF', 'SVG', 'PNG', 'EPS', 'PS']:

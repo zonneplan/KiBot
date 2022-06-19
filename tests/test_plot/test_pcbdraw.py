@@ -5,10 +5,14 @@ For debug information use:
 pytest-3 --log-cli-level debug
 """
 import coverage
+import logging
 from shutil import which
+from os import access
+from importlib import reload
 from . import context
 from kibot.mcpyrate import activate  # noqa: F401
 from kibot.out_pcbdraw import PcbDrawOptions
+import kibot.log
 
 OUT_DIR = 'PcbDraw'
 cov = coverage.Coverage()
@@ -33,15 +37,27 @@ def test_pcbdraw_simple(test_dir):
 
 
 def no_rsvg_convert(name):
+    logging.debug('no_rsvg_convert called')
     if name == 'rsvg-convert':
+        logging.debug('no_rsvg_convert returns None')
         return None
     return which(name)
 
 
 def no_convert(name):
+    logging.debug('no_convert called')
     if name == 'convert':
+        logging.debug('no_convert returns None')
         return None
     return which(name)
+
+
+def no_convert_access(name, attrs):
+    logging.debug('no_convert_access')
+    if name.endswith('/convert'):
+        logging.debug('no_convert_access returns False')
+        return False
+    return access(name, attrs)
 
 
 def no_run(cmd, stderr):
@@ -53,6 +69,10 @@ def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
     with monkeypatch.context() as m:
         m.setattr("shutil.which", no_rsvg_convert)
         m.setattr("subprocess.check_output", no_run)
+        # Reload the module so we get the above patches
+        reload(kibot.dep_downloader)
+        old_lev = kibot.log.debug_level
+        kibot.log.debug_level = 2
         o = PcbDrawOptions()
         o.style = ''
         o.remap = None
@@ -63,6 +83,7 @@ def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
         o.run('')
         cov.stop()
         cov.save()
+        kibot.log.debug_level = old_lev
         assert 'using unreliable PNG/JPG' in caplog.text, caplog.text
         assert 'librsvg2-bin' in caplog.text, caplog.text
 
@@ -72,6 +93,9 @@ def test_pcbdraw_miss_convert(caplog, monkeypatch):
     with monkeypatch.context() as m:
         m.setattr("shutil.which", no_convert)
         m.setattr("subprocess.check_output", no_run)
+        m.setattr("os.access", no_convert_access)
+        # Reload the module so we get the above patches
+        reload(kibot.dep_downloader)
         o = PcbDrawOptions()
         o.style = ''
         o.remap = None

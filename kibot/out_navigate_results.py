@@ -8,31 +8,27 @@
 import os
 import subprocess
 import pprint
-from shutil import copy2, which
+from shutil import copy2
 from math import ceil
 from struct import unpack
 from tempfile import NamedTemporaryFile
 from .gs import GS
 from .optionable import BaseOptions
 from .kiplot import config_output, get_output_dir
-from .misc import W_NOTYET, W_MISSTOOL, TRY_INSTALL_CHECK, ToolDependencyRole, ToolDependency
+from .misc import (W_NOTYET, W_MISSTOOL, ToolDependencyRole, rsvg_dependency, gs_dependency, convert_dependency)
 from .registrable import RegOutput, RegDependency
+from .dep_downloader import check_tool, rsvg_downloader, gs_downloader, convert_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from . import log, __version__
 
-SVGCONV = 'rsvg-convert'
-CONVERT = 'convert'
-PS2IMG = 'ghostscript'
-RegDependency.register(ToolDependency('navigate_results', 'RSVG tools',
-                                      'https://cran.r-project.org/web/packages/rsvg/index.html', deb='librsvg2-bin',
-                                      command=SVGCONV,
-                                      roles=[ToolDependencyRole(desc='Create outputs preview'),
-                                             ToolDependencyRole(desc='Create PNG icons')]))
-RegDependency.register(ToolDependency('navigate_results', 'Ghostscript', 'https://www.ghostscript.com/',
-                                      url_down='https://github.com/ArtifexSoftware/ghostpdl-downloads/releases',
-                                      roles=ToolDependencyRole(desc='Create outputs preview')))
-RegDependency.register(ToolDependency('navigate_results', 'ImageMagick', 'https://imagemagick.org/', command='convert',
-                                      roles=ToolDependencyRole(desc='Create outputs preview')))
+rsvg_dep = rsvg_dependency('navigate_results', rsvg_downloader, roles=[ToolDependencyRole(desc='Create outputs preview'),
+                                                                       ToolDependencyRole(desc='Create PNG icons')])
+gs_dep = gs_dependency('navigate_results', gs_downloader, roles=ToolDependencyRole(desc='Create outputs preview'))
+convert_dep = convert_dependency('navigate_results', convert_downloader,
+                                 roles=ToolDependencyRole(desc='Create outputs preview'))
+RegDependency.register(rsvg_dep)
+RegDependency.register(gs_dep)
+RegDependency.register(convert_dep)
 logger = log.get_logger()
 CAT_IMAGE = {'PCB': 'pcbnew',
              'Schematic': 'eeschema',
@@ -146,11 +142,6 @@ def _run_command(cmd):
     return True
 
 
-def svg_to_png(svg_file, png_file, width):
-    cmd = [SVGCONV, '-w', str(width), '-f', 'png', '-o', png_file, svg_file]
-    return _run_command(cmd)
-
-
 def get_png_size(file):
     with open(file, 'rb') as f:
         s = f.read()
@@ -182,6 +173,10 @@ class Navigate_ResultsOptions(BaseOptions):
             node = node[c]
         node[out.name] = out
 
+    def svg_to_png(self, svg_file, png_file, width):
+        cmd = [self.rsvg_command, '-w', str(width), '-f', 'png', '-o', png_file, svg_file]
+        return _run_command(cmd)
+
     def copy(self, img, width):
         """ Copy an SVG icon to the images/ dir.
             Tries to convert it to PNG. """
@@ -192,7 +187,7 @@ class Navigate_ResultsOptions(BaseOptions):
         src = os.path.join(self.img_src_dir, 'images', img+'.svg')
         dst = os.path.join(self.out_dir, 'images', img_w)
         id = img_w
-        if self.svg2png_avail and svg_to_png(src, dst+'.png', width):
+        if self.rsvg_command is not None and self.svg_to_png(src, dst+'.png', width):
             img_w += '.png'
         else:
             copy2(src, dst+'.svg')
@@ -202,24 +197,21 @@ class Navigate_ResultsOptions(BaseOptions):
         return name
 
     def can_be_converted(self, ext):
-        if ext in IMAGEABLES_SVG and not self.svg2png_avail:
-            logger.warning(W_MISSTOOL+"Missing SVG to PNG converter: "+SVGCONV)
-            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
+        if ext in IMAGEABLES_SVG and self.rsvg_command is None:
+            logger.warning(W_MISSTOOL+"Missing SVG to PNG converter")
             return False
         if ext in IMAGEABLES_GS and not self.ps2img_avail:
-            logger.warning(W_MISSTOOL+"Missing PS/PDF to PNG converter: "+PS2IMG)
-            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
+            logger.warning(W_MISSTOOL+"Missing PS/PDF to PNG converter")
             return False
-        if ext in IMAGEABLES_SIMPLE and not self.convert_avail:
-            logger.warning(W_MISSTOOL+"Missing Imagemagick converter: "+CONVERT)
-            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
+        if ext in IMAGEABLES_SIMPLE and self.convert_command is None:
+            logger.warning(W_MISSTOOL+"Missing {} converter".format(convert_dep.name))
             return False
         return ext in IMAGEABLES_SVG or ext in IMAGEABLES_GS or ext in IMAGEABLES_SIMPLE
 
     def get_image_for_cat(self, cat):
         img = None
         # Check if we have an output that can represent this category
-        if cat in CAT_REP and self.convert_avail:
+        if cat in CAT_REP and self.convert_command is not None:
             outs_rep = CAT_REP[cat]
             rep_file = None
             # Look in all outputs
@@ -251,6 +243,8 @@ class Navigate_ResultsOptions(BaseOptions):
         if not os.path.isfile(file):
             logger.warning(W_NOTYET+"{} not yet generated, using an icon".format(os.path.relpath(file)))
             return False, None, None
+        if self.convert_command is None:
+            return False, None, None
         # Create a unique name using the output name and the generated file name
         bfname = os.path.splitext(os.path.basename(file))[0]
         fname = os.path.join(self.out_dir, 'images', out_name+'_'+bfname+'.png')
@@ -263,10 +257,10 @@ class Navigate_ResultsOptions(BaseOptions):
             with NamedTemporaryFile(mode='w', suffix='.png', delete=False) as f:
                 tmp_name = f.name
             logger.debug('Temporal convert: {} -> {}'.format(file, tmp_name))
-            if not svg_to_png(file, tmp_name, BIG_ICON):
+            if not self.svg_to_png(file, tmp_name, BIG_ICON):
                 return False, None, None
             file = tmp_name
-        cmd = [CONVERT, file,
+        cmd = [self.convert_command, file,
                # Size for the big icons (width)
                '-resize', str(BIG_ICON)+'x']
         if not no_icon:
@@ -448,9 +442,9 @@ class Navigate_ResultsOptions(BaseOptions):
         logger.debug('Collected outputs:\n'+pprint.pformat(o_tree))
         with open(os.path.join(self.out_dir, 'styles.css'), 'wt') as f:
             f.write(STYLE)
-        self.svg2png_avail = which(SVGCONV) is not None
-        self.convert_avail = which(CONVERT) is not None
-        self.ps2img_avail = which(PS2IMG) is not None
+        self.rsvg_command = check_tool(rsvg_dep)
+        self.convert_command = check_tool(convert_dep)
+        self.ps2img_avail = check_tool(gs_dep)
         # Create the pages
         self.home = name
         self.back_img = self.copy('back', MID_ICON)
