@@ -423,6 +423,28 @@ def do_log_err(msg, fatal):
         logger.warning(W_MISSTOOL+msg)
 
 
+def show_roles(roles, fatal):
+    optional = []
+    for r in roles:
+        if not r.mandatory:
+            optional.append(r)
+        output = r.output
+    if output != 'global':
+        do_log_err('Output that needs it: '+output, fatal)
+    if optional:
+        if len(optional) == 1:
+            o = optional[0]
+            desc = o.desc[0].lower()+o.desc[1:]
+            do_log_err('Used to {}'.format(desc), fatal)
+        else:
+            do_log_err('Used to:', fatal)
+            for o in optional:
+                ver = ''
+                if o.version:
+                    ver = ' (v'+'.'.join(map(str, o.version))+')'
+                do_log_err('- {}{}'.format(o.desc, ver), fatal)
+
+
 def check_tool(dep, fatal=False):
     logger.debug('Starting tool check for {}'.format(dep.name))
     if dep.is_python:
@@ -438,6 +460,7 @@ def check_tool(dep, fatal=False):
             do_log_err('Download page: '+dep.url_down, fatal)
         if dep.deb_package:
             do_log_err('Debian package: '+dep.deb_package, fatal)
+        show_roles(dep.roles, fatal)
         do_log_err(TRY_INSTALL_CHECK, fatal)
         if fatal:
             exit(MISSING_TOOL)
