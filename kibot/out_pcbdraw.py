@@ -292,10 +292,13 @@ class PcbDrawOptions(VariantOptions):
         if self.highlight:
             cmd.extend(['-a', self.highlight])
         if self.show_components is not None:
-            to_add = ','.join(self.get_fitted_refs())
-            if self.show_components and to_add:
-                self.show_components += ','
-            self.show_components += to_add
+            # only add fitted_refs if component filter not empty
+            if self.show_components and self.show_components != '':
+                to_add = ','.join(self.get_fitted_refs())
+                self.show_components += "," + to_add
+            # if filter empty, dont add any components
+            if self.show_components == '':
+                self.show_components = ','
             cmd.extend(['-f', self.show_components])
         if self.vcuts:
             cmd.append('-v')
