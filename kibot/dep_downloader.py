@@ -13,8 +13,10 @@ import tarfile
 import stat
 import json
 import fnmatch
-from sys import exit
+import site
+from sys import exit, stdout
 from shutil import which, rmtree, move
+from math import ceil
 from .kiplot import search_as_plugin
 from .misc import MISSING_TOOL, TRY_INSTALL_CHECK, W_DOWNTOOL, W_MISSTOOL, USER_AGENT
 from . import log
@@ -29,13 +31,44 @@ last_stderr = None
 binary_tools_cache = {}
 
 
-def download(url):
+def show_progress(done):
+    stdout.write("\r[%s%s] %3d%%" % ('=' * done, ' ' * (50-done), 2*done))
+    stdout.flush()
+
+
+def end_show_progress():
+    stdout.write("\n")
+    stdout.flush()
+
+
+def download(url, progress=True):
     logger.debug('- Trying to download '+url)
-    r = requests.get(url, allow_redirects=True, headers={'User-Agent': USER_AGENT}, timeout=20)
+    r = requests.get(url, allow_redirects=True, headers={'User-Agent': USER_AGENT}, timeout=20, stream=True)
     if r.status_code != 200:
         logger.debug('- Failed to download `{}`'.format(url))
         return None
-    return r.content
+    total_length = r.headers.get('content-length')
+    logger.debugl(2, '- Total length: '+str(total_length))
+    if total_length is None:  # no content length header
+        return r.content
+    dl = 0
+    total_length = int(total_length)
+    chunk_size = ceil(total_length/50)
+    if chunk_size < 4096:
+        chunk_size = 4096
+    logger.debugl(2, '- Chunk size: '+str(chunk_size))
+    rdata = b''
+    if progress:
+        show_progress(0)
+    for data in r.iter_content(chunk_size=chunk_size):
+        dl += len(data)
+        rdata += data
+        done = int(50 * dl / total_length)
+        if progress:
+            show_progress(done)
+    if progress:
+        end_show_progress()
+    return rdata
 
 
 def write_executable(command, content):
@@ -65,11 +98,111 @@ def try_download_tar_ball(dep, url, name, name_in_tar=None):
         logger.debug('- Failed to extract {}'.format(e))
         return None
     # Is this usable?
-    cmd = check_tool_binary_version(dest_file, dep)
+    cmd = check_tool_binary_version(dest_file, dep, no_cache=True)
     if cmd is None:
         return None
     # logger.warning(W_DOWNTOOL+'Using downloaded `{}` tool, please visit {} for details'.format(name, dep.url))
     return cmd
+
+
+def untar(data):
+    base_dir = os.path.join(home_bin, '..')
+    dir_name = None
+    try:
+        with tarfile.open(fileobj=io.BytesIO(data), mode='r') as tar:
+            for entry in tar:
+                name = os.path.join(base_dir, entry.name)
+                logger.debugl(3, name)
+                if entry.type == tarfile.DIRTYPE:
+                    os.makedirs(name, exist_ok=True)
+                    if dir_name is None:
+                        dir_name = name
+                elif entry.type == tarfile.REGTYPE:
+                    with open(name, 'wb') as f:
+                        f.write(tar.extractfile(entry).read())
+                else:
+                    logger.warning('- Unsupported tar element: '+entry.name)
+    except Exception as e:
+        logger.debug('- Failed to extract {}'.format(e))
+        return None
+    if dir_name is None:
+        return None
+    return os.path.abspath(dir_name)
+
+
+def pytool_downloader(dep, system, plat):
+    # Check if we have a github repo as download page
+    logger.debug('- Download URL: '+str(dep.url_down))
+    if not dep.url_down:
+        return None
+    res = re.match(r'^https://github.com/([^/]+)/([^/]+)/', dep.url_down)
+    if res is None:
+        return None
+    user = res.group(1)
+    prj = res.group(2)
+    logger.debugl(2, '- GitHub repo: {}/{}'.format(user, prj))
+    url = 'https://api.github.com/repos/{}/{}/releases/latest'.format(user, prj)
+    # Check if we have pip and wheel
+    pip_command = which('pip3')
+    if pip_command is not None:
+        pip_ok = True
+    else:
+        pip_command = which('pip')
+        pip_ok = pip_command is not None
+    if not pip_ok:
+        logger.warning(W_MISSTOOL+'Missing Python installation tool (pip)')
+        return None
+    logger.debugl(2, '- Pip command: '+pip_command)
+    # Pip will fail to install downloaded packages if wheel isn't available
+    try:
+        import wheel
+        wheel_ok = True
+        logger.debugl(2, '- Wheel v{}'.format(wheel.__version__))
+    except ImportError:
+        wheel_ok = False
+    if not wheel_ok:
+        cmd = [pip_command, 'install', '--no-warn-script-location', '-U', 'wheel']
+        logger.debug('- Trying to install wheel: `{}`'.format(cmd))
+        try:
+            res_run = subprocess.run(cmd, check=True, capture_output=True)
+        except Exception as e:
+            logger.debug('- Failed to install wheel ({})'.format(e))
+            return None
+    # Look for the last release
+    data = download(url, progress=False)
+    if data is None:
+        return None
+    try:
+        data = json.loads(data)
+        logger.debugl(4, 'Release information: {}'.format(data))
+        url = data['tarball_url']
+    except Exception as e:
+        logger.debug('- Failed to find a download ({})'.format(e))
+        return None
+    logger.debugl(2, '- Tarball: '+url)
+    # Download and uncompress the tarball
+    dest = untar(download(url))
+    if dest is None:
+        return None
+    logger.debugl(2, '- Uncompressed tarball to: '+dest)
+    # Try to pip install it
+    cmd = [pip_command, 'install', '-U', '--no-warn-script-location', '.']
+    logger.debug('- Running: {}'.format(cmd))
+    try:
+        res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=dest)
+        logger.debugl(3, '- Output from pip:\n'+res_run.stdout.decode())
+    except Exception as e:
+        logger.debug('- Failed to install using pip ({})'.format(e))
+        out = res_run.stderr.decode()
+        if out:
+            logger.debug('- StdErr: '+out)
+        out = res_run.stdout.decode()
+        if out:
+            logger.debug('- StdOut: '+out)
+        return None
+    rmtree(dest)
+    # Check it was successful
+    return check_tool_binary_version(os.path.join(site.USER_BASE, 'bin', dep.command), dep, no_cache=True)
 
 
 def git_downloader(dep, system, plat):
@@ -97,7 +230,7 @@ def git_downloader(dep, system, plat):
         f.write('ln -s {} /tmp/kibogit\n'.format(home_bin[:-3]))
         f.write('{} "$@"\n'.format(git_real))
     os.chmod(dest_bin, EXEC_PERM)
-    return check_tool_binary_version(dest_bin, dep)
+    return check_tool_binary_version(dest_bin, dep, no_cache=True)
 
 
 def convert_downloader(dep, system, plat):
@@ -121,12 +254,12 @@ def convert_downloader(dep, system, plat):
         return None
     # Can we run the AppImage?
     dest_bin = write_executable(dep.command, content)
-    cmd = check_tool_binary_version(dest_bin, dep)
+    cmd = check_tool_binary_version(dest_bin, dep, no_cache=True)
     if cmd is not None:
         logger.warning(W_DOWNTOOL+'Using downloaded `{}` tool, please visit {} for details'.format(dep.name, dep.url))
         return cmd
     # Was because we don't have FUSE support
-    if 'libfuse.so' not in last_stderr and 'FUSE' not in last_stderr:
+    if not ('libfuse.so' in last_stderr or 'FUSE' in last_stderr or last_stderr.startswith('fuse')):
         logger.debug('- Unknown fail reason: `{}`'.format(last_stderr))
         return None
     # Uncompress it
@@ -134,6 +267,7 @@ def convert_downloader(dep, system, plat):
     if os.path.isdir(unc_dir):
         rmtree(unc_dir)
     cmd = [dest_bin, '--appimage-extract']
+    logger.debug('- Running {}'.format(cmd))
     try:
         res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=home_bin)
     except Exception as e:
@@ -191,7 +325,7 @@ def convert_downloader(dep, system, plat):
         f.write('{} convert "$@"\n'.format(magick_bin))
     os.chmod(dest_bin, EXEC_PERM)
     # Is this usable?
-    return check_tool_binary_version(dest_bin, dep)
+    return check_tool_binary_version(dest_bin, dep, no_cache=True)
 
 
 def gs_downloader(dep, system, plat):
@@ -314,7 +448,7 @@ def run_command(cmd, only_first_line=True, pre_ver_text=None, no_err_2=False):
     return None
 
 
-def check_tool_binary_version(full_name, dep):
+def check_tool_binary_version(full_name, dep, no_cache=False):
     logger.debugl(2, '- Checking version for `{}`'.format(full_name))
     if dep.no_cmd_line_version:
         # No way to know the version, assume we can use it
@@ -331,7 +465,7 @@ def check_tool_binary_version(full_name, dep):
     else:
         logger.debugl(2, '- Needed version {}'.format(needs))
     # Check the version
-    if full_name in binary_tools_cache:
+    if full_name in binary_tools_cache and not no_cache:
         version = binary_tools_cache[full_name]
         logger.debugl(2, '- Cached version {}'.format(version))
     else:
@@ -373,6 +507,15 @@ def check_tool_binary_local(dep):
     return cmd
 
 
+def check_tool_binary_python(dep):
+    base = os.path.join(site.USER_BASE, 'bin')
+    logger.debugl(2, '- Looking for tool `{}` at Python user site ({})'.format(dep.command, base))
+    full_name = os.path.join(base, dep.command)
+    if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
+        return None
+    return check_tool_binary_version(full_name, dep)
+
+
 def try_download_tool_binary(dep):
     if dep.downloader is None or home_bin is None:
         return None
@@ -404,6 +547,9 @@ def try_download_tool_binary(dep):
 def check_tool_binary(dep):
     logger.debugl(2, '- Checking binary tool {}'.format(dep.name))
     cmd = check_tool_binary_system(dep)
+    if cmd is not None:
+        return cmd
+    cmd = check_tool_binary_python(dep)
     if cmd is not None:
         return cmd
     cmd = check_tool_binary_local(dep)
