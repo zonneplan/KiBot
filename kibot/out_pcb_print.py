@@ -9,7 +9,7 @@ import re
 import os
 import subprocess
 from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask, ZONE_FILLER
-from shutil import rmtree, which
+from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
 from .svgutils.transform import fromstring, RectElement, fromfile
 from .error import KiPlotConfigurationError
@@ -22,9 +22,9 @@ from .kicad.worksheet import Worksheet, WksError
 from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
-from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, MISSING_TOOL, W_PDMASKFAIL,
-                   KICAD5_SVG_SCALE, W_MISSTOOL, ToolDependency, ToolDependencyRole, TRY_INSTALL_CHECK, rsvg_dependency,
-                   gs_dependency, convert_dependency, pcbdraw_dependency)
+from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE,
+                   W_MISSTOOL, ToolDependency, ToolDependencyRole, rsvg_dependency, gs_dependency, convert_dependency,
+                   pcbdraw_dependency, PCBDRAW_MIN_VERSION)
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .registrable import RegDependency
 from .create_pdf import create_pdf_from_pages
@@ -47,7 +47,7 @@ rsvg_dep = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRol
 gs_dep = gs_dependency('pcb_print', gs_downloader, roles=ToolDependencyRole(desc='Create PS files'))
 convert_dep = convert_dependency('pcb_print', convert_downloader, roles=ToolDependencyRole(desc='Create monochrome prints'))
 pcbdraw_dep = pcbdraw_dependency('pcb_print', None, roles=ToolDependencyRole(desc='Create realistic solder masks',
-                                 version=(0, 9, 0)))
+                                 version=PCBDRAW_MIN_VERSION))
 RegDependency.register(rsvg_dep)
 RegDependency.register(gs_dep)
 RegDependency.register(convert_dep)
@@ -726,13 +726,10 @@ class PCB_PrintOptions(VariantOptions):
             return
         logger.debug('- Plotting realistic solder mask using PcbDraw')
         # Check PcbDraw is available
-        if which('pcbdraw') is None:
-            logger.error('`pcbdraw` not installed, needed for `realistic_solder_mask`')
-            logger.error(TRY_INSTALL_CHECK)
-            exit(MISSING_TOOL)
+        pcbdraw_command = check_tool(pcbdraw_dep, fatal=True)
         # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
         pcbdraw_file = os.path.join(temp_dir, out_file.replace('.svg', '-pcbdraw.svg'))
-        cmd = ['pcbdraw', '--no-warn-back', '-f', '']
+        cmd = [pcbdraw_command, '--no-warn-back', '-f', '']
         if id == B_Mask:
             cmd.append('-b')
         cmd.extend([GS.pcb_file, pcbdraw_file])
@@ -995,7 +992,7 @@ class PCB_Print(BaseOutput):  # noqa: F821
         extra = {la._id for la in Layer.solve(EXTRA_LAYERS)}
         disabled = set()
         # Check we can use PcbDraw
-        realistic_solder_mask = which('pcbdraw') is not None
+        realistic_solder_mask = check_tool(pcbdraw_dep) is not None
         if not realistic_solder_mask:
             logger.warning(W_MISSTOOL+'Missing PcbDraw tool, disabling `realistic_solder_mask`')
         # Check we can convert SVGs

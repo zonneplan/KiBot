@@ -7,24 +7,21 @@ import os
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 import subprocess
-from .misc import (PCBDRAW, PCBDRAW_ERR, URL_PCBDRAW, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK, PCB_MAT_COLORS,
+from .misc import (PCBDRAW_ERR, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK, PCB_MAT_COLORS, PCBDRAW_MIN_VERSION,
                    PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, ToolDependencyRole, rsvg_dependency, convert_dependency,
                    pcbdraw_dependency)
-from .kiplot import check_script
 from .registrable import RegDependency
 from .gs import GS
 from .optionable import Optionable
 from .out_base import VariantOptions
-from .dep_downloader import check_tool, rsvg_downloader, convert_downloader
+from .dep_downloader import check_tool, rsvg_downloader, convert_downloader, pytool_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-# 0.9.0 implements KiCad 6 support
-MIN_VERSION = '0.9.0'
 rsvg_dep = rsvg_dependency('pcbdraw', rsvg_downloader, roles=ToolDependencyRole(desc='Create PNG and JPG images'))
 convert_dep = convert_dependency('pcbdraw', convert_downloader, roles=ToolDependencyRole(desc='Create JPG images'))
-pcbdraw_dep = pcbdraw_dependency('pcbdraw', None, roles=ToolDependencyRole(version=(0, 9, 0)))
+pcbdraw_dep = pcbdraw_dependency('pcbdraw', pytool_downloader, roles=ToolDependencyRole(version=PCBDRAW_MIN_VERSION))
 RegDependency.register(rsvg_dep)
 RegDependency.register(convert_dep)
 RegDependency.register(pcbdraw_dep)
@@ -124,7 +121,9 @@ def _run_command(cmd, tmp_remap=False, tmp_style=False):
             os.remove(tmp_remap)
         if tmp_style:
             os.remove(tmp_style)
-    logger.debug('Output from command:\n'+cmd_output.decode())
+    out = cmd_output.decode()
+    if out.strip():
+        logger.debug('Output from command:\n'+out)
 
 
 class PcbDrawOptions(VariantOptions):
@@ -268,9 +267,9 @@ class PcbDrawOptions(VariantOptions):
 
     def run(self, name):
         super().run(name)
-        check_script(PCBDRAW, URL_PCBDRAW, MIN_VERSION)
+        pcbdraw_command = check_tool(pcbdraw_dep, fatal=True)
         # Base command with overwrite
-        cmd = [PCBDRAW]
+        cmd = [pcbdraw_command]
         # Add user options
         tmp_style = None
         if self.style:
@@ -347,12 +346,7 @@ class PcbDraw(BaseOutput):  # noqa: F821
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
-        enabled = True
-        try:
-            check_script(PCBDRAW, URL_PCBDRAW, MIN_VERSION)
-        except SystemExit:
-            enabled = False
-        if not enabled:
+        if check_tool(pcbdraw_dep) is None:
             return None
         outs = []
         for la in layers:

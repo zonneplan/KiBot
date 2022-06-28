@@ -90,6 +90,8 @@ KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 KICAD2STEP = 'kicad2step_do'
 PCBDRAW = 'pcbdraw'
 URL_PCBDRAW = 'https://github.com/INTI-CMNB/pcbdraw'
+# 0.9.0 implements KiCad 6 support
+PCBDRAW_MIN_VERSION = (0, 9, 0)
 EXAMPLE_CFG = 'example_template.kibot.yaml'
 AUTO_SCALE = 0
 PANDOC = 'pandoc'
