@@ -219,6 +219,7 @@ class IBoM(BaseOutput):  # noqa: F821
         with document:
             self.options = IBoMOptions
             """ *[dict] Options for the `ibom` output """
+        self._category = ['Schematic/BoM', 'PCB/fabrication/assembly']
 
     def get_dependencies(self):
         return self.options.get_dependencies()
