@@ -366,7 +366,7 @@ deps = '{\
     "KiCost": {\
         "command": "kicost",\
         "deb_package": "kicost",\
-        "downloader": null,\
+        "downloader": {},\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10001,\
@@ -401,8 +401,8 @@ deps = '{\
                 ]\
             }\
         ],\
-        "url": "https://github.com/INTI-CMNB/KiCost",\
-        "url_down": "https://github.com/INTI-CMNB/KiCost/releases"\
+        "url": "https://github.com/hildogjr/KiCost",\
+        "url_down": "https://github.com/hildogjr/KiCost/releases"\
     },\
     "LXML": {\
         "command": "lxml",\
@@ -909,7 +909,7 @@ def python_module(severity, name, deb_package, roles):
     print(RESET)
 
 
-def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, roles):
+def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, roles, downloader):
     if not severity:
         return
     print(sev2color(severity)+'* {} not installed or too old'.format(name))
@@ -923,6 +923,8 @@ def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, role
         print('  Visit: '+url)
         if url_down:
             print('  Download it from: '+url_down)
+    if isinstance(downloader, dict):
+        print('  This tool might be automatically downloaded by KiBot.')
     show_roles(roles)
     print(RESET)
 
@@ -1086,6 +1088,7 @@ if not os_ok:
     elif system == 'Windows':
         print('  Windows may work with some limitations for KiCad 6.x')
         print('  Consider using a docker image, Windows docker can run Linux images (using virtualization)')
+        print('  You can also try WSL (Windows Subsystem for Linux)')
     else:
         print('  What OS are you using? Is KiCad available for it?')
     print('   Please consult: https://github.com/INTI-CMNB/KiBot/issues')
@@ -1118,8 +1121,9 @@ for name, d in dependencies.items():
     if d['is_python']:
         python_module(d['sev'], d['pypi_name'], d['deb_package'], d['roles'])
     else:
+        # TODO: check pip_ok and if this is a Python tool suggest install pip
         binary_tool(d['sev'], d['name'], d['url'], d['url_down'], d['deb_package'], d['in_debian'], d['extra_deb'],
-                    d['roles'])
+                    d['roles'], d['downloader'])
 
 labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory for an output', 'mandatory for general use')
 text = ', '.join([sev2color(c)+l+RESET for c, l in enumerate(labels)])
