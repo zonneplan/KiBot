@@ -28,7 +28,7 @@ from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRI
 from .kiplot import check_script, exec_with_retry, add_extra_options
 from .registrable import RegDependency
 from .create_pdf import create_pdf_from_pages
-from .dep_downloader import check_tool, rsvg_downloader, gs_downloader, convert_downloader
+from .dep_downloader import check_tool, rsvg_downloader, gs_downloader, convert_downloader, pytool_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
 from .layer import Layer, get_priority
@@ -47,7 +47,7 @@ rsvg_dep = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRol
 rsvg_dep2 = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRole(desc='Create EPS format', version=(2, 40)))
 gs_dep = gs_dependency('pcb_print', gs_downloader, roles=ToolDependencyRole(desc='Create PS files'))
 convert_dep = convert_dependency('pcb_print', convert_downloader, roles=ToolDependencyRole(desc='Create monochrome prints'))
-pcbdraw_dep = pcbdraw_dependency('pcb_print', None, roles=ToolDependencyRole(desc='Create realistic solder masks',
+pcbdraw_dep = pcbdraw_dependency('pcb_print', pytool_downloader, roles=ToolDependencyRole(desc='Create realistic solder masks',
                                  version=PCBDRAW_MIN_VERSION))
 RegDependency.register(rsvg_dep)
 RegDependency.register(rsvg_dep2)

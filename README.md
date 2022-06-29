@@ -98,6 +98,8 @@ You can also run KiBot using docker images in a CI/CD environment like GitHub or
 Notes:
 - When installing from the Debian repo you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
 - When installing using `pip` the dependencies marked as **PyPi dependency** will be automatically installed.
+- The dependencies marked with **Auto-download** can be downloaded on-demand by KiBot.
+  Note this is experimental and is mostly oriented to 64 bits Linux systems.
 - The `kibot-check` tool can help you to know which dependencies are missing.
 - Note that on some systems (i.e. Debian) ImageMagick disables PDF manipulation in its `policy.xml` file.
   Comment or remove lines like this: `<policy domain="coder" rights="none" pattern="PDF" />` (On Debian: `/etc/ImageMagick-6/policy.xml`)
@@ -118,7 +120,7 @@ Notes:
 - Mandatory for `kicost`
 - Optional to find components costs and specs for `bom`
 
-[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0 (tool)
+[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0 (tool) (Auto-download)
 - Mandatory for `pcbdraw`
 - Optional to create realistic solder masks for `pcb_print`
 
@@ -137,7 +139,7 @@ Notes:
 [**Colorama**](https://pypi.org/project/Colorama/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-colorama)
 - Optional to get color messages in a portable way for general use
 
-[**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) v2.40 (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
+[**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) v2.40 (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin) (Auto-download)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PNG icons for `navigate_results`
@@ -145,19 +147,19 @@ Notes:
   - Create EPS format for `pcb_print` (v2.40)
   - Create PNG and JPG images for `pcbdraw`
 
-[**Git**](https://git-scm.com/) (tool) [Debian](https://packages.debian.org/bullseye/git)
+[**Git**](https://git-scm.com/) (tool) [Debian](https://packages.debian.org/bullseye/git) (Auto-download)
 - Optional to:
   - Find commit hash and/or date for `pcb_replace`
   - Find commit hash and/or date for `sch_replace`
   - Find commit hash and/or date for `set_text_variables`
 
-[**ImageMagick**](https://imagemagick.org/) (tool) [Debian](https://packages.debian.org/bullseye/imagemagick)
+[**ImageMagick**](https://imagemagick.org/) (tool) [Debian](https://packages.debian.org/bullseye/imagemagick) (Auto-download)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create monochrome prints for `pcb_print`
   - Create JPG images for `pcbdraw`
 
-[**Ghostscript**](https://www.ghostscript.com/) (tool) [Debian](https://packages.debian.org/bullseye/ghostscript)
+[**Ghostscript**](https://www.ghostscript.com/) (tool) [Debian](https://packages.debian.org/bullseye/ghostscript) (Auto-download)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PS files for `pcb_print`
@@ -165,7 +167,7 @@ Notes:
 [**Pandoc**](https://pandoc.org/) (tool) [Debian](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`
 
-[**RAR**](https://www.rarlab.com/) (tool) [Debian](https://packages.debian.org/bullseye/rar)
+[**RAR**](https://www.rarlab.com/) (tool) [Debian](https://packages.debian.org/bullseye/rar) (Auto-download)
 - Optional to compress in RAR format for `compress`
 
 [**XLSXWriter**](https://pypi.org/project/XLSXWriter/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-xlsxwriter)

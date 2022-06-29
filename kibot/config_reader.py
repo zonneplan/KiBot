@@ -737,6 +737,7 @@ def print_dependencies(markdown=True, jsn=False):
                             key=lambda x: x[1].importance, reverse=True):
         dtype = 'python module' if dep.is_python else 'tool'
         is_pypi_dep = ' (PyPi dependency)' if dep.pypi_name.lower() in __pypi_deps__ else ''
+        has_dowloader = ' (Auto-download)' if dep.downloader is not None else ''
         deb = ''
         if markdown:
             if dep.is_python:
@@ -759,7 +760,7 @@ def print_dependencies(markdown=True, jsn=False):
         ver = ''
         if version:
             ver = 'v'+'.'.join(map(str, version))+' '
-        print("{} {}({}){}{}".format(name, ver, dtype, is_pypi_dep, deb))
+        print("{} {}({}){}{}{}".format(name, ver, dtype, is_pypi_dep, deb, has_dowloader))
         if needed:
             if len(needed) == 1:
                 if needed[0] == 'general use':
