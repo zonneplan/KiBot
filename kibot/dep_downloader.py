@@ -121,6 +121,8 @@ def untar(data):
                 elif entry.type == tarfile.REGTYPE:
                     with open(name, 'wb') as f:
                         f.write(tar.extractfile(entry).read())
+                elif entry.type == tarfile.SYMTYPE:
+                    os.symlink(os.path.join(base_dir, entry.linkname), name)
                 else:
                     logger.warning('- Unsupported tar element: '+entry.name)
     except Exception as e:
