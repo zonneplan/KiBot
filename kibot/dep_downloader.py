@@ -28,6 +28,7 @@ if home_bin is not None:
     home_bin = os.path.join(home_bin, '.local', 'share', 'kibot', 'bin')
 EXEC_PERM = stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH
 last_stderr = None
+version_check_fail = False
 binary_tools_cache = {}
 
 
@@ -450,6 +451,8 @@ def run_command(cmd, only_first_line=True, pre_ver_text=None, no_err_2=False):
 
 def check_tool_binary_version(full_name, dep, no_cache=False):
     logger.debugl(2, '- Checking version for `{}`'.format(full_name))
+    global version_check_fail
+    version_check_fail = False
     if dep.no_cmd_line_version:
         # No way to know the version, assume we can use it
         logger.debugl(2, "- This tool doesn't have a version option")
@@ -475,7 +478,8 @@ def check_tool_binary_version(full_name, dep, no_cache=False):
         version = run_command(cmd, no_err_2=dep.no_cmd_line_version_old)
         binary_tools_cache[full_name] = version
         logger.debugl(2, '- Found version {}'.format(version))
-    return full_name if version is not None and version >= needs else None
+    version_check_fail = version is None or version < needs
+    return None if version_check_fail else full_name
 
 
 def check_tool_binary_system(dep):
@@ -569,6 +573,12 @@ def do_log_err(msg, fatal):
         logger.warning(W_MISSTOOL+msg)
 
 
+def get_version(role):
+    if role.version:
+        return ' (v'+'.'.join(map(str, role.version))+')'
+    return ''
+
+
 def show_roles(roles, fatal):
     optional = []
     for r in roles:
@@ -581,14 +591,11 @@ def show_roles(roles, fatal):
         if len(optional) == 1:
             o = optional[0]
             desc = o.desc[0].lower()+o.desc[1:]
-            do_log_err('Used to {}'.format(desc), fatal)
+            do_log_err('Used to {}{}'.format(desc, get_version(o)), fatal)
         else:
             do_log_err('Used to:', fatal)
             for o in optional:
-                ver = ''
-                if o.version:
-                    ver = ' (v'+'.'.join(map(str, o.version))+')'
-                do_log_err('- {}{}'.format(o.desc, ver), fatal)
+                do_log_err('- {}{}'.format(o.desc, get_version(o)), fatal)
 
 
 def check_tool(dep, fatal=False):
@@ -599,7 +606,10 @@ def check_tool(dep, fatal=False):
         cmd = check_tool_binary(dep)
     logger.debug('- Returning `{}`'.format(cmd))
     if cmd is None:
-        do_log_err('Missing `{}` command ({}), install it'.format(dep.command, dep.name), fatal)
+        if version_check_fail:
+            do_log_err('Upgrade `{}` command ({})'.format(dep.command, dep.name), fatal)
+        else:
+            do_log_err('Missing `{}` command ({}), install it'.format(dep.command, dep.name), fatal)
         if dep.url:
             do_log_err('Home page: '+dep.url, fatal)
         if dep.url_down:
