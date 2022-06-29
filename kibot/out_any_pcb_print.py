@@ -7,9 +7,10 @@ import os
 from shutil import rmtree
 from .pre_base import BasePreFlight
 from .gs import GS
-from .kiplot import check_script, exec_with_retry, add_extra_options
-from .misc import CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, kiauto_dependency
+from .kiplot import exec_with_retry, add_extra_options
+from .misc import CMD_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, kiauto_dependency
 from .out_base import VariantOptions
+from .dep_downloader import check_tool, pytool_downloader
 from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import add_drill_marks, DRILL_MARKS_MAP
@@ -20,7 +21,9 @@ logger = log.get_logger()
 
 
 def register_deps(pre):
-    RegDependency.register(kiauto_dependency(pre+'_pcb_print', (1, 6, 7)))
+    dep = kiauto_dependency(pre+'_pcb_print', (1, 6, 7), CMD_PCBNEW_PRINT_LAYERS, pytool_downloader)
+    RegDependency.register(dep)
+    return dep
 
 
 class Any_PCB_PrintOptions(VariantOptions):
@@ -79,9 +82,9 @@ class Any_PCB_PrintOptions(VariantOptions):
 
     def run(self, output, svg=False):
         super().run(self._layers)
-        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.6.7')
+        command = check_tool(self._dependency, fatal=True)
         # Output file name
-        cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output]
+        cmd = [command, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):
             cmd.append('-f')
         cmd.extend(['--scaling', str(self.scaling), '--pads', str(self.drill_marks)])
@@ -113,7 +116,7 @@ class Any_PCB_PrintOptions(VariantOptions):
             logger.debug('Removing temporal variant dir `{}`'.format(board_dir))
             rmtree(board_dir)
         if ret:
-            logger.error(CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)
+            logger.error(command+' returned %d', ret)
             exit(PDF_PCB_PRINT)
         if video_remove:
             video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_screencast.ogv')

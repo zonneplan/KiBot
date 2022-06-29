@@ -113,10 +113,10 @@ Notes:
 [**Requests**](https://pypi.org/project/Requests/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-requests)
 - Mandatory
 
-[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v1.6.13 (tool) (PyPi dependency)
+[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v1.6.13 (tool) (PyPi dependency) (Auto-download)
 - Mandatory for: `gencad`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`
 
-[**KiCost**](https://github.com/INTI-CMNB/KiCost) v1.1.8 (tool) (Auto-download)
+[**KiCost**](https://github.com/hildogjr/KiCost) v1.1.8 (tool) (Auto-download)
 - Mandatory for `kicost`
 - Optional to find components costs and specs for `bom`
 

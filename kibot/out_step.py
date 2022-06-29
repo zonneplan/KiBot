@@ -6,19 +6,21 @@
 # KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/10075
 import os
 import re
-from subprocess import (check_output, STDOUT, CalledProcessError)
+from subprocess import check_output, STDOUT, CalledProcessError
 from shutil import rmtree
 from .error import KiPlotConfigurationError
-from .misc import KICAD2STEP, KICAD2STEP_ERR, URL_PCBNEW_RUN_DRC, kiauto_dependency
-from .gs import (GS)
+from .misc import KICAD2STEP, KICAD2STEP_ERR, kiauto_dependency
+from .gs import GS
 from .out_base_3d import Base3DOptions, Base3D
-from .kiplot import check_script, add_extra_options
+from .kiplot import add_extra_options
+from .dep_downloader import check_tool, pytool_downloader
 from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-RegDependency.register(kiauto_dependency('step', (1, 6, 1)))
+dep = kiauto_dependency('step', (1, 6, 1), KICAD2STEP, pytool_downloader)
+RegDependency.register(dep)
 
 
 class STEPOptions(Base3DOptions):
@@ -53,14 +55,14 @@ class STEPOptions(Base3DOptions):
 
     def run(self, output):
         super().run(output)
-        check_script(KICAD2STEP, URL_PCBNEW_RUN_DRC, '1.6.1')
+        command = check_tool(dep, fatal=True)
         # Make units explicit
         if self.metric_units:
             units = 'mm'
         else:
             units = 'in'
         # Base command with overwrite
-        cmd = [KICAD2STEP, '-o', output, '-f', '-d', os.path.dirname(output)]
+        cmd = [command, '-o', output, '-f', '-d', os.path.dirname(output)]
         if GS.debug_level > 0:
             cmd.append('-vv')
         else:

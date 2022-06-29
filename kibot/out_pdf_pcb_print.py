@@ -11,7 +11,7 @@ from .layer import Layer
 from . import log
 
 logger = log.get_logger()
-register_deps('pdf')
+dep = register_deps('pdf')
 
 
 class PDF_PCB_PrintOptions(Any_PCB_PrintOptions):
@@ -21,6 +21,7 @@ class PDF_PCB_PrintOptions(Any_PCB_PrintOptions):
             """ Filename for the output PDF (%i=layers, %x=pdf)"""
         super().__init__()
         self._expand_ext = 'pdf'
+        self._dependency = dep
 
 
 @output_class

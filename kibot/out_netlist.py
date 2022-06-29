@@ -6,15 +6,16 @@
 import os
 from .gs import GS
 from .optionable import BaseOptions
-from .misc import (CMD_PCBNEW_IPC_NETLIST, URL_PCBNEW_IPC_NETLIST, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, FAILED_EXECUTE,
-                   kiauto_dependency)
-from .kiplot import check_script, exec_with_retry, add_extra_options
+from .misc import CMD_PCBNEW_IPC_NETLIST, CMD_EESCHEMA_DO, FAILED_EXECUTE, kiauto_dependency
+from .kiplot import exec_with_retry, add_extra_options
+from .dep_downloader import check_tool, pytool_downloader
 from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-RegDependency.register(kiauto_dependency('netlist', (1, 6, 11)))
+dep = kiauto_dependency('netlist', (1, 6, 11), CMD_EESCHEMA_DO, pytool_downloader)
+RegDependency.register(dep)
 
 
 class NetlistOptions(BaseOptions):
@@ -40,20 +41,17 @@ class NetlistOptions(BaseOptions):
             self._category = 'PCB/fabrication/verification'
 
     def run(self, name):
+        command = check_tool(dep, fatal=True)
         if self.format == 'ipc':
-            command = CMD_PCBNEW_IPC_NETLIST
-            url = URL_PCBNEW_IPC_NETLIST
+            command = command.replace(CMD_EESCHEMA_DO, CMD_PCBNEW_IPC_NETLIST)
             subcommand = 'ipc_netlist'
             extra = ['--output_name', name]
             file = GS.pcb_file
         else:
-            command = CMD_EESCHEMA_DO
-            url = URL_EESCHEMA_DO
             subcommand = 'netlist'
             extra = []
             file = GS.sch_file
         output_dir = os.path.dirname(name)
-        check_script(command, url, '1.6.11')
         # Output file name
         cmd = [command, subcommand]+extra+[file, output_dir]
         cmd, video_remove = add_extra_options(cmd)

@@ -6,14 +6,16 @@
 import os
 from .gs import GS
 from .optionable import BaseOptions
-from .misc import CMD_PCBNEW_GENCAD, URL_PCBNEW_GENCAD, FAILED_EXECUTE, kiauto_dependency
-from .kiplot import check_script, exec_with_retry, add_extra_options
+from .misc import CMD_PCBNEW_GENCAD, FAILED_EXECUTE, kiauto_dependency
+from .kiplot import exec_with_retry, add_extra_options
 from .registrable import RegDependency
+from .dep_downloader import check_tool, pytool_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-RegDependency.register(kiauto_dependency('gencad', (1, 6, 5)))
+dep = kiauto_dependency('gencad', (1, 6, 5), CMD_PCBNEW_GENCAD, pytool_downloader)
+RegDependency.register(dep)
 
 
 class GenCADOptions(BaseOptions):
@@ -39,9 +41,9 @@ class GenCADOptions(BaseOptions):
         return [self._parent.expand_filename(out_dir, self.output)]
 
     def run(self, name):
-        check_script(CMD_PCBNEW_GENCAD, URL_PCBNEW_GENCAD, '1.6.5')
+        command = check_tool(dep, fatal=True)
         # Output file name
-        cmd = [CMD_PCBNEW_GENCAD, 'export_gencad', '--output_name', os.path.basename(name)]
+        cmd = [command, 'export_gencad', '--output_name', os.path.basename(name)]
         if self.flip_bottom_padstacks:
             cmd.append('--flip_bottom_padstacks')
         if self.unique_pin_names:
@@ -57,7 +59,7 @@ class GenCADOptions(BaseOptions):
         # Execute it
         ret = exec_with_retry(cmd)
         if ret:
-            logger.error(CMD_PCBNEW_GENCAD+' returned %d', ret)
+            logger.error(command+' returned %d', ret)
             exit(FAILED_EXECUTE)
         if video_remove:
             video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_gencad_screencast.ogv')

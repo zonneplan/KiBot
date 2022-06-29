@@ -9,13 +9,15 @@ from .macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
 from .gs import GS
 from .optionable import Optionable
-from .kiplot import check_script, exec_with_retry, load_board, add_extra_options
-from .misc import CMD_PCBNEW_RUN_DRC, URL_PCBNEW_RUN_DRC, DRC_ERROR, kiauto_dependency
+from .kiplot import exec_with_retry, load_board, add_extra_options
+from .misc import CMD_PCBNEW_RUN_DRC, DRC_ERROR, kiauto_dependency
+from .dep_downloader import check_tool, pytool_downloader
 from .registrable import RegDependency
 from .log import get_logger
 
 logger = get_logger(__name__)
-RegDependency.register(kiauto_dependency('run_drc'))
+dep = kiauto_dependency('run_drc', (1, 4, 0), CMD_PCBNEW_RUN_DRC, pytool_downloader)
+RegDependency.register(dep)
 
 
 @pre_class
@@ -39,10 +41,10 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         return [os.path.abspath(os.path.join(self.expand_dirname(GS.out_dir), name))]
 
     def run(self):
-        check_script(CMD_PCBNEW_RUN_DRC, URL_PCBNEW_RUN_DRC, '1.4.0')
+        command = check_tool(dep, fatal=True)
         output = self.get_targets()[0]
         logger.debug('DRC report: '+output)
-        cmd = [CMD_PCBNEW_RUN_DRC, 'run_drc', '-o', output]
+        cmd = [command, 'run_drc', '-o', output]
         if GS.filter_file:
             cmd.extend(['-f', GS.filter_file])
         if BasePreFlight.get_option('ignore_unconnected'):  # noqa: F821

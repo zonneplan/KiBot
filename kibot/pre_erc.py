@@ -8,14 +8,16 @@ from sys import exit
 from .macros import macros, pre_class  # noqa: F401
 from .gs import GS
 from .optionable import Optionable
-from .kiplot import check_eeschema_do, exec_with_retry, load_sch, add_extra_options
+from .kiplot import exec_with_retry, load_sch, add_extra_options
 from .error import KiPlotConfigurationError
 from .misc import CMD_EESCHEMA_DO, ERC_ERROR, kiauto_dependency
+from .dep_downloader import check_tool, pytool_downloader
 from .registrable import RegDependency
 from .log import get_logger
 
 logger = get_logger(__name__)
-RegDependency.register(kiauto_dependency('run_erc'))
+dep = kiauto_dependency('run_erc', (1, 5, 4), CMD_EESCHEMA_DO, pytool_downloader)
+RegDependency.register(dep)
 
 
 @pre_class
@@ -39,12 +41,12 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         return [os.path.abspath(os.path.join(self.expand_dirname(GS.out_dir), name))]
 
     def run(self):
-        check_eeschema_do()
+        command = check_tool(dep, fatal=True)
         # The schematic is loaded only before executing an output related to it.
         # But here we need data from it.
         output = self.get_targets()[0]
         logger.debug('ERC report: '+output)
-        cmd = [CMD_EESCHEMA_DO, 'run_erc', '-o', output]
+        cmd = [command, 'run_erc', '-o', output]
         if BasePreFlight.get_option('erc_warnings'):  # noqa: F821
             cmd.append('-w')
         if GS.filter_file:

@@ -14,7 +14,7 @@ from .layer import Layer
 from . import log
 
 logger = log.get_logger()
-register_deps('svg')
+dep = register_deps('svg')
 
 
 class SVG_PCB_PrintOptions(Any_PCB_PrintOptions):
@@ -28,6 +28,7 @@ class SVG_PCB_PrintOptions(Any_PCB_PrintOptions):
             """ Enable workaround for KiCad 5 bug """
         super().__init__()
         self._expand_ext = 'svg'
+        self._dependency = dep
 
     def run(self, output):
         super().run(output, svg=True)

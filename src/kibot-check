@@ -255,7 +255,7 @@ deps = '{\
     "KiCad Automation tools": {\
         "command": "pcbnew_do",\
         "deb_package": "kicad automation tools",\
-        "downloader": null,\
+        "downloader": {},\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 110000,\
@@ -345,19 +345,31 @@ deps = '{\
                 "desc": null,\
                 "mandatory": true,\
                 "output": "run_drc",\
-                "version": null\
+                "version": [\
+                    1,\
+                    4,\
+                    0\
+                ]\
             },\
             {\
                 "desc": null,\
                 "mandatory": true,\
                 "output": "run_erc",\
-                "version": null\
+                "version": [\
+                    1,\
+                    5,\
+                    4\
+                ]\
             },\
             {\
                 "desc": null,\
                 "mandatory": true,\
                 "output": "update_xml",\
-                "version": null\
+                "version": [\
+                    1,\
+                    5,\
+                    4\
+                ]\
             }\
         ],\
         "url": "https://github.com/INTI-CMNB/KiAuto",\

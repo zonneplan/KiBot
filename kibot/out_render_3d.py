@@ -6,17 +6,19 @@
 # KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/9890
 import os
 from shutil import rmtree
-from .misc import (CMD_PCBNEW_3D, URL_PCBNEW_3D, RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
+from .misc import (CMD_PCBNEW_3D, RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL, kiauto_dependency)
-from .gs import (GS)
-from .kiplot import check_script, exec_with_retry, add_extra_options
+from .gs import GS
+from .kiplot import exec_with_retry, add_extra_options
 from .out_base_3d import Base3DOptions, Base3D
+from .dep_downloader import check_tool, pytool_downloader
 from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-RegDependency.register(kiauto_dependency('render_3d', (1, 6, 13)))
+dep = kiauto_dependency('render_3d', (1, 6, 13), CMD_PCBNEW_3D, pytool_downloader)
+RegDependency.register(dep)
 
 
 class Render3DOptions(Base3DOptions):
@@ -143,9 +145,9 @@ class Render3DOptions(Base3DOptions):
             logger.error("3D Viewer not supported for KiCad 6.0.0/1\n"
                          "Please upgrade KiCad to 6.0.2 or newer")
             exit(MISSING_TOOL)
-        check_script(CMD_PCBNEW_3D, URL_PCBNEW_3D, '1.6.13')
+        command = check_tool(dep, fatal=True)
         # Base command with overwrite
-        cmd = [CMD_PCBNEW_3D, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),
+        cmd = [command, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),
                '3d_view', '--output_name', output]
         # Add user options
         if not self.no_virtual:
@@ -186,7 +188,7 @@ class Render3DOptions(Base3DOptions):
         if self._tmp_dir:
             rmtree(self._tmp_dir)
         if ret:
-            logger.error(CMD_PCBNEW_3D+' returned %d', ret)
+            logger.error(command+' returned %d', ret)
             exit(RENDER_3D_ERR)
         if video_remove:
             video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_3d_view_screencast.ogv')
