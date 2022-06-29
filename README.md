@@ -471,6 +471,9 @@ A complete Python regular expressions explanation is out of the scope of this ma
 
 KiCad 6 uses strings to differentiate errors, use them for the `error` field. To keep compatibility you can use the `number` or `error_number` options for KiCad 5.
 
+Note that this will ignore the errors, but they will be reported as warnings.
+If you want to suppress these warnings take a look at [Filtering KiBot warnings](#filtering-kibot-warnings)
+
 **Important note**: this will create a file named *kibot_errors.filter* in the output directory.
 
 
