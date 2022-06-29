@@ -116,7 +116,7 @@ Notes:
 [**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v1.6.13 (tool) (PyPi dependency)
 - Mandatory for: `gencad`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`
 
-[**KiCost**](https://github.com/INTI-CMNB/KiCost) v1.1.8 (tool)
+[**KiCost**](https://github.com/INTI-CMNB/KiCost) v1.1.8 (tool) (Auto-download)
 - Mandatory for `kicost`
 - Optional to find components costs and specs for `bom`
 

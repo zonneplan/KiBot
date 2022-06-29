@@ -8,22 +8,22 @@ from os.path import isfile, abspath, join, dirname
 from subprocess import check_output, STDOUT, CalledProcessError
 from tempfile import mkdtemp
 from shutil import rmtree
-from .misc import (CMD_KICOST, URL_KICOST, BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE,
-                   W_KICOSTFLD, W_MIXVARIANT, ToolDependency, ToolDependencyRole)
+from .misc import (BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE,
+                   W_KICOSTFLD, W_MIXVARIANT, ToolDependencyRole, kicost_dependency)
 from .registrable import RegDependency
 from .error import KiPlotConfigurationError
 from .optionable import Optionable
 from .gs import GS
-from .kiplot import check_script
 from .out_base import VariantOptions
+from .dep_downloader import check_tool, pytool_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from .fil_base import FieldRename
 from . import log
 
 logger = log.get_logger()
 WARNING_MIX = ("Don't use the `kicost_variant` when using internal variants/filters")
-RegDependency.register(ToolDependency('kicost', 'KiCost', URL_KICOST, url_down=URL_KICOST+'/releases', in_debian=False,
-                                      roles=ToolDependencyRole(version=(1, 1, 7))))
+kicost_dep = kicost_dependency('kicost', pytool_downloader, roles=ToolDependencyRole(version=(1, 1, 7)))
+RegDependency.register(kicost_dep)
 
 
 class Aggregate(Optionable):
@@ -170,8 +170,7 @@ class KiCostOptions(VariantOptions):
         # Check KiCost is available
         cmd_kicost = abspath(join(dirname(__file__), KICOST_SUBMODULE))
         if not isfile(cmd_kicost):
-            check_script(CMD_KICOST, URL_KICOST)
-            cmd_kicost = CMD_KICOST
+            cmd_kicost = check_tool(kicost_dep, fatal=True)
         # Construct the command
         cmd = [cmd_kicost, '-w', '-o', name, '-i', netlist]
         # Add the rest of input files and their variants

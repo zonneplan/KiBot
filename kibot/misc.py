@@ -85,7 +85,7 @@ URL_KIBOM = 'https://github.com/INTI-CMNB/KiBoM'
 CMD_IBOM = 'generate_interactive_bom.py'
 URL_IBOM = 'https://github.com/INTI-CMNB/InteractiveHtmlBom'
 CMD_KICOST = 'kicost'
-URL_KICOST = 'https://github.com/INTI-CMNB/KiCost'
+URL_KICOST = 'https://github.com/hildogjr/KiCost'
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 KICAD2STEP = 'kicad2step_do'
 PCBDRAW = 'pcbdraw'
@@ -396,4 +396,9 @@ def convert_dependency(output, downloader, roles=None):
 
 def pcbdraw_dependency(output, downloader, roles=None):
     return ToolDependency(output, 'PcbDraw', URL_PCBDRAW, url_down=URL_PCBDRAW+'/releases', in_debian=False,
+                          downloader=downloader, roles=roles)
+
+
+def kicost_dependency(output, downloader, roles=None):
+    return ToolDependency(output, 'KiCost', URL_KICOST, url_down=URL_KICOST+'/releases', in_debian=False,
                           downloader=downloader, roles=roles)
