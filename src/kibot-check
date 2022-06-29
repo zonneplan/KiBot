@@ -591,7 +591,7 @@ deps = '{\
         "downloader": {},\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 4,\
+        "importance": 5,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -615,10 +615,19 @@ deps = '{\
                 "version": null\
             },\
             {\
-                "desc": "Create PDF, PNG, EPS and PS formats",\
+                "desc": "Create PDF, PNG and PS formats",\
                 "mandatory": false,\
                 "output": "pcb_print",\
                 "version": null\
+            },\
+            {\
+                "desc": "Create EPS format",\
+                "mandatory": false,\
+                "output": "pcb_print",\
+                "version": [\
+                    2,\
+                    40\
+                ]\
             },\
             {\
                 "desc": "Create PNG and JPG images",\

@@ -137,11 +137,12 @@ Notes:
 [**Colorama**](https://pypi.org/project/Colorama/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-colorama)
 - Optional to get color messages in a portable way for general use
 
-[**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
+[**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) v2.40 (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PNG icons for `navigate_results`
-  - Create PDF, PNG, EPS and PS formats for `pcb_print`
+  - Create PDF, PNG and PS formats for `pcb_print`
+  - Create EPS format for `pcb_print` (v2.40)
   - Create PNG and JPG images for `pcbdraw`
 
 [**Git**](https://git-scm.com/) (tool) [Debian](https://packages.debian.org/bullseye/git)
