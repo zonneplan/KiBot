@@ -13,6 +13,7 @@ import pprint
 import os.path as op
 import sys
 import logging
+import html
 from textwrap import wrap
 from base64 import b64decode
 from .columnlist import ColumnList
@@ -314,6 +315,8 @@ def create_meta(workbook, name, columns, parts, fmt_head, fmt_cols, max_w, renam
             if not text_l:
                 continue
             fmt_kind = 0 if col_l in SPECS_GENERATED else 2
+            text = html.unescape(text)
+            logger.debugl(3, 'Spec ({},{}): `{}`'.format(r, c, text))
             worksheet.write_string(r+1, c, text, fmt_cols[fmt_kind][r % 2])
             if text_l > col_w[c]:
                 if text_l > max_w:
