@@ -43,12 +43,14 @@ POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stro
                    "stroke-linejoin:round;fill-rule:evenodd;")
 DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
 EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
-rsvg_dep = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRole(desc='Create PDF, PNG, EPS and PS formats'))
+rsvg_dep = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRole(desc='Create PDF, PNG and PS formats'))
+rsvg_dep2 = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRole(desc='Create EPS format', version=(2, 40)))
 gs_dep = gs_dependency('pcb_print', gs_downloader, roles=ToolDependencyRole(desc='Create PS files'))
 convert_dep = convert_dependency('pcb_print', convert_downloader, roles=ToolDependencyRole(desc='Create monochrome prints'))
 pcbdraw_dep = pcbdraw_dependency('pcb_print', None, roles=ToolDependencyRole(desc='Create realistic solder masks',
                                  version=PCBDRAW_MIN_VERSION))
 RegDependency.register(rsvg_dep)
+RegDependency.register(rsvg_dep2)
 RegDependency.register(gs_dep)
 RegDependency.register(convert_dep)
 RegDependency.register(pcbdraw_dep)
@@ -828,7 +830,7 @@ class PCB_PrintOptions(VariantOptions):
         _run_command(cmd)
 
     def svg_to_eps(self, input_folder, svg_file, eps_file):
-        cmd = [self.rsvg_command, '-d', '72', '-p', '72', '-f', 'eps', '-o', os.path.join(input_folder, eps_file),
+        cmd = [self.rsvg_command_eps, '-d', '72', '-p', '72', '-f', 'eps', '-o', os.path.join(input_folder, eps_file),
                os.path.join(input_folder, svg_file)]
         _run_command(cmd)
 
@@ -845,11 +847,16 @@ class PCB_PrintOptions(VariantOptions):
             svg_files.append(os.path.join(input_folder, pdf_file))
         create_pdf_from_pages(svg_files, output_fn)
 
-    def generate_output(self, output):
+    def check_tools(self):
         if self.format != 'SVG':
             self.rsvg_command = check_tool(rsvg_dep, fatal=True)
         if self.format == 'PS':
             self.gs_command = check_tool(gs_dep, fatal=True)
+        if self.format == 'EPS':
+            self.rsvg_command_eps = check_tool(rsvg_dep2, fatal=True)
+
+    def generate_output(self, output):
+        self.check_tools()
         output_dir = os.path.dirname(output)
         if self.keep_temporal_files:
             temp_dir_base = output_dir
