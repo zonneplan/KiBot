@@ -127,7 +127,7 @@ Notes:
 [**Interactive HTML BoM**](https://github.com/INTI-CMNB/InteractiveHtmlBom) v2.4.1.4 (tool)
 - Mandatory for `ibom`
 
-[**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 (tool)
+[**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 (tool) (Auto-download)
 - Mandatory for `kibom`
 
 [**LXML**](https://pypi.org/project/LXML/) (python module) [Debian](https://packages.debian.org/bullseye/python3-lxml)

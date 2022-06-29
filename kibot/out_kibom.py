@@ -8,19 +8,20 @@ from re import search
 from tempfile import NamedTemporaryFile
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import (CMD_KIBOM, URL_KIBOM, BOM_ERROR, ToolDependency, ToolDependencyRole, W_EXTNAME)
-from .kiplot import (check_script)
 from .gs import (GS)
 from .optionable import Optionable, BaseOptions
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
 from .registrable import RegDependency
+from .dep_downloader import check_tool, pytool_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
 CONFIG_FILENAME = 'config.kibom.ini'
-RegDependency.register(ToolDependency('kibom', 'KiBoM', URL_KIBOM, url_down=URL_KIBOM+'/releases',
-                                      command=CMD_KIBOM, in_debian=False, roles=ToolDependencyRole(version=(1, 8, 0))))
+kibom_dep = ToolDependency('kibom', 'KiBoM', URL_KIBOM, url_down=URL_KIBOM+'/releases', command=CMD_KIBOM, in_debian=False,
+                           downloader=pytool_downloader, roles=ToolDependencyRole(version=(1, 8, 0)))
+RegDependency.register(kibom_dep)
 
 
 class KiBoMRegex(Optionable):
@@ -183,7 +184,7 @@ class KiBoMConfig(Optionable):
         """ Create a list of valid columns """
         if not GS.sch:
             return ColumnList.COLUMNS_DEFAULT
-        check_script(CMD_KIBOM, URL_KIBOM, '1.8.0')
+        check_tool(kibom_dep, fatal=True)
         config = None
         csv = None
         columns = None
@@ -370,7 +371,7 @@ class KiBoMOptions(BaseOptions):
         return []
 
     def run(self, name):
-        check_script(CMD_KIBOM, URL_KIBOM, '1.8.0')
+        kibom_command = check_tool(kibom_dep, fatal=True)
         format = self.format.lower()
         prj = GS.sch_no_ext
         config = os.path.join(GS.sch_dir, self.conf)
@@ -383,7 +384,7 @@ class KiBoMOptions(BaseOptions):
             output = os.path.basename(prj)+'.'+format
             output_dir = name
         logger.debug('Doing BoM, format {} prj: {} config: {} output: {}'.format(format, prj, config, output))
-        cmd = [CMD_KIBOM,
+        cmd = [kibom_command,
                '-n', str(self.number),
                '--cfg', config,
                '-s', self.separator,
