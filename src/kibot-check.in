@@ -6,15 +6,16 @@
 # Project: KiBot (formerly KiPlot)
 #
 # This is the installation checker, should help people to detect installation issues and install needed tools
-import os
-import re
-import sys
-import platform
-import subprocess
-import json
-import importlib
-from shutil import which
 from contextlib import contextmanager
+import importlib
+import json
+import os
+import platform
+import re
+from shutil import which
+import site
+import subprocess
+import sys
 
 deps = '@json_dep@'
 # Dirs to look for plugins
@@ -34,8 +35,36 @@ is_x86 = is_64 = is_linux = False
 ver_re = re.compile(r'(\d+)\.(\d+)(?:\.(\d+))?(?:[\.-](\d+))?')
 
 
+def check_tool_binary_python(name):
+    base = os.path.join(site.USER_BASE, 'bin')
+    full_name = os.path.join(base, name)
+    if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
+        return None
+    return full_name
+
+
+def check_tool_binary_local(name):
+    home = os.environ.get('HOME') or os.environ.get('username')
+    if home is None:
+        return None
+    home_bin = os.path.join(home, '.local', 'share', 'kibot', 'bin')
+    full_name = os.path.join(home_bin, name)
+    if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
+        return None
+    return full_name
+
+
 def run_command(cmd, only_first_line=True, pre_ver_text=None, no_err_2=False):
     global last_ok
+    cmd_full = which(cmd[0])
+    if not cmd_full:
+        cmd_full = check_tool_binary_python(cmd[0])
+    if not cmd_full:
+        cmd_full = check_tool_binary_local(cmd[0])
+    if not cmd_full:
+        last_ok = False
+        return NOT_AVAIL
+    cmd[0] = cmd_full
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
     except FileNotFoundError as e:
