@@ -747,7 +747,7 @@ def print_dependencies(markdown=True, jsn=False):
             has_dowloader = ' '+AUTO_DOWN if dep.downloader is not None else ''
             if dep.is_python:
                 url = 'https://pypi.org/project/{}/'.format(name)
-                is_pypi_dep = '[{}]({})'.format(is_pypi_dep, url)
+                is_pypi_dep = ' [{}]({})'.format(is_pypi_dep, url)
             else:
                 url = dep.url
             name = '[**{}**]({})'.format(name, url)
