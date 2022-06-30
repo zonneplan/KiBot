@@ -30,7 +30,7 @@ mocked_call_enabled = False
 # - Once we patched them using monkey patch the patch isn't reverted unless we load them again.
 # I don't know the real reason, may be related to the way we load plug-ins.
 # For this reason this patch is used for more than one case.
-def mocked_check_output(cmd, stderr=None):
+def mocked_check_output(cmd, stderr=None, text=False):
     logging.debug('mocked_check_output called')
     if mocked_check_output_FNF:
         raise FileNotFoundError()
@@ -160,6 +160,7 @@ def test_ibom_parse_fail(test_dir, caplog, monkeypatch):
     # We will patch subprocess.check_output to make ibom fail
     with monkeypatch.context() as m:
         patch_functions(m)
+        os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = 'True'
         with context.cover_it(cov):
             detect_kicad()
             # Load the plug-ins
