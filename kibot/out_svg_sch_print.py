@@ -11,7 +11,7 @@ from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-register_deps('svg')
+dep = register_deps('svg')
 
 
 class SVG_SCH_PrintOptions(Any_SCH_PrintOptions):
@@ -22,6 +22,7 @@ class SVG_SCH_PrintOptions(Any_SCH_PrintOptions):
         super().__init__()
         self._expand_ext = 'svg'
         self._exit_error = SVG_SCH_PRINT
+        self._dependency = dep
 
 
 @output_class

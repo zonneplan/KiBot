@@ -7,10 +7,11 @@ import os
 from tempfile import mkdtemp
 from shutil import rmtree, copy2
 from .gs import GS
-from .kiplot import check_eeschema_do, exec_with_retry, add_extra_options
+from .kiplot import add_extra_options, exec_with_retry
 from .misc import CMD_EESCHEMA_DO, kiauto_dependency
 from .out_base import VariantOptions
 from .kicad.config import KiConf
+from .dep_downloader import check_tool, pytool_downloader
 from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -19,7 +20,9 @@ logger = log.get_logger()
 
 
 def register_deps(pre):
-    RegDependency.register(kiauto_dependency(pre+'_sch_print'))
+    dep = kiauto_dependency(pre+'_sch_print', (1, 5, 4), CMD_EESCHEMA_DO, pytool_downloader)
+    RegDependency.register(dep)
+    return dep
 
 
 def copy_project(sch_dir):
@@ -55,7 +58,7 @@ class Any_SCH_PrintOptions(VariantOptions):
     def run(self, name):
         super().run(name)
         output_dir = os.path.dirname(name)
-        check_eeschema_do()
+        command = check_tool(self._dependency, fatal=True)
         if self._comps:
             # Save it to a temporal dir
             sch_dir = mkdtemp(prefix='tmp-kibot-'+self._expand_ext+'_sch_print-')
@@ -65,7 +68,7 @@ class Any_SCH_PrintOptions(VariantOptions):
         else:
             sch_dir = None
             sch_file = GS.sch_file
-        cmd = [CMD_EESCHEMA_DO, 'export', '--all_pages', '--file_format', self._expand_ext]
+        cmd = [command, 'export', '--all_pages', '--file_format', self._expand_ext]
         if self.monochrome:
             cmd.append('--monochrome')
         if not self.frame:
