@@ -366,8 +366,9 @@ class ToolDependency(object):
         self.roles = roles
 
 
-def kiauto_dependency(output, version=None, command='pcbnew_do', downloader=None):
-    role = None if version is None else ToolDependencyRole(version=version)
+def kiauto_dependency(output, version=None, command='pcbnew_do', downloader=None, role=None):
+    if role is None and version is not None:
+        role = ToolDependencyRole(version=version)
     return ToolDependency(output, 'KiCad Automation tools', URL_EESCHEMA_DO, url_down=URL_EESCHEMA_DO+'/releases',
                           in_debian=False, pypi_name='kiauto', command=command, roles=role, downloader=downloader)
 

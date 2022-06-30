@@ -22,10 +22,10 @@ from .kicad.worksheet import Worksheet, WksError
 from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
-from .misc import (CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE,
-                   W_MISSTOOL, ToolDependency, ToolDependencyRole, rsvg_dependency, gs_dependency, convert_dependency,
-                   pcbdraw_dependency, PCBDRAW_MIN_VERSION)
-from .kiplot import check_script, exec_with_retry, add_extra_options
+from .misc import (CMD_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL, ToolDependency,
+                   ToolDependencyRole, rsvg_dependency, gs_dependency, convert_dependency, pcbdraw_dependency,
+                   PCBDRAW_MIN_VERSION, kiauto_dependency)
+from .kiplot import exec_with_retry, add_extra_options
 from .registrable import RegDependency
 from .create_pdf import create_pdf_from_pages
 from .dep_downloader import check_tool, rsvg_downloader, gs_downloader, convert_downloader, pytool_downloader
@@ -49,12 +49,16 @@ gs_dep = gs_dependency('pcb_print', gs_downloader, roles=ToolDependencyRole(desc
 convert_dep = convert_dependency('pcb_print', convert_downloader, roles=ToolDependencyRole(desc='Create monochrome prints'))
 pcbdraw_dep = pcbdraw_dependency('pcb_print', pytool_downloader, roles=ToolDependencyRole(desc='Create realistic solder masks',
                                  version=PCBDRAW_MIN_VERSION))
+# The plot_frame_gui() needs KiAuto to print the frame
+kiauto_dep = kiauto_dependency('pcb_print', None, CMD_PCBNEW_PRINT_LAYERS, pytool_downloader,
+                               role=ToolDependencyRole(desc='Print the page frame in GUI mode', version=(1, 6, 7)))
 RegDependency.register(rsvg_dep)
 RegDependency.register(rsvg_dep2)
 RegDependency.register(gs_dep)
 RegDependency.register(convert_dep)
 RegDependency.register(pcbdraw_dep)
 RegDependency.register(ToolDependency('pcb_print', 'LXML', is_python=True))
+RegDependency.register(kiauto_dep)
 
 
 def _run_command(cmd):
@@ -421,7 +425,7 @@ class PCB_PrintOptions(VariantOptions):
             So we print a frame using pcbnew_do export.
             We use SVG output to then generate a vectorized PDF. """
         output = os.path.join(dir_name, GS.pcb_basename+"-frame.svg")
-        check_script(CMD_PCBNEW_PRINT_LAYERS, URL_PCBNEW_PRINT_LAYERS, '1.6.7')
+        command = check_tool(kiauto_dep, fatal=True)
         # Move all the drawings away
         # KiCad 5 always prints Edge.Cuts, so we make it empty
         self.clear_layer(layer)
@@ -430,7 +434,7 @@ class PCB_PrintOptions(VariantOptions):
         # Restore the layer
         self.restore_layer()
         # Output file name
-        cmd = [CMD_PCBNEW_PRINT_LAYERS, 'export', '--output_name', output, '--monochrome', '--svg', '--pads', '0',
+        cmd = [command, 'export', '--output_name', output, '--monochrome', '--svg', '--pads', '0',
                pcb_name, dir_name, layer]
         cmd, video_remove = add_extra_options(cmd)
         # Execute it
@@ -439,7 +443,7 @@ class PCB_PrintOptions(VariantOptions):
         logger.debug('Removing temporal PCB used for frame `{}`'.format(pcb_dir))
         rmtree(pcb_dir)
         if ret:
-            logger.error(CMD_PCBNEW_PRINT_LAYERS+' returned %d', ret)
+            logger.error(command+' returned %d', ret)
             exit(PDF_PCB_PRINT)
         if video_remove:
             video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_screencast.ogv')
