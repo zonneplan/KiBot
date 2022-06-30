@@ -49,8 +49,8 @@ jobs:
         python3-coverage erase
         # Create the caches with macros
         python3-coverage run -a src/kibot --help-outputs > /dev/null
-        # pytest-3 --test_dir output
-        pytest-3 --log-cli-level debug -k "test_ibom_parse_fail" --test_dir output
+        pytest-3 --test_dir output
+        # pytest-3 --log-cli-level debug -k "test_ibom_parse_fail" --test_dir output
         python3-coverage report
         python3-coverage html -d output/htmlcov
     - name: Store results
@@ -65,10 +65,11 @@ jobs:
         COVERALLS_FLAG_NAME: ${{ matrix.ki_release }}
         COVERALLS_PARALLEL: true
       run: |
-        apt-get update
-        apt-get -y install python3-pip
-        pip3 install coveralls
-        coveralls --service=github
+        # apt-get update
+        # apt-get -y install python3-pip
+        # pip3 install coveralls
+        #coveralls --service=github
+        echo Disabled by now
 
 
   push_to_registry:
