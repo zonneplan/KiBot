@@ -742,14 +742,16 @@ def print_dependencies(markdown=True, jsn=False):
                             key=lambda x: x[1].importance, reverse=True):
         deb = ''
         if markdown:
-            dtype = ' '+PY_LOGO if dep.is_python else ' '+TOOL_LOGO
-            is_pypi_dep = ' '+PYPI_LOGO if dep.pypi_name.lower() in __pypi_deps__ else ''
+            dtype = PY_LOGO if dep.is_python else TOOL_LOGO
+            is_pypi_dep = PYPI_LOGO if dep.pypi_name.lower() in __pypi_deps__ else ''
             has_dowloader = ' '+AUTO_DOWN if dep.downloader is not None else ''
             if dep.is_python:
                 url = 'https://pypi.org/project/{}/'.format(name)
+                is_pypi_dep = '[{}]({})'.format(is_pypi_dep, url)
             else:
                 url = dep.url
             name = '[**{}**]({})'.format(name, url)
+            dtype = ' [{}]({})'.format(dtype, url)
             if dep.in_debian:
                 deb = ' [{}](https://packages.debian.org/bullseye/{})'.format(DEB_LOGO, dep.deb_package)
         else:
