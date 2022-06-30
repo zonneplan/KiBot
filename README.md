@@ -102,16 +102,15 @@ You can also run KiBot using docker images in a CI/CD environment like GitHub or
 
 Notes:
 - When installing from the Debian repo you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
-- When installing using `pip` the dependencies marked as **PyPi dependency** will be automatically installed.
+- When installing using `pip` the dependencies marked with ![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) will be automatically installed.
 - The dependencies marked with **Auto-download** can be downloaded on-demand by KiBot.
   Note this is experimental and is mostly oriented to 64 bits Linux systems.
 - The `kibot-check` tool can help you to know which dependencies are missing.
 - Note that on some systems (i.e. Debian) ImageMagick disables PDF manipulation in its `policy.xml` file.
   Comment or remove lines like this: `<policy domain="coder" rights="none" pattern="PDF" />` (On Debian: `/etc/ImageMagick-6/policy.xml`)
 - ![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png) Link to Debian stable package.
-- ![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) This is a Python dependency from PyPi and will be installed when using `pip`
 - ![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png) This is a Python module, not a separated tool.
-- ![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png) This is an independent tool, can be a binary or a Python script.
+- ![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png) This is an independent tool, can be a binary or a Python script.
 
 [**Distutils**](https://pypi.org/project/Distutils/)  ![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-distutils)
 - Mandatory
