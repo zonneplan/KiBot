@@ -103,7 +103,7 @@ You can also run KiBot using docker images in a CI/CD environment like GitHub or
 Notes:
 - When installing from the Debian repo you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
 - When installing using `pip` the dependencies marked with ![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) will be automatically installed.
-- The dependencies marked with **Auto-download** can be downloaded on-demand by KiBot.
+- The dependencies marked with ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png) can be downloaded on-demand by KiBot.
   Note this is experimental and is mostly oriented to 64 bits Linux systems.
 - The `kibot-check` tool can help you to know which dependencies are missing.
 - Note that on some systems (i.e. Debian) ImageMagick disables PDF manipulation in its `policy.xml` file.

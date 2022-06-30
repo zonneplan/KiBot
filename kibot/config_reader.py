@@ -29,12 +29,12 @@ LOCAL_OPTIONAL = 1
 GLOBAL_OPTIONAL = LOCAL_OPTIONAL*100
 LOCAL_MANDATORY = GLOBAL_OPTIONAL*100
 GLOBAL_MANDATORY = LOCAL_MANDATORY*100
-DEB_LOGO = '![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)'
-PYPI_LOGO = ('![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/'
-             'docs/images/PyPI_logo_simplified-22x22.png)')
-PY_LOGO = ('![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/'
-           'docs/images/Python-logo-notext-22x22.png)')
-TOOL_LOGO = '![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)'
+GITHUB_RAW = 'https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/'
+DEB_LOGO = '![Debian]('+GITHUB_RAW+'debian-openlogo-22x22.png)'
+PYPI_LOGO = ('![PyPi dependency]('+GITHUB_RAW+'PyPI_logo_simplified-22x22.png)')
+PY_LOGO = ('![Python module]('+GITHUB_RAW+'Python-logo-notext-22x22.png)')
+TOOL_LOGO = '![Tool]('+GITHUB_RAW+'llave-inglesa-22x22.png)'
+AUTO_DOWN = '![Auto-download]('+GITHUB_RAW+'auto_download-22x22.png)'
 
 try:
     import yaml
@@ -740,11 +740,11 @@ def print_dependencies(markdown=True, jsn=False):
     # Now print them sorted by importance (and by name as a second criteria)
     for name, dep in sorted(sorted(RegDependency.get_registered().items(), key=lambda x: x[0].lower()),   # noqa C414
                             key=lambda x: x[1].importance, reverse=True):
-        has_dowloader = ' (Auto-download)' if dep.downloader is not None else ''
         deb = ''
         if markdown:
             dtype = ' '+PY_LOGO if dep.is_python else ' '+TOOL_LOGO
             is_pypi_dep = ' '+PYPI_LOGO if dep.pypi_name.lower() in __pypi_deps__ else ''
+            has_dowloader = ' '+AUTO_DOWN if dep.downloader is not None else ''
             if dep.is_python:
                 url = 'https://pypi.org/project/{}/'.format(name)
             else:
@@ -755,6 +755,7 @@ def print_dependencies(markdown=True, jsn=False):
         else:
             dtype = ' (Python module)' if dep.is_python else ' (Tool)'
             is_pypi_dep = ' (PyPi dependency)' if dep.pypi_name.lower() in __pypi_deps__ else ''
+            has_dowloader = ' (Auto-download)' if dep.downloader is not None else ''
             if dep.in_debian:
                 deb = ' (Debian: {})'.format(dep.deb_package)
         needed = []
