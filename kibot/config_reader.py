@@ -747,7 +747,8 @@ def print_dependencies(markdown=True, jsn=False):
             has_dowloader = ' '+AUTO_DOWN if dep.downloader is not None else ''
             if dep.is_python:
                 url = 'https://pypi.org/project/{}/'.format(name)
-                is_pypi_dep = ' [{}]({})'.format(is_pypi_dep, url)
+                if is_pypi_dep:
+                    is_pypi_dep = ' [{}]({})'.format(is_pypi_dep, url)
             else:
                 url = dep.url
             name = '[**{}**]({})'.format(name, url)
@@ -770,10 +771,8 @@ def print_dependencies(markdown=True, jsn=False):
                 optional.append(r)
             if r.version and (version is None or r.version > version):
                 version = r.version
-        ver = ''
-        if version:
-            ver = 'v'+'.'.join(map(str, version))
-        print("{} {}{}{}{}{}".format(name, ver, dtype, is_pypi_dep, deb, has_dowloader))
+        ver = ' v'+'.'.join(map(str, version)) if version else ''
+        print(name+ver+dtype+is_pypi_dep+deb+has_dowloader)
         if needed:
             if len(needed) == 1:
                 if needed[0] == 'general use':
