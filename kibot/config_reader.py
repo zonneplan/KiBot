@@ -32,7 +32,9 @@ GLOBAL_MANDATORY = LOCAL_MANDATORY*100
 DEB_LOGO = '![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)'
 PYPI_LOGO = ('![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/'
              'docs/images/PyPI_logo_simplified-22x22.png)')
-
+PY_LOGO = ('![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/'
+           'docs/images/Python-logo-notext-22x22.png)')
+TOOL_LOGO = '![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)'
 
 try:
     import yaml
@@ -738,10 +740,10 @@ def print_dependencies(markdown=True, jsn=False):
     # Now print them sorted by importance (and by name as a second criteria)
     for name, dep in sorted(sorted(RegDependency.get_registered().items(), key=lambda x: x[0].lower()),   # noqa C414
                             key=lambda x: x[1].importance, reverse=True):
-        dtype = 'python module' if dep.is_python else 'tool'
         has_dowloader = ' (Auto-download)' if dep.downloader is not None else ''
         deb = ''
         if markdown:
+            dtype = ' '+PY_LOGO if dep.is_python else ' '+TOOL_LOGO
             is_pypi_dep = ' '+PYPI_LOGO if dep.pypi_name.lower() in __pypi_deps__ else ''
             if dep.is_python:
                 url = 'https://pypi.org/project/{}/'.format(name)
@@ -751,6 +753,7 @@ def print_dependencies(markdown=True, jsn=False):
             if dep.in_debian:
                 deb = ' [{}](https://packages.debian.org/bullseye/{})'.format(DEB_LOGO, dep.deb_package)
         else:
+            dtype = ' (Python module)' if dep.is_python else ' (Tool)'
             is_pypi_dep = ' (PyPi dependency)' if dep.pypi_name.lower() in __pypi_deps__ else ''
             if dep.in_debian:
                 deb = ' (Debian: {})'.format(dep.deb_package)
@@ -766,8 +769,8 @@ def print_dependencies(markdown=True, jsn=False):
                 version = r.version
         ver = ''
         if version:
-            ver = 'v'+'.'.join(map(str, version))+' '
-        print("{} {}({}){}{}{}".format(name, ver, dtype, is_pypi_dep, deb, has_dowloader))
+            ver = 'v'+'.'.join(map(str, version))
+        print("{} {}{}{}{}{}".format(name, ver, dtype, is_pypi_dep, deb, has_dowloader))
         if needed:
             if len(needed) == 1:
                 if needed[0] == 'general use':
