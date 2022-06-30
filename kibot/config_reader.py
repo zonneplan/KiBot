@@ -739,10 +739,10 @@ def print_dependencies(markdown=True, jsn=False):
     for name, dep in sorted(sorted(RegDependency.get_registered().items(), key=lambda x: x[0].lower()),   # noqa C414
                             key=lambda x: x[1].importance, reverse=True):
         dtype = 'python module' if dep.is_python else 'tool'
-        is_pypi_dep = ' '+PYPI_LOGO if dep.pypi_name.lower() in __pypi_deps__ else ''
         has_dowloader = ' (Auto-download)' if dep.downloader is not None else ''
         deb = ''
         if markdown:
+            is_pypi_dep = ' '+PYPI_LOGO if dep.pypi_name.lower() in __pypi_deps__ else ''
             if dep.is_python:
                 url = 'https://pypi.org/project/{}/'.format(name)
             else:
@@ -750,6 +750,10 @@ def print_dependencies(markdown=True, jsn=False):
             name = '[**{}**]({})'.format(name, url)
             if dep.in_debian:
                 deb = ' [{}](https://packages.debian.org/bullseye/{})'.format(DEB_LOGO, dep.deb_package)
+        else:
+            is_pypi_dep = ' (PyPi dependency)' if dep.pypi_name.lower() in __pypi_deps__ else ''
+            if dep.in_debian:
+                deb = ' (Debian: {})'.format(dep.deb_package)
         needed = []
         optional = []
         version = None
