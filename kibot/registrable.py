@@ -158,6 +158,5 @@ class RegDependency(Registrable):
 # Here we register some global dependencies
 RegDependency.register(ToolDependency('global', 'Colorama', is_python=True,
                        roles=ToolDependencyRole(desc='get color messages in a portable way')))
-RegDependency.register(ToolDependency('global', 'Distutils', is_python=True))
 RegDependency.register(ToolDependency('global', 'Requests', is_python=True))
 RegDependency.register(ToolDependency('global', 'PyYAML', is_python=True, deb='python3-yaml', module_name='yaml'))

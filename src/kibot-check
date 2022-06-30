@@ -46,34 +46,6 @@ deps = '{\
         "url": null,\
         "url_down": null\
     },\
-    "Distutils": {\
-        "command": "distutils",\
-        "deb_package": "python3-distutils",\
-        "downloader": null,\
-        "extra_deb": null,\
-        "help_option": "--version",\
-        "importance": 1000000,\
-        "in_debian": true,\
-        "is_kicad_plugin": false,\
-        "is_python": true,\
-        "module_name": "distutils",\
-        "name": "Distutils",\
-        "no_cmd_line_version": false,\
-        "no_cmd_line_version_old": false,\
-        "output": "global",\
-        "plugin_dirs": null,\
-        "pypi_name": "Distutils",\
-        "roles": [\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "output": "global",\
-                "version": null\
-            }\
-        ],\
-        "url": null,\
-        "url_down": null\
-    },\
     "Ghostscript": {\
         "command": "ghostscript",\
         "deb_package": "ghostscript",\
@@ -313,7 +285,11 @@ deps = '{\
                 "desc": null,\
                 "mandatory": true,\
                 "output": "pdf_sch_print",\
-                "version": null\
+                "version": [\
+                    1,\
+                    5,\
+                    4\
+                ]\
             },\
             {\
                 "desc": null,\
@@ -349,7 +325,11 @@ deps = '{\
                 "desc": null,\
                 "mandatory": true,\
                 "output": "svg_sch_print",\
-                "version": null\
+                "version": [\
+                    1,\
+                    5,\
+                    4\
+                ]\
             },\
             {\
                 "desc": null,\
