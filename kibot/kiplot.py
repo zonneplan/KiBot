@@ -135,19 +135,6 @@ def check_eeschema_do():
     check_script(CMD_EESCHEMA_DO, URL_EESCHEMA_DO, '1.5.4')
 
 
-def search_as_plugin(cmd, names):
-    """ If a command isn't in the path look for it in the KiCad plugins """
-    if which(cmd) is not None:
-        return cmd
-    for dir in GS.kicad_plugins_dirs:
-        for name in names:
-            fname = os.path.join(dir, name, cmd)
-            if os.path.isfile(fname):
-                logger.debug('Using `{}` for `{}` ({})'.format(fname, cmd, name))
-                return fname
-    return cmd
-
-
 def extract_errors(text):
     in_error = in_warning = False
     msg = ''

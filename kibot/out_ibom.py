@@ -7,8 +7,8 @@ import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from shutil import which
 from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR, W_EXTNAME, ToolDependency, ToolDependencyRole, W_NONETLIST)
-from .gs import (GS)
-from .kiplot import check_script, search_as_plugin
+from .gs import GS
+from .dep_downloader import check_tool, pytool_downloader
 from .out_base import VariantOptions
 from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
@@ -18,15 +18,11 @@ logger = log.get_logger()
 WARNING_MIX = "Avoid using it in conjunction with IBoM native filtering options"
 PLUGIN_NAMES = ['InteractiveHtmlBom', 'InteractiveHtmlBom/InteractiveHtmlBom',
                 'org_openscopeproject_InteractiveHtmlBom/InteractiveHtmlBom']
-RegDependency.register(ToolDependency('ibom', 'Interactive HTML BoM', URL_IBOM, url_down=URL_IBOM+'/releases',
-                                      command=CMD_IBOM, in_debian=False, no_cmd_line_version_old=True,
-                                      plugin_dirs=PLUGIN_NAMES, roles=ToolDependencyRole(version=(2, 4, 1, 4))))
-
-
-def check_tool():
-    tool = search_as_plugin(CMD_IBOM, PLUGIN_NAMES)
-    check_script(tool, URL_IBOM)
-    return tool
+ibom_dep = ToolDependency('ibom', 'Interactive HTML BoM', URL_IBOM, url_down=URL_IBOM+'/releases',
+                          command=CMD_IBOM, in_debian=False, no_cmd_line_version_old=True,
+                          plugin_dirs=PLUGIN_NAMES, downloader=pytool_downloader,
+                          roles=ToolDependencyRole(version=(2, 4, 1, 4)))
+RegDependency.register(ibom_dep)
 
 
 class IBoMOptions(VariantOptions):
@@ -149,7 +145,7 @@ class IBoMOptions(VariantOptions):
 
     def run(self, name):
         super().run(name)
-        tool = check_tool()
+        tool = check_tool(ibom_dep, fatal=True)
         logger.debug('Doing Interactive BoM')
         # Tell ibom we don't want to use the screen
         os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = ''
@@ -226,11 +222,7 @@ class IBoM(BaseOutput):  # noqa: F821
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
-        enabled = True
-        try:
-            check_tool()
-        except SystemExit:
-            enabled = False
-        if not enabled:
+        tool = check_tool(ibom_dep)
+        if tool is None:
             return None
         return BaseOutput.simple_conf_examples(name, 'Interactive HTML BoM', 'Assembly')  # noqa: F821

@@ -17,8 +17,8 @@ import site
 from sys import exit, stdout
 from shutil import which, rmtree, move
 from math import ceil
-from .kiplot import search_as_plugin
 from .misc import MISSING_TOOL, TRY_INSTALL_CHECK, W_DOWNTOOL, W_MISSTOOL, USER_AGENT
+from .gs import GS
 from . import log
 
 logger = log.get_logger()
@@ -30,6 +30,20 @@ EXEC_PERM = stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_I
 last_stderr = None
 version_check_fail = False
 binary_tools_cache = {}
+
+
+def search_as_plugin(cmd, names):
+    """ If a command isn't in the path look for it in the KiCad plugins """
+    name = which(cmd)
+    if name is not None:
+        return name
+    for dir in GS.kicad_plugins_dirs:
+        for name in names:
+            fname = os.path.join(dir, name, cmd)
+            if os.path.isfile(fname):
+                logger.debug('Using `{}` for `{}` ({})'.format(fname, cmd, name))
+                return fname
+    return None
 
 
 def show_progress(done):
@@ -423,8 +437,9 @@ def do_int(v):
     return int(v) if v is not None else 0
 
 
-def run_command(cmd, only_first_line=True, pre_ver_text=None, no_err_2=False):
+def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
     global last_stderr
+    logger.debugl(3, '- Running {}'.format(cmd))
     try:
         res_run = subprocess.run(cmd, check=True, capture_output=True)
     except subprocess.CalledProcessError as e:
@@ -445,6 +460,7 @@ def run_command(cmd, only_first_line=True, pre_ver_text=None, no_err_2=False):
     for pre_ver in pre_vers:
         if pre_ver and res.startswith(pre_ver):
             res = res[len(pre_ver):]
+    logger.debugl(3, '- Looking for version in `{}`'.format(res))
     res = ver_re.search(res)
     if res:
         return tuple(map(do_int, res.groups()))

@@ -9,7 +9,8 @@ from kibot.layer import Layer
 from kibot.pre_base import BasePreFlight
 from kibot.out_base import BaseOutput
 from kibot.gs import GS
-from kibot.kiplot import load_actions, _import, load_board, search_as_plugin, generate_makefile
+from kibot.kiplot import load_actions, _import, load_board, generate_makefile
+from kibot.dep_downloader import search_as_plugin
 from kibot.registrable import RegOutput, RegFilter
 from kibot.misc import (WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, CMD_PCBNEW_PRINT_LAYERS, KICAD2STEP_ERR)
 from kibot.bom.columnlist import ColumnList
@@ -308,7 +309,7 @@ def test_search_as_plugin_fail(test_dir, caplog):
         dir_fake = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
         GS.kicad_plugins_dirs.append(dir_fake)
         fname = search_as_plugin('fake', [''])
-        assert fname == 'fake'
+        assert fname is None
 
 
 def test_layer_no_id():

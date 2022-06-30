@@ -188,7 +188,7 @@ deps = '{\
     "Interactive HTML BoM": {\
         "command": "generate_interactive_bom.py",\
         "deb_package": "interactive html bom",\
-        "downloader": null,\
+        "downloader": {},\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
