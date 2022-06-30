@@ -244,6 +244,9 @@ def main():
     # Now we have the debug level set we can check (and optionally inform) KiCad info
     detect_kicad()
 
+    # Force iBoM to avoid the use of graphical stuff
+    os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = 'True'
+
     # Parse global overwrite options
     for redef in args.global_redef:
         if '=' not in redef:

@@ -444,10 +444,12 @@ def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
         res_run = subprocess.run(cmd, check=True, capture_output=True)
     except subprocess.CalledProcessError as e:
         if e.returncode != 2 or not no_err_2:
-            logger.debug('- Failed to run %s, error %d' % (cmd[0], e.returncode))
+            logger.debug('- Failed to run {}, error {}'.format(cmd, e.returncode))
             last_stderr = e.stderr.decode()
             if e.output:
                 logger.debug('- Output from command: '+e.output.decode())
+            if last_stderr:
+                logger.debug('- StdErr from command: '+last_stderr)
         return None
     except Exception as e:
         logger.debug('- Failed to run {}, error {}'.format(cmd[0], e))
