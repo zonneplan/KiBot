@@ -746,7 +746,9 @@ def print_dependencies(markdown=True, jsn=False):
                 url = dep.url
             name = '[**{}**]({})'.format(name, url)
             if dep.in_debian:
-                deb = ' [Debian](https://packages.debian.org/bullseye/{})'.format(dep.deb_package)
+                img = ('![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/'
+                       'docs/images/debian-openlogo-22x22.png)')
+                deb = ' [{}](https://packages.debian.org/bullseye/{})'.format(img, dep.deb_package)
         needed = []
         optional = []
         version = None

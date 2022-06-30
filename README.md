@@ -103,14 +103,15 @@ Notes:
 - The `kibot-check` tool can help you to know which dependencies are missing.
 - Note that on some systems (i.e. Debian) ImageMagick disables PDF manipulation in its `policy.xml` file.
   Comment or remove lines like this: `<policy domain="coder" rights="none" pattern="PDF" />` (On Debian: `/etc/ImageMagick-6/policy.xml`)
+- ![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png) Link to Debian stable package.
 
-[**Distutils**](https://pypi.org/project/Distutils/) (python module) [Debian](https://packages.debian.org/bullseye/python3-distutils)
+[**Distutils**](https://pypi.org/project/Distutils/) (python module) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-distutils)
 - Mandatory
 
-[**PyYAML**](https://pypi.org/project/PyYAML/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-yaml)
+[**PyYAML**](https://pypi.org/project/PyYAML/) (python module) (PyPi dependency) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-yaml)
 - Mandatory
 
-[**Requests**](https://pypi.org/project/Requests/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-requests)
+[**Requests**](https://pypi.org/project/Requests/) (python module) (PyPi dependency) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-requests)
 - Mandatory
 
 [**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v1.6.13 (tool) (PyPi dependency) (Auto-download)
@@ -130,16 +131,16 @@ Notes:
 [**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 (tool) (Auto-download)
 - Mandatory for `kibom`
 
-[**LXML**](https://pypi.org/project/LXML/) (python module) [Debian](https://packages.debian.org/bullseye/python3-lxml)
+[**LXML**](https://pypi.org/project/LXML/) (python module) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml)
 - Mandatory for `pcb_print`
 
-[**QRCodeGen**](https://pypi.org/project/QRCodeGen/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-qrcodegen)
+[**QRCodeGen**](https://pypi.org/project/QRCodeGen/) (python module) (PyPi dependency) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-qrcodegen)
 - Mandatory for `qr_lib`
 
-[**Colorama**](https://pypi.org/project/Colorama/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-colorama)
+[**Colorama**](https://pypi.org/project/Colorama/) (python module) (PyPi dependency) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-colorama)
 - Optional to get color messages in a portable way for general use
 
-[**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) v2.40 (tool) [Debian](https://packages.debian.org/bullseye/librsvg2-bin) (Auto-download)
+[**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) v2.40 (tool) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/librsvg2-bin) (Auto-download)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PNG icons for `navigate_results`
@@ -147,30 +148,30 @@ Notes:
   - Create EPS format for `pcb_print` (v2.40)
   - Create PNG and JPG images for `pcbdraw`
 
-[**Git**](https://git-scm.com/) (tool) [Debian](https://packages.debian.org/bullseye/git) (Auto-download)
+[**Git**](https://git-scm.com/) (tool) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/git) (Auto-download)
 - Optional to:
   - Find commit hash and/or date for `pcb_replace`
   - Find commit hash and/or date for `sch_replace`
   - Find commit hash and/or date for `set_text_variables`
 
-[**ImageMagick**](https://imagemagick.org/) (tool) [Debian](https://packages.debian.org/bullseye/imagemagick) (Auto-download)
+[**ImageMagick**](https://imagemagick.org/) (tool) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) (Auto-download)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create monochrome prints for `pcb_print`
   - Create JPG images for `pcbdraw`
 
-[**Ghostscript**](https://www.ghostscript.com/) (tool) [Debian](https://packages.debian.org/bullseye/ghostscript) (Auto-download)
+[**Ghostscript**](https://www.ghostscript.com/) (tool) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/ghostscript) (Auto-download)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PS files for `pcb_print`
 
-[**Pandoc**](https://pandoc.org/) (tool) [Debian](https://packages.debian.org/bullseye/pandoc)
+[**Pandoc**](https://pandoc.org/) (tool) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`
 
-[**RAR**](https://www.rarlab.com/) (tool) [Debian](https://packages.debian.org/bullseye/rar) (Auto-download)
+[**RAR**](https://www.rarlab.com/) (tool) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/rar) (Auto-download)
 - Optional to compress in RAR format for `compress`
 
-[**XLSXWriter**](https://pypi.org/project/XLSXWriter/) (python module) (PyPi dependency) [Debian](https://packages.debian.org/bullseye/python3-xlsxwriter)
+[**XLSXWriter**](https://pypi.org/project/XLSXWriter/) (python module) (PyPi dependency) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-xlsxwriter)
 - Optional to create XLSX files for `bom`
 
 
