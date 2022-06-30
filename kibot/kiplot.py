@@ -22,10 +22,10 @@ from collections import OrderedDict
 
 from .gs import GS
 from .registrable import RegOutput
-from .misc import (PLOT_ERROR, MISSING_TOOL, CMD_EESCHEMA_DO, URL_EESCHEMA_DO, CORRUPTED_PCB,
-                   EXIT_BAD_ARGS, CORRUPTED_SCH, EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK,
-                   MOD_SMD, MOD_THROUGH_HOLE, MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT,
-                   W_KIAUTO, W_VARSCH, NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS)
+from .misc import (PLOT_ERROR, MISSING_TOOL, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH,
+                   EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
+                   MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
+                   NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -119,20 +119,6 @@ def check_version(command, version):
                      version+' or newer.')
         exit(MISSING_TOOL)
     script_versions[command] = res[0]
-
-
-def check_script(cmd, url, version=None):
-    if which(cmd) is None and not os.path.isfile(cmd):
-        logger.error('No `'+cmd+'` command found.\n'
-                     'Please install it, visit: '+url)
-        logger.error(TRY_INSTALL_CHECK)
-        exit(MISSING_TOOL)
-    if version is not None:
-        check_version(cmd, version)
-
-
-def check_eeschema_do():
-    check_script(CMD_EESCHEMA_DO, URL_EESCHEMA_DO, '1.5.4')
 
 
 def extract_errors(text):
