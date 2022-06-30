@@ -16,13 +16,12 @@ from sys import path as sys_path
 from shutil import which
 from subprocess import run, PIPE, Popen
 from glob import glob
-from distutils.version import StrictVersion
-from importlib.util import (spec_from_file_location, module_from_spec)
+from importlib.util import spec_from_file_location, module_from_spec
 from collections import OrderedDict
 
 from .gs import GS
 from .registrable import RegOutput
-from .misc import (PLOT_ERROR, MISSING_TOOL, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH,
+from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH,
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS)
@@ -95,30 +94,6 @@ def load_actions():
     if 'deactivate' in activate.__dict__:
         logger.debug('Deactivating macros')
         activate.deactivate()
-
-
-def check_version(command, version):
-    global script_versions
-    if command in script_versions:
-        return
-    cmd = [command, '--version']
-    if not which(command) and not os.access(command, os.X_OK) and command.endswith('.py'):
-        cmd.insert(0, 'python3')
-    logger.debug('Running: '+str(cmd))
-    result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-    z = re.match(command + r' (\d+\.\d+\.\d+)', result.stdout, re.IGNORECASE)
-    if not z:
-        z = re.search(r'Version: (\d+\.\d+\.\d+)', result.stdout, re.IGNORECASE)
-    if not z:
-        logger.error('Unable to determine ' + command + ' version:\n' +
-                     result.stdout)
-        exit(MISSING_TOOL)
-    res = z.groups()
-    if StrictVersion(res[0]) < StrictVersion(version):
-        logger.error('Wrong version for `'+command+'` ('+res[0]+'), must be ' +
-                     version+' or newer.')
-        exit(MISSING_TOOL)
-    script_versions[command] = res[0]
 
 
 def extract_errors(text):
@@ -762,7 +737,7 @@ def discover_files(dest_dir):
 
 
 def yaml_dump(f, tree):
-    if StrictVersion(yaml.__version__) < StrictVersion('3.14'):
+    if tuple(map(int, yaml.__version__.split('.'))) < (3, 14):
         f.write(yaml.dump(tree))
     else:
         # sort_keys was introduced after 3.13
