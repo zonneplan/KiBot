@@ -4,7 +4,6 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-from qrcodegen import QrCode
 from tempfile import NamedTemporaryFile
 from .gs import GS
 from .optionable import BaseOptions, Optionable
@@ -13,18 +12,21 @@ from .kicad.sexpdata import Symbol, dumps, Sep, load, SExpData, sexp_iter
 from .kicad.v6_sch import DrawRectangleV6, PointXY, Stroke, Fill, SchematicFieldV6, FontEffects
 from .kiplot import load_board
 from .misc import ToolDependency, ToolDependencyRole
+from .dep_downloader import check_tool, python_downloader
 from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
+try:
+    import qrcodegen
+except ImportError:
+    qrcodegen = None
 
-QR_ECCS = {'low': QrCode.Ecc.LOW,
-           'medium': QrCode.Ecc.MEDIUM,
-           'quartile': QrCode.Ecc.QUARTILE,
-           'high': QrCode.Ecc.HIGH}
 logger = log.get_logger()
 TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
                'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
-RegDependency.register(ToolDependency('qr_lib', 'QRCodeGen', is_python=True, roles=ToolDependencyRole()))
+qrcodegen_dep = ToolDependency('qr_lib', 'QRCodeGen', is_python=True, roles=ToolDependencyRole(),
+                               downloader=python_downloader)
+RegDependency.register(qrcodegen_dep)
 
 
 def is_symbol(name, sexp):
@@ -90,7 +92,6 @@ class QRCodeOptions(Optionable):
 
     def config(self, parent):
         super().config(parent)
-        self.correction_level = QR_ECCS[self.correction_level]
         self.layer = 'F.SilkS' if self.layer == 'silk' else 'F.Cu'
 
 
@@ -474,6 +475,14 @@ class QR_LibOptions(BaseOptions):
         return sheets
 
     def run(self, output):
+        global qrcodegen
+        if qrcodegen is None:
+            qrcodegen = check_tool(qrcodegen_dep, fatal=True)
+        # Now we are sure we have qrcodegen
+        QR_ECCS = {'low': qrcodegen.QrCode.Ecc.LOW,
+                   'medium': qrcodegen.QrCode.Ecc.MEDIUM,
+                   'quartile': qrcodegen.QrCode.Ecc.QUARTILE,
+                   'high': qrcodegen.QrCode.Ecc.HIGH}
         if self.use_sch_dir:
             self._odir_sch = GS.sch_dir
             self._odir_pcb = GS.pcb_dir
@@ -482,9 +491,9 @@ class QR_LibOptions(BaseOptions):
         # Create the QR codes
         for qr in self.qrs:
             qr._text_sch = self.expand_filename_both(qr.text, make_safe=False)
-            qr._code_sch = QrCode.encode_text(qr._text_sch, qr.correction_level)
+            qr._code_sch = qrcodegen.QrCode.encode_text(qr._text_sch, QR_ECCS[qr.correction_level])
             qr._text_pcb = self.expand_filename_both(qr.text, is_sch=False, make_safe=False)
-            qr._code_pcb = QrCode.encode_text(qr._text_pcb, qr.correction_level)
+            qr._code_pcb = qrcodegen.QrCode.encode_text(qr._text_pcb, QR_ECCS[qr.correction_level])
         # Create the symbols
         if GS.ki5():
             self.symbol_lib_k5()
