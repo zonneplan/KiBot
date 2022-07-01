@@ -18,11 +18,10 @@ from .error import KiPlotConfigurationError
 from .kiplot import get_board_comps_data, load_any_sch
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
-from .bom.xlsx_writer import KICOST_SUPPORT
 from .var_kibom import KiBoM
 from .fil_base import (BaseFilter, apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, reset_filters,
                        KICOST_NAME_TRANSLATIONS)
-from .dep_downloader import pytool_downloader
+from .dep_downloader import check_tool, pytool_downloader, python_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 # To debug the `with document` we can use:
@@ -41,8 +40,9 @@ DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
 kicost_dep = kicost_dependency('bom', pytool_downloader,
                                roles=ToolDependencyRole(desc='Find components costs and specs', version=(1, 1, 8)))
 RegDependency.register(kicost_dep)
-RegDependency.register(ToolDependency('bom', 'XLSXWriter', is_python=True,
-                                      roles=ToolDependencyRole(desc='Create XLSX files')))
+xlsx_dep = ToolDependency('bom', 'XLSXWriter', is_python=True, roles=ToolDependencyRole(desc='Create XLSX files'),
+                          downloader=python_downloader)
+RegDependency.register(xlsx_dep)
 
 
 class BoMJoinField(Optionable):
@@ -691,6 +691,10 @@ class BoMOptions(BaseOptions):
 
     def run(self, output):
         format = self.format.lower()
+        if format == 'xlsx':
+            if self.xlsx.kicost:
+                check_tool(kicost_dep, fatal=True)
+            check_tool(xlsx_dep, fatal=True)
         # Add some info needed for the output to the config object.
         # So all the configuration is contained in one object.
         self.source = GS.sch_basename
@@ -856,17 +860,22 @@ class BoM(BaseOutput):  # noqa: F821
         if join_fields:
             logger.debug(' - Fields to join with Value: {}'.format(join_fields))
         # Create a generic version
-        for fmt in ['HTML', 'CSV', 'TXT', 'TSV', 'XML', 'XLSX']:
+        SIMP_FMT = ['HTML', 'CSV', 'TXT', 'TSV', 'XML']
+        XYRS_FMT = ['HTML']
+        if check_tool(xlsx_dep) is not None:
+            SIMP_FMT.append('XLSX')
+            XYRS_FMT.append('XLSX')
+        for fmt in SIMP_FMT:
             outs.append(BoM.create_bom(fmt, 'Generic', group_fields, join_fields, fld_names))
         if GS.board:
             # Create an example showing the positional fields
             cols = ColumnList.COLUMNS_DEFAULT + ColumnList.COLUMNS_EXTRA
-            for fmt in ['HTML', 'XLSX']:
+            for fmt in XYRS_FMT:
                 gb = BoM.create_bom(fmt, 'Positional', group_fields, None, fld_names, cols)
                 gb['options'][fmt.lower()] = {'style': 'modern-red'}
                 outs.append(gb)
         # Create a costs version
-        if KICOST_SUPPORT:  # and dists?
+        if check_tool(kicost_dep) is not None:  # and dists?
             logger.debug(' - KiCost distributors {}'.format(dists))
             grp = group_fields
             if group_fields:

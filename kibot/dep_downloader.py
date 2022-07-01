@@ -3,6 +3,7 @@
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+import importlib
 import os
 import re
 import subprocess
@@ -17,7 +18,7 @@ import site
 from sys import exit, stdout
 from shutil import which, rmtree, move
 from math import ceil
-from .misc import MISSING_TOOL, TRY_INSTALL_CHECK, W_DOWNTOOL, W_MISSTOOL, USER_AGENT
+from .misc import MISSING_TOOL, TRY_INSTALL_CHECK, W_DOWNTOOL, W_MISSTOOL, USER_AGENT, version_str2tuple
 from .gs import GS
 from . import log
 
@@ -147,18 +148,7 @@ def untar(data):
     return os.path.abspath(dir_name)
 
 
-def pytool_downloader(dep, system, plat):
-    # Check if we have a github repo as download page
-    logger.debug('- Download URL: '+str(dep.url_down))
-    if not dep.url_down:
-        return None
-    res = re.match(r'^https://github.com/([^/]+)/([^/]+)/', dep.url_down)
-    if res is None:
-        return None
-    user = res.group(1)
-    prj = res.group(2)
-    logger.debugl(2, '- GitHub repo: {}/{}'.format(user, prj))
-    url = 'https://api.github.com/repos/{}/{}/releases/latest'.format(user, prj)
+def check_pip():
     # Check if we have pip and wheel
     pip_command = which('pip3')
     if pip_command is not None:
@@ -177,14 +167,45 @@ def pytool_downloader(dep, system, plat):
         logger.debugl(2, '- Wheel v{}'.format(wheel.__version__))
     except ImportError:
         wheel_ok = False
-    if not wheel_ok:
-        cmd = [pip_command, 'install', '--no-warn-script-location', '-U', 'wheel']
-        logger.debug('- Trying to install wheel: `{}`'.format(cmd))
-        try:
-            res_run = subprocess.run(cmd, check=True, capture_output=True)
-        except Exception as e:
-            logger.debug('- Failed to install wheel ({})'.format(e))
-            return None
+    if not wheel_ok and not pip_install(pip_command, name='wheel'):
+        return None
+    return pip_command
+
+
+def pip_install(pip_command, dest=None, name='.'):
+    cmd = [pip_command, 'install', '-U', '--no-warn-script-location', name]
+    logger.debug('- Running: {}'.format(cmd))
+    try:
+        res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=dest)
+        logger.debugl(3, '- Output from pip:\n'+res_run.stdout.decode())
+    except Exception as e:
+        logger.debug('- Failed to install `{}` using pip ({})'.format(name, e))
+        out = res_run.stderr.decode()
+        if out:
+            logger.debug('- StdErr: '+out)
+        out = res_run.stdout.decode()
+        if out:
+            logger.debug('- StdOut: '+out)
+        return False
+    return True
+
+
+def pytool_downloader(dep, system, plat):
+    # Check if we have a github repo as download page
+    logger.debug('- Download URL: '+str(dep.url_down))
+    if not dep.url_down:
+        return None
+    res = re.match(r'^https://github.com/([^/]+)/([^/]+)/', dep.url_down)
+    if res is None:
+        return None
+    user = res.group(1)
+    prj = res.group(2)
+    logger.debugl(2, '- GitHub repo: {}/{}'.format(user, prj))
+    url = 'https://api.github.com/repos/{}/{}/releases/latest'.format(user, prj)
+    # Check if we have pip and wheel
+    pip_command = check_pip()
+    if pip_command is None:
+        return None
     # Look for the last release
     data = download(url, progress=False)
     if data is None:
@@ -203,23 +224,23 @@ def pytool_downloader(dep, system, plat):
         return None
     logger.debugl(2, '- Uncompressed tarball to: '+dest)
     # Try to pip install it
-    cmd = [pip_command, 'install', '-U', '--no-warn-script-location', '.']
-    logger.debug('- Running: {}'.format(cmd))
-    try:
-        res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=dest)
-        logger.debugl(3, '- Output from pip:\n'+res_run.stdout.decode())
-    except Exception as e:
-        logger.debug('- Failed to install using pip ({})'.format(e))
-        out = res_run.stderr.decode()
-        if out:
-            logger.debug('- StdErr: '+out)
-        out = res_run.stdout.decode()
-        if out:
-            logger.debug('- StdOut: '+out)
+    if not pip_install(pip_command, dest=dest):
         return None
     rmtree(dest)
     # Check it was successful
     return check_tool_binary_version(os.path.join(site.USER_BASE, 'bin', dep.command), dep, no_cache=True)
+
+
+def python_downloader(dep):
+    logger.info('- Trying to install {} (from PyPi)'.format(dep.name))
+    # Check if we have pip and wheel
+    pip_command = check_pip()
+    if pip_command is None:
+        return False
+    # Try to pip install it
+    if not pip_install(pip_command, name=dep.pypi_name.lower()):
+        return False
+    return True
 
 
 def git_downloader(dep, system, plat):
@@ -582,7 +603,49 @@ def check_tool_binary(dep):
     return try_download_tool_binary(dep)
 
 
-def check_tool_python(dep):
+def check_tool_python_version(mod, dep):
+    logger.debugl(2, '- Checking version for `{}`'.format(dep.name))
+    global version_check_fail
+    version_check_fail = False
+    # Do we need a particular version?
+    needs = (0, 0, 0)
+    for r in dep.roles:
+        if r.version and r.version > needs:
+            needs = r.version
+    if needs == (0, 0, 0):
+        # Any version is Ok
+        logger.debugl(2, '- No particular version needed')
+    else:
+        logger.debugl(2, '- Needed version {}'.format(needs))
+    # Check the version
+    if hasattr(mod, '__version__'):
+        version = version_str2tuple(mod.__version__)
+    else:
+        version = 'Ok'
+    logger.debugl(2, '- Found version {}'.format(version))
+    version_check_fail = version != 'Ok' and version < needs
+    return None if version_check_fail else mod
+
+
+def check_tool_python(dep, reload):
+    # Try to load the module
+    try:
+        mod = importlib.import_module(dep.module_name)
+        return check_tool_python_version(mod, dep)
+    except ModuleNotFoundError:
+        pass
+    # Not installed, try to download it
+    if not python_downloader(dep):
+        return None
+    # Check we can use it
+    try:
+        mod = importlib.import_module(dep.module_name)
+        res = check_tool_python_version(mod, dep)
+        if res is not None and reload is not None:
+            res = importlib.reload(reload)
+        return res
+    except ModuleNotFoundError:
+        pass
     return None
 
 
@@ -618,18 +681,20 @@ def show_roles(roles, fatal):
                 do_log_err('- {}{}'.format(o.desc, get_version(o)), fatal)
 
 
-def check_tool(dep, fatal=False):
+def check_tool(dep, fatal=False, reload=None):
     logger.debug('Starting tool check for {}'.format(dep.name))
     if dep.is_python:
-        cmd = check_tool_python(dep)
+        cmd = check_tool_python(dep, reload)
+        type = 'python module'
     else:
         cmd = check_tool_binary(dep)
+        type = 'command'
     logger.debug('- Returning `{}`'.format(cmd))
     if cmd is None:
         if version_check_fail:
-            do_log_err('Upgrade `{}` command ({})'.format(dep.command, dep.name), fatal)
+            do_log_err('Upgrade `{}` {} ({})'.format(dep.command, type, dep.name), fatal)
         else:
-            do_log_err('Missing `{}` command ({}), install it'.format(dep.command, dep.name), fatal)
+            do_log_err('Missing `{}` {} ({}), install it'.format(dep.command, type, dep.name), fatal)
         if dep.url:
             do_log_err('Home page: '+dep.url, fatal)
         if dep.url_down:

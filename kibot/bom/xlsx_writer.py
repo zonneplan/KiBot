@@ -19,10 +19,13 @@ from base64 import b64decode
 from .columnlist import ColumnList
 from .kibot_logo import KIBOT_LOGO
 from .. import log
-from ..misc import W_NOKICOST, W_UNKDIST, KICOST_ERROR, W_BADFIELD, TRY_INSTALL_CHECK
+from ..misc import W_NOKICOST, W_UNKDIST, KICOST_ERROR, W_BADFIELD
 from ..error import trace_dump
 from ..gs import GS
 from .. import __version__
+# Init the logger first
+logger = log.get_logger()
+# XLSX Writer support
 try:
     from xlsxwriter import Workbook
     XLSX_SUPPORT = True
@@ -31,8 +34,6 @@ except ModuleNotFoundError:
 
     class Workbook():
         pass
-# Init the logger first
-logger = log.get_logger()
 # KiCost support
 try:
     # Give priority to submodules
@@ -46,13 +47,7 @@ try:
                         init_all_loggers, create_worksheet, Spreadsheet, get_distributors_list, get_dist_name_from_label,
                         set_distributors_progress, is_valid_api)
     KICOST_SUPPORT = True
-except ModuleNotFoundError:
-    KICOST_SUPPORT = False
-    ProgressConsole = object
 except ImportError:
-    logger.error("Installed KiCost is older than the version we support.")
-    logger.error("Try installing the last release or the current GIT code.")
-    logger.error(TRY_INSTALL_CHECK)
     KICOST_SUPPORT = False
     ProgressConsole = object
 
@@ -712,8 +707,6 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     cfg = BoMOptions object with all the configuration
     """
     if not XLSX_SUPPORT:
-        logger.error('Python xlsxwriter module not installed (Debian: python3-xlsxwriter)')
-        logger.error(TRY_INSTALL_CHECK)
         return False
 
     link_datasheet = -1

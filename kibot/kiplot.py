@@ -21,7 +21,7 @@ from collections import OrderedDict
 
 from .gs import GS
 from .registrable import RegOutput
-from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH,
+from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, version_str2tuple,
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS)
@@ -737,7 +737,7 @@ def discover_files(dest_dir):
 
 
 def yaml_dump(f, tree):
-    if tuple(map(int, yaml.__version__.split('.'))) < (3, 14):
+    if version_str2tuple(yaml.__version__) < (3, 14):
         f.write(yaml.dump(tree))
     else:
         # sort_keys was introduced after 3.13

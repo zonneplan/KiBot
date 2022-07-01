@@ -176,7 +176,7 @@ Notes:
 [**RAR**](https://www.rarlab.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.rarlab.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/rar) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to compress in RAR format for `compress`
 
-[**XLSXWriter**](https://pypi.org/project/XLSXWriter/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/XLSXWriter/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/XLSXWriter/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-xlsxwriter)
+[**XLSXWriter**](https://pypi.org/project/XLSXWriter/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/XLSXWriter/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/XLSXWriter/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-xlsxwriter) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to create XLSX files for `bom`
 
 

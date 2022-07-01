@@ -304,6 +304,10 @@ def hide_stderr():
     os.dup2(newstderr, 2)
 
 
+def version_str2tuple(ver):
+    return tuple(map(int, ver.split('.')))
+
+
 class ToolDependencyRole(object):
     """ Class used to define the role of a tool """
     def __init__(self, desc=None, version=None, output=None):

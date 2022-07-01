@@ -17,7 +17,6 @@ This is just a hub that calls the real BoM writer:
 from .csv_writer import write_csv
 from .html_writer import write_html
 from .xml_writer import write_xml
-from .xlsx_writer import write_xlsx
 from .. import log
 
 logger = log.get_logger()
@@ -43,6 +42,8 @@ def write_bom(filename, ext, groups, headings, cfg):
     elif ext in ["xml"]:
         result = write_xml(filename, groups, headings, head_names, cfg)
     elif ext in ["xlsx"]:
+        # We delay the module load to give out_bom the chance to install XLSXWriter dependencies
+        from .xlsx_writer import write_xlsx
         result = write_xlsx(filename, groups, headings, head_names, cfg)
 
     if result:
