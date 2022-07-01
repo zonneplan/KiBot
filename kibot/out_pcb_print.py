@@ -7,17 +7,16 @@
 import re
 import os
 import subprocess
+import importlib
 from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask, ZONE_FILLER
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
-from .svgutils.transform import fromstring, RectElement, fromfile
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
 from .out_base import VariantOptions
 from .kicad.color_theme import load_color_theme
 from .kicad.patch_svg import patch_svg_file
-from .kicad.worksheet import Worksheet, WksError
 from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
@@ -27,7 +26,8 @@ from .misc import (CMD_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_
 from .kiplot import exec_with_retry, add_extra_options
 from .registrable import RegDependency
 from .create_pdf import create_pdf_from_pages
-from .dep_downloader import check_tool, rsvg_downloader, gs_downloader, convert_downloader, pytool_downloader
+from .dep_downloader import (check_tool, rsvg_downloader, gs_downloader, convert_downloader, pytool_downloader,
+                             python_downloader)
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
 from .layer import Layer, get_priority
@@ -54,13 +54,16 @@ pcbdraw_dep = pcbdraw_dependency('pcb_print', pytool_downloader, roles=ToolDepen
 # The plot_frame_gui() needs KiAuto to print the frame
 kiauto_dep = kiauto_dependency('pcb_print', None, CMD_PCBNEW_PRINT_LAYERS, pytool_downloader,
                                role=ToolDependencyRole(desc='Print the page frame in GUI mode', version=(1, 6, 7)))
+# SVGUtils dependency. But this is also a PcbDraw dependency
+svgutils = None  # Will be loaded during dependency check
+kicad_worksheet = None  # Also needs svgutils
+lxml_dep = ToolDependency('pcb_print', 'LXML', is_python=True, downloader=python_downloader)
 RegDependency.register(rsvg_dep)
 RegDependency.register(rsvg_dep2)
 RegDependency.register(gs_dep)
 RegDependency.register(convert_dep)
 RegDependency.register(pcbdraw_dep)
-# SVGUtils dependency. But this is also a PcbDraw dependency
-RegDependency.register(ToolDependency('pcb_print', 'LXML', is_python=True))
+RegDependency.register(lxml_dep)
 RegDependency.register(kiauto_dep)
 
 
@@ -408,8 +411,8 @@ class PCB_PrintOptions(VariantOptions):
         # Load the WKS
         error = None
         try:
-            ws = Worksheet.load(self.layout)
-        except (WksError, SchError) as e:
+            ws = kicad_worksheet.Worksheet.load(self.layout)
+        except (kicad_worksheet.WksError, SchError) as e:
             error = str(e)
         if error:
             raise KiPlotConfigurationError('Error reading `{}` ({})'.format(self.layout, error))
@@ -673,13 +676,13 @@ class PCB_PrintOptions(VariantOptions):
         if not self.add_background:
             return
         if self.background_image:
-            img = fromfile(self.background_image)
+            img = svgutils.fromfile(self.background_image)
             w, h = get_size(img)
             root = img.getroot()
             root.moveto(0, 0)
             root.scale(width/w, height/h)
             svg_out.insert([root])
-        svg_out.insert(RectElement(0, 0, width, height, color=self.background_color))
+        svg_out.insert(svgutils.RectElement(0, 0, width, height, color=self.background_color))
 
     def merge_svg(self, input_folder, input_files, output_folder, output_file, p):
         """ Merge all pages into one """
@@ -687,7 +690,7 @@ class PCB_PrintOptions(VariantOptions):
         for (file, color) in input_files:
             logger.debug(' - Loading layer file '+file)
             file = os.path.join(input_folder, file)
-            new_layer = fromstring(load_svg(file, color, p.colored_holes, p.holes_color, p.monochrome))
+            new_layer = svgutils.fromstring(load_svg(file, color, p.colored_holes, p.holes_color, p.monochrome))
             width, height = get_size(new_layer)
             # Workaround for polygon fill on KiCad 5
             if GS.ki5() and file.endswith('frame.svg'):
@@ -745,11 +748,11 @@ class PCB_PrintOptions(VariantOptions):
         _run_command(cmd)
         # Load the SVG created by PcbDraw
         with open(pcbdraw_file, 'rt') as f:
-            svg = fromstring(f.read())
+            svg = svgutils.fromstring(f.read())
         # Load the plot file from KiCad to get the real coordinates system
         out_file = os.path.join(temp_dir, out_file)
         with open(out_file, 'rt') as f:
-            svg_kicad = fromstring(f.read())
+            svg_kicad = svgutils.fromstring(f.read())
         view_box = svg_kicad.root.get('viewBox')
         view_box_elements = view_box.split(' ')
         # This is the paper size using the SVG precision
@@ -979,6 +982,11 @@ class PCB_PrintOptions(VariantOptions):
 
     def run(self, output):
         super().run(output)
+        check_tool(lxml_dep, fatal=True)
+        global svgutils
+        svgutils = importlib.import_module('.svgutils.transform', package=__package__)
+        global kicad_worksheet
+        kicad_worksheet = importlib.import_module('.kicad.worksheet', package=__package__)
         self.filter_components()
         self.generate_output(output)
         self.unfilter_components()
