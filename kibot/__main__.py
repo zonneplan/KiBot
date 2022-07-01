@@ -9,7 +9,7 @@
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
-         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-g DEF]... [TARGET...]
+         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
@@ -28,6 +28,7 @@ Arguments:
   TARGET    Outputs to generate, default is all
 
 Options:
+  -A, --no-auto-download           Disable dependencies auto-download
   -b BOARD, --board-file BOARD     The PCB .kicad-pcb board file
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -C, --cli-order                  Generate outputs using the indicated order
@@ -75,6 +76,7 @@ from . import __version__, __copyright__, __license__
 from . import log
 log.set_domain('kibot')
 logger = log.init()
+from . import dep_downloader
 from .docopt import docopt
 # GS will import pcbnew, so we must solve the nightly setup first
 # Check if we have to run the nightly KiCad build
@@ -254,6 +256,10 @@ def main():
             sys.exit(EXIT_BAD_ARGS)
         var = redef.split('=')[0]
         GS.cli_global_defs[var] = redef[len(var)+1:]
+
+    # Disable auto-download if needed
+    if args.no_auto_download:
+        dep_downloader.disable_auto_download = True
 
     # Output dir: relative to CWD (absolute path overrides)
     GS.out_dir = os.path.join(os.getcwd(), args.out_dir)

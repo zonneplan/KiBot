@@ -31,6 +31,7 @@ EXEC_PERM = stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_I
 last_stderr = None
 version_check_fail = False
 binary_tools_cache = {}
+disable_auto_download = False
 
 
 def search_as_plugin(cmd, names):
@@ -600,6 +601,9 @@ def check_tool_binary(dep):
     cmd = check_tool_binary_local(dep)
     if cmd is not None:
         return cmd
+    global disable_auto_download
+    if disable_auto_download:
+        return None
     return try_download_tool_binary(dep)
 
 
@@ -635,7 +639,8 @@ def check_tool_python(dep, reload):
     except ModuleNotFoundError:
         pass
     # Not installed, try to download it
-    if not python_downloader(dep):
+    global disable_auto_download
+    if disable_auto_download or not python_downloader(dep):
         return None
     # Check we can use it
     try:

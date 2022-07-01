@@ -3252,7 +3252,7 @@ KiBot: KiCad automation tool for documents generation
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
-         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-g DEF]... [TARGET...]
+         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
@@ -3271,6 +3271,7 @@ Arguments:
   TARGET    Outputs to generate, default is all
 
 Options:
+  -A, --no-auto-download           Disable dependencies auto-download
   -b BOARD, --board-file BOARD     The PCB .kicad-pcb board file
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -C, --cli-order                  Generate outputs using the indicated order
