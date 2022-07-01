@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2022 Salvador E. Tropea
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
-# Copyright (c) 2022 Albin Dennevi (create_pdf_from_pages)
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Base idea: https://gitlab.com/dennevi/Board2Pdf/ (Released as Public Domain)
@@ -43,6 +42,9 @@ POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stro
                    "stroke-linejoin:round;fill-rule:evenodd;")
 DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
 EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
+#
+# Create and register the tools needed by this output
+#
 rsvg_dep = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRole(desc='Create PDF, PNG and PS formats'))
 rsvg_dep2 = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRole(desc='Create EPS format', version=(2, 40)))
 gs_dep = gs_dependency('pcb_print', gs_downloader, roles=ToolDependencyRole(desc='Create PS files'))
@@ -57,6 +59,7 @@ RegDependency.register(rsvg_dep2)
 RegDependency.register(gs_dep)
 RegDependency.register(convert_dep)
 RegDependency.register(pcbdraw_dep)
+# SVGUtils dependency. But this is also a PcbDraw dependency
 RegDependency.register(ToolDependency('pcb_print', 'LXML', is_python=True))
 RegDependency.register(kiauto_dep)
 
