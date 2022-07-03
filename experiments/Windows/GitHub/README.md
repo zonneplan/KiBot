@@ -81,8 +81,13 @@ Is a mess.
 Problems:
 
 1. Only `python` binary, no `python3`. Even when they include `pip` and `pip3`!
+   *Workaround*: Use `python`
 2. You can't run pip installed scripts. They have a wrong shebang, useless for bash and Power Shell. You must use `python FULL_PATH`.
+   *Workaround*: Use `python SCRIPT` or switch to entry-points.
 3. Power Shell silently fails if the shebang is wrong!!!
+   *Workaround*: Add more debug to know it even tried to execute it
+4. `pip install .` doesn't work.
+   *Workaround*: Use `pip install DIR`
 
 # KiCad command shell
 
@@ -151,3 +156,6 @@ The /k means continue.
 - Run with: `python "C:\Program Files\KiCad\6.0\bin\Scripts\kibot"`
 - We should try to add an entry point so we can avoid the shebang problem
 
+# Conclusions
+
+1. The Python included with KiCad is broken, it can't handle *scripts*, just entry points.
