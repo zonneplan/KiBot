@@ -4,21 +4,23 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/9890
+"""
+Dependencies:
+  - from: KiAuto
+    role: mandatory
+    version: 1.6.13
+"""
 import os
 from shutil import rmtree
-from .misc import (CMD_PCBNEW_3D, RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
-                   KICAD_VERSION_6_0_2, MISSING_TOOL, kiauto_dependency)
+from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
+                   KICAD_VERSION_6_0_2, MISSING_TOOL)
 from .gs import GS
 from .kiplot import exec_with_retry, add_extra_options
 from .out_base_3d import Base3DOptions, Base3D
-from .dep_downloader import check_tool, pytool_downloader
-from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-dep = kiauto_dependency('render_3d', (1, 6, 13), CMD_PCBNEW_3D, pytool_downloader)
-RegDependency.register(dep)
 
 
 class Render3DOptions(Base3DOptions):
@@ -145,7 +147,7 @@ class Render3DOptions(Base3DOptions):
             logger.error("3D Viewer not supported for KiCad 6.0.0/1\n"
                          "Please upgrade KiCad to 6.0.2 or newer")
             exit(MISSING_TOOL)
-        command = check_tool(dep, fatal=True)
+        command = self.ensure_tool('KiAuto')
         # Base command with overwrite
         cmd = [command, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),
                '3d_view', '--output_name', output]

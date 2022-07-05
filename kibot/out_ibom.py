@@ -3,26 +3,32 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - name: Interactive HTML BoM
+    role: mandatory
+    github: INTI-CMNB/InteractiveHtmlBom
+    command: generate_interactive_bom.py
+    no_cmd_line_version_old: true
+    plugin_dirs:
+      - InteractiveHtmlBom
+      - InteractiveHtmlBom/InteractiveHtmlBom
+      - org_openscopeproject_InteractiveHtmlBom/InteractiveHtmlBom
+    version: 2.4.1.4
+    downloader: pytool
+    id: ibom
+"""
 import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from shutil import which
-from .misc import (CMD_IBOM, URL_IBOM, BOM_ERROR, W_EXTNAME, ToolDependency, ToolDependencyRole, W_NONETLIST)
+from .misc import BOM_ERROR, W_EXTNAME, W_NONETLIST
 from .gs import GS
-from .dep_downloader import check_tool, pytool_downloader
 from .out_base import VariantOptions
-from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
 WARNING_MIX = "Avoid using it in conjunction with IBoM native filtering options"
-PLUGIN_NAMES = ['InteractiveHtmlBom', 'InteractiveHtmlBom/InteractiveHtmlBom',
-                'org_openscopeproject_InteractiveHtmlBom/InteractiveHtmlBom']
-ibom_dep = ToolDependency('ibom', 'Interactive HTML BoM', URL_IBOM, url_down=URL_IBOM+'/releases',
-                          command=CMD_IBOM, in_debian=False, no_cmd_line_version_old=True,
-                          plugin_dirs=PLUGIN_NAMES, downloader=pytool_downloader,
-                          roles=ToolDependencyRole(version=(2, 4, 1, 4)))
-RegDependency.register(ibom_dep)
 
 
 class IBoMOptions(VariantOptions):
@@ -145,7 +151,7 @@ class IBoMOptions(VariantOptions):
 
     def run(self, name):
         super().run(name)
-        tool = check_tool(ibom_dep, fatal=True)
+        tool = self.ensure_tool('ibom')
         logger.debug('Doing Interactive BoM')
         # Tell ibom we don't want to use the screen
         os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = ''
@@ -222,7 +228,7 @@ class IBoM(BaseOutput):  # noqa: F821
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
-        tool = check_tool(ibom_dep)
+        tool = GS.check_tool(name, 'ibom')
         if tool is None:
             return None
         return BaseOutput.simple_conf_examples(name, 'Interactive HTML BoM', 'Assembly')  # noqa: F821

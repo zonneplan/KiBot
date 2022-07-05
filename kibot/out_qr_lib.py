@@ -3,6 +3,14 @@
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - name: QRCodeGen
+    role: mandatory
+    python_module: true
+    downloader: python
+    debian: python3-qrcodegen
+"""
 import os
 from tempfile import NamedTemporaryFile
 from .gs import GS
@@ -11,9 +19,6 @@ from .error import KiPlotConfigurationError
 from .kicad.sexpdata import Symbol, dumps, Sep, load, SExpData, sexp_iter
 from .kicad.v6_sch import DrawRectangleV6, PointXY, Stroke, Fill, SchematicFieldV6, FontEffects
 from .kiplot import load_board
-from .misc import ToolDependency, ToolDependencyRole
-from .dep_downloader import check_tool, python_downloader
-from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 try:
@@ -24,9 +29,6 @@ except ImportError:
 logger = log.get_logger()
 TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
                'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
-qrcodegen_dep = ToolDependency('qr_lib', 'QRCodeGen', is_python=True, roles=ToolDependencyRole(),
-                               downloader=python_downloader)
-RegDependency.register(qrcodegen_dep)
 
 
 def is_symbol(name, sexp):
@@ -477,7 +479,7 @@ class QR_LibOptions(BaseOptions):
     def run(self, output):
         global qrcodegen
         if qrcodegen is None:
-            qrcodegen = check_tool(qrcodegen_dep, fatal=True)
+            qrcodegen = self.ensure_tool('QRCodeGen')
         # Now we are sure we have qrcodegen
         QR_ECCS = {'low': qrcodegen.QrCode.Ecc.LOW,
                    'medium': qrcodegen.QrCode.Ecc.MEDIUM,

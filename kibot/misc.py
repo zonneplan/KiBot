@@ -68,33 +68,9 @@ error_level_to_name = ['NONE',
                        'KICOST_ERROR',
                        'MISSING_WKS',
                        ]
-CMD_EESCHEMA_DO = 'eeschema_do'
-URL_EESCHEMA_DO = 'https://github.com/INTI-CMNB/KiAuto'
-CMD_PCBNEW_RUN_DRC = 'pcbnew_do'
-URL_PCBNEW_RUN_DRC = URL_EESCHEMA_DO
-CMD_PCBNEW_PRINT_LAYERS = CMD_PCBNEW_RUN_DRC
-URL_PCBNEW_PRINT_LAYERS = URL_EESCHEMA_DO
-CMD_PCBNEW_3D = CMD_PCBNEW_RUN_DRC
-URL_PCBNEW_3D = URL_EESCHEMA_DO
-CMD_PCBNEW_GENCAD = CMD_PCBNEW_RUN_DRC
-URL_PCBNEW_GENCAD = URL_EESCHEMA_DO
-CMD_PCBNEW_IPC_NETLIST = CMD_PCBNEW_RUN_DRC
-URL_PCBNEW_IPC_NETLIST = URL_EESCHEMA_DO
-CMD_KIBOM = 'KiBOM_CLI.py'
-URL_KIBOM = 'https://github.com/INTI-CMNB/KiBoM'
-CMD_IBOM = 'generate_interactive_bom.py'
-URL_IBOM = 'https://github.com/INTI-CMNB/InteractiveHtmlBom'
-CMD_KICOST = 'kicost'
-URL_KICOST = 'https://github.com/hildogjr/KiCost'
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
-KICAD2STEP = 'kicad2step_do'
-PCBDRAW = 'pcbdraw'
-URL_PCBDRAW = 'https://github.com/INTI-CMNB/pcbdraw'
-# 0.9.0 implements KiCad 6 support
-PCBDRAW_MIN_VERSION = (0, 9, 0)
 EXAMPLE_CFG = 'example_template.kibot.yaml'
 AUTO_SCALE = 0
-PANDOC = 'pandoc'
 KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_6_0_0 = 6000000
 KICAD_VERSION_6_0_2 = 6000002
@@ -306,104 +282,3 @@ def hide_stderr():
 
 def version_str2tuple(ver):
     return tuple(map(int, ver.split('.')))
-
-
-class ToolDependencyRole(object):
-    """ Class used to define the role of a tool """
-    def __init__(self, desc=None, version=None, output=None):
-        # Is this tool mandatory
-        self.mandatory = desc is None
-        # If not mandatory, for what?
-        self.desc = desc
-        # Which version is needed?
-        self.version = version
-        # Which output needs it?
-        self.output = output
-
-
-class ToolDependency(object):
-    """ Class used to define tools needed for an output """
-    def __init__(self, output, name, url=None, url_down=None, is_python=False, deb=None, in_debian=True, extra_deb=None,
-                 roles=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
-                 help_option=None, no_cmd_line_version_old=False, downloader=None):
-        # The associated output
-        self.output = output
-        # Name of the tool
-        self.name = name
-        # Name of the .deb
-        if deb is None:
-            if is_python:
-                self.deb_package = 'python3-'+name.lower()
-            else:
-                self.deb_package = name.lower()
-        else:
-            self.deb_package = deb
-        self.is_python = is_python
-        if is_python:
-            self.module_name = module_name if module_name is not None else name.lower()
-        # If this tool has an official Debian package
-        self.in_debian = in_debian
-        # Name at PyPi, can be fake for things that aren't at PyPi
-        # Is used just to indicate if a dependency will we installed from PyPi
-        self.pypi_name = pypi_name if pypi_name is not None else name
-        # Extra Debian packages needed to complement it
-        self.extra_deb = extra_deb
-        # URLs
-        self.url = url
-        self.url_down = url_down
-        self.downloader = downloader
-        # Can be installed as a KiCad plug-in?
-        self.is_kicad_plugin = plugin_dirs is not None
-        self.plugin_dirs = plugin_dirs
-        # Command we run
-        self.command = command if command is not None else name.lower()
-        self.no_cmd_line_version = no_cmd_line_version
-        self.no_cmd_line_version_old = no_cmd_line_version_old  # An old version doesn't have version
-        self.help_option = help_option if help_option is not None else '--version'
-        # Roles
-        if roles is None:
-            roles = [ToolDependencyRole()]
-        elif not isinstance(roles, list):
-            roles = [roles]
-        for r in roles:
-            r.output = output
-        self.roles = roles
-
-
-def kiauto_dependency(output, version=None, command='pcbnew_do', downloader=None, role=None):
-    if role is None and version is not None:
-        role = ToolDependencyRole(version=version)
-    return ToolDependency(output, 'KiCad Automation tools', URL_EESCHEMA_DO, url_down=URL_EESCHEMA_DO+'/releases',
-                          in_debian=False, pypi_name='kiauto', command=command, roles=role, downloader=downloader)
-
-
-def git_dependency(output, downloader):
-    return ToolDependency(output, 'Git', 'https://git-scm.com/', downloader=downloader,
-                          roles=ToolDependencyRole(desc='Find commit hash and/or date'))
-
-
-def rsvg_dependency(output, downloader, roles=None):
-    return ToolDependency(output, 'RSVG tools', 'https://gitlab.gnome.org/GNOME/librsvg', deb='librsvg2-bin',
-                          command='rsvg-convert', downloader=downloader, roles=roles)
-
-
-def gs_dependency(output, downloader, roles=None):
-    return ToolDependency(output, 'Ghostscript', 'https://www.ghostscript.com/',
-                          url_down='https://github.com/ArtifexSoftware/ghostpdl-downloads/releases',
-                          downloader=downloader, roles=roles)
-
-
-def convert_dependency(output, downloader, roles=None):
-    return ToolDependency(output, 'ImageMagick', 'https://imagemagick.org/', command='convert',
-                          url_down='https://imagemagick.org/script/download.php',
-                          downloader=downloader, roles=roles)
-
-
-def pcbdraw_dependency(output, downloader, roles=None):
-    return ToolDependency(output, 'PcbDraw', URL_PCBDRAW, url_down=URL_PCBDRAW+'/releases', in_debian=False,
-                          downloader=downloader, roles=roles)
-
-
-def kicost_dependency(output, downloader, roles=None):
-    return ToolDependency(output, 'KiCost', URL_KICOST, url_down=URL_KICOST+'/releases', in_debian=False,
-                          downloader=downloader, roles=roles)

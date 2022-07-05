@@ -12,7 +12,7 @@ from kibot.gs import GS
 from kibot.kiplot import load_actions, _import, load_board, generate_makefile
 from kibot.dep_downloader import search_as_plugin
 from kibot.registrable import RegOutput, RegFilter
-from kibot.misc import (WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, CMD_PCBNEW_PRINT_LAYERS, KICAD2STEP_ERR)
+from kibot.misc import (WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, KICAD2STEP_ERR)
 from kibot.bom.columnlist import ColumnList
 from kibot.bom.units import get_prefix
 from kibot.__main__ import detect_kicad
@@ -80,7 +80,7 @@ def run_compress(ctx, test_import_fail=False):
     return pytest_wrapped_e
 
 
-# No longer possible, we trust in check_tool, it won't return an unexistent file name, so we don't catch FileNoFound
+# No longer possible, we trust in check_tool_dep, it won't return an unexistent file name, so we don't catch FileNoFound
 # def test_no_rar(test_dir, caplog, monkeypatch):
 #     global mocked_check_output_FNF
 #     mocked_check_output_FNF = True
@@ -235,7 +235,7 @@ def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
     assert e2.value.code == ERC_ERROR
     assert e3.type == SystemExit
     assert e3.value.code == PDF_PCB_PRINT
-    assert CMD_PCBNEW_PRINT_LAYERS+' returned 5' in caplog.text
+    assert 'pcbnew_do returned 5' in caplog.text
     ctx.clean_up()
     mocked_call_enabled = False
 

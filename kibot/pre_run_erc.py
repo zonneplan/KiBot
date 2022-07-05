@@ -3,6 +3,13 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: KiAuto
+    role: mandatory
+    command: eeschema_do
+    version: 1.5.4
+"""
 import os
 from sys import exit
 from .macros import macros, pre_class  # noqa: F401
@@ -10,14 +17,10 @@ from .gs import GS
 from .optionable import Optionable
 from .kiplot import exec_with_retry, load_sch, add_extra_options
 from .error import KiPlotConfigurationError
-from .misc import CMD_EESCHEMA_DO, ERC_ERROR, kiauto_dependency
-from .dep_downloader import check_tool, pytool_downloader
-from .registrable import RegDependency
+from .misc import ERC_ERROR
 from .log import get_logger
 
 logger = get_logger(__name__)
-dep = kiauto_dependency('run_erc', (1, 5, 4), CMD_EESCHEMA_DO, pytool_downloader)
-RegDependency.register(dep)
 
 
 @pre_class
@@ -41,7 +44,7 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         return [os.path.abspath(os.path.join(self.expand_dirname(GS.out_dir), name))]
 
     def run(self):
-        command = check_tool(dep, fatal=True)
+        command = self.ensure_tool('KiAuto')
         # The schematic is loaded only before executing an output related to it.
         # But here we need data from it.
         output = self.get_targets()[0]

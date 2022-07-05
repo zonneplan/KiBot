@@ -3,28 +3,28 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: RSVG
+    role: Create PNG and JPG images
+  - from: ImageMagick
+    role: Create JPG images
+  - from: PcbDraw
+    role: mandatory
+"""
 import os
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 import subprocess
-from .misc import (PCBDRAW_ERR, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK, PCB_MAT_COLORS, PCBDRAW_MIN_VERSION,
-                   PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, ToolDependencyRole, rsvg_dependency, convert_dependency,
-                   pcbdraw_dependency)
-from .registrable import RegDependency
+from .misc import (PCBDRAW_ERR, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK, PCB_MAT_COLORS,
+                   PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS)
 from .gs import GS
 from .optionable import Optionable
 from .out_base import VariantOptions
-from .dep_downloader import check_tool, rsvg_downloader, convert_downloader, pytool_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-rsvg_dep = rsvg_dependency('pcbdraw', rsvg_downloader, roles=ToolDependencyRole(desc='Create PNG and JPG images'))
-convert_dep = convert_dependency('pcbdraw', convert_downloader, roles=ToolDependencyRole(desc='Create JPG images'))
-pcbdraw_dep = pcbdraw_dependency('pcbdraw', pytool_downloader, roles=ToolDependencyRole(version=PCBDRAW_MIN_VERSION))
-RegDependency.register(rsvg_dep)
-RegDependency.register(convert_dep)
-RegDependency.register(pcbdraw_dep)
 
 
 class PcbDrawStyle(Optionable):
@@ -245,16 +245,15 @@ class PcbDrawOptions(VariantOptions):
             cmd.append(output)
         else:
             # PNG and JPG outputs are unreliable
-            self.rsvg_command = check_tool(rsvg_dep)
+            self.rsvg_command = self.check_tool('RSVG')
             if self.rsvg_command is None:
-                logger.warning(W_UNRETOOL + '`{}` not installed, using unreliable PNG/JPG conversion'.format(rsvg_dep.name))
+                logger.warning(W_UNRETOOL + '`RSVG` not installed, using unreliable PNG/JPG conversion')
                 logger.warning(W_USESVG2 + 'If you experiment problems install it')
                 cmd.append(output)
             else:
-                self.convert_command = check_tool(convert_dep)
+                self.convert_command = self.check_tool('ImageMagick')
                 if self.convert_command is None:
-                    logger.warning(W_UNRETOOL + '`{}` not installed, using unreliable PNG/JPG conversion'.
-                                   format(convert_dep.name))
+                    logger.warning(W_UNRETOOL + '`ImageMagick` not installed, using unreliable PNG/JPG conversion')
                     logger.warning(W_USEIMAGICK + 'If you experiment problems install it')
                     cmd.append(output)
                 else:
@@ -267,7 +266,7 @@ class PcbDrawOptions(VariantOptions):
 
     def run(self, name):
         super().run(name)
-        pcbdraw_command = check_tool(pcbdraw_dep, fatal=True)
+        pcbdraw_command = self.ensure_tool('PcbDraw')
         # Base command with overwrite
         cmd = [pcbdraw_command]
         # Add user options
@@ -346,7 +345,7 @@ class PcbDraw(BaseOutput):  # noqa: F821
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
-        if check_tool(pcbdraw_dep) is None:
+        if GS.check_tool(name, 'PcbDraw') is None:
             return None
         outs = []
         for la in layers:

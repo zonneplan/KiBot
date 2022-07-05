@@ -137,3 +137,11 @@ class BasePreFlight(Registrable):
 
     def _find_variant_name(self):
         return ''
+
+    def ensure_tool(self, name):
+        """ Looks for a mandatory dependency """
+        return GS.check_tool_dep(self._name, name, fatal=True)
+
+    def check_tool(self, name):
+        """ Looks for a dependency """
+        return GS.check_tool_dep(self._name, name, fatal=False)

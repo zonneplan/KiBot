@@ -3,6 +3,16 @@
 # Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - name: RAR
+    url: https://www.rarlab.com/
+    url_down: https://www.rarlab.com/download.htm
+    help_option: -?
+    downloader: rar
+    role: Compress in RAR format
+    debian: rar
+"""
 import re
 import os
 import glob
@@ -14,17 +24,13 @@ from tarfile import open as tar_open
 from collections import OrderedDict
 from .gs import GS
 from .kiplot import config_output, get_output_dir, run_output
-from .misc import (WRONG_INSTALL, W_EMPTYZIP, WRONG_ARGUMENTS, INTERNAL_ERROR, ToolDependency, ToolDependencyRole)
+from .misc import WRONG_INSTALL, W_EMPTYZIP, WRONG_ARGUMENTS, INTERNAL_ERROR
 from .optionable import Optionable, BaseOptions
-from .registrable import RegOutput, RegDependency
+from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
-from .dep_downloader import rar_downloader, check_tool
 from . import log
 
 logger = log.get_logger()
-rar_dep = ToolDependency('compress', 'RAR', 'https://www.rarlab.com/', url_down='https://www.rarlab.com/download.htm',
-                         help_option='-?', downloader=rar_downloader, roles=ToolDependencyRole(desc='Compress in RAR format'))
-RegDependency.register(rar_dep)
 
 
 class FilesList(Optionable):
@@ -101,7 +107,7 @@ class CompressOptions(BaseOptions):
     def create_rar(self, output, files):
         if os.path.isfile(output):
             os.remove(output)
-        command = check_tool(rar_dep, fatal=True)
+        command = self.ensure_tool('RAR')
         if command is None:
             return
         for fname, dest in files.items():

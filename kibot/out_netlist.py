@@ -3,19 +3,22 @@
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: KiAuto
+    role: mandatory
+    command: eeschema_do
+    version: 1.6.11
+"""
 import os
 from .gs import GS
 from .optionable import BaseOptions
-from .misc import CMD_PCBNEW_IPC_NETLIST, CMD_EESCHEMA_DO, FAILED_EXECUTE, kiauto_dependency
+from .misc import FAILED_EXECUTE
 from .kiplot import exec_with_retry, add_extra_options
-from .dep_downloader import check_tool, pytool_downloader
-from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-dep = kiauto_dependency('netlist', (1, 6, 11), CMD_EESCHEMA_DO, pytool_downloader)
-RegDependency.register(dep)
 
 
 class NetlistOptions(BaseOptions):
@@ -41,9 +44,9 @@ class NetlistOptions(BaseOptions):
             self._category = 'PCB/fabrication/verification'
 
     def run(self, name):
-        command = check_tool(dep, fatal=True)
+        command = self.ensure_tool('KiAuto')
         if self.format == 'ipc':
-            command = command.replace(CMD_EESCHEMA_DO, CMD_PCBNEW_IPC_NETLIST)
+            command = command.replace('eeschema_do', 'pcbnew_do')
             subcommand = 'ipc_netlist'
             extra = ['--output_name', name]
             file = GS.pcb_file

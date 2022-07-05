@@ -8,22 +8,14 @@ from shutil import rmtree
 from .pre_base import BasePreFlight
 from .gs import GS
 from .kiplot import exec_with_retry, add_extra_options
-from .misc import CMD_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, kiauto_dependency
+from .misc import PDF_PCB_PRINT
 from .out_base import VariantOptions
-from .dep_downloader import check_tool, pytool_downloader
-from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import add_drill_marks, DRILL_MARKS_MAP
 from .layer import Layer
 from . import log
 
 logger = log.get_logger()
-
-
-def register_deps(pre):
-    dep = kiauto_dependency(pre+'_pcb_print', (1, 6, 7), CMD_PCBNEW_PRINT_LAYERS, pytool_downloader)
-    RegDependency.register(dep)
-    return dep
 
 
 class Any_PCB_PrintOptions(VariantOptions):
@@ -82,7 +74,7 @@ class Any_PCB_PrintOptions(VariantOptions):
 
     def run(self, output, svg=False):
         super().run(self._layers)
-        command = check_tool(self._dependency, fatal=True)
+        command = self.ensure_tool('KiAuto')
         # Output file name
         cmd = [command, 'export', '--output_name', output]
         if BasePreFlight.get_option('check_zone_fills'):

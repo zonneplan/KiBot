@@ -378,3 +378,13 @@ class GS(object):
         # Similar but keeping the sorting of useful
         use = {la._id for la in layers}
         return [la for la in Layer.solve(useful) if la._id in use]
+
+    @staticmethod
+    def ensure_tool(context, name):
+        """ Looks for a mandatory dependency """
+        return GS.check_tool_dep(context, name, fatal=True)
+
+    @staticmethod
+    def check_tool(context, name):
+        """ Looks for a dependency """
+        return GS.check_tool_dep(context, name, fatal=False)

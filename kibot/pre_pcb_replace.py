@@ -3,17 +3,17 @@
 # Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: Git
+    role: Find commit hash and/or date
+"""
 from .gs import GS
 from .pre_any_replace import TagReplaceBase, Base_ReplaceOptions, Base_Replace
-from .registrable import RegDependency
-from .misc import git_dependency
-from .dep_downloader import git_downloader
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-git_dep = git_dependency('pcb_replace', git_downloader)
-RegDependency.register(git_dep)
 
 
 class TagReplacePCB(TagReplaceBase):
@@ -58,6 +58,6 @@ class PCB_Replace(Base_Replace):  # noqa: F821
             t.after = '")'
             t._relax_check = True
             o.replace_tags.append(t)
-        self.replace(GS.pcb_file, git_dep)
+        self.replace(GS.pcb_file)
         # Force the schematic reload
         GS.board = None

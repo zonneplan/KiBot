@@ -3,20 +3,23 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: KiAuto
+    role: mandatory
+    command: eeschema_do
+    version: 1.5.4
+"""
 import os
 from sys import exit
 from .macros import macros, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import exec_with_retry, add_extra_options
-from .misc import CMD_EESCHEMA_DO, BOM_ERROR, kiauto_dependency
-from .dep_downloader import check_tool, pytool_downloader
-from .registrable import RegDependency
+from .misc import BOM_ERROR
 from .log import get_logger
 
 logger = get_logger(__name__)
-dep = kiauto_dependency('update_xml', (1, 5, 4), CMD_EESCHEMA_DO, pytool_downloader)
-RegDependency.register(dep)
 
 
 @pre_class
@@ -36,7 +39,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
         return [GS.sch_no_ext+'.xml']
 
     def run(self):
-        command = check_tool(dep, fatal=True)
+        command = self.ensure_tool('KiAuto')
         out_dir = self.expand_dirname(GS.out_dir)
         cmd = [command, 'bom_xml', GS.sch_file, out_dir]
         # If we are in verbose mode enable debug in the child

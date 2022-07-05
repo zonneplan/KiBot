@@ -3,31 +3,34 @@
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - name: Pandoc
+    role: Create PDF/ODF/DOCX files
+    url: https://pandoc.org/
+    url_down: https://github.com/jgm/pandoc/releases
+    debian: pandoc
+    extra_deb: ['texlive-latex-base', 'texlive-latex-recommended']
+    comments: 'In CI/CD environments: the `kicad_auto_test` docker image contains it.'
+"""
 import os
 import re
 import pcbnew
 from subprocess import check_output, STDOUT, CalledProcessError
-from shutil import which
 
 from .gs import GS
-from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, PANDOC, MISSING_TOOL,
-                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST, W_MISSTOOL, ToolDependency, ToolDependencyRole,
-                   TRY_INSTALL_CHECK)
-from .registrable import RegOutput, RegDependency
+from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES,
+                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST)
+from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
 from .kiplot import config_output
+from .dep_downloader import get_dep_data
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
 INF = float('inf')
-PANDOC_INSTALL = ("In CI/CD environments: the `kicad_auto_test` docker image contains it.\n"
-                  "In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`")
-RegDependency.register(ToolDependency('report', 'Pandoc', 'https://pandoc.org/',
-                                      url_down='https://github.com/jgm/pandoc/releases',
-                                      extra_deb=['texlive-latex-base', 'texlive-latex-recommended'],
-                                      roles=ToolDependencyRole(desc='Create PDF/ODF/DOCX files')))
 
 
 def do_round(v, dig):
@@ -157,6 +160,16 @@ def adjust_drill(val, is_pth=True, pad=None):
     return res
 
 
+def list_nice(names):
+    if len(names) == 1:
+        return '`{}`'.format(names[0])
+    res = ''
+    for n in names[:-1]:
+        res += ', `{}`'.format(n)
+    res += ' and `{}`'.format(names[-1])
+    return res[2:]
+
+
 class ReportOptions(BaseOptions):
     def __init__(self):
         with document:
@@ -185,7 +198,10 @@ class ReportOptions(BaseOptions):
         self._mm_digits = 2
         self._mils_digits = 0
         self._in_digits = 2
-        self._help_do_convert += ".\n"+PANDOC_INSTALL
+        # Extra help for PanDoc
+        dep = get_dep_data('report', 'PanDoc')
+        deb_text = 'In Debian/Ubuntu environments: install '+list_nice([dep.deb_package]+dep.extra_deb)
+        self._help_do_convert += ".\n"+'\n'.join(dep.comments)+'\n'+deb_text
 
     def config(self, parent):
         super().config(parent)
@@ -710,23 +726,19 @@ class ReportOptions(BaseOptions):
     def convert(self, fname):
         if not self.do_convert:
             return
+        command = self.ensure_tool('PanDoc')
         out = self.expand_converted_output(GS.out_dir)
         logger.debug('Converting the report to: {}'.format(out))
         resources = '--resource-path='+GS.out_dir
         # Pandoc 2.2.1 doesn't support "--to pdf"
         if not out.endswith('.'+self.convert_to):
             logger.warning(W_WRONGEXT+'The conversion tool detects the output format using the extension')
-        cmd = [PANDOC, '--from', self.convert_from, resources, fname, '-o', out]
+        cmd = [command, '--from', self.convert_from, resources, fname, '-o', out]
         logger.debug('Executing {}'.format(cmd))
         try:
             check_output(cmd, stderr=STDOUT)
-        except FileNotFoundError:
-            logger.error("Unable to convert the report, `{}` must be installed.".format(PANDOC))
-            logger.error(PANDOC_INSTALL)
-            logger.error(TRY_INSTALL_CHECK)
-            exit(MISSING_TOOL)
         except CalledProcessError as e:
-            logger.error('{} error: {}'.format(PANDOC, e.returncode))
+            logger.error('{} error: {}'.format(command, e.returncode))
             if e.output:
                 logger.debug('Output from command: '+e.output.decode())
             exit(FAILED_EXECUTE)
@@ -804,12 +816,7 @@ class Report(BaseOutput):  # noqa: F821
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
-        if which(PANDOC) is None:
-            logger.warning((W_MISSTOOL+'Missing {} tool, disabling report in PDF format\n'+PANDOC_INSTALL).format(PANDOC))
-            logger.warning(W_MISSTOOL+TRY_INSTALL_CHECK)
-            pandoc = False
-        else:
-            pandoc = True
+        pandoc = GS.check_tool(name, 'PanDoc')
         gb = {}
         outs = [gb]
         gb['name'] = 'report_simple'

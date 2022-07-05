@@ -8,21 +8,12 @@ from tempfile import mkdtemp
 from shutil import rmtree, copy2
 from .gs import GS
 from .kiplot import add_extra_options, exec_with_retry
-from .misc import CMD_EESCHEMA_DO, kiauto_dependency
 from .out_base import VariantOptions
 from .kicad.config import KiConf
-from .dep_downloader import check_tool, pytool_downloader
-from .registrable import RegDependency
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-
-
-def register_deps(pre):
-    dep = kiauto_dependency(pre+'_sch_print', (1, 5, 4), CMD_EESCHEMA_DO, pytool_downloader)
-    RegDependency.register(dep)
-    return dep
 
 
 def copy_project(sch_dir):
@@ -58,10 +49,11 @@ class Any_SCH_PrintOptions(VariantOptions):
     def run(self, name):
         super().run(name)
         output_dir = os.path.dirname(name)
-        command = check_tool(self._dependency, fatal=True)
+        our_name = self._expand_ext+'_sch_print'
+        command = self.ensure_tool('KiAuto')
         if self._comps:
             # Save it to a temporal dir
-            sch_dir = mkdtemp(prefix='tmp-kibot-'+self._expand_ext+'_sch_print-')
+            sch_dir = mkdtemp(prefix='tmp-kibot-'+our_name+'-')
             copy_project(sch_dir)
             fname = GS.sch.save_variant(sch_dir)
             sch_file = os.path.join(sch_dir, fname)
@@ -77,7 +69,7 @@ class Any_SCH_PrintOptions(VariantOptions):
         cmd, video_remove = add_extra_options(cmd)
         ret = exec_with_retry(cmd)
         if ret:
-            logger.error(CMD_EESCHEMA_DO+' returned %d', ret)
+            logger.error(command+' returned %d', ret)
             exit(self._exit_error)
         if self.output:
             cur = self._parent.expand_filename(output_dir, '%f.%x')

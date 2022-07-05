@@ -5,6 +5,19 @@
 # Project: KiBot (formerly KiPlot)
 # The Assembly image is a composition from Pixlok and oNline Web Fonts
 # The rest are KiCad icons
+"""
+Dependencies:
+  - from: RSVG
+    role: Create outputs preview
+    id: rsvg1
+  - from: RSVG
+    role: Create PNG icons
+    id: rsvg2
+  - from: Ghostscript
+    role: Create outputs preview
+  - from: ImageMagick
+    role: Create outputs preview
+"""
 import os
 import subprocess
 import pprint
@@ -15,20 +28,11 @@ from tempfile import NamedTemporaryFile
 from .gs import GS
 from .optionable import BaseOptions
 from .kiplot import config_output, get_output_dir
-from .misc import (W_NOTYET, W_MISSTOOL, ToolDependencyRole, rsvg_dependency, gs_dependency, convert_dependency)
-from .registrable import RegOutput, RegDependency
-from .dep_downloader import check_tool, rsvg_downloader, gs_downloader, convert_downloader
+from .misc import W_NOTYET, W_MISSTOOL
+from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log, __version__
 
-rsvg_dep = rsvg_dependency('navigate_results', rsvg_downloader, roles=[ToolDependencyRole(desc='Create outputs preview'),
-                                                                       ToolDependencyRole(desc='Create PNG icons')])
-gs_dep = gs_dependency('navigate_results', gs_downloader, roles=ToolDependencyRole(desc='Create outputs preview'))
-convert_dep = convert_dependency('navigate_results', convert_downloader,
-                                 roles=ToolDependencyRole(desc='Create outputs preview'))
-RegDependency.register(rsvg_dep)
-RegDependency.register(gs_dep)
-RegDependency.register(convert_dep)
 logger = log.get_logger()
 CAT_IMAGE = {'PCB': 'pcbnew',
              'Schematic': 'eeschema',
@@ -204,7 +208,7 @@ class Navigate_ResultsOptions(BaseOptions):
             logger.warning(W_MISSTOOL+"Missing PS/PDF to PNG converter")
             return False
         if ext in IMAGEABLES_SIMPLE and self.convert_command is None:
-            logger.warning(W_MISSTOOL+"Missing {} converter".format(convert_dep.name))
+            logger.warning(W_MISSTOOL+"Missing ImageMagick converter")
             return False
         return ext in IMAGEABLES_SVG or ext in IMAGEABLES_GS or ext in IMAGEABLES_SIMPLE
 
@@ -442,9 +446,9 @@ class Navigate_ResultsOptions(BaseOptions):
         logger.debug('Collected outputs:\n'+pprint.pformat(o_tree))
         with open(os.path.join(self.out_dir, 'styles.css'), 'wt') as f:
             f.write(STYLE)
-        self.rsvg_command = check_tool(rsvg_dep)
-        self.convert_command = check_tool(convert_dep)
-        self.ps2img_avail = check_tool(gs_dep)
+        self.rsvg_command = self.check_tool('rsvg1')
+        self.convert_command = self.check_tool('ImageMagick')
+        self.ps2img_avail = self.check_tool('Ghostscript')
         # Create the pages
         self.home = name
         self.back_img = self.copy('back', MID_ICON)

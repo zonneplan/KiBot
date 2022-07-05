@@ -3,9 +3,15 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: KiAuto
+    role: mandatory
+    version: 1.6.7
+"""
 import os
 from .gs import GS
-from .out_any_pcb_print import Any_PCB_PrintOptions, register_deps
+from .out_any_pcb_print import Any_PCB_PrintOptions
 from .error import KiPlotConfigurationError
 from .kicad.patch_svg import patch_svg_file
 from .kicad.pcb import PCB
@@ -14,7 +20,6 @@ from .layer import Layer
 from . import log
 
 logger = log.get_logger()
-dep = register_deps('svg')
 
 
 class SVG_PCB_PrintOptions(Any_PCB_PrintOptions):
@@ -28,7 +33,6 @@ class SVG_PCB_PrintOptions(Any_PCB_PrintOptions):
             """ Enable workaround for KiCad 5 bug """
         super().__init__()
         self._expand_ext = 'svg'
-        self._dependency = dep
 
     def run(self, output):
         super().run(output, svg=True)

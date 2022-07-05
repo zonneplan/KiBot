@@ -3,6 +3,61 @@
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  # Global dependencies
+  - name: Colorama
+    python_module: true
+    role: Get color messages in a portable way
+    debian: python3-colorama
+  - name: Requests
+    python_module: true
+    role: mandatory
+    debian: python3-requests
+  - name: PyYAML
+    python_module: true
+    debian: python3-yaml
+    module_name: yaml
+    role: mandatory
+  # Base dependencies used by various outputs
+  - name: KiCad Automation tools
+    github: INTI-CMNB/KiAuto
+    command: pcbnew_do
+    pypi: kiauto
+    downloader: pytool
+    id: KiAuto
+  - name: Git
+    url: https://git-scm.com/
+    downloader: git
+    debian: git
+  - name: RSVG tools
+    url: https://gitlab.gnome.org/GNOME/librsvg
+    debian: librsvg2-bin
+    command: rsvg-convert
+    downloader: rsvg
+    id: RSVG
+  - name: Ghostscript
+    url: https://www.ghostscript.com/
+    url_down: https://github.com/ArtifexSoftware/ghostpdl-downloads/releases
+    debian: ghostscript
+    downloader: gs
+  - name: ImageMagick
+    url: https://imagemagick.org/
+    url_down: https://imagemagick.org/script/download.php
+    command: convert
+    downloader: convert
+    debian: imagemagick
+  - name: PcbDraw
+    # 0.9.0 implements KiCad 6 support
+    version: 0.9.0
+    github: INTI-CMNB/pcbdraw
+    pypi: PcbDraw
+    downloader: pytool
+  - name: KiCost
+    github: hildogjr/KiCost
+    pypi: KiCost
+    downloader: pytool
+"""
 import importlib
 import os
 import re
@@ -15,11 +70,13 @@ import stat
 import json
 import fnmatch
 import site
-from sys import exit, stdout
+from sys import exit, stdout, modules
 from shutil import which, rmtree, move
 from math import ceil
+from copy import deepcopy
 from .misc import MISSING_TOOL, TRY_INSTALL_CHECK, W_DOWNTOOL, W_MISSTOOL, USER_AGENT, version_str2tuple
 from .gs import GS
+from .registrable import RegDependency
 from . import log
 
 logger = log.get_logger()
@@ -32,6 +89,10 @@ last_stderr = None
 version_check_fail = False
 binary_tools_cache = {}
 disable_auto_download = False
+# Dependency templates, no roles
+base_deps = {}
+# Actual dependencies
+used_deps = {}
 
 
 def search_as_plugin(cmd, names):
@@ -631,7 +692,7 @@ def check_tool_python_version(mod, dep):
     return None if version_check_fail else mod
 
 
-def check_tool_python(dep, reload):
+def check_tool_python(dep, reload=False):
     # Try to load the module
     try:
         mod = importlib.import_module(dep.module_name)
@@ -686,10 +747,15 @@ def show_roles(roles, fatal):
                 do_log_err('- {}{}'.format(o.desc, get_version(o)), fatal)
 
 
-def check_tool(dep, fatal=False, reload=None):
+def get_dep_data(context, dep):
+    return used_deps[context+':'+dep.lower()]
+
+
+def check_tool_dep(context, dep, fatal=False):
+    dep = get_dep_data(context, dep)
     logger.debug('Starting tool check for {}'.format(dep.name))
     if dep.is_python:
-        cmd = check_tool_python(dep, reload)
+        cmd = check_tool_python(dep)
         type = 'python module'
     else:
         cmd = check_tool_binary(dep)
@@ -706,8 +772,162 @@ def check_tool(dep, fatal=False, reload=None):
             do_log_err('Download page: '+dep.url_down, fatal)
         if dep.deb_package:
             do_log_err('Debian package: '+dep.deb_package, fatal)
+            if dep.deb_extra:
+                do_log_err('- Recommended extra Debian packages: '+' '.join(dep.deb_package), fatal)
+        for comment in dep.comments:
+            do_log_err(comment, fatal)
         show_roles(dep.roles, fatal)
         do_log_err(TRY_INSTALL_CHECK, fatal)
         if fatal:
             exit(MISSING_TOOL)
     return cmd
+
+
+# Avoid circular deps. Optionable can use it.
+GS.check_tool_dep = check_tool_dep
+
+
+class ToolDependencyRole(object):
+    """ Class used to define the role of a tool """
+    def __init__(self, desc=None, version=None, output=None):
+        # Is this tool mandatory
+        self.mandatory = desc is None
+        # If not mandatory, for what?
+        self.desc = desc
+        # Which version is needed?
+        self.version = version
+        # Which output needs it?
+        self.output = output
+
+
+class ToolDependency(object):
+    """ Class used to define tools needed for an output """
+    def __init__(self, output, name, url=None, url_down=None, is_python=False, deb=None, in_debian=True, extra_deb=None,
+                 roles=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
+                 help_option=None, no_cmd_line_version_old=False, downloader=None):
+        # The associated output
+        self.output = output
+        # Name of the tool
+        self.name = name
+        # Name of the .deb
+        if deb is None:
+            if is_python:
+                self.deb_package = 'python3-'+name.lower()
+            else:
+                self.deb_package = name.lower()
+        else:
+            self.deb_package = deb
+        self.is_python = is_python
+        if is_python:
+            self.module_name = module_name if module_name is not None else name.lower()
+        # If this tool has an official Debian package
+        self.in_debian = in_debian
+        # Name at PyPi, can be fake for things that aren't at PyPi
+        # Is used just to indicate if a dependency will we installed from PyPi
+        self.pypi_name = pypi_name if pypi_name is not None else name
+        # Extra Debian packages needed to complement it
+        self.extra_deb = extra_deb
+        # URLs
+        self.url = url
+        self.url_down = url_down
+        self.downloader = downloader
+        # Can be installed as a KiCad plug-in?
+        self.is_kicad_plugin = plugin_dirs is not None
+        self.plugin_dirs = plugin_dirs
+        # Command we run
+        self.command = command if command is not None else name.lower()
+        self.no_cmd_line_version = no_cmd_line_version
+        self.no_cmd_line_version_old = no_cmd_line_version_old  # An old version doesn't have version
+        self.help_option = help_option if help_option is not None else '--version'
+        # Roles
+        if roles is None:
+            roles = [ToolDependencyRole()]
+        elif not isinstance(roles, list):
+            roles = [roles]
+        for r in roles:
+            r.output = output
+        self.roles = roles
+
+
+def register_dep(context, dep):
+    # Solve inheritance
+    parent = dep.get('from', None)
+    if parent:
+        parent_data = base_deps.get(parent.lower(), None)
+        if parent_data is None:
+            logger.error('{} dependency unkwnown parent {}'.format(context, parent))
+            return
+        new_dep = deepcopy(parent_data)
+        new_dep.update(dep)
+        logger.debugl(3, '- Dep after applying from {}: {}'.format(parent, new_dep))
+        dep = new_dep
+    # Solve the role
+    desc = dep['role']
+    if desc.lower() == 'mandatory':
+        desc = None
+    version = dep.get('version', None)
+    if version is not None:
+        version = version_str2tuple(str(version))
+    role = ToolDependencyRole(desc=desc, version=version)
+    # Solve the URLs
+    github = dep.get('github', None)
+    url_def = url_down_def = None
+    if github is not None:
+        url_def = 'https://github.com/'+github
+        url_down_def = url_def+'/releases'
+    url = dep.get('url', url_def)
+    url_down = dep.get('url_down', url_down_def)
+    # Debian stuff
+    deb = dep.get('debian', None)
+    in_debian = deb is not None
+    extra_deb = dep.get('extra_deb', None)
+    is_python = dep.get('python_module', False)
+    module_name = dep.get('module_name', None)
+    plugin_dirs = dep.get('plugin_dirs', None)
+    command = dep.get('command', None)
+    help_option = dep.get('help_option', None)
+    pypi_name = dep.get('pypi', None)
+    no_cmd_line_version_old = dep.get('no_cmd_line_version_old', False)
+    downloader = dep.get('downloader', None)
+    if downloader:
+        downloader = getattr(modules[__name__], downloader+'_downloader')
+    name = dep['name']
+    # logger.error('{}:{} {} {}'.format(context, name, downloader, pypi_name))
+    # TODO: Make it *ARGS
+    td = ToolDependency(context, name, roles=role, url=url, url_down=url_down, deb=deb, in_debian=in_debian,
+                        extra_deb=extra_deb, is_python=is_python, module_name=module_name, plugin_dirs=plugin_dirs,
+                        command=command, help_option=help_option, pypi_name=pypi_name,
+                        no_cmd_line_version_old=no_cmd_line_version_old, downloader=downloader)
+    # Extra comments
+    comments = dep.get('comments', [])
+    if isinstance(comments, str):
+        comments = [comments]
+    td.comments = comments
+    RegDependency.register(td)
+    global used_deps
+    id = dep.get('id', name)
+    used_deps[context+':'+id.lower()] = td
+
+
+def register_deps(context, data):
+    logger.debug('Processing dependencies for `{}`'.format(context))
+    logger.debugl(3, '- Data: '+str(data))
+    # Extract the dependencies
+    deps = data.get('Dependencies', None)
+    if deps is None or not isinstance(deps, list):
+        return
+    # Remove the pre_/out_ prefix
+    if context[3] == '_':
+        context = context[4:]
+    for dep in deps:
+        role = dep.get('role', None)
+        if role is not None:
+            logger.debugl(2, '- Registering dep '+str(dep))
+            register_dep(context, dep)
+        else:
+            logger.debugl(2, '- Registering base dep '+str(dep))
+            name = dep.get('name', None)
+            id = dep.get('id', name)
+            assert id is not None
+            global base_deps
+            base_deps[id.lower()] = dep

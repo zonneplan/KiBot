@@ -6,7 +6,6 @@
 from collections import OrderedDict
 from .optionable import Optionable
 from .error import KiPlotConfigurationError
-from .misc import ToolDependency, ToolDependencyRole
 
 
 class Registrable(object):
@@ -153,10 +152,3 @@ class RegDependency(Registrable):
             old_reg.roles.extend(aclass.roles)
         else:
             cl._registered[name] = aclass
-
-
-# Here we register some global dependencies
-RegDependency.register(ToolDependency('global', 'Colorama', is_python=True,
-                       roles=ToolDependencyRole(desc='get color messages in a portable way')))
-RegDependency.register(ToolDependency('global', 'Requests', is_python=True))
-RegDependency.register(ToolDependency('global', 'PyYAML', is_python=True, deb='python3-yaml', module_name='yaml'))

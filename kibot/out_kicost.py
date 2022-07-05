@@ -3,27 +3,29 @@
 # Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: KiCost
+    role: mandatory
+    version: 1.1.7
+"""
 import os
 from os.path import isfile, abspath, join, dirname
 from subprocess import check_output, STDOUT, CalledProcessError
 from tempfile import mkdtemp
 from shutil import rmtree
 from .misc import (BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE,
-                   W_KICOSTFLD, W_MIXVARIANT, ToolDependencyRole, kicost_dependency)
-from .registrable import RegDependency
+                   W_KICOSTFLD, W_MIXVARIANT)
 from .error import KiPlotConfigurationError
 from .optionable import Optionable
 from .gs import GS
 from .out_base import VariantOptions
-from .dep_downloader import check_tool, pytool_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from .fil_base import FieldRename
 from . import log
 
 logger = log.get_logger()
 WARNING_MIX = ("Don't use the `kicost_variant` when using internal variants/filters")
-kicost_dep = kicost_dependency('kicost', pytool_downloader, roles=ToolDependencyRole(version=(1, 1, 7)))
-RegDependency.register(kicost_dep)
 
 
 class Aggregate(Optionable):
@@ -170,7 +172,7 @@ class KiCostOptions(VariantOptions):
         # Check KiCost is available
         cmd_kicost = abspath(join(dirname(__file__), KICOST_SUBMODULE))
         if not isfile(cmd_kicost):
-            cmd_kicost = check_tool(kicost_dep, fatal=True)
+            cmd_kicost = self.ensure_tool('KiCost')
         # Construct the command
         cmd = [cmd_kicost, '-w', '-o', name, '-i', netlist]
         # Add the rest of input files and their variants

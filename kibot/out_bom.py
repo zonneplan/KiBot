@@ -4,16 +4,25 @@
 # License: MIT
 # Project: KiBot (formerly KiPlot)
 """
-Internal BoM (Bill of Materials) output for KiBot.
-This is somehow compatible with KiBoM.
+# Internal BoM (Bill of Materials) output for KiBot.
+# This is somehow compatible with KiBoM.
+Dependencies:
+  - from: KiCost
+    role: Find components costs and specs
+    version: 1.1.8
+  - name: XLSXWriter
+    role: Create XLSX files
+    python_module: true
+    debian: python3-xlsxwriter
+    downloader: python
 """
 import os
 import re
 from copy import deepcopy
 from .gs import GS
-from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, ToolDependency, ToolDependencyRole, kicost_dependency
+from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS
 from .optionable import Optionable, BaseOptions
-from .registrable import RegOutput, RegDependency
+from .registrable import RegOutput
 from .error import KiPlotConfigurationError
 from .kiplot import get_board_comps_data, load_any_sch
 from .bom.columnlist import ColumnList, BoMError
@@ -21,7 +30,6 @@ from .bom.bom import do_bom
 from .var_kibom import KiBoM
 from .fil_base import (BaseFilter, apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, reset_filters,
                        KICOST_NAME_TRANSLATIONS)
-from .dep_downloader import check_tool, pytool_downloader, python_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 # To debug the `with document` we can use:
@@ -37,12 +45,6 @@ DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
                    ['zener', 'zenersmall'],
                    ['d', 'diode', 'd_small'],
                    ]
-kicost_dep = kicost_dependency('bom', pytool_downloader,
-                               roles=ToolDependencyRole(desc='Find components costs and specs', version=(1, 1, 8)))
-RegDependency.register(kicost_dep)
-xlsx_dep = ToolDependency('bom', 'XLSXWriter', is_python=True, roles=ToolDependencyRole(desc='Create XLSX files'),
-                          downloader=python_downloader)
-RegDependency.register(xlsx_dep)
 
 
 class BoMJoinField(Optionable):
@@ -693,8 +695,8 @@ class BoMOptions(BaseOptions):
         format = self.format.lower()
         if format == 'xlsx':
             if self.xlsx.kicost:
-                check_tool(kicost_dep, fatal=True)
-            check_tool(xlsx_dep, fatal=True)
+                self.ensure_tool('KiCost')
+            self.ensure_tool('XLSXWriter')
         # Add some info needed for the output to the config object.
         # So all the configuration is contained in one object.
         self.source = GS.sch_basename
@@ -862,7 +864,7 @@ class BoM(BaseOutput):  # noqa: F821
         # Create a generic version
         SIMP_FMT = ['HTML', 'CSV', 'TXT', 'TSV', 'XML']
         XYRS_FMT = ['HTML']
-        if check_tool(xlsx_dep) is not None:
+        if GS.check_tool(name, 'XLSXWriter') is not None:
             SIMP_FMT.append('XLSX')
             XYRS_FMT.append('XLSX')
         for fmt in SIMP_FMT:
@@ -875,7 +877,7 @@ class BoM(BaseOutput):  # noqa: F821
                 gb['options'][fmt.lower()] = {'style': 'modern-red'}
                 outs.append(gb)
         # Create a costs version
-        if check_tool(kicost_dep) is not None:  # and dists?
+        if GS.check_tool(name, 'KiCost') is not None:  # and dists?
             logger.debug(' - KiCost distributors {}'.format(dists))
             grp = group_fields
             if group_fields:

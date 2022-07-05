@@ -3,25 +3,29 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - name: KiBoM
+    role: mandatory
+    github: INTI-CMNB/KiBoM
+    command: KiBOM_CLI.py
+    version: 1.8.0
+    downloader: pytool
+"""
 import os
 from re import search
 from tempfile import NamedTemporaryFile
 from subprocess import (check_output, STDOUT, CalledProcessError)
-from .misc import (CMD_KIBOM, URL_KIBOM, BOM_ERROR, ToolDependency, ToolDependencyRole, W_EXTNAME)
-from .gs import (GS)
+from .misc import BOM_ERROR, W_EXTNAME
+from .gs import GS
 from .optionable import Optionable, BaseOptions
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
-from .registrable import RegDependency
-from .dep_downloader import check_tool, pytool_downloader
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
 CONFIG_FILENAME = 'config.kibom.ini'
-kibom_dep = ToolDependency('kibom', 'KiBoM', URL_KIBOM, url_down=URL_KIBOM+'/releases', command=CMD_KIBOM, in_debian=False,
-                           downloader=pytool_downloader, roles=ToolDependencyRole(version=(1, 8, 0)))
-RegDependency.register(kibom_dep)
 
 
 class KiBoMRegex(Optionable):
@@ -184,7 +188,7 @@ class KiBoMConfig(Optionable):
         """ Create a list of valid columns """
         if not GS.sch:
             return ColumnList.COLUMNS_DEFAULT
-        check_tool(kibom_dep, fatal=True)
+        command = GS.ensure_tool('kibom', 'KiBoM')
         config = None
         csv = None
         columns = None
@@ -193,7 +197,7 @@ class KiBoMConfig(Optionable):
             config = os.path.abspath(KiBoMConfig._create_minimal_ini())
             with NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
                 csv = f.name
-            cmd = [CMD_KIBOM, '--cfg', config, '-d', os.path.dirname(csv), '-s', ',', xml, csv]
+            cmd = [command, '--cfg', config, '-d', os.path.dirname(csv), '-s', ',', xml, csv]
             logger.debug('Running: '+str(cmd))
             cmd_output = check_output(cmd, stderr=STDOUT)
             with open(csv, 'rt') as f:
@@ -371,7 +375,7 @@ class KiBoMOptions(BaseOptions):
         return []
 
     def run(self, name):
-        kibom_command = check_tool(kibom_dep, fatal=True)
+        kibom_command = self.ensure_tool('KiBoM')
         format = self.format.lower()
         prj = GS.sch_no_ext
         config = os.path.join(GS.sch_dir, self.conf)

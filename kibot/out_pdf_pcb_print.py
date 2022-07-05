@@ -3,15 +3,20 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: KiAuto
+    role: mandatory
+    version: 1.6.7
+"""
 from .gs import GS
-from .out_any_pcb_print import Any_PCB_PrintOptions, register_deps
+from .out_any_pcb_print import Any_PCB_PrintOptions
 from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
 from . import log
 
 logger = log.get_logger()
-dep = register_deps('pdf')
 
 
 class PDF_PCB_PrintOptions(Any_PCB_PrintOptions):
@@ -21,7 +26,6 @@ class PDF_PCB_PrintOptions(Any_PCB_PrintOptions):
             """ Filename for the output PDF (%i=layers, %x=pdf)"""
         super().__init__()
         self._expand_ext = 'pdf'
-        self._dependency = dep
 
 
 @output_class

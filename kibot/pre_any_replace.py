@@ -12,7 +12,6 @@ from .misc import FAILED_EXECUTE, W_EMPTREP, W_BADCHARS
 from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .gs import GS
-from .dep_downloader import check_tool
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 
@@ -88,7 +87,7 @@ class Base_Replace(BasePreFlight):  # noqa: F821
                 "\n        before: 'Git hash: <'"
                 "\n        after: '>'".format(cls._context, cls._context))
 
-    def replace(self, file, git_dep):
+    def replace(self, file):
         logger.debug('Applying replacements to `{}`'.format(file))
         with open(file, 'rt') as f:
             content = f.read()
@@ -99,7 +98,7 @@ class Base_Replace(BasePreFlight):  # noqa: F821
             if not text:
                 command = r.command
                 if re_git.search(command):
-                    git_command = check_tool(git_dep, fatal=True)
+                    git_command = self.ensure_tool('git')
                     command = re_git.sub(r'\1'+git_command+' ', command)
                 cmd = ['/bin/bash', '-c', command]
                 logger.debugl(2, 'Running: {}'.format(cmd))

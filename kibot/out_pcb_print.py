@@ -4,6 +4,33 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Base idea: https://gitlab.com/dennevi/Board2Pdf/ (Released as Public Domain)
+"""
+Dependencies:
+  - from: RSVG
+    role: Create PDF, PNG and PS formats
+    id: rsvg1
+  - from: RSVG
+    role: Create EPS format
+    version: '2.40'
+    id: rsvg2
+  - from: Ghostscript
+    role: Create PS files
+  - from: ImageMagick
+    role: Create monochrome prints
+  - from: PcbDraw
+    role: Create realistic solder masks
+  # The plot_frame_gui() needs KiAuto to print the frame
+  - from: KiAuto
+    command: pcbnew_do
+    role: Print the page frame in GUI mode
+    version: 1.6.7
+  # SVGUtils dependency. But this is also a PcbDraw dependency
+  - name: LXML
+    python_module: true
+    debian: python3-lxml
+    role: mandatory
+    downloader: python
+"""
 import re
 import os
 import subprocess
@@ -20,14 +47,9 @@ from .kicad.patch_svg import patch_svg_file
 from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
-from .misc import (CMD_PCBNEW_PRINT_LAYERS, PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL, ToolDependency,
-                   ToolDependencyRole, rsvg_dependency, gs_dependency, convert_dependency, pcbdraw_dependency,
-                   PCBDRAW_MIN_VERSION, kiauto_dependency)
+from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL
 from .kiplot import exec_with_retry, add_extra_options
-from .registrable import RegDependency
 from .create_pdf import create_pdf_from_pages
-from .dep_downloader import (check_tool, rsvg_downloader, gs_downloader, convert_downloader, pytool_downloader,
-                             python_downloader)
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
 from .layer import Layer, get_priority
@@ -42,29 +64,10 @@ POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stro
                    "stroke-linejoin:round;fill-rule:evenodd;")
 DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
 EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
-#
-# Create and register the tools needed by this output
-#
-rsvg_dep = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRole(desc='Create PDF, PNG and PS formats'))
-rsvg_dep2 = rsvg_dependency('pcb_print', rsvg_downloader, roles=ToolDependencyRole(desc='Create EPS format', version=(2, 40)))
-gs_dep = gs_dependency('pcb_print', gs_downloader, roles=ToolDependencyRole(desc='Create PS files'))
-convert_dep = convert_dependency('pcb_print', convert_downloader, roles=ToolDependencyRole(desc='Create monochrome prints'))
-pcbdraw_dep = pcbdraw_dependency('pcb_print', pytool_downloader, roles=ToolDependencyRole(desc='Create realistic solder masks',
-                                 version=PCBDRAW_MIN_VERSION))
-# The plot_frame_gui() needs KiAuto to print the frame
-kiauto_dep = kiauto_dependency('pcb_print', None, CMD_PCBNEW_PRINT_LAYERS, pytool_downloader,
-                               role=ToolDependencyRole(desc='Print the page frame in GUI mode', version=(1, 6, 7)))
-# SVGUtils dependency. But this is also a PcbDraw dependency
+# The following modules will be downloaded after we solve the dependencies
+# They are just helpers and we solve their dependencies
 svgutils = None  # Will be loaded during dependency check
 kicad_worksheet = None  # Also needs svgutils
-lxml_dep = ToolDependency('pcb_print', 'LXML', is_python=True, downloader=python_downloader)
-RegDependency.register(rsvg_dep)
-RegDependency.register(rsvg_dep2)
-RegDependency.register(gs_dep)
-RegDependency.register(convert_dep)
-RegDependency.register(pcbdraw_dep)
-RegDependency.register(lxml_dep)
-RegDependency.register(kiauto_dep)
 
 
 def _run_command(cmd):
@@ -431,7 +434,7 @@ class PCB_PrintOptions(VariantOptions):
             So we print a frame using pcbnew_do export.
             We use SVG output to then generate a vectorized PDF. """
         output = os.path.join(dir_name, GS.pcb_basename+"-frame.svg")
-        command = check_tool(kiauto_dep, fatal=True)
+        command = self.ensure_tool('KiAuto')
         # Move all the drawings away
         # KiCad 5 always prints Edge.Cuts, so we make it empty
         self.clear_layer(layer)
@@ -606,7 +609,7 @@ class PCB_PrintOptions(VariantOptions):
            not self.last_worksheet.has_images):
             return
         if monochrome:
-            convert_command = check_tool(convert_dep, fatal=True)
+            convert_command = self.ensure_tool('ImageMagick')
             for img in self.last_worksheet.images:
                 with NamedTemporaryFile(mode='wb', suffix='.png', delete=False) as f:
                     f.write(img.data)
@@ -738,7 +741,7 @@ class PCB_PrintOptions(VariantOptions):
             return
         logger.debug('- Plotting realistic solder mask using PcbDraw')
         # Check PcbDraw is available
-        pcbdraw_command = check_tool(pcbdraw_dep, fatal=True)
+        pcbdraw_command = self.ensure_tool('PcbDraw')
         # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
         pcbdraw_file = os.path.join(temp_dir, out_file.replace('.svg', '-pcbdraw.svg'))
         cmd = [pcbdraw_command, '--no-warn-back', '-f', '']
@@ -859,11 +862,11 @@ class PCB_PrintOptions(VariantOptions):
 
     def check_tools(self):
         if self.format != 'SVG':
-            self.rsvg_command = check_tool(rsvg_dep, fatal=True)
+            self.rsvg_command = self.ensure_tool('rsvg1')
         if self.format == 'PS':
-            self.gs_command = check_tool(gs_dep, fatal=True)
+            self.gs_command = self.ensure_tool('Ghostscript')
         if self.format == 'EPS':
-            self.rsvg_command_eps = check_tool(rsvg_dep2, fatal=True)
+            self.rsvg_command_eps = self.ensure_tool('rsvg2')
 
     def generate_output(self, output):
         self.check_tools()
@@ -982,7 +985,7 @@ class PCB_PrintOptions(VariantOptions):
 
     def run(self, output):
         super().run(output)
-        check_tool(lxml_dep, fatal=True)
+        self.ensure_tool('LXML')
         global svgutils
         svgutils = importlib.import_module('.svgutils.transform', package=__package__)
         global kicad_worksheet
@@ -1014,17 +1017,20 @@ class PCB_Print(BaseOutput):  # noqa: F821
         extra = {la._id for la in Layer.solve(EXTRA_LAYERS)}
         disabled = set()
         # Check we can use PcbDraw
-        realistic_solder_mask = check_tool(pcbdraw_dep) is not None
+        realistic_solder_mask = GS.check_tool(name, 'PcbDraw') is not None
         if not realistic_solder_mask:
             logger.warning(W_MISSTOOL+'Missing PcbDraw tool, disabling `realistic_solder_mask`')
         # Check we can convert SVGs
-        if check_tool(rsvg_dep) is None:
+        if GS.check_tool(name, 'rsvg1') is None:
             logger.warning(W_MISSTOOL+'Disabling most printed formats')
             disabled |= {'PDF', 'PNG', 'EPS', 'PS'}
+        elif GS.check_tool(name, 'rsvg2') is None:
+            logger.warning(W_MISSTOOL+'Disabling EPS PCB print')
+            disabled.add('EPS')
         # Check we can convert to PS
-        if check_tool(gs_dep) is None:
-            logger.warning(W_MISSTOOL+'Disabling postscript printed format')
-            disabled.add('PS')
+        if GS.check_tool(name, 'Ghostscript') is None:
+            logger.warning(W_MISSTOOL+'Disabling postscript/PDF printed format')
+            disabled |= {'PDF', 'EPS', 'PS'}
         # Generate one output for each format
         for fmt in ['PDF', 'SVG', 'PNG', 'EPS', 'PS']:
             if fmt in disabled:

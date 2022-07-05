@@ -381,6 +381,14 @@ class BaseOptions(Optionable):
         """ Set attributes from a PCB_PLOT_PARAMS (plot options) """
         return
 
+    def ensure_tool(self, name):
+        """ Looks for a mandatory dependency """
+        return GS.check_tool_dep(self._parent.type, name, fatal=True)
+
+    def check_tool(self, name):
+        """ Looks for a dependency """
+        return GS.check_tool_dep(self._parent.type, name, fatal=False)
+
     def expand_filename(self, dir, name, id, ext):
         cur_id = self._expand_id
         cur_ext = self._expand_ext

@@ -28,6 +28,8 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
+from .dep_downloader import register_deps
+import kibot.dep_downloader as dep_downloader
 from .kicad.v5_sch import Schematic, SchFileError, SchError
 from .kicad.v6_sch import SchematicV6
 from .kicad.config import KiConfError
@@ -47,6 +49,16 @@ except ImportError:
     exit(NO_YAML_MODULE)
 
 
+def try_register_deps(mod, name):
+    if mod.__doc__:
+        try:
+            data = yaml.safe_load(mod.__doc__)
+        except yaml.YAMLError as e:
+            logger.error('While loading plug-in `{}`:'.format(name))
+            config_error("Error loading YAML "+str(e))
+        register_deps(name, data)
+
+
 def _import(name, path):
     # Python 3.4+ import mechanism
     spec = spec_from_file_location("kibot."+name, path)
@@ -59,9 +71,11 @@ def _import(name, path):
         logger.error('Make sure you used `--no-compile` if you used pip for installation')
         logger.error('Python path: '+str(sys_path))
         exit(WRONG_INSTALL)
+    try_register_deps(mod, name)
 
 
 def _load_actions(path, load_internals=False):
+    try_register_deps(dep_downloader, 'global')
     logger.debug("Importing from "+path)
     lst = glob(os.path.join(path, 'out_*.py')) + glob(os.path.join(path, 'pre_*.py'))
     lst += glob(os.path.join(path, 'var_*.py')) + glob(os.path.join(path, 'fil_*.py'))

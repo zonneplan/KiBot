@@ -3,21 +3,23 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: KiAuto
+    role: mandatory
+    version: 1.4.0
+"""
 import os
 from sys import exit
 from .macros import macros, pre_class  # noqa: F401
-from .error import (KiPlotConfigurationError)
+from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
 from .kiplot import exec_with_retry, load_board, add_extra_options
-from .misc import CMD_PCBNEW_RUN_DRC, DRC_ERROR, kiauto_dependency
-from .dep_downloader import check_tool, pytool_downloader
-from .registrable import RegDependency
+from .misc import DRC_ERROR
 from .log import get_logger
 
 logger = get_logger(__name__)
-dep = kiauto_dependency('run_drc', (1, 4, 0), CMD_PCBNEW_RUN_DRC, pytool_downloader)
-RegDependency.register(dep)
 
 
 @pre_class
@@ -41,7 +43,7 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         return [os.path.abspath(os.path.join(self.expand_dirname(GS.out_dir), name))]
 
     def run(self):
-        command = check_tool(dep, fatal=True)
+        command = self.ensure_tool('KiAuto')
         output = self.get_targets()[0]
         logger.debug('DRC report: '+output)
         cmd = [command, 'run_drc', '-o', output]

@@ -3,24 +3,25 @@
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: Git
+    role: Find commit hash and/or date
+"""
 import os
 import sys
 import json
 import re
 from subprocess import run, PIPE
 from .error import KiPlotConfigurationError
-from .misc import FAILED_EXECUTE, W_EMPTREP, git_dependency
+from .misc import FAILED_EXECUTE, W_EMPTREP
 from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .gs import GS
-from .registrable import RegDependency
-from .dep_downloader import git_downloader, check_tool
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-git_dep = git_dependency('set_text_variables', git_downloader)
-RegDependency.register(git_dep)
 re_git = re.compile(r'([^a-zA-Z_]|^)(git) ')
 
 
@@ -118,7 +119,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
             if not text:
                 command = r.command
                 if re_git.search(command):
-                    git_command = check_tool(git_dep, fatal=True)
+                    git_command = self.ensure_tool('git')
                     command = re_git.sub(r'\1'+git_command+' ', command)
                 cmd = ['/bin/bash', '-c', command]
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)

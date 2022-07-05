@@ -20,6 +20,7 @@ import sys
 deps = '{\
     "Colorama": {\
         "command": "colorama",\
+        "comments": [],\
         "deb_package": "python3-colorama",\
         "downloader": null,\
         "extra_deb": null,\
@@ -37,7 +38,7 @@ deps = '{\
         "pypi_name": "Colorama",\
         "roles": [\
             {\
-                "desc": "get color messages in a portable way",\
+                "desc": "Get color messages in a portable way",\
                 "mandatory": false,\
                 "output": "global",\
                 "version": null\
@@ -48,6 +49,7 @@ deps = '{\
     },\
     "Ghostscript": {\
         "command": "ghostscript",\
+        "comments": [],\
         "deb_package": "ghostscript",\
         "downloader": {},\
         "extra_deb": null,\
@@ -81,6 +83,7 @@ deps = '{\
     },\
     "Git": {\
         "command": "git",\
+        "comments": [],\
         "deb_package": "git",\
         "downloader": {},\
         "extra_deb": null,\
@@ -120,6 +123,7 @@ deps = '{\
     },\
     "ImageMagick": {\
         "command": "convert",\
+        "comments": [],\
         "deb_package": "imagemagick",\
         "downloader": {},\
         "extra_deb": null,\
@@ -159,6 +163,7 @@ deps = '{\
     },\
     "Interactive HTML BoM": {\
         "command": "generate_interactive_bom.py",\
+        "comments": [],\
         "deb_package": "interactive html bom",\
         "downloader": {},\
         "extra_deb": null,\
@@ -195,6 +200,7 @@ deps = '{\
     },\
     "KiBoM": {\
         "command": "KiBOM_CLI.py",\
+        "comments": [],\
         "deb_package": "kibom",\
         "downloader": {},\
         "extra_deb": null,\
@@ -226,6 +232,7 @@ deps = '{\
     },\
     "KiCad Automation tools": {\
         "command": "pcbnew_do",\
+        "comments": [],\
         "deb_package": "kicad automation tools",\
         "downloader": {},\
         "extra_deb": null,\
@@ -367,6 +374,7 @@ deps = '{\
     },\
     "KiCost": {\
         "command": "kicost",\
+        "comments": [],\
         "deb_package": "kicost",\
         "downloader": {},\
         "extra_deb": null,\
@@ -408,6 +416,7 @@ deps = '{\
     },\
     "LXML": {\
         "command": "lxml",\
+        "comments": [],\
         "deb_package": "python3-lxml",\
         "downloader": {},\
         "extra_deb": null,\
@@ -436,6 +445,9 @@ deps = '{\
     },\
     "Pandoc": {\
         "command": "pandoc",\
+        "comments": [\
+            "In CI/CD environments: the `kicad_auto_test` docker image contains it."\
+        ],\
         "deb_package": "pandoc",\
         "downloader": null,\
         "extra_deb": [\
@@ -466,6 +478,7 @@ deps = '{\
     },\
     "PcbDraw": {\
         "command": "pcbdraw",\
+        "comments": [],\
         "deb_package": "pcbdraw",\
         "downloader": {},\
         "extra_deb": null,\
@@ -507,6 +520,7 @@ deps = '{\
     },\
     "PyYAML": {\
         "command": "pyyaml",\
+        "comments": [],\
         "deb_package": "python3-yaml",\
         "downloader": null,\
         "extra_deb": null,\
@@ -535,6 +549,7 @@ deps = '{\
     },\
     "QRCodeGen": {\
         "command": "qrcodegen",\
+        "comments": [],\
         "deb_package": "python3-qrcodegen",\
         "downloader": {},\
         "extra_deb": null,\
@@ -563,6 +578,7 @@ deps = '{\
     },\
     "RAR": {\
         "command": "rar",\
+        "comments": [],\
         "deb_package": "rar",\
         "downloader": {},\
         "extra_deb": null,\
@@ -590,6 +606,7 @@ deps = '{\
     },\
     "RSVG tools": {\
         "command": "rsvg-convert",\
+        "comments": [],\
         "deb_package": "librsvg2-bin",\
         "downloader": {},\
         "extra_deb": null,\
@@ -644,6 +661,7 @@ deps = '{\
     },\
     "Requests": {\
         "command": "requests",\
+        "comments": [],\
         "deb_package": "python3-requests",\
         "downloader": null,\
         "extra_deb": null,\
@@ -672,6 +690,7 @@ deps = '{\
     },\
     "XLSXWriter": {\
         "command": "xlsxwriter",\
+        "comments": [],\
         "deb_package": "python3-xlsxwriter",\
         "downloader": {},\
         "extra_deb": null,\

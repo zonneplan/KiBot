@@ -3,14 +3,20 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: KiAuto
+    role: mandatory
+    command: eeschema_do
+    version: 1.5.4
+"""
 from .gs import GS
-from .out_any_sch_print import Any_SCH_PrintOptions, register_deps
+from .out_any_sch_print import Any_SCH_PrintOptions
 from .misc import PDF_SCH_PRINT
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-dep = register_deps('pdf')
 
 
 class PDF_SCH_PrintOptions(Any_SCH_PrintOptions):
@@ -21,7 +27,6 @@ class PDF_SCH_PrintOptions(Any_SCH_PrintOptions):
         super().__init__()
         self._expand_ext = 'pdf'
         self._exit_error = PDF_SCH_PRINT
-        self._dependency = dep
 
 
 @output_class
