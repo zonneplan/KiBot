@@ -772,7 +772,7 @@ def check_tool_dep(context, dep, fatal=False):
             do_log_err('Download page: '+dep.url_down, fatal)
         if dep.deb_package:
             do_log_err('Debian package: '+dep.deb_package, fatal)
-            if dep.deb_extra:
+            if dep.extra_deb:
                 do_log_err('- Recommended extra Debian packages: '+' '.join(dep.deb_package), fatal)
         for comment in dep.comments:
             do_log_err(comment, fatal)
