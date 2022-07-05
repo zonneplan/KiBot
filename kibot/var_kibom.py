@@ -3,9 +3,7 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-"""
-Implements the KiBoM variants mechanism.
-"""
+# Description: Implements the KiBoM variants mechanism.
 from .optionable import Optionable
 from .gs import GS
 from .misc import IFILT_MECHANICAL

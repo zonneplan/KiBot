@@ -4,11 +4,9 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # The algorithm is from KiCost project (https://github.com/xesscorp/KiCost)
-"""
-Implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
-It applies the KiCost concept of variants (a regex to match the VARIANT)
-Can be configured, by default is what KiCost does.
-"""
+# Description: Implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
+#              It applies the KiCost concept of variants (a regex to match the VARIANT)
+#              Can be configured, by default is what KiCost does.
 import re
 from .gs import GS
 from .macros import macros, document, filter_class  # noqa: F401

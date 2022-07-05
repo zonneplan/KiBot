@@ -3,9 +3,7 @@
 # Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-"""
-Implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
-"""
+# Description: Implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
 from .gs import GS
 from .macros import macros, document, filter_class  # noqa: F401
 from . import log

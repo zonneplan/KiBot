@@ -3,9 +3,7 @@
 # Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-"""
-Implements a field renamer
-"""
+# Description: Implements a field renamer
 from .gs import GS
 from .misc import W_EMPTYREN
 from .macros import macros, document, filter_class  # noqa: F401

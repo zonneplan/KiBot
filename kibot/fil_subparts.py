@@ -3,11 +3,9 @@
 # Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-"""
-Implements the KiCost subparts mechanism.
-The 'manf#' field can contain more than one value separated by ;
-The result is REF#subpart
-"""
+# Description: Implements the KiCost subparts mechanism.
+#              The 'manf#' field can contain more than one value separated by ;
+#              The result is REF#subpart
 import re
 from copy import deepcopy
 from .gs import GS

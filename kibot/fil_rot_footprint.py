@@ -3,10 +3,8 @@
 # Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-"""
-Implements a filter to rotate footprints.
-This is inspired in JLCKicadTools by Matthew Lai.
-"""
+# Description: Implements a filter to rotate footprints.
+#              This is inspired in JLCKicadTools by Matthew Lai.
 from re import compile
 from .gs import GS
 from .optionable import Optionable

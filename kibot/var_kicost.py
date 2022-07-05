@@ -4,9 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # The algorithm is from KiCost project (https://github.com/xesscorp/KiCost)
-"""
-Implements the KiCost variants mechanism.
-"""
+# Description: Implements the KiCost variants mechanism.
 import re
 from .gs import GS
 from .misc import IFILT_VAR_RENAME_KICOST, IFILT_KICOST_RENAME, IFILT_KICOST_DNP

@@ -3,9 +3,7 @@
 # Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-"""
-Implements the KiBoM and IBoM filters.
-"""
+# Description: Implements the KiBoM and IBoM filters.
 from re import compile, IGNORECASE
 from .optionable import Optionable
 from .bom.columnlist import ColumnList
