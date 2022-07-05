@@ -859,7 +859,7 @@ def register_dep(context, dep):
             return
         new_dep = deepcopy(parent_data)
         new_dep.update(dep)
-        logger.debugl(3, '- Dep after applying from {}: {}'.format(parent, new_dep))
+        logger.debugl(3, ' - Dep after applying from {}: {}'.format(parent, new_dep))
         dep = new_dep
     # Solve the role
     desc = dep['role']
@@ -910,8 +910,8 @@ def register_dep(context, dep):
 
 
 def register_deps(context, data):
-    logger.debug('Processing dependencies for `{}`'.format(context))
-    logger.debugl(3, '- Data: '+str(data))
+    logger.debug('- Processing dependencies for `{}`'.format(context))
+    logger.debugl(3, ' - Data: '+str(data))
     # Extract the dependencies
     deps = data.get('Dependencies', None)
     if deps is None or not isinstance(deps, list):
@@ -922,10 +922,10 @@ def register_deps(context, data):
     for dep in deps:
         role = dep.get('role', None)
         if role is not None:
-            logger.debugl(2, '- Registering dep '+str(dep))
+            logger.debugl(2, ' - Registering dep '+str(dep))
             register_dep(context, dep)
         else:
-            logger.debugl(2, '- Registering base dep '+str(dep))
+            logger.debugl(2, ' - Registering base dep '+str(dep))
             name = dep.get('name', None)
             id = dep.get('id', name)
             assert id is not None
