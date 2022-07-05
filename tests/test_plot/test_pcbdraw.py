@@ -76,6 +76,16 @@ def platform_system_bogus():
     return 'Bogus'
 
 
+class DummyPcbDraw(object):
+    def __init__(self):
+        self.type = 'pcbdraw'
+
+
+DEPS = {'Dependencies': [{'name': 'pcbdraw', 'command': 'pcbdraw', 'role': 'mandatory'},
+                         {'name': 'RSVG', 'command': 'rsvg-convert', 'role': 'XXXX', 'debian': 'librsvg2-bin'},
+                         {'name': 'ImageMagick', 'command': 'convert', 'role': 'XXXX', 'debian': 'imagemagick'}]}
+
+
 def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
     """ Check missing rsvg-convert """
     with monkeypatch.context() as m:
@@ -88,7 +98,9 @@ def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
         # Make platform.system() return a bogus OS
         m.setattr("platform.system", platform_system_bogus)
         # Reload the module so we get the above patches
-        reload(kibot.dep_downloader)
+        mod = reload(kibot.dep_downloader)
+        mod.register_deps('pcbdraw', DEPS)
+        logging.error(mod.used_deps)
         old_lev = kibot.log.debug_level
         kibot.log.debug_level = 2
         o = PcbDrawOptions()
@@ -96,6 +108,7 @@ def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
         o.remap = None
         o.format = 'jpg'
         o.config(None)
+        o._parent = DummyPcbDraw()
         cov.load()
         cov.start()
         o.run('')
@@ -115,12 +128,14 @@ def test_pcbdraw_miss_convert(caplog, monkeypatch):
         # Make platform.system() return a bogus OS
         m.setattr("platform.system", platform_system_bogus)
         # Reload the module so we get the above patches
-        reload(kibot.dep_downloader)
+        mod = reload(kibot.dep_downloader)
+        mod.register_deps('pcbdraw', DEPS)
         o = PcbDrawOptions()
         o.style = ''
         o.remap = None
         o.format = 'jpg'
         o.config(None)
+        o._parent = DummyPcbDraw()
         cov.load()
         cov.start()
         o.run('')
