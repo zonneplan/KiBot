@@ -13,7 +13,6 @@ from . import context
 from kibot.mcpyrate import activate  # noqa: F401
 import kibot.dep_downloader as downloader
 import kibot.out_compress as compress
-import kibot.out_kibom as kibom
 import kibot.log as log
 
 cov = coverage.Coverage()
@@ -55,9 +54,37 @@ def test_dep_rar(test_dir, caplog, monkeypatch):
     try_dependency(ctx, caplog, monkeypatch, compress.__doc__, 'rar', 'rar', bin_dir)
 
 
-def test_dep_pytool(test_dir, caplog, monkeypatch):
-    """ Check the pytool_downloader """
+# Needs adjusts, pip behaves differently when running as root ...
+# def test_dep_pytool(test_dir, caplog, monkeypatch):
+#     """ Check the pytool_downloader """
+#     # Create a context to get an output directory
+#     ctx = context.TestContext(test_dir, 'bom', 'bom')
+#     log.debug_level = 10
+#     try_dependency(ctx, caplog, monkeypatch, kibom.__doc__, 'kibom', 'pytool', bin_dir_py)
+
+
+def test_dep_rsvg(test_dir, caplog, monkeypatch):
+    """ Check the rsvg_downloader """
     # Create a context to get an output directory
     ctx = context.TestContext(test_dir, 'bom', 'bom')
     log.debug_level = 10
-    try_dependency(ctx, caplog, monkeypatch, kibom.__doc__, 'kibom', 'pytool', bin_dir_py)
+    dep = '  - from: RSVG\n    role: mandatory\n'
+    try_dependency(ctx, caplog, monkeypatch, downloader.__doc__+dep, 'rsvg', 'rsvg', bin_dir)
+
+
+def test_dep_git(test_dir, caplog, monkeypatch):
+    """ Check the git_downloader """
+    # Create a context to get an output directory
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    log.debug_level = 10
+    dep = '  - from: Git\n    role: mandatory\n'
+    try_dependency(ctx, caplog, monkeypatch, downloader.__doc__+dep, 'git', 'git', bin_dir)
+
+
+def test_dep_convert(test_dir, caplog, monkeypatch):
+    """ Check the convert_downloader """
+    # Create a context to get an output directory
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    log.debug_level = 10
+    dep = '  - from: ImageMagick\n    role: mandatory\n'
+    try_dependency(ctx, caplog, monkeypatch, downloader.__doc__+dep, 'imagemagick', 'convert', bin_dir)
