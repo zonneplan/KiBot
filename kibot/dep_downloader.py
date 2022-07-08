@@ -701,7 +701,8 @@ def check_tool_python(dep, reload=False):
     # Try to load the module
     try:
         mod = importlib.import_module(dep.module_name)
-        return check_tool_python_version(mod, dep)
+        if mod.__file__ is not None:
+            return check_tool_python_version(mod, dep)
     except ModuleNotFoundError:
         pass
     # Not installed, try to download it
@@ -712,6 +713,9 @@ def check_tool_python(dep, reload=False):
     try:
         importlib.invalidate_caches()
         mod = importlib.import_module(dep.module_name)
+        if mod.__file__ is None:
+            logger.error(mod)
+            return None
         res = check_tool_python_version(mod, dep)
         if res is not None and reload:
             res = importlib.reload(reload)
