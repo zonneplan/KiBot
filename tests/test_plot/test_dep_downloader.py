@@ -117,6 +117,7 @@ def test_dep_gs(test_dir, caplog, monkeypatch):
     log.debug_level = 10
     dep = '  - from: Ghostscript\n    role: mandatory\n'
     try_dependency(ctx, caplog, monkeypatch, downloader.__doc__+dep, 'ghostscript', 'gs', bin_dir)
+    os.remove(os.path.join(ctx.output_dir, bin_dir, 'gs'))
 
 
 def test_dep_convert(test_dir, caplog, monkeypatch):
