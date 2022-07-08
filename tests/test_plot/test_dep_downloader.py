@@ -108,6 +108,15 @@ def test_dep_git(test_dir, caplog, monkeypatch):
     try_dependency(ctx, caplog, monkeypatch, downloader.__doc__+dep, 'git', 'git', bin_dir)
 
 
+def test_dep_gs(test_dir, caplog, monkeypatch):
+    """ Check the git_downloader """
+    # Create a context to get an output directory
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    log.debug_level = 10
+    dep = '  - from: Ghostscript\n    role: mandatory\n'
+    try_dependency(ctx, caplog, monkeypatch, downloader.__doc__+dep, 'ghostscript', 'gs', bin_dir)
+
+
 def test_dep_convert(test_dir, caplog, monkeypatch):
     """ Check the convert_downloader """
     # Create a context to get an output directory
