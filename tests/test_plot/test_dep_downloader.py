@@ -22,12 +22,9 @@ import kibot.log as log
 cov = coverage.Coverage()
 bin_dir = os.path.join('.local', 'share', 'kibot', 'bin')
 bin_dir_py = os.path.join('.local', 'bin')
-# DEPS = {'Dependencies':
-#         [{'from': 'RAR', 'role': 'mandatory'},
-#          {'name': 'KiBoM', 'role': 'mandatory', 'github': 'INTI-CMNB/KiBoM', 'command': 'KiBOM_CLI.py', 'version': '1.8.0'}]}
 
 
-def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_name, b_dir):
+def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_name, b_dir, use_wrapper=False):
     with monkeypatch.context() as m:
         # Force the downloader to use the output dir instead of HOME
         home = os.path.abspath(ctx.output_dir)
@@ -42,7 +39,11 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
         cov.load()
         cov.start()
         downloader_func = getattr(mod, downloader_name+'_downloader')
-        res = downloader_func(dep, 'Linux', 'x86_64')
+        if use_wrapper:
+            dep.downloader = downloader_func
+            res = mod.try_download_tool_binary(dep)
+        else:
+            res = downloader_func(dep, 'Linux', 'x86_64')
         cov.stop()
         cov.save()
         # We should get the following name:
@@ -72,14 +73,13 @@ def try_dependency_module(ctx, caplog, monkeypatch, docstring, name_dep, downloa
         logging.debug('Result: {}'.format(res))
         assert res is not None
         assert res.__file__ is not None
-        # We executed the file
 
 
 def test_dep_rar(test_dir, caplog, monkeypatch):
     """ Check the rar_downloader """
     # Create a context to get an output directory
     ctx = context.TestContext(test_dir, 'bom', 'bom')
-    try_dependency(ctx, caplog, monkeypatch, compress.__doc__, 'rar', 'rar', bin_dir)
+    try_dependency(ctx, caplog, monkeypatch, compress.__doc__, 'rar', 'rar', bin_dir, use_wrapper=True)
 
 
 def test_dep_pytool(test_dir, caplog, monkeypatch):
