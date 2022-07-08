@@ -321,7 +321,7 @@ def git_downloader(dep, system, plat):
     # Now create the wrapper
     git_real = dest_bin
     dest_bin = dest_bin[:-5]
-    logger.error(f'{dest_bin} -> {git_real}')
+    logger.debugl(2, '{} -> {}'.format(dest_bin, git_real))
     if os.path.isfile(dest_bin):
         os.remove(dest_bin)
     with open(dest_bin, 'wt') as f:

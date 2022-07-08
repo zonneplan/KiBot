@@ -8,5 +8,10 @@ if prev_dir not in sys.path:
 # Utils import
 from utils import context   # noqa: F401
 prev_dir = os.path.dirname(prev_dir)
-if prev_dir not in sys.path:
+# py-test inserts things at the beginning, so we could end loading an installed copy of KiBot
+if sys.path[0] != prev_dir:
+    try:
+        sys.path.remove(prev_dir)
+    except ValueError:
+        pass
     sys.path.insert(0, prev_dir)

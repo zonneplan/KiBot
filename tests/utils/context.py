@@ -11,7 +11,12 @@ from glob import glob
 from pty import openpty
 import xml.etree.ElementTree as ET
 prev_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if prev_dir not in sys.path:
+# py-test inserts things at the beginning, so we could end loading an installed copy of KiBot
+if sys.path[0] != prev_dir:
+    try:
+        sys.path.remove(prev_dir)
+    except ValueError:
+        pass
     sys.path.insert(0, prev_dir)
 from kibot.misc import (error_level_to_name)
 
