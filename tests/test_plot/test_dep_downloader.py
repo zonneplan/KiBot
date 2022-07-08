@@ -42,6 +42,8 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
         if use_wrapper:
             dep.downloader = downloader_func
             res = mod.try_download_tool_binary(dep)
+            if res:
+                res = mod.check_tool_binary_local(dep)
         else:
             res = downloader_func(dep, 'Linux', 'x86_64')
         cov.stop()
