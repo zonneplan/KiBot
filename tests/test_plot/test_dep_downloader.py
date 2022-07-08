@@ -49,6 +49,8 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
 
 
 def try_dependency_module(ctx, caplog, monkeypatch, docstring, name_dep, downloader_name):
+    # Note: every attempt to install in a chosen dir failed, even when the module was there and in the sys.path the
+    # importlib call miserably failed.
     with monkeypatch.context():
         # Refresh the module with actual dependencies
         mod = importlib.reload(downloader)
@@ -60,7 +62,7 @@ def try_dependency_module(ctx, caplog, monkeypatch, docstring, name_dep, downloa
         cov.start()
         # Python module
         downloader_func = getattr(mod, downloader_name)
-        res = downloader_func(dep, False)
+        res = downloader_func(dep)
         cov.stop()
         cov.save()
         # We should get the following name:

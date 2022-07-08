@@ -235,10 +235,12 @@ def check_pip():
 
 
 def pip_install(pip_command, dest=None, name='.'):
-    cmd = [pip_command, 'install', '-U', '--no-warn-script-location',
-           # This is what -U (--user) means, but Debian's pip installs to /usr/local when used by root
-           '--root', os.path.dirname(site.USER_BASE), '--prefix', os.path.basename(site.USER_BASE),
-           name]
+    cmd = [pip_command, 'install', '-U', '--no-warn-script-location']
+    if name == '.':
+        # Applied only when installing a downloaded tarball
+        # This is what -U (--user) means, but Debian's pip installs to /usr/local when used by root
+        cmd.extend(['--root', os.path.dirname(site.USER_BASE), '--prefix', os.path.basename(site.USER_BASE)])
+    cmd.append(name)
     logger.debug('- Running: {}'.format(cmd))
     try:
         res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=dest)
@@ -708,9 +710,10 @@ def check_tool_python(dep, reload=False):
         return None
     # Check we can use it
     try:
+        importlib.invalidate_caches()
         mod = importlib.import_module(dep.module_name)
         res = check_tool_python_version(mod, dep)
-        if res is not None and reload is not None:
+        if res is not None and reload:
             res = importlib.reload(reload)
         return res
     except ModuleNotFoundError:
