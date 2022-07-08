@@ -13,6 +13,7 @@ from . import context
 from kibot.mcpyrate import activate  # noqa: F401
 import kibot.dep_downloader as downloader
 import kibot.out_compress as compress
+import kibot.out_kibom as kibom
 import kibot.log as log
 
 cov = coverage.Coverage()
@@ -54,13 +55,12 @@ def test_dep_rar(test_dir, caplog, monkeypatch):
     try_dependency(ctx, caplog, monkeypatch, compress.__doc__, 'rar', 'rar', bin_dir)
 
 
-# Needs adjusts, pip behaves differently when running as root ...
-# def test_dep_pytool(test_dir, caplog, monkeypatch):
-#     """ Check the pytool_downloader """
-#     # Create a context to get an output directory
-#     ctx = context.TestContext(test_dir, 'bom', 'bom')
-#     log.debug_level = 10
-#     try_dependency(ctx, caplog, monkeypatch, kibom.__doc__, 'kibom', 'pytool', bin_dir_py)
+def test_dep_pytool(test_dir, caplog, monkeypatch):
+    """ Check the pytool_downloader """
+    # Create a context to get an output directory
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    log.debug_level = 10
+    try_dependency(ctx, caplog, monkeypatch, kibom.__doc__, 'kibom', 'pytool', bin_dir_py)
 
 
 def test_dep_rsvg(test_dir, caplog, monkeypatch):
