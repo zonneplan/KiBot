@@ -9,6 +9,9 @@ import coverage
 import yaml
 import logging
 import importlib
+import shutil
+import subprocess
+import sys
 from . import context
 from kibot.mcpyrate import activate  # noqa: F401
 import kibot.dep_downloader as downloader
@@ -68,7 +71,7 @@ def try_dependency_module(ctx, caplog, monkeypatch, docstring, name_dep, downloa
         # We should get the following name:
         logging.debug('Result: {}'.format(res))
         assert res is not None
-        logging.debug(res.__file__)
+        assert res.__file__ is not None
         # We executed the file
 
 
@@ -119,5 +122,19 @@ def test_dep_python(test_dir, caplog, monkeypatch):
     # Create a context to get an output directory
     ctx = context.TestContext(test_dir, 'bom', 'bom')
     log.debug_level = 10
+    # Ensure we don't have engineering-notation
+    try:
+        import engineering_notation
+        logging.debug('Test module is already installed, using pip to uninstall ...')
+        subprocess.run(['pip', 'uninstall', '-y', 'engineering-notation'])
+        # Why pip does this???!!!
+        dir_name = os.path.dirname(engineering_notation.__file__)
+        if os.path.isdir(dir_name):
+            logging.debug('Silly pip left things that will allow importing a non-existent module, removing it')
+            shutil.rmtree(dir_name)
+        logging.debug('Removing engineering_notation from memory')
+        del sys.modules["engineering_notation"]
+    except Exception as e:
+        logging.error(e)
     dep = 'Dependencies:\n  - name: engineering_notation\n    role: mandatory\n    python_module: true\n'
     try_dependency_module(ctx, caplog, monkeypatch, dep, 'engineering_notation', 'check_tool_python')
