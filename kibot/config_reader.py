@@ -357,6 +357,7 @@ class CfgYamlReader(object):
                     config_error("`import` entry without `file` ({})".format(str(entry)))
             else:
                 config_error("`import` items must be strings or dicts ({})".format(str(entry)))
+            fn = os.path.expandvars(os.path.expanduser(fn))
             if not os.path.isabs(fn):
                 fn = os.path.join(dir, fn)
             if not os.path.isfile(fn):

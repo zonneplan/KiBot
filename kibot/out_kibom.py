@@ -378,7 +378,9 @@ class KiBoMOptions(BaseOptions):
         kibom_command = self.ensure_tool('KiBoM')
         format = self.format.lower()
         prj = GS.sch_no_ext
-        config = os.path.join(GS.sch_dir, self.conf)
+        config = os.path.expandvars(os.path.expanduser(self.conf))
+        if not os.path.isabs(config):
+            config = os.path.join(GS.sch_dir, config)
         if self.output:
             force_output = True
             output = name
