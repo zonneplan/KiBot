@@ -8,7 +8,7 @@ import os
 import coverage
 import yaml
 import logging
-from importlib import reload
+import importlib
 from . import context
 from kibot.mcpyrate import activate  # noqa: F401
 import kibot.dep_downloader as downloader
@@ -31,9 +31,9 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
         m.setenv("HOME", home)
         m.setattr("site.USER_BASE", os.path.join(home, '.local'))
         # Refresh the module with actual dependencies
-        mod = reload(downloader)
+        mod = importlib.reload(downloader)
         mod.register_deps('test', yaml.safe_load(docstring))
-        # Get the RAR dependency
+        # Get the dependency
         dep = mod.used_deps['test:'+name_dep]
         # Download it
         cov.load()
@@ -45,6 +45,28 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
         # We should get the following name:
         logging.debug('Result: {}'.format(res))
         assert res == os.path.join(home, b_dir, dep.command)
+        # We executed the file
+
+
+def try_dependency_module(ctx, caplog, monkeypatch, docstring, name_dep, downloader_name):
+    with monkeypatch.context():
+        # Refresh the module with actual dependencies
+        mod = importlib.reload(downloader)
+        mod.register_deps('test', yaml.safe_load(docstring))
+        # Get the dependency
+        dep = mod.used_deps['test:'+name_dep]
+        # Download it
+        cov.load()
+        cov.start()
+        # Python module
+        downloader_func = getattr(mod, downloader_name)
+        res = downloader_func(dep, False)
+        cov.stop()
+        cov.save()
+        # We should get the following name:
+        logging.debug('Result: {}'.format(res))
+        assert res is not None
+        logging.debug(res.__file__)
         # We executed the file
 
 
@@ -88,3 +110,12 @@ def test_dep_convert(test_dir, caplog, monkeypatch):
     log.debug_level = 10
     dep = '  - from: ImageMagick\n    role: mandatory\n'
     try_dependency(ctx, caplog, monkeypatch, downloader.__doc__+dep, 'imagemagick', 'convert', bin_dir)
+
+
+def test_dep_python(test_dir, caplog, monkeypatch):
+    """ Check the python_downloader """
+    # Create a context to get an output directory
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    log.debug_level = 10
+    dep = 'Dependencies:\n  - name: engineering_notation\n    role: mandatory\n    python_module: true\n'
+    try_dependency_module(ctx, caplog, monkeypatch, dep, 'engineering_notation', 'check_tool_python')
