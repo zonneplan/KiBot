@@ -235,7 +235,10 @@ def check_pip():
 
 
 def pip_install(pip_command, dest=None, name='.'):
-    cmd = [pip_command, 'install', '-U', '--no-warn-script-location', name]
+    cmd = [pip_command, 'install', '-U', '--no-warn-script-location',
+           # This is what -U (--user) means, but Debian's pip installs to /usr/local when used by root
+           '--root', os.path.dirname(site.USER_BASE), '--prefix', os.path.basename(site.USER_BASE),
+           name]
     logger.debug('- Running: {}'.format(cmd))
     try:
         res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=dest)
