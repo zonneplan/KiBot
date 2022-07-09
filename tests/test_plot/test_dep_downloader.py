@@ -122,6 +122,7 @@ def test_dep_gs(test_dir, caplog, monkeypatch):
 
 
 @pytest.mark.slow
+@pytest.mark.xfail(True, reason="URL down", run=True, raises=AssertionError)
 def test_dep_convert(test_dir, caplog, monkeypatch):
     """ Check the convert_downloader """
     # Create a context to get an output directory
