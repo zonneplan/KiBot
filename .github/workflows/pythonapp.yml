@@ -48,6 +48,7 @@ jobs:
         rm -f tests/.local
         pip3 install --upgrade coverage
         pip3 install --upgrade pytest
+        pip3 install --upgrade pytest-xdist
         coverage3 erase
         # Create the caches with macros
         coverage3 run src/kibot --help-outputs > /dev/null
