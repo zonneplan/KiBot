@@ -276,7 +276,7 @@ class TestContext(object):
             f.write('Dummy file\n')
 
     def do_run(self, cmd, ret_val=None, use_a_tty=False, chdir_out=False):
-        cmd_base = [COVERAGE_SCRIPT, 'run', '-a']
+        cmd_base = [COVERAGE_SCRIPT, 'run']
         if chdir_out:
             cwd = os.getcwd()
             cmd_base.append('--rcfile='+os.path.join(cwd, '.coveragerc'))

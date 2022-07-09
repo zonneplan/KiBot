@@ -8,6 +8,7 @@ omit = */kibot/docopt.py
        */kibot/mcpyrate/*
        */kibot/PyPDF2/*
        */kibot/svgutils/*
+parallel = true
 
 [report]
 exclude_lines =

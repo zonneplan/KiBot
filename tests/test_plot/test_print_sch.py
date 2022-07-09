@@ -12,6 +12,7 @@ pytest-3 --log-cli-level debug
 import os
 import logging
 import coverage
+import pytest
 from . import context
 from kibot.misc import (PDF_SCH_PRINT, SVG_SCH_PRINT)
 from kibot.kicad.v5_sch import Schematic, SchFileError, DrawPoligon, Pin
@@ -25,6 +26,7 @@ NI_DIR = 'no_inductor'
 cov = coverage.Coverage()
 
 
+@pytest.mark.slow
 def test_print_sch_ok(test_dir):
     prj = 'bom_no_xml'  # bom has meta data, here we test no meta-data
     ctx = context.TestContext(test_dir, prj, 'print_sch')
@@ -34,6 +36,7 @@ def test_print_sch_ok(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_print_sch_fail(test_dir):
     prj = 'print_err'
     ctx = context.TestContextSCH(test_dir, prj, 'print_sch')
@@ -42,6 +45,7 @@ def test_print_sch_fail(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_print_sch_svg_ok(test_dir):
     prj = 'bom_no_xml'  # bom has meta data, here we test no meta-data
     ctx = context.TestContext(test_dir, prj, 'print_sch_svg')
@@ -51,6 +55,7 @@ def test_print_sch_svg_ok(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_print_sch_svg_fail(test_dir):
     prj = 'print_err'
     ctx = context.TestContext(test_dir, prj, 'print_sch_svg')
@@ -97,6 +102,7 @@ def test_sch_variant_ni_2(test_dir):
     check_l1(ctx)
 
 
+@pytest.mark.slow
 def test_print_sch_variant_ni_1(test_dir):
     """ Using a variant """
     prj = 'test_v5_wks'  # Is the most complete, contains every KiCad object I know
@@ -109,6 +115,7 @@ def test_print_sch_variant_ni_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
 def test_print_sch_svg_variant_ni_1(test_dir):
     """ SVG using a variant """
     prj = 'test_v5'  # Is the most complete, contains every KiCad object I know
@@ -121,6 +128,7 @@ def test_print_sch_svg_variant_ni_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_print_sch_variant_ni_2(test_dir):
     """ Using a filter """
     prj = 'test_v5'  # Is the most complete, contains every KiCad object I know

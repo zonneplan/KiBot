@@ -31,6 +31,7 @@ import os
 import re
 import shutil
 import logging
+import pytest
 import subprocess
 import json
 from . import context
@@ -742,6 +743,7 @@ def check_makefile(ctx, mkfile, prj, dbg, txt):
     ctx.search_err(r'Wrong character in file name `(.*)/test_v5-top\$.svg')
 
 
+@pytest.mark.slow
 def test_makefile_1(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'makefile_1')
@@ -752,6 +754,7 @@ def test_makefile_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_makefile_2(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'makefile_1')
@@ -898,6 +901,7 @@ def test_cli_order(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_qr_lib_1(test_dir):
     prj = 'qr_test/qr_test'
     ctx = context.TestContext(test_dir, prj, 'qr_lib_1', POS_DIR)
@@ -959,6 +963,7 @@ def test_report_simple_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
 def test_report_simple_2(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'report_simple_2', POS_DIR)
@@ -1117,6 +1122,7 @@ def test_annotate_pcb_tbrl_small_grid(test_dir):
                    {'C1': '1u', 'C2': '2u', 'R1': '2', 'R2': '1', 'C3': '3u', 'C4': '4u', 'R3': '3', 'R4': '4'})
 
 
+@pytest.mark.slow
 def test_gencad_1(test_dir):
     prj = 'gencad'
     ctx = context.TestContext(test_dir, prj, 'gencad_1')
@@ -1133,6 +1139,7 @@ def test_gencad_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_quick_start_1(test_dir):
     """ Very naive test to see if it doesn't crash """
     prj = 'light_control'
@@ -1172,6 +1179,7 @@ def test_quick_start_1(test_dir):
     ctx.expect_out_file(os.path.join('Browse', 'light_control-navigate.html'))
 
 
+@pytest.mark.slow
 def test_netlist_classic_1(test_dir):
     prj = 'light_control'
     dir_o = 'Export'
@@ -1180,6 +1188,7 @@ def test_netlist_classic_1(test_dir):
     ctx.expect_out_file(os.path.join(dir_o, prj+'-netlist.net'))
 
 
+@pytest.mark.slow
 def test_netlist_ipc_1(test_dir):
     prj = 'light_control'
     dir_o = 'Export'

@@ -9,6 +9,7 @@ pytest-3 --log-cli-level debug
 
 """
 import os
+import pytest
 from glob import glob
 from . import context
 
@@ -17,6 +18,7 @@ STEP_DIR = '3D'
 # STEP_FILE = 'bom.step'
 
 
+@pytest.mark.slow
 def test_step_1(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'step_simple', STEP_DIR)
@@ -31,6 +33,7 @@ def test_step_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_step_2(test_dir):
     prj = 'bom_fake_models'
     yaml = 'step_simple_2'
@@ -44,6 +47,7 @@ def test_step_2(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
 def test_step_3(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'step_simple_3', STEP_DIR)
@@ -53,6 +57,7 @@ def test_step_3(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_step_gl_env(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'step_gl_env', STEP_DIR)
@@ -67,6 +72,7 @@ def test_step_gl_env(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_step_variant_1(test_dir):
     prj = 'kibom-variant_3'
     ctx = context.TestContext(test_dir, prj, 'step_variant_1')
@@ -78,6 +84,7 @@ def test_step_variant_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
 def test_render_3d_variant_1(test_dir):
     # Text variables to ensure they are rendered.
     # Traces

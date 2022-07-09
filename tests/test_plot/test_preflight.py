@@ -13,15 +13,17 @@ For debug information use:
 pytest-3 --log-cli-level debug
 
 """
-import os
-import logging
-import re
 import json
+import logging
+import pytest
+import os
+import re
 from subprocess import run, PIPE
 from . import context
 from kibot.misc import DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH, EXIT_BAD_CONFIG
 
 
+@pytest.mark.slow
 def test_erc_1(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'erc', '')
@@ -31,6 +33,7 @@ def test_erc_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_erc_fail_1(test_dir):
     """ Using an SCH with ERC errors """
     prj = 'fail-erc'
@@ -49,6 +52,7 @@ def test_erc_fail_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_erc_warning_1(test_dir):
     """ Using an SCH with ERC warnings """
     prj = 'warning-project'
@@ -60,6 +64,7 @@ def test_erc_warning_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_erc_warning_2(test_dir):
     """ Using an SCH with ERC warnings as errors """
     prj = 'warning-project'
@@ -130,6 +135,7 @@ def test_drc_time_out(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_update_xml_1(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'update_xml', '')
@@ -149,6 +155,7 @@ def test_update_xml_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_update_xml_fail(test_dir):
     """ Using a dummy SCH """
     prj = '3Rs'

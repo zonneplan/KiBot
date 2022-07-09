@@ -9,10 +9,11 @@ For debug information use:
 pytest-3 --log-cli-level debug
 
 """
-import os
-import re
 import json
 import logging
+import os
+import pytest
+import re
 from . import context
 from utils.lzstring import LZString
 from kibot.misc import (BOM_ERROR)
@@ -87,6 +88,7 @@ def test_ibom_all_ops(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_ibom_variant_1(test_dir):
     prj = 'kibom-variante'
     ctx = context.TestContext(test_dir, prj, 'ibom_variant_1', BOM_DIR)
