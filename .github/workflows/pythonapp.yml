@@ -52,12 +52,12 @@ jobs:
         # Create the caches with macros
         python3-coverage run src/kibot --help-outputs > /dev/null
         # Individual run for specific tests
-        # pytest --log-cli-level debug -k "test_ibom_parse_fail" --test_dir output
+        # pytest --log-cli-level debug -k "test_ibom_parse_fail" --test_dir=output
         # Run the 90% faster tests (under 3 s)
         # Do it in parallel
-        pytest -v --durations=0 -m "not slow" -n 2 --test_dir output
+        pytest -v --durations=0 -m "not slow" -n 2 --test_dir=output
         # Run the slowest at the end and exit on the first error
-        pytest -v --durations=0 -m slow -x --test_dir output
+        pytest -v --durations=0 -m slow -x --test_dir=output
         python3-coverage combine
         python3-coverage report
         python3-coverage html -d output/htmlcov

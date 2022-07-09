@@ -47,8 +47,8 @@ test: lint
 	rm -f example.kibot.yaml
 	rm -f tests/.local
 	$(PY_COV) erase
-	$(PYTEST) -m "not slow" -n 2 --test_dir output
-	$(PYTEST) -m "slow" --test_dir output
+	$(PYTEST) -m "not slow" -n 2 --test_dir=output
+	$(PYTEST) -m "slow" --test_dir=output
 	$(PY_COV) combine
 	$(PY_COV) report
 	$(PY_COV) html
@@ -60,7 +60,7 @@ test1:
 	rm -f example.kibot.yaml
 	rm -f tests/.local
 	$(PY_COV) erase
-	$(PYTEST) --log-cli-level debug -k "test_bom_ok" --test_dir output
+	$(PYTEST) --log-cli-level debug -k "test_bom_ok" --test_dir=output
 	$(PY_COV) combine
 	$(PY_COV) report
 	$(PY_COV) html
@@ -78,7 +78,7 @@ test_docker_local_1:
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
 	#docker run --rm -it -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:latest '/bin/bash'
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:latest \
-		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run -a src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k 'test_print_pcb_svg_simple_2' --test_dir output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/"
+		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run -a src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k 'test_print_pcb_svg_simple_2' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/"
 	#$(PY_COV) report
 	#x-www-browser htmlcov/index.html
 	# The coverage used in the image is incompatible
@@ -91,7 +91,7 @@ test_docker_local_1_ki6:
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:ki6 \
-		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run -a src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k 'test_dep_pytool' --test_dir output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/"
+		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run -a src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k 'test_dep_pytool' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/"
 	#$(PY_COV) report
 	#x-www-browser htmlcov/index.html
 
@@ -102,7 +102,7 @@ test_docker_local:
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:latest \
-		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run -a src/kibot --help-outputs ; pytest-3 --test_dir output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/"
+		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run -a src/kibot --help-outputs ; pytest-3 --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/"
 	# $(PY_COV) report
 	# x-www-browser htmlcov/index.html
 	$(PY_COV) erase
@@ -114,7 +114,7 @@ test_docker_local_ki6:
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:ki6 \
-		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run -a src/kibot --help-outputs ; pytest-3 --test_dir output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/"
+		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run -a src/kibot --help-outputs ; pytest-3 --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/"
 	$(PY_COV) combine
 	$(PY_COV) report
 	x-www-browser htmlcov/index.html
@@ -132,7 +132,7 @@ docker_shell:
 single_test:
 	rm -rf pp
 	-$(PY_COV) run src/kibot --help-list-outputs > /dev/null
-	-$(PYTEST) --log-cli-level debug -k "$(SINGLE_TEST)" --test_dir pp
+	-$(PYTEST) --log-cli-level debug -k "$(SINGLE_TEST)" --test_dir=pp
 	@echo "********************" Output
 	@cat pp/*/output.txt
 	@echo "********************" Error
@@ -142,7 +142,7 @@ single_test:
 single_tests:
 	rm -rf pp
 	# 12 threads, for a 6 core CPU w/HT. Almost 4 times faster for BoM tests.
-	-$(PYTEST) -n 12 --log-cli-level debug -k "$(SINGLE_TEST)" --test_dir pp
+	-$(PYTEST) -n 12 --log-cli-level debug -k "$(SINGLE_TEST)" --test_dir=pp
 	@rm -f tests/input_samples/bom.ini
 
 deb_clean:
