@@ -75,7 +75,6 @@ def _import(name, path):
 
 
 def _load_actions(path, load_internals=False):
-    try_register_deps(dep_downloader, 'global')
     logger.debug("Importing from "+path)
     lst = glob(os.path.join(path, 'out_*.py')) + glob(os.path.join(path, 'pre_*.py'))
     lst += glob(os.path.join(path, 'var_*.py')) + glob(os.path.join(path, 'fil_*.py'))
@@ -93,6 +92,7 @@ def load_actions():
     if actions_loaded:
         return
     actions_loaded = True
+    try_register_deps(dep_downloader, 'global')
     from kibot.mcpyrate import activate
     # activate.activate()
     _load_actions(os.path.abspath(os.path.dirname(__file__)), True)
