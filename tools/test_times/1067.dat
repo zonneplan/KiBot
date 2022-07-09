@@ -1,0 +1,803 @@
+33.95s call     tests/test_plot/test_dep_downloader.py::test_dep_convert
+47
+18.61s call     tests/test_plot/test_misc.py::test_qr_lib_1
+48
+18.15s call     tests/test_plot/test_step.py::test_render_3d_variant_1
+49
+15.08s call     tests/test_plot/test_print_pcb.py::test_print_pcb_refill_1
+50
+14.60s call     tests/test_plot/test_print_pcb.py::test_print_pcb_refill_2
+51
+13.91s call     tests/test_plot/test_misc.py::test_quick_start_1
+52
+10.24s call     tests/test_plot/test_print_sch.py::test_print_sch_variant_ni_1
+53
+10.05s call     tests/test_plot/test_print_pcb.py::test_print_pcb_svg_simple_2
+54
+10.03s call     tests/test_plot/test_print_sch.py::test_print_sch_variant_ni_2
+55
+9.91s call     tests/test_plot/test_print_pcb.py::test_print_pcb_options
+56
+9.90s call     tests/test_plot/test_print_pcb.py::test_print_pcb_svg_simple_1
+57
+9.87s call     tests/test_plot/test_misc.py::test_netlist_ipc_1
+58
+9.57s call     tests/test_plot/test_print_pcb.py::test_pcb_print_simple_1
+59
+9.07s call     tests/test_plot/test_print_pcb.py::test_print_variant_1
+60
+8.91s call     tests/test_plot/test_misc.py::test_gencad_1
+61
+8.73s call     tests/test_plot/test_misc.py::test_report_simple_2
+62
+7.63s call     tests/test_plot/test_print_pcb.py::test_print_wrong_paste
+63
+7.54s call     tests/test_plot/test_print_sch.py::test_print_sch_svg_variant_ni_1
+64
+7.34s call     tests/test_plot/test_print_pcb.py::test_print_pcb_simple
+65
+7.09s call     tests/test_plot/test_print_sch.py::test_print_sch_svg_fail
+66
+7.03s call     tests/test_plot/test_print_sch.py::test_print_sch_fail
+67
+7.03s call     tests/test_plot/test_preflight.py::test_update_xml_fail
+68
+6.98s call     tests/test_plot/test_preflight.py::test_erc_fail_1
+69
+6.90s call     tests/test_plot/test_misc.py::test_makefile_1
+70
+6.86s call     tests/test_plot/test_preflight.py::test_erc_1
+71
+6.49s call     tests/test_plot/test_preflight.py::test_erc_warning_2
+72
+6.48s call     tests/test_plot/test_preflight.py::test_erc_warning_1
+73
+5.93s call     tests/test_plot/test_misc.py::test_makefile_2
+74
+5.64s call     tests/test_plot/test_misc.py::test_netlist_classic_1
+75
+5.32s call     tests/test_plot/test_step.py::test_step_1
+76
+5.08s call     tests/test_plot/test_step.py::test_step_variant_1
+77
+4.91s call     tests/test_plot/test_step.py::test_step_gl_env
+78
+4.82s call     tests/test_plot/test_preflight.py::test_update_xml_1
+79
+4.73s call     tests/test_plot/test_step.py::test_step_3
+80
+4.51s call     tests/test_plot/test_print_sch.py::test_print_sch_ok
+81
+4.51s call     tests/test_plot/test_print_sch.py::test_print_sch_svg_ok
+82
+4.24s call     tests/test_plot/test_step.py::test_step_2
+83
+3.97s call     tests/test_plot/test_ibom.py::test_ibom_variant_1
+84
+2.88s call     tests/test_plot/test_dep_downloader.py::test_dep_rar
+85
+2.82s call     tests/test_plot/test_kicost.py::test_kicost_int_variant
+86
+2.80s call     tests/test_plot/test_misc.py::test_board_view_1
+87
+2.75s call     tests/test_plot/test_kicost.py::test_kicost_simple
+88
+2.75s call     tests/test_plot/test_dep_downloader.py::test_dep_pytool
+89
+1.97s call     tests/test_plot/test_pcbdraw.py::test_pcbdraw_simple
+90
+1.94s call     tests/test_plot/test_kicost.py::test_kicost_bom_simple
+91
+1.90s call     tests/test_plot/test_pcbdraw.py::test_pcbdraw_3Rs
+92
+1.86s call     tests/test_plot/test_int_bom.py::test_int_bom_subparts_3
+93
+1.85s call     tests/test_plot/test_misc.py::test_dependencies_1
+94
+1.85s call     tests/test_plot/test_int_bom.py::test_int_bom_subparts_2
+95
+1.84s call     tests/test_plot/test_int_bom.py::test_int_bom_subparts_1
+96
+1.78s call     tests/test_plot/test_kicost.py::test_kicost_bom_sel_dist_1
+97
+1.76s call     tests/test_plot/test_kicost.py::test_kicost_bom_merge_1
+98
+1.58s call     tests/test_plot/test_dep_downloader.py::test_dep_gs
+99
+1.58s call     tests/test_plot/test_pcbdraw.py::test_pcbdraw_variant_2
+100
+1.58s call     tests/test_plot/test_pcbdraw.py::test_pcbdraw_variant_3
+101
+1.58s call     tests/test_plot/test_pcbdraw.py::test_pcbdraw_variant_1
+102
+1.44s call     tests/test_plot/test_misc.py::test_pcbdraw_fail
+103
+1.43s call     tests/test_plot/test_dep_downloader.py::test_dep_python
+104
+1.33s call     tests/test_plot/test_position.py::test_position_rot_2
+105
+1.32s call     tests/test_plot/test_position.py::test_position_rot_1
+106
+1.29s call     tests/test_plot/test_misc.py::test_report_simple_1
+107
+1.28s call     tests/test_plot/test_position.py::test_position_rot_3
+108
+1.28s call     tests/test_plot/test_position.py::test_position_rot_4
+109
+1.28s call     tests/test_plot/test_position.py::test_position_rot_5
+110
+1.27s call     tests/test_plot/test_pdf.py::test_pdf_variant_1
+111
+1.27s call     tests/test_plot/test_position.py::test_position_rot_6
+112
+1.26s call     tests/test_plot/test_misc.py::test_example_3
+113
+1.24s call     tests/test_plot/test_kicost.py::test_kicost_merge
+114
+1.24s call     tests/test_plot/test_ibom.py::test_ibom_no_ops
+115
+1.20s call     tests/test_plot/test_ibom.py::test_ibom_all_ops
+116
+1.20s call     tests/test_plot/test_ibom.py::test_ibom_1
+117
+1.18s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xlsx_1
+118
+1.17s call     tests/test_plot/test_ibom.py::test_ibom_fail
+119
+1.15s call     tests/test_plot/test_int_bom.py::test_int_bom_digikey_links_xlsx
+120
+1.15s call     tests/test_plot/test_int_bom.py::test_int_bom_digikey_link_xlsx
+121
+1.15s call     tests/test_plot/test_int_bom.py::test_int_bom_datasheet_link_xlsx
+122
+1.14s call     tests/test_plot/test_int_bom.py::test_int_bom_column_rename_xlsx
+123
+1.14s call     tests/test_plot/test_int_bom.py::test_int_bom_merge_xlsx_1
+124
+1.13s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xlsx_7
+125
+1.13s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xlsx_8
+126
+1.12s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xlsx_9
+127
+1.12s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xlsx_a
+128
+1.12s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xlsx_2
+129
+1.11s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xlsx_3
+130
+1.11s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xlsx_5
+131
+1.11s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xlsx_4
+132
+1.10s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xlsx_6
+133
+0.98s call     tests/test_plot/test_preflight.py::test_pcb_replace_1
+134
+0.98s call     tests/test_plot/test_preflight.py::test_drc_filter
+135
+0.98s call     tests/test_plot/test_pdf.py::test_pdf_refill_2
+136
+0.97s call     tests/test_plot/test_pdf.py::test_pdf_refill_1
+137
+0.97s call     tests/test_plot/test_print_sch.py::test_sch_variant_ni_1
+138
+0.96s call     tests/test_plot/test_preflight.py::test_drc_error
+139
+0.96s call     tests/test_plot/test_preflight.py::test_drc_unco
+140
+0.96s call     tests/test_plot/test_print_sch.py::test_sch_variant_ni_2
+141
+0.95s call     tests/test_plot/test_preflight.py::test_drc_1
+142
+0.91s call     tests/test_plot/test_bom.py::test_bom_cfg_2
+143
+0.90s call     tests/test_plot/test_bom.py::test_bom_cfg_1
+144
+0.90s call     tests/test_plot/test_bom.py::test_bom_ok
+145
+0.89s call     tests/test_plot/test_bom.py::test_bom_cfg_4
+146
+0.86s call     tests/test_plot/test_print_pcb.py::test_pcb_print_simple_2
+147
+0.84s call     tests/test_plot/test_dep_downloader.py::test_dep_rsvg
+148
+0.83s call     tests/test_plot/test_preflight.py::test_sch_replace_1
+149
+0.83s call     tests/test_plot/test_dep_downloader.py::test_dep_git
+150
+0.82s call     tests/test_plot/test_misc.py::test_compress_sources_1
+151
+0.82s call     tests/test_plot/test_yaml_errors.py::test_error_bom_column
+152
+0.80s call     tests/test_plot/test_bom.py::test_bom_cfg_3
+153
+0.79s call     tests/test_plot/test_int_bom.py::test_int_bom_sub_sheet_alt
+154
+0.79s call     tests/test_plot/test_misc.py::test_annotate_power_1
+155
+0.78s call     tests/test_plot/test_yaml_errors.py::test_error_bom_no_columns
+156
+0.78s call     tests/test_plot/test_misc.py::test_date_format_1
+157
+0.78s call     tests/test_plot/test_misc.py::test_expand_comment_1
+158
+0.78s call     tests/test_plot/test_bom.py::test_bom_fail
+159
+0.76s call     tests/test_plot/test_misc.py::test_report_edge_1
+160
+0.76s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_t1
+161
+0.74s call     tests/test_plot/test_gerber.py::test_gerber_variant_1
+162
+0.73s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_cl_gl
+163
+0.73s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_glb
+164
+0.73s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_cli
+165
+0.73s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_t3
+166
+0.72s call     tests/test_plot/test_gerber.py::test_gerber_protel_2
+167
+0.72s call     tests/test_plot/test_gerber.py::test_gerber_inner_ok
+168
+0.71s call     tests/test_plot/test_int_bom.py::test_int_bom_collision
+169
+0.71s call     tests/test_plot/test_misc.py::test_annotate_pcb_btrl
+170
+0.71s call     tests/test_plot/test_misc.py::test_annotate_pcb_lrtb
+171
+0.71s call     tests/test_plot/test_misc.py::test_annotate_pcb_tbrl_big_grid
+172
+0.71s call     tests/test_plot/test_misc.py::test_annotate_pcb_lrbt
+173
+0.71s call     tests/test_plot/test_misc.py::test_annotate_pcb_tbrl_small_grid
+174
+0.71s call     tests/test_plot/test_preflight.py::test_erc_fail_2
+175
+0.71s call     tests/test_plot/test_misc.py::test_annotate_pcb_rlbt
+176
+0.70s call     tests/test_plot/test_misc.py::test_annotate_pcb_btlr
+177
+0.70s call     tests/test_plot/test_int_bom.py::test_int_bom_exclude_any
+178
+0.70s call     tests/test_plot/test_misc.py::test_annotate_pcb_rltb
+179
+0.70s call     tests/test_plot/test_misc.py::test_annotate_pcb_tblr
+180
+0.70s call     tests/test_plot/test_preflight.py::test_drc_fail
+181
+0.70s call     tests/test_plot/test_position.py::test_position_variant_t2i
+182
+0.69s call     tests/test_plot/test_misc.py::test_import_4
+183
+0.69s call     tests/test_plot/test_misc.py::test_disable_default_1
+184
+0.69s call     tests/test_plot/test_misc.py::test_import_3
+185
+0.69s call     tests/test_plot/test_int_bom.py::test_int_bom_fil_2
+186
+0.69s call     tests/test_plot/test_misc.py::test_help_outputs
+187
+0.69s call     tests/test_plot/test_preflight.py::test_set_text_variables_1
+188
+0.69s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_t2if
+189
+0.69s call     tests/test_plot/test_misc.py::test_import_2
+190
+0.69s call     tests/test_plot/test_yaml_errors.py::test_error_aggregate_miss_file
+191
+0.69s call     tests/test_plot/test_misc.py::test_pdfunite_1
+192
+0.68s call     tests/test_plot/test_misc.py::test_empty_zip
+193
+0.68s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_t2is
+194
+0.68s call     tests/test_plot/test_int_bom.py::test_int_bom_datasheet_link
+195
+0.68s call     tests/test_plot/test_int_bom.py::test_int_bom_digikey_links
+196
+0.68s call     tests/test_plot/test_int_bom.py::test_int_bom_digikey_link
+197
+0.68s call     tests/test_plot/test_misc.py::test_pdfunite_2
+198
+0.68s call     tests/test_plot/test_int_bom.py::test_int_bom_column_rename_html
+199
+0.68s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_t2kf
+200
+0.68s call     tests/test_plot/test_misc.py::test_import_1
+201
+0.68s call     tests/test_plot/test_yaml_errors.py::test_error_int_bom_invalid_col
+202
+0.68s call     tests/test_plot/test_int_bom.py::test_int_bom_sort_2
+203
+0.68s call     tests/test_plot/test_int_bom.py::test_int_bom_sort_3
+204
+0.68s call     tests/test_plot/test_int_bom.py::test_int_bom_no_xlsx_support
+205
+0.68s call     tests/test_plot/test_int_bom.py::test_int_bom_fil_1
+206
+0.68s call     tests/test_plot/test_yaml_errors.py::test_error_int_bom_logo_format
+207
+0.67s call     tests/test_plot/test_int_bom.py::test_int_bom_merge_html_1
+208
+0.67s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_rename_2
+209
+0.67s call     tests/test_plot/test_int_bom.py::test_int_bom_column_rename_xml
+210
+0.67s call     tests/test_plot/test_int_bom.py::test_int_bom_sort_1
+211
+0.67s call     tests/test_plot/test_int_bom.py::test_int_bom_merge_csv_1
+212
+0.67s call     tests/test_plot/test_gerber.py::test_gerber_protel_1
+213
+0.67s call     tests/test_plot/test_drill.py::test_drill_3Rs
+214
+0.67s call     tests/test_plot/test_misc.py::test_compress_fail_deps
+215
+0.67s call     tests/test_plot/test_misc.py::test_date_format_2
+216
+0.67s call     tests/test_plot/test_drill.py::test_drill_single_3Rs
+217
+0.67s call     tests/test_plot/test_int_bom.py::test_int_bom_column_rename_csv
+218
+0.67s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_rename_1
+219
+0.67s call     tests/test_plot/test_yaml_errors.py::test_extends_1
+220
+0.67s call     tests/test_plot/test_misc.py::test_download_datasheets_1
+221
+0.67s call     tests/test_plot/test_int_bom.py::test_int_bom_column_sensitive
+222
+0.67s call     tests/test_plot/test_int_bom.py::test_int_bom_merge_xml_1
+223
+0.67s call     tests/test_plot/test_drill.py::test_drill_legacy_s_3Rs
+224
+0.66s call     tests/test_plot/test_yaml_errors.py::test_error_hpgl_pen_num
+225
+0.66s call     tests/test_plot/test_yaml_errors.py::test_error_wrong_drill_marks_1
+226
+0.66s call     tests/test_plot/test_svg.py::test_svg_technical
+227
+0.66s call     tests/test_plot/test_yaml_errors.py::test_error_gerber_precision
+228
+0.66s call     tests/test_plot/test_yaml_errors.py::test_error_wrong_boolean
+229
+0.66s call     tests/test_plot/test_position.py::test_position_rot_bottom
+230
+0.66s call     tests/test_plot/test_drill.py::test_drill_legacy_3Rs
+231
+0.66s call     tests/test_plot/test_svg.py::test_svg_copper_and_user
+232
+0.66s call     tests/test_plot/test_svg.py::test_svg_copper_and_cmt
+233
+0.66s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_html_1
+234
+0.66s call     tests/test_plot/test_yaml_errors.py::test_error_fil_unknown
+235
+0.66s call     tests/test_plot/test_svg.py::test_svg_anchor
+236
+0.66s call     tests/test_plot/test_svg.py::test_svg_copper_and_draw
+237
+0.66s call     tests/test_plot/test_misc.py::test_pdfunite_no_input
+238
+0.66s call     tests/test_plot/test_misc.py::test_help_output_plugin_1
+239
+0.66s call     tests/test_plot/test_yaml_errors.py::test_error_pcbdraw_comp_key
+240
+0.66s call     tests/test_plot/test_misc.py::test_example_7
+241
+0.66s call     tests/test_plot/test_yaml_errors.py::test_error_bom_no_field
+242
+0.66s call     tests/test_plot/test_int_bom.py::test_int_bom_repeat_csv
+243
+0.66s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_html_2
+244
+0.66s call     tests/test_plot/test_int_bom.py::test_int_bom_html_generate_dnf
+245
+0.65s call     tests/test_plot/test_svg.py::test_svg_all
+246
+0.65s call     tests/test_plot/test_misc.py::test_auto_pcb_and_cfg_2
+247
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_no_column_id
+248
+0.65s call     tests/test_plot/test_misc.py::test_auto_pcb_and_cfg_1
+249
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_include_only
+250
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_alias_csv
+251
+0.65s call     tests/test_plot/test_gerber.py::test_gerber_inner_wrong
+252
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_int_bom_no_field
+253
+0.65s call     tests/test_plot/test_misc.py::test_cli_order
+254
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_use_alt_2
+255
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_aggregate_no_file
+256
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_int_bom_unknown_style
+257
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_t2s
+258
+0.65s call     tests/test_plot/test_pdf.py::test_pdf
+259
+0.65s call     tests/test_plot/test_misc.py::test_select_output
+260
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_alias_nm_csv
+261
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_color
+262
+0.65s call     tests/test_plot/test_misc.py::test_example_5
+263
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_ref_separator
+264
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_makefile_wrong_out
+265
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_bom_wrong_format
+266
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_var_unknown
+267
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_int_bom_miss_logo
+268
+0.65s call     tests/test_plot/test_misc.py::test_pdfunite_wrong_input
+269
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_html_8
+270
+0.65s call     tests/test_plot/test_position.py::test_position_3Rs_unified_th_csv
+271
+0.65s call     tests/test_plot/test_yaml_errors.py::test_wrong_layer_3
+272
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_csv
+273
+0.65s call     tests/test_plot/test_position.py::test_position_3Rs_1
+274
+0.65s call     tests/test_plot/test_gerber.py::test_gerber_2layer
+275
+0.65s call     tests/test_plot/test_position.py::test_position_3Rs_unified_th
+276
+0.65s call     tests/test_plot/test_ps.py::test_ps
+277
+0.65s call     tests/test_plot/test_yaml_errors.py::test_drill_report_wrong_type_3
+278
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_t2b
+279
+0.65s call     tests/test_plot/test_misc.py::test_example_4
+280
+0.65s call     tests/test_plot/test_yaml_errors.py::test_wrong_layer_1
+281
+0.65s call     tests/test_plot/test_yaml_errors.py::test_wrong_layer_6
+282
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_step_min_distance
+283
+0.65s call     tests/test_plot/test_position.py::test_position_3Rs_inches_csv
+284
+0.65s call     tests/test_plot/test_position.py::test_position_csv_cols
+285
+0.65s call     tests/test_plot/test_yaml_errors.py::test_out_unknown_attr
+286
+0.65s call     tests/test_plot/test_svg.py::test_svg
+287
+0.65s call     tests/test_plot/test_dxf.py::test_dxf
+288
+0.65s call     tests/test_plot/test_yaml_errors.py::test_wrong_layer_2
+289
+0.65s call     tests/test_plot/test_yaml_errors.py::test_wrong_layer_9
+290
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_int_bom_miss_style
+291
+0.65s call     tests/test_plot/test_position.py::test_position_3Rs_neg_x
+292
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_use_alt_1
+293
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_xml
+294
+0.65s call     tests/test_plot/test_yaml_errors.py::test_drill_report_wrong_type_2
+295
+0.65s call     tests/test_plot/test_yaml_errors.py::test_drill_map_no_type_2
+296
+0.65s call     tests/test_plot/test_yaml_errors.py::test_wrong_layer_5
+297
+0.65s call     tests/test_plot/test_yaml_errors.py::test_wrong_layer_7
+298
+0.65s call     tests/test_plot/test_yaml_errors.py::test_no_layers
+299
+0.65s call     tests/test_plot/test_yaml_errors.py::test_drill_map_wrong_type_1
+300
+0.65s call     tests/test_plot/test_yaml_errors.py::test_wrong_layer_4
+301
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_print_pcb_no_layer
+302
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_html_9
+303
+0.65s call     tests/test_plot/test_yaml_errors.py::test_drill_map_wrong_type_3
+304
+0.65s call     tests/test_plot/test_hpgl.py::test_hpgl
+305
+0.65s call     tests/test_plot/test_yaml_errors.py::test_drill_report_no_type_2
+306
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_t2c
+307
+0.65s call     tests/test_plot/test_misc.py::test_example_2
+308
+0.65s call     tests/test_plot/test_yaml_errors.py::test_drill_report_no_type_1
+309
+0.65s call     tests/test_plot/test_position.py::test_position_3Rs_csv
+310
+0.65s call     tests/test_plot/test_svg.py::test_svg_selected
+311
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_wrong_variant
+312
+0.65s call     tests/test_plot/test_position.py::test_position_3Rs_unified
+313
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_txt
+314
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_csv_no_extra
+315
+0.65s call     tests/test_plot/test_yaml_errors.py::test_error_step_origin
+316
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_join_2
+317
+0.65s call     tests/test_plot/test_ps.py::test_ps_auto
+318
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_html_6
+319
+0.65s call     tests/test_plot/test_misc.py::test_list
+320
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_csv_no_stats
+321
+0.65s call     tests/test_plot/test_yaml_errors.py::test_drill_map_no_type_1
+322
+0.65s call     tests/test_plot/test_hpgl.py::test_hpgl_auto
+323
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_csv_no_info
+324
+0.65s call     tests/test_plot/test_int_bom.py::test_int_include_dnf
+325
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_html_3
+326
+0.65s call     tests/test_plot/test_yaml_errors.py::test_drill_map_wrong_type_2
+327
+0.65s call     tests/test_plot/test_position.py::test_position_3Rs_inches
+328
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_no_group_csv
+329
+0.65s call     tests/test_plot/test_yaml_errors.py::test_wrong_layer_8
+330
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_html_5
+331
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_no_number_rows
+332
+0.65s call     tests/test_plot/test_int_bom.py::test_int_bom_refuse_no_sep
+333
+0.64s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_html_4
+334
+0.64s call     tests/test_plot/test_yaml_errors.py::test_error_import_no_outputs
+335
+0.64s call     tests/test_plot/test_int_bom.py::test_int_bom_join_1
+336
+0.64s call     tests/test_plot/test_print_sch.py::test_sch_missing_1
+337
+0.64s call     tests/test_plot/test_int_bom.py::test_int_bom_variant_5
+338
+0.64s call     tests/test_plot/test_misc.py::test_miss_sch
+339
+0.64s call     tests/test_plot/test_print_sch.py::test_sch_missing_filtered
+340
+0.64s call     tests/test_plot/test_int_bom.py::test_int_bom_fil_dummy
+341
+0.64s call     tests/test_plot/test_position.py::test_position_3Rs_unified_csv
+342
+0.64s call     tests/test_plot/test_misc.py::test_help_output_plugin_4
+343
+0.64s call     tests/test_plot/test_int_bom.py::test_int_bom_group_connectors
+344
+0.64s call     tests/test_plot/test_int_bom.py::test_int_bom_no_group_connectors
+345
+0.64s call     tests/test_plot/test_misc.py::test_help_output_plugin_3
+346
+0.64s call     tests/test_plot/test_misc.py::test_help_output_plugin_2
+347
+0.64s call     tests/test_plot/test_sch_errors.py::test_imported_k6
+348
+0.64s call     tests/test_plot/test_int_bom.py::test_int_bom_simple_html_7
+349
+0.64s call     tests/test_plot/test_yaml_errors.py::test_goutput_not_string
+350
+0.63s call     tests/test_plot/test_misc.py::test_auto_pcb_and_cfg_4
+351
+0.63s call     tests/test_plot/test_misc.py::test_example_1
+352
+0.63s call     tests/test_plot/test_misc.py::test_skip_pre_and_outputs_2
+353
+0.63s call     tests/test_plot/test_yaml_errors.py::test_unk_global
+354
+0.63s call     tests/test_plot/test_misc.py::test_unknown_out_name_2
+355
+0.63s call     tests/test_plot/test_misc.py::test_miss_pcb_2
+356
+0.63s call     tests/test_plot/test_misc.py::test_unknown_out_name_1
+357
+0.63s call     tests/test_plot/test_yaml_errors.py::test_same_name_3
+358
+0.63s call     tests/test_plot/test_misc.py::test_skip_pre_and_outputs_4
+359
+0.63s call     tests/test_plot/test_misc.py::test_skip_pre_and_outputs
+360
+0.63s call     tests/test_plot/test_misc.py::test_auto_pcb_and_cfg_5
+361
+0.63s call     tests/test_plot/test_misc.py::test_skip_pre_and_outputs_3
+362
+0.63s call     tests/test_plot/test_yaml_errors.py::test_error_var_no_list
+363
+0.63s call     tests/test_plot/test_yaml_errors.py::test_same_name_1
+364
+0.63s call     tests/test_plot/test_misc.py::test_auto_pcb_and_cfg_3
+365
+0.63s call     tests/test_plot/test_yaml_errors.py::test_error_rot_not_two
+366
+0.63s call     tests/test_plot/test_yaml_errors.py::test_error_wrong_import_type
+367
+0.63s call     tests/test_plot/test_yaml_errors.py::test_same_name_2
+368
+0.63s call     tests/test_plot/test_yaml_errors.py::test_error_rot_not_number
+369
+0.63s call     tests/test_plot/test_yaml_errors.py::test_error_import_not_str
+370
+0.63s call     tests/test_plot/test_yaml_errors.py::test_error_wrong_fil_name
+371
+0.63s call     tests/test_plot/test_yaml_errors.py::test_error_var_empty_type
+372
+0.63s call     tests/test_plot/test_yaml_errors.py::test_error_var_no_type
+373
+0.63s call     tests/test_plot/test_yaml_errors.py::test_error_import_miss_file
+374
+0.62s call     tests/test_plot/test_misc.py::test_corrupted_pcb
+375
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_rot_no_rotations
+376
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_fil_no_list
+377
+0.62s call     tests/test_plot/test_misc.py::test_skip_pre_and_outputs_5
+378
+0.62s call     tests/test_plot/test_yaml_errors.py::test_empty_name
+379
+0.62s call     tests/test_plot/test_yaml_errors.py::test_out_needs_type
+380
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_var_empty_name
+381
+0.62s call     tests/test_plot/test_yaml_errors.py::test_filter_wrong_entry
+382
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_yaml
+383
+0.62s call     tests/test_plot/test_yaml_errors.py::test_no_type
+384
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_var_wrong_type
+385
+0.62s call     tests/test_plot/test_misc.py::test_miss_yaml
+386
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_var_no_name
+387
+0.62s call     tests/test_plot/test_yaml_errors.py::test_wrong_global
+388
+0.62s call     tests/test_plot/test_sch_errors.py::test_sch_errors_no_signature
+389
+0.62s call     tests/test_plot/test_yaml_errors.py::test_filter_no_number_1
+390
+0.62s call     tests/test_plot/test_misc.py::test_unknown_out_type
+391
+0.62s call     tests/test_plot/test_yaml_errors.py::test_filter_no_number_2
+392
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_wrong_type_1
+393
+0.62s call     tests/test_plot/test_yaml_errors.py::test_filter_no_regex_1
+394
+0.62s call     tests/test_plot/test_misc.py::test_miss_pcb
+395
+0.62s call     tests/test_plot/test_misc.py::test_help_filters
+396
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_wrong_type_2
+397
+0.62s call     tests/test_plot/test_yaml_errors.py::test_wrong_version_2
+398
+0.62s call     tests/test_plot/test_yaml_errors.py::test_unk_section
+399
+0.62s call     tests/test_plot/test_yaml_errors.py::test_filter_not_list
+400
+0.62s call     tests/test_plot/test_misc.py::test_miss_yaml_2
+401
+0.62s call     tests/test_plot/test_yaml_errors.py::test_wrong_version_3
+402
+0.62s call     tests/test_plot/test_yaml_errors.py::test_no_name
+403
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_wrong_type_4
+404
+0.62s call     tests/test_plot/test_misc.py::test_help_output
+405
+0.62s call     tests/test_plot/test_misc.py::test_miss_sch_2
+406
+0.62s call     tests/test_plot/test_yaml_errors.py::test_out_not_list
+407
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_wrong_type_3
+408
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_pre_list
+409
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_wrong_type_5
+410
+0.62s call     tests/test_plot/test_yaml_errors.py::test_wrong_version
+411
+0.62s call     tests/test_plot/test_yaml_errors.py::test_no_version
+412
+0.62s call     tests/test_plot/test_yaml_errors.py::test_error_pre_unk
+413
+0.62s call     tests/test_plot/test_misc.py::test_help_preflights
+414
+0.62s call     tests/test_plot/test_misc.py::test_help_list_outputs
+415
+0.62s call     tests/test_plot/test_misc.py::test_example_6
+416
+0.61s call     tests/test_plot/test_misc.py::test_help_output_unk
+417
+0.60s call     tests/test_plot/test_misc_2.py::test_step_fail
+418
+0.47s call     tests/test_plot/test_misc.py::test_wrong_global_redef
+419
+0.46s call     tests/test_plot/test_misc.py::test_help
+420
+0.41s call     tests/test_plot/test_pcbdraw.py::test_pcbdraw_miss_rsvg
+421
+0.41s call     tests/test_plot/test_pcbdraw.py::test_pcbdraw_miss_convert
+422
+0.34s call     tests/test_plot/test_misc.py::test_old_pcbnew
+423
+0.33s call     tests/test_plot/test_misc.py::test_no_pcbnew
+424
+0.30s call     tests/test_plot/test_misc_2.py::test_pre_xrc_fail
+425
+0.28s call     tests/test_plot/test_kicad_config_errors.py::test_config_redirect
+426
+0.26s call     tests/test_plot/test_kicad_config_errors.py::test_kicad_conf_guess_libs
+427
+0.26s call     tests/test_plot/test_kicad_config_errors.py::test_kicad_conf_xdg
+428
+0.26s call     tests/test_plot/test_kicad_config_errors.py::test_kicad_conf_lib_env
+429
+0.26s call     tests/test_plot/test_kicad_config_errors.py::test_kicad_conf_user
+430
+0.26s call     tests/test_plot/test_kicad_config_errors.py::test_kicad_conf_no_conf
+431
+0.25s call     tests/test_plot/test_misc.py::test_no_yaml
+432
+0.25s call     tests/test_plot/test_kicad_config_errors.py::test_kicad_conf_sym_err_1
+433
+0.25s call     tests/test_plot/test_kicad_config_errors.py::test_kicad_conf_sym_err_2
+434
+0.21s call     tests/test_plot/test_misc_2.py::test_ibom_parse_fail
+435
+0.16s call     tests/test_plot/test_misc_2.py::test_rar_fail
+436
+0.13s call     tests/test_plot/test_misc.py::test_no_colorama
+437
+0.01s call     tests/test_plot/test_kicad_config_errors.py::test_kicad_conf_no_instance
+438
+0.01s call     tests/test_plot/test_kicad_config_errors.py::test_kicad_conf_local_conf
+439
+0.01s call     tests/test_plot/test_misc_2.py::test_search_as_plugin_ok
+440
+0.01s call     tests/test_plot/test_misc_2.py::test_makefile_kibot_sys
+441
+0.01s call     tests/test_plot/test_misc_2.py::test_unimplemented_layer
+442
+0.01s call     tests/test_plot/test_misc_2.py::test_search_as_plugin_fail
+443
+0.01s call     tests/test_plot/test_misc_2.py::test_unknown_prefix
+444
+0.01s call     tests/test_plot/test_misc_2.py::test_no_get_targets
+445
+0.01s call     tests/test_plot/test_misc_2.py::test_bom_no_sch
+446
+0.01s call     tests/test_plot/test_misc_2.py::test_var_rename_no_variant
+447
+0.01s call     tests/test_plot/test_misc_2.py::test_layer_no_id
