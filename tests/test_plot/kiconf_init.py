@@ -14,7 +14,11 @@ if prev_dir not in sys.path:
     sys.path.insert(0, prev_dir)
 # One more level for the project
 prev_dir = os.path.dirname(prev_dir)
-if prev_dir not in sys.path:
+if sys.path[0] != prev_dir:
+    try:
+        sys.path.remove(prev_dir)
+    except ValueError:
+        pass
     sys.path.insert(0, prev_dir)
 
 import kibot.log as log
