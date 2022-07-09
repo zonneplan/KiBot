@@ -49,6 +49,10 @@ jobs:
         rm -f tests/.local
         mkdir output_fast
         mkdir output_slow
+        echo pwd
+        pwd
+        ls -la
+        echo -----------------
         pip3 install --upgrade pytest
         pip3 install --upgrade pytest-xdist
         python3-coverage erase
@@ -59,8 +63,18 @@ jobs:
         # Run the 90% faster tests (under 3 s)
         # Do it in parallel
         pytest -v --durations=0 -m "not slow" -n 2 --test_dir=output_fast
+        echo -----------------
+        ls -la
+        ls -lad output_fast
+        ls -la output_fast
+        echo -----------------
         # Run the slowest at the end and exit on the first error
         pytest -v --durations=0 -m slow -x --test_dir=output_slow
+        echo -----------------
+        ls -la
+        ls -lad output_slow
+        ls -la output_slow
+        echo -----------------
         python3-coverage combine
         python3-coverage report
         python3-coverage html -d output/htmlcov
