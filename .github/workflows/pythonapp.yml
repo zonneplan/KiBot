@@ -44,48 +44,32 @@ jobs:
         flake8 . --count --exit-zero --statistics
     - name: Test ${{ matrix.ki_release }}
       run: |
-        rm -rf output_fast
-        rm -rf output_slow
+        rm -rf output
         rm -f tests/.local
-        mkdir output_fast
-        mkdir output_slow
-        echo pwd
-        pwd
-        ls -la
-        echo -----------------
+        # The KiCad 5 image currently has a very old pytest (no parallel run)
         pip3 install --upgrade pytest
         pip3 install --upgrade pytest-xdist
+        # Ensure we start a fresh coverage meassurement
         python3-coverage erase
         # Create the caches with macros
         python3-coverage run src/kibot --help-outputs > /dev/null
         # Individual run for specific tests
-        # pytest --log-cli-level debug -k "test_ibom_parse_fail" --test_dir=output_fast
+        # pytest --log-cli-level debug -k "test_ibom_parse_fail" --test_dir=output
         # Run the 90% faster tests (under 3 s)
         # Do it in parallel
-        pytest -v --durations=0 -m "not slow" -n 2 --test_dir=output_fast
-        echo -----------------
-        ls -la
-        ls -lad output_fast
-        ls -la output_fast
-        echo -----------------
+        pytest -v --durations=0 -m "not slow" -n 2 --test_dir=output
         # Run the slowest at the end and exit on the first error
-        pytest -v --durations=0 -m slow -x --test_dir=output_slow
-        echo -----------------
-        ls -la
-        ls -lad output_slow
-        ls -la output_slow
-        echo -----------------
+        pytest -v --durations=0 -m slow -x --test_dir=output
         python3-coverage combine
         python3-coverage report
         python3-coverage html -d output/htmlcov
     - name: Store results
       if: ${{ always() }}
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3
       with:
         name: Test_Output_${{ matrix.ki_release }}
-        path: |
-          output_fast
-          output_slow
+        # Important! empty directories are skipped!!!!
+        path: output
     - name: Upload Coverage
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
