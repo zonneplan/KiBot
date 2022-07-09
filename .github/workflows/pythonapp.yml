@@ -48,7 +48,7 @@ jobs:
         rm -f tests/.local
         python3-coverage erase
         # Create the caches with macros
-        python3-coverage run -a src/kibot --help-outputs > /dev/null
+        python3-coverage run src/kibot --help-outputs > /dev/null
         # Individual run for specific tests
         # pytest-3 --log-cli-level debug -k "test_ibom_parse_fail" --test_dir output
         # Run the 90% faster tests (under 3 s)
