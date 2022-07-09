@@ -84,6 +84,7 @@ class GS(object):
     # Name for the output we are generating
     current_output = None
     test_boolean = True
+    test_number = 5
     stackup = None
     #
     # Global defaults
