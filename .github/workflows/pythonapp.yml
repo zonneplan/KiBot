@@ -46,9 +46,10 @@ jobs:
       run: |
         rm -rf output
         rm -f tests/.local
-        python3-coverage erase
+        pip3 install --upgrade coverage
+        coverage3 erase
         # Create the caches with macros
-        python3-coverage run src/kibot --help-outputs > /dev/null
+        coverage3 run src/kibot --help-outputs > /dev/null
         # Individual run for specific tests
         # pytest-3 --log-cli-level debug -k "test_ibom_parse_fail" --test_dir output
         # Run the 90% faster tests (under 3 s)
@@ -56,9 +57,9 @@ jobs:
         pytest-3 -v --durations=0 -m "not slow" -n 2 --test_dir output
         # Run the slowest at the end and exit on the first error
         pytest-3 -v --durations=0 -m slow -x --test_dir output
-        python3-coverage combine
-        python3-coverage report
-        python3-coverage html -d output/htmlcov
+        coverage3 combine
+        coverage3 report
+        coverage3 html -d output/htmlcov
     - name: Store results
       if: ${{ always() }}
       uses: actions/upload-artifact@v1
