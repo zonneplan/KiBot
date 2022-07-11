@@ -1844,7 +1844,7 @@ Notes:
         - **`format`**: [string='HTML'] [HTML,CSV,XML,XLSX] Format for the BoM.
         - **`number`**: [number=1] Number of boards to build (components multiplier).
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=bom). Affected by global options.
-        - `conf`: [string|dict] BoM configuration file, relative to PCB.
+        - `conf`: [string|dict] BoM configuration file, relative to PCB. Environment variables and ~ allowed.
                   You can also define the configuration here, will be stored in `config.kibom.ini`.
           * Valid keys:
             - **`columns`**: [list(dict)|list(string)] List of columns to display.
@@ -2588,6 +2588,7 @@ Notes:
                             In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`.
         - **`output`**: [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options.
         - **`template`**: [string='full'] Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+                          Environment variables and ~ are allowed.
                           Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
         - `convert_from`: [string='markdown'] Original format for the report conversion. Current templates are `markdown`. See `do_convert`.
         - `converted_output`: [string='%f-%i%I%v.%x'] Converted output file name (%i='report', %x=`convert_to`).

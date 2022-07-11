@@ -177,6 +177,7 @@ class ReportOptions(BaseOptions):
             """ *Output file name (%i='report', %x='txt') """
             self.template = 'full'
             """ *Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+                Environment variables and ~ are allowed.
                 Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`) """
             self.convert_from = 'markdown'
             """ Original format for the report conversion. Current templates are `markdown`. See `do_convert` """
@@ -212,6 +213,8 @@ class ReportOptions(BaseOptions):
         if self.template.lower() in ('full', 'simple', 'full_svg'):
             self.template = os.path.abspath(os.path.join(os.path.dirname(__file__), 'report_templates',
                                             'report_'+self.template.lower()+'.txt'))
+        if not os.path.isabs(self.template):
+            self.template = os.path.expandvars(os.path.expanduser(self.template))
         if not os.path.isfile(self.template):
             raise KiPlotConfigurationError("Missing report template: `{}`".format(self.template))
         m = re.match(r'(\d+)([A-F])', self.eurocircuits_class_target)
