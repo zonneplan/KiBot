@@ -177,6 +177,7 @@ class ReportOptions(BaseOptions):
             """ *Output file name (%i='report', %x='txt') """
             self.template = 'full'
             """ *Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+                Environment variables and ~ are allowed.
                 Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`) """
             self.convert_from = 'markdown'
             """ Original format for the report conversion. Current templates are `markdown`. See `do_convert` """
