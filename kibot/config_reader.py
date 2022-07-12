@@ -261,7 +261,8 @@ class CfgYamlReader(object):
     def _parse_import_filters(self, filters, explicit_fils, fn_rel, data, imported):
         sel_fils = {}
         if (filters is None or len(filters) > 0) and 'filters' in data:
-            i_fils = imported.filters.update(self._parse_filters(data['filters']))
+            imported.filters.update(self._parse_filters(data['filters']))
+            i_fils = imported.filters
             if filters is not None:
                 for f in filters:
                     if f in i_fils:
@@ -281,7 +282,8 @@ class CfgYamlReader(object):
     def _parse_import_variants(self, vars, explicit_vars, fn_rel, data, imported):
         sel_vars = {}
         if (vars is None or len(vars) > 0) and 'variants' in data:
-            i_vars = imported.variants.update(self._parse_variants(data['variants']))
+            imported.variants.update(self._parse_variants(data['variants']))
+            i_vars = imported.variants
             if vars is not None:
                 for f in vars:
                     if f in i_vars:
