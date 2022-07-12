@@ -857,7 +857,7 @@ def test_import_8(test_dir):
     ctx = context.TestContext(test_dir, prj, 'import_test_8')
     ctx.run(extra=[])
     ctx.expect_out_file('JLCPCB/light_control_cpl_jlc.csv')
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_disable_default_1(test_dir):
