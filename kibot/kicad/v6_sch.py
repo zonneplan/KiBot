@@ -896,15 +896,16 @@ class LibComponent(object):
         for c in range(self.unit_count):
             name = self.name+"_"+str(c+1)
             box = Box()
-            unit_with_graphs = None
+            units_with_graphs = []
             for unit in self.units:
                 # Unit 0 is part of unit 1
                 if unit.name.startswith(name) or (c == 0 and unit.name.startswith(name0)):
                     box.union(unit.box)
                     if len(unit.draw):
-                        unit_with_graphs = unit
-            if unit_with_graphs:
-                unit_with_graphs.cross_box = box
+                        units_with_graphs.append(unit)
+            if units_with_graphs:
+                for u in units_with_graphs:
+                    u.cross_box = box
 
     def write_cross(s, sdata):
         """ Add the cross drawing """
