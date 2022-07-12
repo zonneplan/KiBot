@@ -1,0 +1,17 @@
+kibot:
+  version: 1
+
+import:
+  # Here we change the global.output pattern
+  - file: global_import.kibot.yaml
+  - file: import_test_6b.kibot.yaml
+    outputs: position
+
+outputs:
+  - name: 'position_mine'
+    comment: "Pick and place file"
+    type: position
+    dir: positiondir
+    extends: position
+    options:
+      separate_files_for_front_and_back: false

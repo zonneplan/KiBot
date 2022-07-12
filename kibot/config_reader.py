@@ -45,6 +45,16 @@ except ImportError:
     exit(NO_YAML_MODULE)
 
 
+class CollectedImports(object):
+    def __init__(self):
+        super().__init__()
+        self.outputs = []
+        self.filters = {}
+        self.variants = {}
+        self.globals = {}
+        self.preflights = []
+
+
 class CfgYamlReader(object):
     def __init__(self):
         super().__init__()
@@ -227,15 +237,15 @@ class CfgYamlReader(object):
             return values
         CfgYamlReader._config_error_import(fname, '`{}` must be a string or a list ({})'.format(kind, str(v)))
 
-    def _parse_import_outputs(self, outs, explicit_outs, fn_rel, data):
+    def _parse_import_outputs(self, outs, explicit_outs, fn_rel, data, imported):
+        sel_outs = []
         if (outs is None or len(outs) > 0) and 'outputs' in data:
-            i_outs = self._parse_outputs(data['outputs'])
+            i_outs = imported.outputs+self._parse_outputs(data['outputs'])
             if outs is not None:
-                sel_outs = []
                 for o in i_outs:
                     if o.name in outs:
                         sel_outs.append(o)
-                        outs.remove(o)
+                        outs.remove(o.name)
                 for o in outs:
                     logger.warning(W_UNKOUT+"can't import `{}` output from `{}` (missing)".format(o, fn_rel))
             else:
@@ -243,19 +253,16 @@ class CfgYamlReader(object):
             if len(sel_outs) == 0:
                 logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
             else:
-                try:
-                    RegOutput.add_outputs(sel_outs, fn_rel)
-                except KiPlotConfigurationError as e:
-                    config_error(str(e))
                 logger.debug('Outputs loaded from `{}`: {}'.format(fn_rel, list(map(lambda c: c.name, sel_outs))))
         if outs is None and explicit_outs and 'outputs' not in data:
             logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
+        return sel_outs
 
-    def _parse_import_filters(self, filters, explicit_fils, fn_rel, data):
+    def _parse_import_filters(self, filters, explicit_fils, fn_rel, data, imported):
+        sel_fils = {}
         if (filters is None or len(filters) > 0) and 'filters' in data:
-            i_fils = self._parse_filters(data['filters'])
+            i_fils = imported.filters.update(self._parse_filters(data['filters']))
             if filters is not None:
-                sel_fils = {}
                 for f in filters:
                     if f in i_fils:
                         sel_fils[f] = i_fils[f]
@@ -266,16 +273,16 @@ class CfgYamlReader(object):
             if len(sel_fils) == 0:
                 logger.warning(W_NOFILTERS+"No filters found in `{}`".format(fn_rel))
             else:
-                RegOutput.add_filters(sel_fils)
                 logger.debug('Filters loaded from `{}`: {}'.format(fn_rel, sel_fils.keys()))
         if filters is None and explicit_fils and 'filters' not in data:
             logger.warning(W_NOFILTERS+"No filters found in `{}`".format(fn_rel))
+        return sel_fils
 
-    def _parse_import_variants(self, vars, explicit_vars, fn_rel, data):
+    def _parse_import_variants(self, vars, explicit_vars, fn_rel, data, imported):
+        sel_vars = {}
         if (vars is None or len(vars) > 0) and 'variants' in data:
-            i_vars = self._parse_variants(data['variants'])
+            i_vars = imported.variants.update(self._parse_variants(data['variants']))
             if vars is not None:
-                sel_vars = {}
                 for f in vars:
                     if f in i_vars:
                         sel_vars[f] = i_vars[f]
@@ -286,18 +293,20 @@ class CfgYamlReader(object):
             if len(sel_vars) == 0:
                 logger.warning(W_NOVARIANTS+"No variants found in `{}`".format(fn_rel))
             else:
-                RegOutput.add_variants(sel_vars)
                 logger.debug('Variants loaded from `{}`: {}'.format(fn_rel, sel_vars.keys()))
         if vars is None and explicit_vars and 'variants' not in data:
             logger.warning(W_NOVARIANTS+"No variants found in `{}`".format(fn_rel))
+        return sel_vars
 
-    def _parse_import_globals(self, globals, explicit_globals, fn_rel, data):
+    def _parse_import_globals(self, globals, explicit_globals, fn_rel, data, imported):
+        sel_globals = {}
         if (globals is None or len(globals) > 0) and 'global' in data:
             i_globals = data['global']
             if not isinstance(i_globals, dict):
                 config_error("Incorrect `global` section (must be a dict), while importing from {}".format(fn_rel))
+            imported.globals.update(i_globals)
+            i_globals = imported.globals
             if globals is not None:
-                sel_globals = {}
                 for f in globals:
                     if f in i_globals:
                         sel_globals[f] = i_globals[f]
@@ -308,18 +317,22 @@ class CfgYamlReader(object):
             if len(sel_globals) == 0:
                 logger.warning(W_NOGLOBALS+"No globals found in `{}`".format(fn_rel))
             else:
-                self.imported_globals.update(sel_globals)
                 logger.debug('Globals loaded from `{}`: {}'.format(fn_rel, sel_globals.keys()))
         if globals is None and explicit_globals and 'global' not in data:
             logger.warning(W_NOGLOBALS+"No globals found in `{}`".format(fn_rel))
+        return sel_globals
 
-    def _parse_import(self, imp, name):
+    def _parse_import(self, imp, name, apply=True, depth=0):
         """ Get imports """
         logger.debug("Parsing imports: {}".format(imp))
+        depth += 1
+        if depth > 20:
+            config_error("Import depth greater than 20, make sure this isn't an infinite loop")
         if not isinstance(imp, list):
             config_error("Incorrect `import` section (must be a list)")
         # Import the files
         dir = os.path.dirname(os.path.abspath(name))
+        all_collected = CollectedImports()
         for entry in imp:
             if isinstance(entry, str):
                 fn = entry
@@ -364,14 +377,31 @@ class CfgYamlReader(object):
                 config_error("missing import file `{}`".format(fn))
             fn_rel = os.path.relpath(fn)
             data = self.load_yaml(open(fn))
+            if 'import' in data:
+                # Do a recursive import
+                imported = self._parse_import(data['import'], fn, apply=False, depth=depth)
+            else:
+                # Nothing to import, start fresh
+                imported = CollectedImports()
+            # Parse and filter all stuff, add them to all_collected
             # Outputs
-            self._parse_import_outputs(outs, explicit_outs, fn_rel, data)
+            all_collected.outputs.extend(self._parse_import_outputs(outs, explicit_outs, fn_rel, data, imported))
             # Filters
-            self._parse_import_filters(filters, explicit_fils, fn_rel, data)
+            all_collected.filters.update(self._parse_import_filters(filters, explicit_fils, fn_rel, data, imported))
             # Variants
-            self._parse_import_variants(vars, explicit_vars, fn_rel, data)
+            all_collected.variants.update(self._parse_import_variants(vars, explicit_vars, fn_rel, data, imported))
             # Globals
-            self._parse_import_globals(globals, explicit_globals, fn_rel, data)
+            all_collected.globals.update(self._parse_import_globals(globals, explicit_globals, fn_rel, data, imported))
+        if apply:
+            # This is the main import (not a recursive one) apply the results
+            try:
+                RegOutput.add_outputs(all_collected.outputs, fn_rel)
+            except KiPlotConfigurationError as e:
+                config_error(str(e))
+            RegOutput.add_filters(all_collected.filters)
+            RegOutput.add_variants(all_collected.variants)
+            self.imported_globals = all_collected.globals
+        return all_collected
 
     def load_yaml(self, fstream):
         try:

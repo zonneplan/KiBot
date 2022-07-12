@@ -823,6 +823,24 @@ def test_import_4(test_dir):
     ctx.clean_up()
 
 
+def test_import_5(test_dir):
+    """ Infinite loop import """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, prj, 'import_test_5')
+    ctx.run(EXIT_BAD_CONFIG)
+    ctx.search_err(r'.*infinite loop')
+    ctx.clean_up()
+
+
+def test_import_6(test_dir):
+    """ Import an output and change it, but using an import inside another """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, prj, 'import_test_6')
+    ctx.run(extra=['position_mine'])
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
+    ctx.clean_up()
+
+
 def test_disable_default_1(test_dir):
     """ Disable in the same file and out-of-order """
     prj = 'test_v5'

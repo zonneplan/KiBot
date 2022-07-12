@@ -1,0 +1,6 @@
+kibot:
+  version: 1
+
+import:
+  # Create an infinite loop
+  - import_test_5.kibot.yaml

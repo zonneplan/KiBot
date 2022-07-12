@@ -1,0 +1,12 @@
+kibot:
+  version: 1
+
+import:
+  - file: simple_position_csv.kibot.yaml
+
+outputs:
+  - name: 'position_mine'
+    comment: "Pick and place file"
+    type: position
+    dir: positiondir
+    extends: position
