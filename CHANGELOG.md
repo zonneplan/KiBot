@@ -10,7 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The user also gets more information when something is missing.
   It can be disabled from the command line.
 - A global option to cross components without a body (#219)
-- Now you can nest imports (import from an imported file) (#218)
+- Imports:
+  - Now you can nest imports (import from an imported file) (#218)
+  - Preflights can be imported (#181)
+
 
 ## [1.2.0] - 2022-06-15
 ### Added

@@ -34,6 +34,11 @@ class BasePreFlight(Registrable):
         BasePreFlight._in_use[o_pre._name] = o_pre
 
     @staticmethod
+    def add_preflights(pre):
+        for p in pre:
+            BasePreFlight._in_use[p._name] = p
+
+    @staticmethod
     def get_preflight(name):
         return BasePreFlight._in_use.get(name)
 

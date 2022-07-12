@@ -16,7 +16,7 @@ from collections import OrderedDict
 
 from .error import (KiPlotConfigurationError, config_error)
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
-                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK)
+                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
@@ -134,7 +134,7 @@ class CfgYamlReader(object):
             config_error("`outputs` must be a list")
         return outputs
 
-    def _parse_variant(self, o_tree, kind, reg_class):
+    def _parse_variant_or_filter(self, o_tree, kind, reg_class):
         kind_f = kind[0].upper()+kind[1:]
         try:
             name = str(o_tree['name'])
@@ -156,17 +156,16 @@ class CfgYamlReader(object):
         logger.debug("Parsing "+kind+" "+name_type)
         o_var = reg_class.get_class_for(otype)()
         o_var.set_tree(o_tree)
-        try:
-            o_var.config(None)
-        except KiPlotConfigurationError as e:
-            config_error("In section `"+name_type+"`: "+str(e))
+        o_var.name = name
+        o_var._name_type = name_type
+        # Don't configure it yet, wait until we finish loading (could be an import)
         return o_var
 
     def _parse_variants(self, v):
         variants = {}
         if isinstance(v, list):
             for o in v:
-                o_var = self._parse_variant(o, 'variant', RegVariant)
+                o_var = self._parse_variant_or_filter(o, 'variant', RegVariant)
                 variants[o_var.name] = o_var
         else:
             config_error("`variants` must be a list")
@@ -176,17 +175,19 @@ class CfgYamlReader(object):
         filters = {}
         if isinstance(v, list):
             for o in v:
-                o_fil = self._parse_variant(o, 'filter', RegFilter)
+                o_fil = self._parse_variant_or_filter(o, 'filter', RegFilter)
+                self.configure_variant_or_filter(o_fil)
                 filters[o_fil.name] = o_fil
         else:
             config_error("`filters` must be a list")
         return filters
 
-    def _parse_preflight(self, pf):
+    def _parse_preflights(self, pf):
         logger.debug("Parsing preflight options: {}".format(pf))
         if not isinstance(pf, dict):
             config_error("Incorrect `preflight` section")
 
+        preflights = []
         for k, v in pf.items():
             if not BasePreFlight.is_registered(k):
                 config_error("Unknown preflight: `{}`".format(k))
@@ -195,7 +196,8 @@ class CfgYamlReader(object):
                 o_pre = BasePreFlight.get_class_for(k)(k, v)
             except KiPlotConfigurationError as e:
                 config_error("In preflight '"+k+"': "+str(e))
-            BasePreFlight.add_preflight(o_pre)
+            preflights.append(o_pre)
+        return preflights
 
     def _parse_global(self, gb):
         """ Get global options """
@@ -257,6 +259,27 @@ class CfgYamlReader(object):
         if outs is None and explicit_outs and 'outputs' not in data:
             logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
         return sel_outs
+
+    def _parse_import_preflights(self, pre, explicit_pres, fn_rel, data, imported):
+        sel_pres = []
+        if (pre is None or len(pre) > 0) and 'preflight' in data:
+            i_pres = imported.preflights+self._parse_preflights(data['preflight'])
+            if pre is not None:
+                for p in i_pres:
+                    if p._name in pre:
+                        sel_pres.append(p)
+                        pre.remove(p._name)
+                for p in pre:
+                    logger.warning(W_UNKOUT+"can't import `{}` preflight from `{}` (missing)".format(p, fn_rel))
+            else:
+                sel_pres = i_pres
+            if len(sel_pres) == 0:
+                logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
+            else:
+                logger.debug('Preflights loaded from `{}`: {}'.format(fn_rel, list(map(lambda c: c._name, sel_pres))))
+        if pre is None and explicit_pres and 'preflight' not in data:
+            logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
+        return sel_pres
 
     def _parse_import_filters(self, filters, explicit_fils, fn_rel, data, imported):
         sel_fils = {}
@@ -324,6 +347,17 @@ class CfgYamlReader(object):
             logger.warning(W_NOGLOBALS+"No globals found in `{}`".format(fn_rel))
         return sel_globals
 
+    def configure_variant_or_filter(self, o_var):
+        try:
+            o_var.config(None)
+        except KiPlotConfigurationError as e:
+            config_error("In section `"+o_var._name_type+"`: "+str(e))
+
+    def configure_variants(self, variants):
+        logger.debug('Configuring variants')
+        for o_var in variants.values():
+            self.configure_variant_or_filter(o_var)
+
     def _parse_import(self, imp, name, apply=True, depth=0):
         """ Get imports """
         logger.debug("Parsing imports: {}".format(imp))
@@ -342,13 +376,15 @@ class CfgYamlReader(object):
                 filters = []
                 vars = []
                 globals = []
+                pre = []
                 explicit_outs = True
                 explicit_fils = False
                 explicit_vars = False
                 explicit_globals = False
+                explicit_pres = False
             elif isinstance(entry, dict):
-                fn = outs = filters = vars = globals = None
-                explicit_outs = explicit_fils = explicit_vars = explicit_globals = False
+                fn = outs = filters = vars = globals = pre = None
+                explicit_outs = explicit_fils = explicit_vars = explicit_globals = explicit_pres = False
                 for k, v in entry.items():
                     if k == 'file':
                         if not isinstance(v, str):
@@ -357,6 +393,9 @@ class CfgYamlReader(object):
                     elif k == 'outputs':
                         outs = self._parse_import_items(k, fn, v)
                         explicit_outs = True
+                    elif k == 'preflights':
+                        pre = self._parse_import_items(k, fn, v)
+                        explicit_pres = True
                     elif k == 'filters':
                         filters = self._parse_import_items(k, fn, v)
                         explicit_fils = True
@@ -388,6 +427,8 @@ class CfgYamlReader(object):
             # Parse and filter all stuff, add them to all_collected
             # Outputs
             all_collected.outputs.extend(self._parse_import_outputs(outs, explicit_outs, fn_rel, data, imported))
+            # Preflights
+            all_collected.preflights.extend(self._parse_import_preflights(pre, explicit_pres, fn_rel, data, imported))
             # Filters
             all_collected.filters.update(self._parse_import_filters(filters, explicit_fils, fn_rel, data, imported))
             # Variants
@@ -396,13 +437,15 @@ class CfgYamlReader(object):
             all_collected.globals.update(self._parse_import_globals(globals, explicit_globals, fn_rel, data, imported))
         if apply:
             # This is the main import (not a recursive one) apply the results
+            RegOutput.add_filters(all_collected.filters)
+            self.configure_variants(all_collected.variants)
+            RegOutput.add_variants(all_collected.variants)
+            self.imported_globals = all_collected.globals
+            BasePreFlight.add_preflights(all_collected.preflights)
             try:
                 RegOutput.add_outputs(all_collected.outputs, fn_rel)
             except KiPlotConfigurationError as e:
                 config_error(str(e))
-            RegOutput.add_filters(all_collected.filters)
-            RegOutput.add_variants(all_collected.variants)
-            self.imported_globals = all_collected.globals
         return all_collected
 
     def load_yaml(self, fstream):
@@ -432,14 +475,16 @@ class CfgYamlReader(object):
             if k == 'kiplot' or k == 'kibot':
                 version = self._check_version(v)
             elif k == 'preflight':
-                self._parse_preflight(v)
+                BasePreFlight.add_preflights(self._parse_preflights(v))
             elif k == 'global':
                 self._parse_global(v)
                 globals_found = True
             elif k == 'import':
                 self._parse_import(v, fstream.name)
             elif k == 'variants':
-                RegOutput.add_variants(self._parse_variants(v))
+                variants = self._parse_variants(v)
+                self.configure_variants(variants)
+                RegOutput.add_variants(variants)
             elif k == 'filters':
                 RegOutput.add_filters(self._parse_filters(v))
             elif k == 'outputs':

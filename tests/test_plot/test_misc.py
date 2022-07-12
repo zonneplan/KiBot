@@ -841,6 +841,25 @@ def test_import_6(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.skipif(context.ki5(), reason="too slow on KiCad 5")
+def test_import_7(test_dir):
+    """ Import a preflight """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, prj, 'import_test_7')
+    ctx.run(extra=[])
+    ctx.expect_out_file('test_v5-drc.txt')
+    ctx.clean_up()
+
+
+def test_import_8(test_dir):
+    """ Import a preflight """
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'import_test_8')
+    ctx.run(extra=[])
+    ctx.expect_out_file('JLCPCB/light_control_cpl_jlc.csv')
+    ctx.clean_up()
+
+
 def test_disable_default_1(test_dir):
     """ Disable in the same file and out-of-order """
     prj = 'test_v5'

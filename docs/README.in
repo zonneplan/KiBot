@@ -1138,6 +1138,7 @@ In this case you must use the more general syntax:
 import:
   - file: FILE_CONTAINING_THE_YAML_DEFINITIONS
     outputs: LIST_OF_OUTPUTS
+    preflights: LIST_OF_PREFLIGHTS
     filters: LIST_OF_FILTERS
     variants: LIST_OF_VARIANTS
     global: LIST_OF_GLOBALS
