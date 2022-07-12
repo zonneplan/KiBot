@@ -617,6 +617,7 @@ global:
     - *copper_finish*: Alias for pcb_finish.
     - `copper_thickness`: [number|string] Copper thickness in micrometers (1 Oz is 35 micrometers).
                           KiCad 6: you should set this in the Board Setup -> Physical Stackup.
+    - `cross_no_body`: [boolean=false] Cross components even when they don't have a body. Only for KiCad 6.
     - `date_format`: [string='%Y-%m-%d'] Format used for the day we started the script.
                      Is also used for the PCB/SCH date formatting when `time_reformat` is enabled (default behavior).
                      Uses the `strftime` format.

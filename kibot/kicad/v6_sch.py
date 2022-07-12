@@ -897,15 +897,22 @@ class LibComponent(object):
             name = self.name+"_"+str(c+1)
             box = Box()
             units_with_graphs = []
+            unit_without_graphs = None
             for unit in self.units:
                 # Unit 0 is part of unit 1
                 if unit.name.startswith(name) or (c == 0 and unit.name.startswith(name0)):
                     box.union(unit.box)
                     if len(unit.draw):
+                        # We can have more than one drawing. This is used for the alternative version
                         units_with_graphs.append(unit)
+                    else:
+                        unit_without_graphs = unit
             if units_with_graphs:
                 for u in units_with_graphs:
                     u.cross_box = box
+            elif unit_without_graphs is not None and GS.global_cross_no_body:
+                unit_without_graphs.cross_box = box
+            # Note: if unit_without_graphs is None is because we are inside a unit and it doesn't have a sub-unit
 
     def write_cross(s, sdata):
         """ Add the cross drawing """

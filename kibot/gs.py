@@ -99,6 +99,7 @@ class GS(object):
     class_for_global_opts = None
     global_castellated_pads = None
     global_copper_thickness = None
+    global_cross_no_body = None
     global_date_format = None
     global_date_time_format = None
     global_dir = None
