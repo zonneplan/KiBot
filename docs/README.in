@@ -11,6 +11,7 @@
 - You need KiBot 1.0.0 or newer
 - The docker images tagged `ki6` and `dev_k6` has KiCad 6.
 - The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
+  Consult: [Github Actions tags](#github-actions-tags)
 - When using KiCad 6 you must migrate the whole project and pass the migrated files to KiBot.
 
 **New on v1.2.0**
@@ -59,6 +60,7 @@
 * [Usage](#usage)
 * [Usage for CI/CD](#usage-for-cicd)
   * [Github Actions](#usage-of-github-actions)
+    * [Github Actions tags](#github-actions-tags)
 * [Contributing](#contributing)
 * [Notes about Gerber format](#notes-about-gerber-format)
 * [Notes about the position file](#notes-about-the-position-file)
@@ -1295,12 +1297,14 @@ If you need to run the current development version of KiBot you can use the foll
 
 The most important images are:
 
-| Name   | KiBot        | KiCad |
-| :------| ------------ | ----: |
-| latest | last release | 5.1.9 |
-| ki6    | last release | 6.x   |
-| dev    | git code     | 5.1.9 |
-| dev_k6 | git code     | 6.x   |
+| Name           | KiBot        | KiCad |
+| :------------- | ------------ | ----: |
+| latest         | last release | 5.1.9 |
+| ki6            | last release | 6.x   |
+| dev            | git code     | 5.1.9 |
+| dev_k6         | git code     | 6.x   |
+| 10.4-5.1.9     | 1.2.0        | 5.1.9 |
+| ki6.0.5_Debian | 1.2.0        | 6.0.5 |
 
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
@@ -1368,6 +1372,29 @@ The available options are:
 - **targets**: List of targets to generate separated by spaces. To only run preflights use __NONE__. All targets are generated when omitted.
 - **variant**: Global variant to use. No variant is applied when omitted.
 - **verbose**: Level of verbosity. Valid values are 0, 1, 2 or 3. Default is 0.
+
+#### Github Actions tags
+
+There are several tags you can choose:
+
+| Tag         | API | KiBot        | KiCad |
+| :---------- | --- | ------------ | ----: |
+| v1          |  1  | 1.2.0        | 5.1.9 |
+| v1_k6       |  1  | 1.2.0        | 6.0.5 |
+| v2_1_2_0    |  2  | 1.2.0        | 5.1.9 |
+| v2_k6_1_2_0 |  2  | 1.2.0        | 6.0.5 |
+| v2          |  2  | last release | 5.1.9 |
+| v2_k6       |  2  | last release | 6.x   |
+| v2_d        |  2  | git code     | 5.1.9 |
+| v2_dk6      |  2  | git code     | 6.x   |
+
+The main differences between API 1 and 2 are:
+
+- API 2 adds support for variants and quick-start
+- In API 2 you can select which targets are created
+- In API 1 you must specify the input files, in API 2 can be omitted
+- API 1 supports wildcards in the filenames, API 2 doesn't
+- API 2 supports spaces in the filenames, API 1 doesn't
 
 ## Contributing
 
