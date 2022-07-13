@@ -7,7 +7,9 @@ global:
     - number: 43
       regex: FooBar
     - number: 10
-      regex: '3D'
+      regex: '(3D|template)'
+    - number: 8
+      regex: kicad_common
 
 filters:
   - name: 'no_inductor'
