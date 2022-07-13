@@ -10,6 +10,8 @@ global:
       regex: '(3D|template)'
     - number: 8
       regex: kicad_common
+    - number: 9
+      regex: EnvironmentVariables
 
 filters:
   - name: 'no_inductor'
