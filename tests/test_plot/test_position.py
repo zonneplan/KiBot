@@ -19,6 +19,7 @@ pytest-3 --log-cli-level debug
 """
 import os
 import logging
+from kibot.misc import EXIT_BAD_CONFIG
 from . import context
 
 POS_DIR = 'positiondir'
@@ -270,4 +271,11 @@ def test_position_rot_bottom(test_dir):
     pos_bot = ctx.get_pos_both_filename()
     ctx.expect_out_file(pos_bot)
     expect_position(ctx, pos_bot, ['U1'], neg_x=True)
+    ctx.clean_up()
+
+
+def test_position_error_same_name(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'error_position_same_name', POS_DIR)
+    ctx.run(EXIT_BAD_CONFIG)
+    ctx.search_err(r"(.*)but both with the same name")
     ctx.clean_up()

@@ -31,6 +31,12 @@ def _ref_key(ref_str):
     return [pre, 0 if suf == '?' else int(suf)]
 
 
+def check_names(top, bot):
+    if top == bot:
+        raise KiPlotConfigurationError("Asking for two separated files, but both with the same name.\n"
+                                       "Try using %i in the name.")
+
+
 class PosColumns(Optionable):
     """ Which columns we want and its names """
     def __init__(self):
@@ -98,8 +104,11 @@ class PositionOptions(VariantOptions):
         botf = None
         bothf = None
         if self.separate_files_for_front_and_back:
-            topf = open(self.expand_filename(output_dir, self.output, 'top_pos', 'pos'), 'w')
-            botf = open(self.expand_filename(output_dir, self.output, 'bottom_pos', 'pos'), 'w')
+            topf_name = self.expand_filename(output_dir, self.output, 'top_pos', 'pos')
+            botf_name = self.expand_filename(output_dir, self.output, 'bottom_pos', 'pos')
+            check_names(topf_name, botf_name)
+            topf = open(topf_name, 'w')
+            botf = open(botf_name, 'w')
         else:
             bothf = open(self.expand_filename(output_dir, self.output, 'both_pos', 'pos'), 'w')
 
@@ -156,8 +165,11 @@ class PositionOptions(VariantOptions):
         botf = None
         bothf = None
         if self.separate_files_for_front_and_back:
-            topf = open(self.expand_filename(output_dir, self.output, 'top_pos', 'csv'), 'w')
-            botf = open(self.expand_filename(output_dir, self.output, 'bottom_pos', 'csv'), 'w')
+            topf_name = self.expand_filename(output_dir, self.output, 'top_pos', 'csv')
+            botf_name = self.expand_filename(output_dir, self.output, 'bottom_pos', 'csv')
+            check_names(topf_name, botf_name)
+            topf = open(topf_name, 'w')
+            botf = open(botf_name, 'w')
         else:
             bothf = open(self.expand_filename(output_dir, self.output, 'both_pos', 'csv'), 'w')
 
