@@ -844,10 +844,10 @@ def test_import_6(test_dir):
 @pytest.mark.skipif(context.ki5(), reason="too slow on KiCad 5")
 def test_import_7(test_dir):
     """ Import a preflight """
-    prj = 'test_v5'
+    prj = '3Rs'
     ctx = context.TestContext(test_dir, prj, 'import_test_7')
     ctx.run(extra=[])
-    ctx.expect_out_file('test_v5-drc.txt')
+    ctx.expect_out_file('3Rs-drc.txt')
     ctx.clean_up()
 
 
