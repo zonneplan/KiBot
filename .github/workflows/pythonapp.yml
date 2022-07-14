@@ -47,6 +47,9 @@ jobs:
       run: |
         rm -rf output
         rm -f tests/.local
+        # Unify coverage versions to allow combine
+        pip3 install --upgrade coverage
+        ln -s /usr/local/bin/coverage3 /usr/local/bin/python3-coverage
         # The KiCad 5 image currently has a very old pytest (no parallel run)
         pip3 install --upgrade pytest
         pip3 install --upgrade pytest-xdist
@@ -94,6 +97,7 @@ jobs:
   consolidate_coverage:
     name: Consolidate coverage data
     runs-on: ubuntu-latest
+    container: setsoft/kicad_auto_test:ki6
     needs: test
 
     steps:
@@ -129,6 +133,8 @@ jobs:
 
     - name: Combine coverage
       run: |
+        pip3 install --upgrade coverage
+        ln -s /usr/local/bin/coverage3 /usr/local/bin/python3-coverage
         python3-coverage combine
         python3-coverage report
         python3-coverage html -d htmlcov
