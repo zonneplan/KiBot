@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Preflights can be imported (#181)
 
 ### Fixed
-- OAR computation (Report)
+- OAR computation (Report) (#225)
 
 
 ## [1.2.0] - 2022-06-15
