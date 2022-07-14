@@ -255,8 +255,10 @@ class PositionOptions(VariantOptions):
                     footprint = c.footprint
                     is_bottom = c.bottom
                     rotation = c.footprint_rot
-                    center_x = c.footprint_x
-                    center_y = c.footprint_y
+                    # Here we can't use c.footprint_x/y because this doesn't work for panels
+                    center = GS.get_center(m)
+                    center_x = center.x
+                    center_y = center.y
             if value is None:
                 value = m.GetValue()
                 footprint = str(m.GetFPID().GetLibItemName())  # pcbnew.UTF8 type

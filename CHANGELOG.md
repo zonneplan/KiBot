@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - OAR computation (Report) (#225)
+- Position: Problems when doing manual panelization (repeated references) (#224)
 
 
 ## [1.2.0] - 2022-06-15
