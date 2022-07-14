@@ -101,6 +101,10 @@ jobs:
     needs: test
 
     steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
     - name: Download coverage k5 g1
       uses: actions/download-artifact@v3
       with:
