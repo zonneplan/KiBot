@@ -18,6 +18,7 @@ PDF_FILE_C = 'PCB_Bot_def.pdf'
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_print_pcb_simple(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'print_pcb', PDF_DIR)
@@ -28,6 +29,7 @@ def test_print_pcb_simple(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_print_pcb_svg_simple_1(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'print_pcb_svg')
@@ -40,6 +42,7 @@ def test_print_pcb_svg_simple_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_print_pcb_svg_simple_2(test_dir):
     """ Check the portrait version is OK """
     prj = 'bom_portrait'
@@ -53,6 +56,7 @@ def test_print_pcb_svg_simple_2(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_print_pcb_refill_1(test_dir):
     prj = 'zone-refill'
     ctx = context.TestContext(test_dir, prj, 'print_pcb_zone-refill')
@@ -63,6 +67,7 @@ def test_print_pcb_refill_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_print_pcb_refill_2(test_dir):
     """ Using KiCad 6 colors """
     if context.ki5():
@@ -76,6 +81,7 @@ def test_print_pcb_refill_2(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_print_variant_1(test_dir):
     prj = 'kibom-variant_3_txt'
     ctx = context.TestContext(test_dir, prj, 'print_pcb_variant_1')
@@ -89,6 +95,7 @@ def test_print_variant_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_print_pcb_options(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'print_pcb_options', PDF_DIR)
@@ -100,6 +107,7 @@ def test_print_pcb_options(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_print_wrong_paste(test_dir):
     prj = 'wrong_paste'
     ctx = context.TestContext(test_dir, prj, 'wrong_paste', PDF_DIR)
@@ -111,6 +119,7 @@ def test_print_wrong_paste(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_pcb_print_simple_1(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'pcb_print_2')

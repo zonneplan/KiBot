@@ -27,6 +27,7 @@ cov = coverage.Coverage()
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_print_sch_ok(test_dir):
     prj = 'bom_no_xml'  # bom has meta data, here we test no meta-data
     ctx = context.TestContext(test_dir, prj, 'print_sch')
@@ -37,6 +38,7 @@ def test_print_sch_ok(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_print_sch_fail(test_dir):
     prj = 'print_err'
     ctx = context.TestContextSCH(test_dir, prj, 'print_sch')
@@ -46,6 +48,7 @@ def test_print_sch_fail(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_print_sch_svg_ok(test_dir):
     prj = 'bom_no_xml'  # bom has meta data, here we test no meta-data
     ctx = context.TestContext(test_dir, prj, 'print_sch_svg')
@@ -56,6 +59,7 @@ def test_print_sch_svg_ok(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_print_sch_svg_fail(test_dir):
     prj = 'print_err'
     ctx = context.TestContext(test_dir, prj, 'print_sch_svg')
@@ -103,6 +107,7 @@ def test_sch_variant_ni_2(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_print_sch_variant_ni_1(test_dir):
     """ Using a variant """
     prj = 'test_v5_wks'  # Is the most complete, contains every KiCad object I know
@@ -116,6 +121,7 @@ def test_print_sch_variant_ni_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_print_sch_svg_variant_ni_1(test_dir):
     """ SVG using a variant """
     prj = 'test_v5'  # Is the most complete, contains every KiCad object I know
@@ -129,6 +135,7 @@ def test_print_sch_svg_variant_ni_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_print_sch_variant_ni_2(test_dir):
     """ Using a filter """
     prj = 'test_v5'  # Is the most complete, contains every KiCad object I know

@@ -24,6 +24,7 @@ from kibot.misc import DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_erc_1(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'erc', '')
@@ -34,6 +35,7 @@ def test_erc_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_erc_fail_1(test_dir):
     """ Using an SCH with ERC errors """
     prj = 'fail-erc'
@@ -53,6 +55,7 @@ def test_erc_fail_2(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_erc_warning_1(test_dir):
     """ Using an SCH with ERC warnings """
     prj = 'warning-project'
@@ -65,6 +68,7 @@ def test_erc_warning_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_erc_warning_2(test_dir):
     """ Using an SCH with ERC warnings as errors """
     prj = 'warning-project'
@@ -136,6 +140,7 @@ def test_drc_time_out(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_update_xml_1(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'update_xml', '')
@@ -156,6 +161,7 @@ def test_update_xml_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_update_xml_fail(test_dir):
     """ Using a dummy SCH """
     prj = '3Rs'

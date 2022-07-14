@@ -19,6 +19,7 @@ STEP_DIR = '3D'
 
 
 @pytest.mark.slow
+@pytest.mark.kicad2step
 def test_step_1(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'step_simple', STEP_DIR)
@@ -34,6 +35,7 @@ def test_step_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.kicad2step
 def test_step_2(test_dir):
     prj = 'bom_fake_models'
     yaml = 'step_simple_2'
@@ -48,6 +50,7 @@ def test_step_2(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.kicad2step
 def test_step_3(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'step_simple_3', STEP_DIR)
@@ -58,6 +61,7 @@ def test_step_3(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.kicad2step
 def test_step_gl_env(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'step_gl_env', STEP_DIR)
@@ -73,6 +77,7 @@ def test_step_gl_env(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.kicad2step
 def test_step_variant_1(test_dir):
     prj = 'kibom-variant_3'
     ctx = context.TestContext(test_dir, prj, 'step_variant_1')
@@ -85,6 +90,7 @@ def test_step_variant_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_render_3d_variant_1(test_dir):
     # Text variables to ensure they are rendered.
     # Traces
