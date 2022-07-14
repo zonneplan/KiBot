@@ -28,6 +28,7 @@ jobs:
     strategy:
       matrix:
         ki_release: [latest, ki6]
+        w_tests: [g1, g2, g3]
 
     runs-on: ubuntu-latest
     container: setsoft/kicad_auto_test:${{ matrix.ki_release }}
@@ -57,23 +58,21 @@ jobs:
         # pytest --log-cli-level debug -k "test_ibom_parse_fail" --test_dir=output
         # Run the 90% faster tests (under 3 s)
         # Do it in parallel
-        pytest -v --durations=0 -m "not slow" -n 2 --test_dir=output
-        # Run the slowest at the end and exit on the first error
-        pytest -v --durations=0 -m slow -x --test_dir=output
+        ./${{ matrix.w_tests }}.sh
         python3-coverage combine
         python3-coverage report
-        python3-coverage html -d output/htmlcov
+        python3-coverage html -d output/htmlcov_${{ matrix.w_tests }}
     - name: Store results
       if: ${{ always() }}
       uses: actions/upload-artifact@v3
       with:
-        name: Test_Output_${{ matrix.ki_release }}
+        name: Test_Output_${{ matrix.ki_release }}_${{ matrix.w_tests }}
         # Important! empty directories are skipped!!!!
         path: output
     - name: Upload Coverage
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        COVERALLS_FLAG_NAME: ${{ matrix.ki_release }}
+        COVERALLS_FLAG_NAME: ${{ matrix.ki_release }}_${{ matrix.w_tests }}
         COVERALLS_PARALLEL: true
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
