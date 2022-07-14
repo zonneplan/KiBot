@@ -4,8 +4,10 @@ kibot:
 
 global:
   filters:
+    - number: 9
+      regex: 'EnvironmentVariables'
     - number: 10
-      regex: '3D'
+      regex: '(3D|templates)'
 
 filters:
   - name: 'no_inductor'
