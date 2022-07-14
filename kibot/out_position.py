@@ -66,7 +66,8 @@ class PositionOptions(VariantOptions):
             self.only_smd = True
             """ *Only include the surface mount components """
             self.output = GS.def_global_output
-            """ *Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv') """
+            """ *Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv').
+                Important: when using separate files you must use `%i` to differentiate them """
             self.units = 'millimeters'
             """ *[millimeters,inches,mils] Units used for the positions. Affected by global options """
             self.columns = PosColumns

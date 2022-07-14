@@ -2385,7 +2385,8 @@ Notes:
       * Valid keys:
         - **`format`**: [string='ASCII'] [ASCII,CSV] Format for the position file.
         - **`only_smd`**: [boolean=true] Only include the surface mount components.
-        - **`output`**: [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv').
+                        Important: when using separate files you must use `%i` to differentiate them. Affected by global options.
         - **`separate_files_for_front_and_back`**: [boolean=true] Generate two separated files, one for the top and another for the bottom.
         - **`units`**: [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
         - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer.

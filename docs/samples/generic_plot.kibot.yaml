@@ -1334,7 +1334,8 @@ outputs:
       include_virtual: false
       # [boolean=true] Only include the surface mount components
       only_smd: true
-      # [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options
+      # [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv').
+      # Important: when using separate files you must use `%i` to differentiate them. Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=true] Generate two separated files, one for the top and another for the bottom
       separate_files_for_front_and_back: true
