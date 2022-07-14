@@ -59,6 +59,14 @@ jobs:
         # Run the 90% faster tests (under 3 s)
         # Do it in parallel
         ./${{ matrix.w_tests }}.sh
+    - name: Store coverage
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: Test_Coverage_${{ matrix.ki_release }}_${{ matrix.w_tests }}
+        path: .coverage.*
+    - name: Collect coverage ${{ matrix.ki_release }}
+      run: |
         python3-coverage combine
         python3-coverage report
         python3-coverage html -d output/htmlcov_${{ matrix.w_tests }}
@@ -82,6 +90,53 @@ jobs:
         #coveralls --service=github
         #echo Disabled by now
         coveralls
+
+  consolidate_coverage:
+    name: Consolidate coverage data
+    runs-on: ubuntu-latest
+    needs: test
+
+    - name: Download coverage k5 g1
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_latest_g1
+
+    - name: Download coverage k5 g2
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_latest_g2
+
+    - name: Download coverage k5 g3
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_latest_g3
+
+    - name: Download coverage k6 g1
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_ki6_g1
+
+    - name: Download coverage k6 g2
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_ki6_g2
+
+    - name: Download coverage k6 g3
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_ki6_g3
+
+    - name: Combine coverage
+      run: |
+        python3-coverage combine
+        python3-coverage report
+        python3-coverage html -d htmlcov
+
+    - name: Store result
+      uses: actions/upload-artifact@v3
+      with:
+        name: Test_Coverage_combined
+        path: htmlcov
 
 
   push_to_registry:
