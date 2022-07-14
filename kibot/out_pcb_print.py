@@ -522,7 +522,7 @@ class PCB_PrintOptions(VariantOptions):
         if len(zones):
             ZONE_FILLER(GS.board).Fill(zones)
         # Add it to the list
-        filelist.append((GS.pcb_basename+"-"+suffix+".svg", self.pad_color))
+        filelist.append((pc.GetPlotFileName(), self.pad_color))
 
     def plot_vias(self, la, pc, p, filelist, via_t, via_c):
         id = la._id
@@ -602,7 +602,7 @@ class PCB_PrintOptions(VariantOptions):
         if len(zones):
             ZONE_FILLER(GS.board).Fill(zones)
         # Add it to the list
-        filelist.append((GS.pcb_basename+"-"+suffix+".svg", via_c))
+        filelist.append((pc.GetPlotFileName(), via_c))
 
     def add_frame_images(self, svg, monochrome):
         if (not self.plot_sheet_reference or not self.frame_plot_mechanism == 'internal' or
@@ -937,7 +937,7 @@ class PCB_PrintOptions(VariantOptions):
                 pc.OpenPlotfile(la.suffix, PLOT_FORMAT_SVG, p.sheet)
                 pc.PlotLayer()
                 pc.ClosePlot()
-                filelist.append((GS.pcb_basename+"-"+la.suffix+".svg", la.color))
+                filelist.append((pc.GetPlotFileName(), la.color))
                 self.plot_extra_cu(id, la, pc, p, filelist)
                 self.plot_realistic_solder_mask(id, temp_dir, filelist[-1][0], filelist[-1][1], p.mirror, p.scaling)
             # 2) Plot the frame using an empty layer and 1.0 scale
