@@ -521,7 +521,7 @@ class ReportOptions(BaseOptions):
                 via_id = (via.GetDrill(), via.GetWidth())
                 self._vias[via_id] = self._vias.get(via_id, 0) + 1
                 d = adjust_drill(via_id[0])
-                self.oar_vias = min(self.oar_vias, via_id[1] - d)
+                self.oar_vias = min(self.oar_vias, (via_id[1] - d) / 2)
                 self._drills_real[d] = self._drills_real.get(d, 0) + 1
         self.track_min = min(self.track_d, self.track)
         ###########################################################
@@ -580,8 +580,8 @@ class ReportOptions(BaseOptions):
                     # print('{} @ {}'.format(dr, pad.GetPosition()))
                     self._drills_real[d_r] = self._drills_real.get(d_r, 0) + 1
                 pad_sz = pad.GetSize()
-                oar_x = pad_sz.x - dr_x_real
-                oar_y = pad_sz.y - dr_y_real
+                oar_x = (pad_sz.x - dr_x_real) / 2
+                oar_y = (pad_sz.y - dr_y_real) / 2
                 oar_t = min(oar_x, oar_y)
                 if oar_t > 0:
                     self.oar_pads = min(self.oar_pads, oar_t)
@@ -636,7 +636,7 @@ class ReportOptions(BaseOptions):
             h = v.m_Drill
             if not d and not h:
                 continue  # KiCad 6
-            self.oar_vias_d = min(self.oar_vias_d, d - adjust_drill(h))
+            self.oar_vias_d = min(self.oar_vias_d, (d - adjust_drill(h)) / 2)
             self._vias_defined.add((h, d))
             self._via_sizes_sorted.append((h, d))
         ###########################################################
