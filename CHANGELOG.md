@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now you can nest imports (import from an imported file) (#218)
   - Preflights can be imported (#181)
 
+### Fixed
+- OAR computation (Report) (#225)
+- Position: Problems when doing manual panelization (repeated references) (#224)
+- PCB_Print: Problems with filtered/modified PCBs
+
 
 ## [1.2.0] - 2022-06-15
 ### Added

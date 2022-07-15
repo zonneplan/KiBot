@@ -3,7 +3,7 @@ Size:
 
 - 59.69x48.26 mm
 
-Class: 6C
+Class: 10C
 
 Track width: ≥ 0.15 mm
 
@@ -13,7 +13,7 @@ Minimum drill size: ≥ 0.35 mm (finished metalized hole: 0.25 mm)
 
 Minimum slot width: ≥ 0.6 mm
 
-Ring collar: ≥ 0.16 mm
+Ring collar: ≥ 0.08 mm
 
 Special features:
 

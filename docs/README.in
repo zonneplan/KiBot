@@ -1718,6 +1718,8 @@ Additionally we support:
 - `Footprint Y-Size`
 - `Footprint Populate`
 
+Important: These files doesn't support manual panelization with repeated reference names, you'll get the coordinates for just one component because this is a BoM.
+
 ## Credits
 
 - **KiBot project**: Salvador E. Tropea (@set-soft)

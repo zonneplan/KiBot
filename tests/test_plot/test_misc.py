@@ -744,6 +744,7 @@ def check_makefile(ctx, mkfile, prj, dbg, txt):
 
 
 @pytest.mark.slow
+@pytest.mark.kicad2step
 def test_makefile_1(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'makefile_1')
@@ -755,6 +756,7 @@ def test_makefile_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.kicad2step
 def test_makefile_2(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'makefile_1')
@@ -939,6 +941,7 @@ def test_cli_order(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_qr_lib_1(test_dir):
     prj = 'qr_test/qr_test'
     ctx = context.TestContext(test_dir, prj, 'qr_lib_1', POS_DIR)
@@ -1001,6 +1004,7 @@ def test_report_simple_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_report_simple_2(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'report_simple_2', POS_DIR)
@@ -1160,6 +1164,7 @@ def test_annotate_pcb_tbrl_small_grid(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_gencad_1(test_dir):
     prj = 'gencad'
     ctx = context.TestContext(test_dir, prj, 'gencad_1')
@@ -1177,6 +1182,7 @@ def test_gencad_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_quick_start_1(test_dir):
     """ Very naive test to see if it doesn't crash """
     prj = 'light_control'
@@ -1217,6 +1223,7 @@ def test_quick_start_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.eeschema
 def test_netlist_classic_1(test_dir):
     prj = 'light_control'
     dir_o = 'Export'
@@ -1226,6 +1233,7 @@ def test_netlist_classic_1(test_dir):
 
 
 @pytest.mark.slow
+@pytest.mark.pcbnew
 def test_netlist_ipc_1(test_dir):
     prj = 'light_control'
     dir_o = 'Export'

@@ -28,6 +28,7 @@ jobs:
     strategy:
       matrix:
         ki_release: [latest, ki6]
+        w_tests: [g1, g2, g3]
 
     runs-on: ubuntu-latest
     container: setsoft/kicad_auto_test:${{ matrix.ki_release }}
@@ -46,6 +47,9 @@ jobs:
       run: |
         rm -rf output
         rm -f tests/.local
+        # Unify coverage versions to allow combine
+        pip3 install --upgrade coverage==5.1
+        ln -s /usr/local/bin/coverage3 /usr/local/bin/python3-coverage || true
         # The KiCad 5 image currently has a very old pytest (no parallel run)
         pip3 install --upgrade pytest
         pip3 install --upgrade pytest-xdist
@@ -57,23 +61,29 @@ jobs:
         # pytest --log-cli-level debug -k "test_ibom_parse_fail" --test_dir=output
         # Run the 90% faster tests (under 3 s)
         # Do it in parallel
-        pytest -v --durations=0 -m "not slow" -n 2 --test_dir=output
-        # Run the slowest at the end and exit on the first error
-        pytest -v --durations=0 -m slow -x --test_dir=output
+        ./${{ matrix.w_tests }}.sh
+    - name: Store coverage
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: Test_Coverage_${{ matrix.ki_release }}_${{ matrix.w_tests }}
+        path: .coverage.*
+    - name: Collect coverage ${{ matrix.ki_release }}
+      run: |
         python3-coverage combine
         python3-coverage report
-        python3-coverage html -d output/htmlcov
+        python3-coverage html -d output/htmlcov_${{ matrix.w_tests }}
     - name: Store results
       if: ${{ always() }}
       uses: actions/upload-artifact@v3
       with:
-        name: Test_Output_${{ matrix.ki_release }}
+        name: Test_Output_${{ matrix.ki_release }}_${{ matrix.w_tests }}
         # Important! empty directories are skipped!!!!
         path: output
     - name: Upload Coverage
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        COVERALLS_FLAG_NAME: ${{ matrix.ki_release }}
+        COVERALLS_FLAG_NAME: ${{ matrix.ki_release }}_${{ matrix.w_tests }}
         COVERALLS_PARALLEL: true
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
@@ -83,6 +93,61 @@ jobs:
         #coveralls --service=github
         #echo Disabled by now
         coveralls
+
+  consolidate_coverage:
+    name: Consolidate coverage data
+    runs-on: ubuntu-latest
+    container: setsoft/kicad_auto_test:ki6
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Download coverage k5 g1
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_latest_g1
+
+    - name: Download coverage k5 g2
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_latest_g2
+
+    - name: Download coverage k5 g3
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_latest_g3
+
+    - name: Download coverage k6 g1
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_ki6_g1
+
+    - name: Download coverage k6 g2
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_ki6_g2
+
+    - name: Download coverage k6 g3
+      uses: actions/download-artifact@v3
+      with:
+        name: Test_Coverage_ki6_g3
+
+    - name: Combine coverage
+      run: |
+        pip3 install --upgrade coverage==5.1
+        ln -s /usr/local/bin/coverage3 /usr/local/bin/python3-coverage || true
+        python3-coverage combine
+        python3-coverage report
+        python3-coverage html -d htmlcov
+
+    - name: Store result
+      uses: actions/upload-artifact@v3
+      with:
+        name: Test_Coverage_combined
+        path: htmlcov
 
 
   push_to_registry:
