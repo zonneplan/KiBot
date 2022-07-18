@@ -898,7 +898,7 @@ def register_dep(context, dep):
     help_option = dep.get('help_option', None)
     pypi_name = dep.get('pypi', None)
     no_cmd_line_version_old = dep.get('no_cmd_line_version_old', False)
-    downloader = dep.get('downloader', None)
+    downloader_str = downloader = dep.get('downloader', None)
     if downloader:
         downloader = getattr(modules[__name__], downloader+'_downloader')
     name = dep['name']
@@ -913,6 +913,7 @@ def register_dep(context, dep):
     if isinstance(comments, str):
         comments = [comments]
     td.comments = comments
+    td.downloader_str = downloader_str
     RegDependency.register(td)
     global used_deps
     id = dep.get('id', name)

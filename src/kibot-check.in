@@ -245,8 +245,11 @@ def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, role
             print('  Download it from: '+url_down)
     for c in comments:
         print('  '+c)
-    if isinstance(downloader, dict):
-        print('  This tool might be automatically downloaded by KiBot.')
+    if isinstance(downloader, str):
+        if downloader == 'pytool' and not pip_ok:
+            print('  Please install the Python Installer (pip).')
+        else:
+            print('  This tool might be automatically downloaded by KiBot.')
     show_roles(roles)
     print(RESET)
 
@@ -443,9 +446,8 @@ for name, d in dependencies.items():
     if d['is_python']:
         python_module(d['sev'], d['pypi_name'], d['deb_package'], d['roles'])
     else:
-        # TODO: check pip_ok and if this is a Python tool suggest install pip
         binary_tool(d['sev'], d['name'], d['url'], d['url_down'], d['deb_package'], d['in_debian'], d['extra_deb'],
-                    d['roles'], d['downloader'], d['comments'])
+                    d['roles'], d['downloader_str'], d['comments'])
 
 labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory for an output', 'mandatory for general use')
 text = ', '.join([sev2color(c)+l+RESET for c, l in enumerate(labels)])

@@ -23,6 +23,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "python3-colorama",\
         "downloader": null,\
+        "downloader_str": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 100,\
@@ -52,6 +53,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "ghostscript",\
         "downloader": {},\
+        "downloader_str": "gs",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 2,\
@@ -86,6 +88,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "git",\
         "downloader": {},\
+        "downloader_str": "git",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 3,\
@@ -126,6 +129,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "imagemagick",\
         "downloader": {},\
+        "downloader_str": "convert",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 3,\
@@ -166,6 +170,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "interactive html bom",\
         "downloader": {},\
+        "downloader_str": "pytool",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -203,6 +208,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "kibom",\
         "downloader": {},\
+        "downloader_str": "pytool",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -235,6 +241,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "kicad automation tools",\
         "downloader": {},\
+        "downloader_str": "pytool",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 110001,\
@@ -377,6 +384,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "kicost",\
         "downloader": {},\
+        "downloader_str": "pytool",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10001,\
@@ -419,6 +427,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "python3-lxml",\
         "downloader": {},\
+        "downloader_str": "python",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -450,6 +459,7 @@ deps = '{\
         ],\
         "deb_package": "pandoc",\
         "downloader": null,\
+        "downloader_str": null,\
         "extra_deb": [\
             "texlive-latex-base",\
             "texlive-latex-recommended"\
@@ -481,6 +491,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "pcbdraw",\
         "downloader": {},\
+        "downloader_str": "pytool",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10001,\
@@ -523,6 +534,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "python3-yaml",\
         "downloader": null,\
+        "downloader_str": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 1000000,\
@@ -552,6 +564,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "python3-qrcodegen",\
         "downloader": {},\
+        "downloader_str": "python",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -581,6 +594,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "rar",\
         "downloader": {},\
+        "downloader_str": "rar",\
         "extra_deb": null,\
         "help_option": "-?",\
         "importance": 1,\
@@ -609,6 +623,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "librsvg2-bin",\
         "downloader": {},\
+        "downloader_str": "rsvg",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 5,\
@@ -664,6 +679,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "python3-requests",\
         "downloader": null,\
+        "downloader_str": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 1000000,\
@@ -693,6 +709,7 @@ deps = '{\
         "comments": [],\
         "deb_package": "python3-xlsxwriter",\
         "downloader": {},\
+        "downloader_str": "python",\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 1,\
@@ -946,8 +963,11 @@ def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, role
             print('  Download it from: '+url_down)
     for c in comments:
         print('  '+c)
-    if isinstance(downloader, dict):
-        print('  This tool might be automatically downloaded by KiBot.')
+    if isinstance(downloader, str):
+        if downloader == 'pytool' and not pip_ok:
+            print('  Please install the Python Installer (pip).')
+        else:
+            print('  This tool might be automatically downloaded by KiBot.')
     show_roles(roles)
     print(RESET)
 
@@ -1144,9 +1164,8 @@ for name, d in dependencies.items():
     if d['is_python']:
         python_module(d['sev'], d['pypi_name'], d['deb_package'], d['roles'])
     else:
-        # TODO: check pip_ok and if this is a Python tool suggest install pip
         binary_tool(d['sev'], d['name'], d['url'], d['url_down'], d['deb_package'], d['in_debian'], d['extra_deb'],
-                    d['roles'], d['downloader'], d['comments'])
+                    d['roles'], d['downloader_str'], d['comments'])
 
 labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory for an output', 'mandatory for general use')
 text = ', '.join([sev2color(c)+l+RESET for c, l in enumerate(labels)])
