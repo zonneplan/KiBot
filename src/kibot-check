@@ -930,7 +930,7 @@ def python_module(severity, name, deb_package, roles):
     print(RESET)
 
 
-def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, roles, downloader):
+def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, roles, downloader, comments):
     if not severity:
         return
     print(sev2color(severity)+'* {} not installed or too old'.format(name))
@@ -944,6 +944,8 @@ def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, role
         print('  Visit: '+url)
         if url_down:
             print('  Download it from: '+url_down)
+    for c in comments:
+        print('  '+c)
     if isinstance(downloader, dict):
         print('  This tool might be automatically downloaded by KiBot.')
     show_roles(roles)
@@ -1144,7 +1146,7 @@ for name, d in dependencies.items():
     else:
         # TODO: check pip_ok and if this is a Python tool suggest install pip
         binary_tool(d['sev'], d['name'], d['url'], d['url_down'], d['deb_package'], d['in_debian'], d['extra_deb'],
-                    d['roles'], d['downloader'])
+                    d['roles'], d['downloader'], d['comments'])
 
 labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory for an output', 'mandatory for general use')
 text = ', '.join([sev2color(c)+l+RESET for c, l in enumerate(labels)])
