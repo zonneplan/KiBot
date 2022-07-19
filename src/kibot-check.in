@@ -253,6 +253,10 @@ def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, role
     show_roles(roles)
     print(RESET)
 
+
+# Force iBoM to avoid the use of graphical stuff
+os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = 'True'
+
 # ######################################################################################################################
 #  Core tools
 # ######################################################################################################################
