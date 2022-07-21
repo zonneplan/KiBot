@@ -1640,7 +1640,7 @@ class SchematicV6(Schematic):
         return [Sep(), Sep(), _symbol('paper', paper_data)]
 
     def write_title_block(self):
-        data = [Sep()]
+        data = []
         if self.title_ori:
             data += [_symbol('title', [self.title_ori]), Sep()]
         if self.date_ori:
@@ -1652,7 +1652,10 @@ class SchematicV6(Schematic):
         for num, val in enumerate(self.comment_ori):
             if val:
                 data += [_symbol('comment', [num+1, val]), Sep()]
-        return [Sep(), Sep(), _symbol('title_block', data)]
+        # If all empty return an empty list
+        if not data:
+            return data
+        return [Sep(), Sep(), _symbol('title_block', [Sep()]+data)]
 
     def write_lib_symbols(self, cross=False):
         data = [Sep()]
@@ -1690,8 +1693,7 @@ class SchematicV6(Schematic):
             sch.append(Sep())
             sch.append(_symbol('uuid', [Symbol(self.uuid)]))
             sch.extend(self.write_paper())
-            if self.title_ori is not None:
-                sch.extend(self.write_title_block())
+            sch.extend(self.write_title_block())
             sch.extend(self.write_lib_symbols(cross))
             # Bus aliases
             _add_items(self.bus_alias, sch)
