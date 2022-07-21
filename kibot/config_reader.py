@@ -14,7 +14,7 @@ import json
 from sys import (exit, maxsize)
 from collections import OrderedDict
 
-from .error import (KiPlotConfigurationError, config_error)
+from .error import KiPlotConfigurationError
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
                    W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS)
 from .gs import GS
@@ -35,6 +35,8 @@ PYPI_LOGO = ('![PyPi dependency]('+GITHUB_RAW+'PyPI_logo_simplified-22x22.png)')
 PY_LOGO = ('![Python module]('+GITHUB_RAW+'Python-logo-notext-22x22.png)')
 TOOL_LOGO = '![Tool]('+GITHUB_RAW+'llave-inglesa-22x22.png)'
 AUTO_DOWN = '![Auto-download]('+GITHUB_RAW+'auto_download-22x22.png)'
+VALID_SECTIONS = {'kiplot', 'kibot', 'import', 'global', 'filters', 'variants', 'preflight', 'outputs'}
+
 
 try:
     import yaml
@@ -63,13 +65,13 @@ class CfgYamlReader(object):
 
     def _check_version(self, v):
         if not isinstance(v, dict):
-            config_error("Incorrect `kibot` section")
+            raise KiPlotConfigurationError("Incorrect `kibot` section")
         if 'version' not in v:
-            config_error("YAML config needs `kibot.version`.")
+            raise KiPlotConfigurationError("YAML config needs `kibot.version`.")
         version = v['version']
         # Only version 1 is known
         if version != 1:
-            config_error("Unknown KiBot config version: "+str(version))
+            raise KiPlotConfigurationError("Unknown KiBot config version: "+str(version))
         return version
 
     def _parse_output(self, o_tree):
@@ -78,14 +80,14 @@ class CfgYamlReader(object):
             if not name:
                 raise KeyError
         except KeyError:
-            config_error("Output needs a name in: "+str(o_tree))
+            raise KiPlotConfigurationError("Output needs a name in: "+str(o_tree))
 
         try:
             otype = o_tree['type']
             if not otype:
                 raise KeyError
         except KeyError:
-            config_error("Output `"+name+"` needs a type")
+            raise KiPlotConfigurationError("Output `"+name+"` needs a type")
 
         try:
             comment = o_tree['comment']
@@ -98,7 +100,7 @@ class CfgYamlReader(object):
 
         # Is a valid type?
         if not RegOutput.is_registered(otype):
-            config_error("Unknown output type: `{}`".format(otype))
+            raise KiPlotConfigurationError("Unknown output type: `{}`".format(otype))
         # Load it
         logger.debug("Pre-parsing output options for "+name_type)
         o_out = RegOutput.get_class_for(otype)()
@@ -131,7 +133,7 @@ class CfgYamlReader(object):
             for o in v:
                 outputs.append(self._parse_output(o))
         else:
-            config_error("`outputs` must be a list")
+            raise KiPlotConfigurationError("`outputs` must be a list")
         return outputs
 
     def _parse_variant_or_filter(self, o_tree, kind, reg_class):
@@ -141,16 +143,16 @@ class CfgYamlReader(object):
             if not name:
                 raise KeyError
         except KeyError:
-            config_error(kind_f+" needs a name in: "+str(o_tree))
+            raise KiPlotConfigurationError(kind_f+" needs a name in: "+str(o_tree))
         try:
             otype = o_tree['type']
             if not otype:
                 raise KeyError
         except KeyError:
-            config_error(kind_f+" `"+name+"` needs a type")
+            raise KiPlotConfigurationError(kind_f+" `"+name+"` needs a type")
         # Is a valid type?
         if not reg_class.is_registered(otype):
-            config_error("Unknown {} type: `{}`".format(kind, otype))
+            raise KiPlotConfigurationError("Unknown {} type: `{}`".format(kind, otype))
         # Load it
         name_type = "`"+name+"` ("+otype+")"
         logger.debug("Parsing "+kind+" "+name_type)
@@ -168,7 +170,7 @@ class CfgYamlReader(object):
                 o_var = self._parse_variant_or_filter(o, 'variant', RegVariant)
                 variants[o_var.name] = o_var
         else:
-            config_error("`variants` must be a list")
+            raise KiPlotConfigurationError("`variants` must be a list")
         return variants
 
     def _parse_filters(self, v):
@@ -179,23 +181,23 @@ class CfgYamlReader(object):
                 self.configure_variant_or_filter(o_fil)
                 filters[o_fil.name] = o_fil
         else:
-            config_error("`filters` must be a list")
+            raise KiPlotConfigurationError("`filters` must be a list")
         return filters
 
     def _parse_preflights(self, pf):
         logger.debug("Parsing preflight options: {}".format(pf))
         if not isinstance(pf, dict):
-            config_error("Incorrect `preflight` section")
+            raise KiPlotConfigurationError("Incorrect `preflight` section")
 
         preflights = []
         for k, v in pf.items():
             if not BasePreFlight.is_registered(k):
-                config_error("Unknown preflight: `{}`".format(k))
+                raise KiPlotConfigurationError("Unknown preflight: `{}`".format(k))
             try:
                 logger.debug("Parsing preflight "+k)
                 o_pre = BasePreFlight.get_class_for(k)(k, v)
             except KiPlotConfigurationError as e:
-                config_error("In preflight '"+k+"': "+str(e))
+                raise KiPlotConfigurationError("In preflight '"+k+"': "+str(e))
             preflights.append(o_pre)
         return preflights
 
@@ -203,7 +205,7 @@ class CfgYamlReader(object):
         """ Get global options """
         logger.debug("Parsing global options: {}".format(gb))
         if not isinstance(gb, dict):
-            config_error("Incorrect `global` section (must be a dict)")
+            raise KiPlotConfigurationError("Incorrect `global` section (must be a dict)")
         if self.imported_globals:
             gb.update(self.imported_globals)
             logger.debug("Global options + imported: {}".format(gb))
@@ -213,13 +215,13 @@ class CfgYamlReader(object):
         try:
             glb.config(None)
         except KiPlotConfigurationError as e:
-            config_error("In `global` section: "+str(e))
+            raise KiPlotConfigurationError("In `global` section: "+str(e))
 
     @staticmethod
     def _config_error_import(fname, error):
         if fname is None:
             fname = '*unnamed*'
-        config_error('{} in {} import'.format(error, fname))
+        raise KiPlotConfigurationError('{} in {} import'.format(error, fname))
 
     @staticmethod
     def _parse_import_items(kind, fname, value):
@@ -328,7 +330,8 @@ class CfgYamlReader(object):
         if (globals is None or len(globals) > 0) and 'global' in data:
             i_globals = data['global']
             if not isinstance(i_globals, dict):
-                config_error("Incorrect `global` section (must be a dict), while importing from {}".format(fn_rel))
+                raise KiPlotConfigurationError("Incorrect `global` section (must be a dict), while importing from {}".
+                                               format(fn_rel))
             imported.globals.update(i_globals)
             i_globals = imported.globals
             if globals is not None:
@@ -348,10 +351,7 @@ class CfgYamlReader(object):
         return sel_globals
 
     def configure_variant_or_filter(self, o_var):
-        try:
-            o_var.config(None)
-        except KiPlotConfigurationError as e:
-            config_error("In section `"+o_var._name_type+"`: "+str(e))
+        o_var.config(None)
 
     def configure_variants(self, variants):
         logger.debug('Configuring variants')
@@ -363,9 +363,9 @@ class CfgYamlReader(object):
         logger.debug("Parsing imports: {}".format(imp))
         depth += 1
         if depth > 20:
-            config_error("Import depth greater than 20, make sure this isn't an infinite loop")
+            raise KiPlotConfigurationError("Import depth greater than 20, make sure this isn't an infinite loop")
         if not isinstance(imp, list):
-            config_error("Incorrect `import` section (must be a list)")
+            raise KiPlotConfigurationError("Incorrect `import` section (must be a list)")
         # Import the files
         dir = os.path.dirname(os.path.abspath(name))
         all_collected = CollectedImports()
@@ -388,7 +388,7 @@ class CfgYamlReader(object):
                 for k, v in entry.items():
                     if k == 'file':
                         if not isinstance(v, str):
-                            config_error("`import.file` must be a string ({})".format(str(v)))
+                            raise KiPlotConfigurationError("`import.file` must be a string ({})".format(str(v)))
                         fn = v
                     elif k == 'outputs':
                         outs = self._parse_import_items(k, fn, v)
@@ -408,14 +408,14 @@ class CfgYamlReader(object):
                     else:
                         self._config_error_import(fn, "unknown import entry `{}`".format(str(v)))
                 if fn is None:
-                    config_error("`import` entry without `file` ({})".format(str(entry)))
+                    raise KiPlotConfigurationError("`import` entry without `file` ({})".format(str(entry)))
             else:
-                config_error("`import` items must be strings or dicts ({})".format(str(entry)))
+                raise KiPlotConfigurationError("`import` items must be strings or dicts ({})".format(str(entry)))
             fn = os.path.expandvars(os.path.expanduser(fn))
             if not os.path.isabs(fn):
                 fn = os.path.join(dir, fn)
             if not os.path.isfile(fn):
-                config_error("missing import file `{}`".format(fn))
+                raise KiPlotConfigurationError("missing import file `{}`".format(fn))
             fn_rel = os.path.relpath(fn)
             data = self.load_yaml(open(fn))
             if 'import' in data:
@@ -442,17 +442,14 @@ class CfgYamlReader(object):
             RegOutput.add_variants(all_collected.variants)
             self.imported_globals = all_collected.globals
             BasePreFlight.add_preflights(all_collected.preflights)
-            try:
-                RegOutput.add_outputs(all_collected.outputs, fn_rel)
-            except KiPlotConfigurationError as e:
-                config_error(str(e))
+            RegOutput.add_outputs(all_collected.outputs, fn_rel)
         return all_collected
 
     def load_yaml(self, fstream):
         try:
             data = yaml.safe_load(fstream)
         except yaml.YAMLError as e:
-            config_error("Error loading YAML "+str(e))
+            raise KiPlotConfigurationError("Error loading YAML "+str(e))
         # Accept `globals` for `global`
         if 'globals' in data and 'global' not in data:
             data['global'] = data['globals']
@@ -466,45 +463,52 @@ class CfgYamlReader(object):
         :param fstream: file stream of a config YAML file
         """
         data = self.load_yaml(fstream)
-        # List of outputs
-        version = None
-        globals_found = False
-        # Analyze each section
-        for k, v in data.items():
-            # logger.debug('{} {}'.format(k, v))
-            if k == 'kiplot' or k == 'kibot':
-                version = self._check_version(v)
-            elif k == 'preflight':
-                BasePreFlight.add_preflights(self._parse_preflights(v))
-            elif k == 'global':
-                self._parse_global(v)
-                globals_found = True
-            elif k == 'import':
-                self._parse_import(v, fstream.name)
-            elif k == 'variants':
-                variants = self._parse_variants(v)
-                self.configure_variants(variants)
-                RegOutput.add_variants(variants)
-            elif k == 'filters':
-                RegOutput.add_filters(self._parse_filters(v))
-            elif k == 'outputs':
-                try:
-                    RegOutput.add_outputs(self._parse_outputs(v))
-                except KiPlotConfigurationError as e:
-                    config_error(str(e))
-            else:
-                config_error('Unknown section `{}` in config.'.format(k))
-        if version is None:
-            config_error("YAML config needs `kibot.version`.")
+        # Analyze the version
+        # Currently just checks for v1
+        v1 = data.get('kiplot', None)
+        v2 = data.get('kibot', None)
+        if v1 and v2:
+            raise KiPlotConfigurationError("Use `kibot` or `kiplot` but not both.")
+        if not v1 and not v2:
+            raise KiPlotConfigurationError("YAML config needs `kibot.version`.")
+        if v1 or v2:
+            self._check_version(v1 or v2)
+        # Look for imports
+        v1 = data.get('import', None)
+        if v1:
+            self._parse_import(v1, fstream.name)
+        # Look for globals
         # If no globals defined initialize them with default values
-        if not globals_found:
-            self._parse_global({})
+        self._parse_global(data.get('global', {}))
+        # Look for filters
+        v1 = data.get('filters', None)
+        if v1:
+            RegOutput.add_filters(self._parse_filters(v1))
+        # Look for variants
+        v1 = data.get('variants', None)
+        if v1:
+            variants = self._parse_variants(v1)
+            self.configure_variants(variants)
+            RegOutput.add_variants(variants)
         # Solve the global variant
         if GS.global_variant:
             try:
                 GS.solved_global_variant = RegOutput.check_variant(GS.global_variant)
             except KiPlotConfigurationError as e:
-                config_error("In global section: "+str(e))
+                raise KiPlotConfigurationError("In global section: "+str(e))
+        # Look for preflights
+        v1 = data.get('preflight', None)
+        if v1:
+            BasePreFlight.add_preflights(self._parse_preflights(v1))
+        # Look for outputs
+        v1 = data.get('outputs', None)
+        if v1:
+            RegOutput.add_outputs(self._parse_outputs(v1))
+        # Report invalid sections (the first we find)
+        defined_sections = set(data.keys())
+        invalid_sections = defined_sections-VALID_SECTIONS
+        for k in invalid_sections:
+            raise KiPlotConfigurationError('Unknown section `{}` in config.'.format(k))
         # Ok, now we have all the outputs loaded, so we can apply the disable_run_by_default
         for name in self.no_run_by_default:
             o = RegOutput.get_output(name)

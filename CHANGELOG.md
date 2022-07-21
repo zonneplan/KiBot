@@ -20,6 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PCB_Print:
   - Problems with filtered/modified PCBs
   - Problems with zones on multiple layers (#226)
+- SCH Variants on KiCad 6:
+  - Problems with missing values in the title block.
+
+### Changed
+- The order in which main sections are parsed is now fixed.
+  The declared order is ignored. The order is:
+  kiplot/kibot, import, global, filters, variants, preflight, outputs
 
 
 ## [1.2.0] - 2022-06-15

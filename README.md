@@ -28,6 +28,7 @@
   * [Notes about virtualenv](#notes-about-virtualenv)
   * [Installation on other targets](#installation-on-other-targets)
 * [Configuration](#configuration)
+  * [Quick start](#quick-start)
   * [The header](#the-header)
   * [The *preflight* section](#the-preflight-section)
     * [Supported *preflight* options](#supported-preflight-options)
@@ -255,7 +256,7 @@ I don't know how to make it.
 ## Configuration
 
 KiBot uses a configuration file where you can specify what *outputs* to
-generate and which pre-flight (before *launching* the outputs generation)
+generate and which preflight (before *launching* the outputs generation)
 actions to perform. By default you'll generate all of them, but you can specify which
 ones from the command line.
 
@@ -304,6 +305,20 @@ kibot --example
 
 This will generate a configuration file with all the available outputs
 and all their options.
+
+### Section order
+
+The file is divided in various sections. Some of them are optional.
+
+The order in which they are declared is not relevant, they are interpreted in the following order:
+
+- `kiplot`/`kibot` see [The header](#the-header)
+- `import` see [Importing outputs from another file](#importing-outputs-from-another-file)
+- `global` see [Default global options](#default-global-options)
+- `filters` see [Filters and variants](#filters-and-variants)
+- `variants` see [Filters and variants](#filters-and-variants)
+- `preflight` see [The *preflight* section](#the-preflight-section)
+- `outputs` see [The *outputs* section](#the-outputs-section)
 
 ### The header
 

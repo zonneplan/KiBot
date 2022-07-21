@@ -1,0 +1,54 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'print_copper'
+    comment: "Print all copper layers"
+    type: pcb_print
+    dir: print_zones/pass1
+    options:
+      plot_sheet_reference: false
+      format: 'PNG'
+      keep_temporal_files: true
+      scaling: 2
+      pages:
+        - monochrome: true
+          layers: F.Cu
+        - monochrome: true
+          layers: In1.Cu
+        - monochrome: true
+          layers: In2.Cu
+        - monochrome: true
+          layers: B.Cu
+
+  - name: 'gerbers'
+    comment: "Gerbers for the Gerber god"
+    type: gerber
+    dir: print_zones/gerbers
+    layers: copper
+
+  - name: 'svg'
+    comment: "SVG plotted"
+    type: svg
+    dir: print_zones/svg
+    layers: copper
+
+  - name: 'print_copper_2'
+    comment: "Print all copper layers"
+    type: pcb_print
+    dir: print_zones/pass2
+    options:
+      plot_sheet_reference: false
+      format: 'PNG'
+      keep_temporal_files: true
+      scaling: 2
+      pages:
+        - monochrome: true
+          layers: F.Cu
+        - monochrome: true
+          layers: In1.Cu
+        - monochrome: true
+          layers: In2.Cu
+        - monochrome: true
+          layers: B.Cu

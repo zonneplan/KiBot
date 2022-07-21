@@ -94,6 +94,7 @@ if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
 from .gs import GS
 from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK
 from .pre_base import BasePreFlight
+from .error import KiPlotConfigurationError, config_error
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help, print_global_options_help, print_dependencies)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
@@ -317,9 +318,12 @@ def main():
         pass
     if outputs is None:
         with open(plot_config) as cf_file:
-            outputs = cr.read(cf_file)
+            try:
+                outputs = cr.read(cf_file)
+            except KiPlotConfigurationError as e:
+                config_error(str(e))
 
-    # Is just list the available targets?
+    # Is just "list the available targets"?
     if args.list:
         list_pre_and_outs(logger, outputs)
         sys.exit(0)

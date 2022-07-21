@@ -3,7 +3,7 @@ kibot:
   version: 1
 
 import:
-  - error_same_name_3b.kibot.yaml
+  - simple_position.kibot.yaml
 
 outputs:
   - name: 'position'
