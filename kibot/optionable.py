@@ -212,14 +212,24 @@ class Optionable(object):
         attrs = self.get_attrs_for()
         return ((k, v) for k, v in attrs.items() if k[0] != '_')
 
+    @staticmethod
+    def _find_global_variant():
+        if GS.solved_global_variant:
+            return GS.solved_global_variant.file_id
+        return ''
+
     def _find_variant(self):
         """ Returns the text to add for the current variant.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
         if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'file_id'):
             return self.variant.file_id
+        return Optionable._find_global_variant()
+
+    @staticmethod
+    def _find_global_variant_name():
         if GS.solved_global_variant:
-            return GS.solved_global_variant.file_id
+            return GS.solved_global_variant.name
         return ''
 
     def _find_variant_name(self):
@@ -228,9 +238,8 @@ class Optionable(object):
             If no variant is defined an empty string is returned. """
         if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'name'):
             return self.variant.name
-        if GS.solved_global_variant:
-            return GS.solved_global_variant.name
-        return ''
+        logger.error('S')
+        return Optionable._find_global_variant_name()
 
     def expand_filename_common(self, name, parent):
         """ Expansions common to the PCB and Schematic """
@@ -268,6 +277,9 @@ class Optionable(object):
             if parent and hasattr(parent, 'output_id'):
                 replace_id = _cl(parent.output_id)
             name = name.replace('%I', replace_id)
+        else:
+            name = name.replace('%v', _cl(Optionable._find_global_variant()))
+            name = name.replace('%V', _cl(Optionable._find_global_variant_name()))
         return name
 
     def expand_filename_both(self, name, is_sch=True, make_safe=True):

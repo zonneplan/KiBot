@@ -138,10 +138,12 @@ class BasePreFlight(Registrable):
         return Optionable.expand_filename_both(self, out_dir, is_sch=self._sch_related)
 
     def _find_variant(self):
-        return ''
+        # Preflights doesn't have a variant, but we could have one global default
+        return Optionable._find_global_variant()
 
     def _find_variant_name(self):
-        return ''
+        # Preflights doesn't have a variant, but we could have one global default
+        return Optionable._find_global_variant_name()
 
     def ensure_tool(self, name):
         """ Looks for a mandatory dependency """
