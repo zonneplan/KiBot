@@ -238,7 +238,6 @@ class Optionable(object):
             If no variant is defined an empty string is returned. """
         if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'name'):
             return self.variant.name
-        logger.error('S')
         return Optionable._find_global_variant_name()
 
     def expand_filename_common(self, name, parent):
