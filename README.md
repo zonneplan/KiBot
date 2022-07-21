@@ -3272,7 +3272,7 @@ kibot --list
 KiBot: KiCad automation tool for documents generation
 
 Usage:
-  kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
+  kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
          [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
@@ -3297,6 +3297,7 @@ Options:
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -C, --cli-order                  Generate outputs using the indicated order
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
+  -D, --dont-stop                  Try to continue if an output fails
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets

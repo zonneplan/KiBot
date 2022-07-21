@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Imports:
   - Now you can nest imports (import from an imported file) (#218)
   - Preflights can be imported (#181)
+- `--dont-stop` command line option, to try to continue even on errors (#209)
 
 ### Fixed
 - OAR computation (Report) (#225)
