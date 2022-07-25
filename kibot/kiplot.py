@@ -668,7 +668,6 @@ def solve_board_file(base_dir, a_board_file=None, sug_b=True):
         pcb = os.path.join(base_dir, os.path.splitext(schematic)[0]+'.kicad_pcb')
         if os.path.isfile(pcb):
             board_file = pcb
-            logger.info('Using PCB file: '+os.path.relpath(board_file))
     if not board_file:
         board_files = glob(os.path.join(base_dir, '*.kicad_pcb'))
         if len(board_files) == 1:
