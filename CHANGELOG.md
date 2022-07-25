@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now you can nest imports (import from an imported file) (#218)
   - Preflights can be imported (#181)
 - `--dont-stop` command line option, to try to continue even on errors (#209)
+- PDF/SVG PCB Print: option to print all pages/single page (#236)
 
 ### Fixed
 - OAR computation (Report) (#225)
