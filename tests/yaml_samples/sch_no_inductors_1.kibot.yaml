@@ -4,6 +4,8 @@ kibot:
 
 global:
   filters:
+    - number: 8
+      regex: kicad_common
     - number: 9
       regex: 'EnvironmentVariables'
     - number: 10
