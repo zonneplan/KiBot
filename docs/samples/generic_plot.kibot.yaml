@@ -1281,6 +1281,8 @@ outputs:
       frame: true
       # [boolean=false] Generate a monochromatic PDF
       monochrome: false
+      # [boolean=true] Generate with all hierarchical sheets.
+      all_pages: true
       # [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options
       output: '%f-%i%I%v.%x'
       # [string=''] Board variant to apply.
@@ -1709,6 +1711,8 @@ outputs:
       frame: true
       # [boolean=false] Generate a monochromatic PDF
       monochrome: false
+      # [boolean=true] Generate with all hierarchical sheets.
+      all_pages: true
       # [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options
       output: '%f-%i%I%v.%x'
       # [string=''] Board variant to apply.

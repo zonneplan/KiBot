@@ -37,6 +37,8 @@ class Any_SCH_PrintOptions(VariantOptions):
             """ Generate a monochromatic PDF """
             self.frame = True
             """ *Include the frame and title block """
+            self.all_pages = True
+            """ Generate with all hierarchical sheets """
         super().__init__()
         self.add_to_doc('variant', "Not fitted components are crossed")
         self._expand_id = 'schematic'
@@ -60,11 +62,13 @@ class Any_SCH_PrintOptions(VariantOptions):
         else:
             sch_dir = None
             sch_file = GS.sch_file
-        cmd = [command, 'export', '--all_pages', '--file_format', self._expand_ext]
+        cmd = [command, 'export', '--file_format', self._expand_ext]
         if self.monochrome:
             cmd.append('--monochrome')
         if not self.frame:
             cmd.append('--no_frame')
+        if self.all_pages:
+            cmd.append('--all_pages')
         cmd.extend([sch_file, output_dir])
         cmd, video_remove = add_extra_options(cmd)
         ret = exec_with_retry(cmd)

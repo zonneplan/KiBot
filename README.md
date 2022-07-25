@@ -2340,6 +2340,7 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
+        - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
@@ -2808,6 +2809,7 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
+        - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
