@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems with zones on multiple layers (#226)
 - SCH Variants on KiCad 6:
   - Problems with missing values in the title block.
+- Report:
+  - Converted file wasn't stored at `dir` (#238)
 
 ### Changed
 - The order in which main sections are parsed is now fixed.

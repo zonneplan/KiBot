@@ -1009,11 +1009,12 @@ def test_report_simple_2(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'report_simple_2', POS_DIR)
     ctx.run()
-    ctx.expect_out_file(prj+'-report.txt')
+    f_report = os.path.join('report', prj+'-report.txt')
+    ctx.expect_out_file(f_report)
     ctx.expect_out_file(prj+'-report_simple.txt')
-    ctx.compare_txt(prj+'-report.txt', prj+'-report.txt_2')
+    ctx.compare_txt(f_report, prj+'-report.txt_2')
     ctx.compare_txt(prj+'-report_simple.txt')
-    ctx.expect_out_file(prj+'-report.pdf')
+    ctx.expect_out_file(f_report.replace('.txt', '.pdf'))
     ctx.clean_up(keep_project=True)
 
 

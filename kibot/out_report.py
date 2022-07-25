@@ -730,9 +730,10 @@ class ReportOptions(BaseOptions):
         if not self.do_convert:
             return
         command = self.ensure_tool('PanDoc')
-        out = self.expand_converted_output(GS.out_dir)
+        dir_out = os.path.dirname(os.path.abspath(fname))
+        out = self.expand_converted_output(dir_out)
         logger.debug('Converting the report to: {}'.format(out))
-        resources = '--resource-path='+GS.out_dir
+        resources = '--resource-path='+dir_out
         # Pandoc 2.2.1 doesn't support "--to pdf"
         if not out.endswith('.'+self.convert_to):
             logger.warning(W_WRONGEXT+'The conversion tool detects the output format using the extension')

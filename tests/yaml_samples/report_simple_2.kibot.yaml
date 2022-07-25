@@ -54,5 +54,6 @@ outputs:
   - name: 'report_full'
     comment: "Full design report"
     type: report
+    dir: report
     options:
       do_convert: true
