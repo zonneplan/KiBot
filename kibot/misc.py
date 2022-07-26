@@ -241,7 +241,7 @@ SILK_COLORS = {'black': "0b1013", 'white': "d5dce4"}
 # KiCad 6 uses IUs for SVGs, but KiCad 5 uses a very different scale based on inches
 KICAD5_SVG_SCALE = 116930/297002200
 # Some browser name to pretend
-USER_AGENT = 'Mozilla/5.0 (Windows NT 5.2; rv:2.0.1) Gecko/20100101 Firefox/4.0.1'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'
 
 
 class Rect(object):
