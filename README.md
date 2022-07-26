@@ -2337,10 +2337,10 @@ Notes:
     - **`options`**: [dict] Options for the `pdf_sch_print` output.
       * Valid keys:
         - **`frame`**: [boolean=true] Include the frame and title block.
+        - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
-        - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
@@ -2806,10 +2806,10 @@ Notes:
     - **`options`**: [dict] Options for the `svg_sch_print` output.
       * Valid keys:
         - **`frame`**: [boolean=true] Include the frame and title block.
+        - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
-        - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
@@ -3799,6 +3799,8 @@ Important: These files doesn't support manual panelization with repeated referen
   - **Typos corrections**: Seth Kaz (@sethkaz) and Sebastian Grau (@SebastianGrau)
   - **Various tools suggested**: MDW (@mdeweerd)
   - **GENCAD export for KiAuto**: Theo Hussey (@flaminggoat)
+  - **Various fixes**: Henning Kleen (@hkleen)
+  - **SCH print all-pages option**: Kevin Dong (@kevin-dong-nai-jia)
 - **Sources of inspiration and good ideas**:
   - **JLC Kicad Tools**: Matthew Lai (@matthewlai)
   - **KiCad Gerber Zipper**: @g200kg

@@ -1761,6 +1761,8 @@ Important: These files doesn't support manual panelization with repeated referen
   - **Typos corrections**: Seth Kaz (@sethkaz) and Sebastian Grau (@SebastianGrau)
   - **Various tools suggested**: MDW (@mdeweerd)
   - **GENCAD export for KiAuto**: Theo Hussey (@flaminggoat)
+  - **Various fixes**: Henning Kleen (@hkleen)
+  - **SCH print all-pages option**: Kevin Dong (@kevin-dong-nai-jia)
 - **Sources of inspiration and good ideas**:
   - **JLC Kicad Tools**: Matthew Lai (@matthewlai)
   - **KiCad Gerber Zipper**: @g200kg

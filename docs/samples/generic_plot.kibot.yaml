@@ -1274,6 +1274,8 @@ outputs:
     type: 'pdf_sch_print'
     dir: 'Example/pdf_sch_print_dir'
     options:
+      # [boolean=true] Generate with all hierarchical sheets
+      all_pages: true
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
@@ -1281,8 +1283,6 @@ outputs:
       frame: true
       # [boolean=false] Generate a monochromatic PDF
       monochrome: false
-      # [boolean=true] Generate with all hierarchical sheets.
-      all_pages: true
       # [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options
       output: '%f-%i%I%v.%x'
       # [string=''] Board variant to apply.
@@ -1704,6 +1704,8 @@ outputs:
     type: 'svg_sch_print'
     dir: 'Example/svg_sch_print_dir'
     options:
+      # [boolean=true] Generate with all hierarchical sheets
+      all_pages: true
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
@@ -1711,8 +1713,6 @@ outputs:
       frame: true
       # [boolean=false] Generate a monochromatic PDF
       monochrome: false
-      # [boolean=true] Generate with all hierarchical sheets.
-      all_pages: true
       # [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options
       output: '%f-%i%I%v.%x'
       # [string=''] Board variant to apply.

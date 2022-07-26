@@ -22,15 +22,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PCB_Print:
   - Problems with filtered/modified PCBs
   - Problems with zones on multiple layers (#226)
-- SCH Variants on KiCad 6:
-  - Problems with missing values in the title block.
-- Report:
-  - Converted file wasn't stored at `dir` (#238)
+- SCH Variants on KiCad 6: Problems with missing values in the title block.
+- Report: Converted file wasn't stored at `dir` (#238)
+- Datasheet download: Time-outs on some servers expecting modern browsers (#240)
 
 ### Changed
 - The order in which main sections are parsed is now fixed.
   The declared order is ignored. The order is:
   kiplot/kibot, import, global, filters, variants, preflight, outputs
+- Datasheet download:
+  - Continue downloading if an SSL certificate error found (#239)
 
 
 ## [1.2.0] - 2022-06-15
