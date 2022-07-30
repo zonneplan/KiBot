@@ -47,6 +47,10 @@ jobs:
       run: |
         rm -rf output
         rm -f tests/.local
+        #### Experimental stuff:
+        # Install KiAuto
+        pip3 install git+https://github.com/INTI-CMNB/KiAuto.git@kicad_interposer
+        #### End Experimental stuff
         # Unify coverage versions to allow combine
         pip3 install --upgrade coverage==5.1
         ln -s /usr/local/bin/coverage3 /usr/local/bin/python3-coverage || true
