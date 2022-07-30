@@ -99,7 +99,7 @@ def test_render_3d_variant_1(test_dir):
     if context.ki5():
         yaml += '_k5'
     ctx = context.TestContext(test_dir, prj, yaml)
-    ctx.run()
+    ctx.run(extra_debug=True)
     # Check all outputs are there
     name = prj+'-3D_top.png'
     ctx.expect_out_file(name)
