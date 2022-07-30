@@ -51,18 +51,13 @@ jobs:
         # Install KiAuto
         pip3 install --upgrade  git+https://github.com/INTI-CMNB/KiAuto.git@kicad_interposer
         # Uninstall the system level version
-        # rm /usr/bin/pcbnew_do
-        # rm /usr/bin/eeschema_do
-        # rm /usr/bin/kicad2step_do
-        # rm -r /usr/lib/python3/dist-packages/kiauto*
-        ls -la /usr/lib/python3/dist-packages/kiauto*
-        echo "ls -la /usr/lib/python3/dist-packages/kiauto*/*"
-        ls -la /usr/lib/python3/dist-packages/kiauto*/* || true
-        echo "ls -la /usr/local/lib/python3*/dist-packages/kiauto*/*"
-        ls -la /usr/local/lib/python3*/dist-packages/kiauto*/* || true
+        rm /usr/bin/pcbnew_do
+        rm /usr/bin/eeschema_do
+        rm /usr/bin/kicad2step_do
+        rm -r /usr/lib/python3/dist-packages/kiauto*
         echo $PATH
         which pcbnew_do
-        ls -la /usr/local/bin/
+        pcbnew_do --version
         #### End Experimental stuff
         # Unify coverage versions to allow combine
         pip3 install --upgrade coverage==5.1
