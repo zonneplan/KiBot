@@ -20,7 +20,8 @@ Dependencies:
 """
 import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
-from shutil import which
+from shutil import which, rmtree
+from tempfile import mkdtemp
 from .misc import BOM_ERROR, W_EXTNAME, W_NONETLIST
 from .gs import GS
 from .out_base import VariantOptions
@@ -164,19 +165,35 @@ class IBoMOptions(VariantOptions):
             cur = os.path.join(output_dir, 'ibom.html')
         else:
             output_dir = name
-        cmd = [tool, GS.pcb_file, '--dest-dir', output_dir, '--no-browser', ]
+        # Solve the variants stuff
+        ori_extra_data_file = self.extra_data_file
+        net_dir = None
+        pcb_name = GS.pcb_file
+        if self._comps:
+            # Write a custom netlist to a temporal dir
+            net_dir = mkdtemp(prefix='tmp-kibot-ibom-')
+            netlist = os.path.join(net_dir, GS.pcb_basename+'.xml')
+            self.extra_data_file = netlist
+            logger.debug('Creating variant netlist `{}`'.format(netlist))
+            with open(netlist, 'wb') as f:
+                GS.sch.save_netlist(f, self._comps)
+            # Write a board with the filtered values applied
+            self.sch_fields_to_pcb(self._comps, GS.board)
+            pcb_name = self.save_tmp_board(dir=net_dir)
+        else:
+            # Check if the user wants extra_fields but there is no data about them (#68)
+            if self.need_extra_fields() and not os.path.isfile(self.extra_data_file):
+                logger.warning(W_NONETLIST+'iBoM needs information about user defined fields and no netlist provided')
+                if self._extra_data_file_guess:
+                    logger.warning(W_NONETLIST+'Create a BoM in XML format or use the `update_xml` preflight')
+                    # If the name of the netlist is just a guess remove it from the options
+                    self.extra_data_file = ''
+                else:
+                    logger.warning(W_NONETLIST+"The file name used in `extra_data_file` doesn't exist")
+        cmd = [tool, pcb_name, '--dest-dir', output_dir, '--no-browser', ]
         if not which(tool) and not os.access(tool, os.X_OK):
             # Plugin could be installed without execute flags
             cmd.insert(0, 'python3')
-        # Check if the user wants extra_fields but there is no data about them (#68)
-        if self.need_extra_fields() and not os.path.isfile(self.extra_data_file):
-            logger.warning(W_NONETLIST+'iBoM needs information about user defined fields and no netlist provided')
-            if self._extra_data_file_guess:
-                logger.warning(W_NONETLIST+'Create a BoM in XML format or use the `update_xml` preflight')
-                # If the name of the netlist is just a guess remove it from the options
-                self.extra_data_file = ''
-            else:
-                logger.warning(W_NONETLIST+"The file name used in `extra_data_file` doesn't exist")
         # Apply variants/filters
         to_remove = ','.join(self.get_not_fitted_refs())
         if self.blacklist and to_remove:
@@ -204,6 +221,14 @@ class IBoMOptions(VariantOptions):
                 if "'PCB_SHAPE' object has no attribute 'GetAngle'" in e.output.decode():
                     logger.error("Update Interactive HTML BoM your version doesn't support KiCad 6 files")
             exit(BOM_ERROR)
+        finally:
+            if net_dir:
+                logger.debug('Removing temporal variant dir `{}`'.format(net_dir))
+                rmtree(net_dir)
+                # Restore the PCB properties and values
+                self.restore_sch_fields_to_pcb(GS.board)
+            # Restore the real name selected
+            self.extra_data_file = ori_extra_data_file
         logger.debug('Output from command:\n'+cmd_output_dec+'\n')
         if output:
             logger.debug('Renaming output file: {} -> {}'.format(cur, output))

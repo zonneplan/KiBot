@@ -423,6 +423,39 @@ class VariantOptions(BaseOptions):
             GS.board.GetTitleBlock().SetTitle(self.old_title)
             self.old_title = None
 
+    def sch_fields_to_pcb(self, comps, board):
+        """ Change the module/footprint data according to the filtered fields.
+            iBoM can parse it. """
+        comps_hash = self.get_refs_hash()
+        self.sch_fields_to_pcb_bkp = {}
+        for m in GS.get_modules_board(board):
+            ref = m.GetReference()
+            comp = comps_hash.get(ref, None)
+            if comp is not None:
+                properties = {f.name: f.value for f in comp.fields}
+                old_value = m.GetValue()
+                m.SetValue(properties['Value'])
+                if GS.ki6():
+                    old_properties = m.GetProperties()
+                    old_fp = m.GetFPIDAsString()
+                    m.SetProperties(properties)
+                    m.SetFPIDAsString(properties['Footprint'])
+                    self.sch_fields_to_pcb_bkp[ref] = (old_value, old_properties, old_fp)
+                else:
+                    self.sch_fields_to_pcb_bkp[ref] = old_value
+
+    def restore_sch_fields_to_pcb(self, board):
+        for m in GS.get_modules_board(board):
+            ref = m.GetReference()
+            data = self.sch_fields_to_pcb_bkp.get(ref, None)
+            if data is not None:
+                if GS.ki6():
+                    m.SetValue(data[0])
+                    m.SetProperties(data[1])
+                    m.SetFPIDAsString(data[2])
+                else:
+                    m.SetValue(data)
+
     def save_tmp_board(self, dir=None):
         """ Save the PCB to a temporal file.
             Advantage: all relative paths inside the file remains valid
