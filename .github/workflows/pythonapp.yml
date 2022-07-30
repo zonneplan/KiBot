@@ -50,9 +50,6 @@ jobs:
         #### Experimental stuff:
         # Remove KiAuto
         dpkg --remove kiauto
-        # Install curl
-        apt-get update
-        apt-get -y install --no-install-recommends  -t bullseye-backports curl
         # Install KiAuto@kicad_interposer
         curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/kicad_interposer --output pp.zip
         unzip pp.zip
