@@ -49,15 +49,15 @@ jobs:
         rm -f tests/.local
         #### Experimental stuff:
         # Install KiAuto
-        pip3 install git+https://github.com/INTI-CMNB/KiAuto.git@kicad_interposer
+        pip3 install --upgrade  git+https://github.com/INTI-CMNB/KiAuto.git@kicad_interposer
         # Uninstall the system level version
-        rm /usr/bin/pcbnew_do
-        rm /usr/bin/eeschema_do
-        rm /usr/bin/kicad2step_do
-        rm -r /usr/lib/python3/dist-packages/kiauto*
+        # rm /usr/bin/pcbnew_do
+        # rm /usr/bin/eeschema_do
+        # rm /usr/bin/kicad2step_do
+        # rm -r /usr/lib/python3/dist-packages/kiauto*
+        ls -la /usr/lib/python3/dist-packages/kiauto*
+        ls -la /usr/lib/python3/dist-packages/kiauto*/* || true
         which pcbnew_do
-        ls -la /github/home/.local/bin/ || true
-        ls -la /github/home/.local/lib/python3*/dist-packages/kiauto* || true
         #### End Experimental stuff
         # Unify coverage versions to allow combine
         pip3 install --upgrade coverage==5.1
