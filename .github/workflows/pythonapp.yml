@@ -55,8 +55,9 @@ jobs:
         rm /usr/bin/eeschema_do
         rm /usr/bin/kicad2step_do
         rm -r /usr/lib/python3/dist-packages/kiauto*
-        ls -la /github/home/.local/bin/
-        ls -la /github/home/.local/lib/python3*/dist-packages/kiauto*
+        which pcbnew_do
+        ls -la /github/home/.local/bin/ || true
+        ls -la /github/home/.local/lib/python3*/dist-packages/kiauto* || true
         #### End Experimental stuff
         # Unify coverage versions to allow combine
         pip3 install --upgrade coverage==5.1
