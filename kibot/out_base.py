@@ -428,7 +428,11 @@ class VariantOptions(BaseOptions):
             iBoM can parse it. """
         comps_hash = self.get_refs_hash()
         self.sch_fields_to_pcb_bkp = {}
+        first = True
         for m in GS.get_modules_board(board):
+            if first:
+                has_GetFPIDAsString = hasattr(m, 'GetFPIDAsString')
+                first = False
             ref = m.GetReference()
             comp = comps_hash.get(ref, None)
             if comp is not None:
@@ -437,14 +441,22 @@ class VariantOptions(BaseOptions):
                 m.SetValue(properties['Value'])
                 if GS.ki6():
                     old_properties = m.GetProperties()
-                    old_fp = m.GetFPIDAsString()
                     m.SetProperties(properties)
-                    m.SetFPIDAsString(properties['Footprint'])
-                    self.sch_fields_to_pcb_bkp[ref] = (old_value, old_properties, old_fp)
+                    if has_GetFPIDAsString:
+                        # Introduced in 6.0.6
+                        old_fp = m.GetFPIDAsString()
+                        m.SetFPIDAsString(properties['Footprint'])
+                        data = (old_value, old_properties, old_fp)
+                    else:
+                        data = (old_value, old_properties)
                 else:
-                    self.sch_fields_to_pcb_bkp[ref] = old_value
+                    data = old_value
+                self.sch_fields_to_pcb_bkp[ref] = data
+        self._has_GetFPIDAsString = has_GetFPIDAsString
 
     def restore_sch_fields_to_pcb(self, board):
+        """ Undo sch_fields_to_pcb() """
+        has_GetFPIDAsString = self._has_GetFPIDAsString
         for m in GS.get_modules_board(board):
             ref = m.GetReference()
             data = self.sch_fields_to_pcb_bkp.get(ref, None)
@@ -452,7 +464,8 @@ class VariantOptions(BaseOptions):
                 if GS.ki6():
                     m.SetValue(data[0])
                     m.SetProperties(data[1])
-                    m.SetFPIDAsString(data[2])
+                    if has_GetFPIDAsString:
+                        m.SetFPIDAsString(data[2])
                 else:
                     m.SetValue(data)
 
