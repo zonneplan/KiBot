@@ -50,6 +50,9 @@ jobs:
         #### Experimental stuff:
         # Install KiAuto
         pip3 install git+https://github.com/INTI-CMNB/KiAuto.git@kicad_interposer
+        rm /usr/bin/pcbnew_do
+        rm /usr/bin/eeschema_do
+        rm /usr/bin/kicad2step_do
         #### End Experimental stuff
         # Unify coverage versions to allow combine
         pip3 install --upgrade coverage==5.1
