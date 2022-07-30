@@ -56,8 +56,13 @@ jobs:
         # rm /usr/bin/kicad2step_do
         # rm -r /usr/lib/python3/dist-packages/kiauto*
         ls -la /usr/lib/python3/dist-packages/kiauto*
+        echo "ls -la /usr/lib/python3/dist-packages/kiauto*/*"
         ls -la /usr/lib/python3/dist-packages/kiauto*/* || true
+        echo "ls -la /usr/local/lib/python3*/dist-packages/kiauto*/*"
+        ls -la /usr/local/lib/python3*/dist-packages/kiauto*/* || true
+        echo $PATH
         which pcbnew_do
+        ls -la /usr/local/bin/
         #### End Experimental stuff
         # Unify coverage versions to allow combine
         pip3 install --upgrade coverage==5.1
