@@ -48,13 +48,18 @@ jobs:
         rm -rf output
         rm -f tests/.local
         #### Experimental stuff:
-        # Install KiAuto
-        pip3 install --upgrade  git+https://github.com/INTI-CMNB/KiAuto.git@kicad_interposer
-        # Uninstall the system level version
-        rm /usr/bin/pcbnew_do
-        rm /usr/bin/eeschema_do
-        rm /usr/bin/kicad2step_do
-        rm -r /usr/lib/python3/dist-packages/kiauto*
+        # Remove KiAuto
+        dpkg --remove kiauto
+        # Install curl
+        apt-get update
+        apt-get -y install --no-install-recommends  -t bullseye-backports curl
+        # Install KiAuto@kicad_interposer
+        curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/kicad_interposer --output pp.zip
+        unzip pp.zip
+        pip3 install KiAuto-kicad_interposer/
+        # Clean the downloaded stuff
+        rm -rf KiAuto-kicad_interposer/ pp.zip
+        # Check what we got
         echo $PATH
         ls -la /usr/bin/*_do || true
         ls -la /usr/local/bin/*_do || true
