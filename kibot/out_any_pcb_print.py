@@ -98,7 +98,7 @@ class Any_PCB_PrintOptions(VariantOptions):
         cmd, video_remove = add_extra_options(cmd)
         # Add the layers
         cmd.extend([la.layer for la in self._layers])
-        if GS.ki6() and self.force_edge_cuts and not self.separated:
+        if GS.ki6 and self.force_edge_cuts and not self.separated:
             cmd.append('Edge.Cuts')
         # Execute it
         ret = exec_with_retry(cmd)

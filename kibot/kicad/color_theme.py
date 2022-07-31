@@ -59,7 +59,7 @@ def parse_color(val):
 def load_color_theme(name):
     logger.debug('Looking for color theme `{}`'.format(name))
     is_built_in = name in BUILT_IN
-    if not is_built_in and GS.ki5():
+    if not is_built_in and GS.ki5:
         logger.warning(W_COLORTHEME, "KiCad 5 doesn't support color themes ({})".format(name))
         return None
     if is_built_in:

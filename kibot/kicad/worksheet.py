@@ -20,7 +20,7 @@ if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
     detect_kicad()
-if GS.ki6():
+if GS.ki6:
     from pcbnew import PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY
 else:
     from pcbnew import DRAWSEGMENT, TEXTE_PCB
@@ -168,7 +168,7 @@ class WksLine(WksDrawing):
         st, sti = p.solve_ref(e.start, e.incrx, e.incry, e.start_ref)
         en, eni = p.solve_ref(e.end, e.incrx, e.incry, e.end_ref)
         for _ in range(e.repeat):
-            if GS.ki5() and e.shape:
+            if GS.ki5 and e.shape:
                 # Using KiCad 5 I always get a line. Why? What's missing?
                 e.draw_line(p, st, wxPoint(en.x, st.y))
                 e.draw_line(p, wxPoint(en.x, st.y), wxPoint(en.x, en.y))
@@ -418,7 +418,7 @@ class WksBitmap(WksDrawing):
             x = pos.x-round(w/2)
             y = pos.y-round(h/2)
             img.moveto(x, y)
-            if GS.ki5():
+            if GS.ki5:
                 # KiCad 5 uses Inches and with less resolution
                 img.scale(KICAD5_SVG_SCALE)
             # Put the image in a group

@@ -14,7 +14,7 @@ if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
     detect_kicad()
-if GS.ki6():
+if GS.ki6:
     # New name, no alias ...
     from pcbnew import FP_SHAPE, wxPoint, LSET
 else:
@@ -222,7 +222,7 @@ class VariantOptions(BaseOptions):
 
     @staticmethod
     def create_module_element(m):
-        if GS.ki6():
+        if GS.ki6:
             return FP_SHAPE(m)
         return EDGE_MODULE(m)
 
@@ -439,7 +439,7 @@ class VariantOptions(BaseOptions):
                 properties = {f.name: f.value for f in comp.fields}
                 old_value = m.GetValue()
                 m.SetValue(properties['Value'])
-                if GS.ki6():
+                if GS.ki6:
                     old_properties = m.GetProperties()
                     m.SetProperties(properties)
                     if has_GetFPIDAsString:
@@ -461,7 +461,7 @@ class VariantOptions(BaseOptions):
             ref = m.GetReference()
             data = self.sch_fields_to_pcb_bkp.get(ref, None)
             if data is not None:
-                if GS.ki6():
+                if GS.ki6:
                     m.SetValue(data[0])
                     m.SetProperties(data[1])
                     if has_GetFPIDAsString:

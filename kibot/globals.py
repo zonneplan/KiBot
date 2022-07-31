@@ -68,7 +68,7 @@ class Environment(Optionable):
     def config(self, parent):
         super().config(parent)
         defs = {}
-        if GS.ki5():
+        if GS.ki5:
             self.define_k5_vars(defs)
         else:
             self.define_k6_vars(defs)
@@ -282,7 +282,7 @@ class Globals(FiltersOptions):
             logger.debug("- Copper thickness: "+self.copper_thickness)
 
     def config(self, parent):
-        if GS.ki6() and GS.pcb_file and os.path.isfile(GS.pcb_file):
+        if GS.ki6 and GS.pcb_file and os.path.isfile(GS.pcb_file):
             self.get_stack_up()
         super().config(parent)
         # Transfer options to the GS globals

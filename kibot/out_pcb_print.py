@@ -302,7 +302,7 @@ class PCB_PrintOptions(VariantOptions):
                 self.validate_color(member)
             else:
                 setattr(self, member, getattr(self._color_theme, color))
-        if self.frame_plot_mechanism == 'plot' and GS.ki5():
+        if self.frame_plot_mechanism == 'plot' and GS.ki5:
             raise KiPlotConfigurationError("You can't use `plot` for `frame_plot_mechanism` with KiCad 5. It will crash.")
         KiConf.init(GS.pcb_file)
         if self.sheet_reference_layout:
@@ -505,7 +505,7 @@ class PCB_PrintOptions(VariantOptions):
                 found = True
             if found:
                 zones.append(e)
-        via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
+        via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
         for e in GS.board.GetTracks():
             if e.GetClass() == via_type:
                 vias.append((e, e.GetDrill(), e.GetWidth()))
@@ -576,7 +576,7 @@ class PCB_PrintOptions(VariantOptions):
                 found = True
             if found:
                 zones.append(e)
-        via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
+        via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
         for e in GS.board.GetTracks():
             if e.GetClass() == via_type:
                 if e.GetViaType() == via_t:
@@ -718,7 +718,7 @@ class PCB_PrintOptions(VariantOptions):
             new_layer = svgutils.fromstring(load_svg(file, color, p.colored_holes, p.holes_color, p.monochrome))
             width, height = get_size(new_layer)
             # Workaround for polygon fill on KiCad 5
-            if GS.ki5() and file.endswith('frame.svg'):
+            if GS.ki5 and file.endswith('frame.svg'):
                 if p.monochrome:
                     color = to_gray_hex(color)
                 self.fill_polygons(new_layer, color)
@@ -789,7 +789,7 @@ class PCB_PrintOptions(VariantOptions):
             # This the autocenter computation used by KiCad
             scale_x = scale_y = scale
             board_center = GS.board.GetBoundingBox().GetCenter()
-            if GS.ki5():
+            if GS.ki5:
                 # KiCad 5 uses a different precision, we must adjust
                 board_center.x = round(board_center.x*KICAD5_SVG_SCALE)
                 board_center.y = round(board_center.y*KICAD5_SVG_SCALE)
@@ -941,7 +941,7 @@ class PCB_PrintOptions(VariantOptions):
             p.scaling = self.set_scaling(po, p.scaling)
             po.SetNegative(p.negative_plot)
             po.SetPlotViaOnMaskLayer(not p.tent_vias)
-            if GS.ki5():
+            if GS.ki5:
                 po.SetLineWidth(FromMM(p.line_width))
                 po.SetPlotPadsOnSilkLayer(not p.exclude_pads_from_silkscreen)
             filelist = []
@@ -1034,7 +1034,7 @@ class PCB_Print(BaseOutput):  # noqa: F821
     @staticmethod
     def get_conf_examples(name, layers, templates):
         outs = []
-        if len(DRAWING_LAYERS) < 10 and GS.ki6():
+        if len(DRAWING_LAYERS) < 10 and GS.ki6:
             DRAWING_LAYERS.extend(['User.'+str(c+1) for c in range(9)])
         extra = {la._id for la in Layer.solve(EXTRA_LAYERS)}
         disabled = set()

@@ -136,7 +136,7 @@ class KiConf(object):
         cfg = ''
         if GS.kicad_conf_path:
             cfg = os.path.join(GS.kicad_conf_path, KICAD_COMMON)
-            if GS.ki6():
+            if GS.ki6:
                 cfg += '.json'
             if os.path.isfile(cfg):
                 return cfg
@@ -184,7 +184,7 @@ class KiConf(object):
         return None
 
     def guess_symbol_dir():
-        if GS.ki5():
+        if GS.ki5:
             order = ['library', 'symbols']
         else:
             order = ['symbols', 'library']
@@ -194,7 +194,7 @@ class KiConf(object):
         return guess
 
     def guess_footprint_dir():
-        if GS.ki5():
+        if GS.ki5:
             order = ['modules', 'footprints']
         else:
             order = ['footprints', 'modules']
@@ -208,7 +208,7 @@ class KiConf(object):
 
     def guess_3d_dir():
         modules3d = os.path.join('modules', 'packages3d')
-        if GS.ki5():
+        if GS.ki5:
             order = [modules3d, '3dmodels']
         else:
             order = ['3dmodels', modules3d]
@@ -223,7 +223,7 @@ class KiConf(object):
             home = os.environ.get('HOME')
             if home is None:
                 return None
-            if GS.ki6():
+            if GS.ki6:
                 name = os.path.join(home, '.local', 'share', 'kicad', '6.0', 'template')
                 if os.path.isdir(name):
                     return name
@@ -299,7 +299,7 @@ class KiConf(object):
         if not no_dir:
             base_name += '_DIR'
         names = []
-        if GS.ki6() and ki6_diff:
+        if GS.ki6 and ki6_diff:
             # KiCad 6 specific name goes first when using KiCad 6
             names.append('KICAD6_'+base_name)
         # KiCad 5 names, allowed even when using KiCad 6
@@ -341,7 +341,7 @@ class KiConf(object):
         """ Sets the environment and the internal list """
         if not no_dir:
             base_name += '_DIR'
-        if GS.ki6() and ki6_diff:
+        if GS.ki6 and ki6_diff:
             name = 'KICAD6_'+base_name
         else:
             name = 'KICAD_'+base_name
@@ -350,7 +350,7 @@ class KiConf(object):
         logger.debug('Using {}="{}" (guessed)'.format(name, val))
 
     def _solve_var(name, member, desc, guesser, old=None, only_old=False, ki6_diff=True, only_k6=False, no_dir=False):
-        if only_k6 and GS.ki5():
+        if only_k6 and GS.ki5:
             return
         val = KiConf._look_env_var(name, old, only_old, ki6_diff, no_dir)
         if val is not None:
@@ -373,7 +373,7 @@ class KiConf(object):
             # Get the environment variables
             logger.debug('Reading KiCad config from `{}`'.format(cfg))
             KiConf.config_dir = os.path.dirname(cfg)
-            if GS.ki5():
+            if GS.ki5:
                 # All environment vars should be here
                 KiConf.load_ki5_env(cfg)
             else:
@@ -521,7 +521,7 @@ class KiConf(object):
         if not project:
             return None, None
         KiConf.init(GS.pcb_file)
-        if GS.ki5():
+        if GS.ki5:
             return KiConf.fix_page_layout_k5(project, dry)
         return KiConf.fix_page_layout_k6(project, dry)
 

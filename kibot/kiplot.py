@@ -189,7 +189,7 @@ def load_board(pcb_file=None):
         board = pcbnew.LoadBoard(pcb_file)
         if BasePreFlight.get_option('check_zone_fills'):
             pcbnew.ZONE_FILLER(board).Fill(board.Zones())
-        if GS.global_units and GS.ki6():
+        if GS.global_units and GS.ki6:
             # In KiCad 6 "dimensions" has units.
             # The default value is DIM_UNITS_MODE_AUTOMATIC.
             # But this has a meaning only in the GUI where you have default units.
@@ -270,7 +270,7 @@ def get_board_comps_data(comps):
         c.footprint_y = center.y
         (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
         attrs = m.GetAttributes()
-        if GS.ki5():
+        if GS.ki5:
             # KiCad 5
             if attrs == UI_SMD:
                 c.smd = True
@@ -603,7 +603,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
                 schematic = sch
     if not schematic:
         schematics = glob(os.path.join(base_dir, '*.sch'))
-        if GS.ki6():
+        if GS.ki6:
             schematics += glob(os.path.join(base_dir, '*.kicad_sch'))
         if len(schematics) == 1:
             schematic = schematics[0]
@@ -621,7 +621,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
                 sch = os.path.join(base_dir, config+'.sch')
                 if os.path.isfile(sch):
                     schematic = sch
-                elif GS.ki6():
+                elif GS.ki6:
                     # Try KiCad 6
                     sch = os.path.join(base_dir, config+'.kicad_sch')
                     if os.path.isfile(sch):
@@ -637,7 +637,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
                         break
                 else:
                     # No way to select one, just take the first
-                    if GS.ki6():
+                    if GS.ki6:
                         schematic = guess_ki6_sch(schematics)
                     if not schematic:
                         schematic = schematics[0]
@@ -719,7 +719,7 @@ def look_for_used_layers():
     for e in list(GS.board.Zones()):
         layers.add(e.GetLayer())
     # Tracks and vias
-    via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
+    via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
     for e in GS.board.GetTracks():
         if e.GetClass() == via_type:
             for id in e.GetLayerSet().Seq():

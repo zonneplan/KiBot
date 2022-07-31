@@ -66,7 +66,7 @@ class GerberOptions(AnyLayerOptions):
         po.SetIncludeGerberNetlistInfo(self.use_gerber_net_attributes)
         po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
         po.SetDrillMarksType(0)
-        if GS.ki5():
+        if GS.ki5:
             po.SetLineWidth(FromMM(self.line_width))
         else:
             po.SetDisableGerberMacros(self.disable_aperture_macros)
@@ -88,7 +88,7 @@ class GerberOptions(AnyLayerOptions):
         self.subtract_mask_from_silk = po.GetSubtractMaskFromSilk()
         # useauxorigin
         self.use_aux_axis_as_origin = po.GetUseAuxOrigin()
-        if GS.ki5():
+        if GS.ki5:
             # linewidth
             self.line_width = ToMM(po.GetLineWidth())
         else:

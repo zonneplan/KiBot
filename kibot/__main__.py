@@ -185,13 +185,15 @@ def detect_kicad():
     GS.kicad_version_minor = int(m.group(2))
     GS.kicad_version_patch = int(m.group(3))
     GS.kicad_version_n = GS.kicad_version_major*1000000+GS.kicad_version_minor*1000+GS.kicad_version_patch
+    GS.ki6 = GS.kicad_version_major >= 6
+    GS.ki5 = GS.kicad_version_major < 6
     logger.debug('Detected KiCad v{}.{}.{} ({} {})'.format(GS.kicad_version_major, GS.kicad_version_minor,
                  GS.kicad_version_patch, GS.kicad_version, GS.kicad_version_n))
     # Used to look for plug-ins.
     # KICAD_PATH isn't good on my system.
     # The kicad-nightly package overwrites the regular package!!
     GS.kicad_share_path = '/usr/share/kicad'
-    if GS.ki6():
+    if GS.ki6:
         GS.kicad_conf_path = pcbnew.GetSettingsManager().GetUserSettingsPath()
         if nightly:
             # Nightly Debian packages uses `/usr/share/kicad-nightly/kicad-nightly.env` as an environment extension

@@ -215,7 +215,7 @@ class PositionOptions(VariantOptions):
 
     @staticmethod
     def get_attr_tests():
-        if GS.ki5():
+        if GS.ki5:
             return PositionOptions.is_pure_smd_5, PositionOptions.is_not_virtual_5
         return PositionOptions.is_pure_smd_6, PositionOptions.is_not_virtual_6
 

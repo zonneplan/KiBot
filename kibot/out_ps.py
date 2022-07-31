@@ -45,7 +45,7 @@ class PSOptions(DrillMarks):
         po.SetFineScaleAdjustX(self.scale_adjust_y)
         po.SetA4Output(self.a4_output)
         po.SetPlotMode(SKETCH if self.sketch_plot else FILLED)
-        if GS.ki5():
+        if GS.ki5:
             po.SetLineWidth(FromMM(self.line_width))
         po.SetNegative(self.negative_plot)
         po.SetMirror(self.mirror_plot)
@@ -64,7 +64,7 @@ class PSOptions(DrillMarks):
         self.scale_adjust_y = po.GetFineScaleAdjustX()
         self.a4_output = po.GetA4Output()
         self.sketch_plot = po.GetPlotMode() == SKETCH
-        if GS.ki5():
+        if GS.ki5:
             self.line_width = ToMM(po.GetLineWidth())
         self.negative_plot = po.GetNegative()
         self.mirror_plot = po.GetMirror()

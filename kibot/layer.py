@@ -241,7 +241,7 @@ class Layer(Optionable):
                     elif layer in Layer._pcb_layers:
                         ext = [cls.create_layer(layer)]
                     # Give compatibility for the KiCad 5 default names (automagically renamed by KiCad 6)
-                    elif GS.ki6() and layer in Layer.KICAD6_RENAME:
+                    elif GS.ki6 and layer in Layer.KICAD6_RENAME:
                         ext = [cls.create_layer(Layer.KICAD6_RENAME[layer])]
                     elif layer in Layer.DEFAULT_LAYER_NAMES:
                         ext = [cls.create_layer(layer)]
@@ -339,7 +339,7 @@ class Layer(Optionable):
 
     @staticmethod
     def id2def_name(id):
-        if GS.ki5():
+        if GS.ki5:
             return Layer.ID_2_DEFAULT_NAME[id]
         return pcbnew.LayerName(id)
 
@@ -349,7 +349,7 @@ for i in range(1, 30):
     name = 'In'+str(i)+'.Cu'
     Layer.DEFAULT_LAYER_NAMES[name] = pcbnew.In1_Cu+i-1
     Layer.DEFAULT_LAYER_DESC[name] = 'Inner layer '+str(i)
-if GS.ki6():
+if GS.ki6:
     # Add all the User.N layers
     for i in range(1, 10):
         name = 'User.'+str(i)

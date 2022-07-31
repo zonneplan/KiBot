@@ -15,7 +15,7 @@ except ImportError:
 from datetime import datetime, date
 from sys import exit
 from shutil import copy2
-from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, KICAD_VERSION_5_99, W_UNKVAR
+from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -196,7 +196,7 @@ class GS(object):
 
     @staticmethod
     def get_pcb_comment(title_block, num):
-        if GS.ki6():
+        if GS.ki6:
             # Backward compatibility ... what's this?
             # Also: Maintaining the same numbers used before (and found in the file) is asking too much?
             return title_block.GetComment(num)
@@ -212,13 +212,13 @@ class GS(object):
 
     @staticmethod
     def get_modules():
-        if GS.ki6():
+        if GS.ki6:
             return GS.board.GetFootprints()
         return GS.board.GetModules()
 
     @staticmethod
     def get_modules_board(board):
-        if GS.ki6():
+        if GS.ki6:
             return board.GetFootprints()
         return board.GetModules()
 
@@ -226,20 +226,20 @@ class GS(object):
     def get_aux_origin():
         if GS.board is None:
             return (0, 0)
-        if GS.ki6():
+        if GS.ki6:
             settings = GS.board.GetDesignSettings()
             return settings.GetAuxOrigin()
         return GS.board.GetAuxOrigin()
 
     @staticmethod
     def get_center(m):
-        if GS.ki5():
+        if GS.ki5:
             return m.GetCenter()
         return m.GetPosition()
 
     @staticmethod
     def get_fp_size(m):
-        if GS.ki5():
+        if GS.ki5:
             pads = m.Pads()
             r = pcbnew.EDA_RECT()
             for pad in pads:
@@ -269,20 +269,12 @@ class GS(object):
         os.rename(fname, bkp)
 
     @staticmethod
-    def ki6():
-        return GS.kicad_version_n >= KICAD_VERSION_5_99
-
-    @staticmethod
-    def ki5():
-        return GS.kicad_version_n < KICAD_VERSION_5_99
-
-    @staticmethod
     def zones():
-        return pcbnew.ZONES() if GS.ki6() else pcbnew.ZONE_CONTAINERS()
+        return pcbnew.ZONES() if GS.ki6 else pcbnew.ZONE_CONTAINERS()
 
     @staticmethod
     def layers_contains(layers, id):
-        if GS.ki6():
+        if GS.ki6:
             return layers.Contains(id)
         return id in layers.Seq()
 
@@ -333,7 +325,7 @@ class GS(object):
         logger.debug("PCB date: `{}`".format(GS.pcb_date))
         logger.debug("PCB revision: `{}`".format(GS.pcb_rev))
         logger.debug("PCB company: `{}`".format(GS.pcb_comp))
-        for num in range(4 if GS.ki5() else 9):
+        for num in range(4 if GS.ki5 else 9):
             logger.debug("PCB comment {}: `{}`".format(num+1, GS.pcb_com[num]))
 
     @staticmethod

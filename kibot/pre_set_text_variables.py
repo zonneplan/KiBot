@@ -96,7 +96,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         o = self._value
         if len(o) == 0:
             return
-        if GS.ki5():
+        if GS.ki5:
             raise KiPlotConfigurationError("The `set_text_variables` preflight is for KiCad 6 or newer")
         pro_name = GS.pro_file
         if not pro_name or not os.path.isfile(pro_name):

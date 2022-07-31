@@ -50,7 +50,7 @@ def pad_sort_key(pad):
 def convert(pcb, brd):
     # Board outline
     outlines = SHAPE_POLY_SET()
-    if GS.ki5():
+    if GS.ki5:
         pcb.GetBoardPolygonOutlines(outlines, "")
         outline = outlines.Outline(0)
         outline_points = [outline.Point(n) for n in range(outline.PointCount())]
@@ -84,7 +84,7 @@ def convert(pcb, brd):
     brd.write("NETS: {count}\n"
               .format(count=len(net_items)))
     for net_item in net_items:
-        code = net_item.GetNet() if GS.ki5() else net_item.GetNetCode()
+        code = net_item.GetNet() if GS.ki5 else net_item.GetNetCode()
         brd.write("{code} {name}\n"
                   .format(code=code,
                           name=net_item.GetNetname().replace(" ", u"\u00A0")))

@@ -81,12 +81,12 @@ class AnyLayerOptions(VariantOptions):
     def _configure_plot_ctrl(self, po, output_dir):
         logger.debug("Configuring plot controller for output")
         po.SetOutputDirectory(output_dir)
-        po.SetPlotFrameRef(self.plot_sheet_reference and (not GS.ki5()))
+        po.SetPlotFrameRef(self.plot_sheet_reference and (not GS.ki5))
         po.SetPlotReference(self.plot_footprint_refs)
         po.SetPlotValue(self.plot_footprint_values)
         po.SetPlotInvisibleText(self.force_plot_invisible_refs_vals)
         po.SetExcludeEdgeLayer(self.exclude_edge_layer)
-        if GS.ki5():
+        if GS.ki5:
             po.SetPlotPadsOnSilkLayer(not self.exclude_pads_from_silkscreen)
         po.SetPlotViaOnMaskLayer(not self.tent_vias)
         # Only useful for gerber outputs
@@ -231,7 +231,7 @@ class AnyLayerOptions(VariantOptions):
         self.force_plot_invisible_refs_vals = po.GetPlotInvisibleText()
         # viasonmask
         self.tent_vias = not po.GetPlotViaOnMaskLayer()
-        if GS.ki5():
+        if GS.ki5:
             # padsonsilk
             self.exclude_pads_from_silkscreen = not po.GetPlotPadsOnSilkLayer()
 

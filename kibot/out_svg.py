@@ -27,13 +27,13 @@ class SVGOptions(DrillMarks):
     def _configure_plot_ctrl(self, po, output_dir):
         super()._configure_plot_ctrl(po, output_dir)
         po.SetMirror(self.mirror_plot)
-        if GS.ki5():
+        if GS.ki5:
             po.SetLineWidth(FromMM(self.line_width))
         po.SetNegative(self.negative_plot)
 
     def read_vals_from_po(self, po):
         super().read_vals_from_po(po)
-        if GS.ki5():
+        if GS.ki5:
             self.line_width = ToMM(po.GetLineWidth())
         self.negative_plot = po.GetNegative()
         self.mirror_plot = po.GetMirror()

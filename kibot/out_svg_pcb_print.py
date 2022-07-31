@@ -36,7 +36,7 @@ class SVG_PCB_PrintOptions(Any_PCB_PrintOptions):
 
     def run(self, output):
         super().run(output, svg=True)
-        if (GS.ki6() and self.enable_ki6_page_fix) or (GS.ki5() and self.enable_ki5_page_fix):
+        if (GS.ki6 and self.enable_ki6_page_fix) or (GS.ki5 and self.enable_ki5_page_fix):
             # KiCad 6.0.2 bug: https://gitlab.com/kicad/code/kicad/-/issues/11033
             o = self._parent
             out_files = o.get_targets(o.expand_dirname(os.path.join(GS.out_dir, o.dir)))

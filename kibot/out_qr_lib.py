@@ -380,7 +380,7 @@ class QR_LibOptions(BaseOptions):
             os.remove(tmp_pcb)
             GS.make_bkp(GS.pcb_file)
             prl = None
-            if GS.ki6():
+            if GS.ki6:
                 # KiCad 6 is destroying the PRL ...
                 prl_name = GS.pcb_no_ext+'.kicad_prl'
                 if os.path.isfile(prl_name):
@@ -497,7 +497,7 @@ class QR_LibOptions(BaseOptions):
             qr._text_pcb = self.expand_filename_both(qr.text, is_sch=False, make_safe=False)
             qr._code_pcb = qrcodegen.QrCode.encode_text(qr._text_pcb, QR_ECCS[qr.correction_level])
         # Create the symbols
-        if GS.ki5():
+        if GS.ki5:
             self.symbol_lib_k5()
         else:
             self.symbol_lib_k6()
@@ -520,7 +520,7 @@ class QR_LibOptions(BaseOptions):
             # PCB
             self.update_footprints(known_qrs)
             # Schematic
-            if GS.ki6():
+            if GS.ki6:
                 # KiCad 5 reads the lib, but KiCad 6 is more like the PCB
                 assert GS.sch_file is not None
                 sheets = self.load_k6_sheets(GS.sch_file)

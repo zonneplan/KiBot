@@ -424,14 +424,14 @@ class ReportOptions(BaseOptions):
         return not (m.GetAttributes() & MOD_EXCLUDE_FROM_POS_FILES)
 
     def get_attr_tests(self):
-        if GS.ki5():
+        if GS.ki5:
             return self.is_pure_smd_5, self.is_not_virtual_5
         return self.is_pure_smd_6, self.is_not_virtual_6
 
     def measure_pcb(self, board):
         edge_layer = board.GetLayerID('Edge.Cuts')
         x1 = y1 = x2 = y2 = None
-        draw_type = 'DRAWSEGMENT' if GS.ki5() else 'PCB_SHAPE'
+        draw_type = 'DRAWSEGMENT' if GS.ki5 else 'PCB_SHAPE'
         for d in board.GetDrawings():
             if d.GetClass() == draw_type and d.GetLayer() == edge_layer:
                 if x1 is None:
@@ -508,8 +508,8 @@ class ReportOptions(BaseOptions):
         self._vias = {}
         self._tracks_m = {}
         self._drills_real = {}
-        track_type = 'TRACK' if GS.ki5() else 'PCB_TRACK'
-        via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
+        track_type = 'TRACK' if GS.ki5 else 'PCB_TRACK'
+        via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
         for t in tracks:
             tclass = t.GetClass()
             if tclass == track_type:
@@ -527,7 +527,7 @@ class ReportOptions(BaseOptions):
         ###########################################################
         # Drill (min)
         ###########################################################
-        modules = board.GetModules() if GS.ki5() else board.GetFootprints()
+        modules = board.GetModules() if GS.ki5 else board.GetFootprints()
         self._drills = {}
         self._drills_oval = {}
         self.oar_pads = self.pad_drill = self.pad_drill_real = INF
@@ -536,7 +536,7 @@ class ReportOptions(BaseOptions):
         top_layer = board.GetLayerID('F.Cu')
         bottom_layer = board.GetLayerID('B.Cu')
         is_pure_smd, is_not_virtual = self.get_attr_tests()
-        npth_attrib = 3 if GS.ki5() else pcbnew.PAD_ATTRIB_NPTH
+        npth_attrib = 3 if GS.ki5 else pcbnew.PAD_ATTRIB_NPTH
         min_oar = 0.1*pcbnew.IU_PER_MM
         for m in modules:
             layer = m.GetLayer()
@@ -599,7 +599,7 @@ class ReportOptions(BaseOptions):
         self.via_pad_min = min(self.via_pad_d, self.via_pad)
         # Via Drill size
         self._vias_m = sorted(self._vias.keys())
-        self.via_drill_d = ds.m_ViasMinDrill if GS.ki5() else ds.m_MinThroughDrill
+        self.via_drill_d = ds.m_ViasMinDrill if GS.ki5 else ds.m_MinThroughDrill
         self.via_drill = self._vias_m[0][0] if self._vias_m else INF
         self.via_drill_min = min(self.via_drill_d, self.via_drill)
         # Via Drill size before platting
@@ -608,8 +608,8 @@ class ReportOptions(BaseOptions):
         self.via_drill_real_min = adjust_drill(self.via_drill_min)
         # Pad Drill
         # No minimum defined (so no _d)
-        self.pad_drill_min = self.pad_drill if GS.ki5() else ds.m_MinThroughDrill
-        self.pad_drill_real_min = self.pad_drill_real if GS.ki5() else adjust_drill(ds.m_MinThroughDrill, False)
+        self.pad_drill_min = self.pad_drill if GS.ki5 else ds.m_MinThroughDrill
+        self.pad_drill_real_min = self.pad_drill_real if GS.ki5 else adjust_drill(ds.m_MinThroughDrill, False)
         # Drill overall
         self.drill_d = min(self.via_drill_d, self.pad_drill)
         self.drill = min(self.via_drill, self.pad_drill)

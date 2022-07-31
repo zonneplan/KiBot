@@ -68,7 +68,7 @@ class Annotate_Power(BasePreFlight):  # noqa: F821
         if not GS.sch.annotation_error:
             logger.warning(W_NOANNO+"No annotation problems, skipping power annotation")
             return
-        if GS.ki5():
+        if GS.ki5:
             self.annotate_ki5()
         else:
             self.annotate_ki6()

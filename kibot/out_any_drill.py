@@ -117,7 +117,7 @@ class AnyDrill(BaseOptions):
         """ Get the ID for all the generated files.
             It includes buried/blind vias. """
         groups = [''] if unified else ['PTH', 'NPTH']
-        via_type = 'VIA' if GS.ki5() else 'PCB_VIA'
+        via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
         pairs = set()
         for t in GS.board.GetTracks():
             tclass = t.GetClass()

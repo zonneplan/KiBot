@@ -46,7 +46,7 @@ ALL_LAYERS = ['B_Adhes',
               ]
 detect_kicad()
 # New layer names in KiCad 6
-if GS.ki6():
+if GS.ki6:
     ALL_LAYERS = [ki5_2_ki6(la) for la in ALL_LAYERS]
 ALL_EXTS = ['gba',
             'gbr',
@@ -133,7 +133,7 @@ def check_layers_exist(ctx, dir, prefix, layers, suffix):
 
 
 def check_components(ctx, dir, prefix, layers, suffix, exclude, include):
-    if GS.ki6():
+    if GS.ki6:
         layers = [ki5_2_ki6(la) for la in layers]
     for layer in layers:
         fname = compose_fname(dir, prefix, layer, suffix)

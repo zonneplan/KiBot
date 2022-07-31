@@ -215,7 +215,7 @@ class Annotate_PCB(BasePreFlight):  # noqa: F821
         for m in modules:
             old_ref = m.ref_prefix+str(m.ref_suffix)
             new_ref = m.ref_prefix+str(m.new_ref_suffix)
-            if GS.ki6():
+            if GS.ki6:
                 changes[old_ref] = new_ref
             else:
                 changes[old_ref] = m.new_ref_suffix
@@ -230,7 +230,7 @@ class Annotate_PCB(BasePreFlight):  # noqa: F821
         if not GS.sch:
             return
         logger.debug('- Transferring changes to the schematic')
-        if GS.ki5():
+        if GS.ki5:
             self.annotate_ki5(changes)
         else:
             self.annotate_ki6(changes)
