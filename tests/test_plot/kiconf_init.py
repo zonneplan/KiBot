@@ -51,6 +51,8 @@ GS.kicad_version_major = int(m.group(1))
 GS.kicad_version_minor = int(m.group(2))
 GS.kicad_version_patch = int(m.group(3))
 GS.kicad_version_n = GS.kicad_version_major*1000000+GS.kicad_version_minor*1000+GS.kicad_version_patch
+GS.ki6 = GS.kicad_version_major >= 6
+GS.ki5 = GS.kicad_version_major < 6
 logger.debug('Detected KiCad v{}.{}.{} ({} {})'.format(GS.kicad_version_major, GS.kicad_version_minor,
              GS.kicad_version_patch, GS.kicad_version, GS.kicad_version_n))
 
