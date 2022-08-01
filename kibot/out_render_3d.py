@@ -143,7 +143,7 @@ class Render3DOptions(Base3DOptions):
 
     def run(self, output):
         super().run(output)
-        if GS.ki6() and GS.kicad_version_n < KICAD_VERSION_6_0_2:
+        if GS.ki6 and GS.kicad_version_n < KICAD_VERSION_6_0_2:
             logger.error("3D Viewer not supported for KiCad 6.0.0/1\n"
                          "Please upgrade KiCad to 6.0.2 or newer")
             exit(MISSING_TOOL)
@@ -227,7 +227,7 @@ class Render_3D(Base3D):  # noqa: F821
             gb['dir'] = '3D'
             gb['options'] = {'ray_tracing': True, 'orthographic': True}
             outs.append(gb)
-            if GS.ki6():
+            if GS.ki6:
                 gb = {}
                 gb['name'] = 'basic_{}_30deg'.format(name)
                 gb['comment'] = '3D view from 30 degrees'
