@@ -13,10 +13,10 @@ RUN     dpkg --remove kicost kibot kiauto && \
 	unzip pp.zip && \
 	pip3 install KiCost-master/ && \
 	rm -rf KiCost-master pp.zip && \
-	curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/kicad_interposer --output pp.zip && \
+	curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip && \
 	unzip pp.zip && \
-	pip3 install KiAuto-kicad_interposer/ && \
-	rm -rf KiAuto-kicad_interposer/ pp.zip && \
+	pip3 install KiAuto-master/ && \
+	rm -rf KiAuto-master/ pp.zip && \
 	apt-get -y remove curl python3-pip unzip python3-setuptools python3-wheel && \
 	rm -rf /var/lib/apt/lists/*
 
