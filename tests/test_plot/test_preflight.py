@@ -93,13 +93,14 @@ def test_drc_filter_1(test_dir):
     """ Test using internal filters """
     prj = 'fail-project'
     ctx = context.TestContext(test_dir, prj, 'drc_filter', '')
-    ctx.run()
+    ctx.run(extra_debug=True)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt')
     ctx.expect_out_file('kibot_errors.filter')
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.skipif(context.ki5(), reason="KiCad 6 exclusions")
 def test_drc_filter_2(test_dir):
     """ Test using KiCad 6 exclusions """
     prj = 'fail-project'
