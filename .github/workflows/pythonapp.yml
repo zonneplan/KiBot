@@ -50,12 +50,12 @@ jobs:
         #### Experimental stuff:
         # Remove KiAuto
         dpkg --remove kiauto
-        # Install KiAuto@kicad_interposer
-        curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/kicad_interposer --output pp.zip
+        # Install KiAuto@master
+        curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip
         unzip pp.zip
-        pip3 install KiAuto-kicad_interposer/
+        pip3 install KiAuto-master/
         # Clean the downloaded stuff
-        rm -rf KiAuto-kicad_interposer/ pp.zip
+        rm -rf KiAuto-master/ pp.zip
         # Check what we got
         echo $PATH
         ls -la /usr/bin/*_do || true
