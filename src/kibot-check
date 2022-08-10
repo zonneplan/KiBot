@@ -350,8 +350,8 @@ deps = '{\
                 "mandatory": true,\
                 "output": "run_drc",\
                 "version": [\
-                    1,\
-                    4,\
+                    2,\
+                    0,\
                     0\
                 ]\
             },\

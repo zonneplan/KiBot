@@ -102,6 +102,7 @@ class GS(object):
     global_cross_no_body = None
     global_date_format = None
     global_date_time_format = None
+    global_drc_exclusions_workaround = None
     global_dir = None
     global_drill_size_increment = None
     global_edge_connector = None

@@ -121,7 +121,7 @@ Notes:
 [**Requests**](https://pypi.org/project/Requests/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/Requests/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/Requests/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-requests)
 - Mandatory
 
-[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v1.6.13 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v2.0.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `gencad`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`
 - Optional to print the page frame in GUI mode for `pcb_print`
 
@@ -640,6 +640,10 @@ global:
                      Uses the `strftime` format.
     - `date_time_format`: [string='%Y-%m-%d_%H-%M-%S'] Format used for the PCB and schematic date when using the file timestamp. Uses the `strftime` format.
     - `dir`: [string=''] Default pattern for the output directories.
+    - `drc_exclusions_workaround`: [boolean=false] KiCad 6 introduced DRC exclusions. They are stored in the project but ignored by the Python API.
+                                   This is reported as bug number 11562 (https://gitlab.com/kicad/code/kicad/-/issues/11562).
+                                   If you really need exclusions enable this option, this will use the GUI version of the DRC (slower).
+                                   Current KiCad version is 6.0.7 and the bug is still there.
     - `drill_size_increment`: [number=0.05] This is the difference between drill tools in millimeters.
                               A manufacturer with 0.05 of increment has drills for 0.1, 0.15, 0.2, 0.25, etc..
     - `edge_connector`: [string='no'] [yes,no,bevelled] Has the PCB edge connectors?

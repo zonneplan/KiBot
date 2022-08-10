@@ -133,7 +133,7 @@ def test_miss_sch(test_dir):
     ctx = context.TestContext(test_dir, prj, 'pre_and_position')
     ctx.run(EXIT_BAD_ARGS, extra=['pos_ascii'])
     assert ctx.search_err('No SCH file found')
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_miss_sch_2(test_dir):
@@ -141,7 +141,7 @@ def test_miss_sch_2(test_dir):
     ctx = context.TestContext(test_dir, prj, 'pre_and_position')
     ctx.run(NO_SCH_FILE, no_board_file=True, extra=['-e', 'bogus', 'pos_ascii'])
     assert ctx.search_err('Schematic file not found')
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_miss_pcb(test_dir):

@@ -110,6 +110,11 @@ class Globals(FiltersOptions):
             """ Format used for the PCB and schematic date when using the file timestamp. Uses the `strftime` format """
             self.dir = ''
             """ Default pattern for the output directories """
+            self.drc_exclusions_workaround = False
+            """ KiCad 6 introduced DRC exclusions. They are stored in the project but ignored by the Python API.
+                This is reported as bug number 11562 (https://gitlab.com/kicad/code/kicad/-/issues/11562).
+                If you really need exclusions enable this option, this will use the GUI version of the DRC (slower).
+                Current KiCad version is 6.0.7 and the bug is still there """
             self.drill_size_increment = 0.05
             """ This is the difference between drill tools in millimeters.
                 A manufacturer with 0.05 of increment has drills for 0.1, 0.15, 0.2, 0.25, etc. """

@@ -89,14 +89,26 @@ def test_drc_1(test_dir):
     ctx.clean_up()
 
 
-def test_drc_filter(test_dir):
+def test_drc_filter_1(test_dir):
+    """ Test using internal filters """
     prj = 'fail-project'
     ctx = context.TestContext(test_dir, prj, 'drc_filter', '')
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt')
     ctx.expect_out_file('kibot_errors.filter')
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
+
+
+def test_drc_filter_2(test_dir):
+    """ Test using KiCad 6 exclusions """
+    prj = 'fail-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_filter_k6_exc', '')
+    ctx.run(extra_debug=True)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.txt')
+    ctx.expect_out_file('kibot_errors.filter')
+    ctx.clean_up(keep_project=True)
 
 
 def test_drc_unco(test_dir):

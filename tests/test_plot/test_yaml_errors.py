@@ -279,49 +279,49 @@ def test_filter_not_list(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_filter_not_list')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Option .?filters.? must be a list\(dict\) not `dict`")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_filter_no_number_1(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_filter_no_number')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Empty option .?number.?")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_filter_no_number_2(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_filter_no_number_2')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Missing .?error.?")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_filter_no_regex_1(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_filter_no_regex')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Empty option .?regex.?")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_filter_wrong_entry(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_filter_wrong_entry')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown option .?numerito.?")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_pre_list(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_list')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Incorrect .?preflight.? section")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_pre_unk(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_unk')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown preflight: .?run_drcs.?")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_wrong_type_1(test_dir):
@@ -329,7 +329,7 @@ def test_error_wrong_type_1(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_1')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("In preflight 'run_drc': must be boolean")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_wrong_type_2(test_dir):
@@ -337,7 +337,7 @@ def test_error_wrong_type_2(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_2')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("In preflight 'ignore_unconnected': must be boolean")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_wrong_type_3(test_dir):
@@ -345,7 +345,7 @@ def test_error_wrong_type_3(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_3')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("In preflight 'run_erc': must be boolean")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_wrong_type_4(test_dir):
@@ -353,7 +353,7 @@ def test_error_wrong_type_4(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_4')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("In preflight 'update_xml': must be boolean")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_wrong_type_5(test_dir):
@@ -361,56 +361,56 @@ def test_error_wrong_type_5(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_5')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("In preflight 'check_zone_fills': must be boolean")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_yaml(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_yaml')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Error loading YAML")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_out_not_list(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_out_not_list')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(".?outputs.? must be a list")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_unk_section(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_unk_section')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Unknown section .?bogus.? in config")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_hpgl_pen_num(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_hpgl_pen_num')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("Option .?pen_number.? outside its range")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_bom_wrong_format(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_bom_wrong_format')
     ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom'+context.KICAD_SCH_EXT)])
     assert ctx.search_err("Option .?format.? must be any of")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_bom_column(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_bom_column')
     ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom'+context.KICAD_SCH_EXT)])
     assert ctx.search_err("Invalid column name .?Impossible.?")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_bom_no_columns(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_bom_column')
     ctx.run(BOM_ERROR, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom_no_xml'+context.KICAD_SCH_EXT)])
     assert ctx.search_err("Failed to get the column names")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_bom_no_field(test_dir):
@@ -418,28 +418,28 @@ def test_error_bom_no_field(test_dir):
     ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(),
             'fail-erc'+context.KICAD_SCH_EXT)])
     assert ctx.search_err("Missing or empty .?field.?")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_wrong_boolean(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_wrong_boolean')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(".?exclude_edge_layer.? must be a boolean")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_gerber_precision(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_gerber_precision')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(".?gerber_precision.? must be 4.5 or 4.6")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_wrong_drill_marks_1(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_wrong_drill_marks')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Option `drill_marks` must be any of \['none', 'small', 'full'\] not `bogus`")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_print_pcb_no_layer(test_dir):
@@ -653,28 +653,28 @@ def test_error_wrong_import_type(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_wrong_import_type')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Incorrect `import` section \(must be a list\)")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_import_not_str(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_import_not_str')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"`import` items must be strings")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_import_miss_file(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_import_miss_file')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"missing import file")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_error_import_no_outputs(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_import_no_outputs')
     ctx.run()
     assert ctx.search_err(r"No outputs found in `(.*)drc.kibot.yaml`")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_same_name_1(test_dir):
@@ -682,7 +682,7 @@ def test_same_name_1(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_same_name_1')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Output name `position` already defined")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_same_name_2(test_dir):
@@ -690,7 +690,7 @@ def test_same_name_2(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_same_name_2')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Output name `position` already defined")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_same_name_3(test_dir):
@@ -698,7 +698,7 @@ def test_same_name_3(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_same_name_3')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Output name `position` already defined, while importing from")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)
 
 
 def test_extends_1(test_dir):
@@ -706,4 +706,4 @@ def test_extends_1(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_extends_1')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"In section 'position_mine' \(position\): Unknown output `position2` in `extends`")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=True)

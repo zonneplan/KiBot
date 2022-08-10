@@ -7,7 +7,7 @@
 Dependencies:
   - from: KiAuto
     role: mandatory
-    version: 1.4.0
+    version: 2.0.0
 """
 import os
 from sys import exit
@@ -49,6 +49,8 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         cmd = [command, 'run_drc', '-o', output]
         if GS.filter_file:
             cmd.extend(['-f', GS.filter_file])
+        if GS.global_drc_exclusions_workaround:
+            cmd.append('-F')
         if BasePreFlight.get_option('ignore_unconnected'):  # noqa: F821
             cmd.append('-i')
         cmd.extend([GS.pcb_file, self.expand_dirname(GS.out_dir)])

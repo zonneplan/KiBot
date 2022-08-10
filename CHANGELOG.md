@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--dont-stop` command line option, to try to continue even on errors (#209)
 - PDF/SVG PCB Print: option to print all pages/single page (#236)
 - iBoM: Support for variants that change component fields (#242)
+- Workaround for problems with DRC exclusions (See INTI-CMNB/KiAuto#26)
+  Global option: `drc_exclusions_workaround`
+  KiCad bug [11562](https://gitlab.com/kicad/code/kicad/-/issues/11562)
 
 ### Fixed
 - OAR computation (Report) (#225)
