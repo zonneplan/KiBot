@@ -70,6 +70,8 @@ test1:
 	#@echo "********************" Error
 	#@cat output/*/error.txt
 
+t1k5: test_docker_local_1
+
 test_docker_local_1:
 	-rm -rf output
 	-rm -f tests/.local
@@ -128,6 +130,8 @@ docker_shell:
 	--volume="/etc/shadow:/etc/shadow:ro" \
 	--volume="/home/$(USER):/home/$(USER):rw" \
 	setsoft/kicad_auto_test:latest /bin/bash
+
+t1k6: single_test
 
 single_test:
 	rm -rf pp
