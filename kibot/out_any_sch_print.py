@@ -62,7 +62,7 @@ class Any_SCH_PrintOptions(VariantOptions):
         else:
             sch_dir = None
             sch_file = GS.sch_file
-        cmd = [command, 'export', '--file_format', self._expand_ext]
+        cmd = [command, 'export', '--file_format', self._expand_ext, '-o', name]
         if self.monochrome:
             cmd.append('--monochrome')
         if not self.frame:
@@ -75,10 +75,6 @@ class Any_SCH_PrintOptions(VariantOptions):
         if ret:
             logger.error(command+' returned %d', ret)
             exit(self._exit_error)
-        if self.output:
-            cur = self._parent.expand_filename(output_dir, '%f.%x')
-            logger.debug('Moving '+cur+' -> '+name)
-            os.rename(cur, name)
         # Remove the temporal dir if needed
         if sch_dir:
             logger.debug('Removing temporal variant dir `{}`'.format(sch_dir))

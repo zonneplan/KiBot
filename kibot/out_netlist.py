@@ -8,7 +8,7 @@ Dependencies:
   - from: KiAuto
     role: mandatory
     command: eeschema_do
-    version: 1.6.11
+    version: 2.0.0
 """
 import os
 from .gs import GS
@@ -48,26 +48,19 @@ class NetlistOptions(BaseOptions):
         if self.format == 'ipc':
             command = command.replace('eeschema_do', 'pcbnew_do')
             subcommand = 'ipc_netlist'
-            extra = ['--output_name', name]
             file = GS.pcb_file
         else:
             subcommand = 'netlist'
-            extra = []
             file = GS.sch_file
         output_dir = os.path.dirname(name)
         # Output file name
-        cmd = [command, subcommand]+extra+[file, output_dir]
+        cmd = [command, subcommand, '--output_name', name, file, output_dir]
         cmd, video_remove = add_extra_options(cmd)
         # Execute it
         ret = exec_with_retry(cmd)
         if ret:
             logger.error(command+' returned %d', ret)
             exit(FAILED_EXECUTE)
-        # Rename the output if needed
-        if not extra:
-            cur = self._parent.expand_filename(output_dir, '%f.%x')
-            logger.debug('Moving '+cur+' -> '+name)
-            os.rename(cur, name)
         # Remove the video if needed
         if video_remove:
             video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), command[:-3]+'_'+subcommand+'_screencast.ogv')

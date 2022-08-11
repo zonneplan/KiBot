@@ -270,9 +270,9 @@ deps = '{\
                 "mandatory": true,\
                 "output": "netlist",\
                 "version": [\
-                    1,\
-                    6,\
-                    11\
+                    2,\
+                    0,\
+                    0\
                 ]\
             },\
             {\
@@ -300,9 +300,9 @@ deps = '{\
                 "mandatory": true,\
                 "output": "pdf_sch_print",\
                 "version": [\
-                    1,\
-                    5,\
-                    4\
+                    2,\
+                    0,\
+                    0\
                 ]\
             },\
             {\
@@ -340,9 +340,9 @@ deps = '{\
                 "mandatory": true,\
                 "output": "svg_sch_print",\
                 "version": [\
-                    1,\
-                    5,\
-                    4\
+                    2,\
+                    0,\
+                    0\
                 ]\
             },\
             {\

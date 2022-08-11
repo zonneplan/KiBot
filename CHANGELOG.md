@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SCH Variants on KiCad 6: Problems with missing values in the title block.
 - Report: Converted file wasn't stored at `dir` (#238)
 - Datasheet download: Time-outs on some servers expecting modern browsers (#240)
+- SCH Print and Netlist: name collisions. When the default name used by KiCad
+  belongs to an already existing file. (#244)
 
 ### Changed
 - The order in which main sections are parsed is now fixed.
