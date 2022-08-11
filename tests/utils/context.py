@@ -282,7 +282,7 @@ class TestContext(object):
             cmd_base.append('--rcfile='+os.path.join(cwd, '.coveragerc'))
             os.environ['COVERAGE_FILE'] = os.path.join(cwd, '.coverage')
         cmd = cmd_base+cmd
-        logging.debug(cmd)
+        logging.debug(usable_cmd(cmd))
         out_filename = self.get_out_path('output.txt')
         err_filename = self.get_out_path('error.txt')
         if use_a_tty:
