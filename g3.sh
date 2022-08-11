@@ -1,3 +1,3 @@
 #!/bin/sh
 # PCBnew tests
-pytest -v --durations=0 -m "pcbnew" --test_dir=output
+pytest-3 -v --durations=0 -m "pcbnew" --test_dir=output
