@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegFilter, Registrable, RegOutput
 from .optionable import Optionable
 from .gs import GS
 from .misc import (IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT, IFILT_KICOST_RENAME, DISTRIBUTORS,
-                   IFILT_VAR_RENAME_KICOST, IFILT_KICOST_DNP)
+                   IFILT_VAR_RENAME_KICOST, IFILT_KICOST_DNP, IFILT_EXPAND_TEXT_VARS)
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
 from .macros import macros, document  # noqa: F401
@@ -244,6 +244,14 @@ class BaseFilter(RegFilter):
         return o_tree
 
     @staticmethod
+    def _create_expand_text_vars(name):
+        o_tree = {'name': name}
+        o_tree['type'] = 'expand_text_vars'
+        o_tree['comment'] = 'Internal default text variables expander'
+        logger.debug('Creating internal filter: '+str(o_tree))
+        return o_tree
+
+    @staticmethod
     def _create_kibom_dnx(name):
         type = name[7:10]
         if len(name) > 11:
@@ -308,6 +316,8 @@ class BaseFilter(RegFilter):
             tree = BaseFilter._create_var_rename_kicost(name)
         elif name == IFILT_KICOST_DNP:
             tree = BaseFilter._create_kicost_dnp(name)
+        elif name == IFILT_EXPAND_TEXT_VARS:
+            tree = BaseFilter._create_expand_text_vars(name)
         else:
             return None
         filter = RegFilter.get_class_for(tree['type'])()

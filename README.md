@@ -738,6 +738,13 @@ filters:
 
 #### Supported filters:
 
+- expand_text_vars: Expand_Text_Vars
+        This filter expands KiCad 6 text variables (${VARIABLE}).
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `include_kicad_env`: [boolean=true] Also expand KiCad environment variables.
+    - `include_os_env`: [boolean=false] Also expand system environment variables.
+    - `name`: [string=''] Used to identify this particular filter definition.
 - field_rename: Field_Rename
         This filter implements a field renamer.
         The internal `_kicost_rename` filter emulates the KiCost behavior.
@@ -872,14 +879,15 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
 
 #### Built-in filters
 
-- **_mechanical** is used to exclude:
-  - References that start with #
-  - Virtual components
-  - References that match: '^TP[0-9]*' or '^FID'
-  - Part names that match: 'regex': 'mount.*hole' or 'solder.*bridge' or 'solder.*jump' or 'test.*point'
-  - Footprints that match:  'test.*point' or 'mount.*hole' or 'fiducial'
-- **_var_rename** is a default `var_rename` filter
-- **_var_rename_kicost** is a default `var_rename_kicost` filter
+- **_expand_text_vars** is a default `expand_text_vars` filter
+- **_kibom_dnc_Config** it uses the internal `dnc_list` to exclude components with
+  - Value matching any of the keys
+  - Any of the keys in the `Config` field (comma or space separated)
+- **_kibom_dnf_Config** it uses the internal `dnf_list` to exclude components with
+  - Value matching any of the keys
+  - Any of the keys in the `Config` field (comma or space separated)
+- **_kicost_dnp** used emulate the way KiCost handles the `dnp` field.
+  - If the field is 0 the component is included, otherwise excluded.
 - **_kicost_rename** is a `field_rename` filter that applies KiCost renamings.
   - Includes all `manf#` and `manf` variations supported by KiCost
   - Includes all distributor part number variations supported by KiCost
@@ -887,17 +895,17 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
   - 'nopop' -> 'dnp'
   - 'description' -> 'desc'
   - 'pdf' -> 'datasheet'
-- **_kicost_dnp** used emulate the way KiCost handles the `dnp` field.
-  - If the field is 0 the component is included, otherwise excluded.
+- **_mechanical** is used to exclude:
+  - References that start with #
+  - Virtual components
+  - References that match: '^TP[0-9]*' or '^FID'
+  - Part names that match: 'regex': 'mount.*hole' or 'solder.*bridge' or 'solder.*jump' or 'test.*point'
+  - Footprints that match:  'test.*point' or 'mount.*hole' or 'fiducial'
 - **_rot_footprint** is a default `rot_footprint` filter
-- **_kibom_dnf_Config** it uses the internal `dnf_list` to exclude components with
-  - Value matching any of the keys
-  - Any of the keys in the `Config` field (comma or space separated)
-- **_kibom_dnc_Config** it uses the internal `dnc_list` to exclude components with
-  - Value matching any of the keys
-  - Any of the keys in the `Config` field (comma or space separated)
+- **_var_rename** is a default `var_rename` filter
+- **_var_rename_kicost** is a default `var_rename_kicost` filter
 
-Note that the last two uses a field named `Config`, but you can customise them invoking **_kibom_dnf_FIELD**. This will create an equivalent filter, but using the indicated **FIELD**.
+Note that the **_kibom_...** filters uses a field named `Config`, but you can customise them invoking **_kibom_dnf_FIELD**. This will create an equivalent filter, but using the indicated **FIELD**.
 
 #### Changing the 3D model, simple mechanism
 
@@ -1388,6 +1396,10 @@ Notes:
                         The default filter marks components with a DNF value or DNF in the Config field.
         - `exclude_filter`: [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
                             The default filter excludes test points, fiducial marks, mounting holes, etc.
+        - `expand_text_vars`: [boolean=true] Expand KiCad 6 text variables after applying all filters and variants.
+                              This is done using a **_expand_text_vars** filter.
+                              If you need to customize the filter, or apply it before, you can disable this option and
+                              add a custom filter to the filter chain.
         - `fit_field`: [string='Config'] Field name used for internal filters.
         - `footprint_populate_values`: [string|list(string)='no,yes'] Values for the `Footprint Populate` column.
         - `footprint_type_values`: [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column.

@@ -83,6 +83,7 @@ IFILT_VAR_RENAME_KICOST = '_var_rename_kicost'
 IFILT_ROT_FOOTPRINT = '_rot_footprint'
 IFILT_KICOST_RENAME = '_kicost_rename'
 IFILT_KICOST_DNP = '_kicost_dnp'
+IFILT_EXPAND_TEXT_VARS = '_expand_text_vars'
 # KiCad 5 GUI values for the attribute
 UI_THT = 0       # 1 for KiCad 6
 UI_SMD = 1       # 2 for KiCad 6

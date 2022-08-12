@@ -211,6 +211,11 @@ outputs:
       # [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
       # The default filter excludes test points, fiducial marks, mounting holes, etc
       exclude_filter: '_mechanical'
+      # [boolean=true] Expand KiCad 6 text variables after applying all filters and variants.
+      # This is done using a **_expand_text_vars** filter.
+      # If you need to customize the filter, or apply it before, you can disable this option and
+      # add a custom filter to the filter chain
+      expand_text_vars: true
       # [string='Config'] Field name used for internal filters
       fit_field: 'Config'
       # [string|list(string)='no,yes'] Values for the `Footprint Populate` column

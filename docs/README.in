@@ -517,14 +517,15 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
 
 #### Built-in filters
 
-- **_mechanical** is used to exclude:
-  - References that start with #
-  - Virtual components
-  - References that match: '^TP[0-9]*' or '^FID'
-  - Part names that match: 'regex': 'mount.*hole' or 'solder.*bridge' or 'solder.*jump' or 'test.*point'
-  - Footprints that match:  'test.*point' or 'mount.*hole' or 'fiducial'
-- **_var_rename** is a default `var_rename` filter
-- **_var_rename_kicost** is a default `var_rename_kicost` filter
+- **_expand_text_vars** is a default `expand_text_vars` filter
+- **_kibom_dnc_Config** it uses the internal `dnc_list` to exclude components with
+  - Value matching any of the keys
+  - Any of the keys in the `Config` field (comma or space separated)
+- **_kibom_dnf_Config** it uses the internal `dnf_list` to exclude components with
+  - Value matching any of the keys
+  - Any of the keys in the `Config` field (comma or space separated)
+- **_kicost_dnp** used emulate the way KiCost handles the `dnp` field.
+  - If the field is 0 the component is included, otherwise excluded.
 - **_kicost_rename** is a `field_rename` filter that applies KiCost renamings.
   - Includes all `manf#` and `manf` variations supported by KiCost
   - Includes all distributor part number variations supported by KiCost
@@ -532,17 +533,17 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
   - 'nopop' -> 'dnp'
   - 'description' -> 'desc'
   - 'pdf' -> 'datasheet'
-- **_kicost_dnp** used emulate the way KiCost handles the `dnp` field.
-  - If the field is 0 the component is included, otherwise excluded.
+- **_mechanical** is used to exclude:
+  - References that start with #
+  - Virtual components
+  - References that match: '^TP[0-9]*' or '^FID'
+  - Part names that match: 'regex': 'mount.*hole' or 'solder.*bridge' or 'solder.*jump' or 'test.*point'
+  - Footprints that match:  'test.*point' or 'mount.*hole' or 'fiducial'
 - **_rot_footprint** is a default `rot_footprint` filter
-- **_kibom_dnf_Config** it uses the internal `dnf_list` to exclude components with
-  - Value matching any of the keys
-  - Any of the keys in the `Config` field (comma or space separated)
-- **_kibom_dnc_Config** it uses the internal `dnc_list` to exclude components with
-  - Value matching any of the keys
-  - Any of the keys in the `Config` field (comma or space separated)
+- **_var_rename** is a default `var_rename` filter
+- **_var_rename_kicost** is a default `var_rename_kicost` filter
 
-Note that the last two uses a field named `Config`, but you can customise them invoking **_kibom_dnf_FIELD**. This will create an equivalent filter, but using the indicated **FIELD**.
+Note that the **_kibom_...** filters uses a field named `Config`, but you can customise them invoking **_kibom_dnf_FIELD**. This will create an equivalent filter, but using the indicated **FIELD**.
 
 #### Changing the 3D model, simple mechanism
 

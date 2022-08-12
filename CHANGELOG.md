@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Workaround for problems with DRC exclusions (See INTI-CMNB/KiAuto#26)
   Global option: `drc_exclusions_workaround`
   KiCad bug [11562](https://gitlab.com/kicad/code/kicad/-/issues/11562)
+- Internal BoM: KiCad 6 text variables expansion in the fields (#247)
 
 ### Fixed
 - OAR computation (Report) (#225)

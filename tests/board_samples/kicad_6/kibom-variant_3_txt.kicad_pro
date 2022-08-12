@@ -415,6 +415,7 @@
     ]
   ],
   "text_variables": {
-    "text": "Test"
+    "text": "Test",
+    "VAL_C2": "1000 pF"
   }
 }

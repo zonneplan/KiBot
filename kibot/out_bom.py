@@ -20,7 +20,7 @@ import os
 import re
 from copy import deepcopy
 from .gs import GS
-from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS
+from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, IFILT_EXPAND_TEXT_VARS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
@@ -29,7 +29,7 @@ from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
 from .var_kibom import KiBoM
 from .fil_base import (BaseFilter, apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, reset_filters,
-                       KICOST_NAME_TRANSLATIONS)
+                       KICOST_NAME_TRANSLATIONS, apply_pre_transform)
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 # To debug the `with document` we can use:
@@ -479,6 +479,11 @@ class BoMOptions(BaseOptions):
             """ [string|list(string)='no,yes'] Values for the `Footprint Populate` column """
             self.footprint_type_values = Optionable
             """ [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column """
+            self.expand_text_vars = True
+            """ Expand KiCad 6 text variables after applying all filters and variants.
+                This is done using a **_expand_text_vars** filter.
+                If you need to customize the filter, or apply it before, you can disable this option and
+                add a custom filter to the filter chain """
         self._format_example = 'CSV'
         self._footprint_populate_values_example = 'no,yes'
         self._footprint_type_values_example = 'SMD,THT,VIRTUAL'
@@ -724,6 +729,11 @@ class BoMOptions(BaseOptions):
         apply_fixed_filter(comps, self.dnc_filter)
         # Apply the variant
         comps = self.variant.filter(comps)
+        # Now expand the text variables, the user can disable it and insert a customized filter
+        # in the variant or even before.
+        if self.expand_text_vars:
+            comps = apply_pre_transform(comps, BaseFilter.solve_filter(IFILT_EXPAND_TEXT_VARS, 'KiCad 6 text vars',
+                                                                       is_transform=True))
         # We add the main project to the aggregate list so do_bom sees a complete list
         base_sch = Aggregate()
         base_sch.file = GS.sch_file
