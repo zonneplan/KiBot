@@ -13,6 +13,7 @@ Dependencies:
     plugin_dirs:
       - InteractiveHtmlBom
       - InteractiveHtmlBom/InteractiveHtmlBom
+      - org_openscopeproject_InteractiveHtmlBom
       - org_openscopeproject_InteractiveHtmlBom/InteractiveHtmlBom
     version: 2.4.1.4
     downloader: pytool

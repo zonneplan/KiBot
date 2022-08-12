@@ -184,6 +184,7 @@ deps = '{\
         "plugin_dirs": [\
             "InteractiveHtmlBom",\
             "InteractiveHtmlBom/InteractiveHtmlBom",\
+            "org_openscopeproject_InteractiveHtmlBom",\
             "org_openscopeproject_InteractiveHtmlBom/InteractiveHtmlBom"\
         ],\
         "pypi_name": "Interactive HTML BoM",\
@@ -1046,7 +1047,10 @@ if kicad_ok:
             if kicad_version[0] >= 6 and home:
                 # KiCad 6.0 PCM
                 ver_dir = str(kicad_version[0])+'.'+str(kicad_version[1])
-                kicad_plugins_dirs.append(os.path.join(home, '.local', 'share', 'kicad', ver_dir, '3rdparty', 'plugins'))
+                local_share = os.path.join(home, '.local', 'share', 'kicad', ver_dir)
+                kicad_plugins_dirs.append(os.path.join(local_share, 'scripting'))
+                kicad_plugins_dirs.append(os.path.join(local_share, 'scripting', 'plugins'))
+                kicad_plugins_dirs.append(os.path.join(local_share, '3rdparty', 'plugins'))  # KiCad 6.0 PCM
     except:
         version = 'Older than 5.1.6'
 else:
