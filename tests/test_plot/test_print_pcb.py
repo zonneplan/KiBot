@@ -149,3 +149,13 @@ def test_pcb_print_simple_2(test_dir):
     else:
         assert abs(w-210.0) < 0.1 and abs(h-297.0) < 0.1
     ctx.clean_up()
+
+
+@pytest.mark.skipif(context.ki5(), reason="uses KiCad 6 nested zones")
+def test_pcb_print_multizone_1(test_dir):
+    prj = 'print_multizone'
+    ctx = context.TestContext(test_dir, prj, 'print_multizone')
+    ctx.run()
+    ctx.compare_image(prj+'-assembly_page_01.png')
+    ctx.compare_image(prj+'-assembly_page_02.png')
+    ctx.clean_up()

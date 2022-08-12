@@ -1,0 +1,34 @@
+# KiBot config file
+kibot:
+  version: 1
+
+
+outputs:
+  - name: 'print_asm_notes'
+    comment: "Top & Bottom in PNG b/w"
+    type: pcb_print
+    dir: .
+    options:
+      format: 'PNG'
+      force_edge_cuts: true
+      plot_sheet_reference: false
+      keep_temporal_files: true
+      scaling: 10
+      pages:
+        - sheet: 'Assembly Top Layer'
+          monochrome: true
+          layers:
+            - layer: F.Cu
+            - layer: F.Fab
+              plot_footprint_refs: true
+              plot_footprint_values: false
+            - layer: Edge.Cuts
+        - sheet: 'Assembly Bottom Layer'
+          mirror: true
+          monochrome: true
+          layers:
+            - layer: B.Cu
+            - layer: B.Fab
+              plot_footprint_refs: true
+              plot_footprint_values: false
+            - layer: Edge.Cuts
