@@ -773,7 +773,7 @@ def check_tool_binary_local(name):
     return full_name
 
 
-def run_command(cmd, only_first_line=True, pre_ver_text=None, no_err_2=False):
+def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
     global last_ok
     cmd_full = which(cmd[0])
     if not cmd_full:
@@ -1095,6 +1095,7 @@ for name, d in dependencies.items():
         version = NOT_AVAIL
     sev, ver = check_version(version, d['roles'])
     d['sev'] = sev
+    version = version.split('\n')[0]
     print(name+': '+do_color(version, sev, version=ver))
 
 print(do_bright('\nTools:'))
@@ -1115,6 +1116,7 @@ for name, d in dependencies.items():
         version = run_command(cmd, no_err_2=d['no_cmd_line_version_old'])
     sev, ver = check_version(version, d['roles'])
     d['sev'] = sev
+    version = version.split('\n')[0]
     print(name+': '+do_color(version, sev, version=ver))
 
 # ######################################################################################################################

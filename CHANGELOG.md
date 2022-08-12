@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Datasheet download: Time-outs on some servers expecting modern browsers (#240)
 - SCH Print and Netlist: name collisions. When the default name used by KiCad
   belongs to an already existing file. (#244)
+- Install checker: fixed problems to detect iBoM installed as plugin. (#209)
 
 ### Changed
 - The order in which main sections are parsed is now fixed.
