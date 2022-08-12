@@ -386,7 +386,9 @@ for name, d in dependencies.items():
         version = 'Ok ({})'.format(command) if which(command) is not None else NOT_AVAIL
     else:
         cmd = [command, d['help_option']]
-        if d['is_kicad_plugin']:
+        if d['is_kicad_plugin'] and os.path.isfile(command):
+            # There is no point in adding the interpreter if the script isn't there
+            # It will just confuse run_command thinking we need to check Python
             cmd.insert(0, 'python3')
         version = run_command(cmd, no_err_2=d['no_cmd_line_version_old'])
     sev, ver = check_version(version, d['roles'])
