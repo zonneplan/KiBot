@@ -40,6 +40,7 @@ Dependencies:
     url: https://www.ghostscript.com/
     url_down: https://github.com/ArtifexSoftware/ghostpdl-downloads/releases
     debian: ghostscript
+    command: gs
     downloader: gs
   - name: ImageMagick
     url: https://imagemagick.org/
@@ -459,12 +460,12 @@ def gs_downloader(dep, system, plat):
         logger.debug('- No suitable binary')
         return None
     # Try to download it
-    res = try_download_tar_ball(dep, url, 'ghostscript', 'ghostscript-*/gs*')
+    res = try_download_tar_ball(dep, url, 'gs', 'ghostscript-*/gs*')
     if res is not None:
-        short_gs = res[:-11]+'gs'
-        long_gs = res
-        if not os.path.isfile(short_gs):
-            os.symlink(long_gs, short_gs)
+        short_gs = res
+        long_gs = res[:-2]+'ghostscript'
+        if not os.path.isfile(long_gs):
+            os.symlink(short_gs, long_gs)
     return res
 
 
