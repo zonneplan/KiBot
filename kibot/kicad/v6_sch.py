@@ -992,6 +992,11 @@ class SchematicComponentV6(SchematicComponent):
         if not m:
             raise SchError('Malformed component reference `{}`'.format(ref))
         self.ref_prefix, self.ref_suffix = m.groups()
+        self.set_field('Reference', ref)
+
+    def set_value(self, value):
+        self.value = value
+        self.set_field('Value', value)
 
     def set_footprint(self, fp):
         res = fp.split(':')
@@ -1004,6 +1009,7 @@ class SchematicComponentV6(SchematicComponent):
             self.footprint = res[1]
         else:
             raise SchError('Footprint with more than one colon (`{}`)'.format(fp))
+        self.set_field('Footprint', fp)
 
     @staticmethod
     def get_lib_and_name(comp, i, name):
@@ -1907,7 +1913,7 @@ class SchematicV6(Schematic):
             # Transfer the instance data
             comp.set_ref(s.reference)
             comp.unit = s.unit
-            comp.value = s.value
+            comp.set_value(s.value)
             comp.set_footprint(s.footprint)
             comp.sheet_path = path
             comp.sheet_path_h = self.path_to_human(path)
