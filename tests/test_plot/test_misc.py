@@ -1254,3 +1254,15 @@ def test_dependencies_1(test_dir):
     with open(ctx.get_out_path('output.txt'), 'rt') as f:
         data = json.load(f)
     assert dep in data
+
+
+def test_dont_stop_1(test_dir):
+    """ The first target fails, check we get the second """
+    ctx = context.TestContext(test_dir, 'light_control', 'dont_stop_1', 'positiondir')
+    ctx.run(extra=['--dont-stop'])
+    pos_top = ctx.get_pos_top_csv_filename()
+    pos_bot = ctx.get_pos_bot_csv_filename()
+    ctx.expect_out_file(pos_top)
+    ctx.expect_out_file(pos_bot)
+    ctx.search_err('ERROR:Failed to create BoM')
+    ctx.clean_up(keep_project=True)

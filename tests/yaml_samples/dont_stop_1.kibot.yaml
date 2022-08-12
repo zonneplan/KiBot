@@ -1,0 +1,18 @@
+# A fail target plus a valid target
+kibot:
+  version: 1
+
+outputs:
+  - name: 'kibom_fail'
+    type: 'kibom'
+    options:
+      config: bogus.ini
+
+  - name: 'position'
+    type: position
+    dir: positiondir
+    options:
+      format: CSV   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: true
+      only_smd: true
