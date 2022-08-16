@@ -50,10 +50,12 @@ Dependencies:
     debian: imagemagick
   - name: PcbDraw
     # 0.9.0 implements KiCad 6 support
-    version: 0.9.0
+    # 0.9.0.3 Fixes KiCad 5 problems
+    version: 0.9.0.3
     github: INTI-CMNB/pcbdraw
     pypi: PcbDraw
     downloader: pytool
+    comments: 'Currently the upstream version is broken, please use the mentioned fork'
   - name: KiCost
     github: hildogjr/KiCost
     pypi: KiCost

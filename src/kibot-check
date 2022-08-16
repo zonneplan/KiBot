@@ -489,7 +489,9 @@ deps = '{\
     },\
     "PcbDraw": {\
         "command": "pcbdraw",\
-        "comments": [],\
+        "comments": [\
+            "Currently the upstream version is broken, please use the mentioned fork"\
+        ],\
         "deb_package": "pcbdraw",\
         "downloader": {},\
         "downloader_str": "pytool",\
@@ -513,7 +515,8 @@ deps = '{\
                 "version": [\
                     0,\
                     9,\
-                    0\
+                    0,\
+                    3\
                 ]\
             },\
             {\
@@ -523,7 +526,8 @@ deps = '{\
                 "version": [\
                     0,\
                     9,\
-                    0\
+                    0,\
+                    3\
                 ]\
             }\
         ],\

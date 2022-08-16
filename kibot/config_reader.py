@@ -804,6 +804,15 @@ class MyEncoder(json.JSONEncoder):
         return o.__dict__
 
 
+def print_dep_comments(dep):
+    if len(dep.comments) == 1:
+        print('- Note: '+dep.comments[0])
+    elif len(dep.comments) > 1:
+        print('- Notes:')
+        for comment in dep.comments:
+            print('  - '+comment)
+
+
 def print_dependencies(markdown=True, jsn=False):
     # Compute the importance of each dependency
     for dep in RegDependency.get_registered().values():
@@ -875,4 +884,5 @@ def print_dependencies(markdown=True, jsn=False):
                     if o.version:
                         ver = ' (v'+'.'.join(map(str, o.version))+')'
                     print('  - {} for {}{}'.format(o.desc, global2human(o.output), ver))
+        print_dep_comments(dep)
         print()
