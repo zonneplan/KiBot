@@ -246,14 +246,15 @@ def pip_install(pip_command, dest=None, name='.'):
     try:
         res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=dest)
         logger.debugl(3, '- Output from pip:\n'+res_run.stdout.decode())
+    except subprocess.CalledProcessError as e:
+        logger.debug('- Failed to install `{}` using pip (cmd: {} code: {})'.format(name, e.cmd, e.returncode))
+        if e.output:
+            logger.debug('- Output from command: '+e.output.decode())
+        if e.stderr:
+            logger.debug('- StdErr from command: '+e.stderr.decode())
+        return False
     except Exception as e:
         logger.debug('- Failed to install `{}` using pip ({})'.format(name, e))
-        out = res_run.stderr.decode()
-        if out:
-            logger.debug('- StdErr: '+out)
-        out = res_run.stdout.decode()
-        if out:
-            logger.debug('- StdOut: '+out)
         return False
     return True
 
