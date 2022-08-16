@@ -249,6 +249,7 @@ def main():
     # Set the specified verbosity
     GS.debug_enabled = log.set_verbosity(logger, args.verbose, args.quiet)
     log.debug_level = GS.debug_level = args.verbose
+    logger.debug('KiBot {} verbose level: {}'.format(__version__, args.verbose))
     # Now we have the debug level set we can check (and optionally inform) KiCad info
     detect_kicad()
 
