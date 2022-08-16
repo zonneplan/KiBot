@@ -96,7 +96,7 @@ If you want to see this concept applied to a real world project visit the [Spora
 
 ## Installation
 
-KiBot main target is Linux, but some user successfully use it on Windows. For Windows you'll need to install tools to mimic a Linux environment.
+KiBot main target is Linux, but some users successfully use it on Windows. For Windows you'll need to install tools to mimic a Linux environment.
 Running KiBot on MacOSX should be possible now that KiCad migrated to Python 3.x.
 
 You can also run KiBot using docker images in a CI/CD environment like GitHub or GitLab. In this case you don't need to install anything locally.
