@@ -171,6 +171,18 @@ class GS(object):
         return GS.pro_variables
 
     @staticmethod
+    def read_pro():
+        if GS.pro_file:
+            with open(GS.pro_file, 'rt') as f:
+                return f.read()
+
+    @staticmethod
+    def write_pro(prj):
+        if GS.pro_file and prj:
+            with open(GS.pro_file, 'wt') as f:
+                f.write(prj)
+
+    @staticmethod
     def load_sch_title_block():
         if GS.sch_title is not None:
             return
