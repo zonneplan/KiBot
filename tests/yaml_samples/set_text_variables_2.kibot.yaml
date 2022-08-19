@@ -1,0 +1,26 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+globals:
+  restore_project: true
+
+preflight:
+  set_text_variables:
+    - variable: "Comment4"
+      command: git log -1 --format="%h" $KIBOT_SCH_NAME
+      before: "Git_hash:'"
+      after: "' (%f)"
+    - variable: "git_hash"
+      command: git log -1 --format="%h" $KIBOT_SCH_NAME
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    options:
+      csv:
+        hide_pcb_info: true
+        hide_stats_info: true
+      output: '%f-%i_%r.%x'
+      columns: [References, Value]

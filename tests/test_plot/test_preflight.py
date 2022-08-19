@@ -282,3 +282,28 @@ def test_set_text_variables_1(test_dir):
             os.rename(file_back, file)
         ctx.expect_out_file(prj+'-bom_'+hash+'.csv')
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(context.ki5(), reason="KiCad 6 text vars (fail already tested)")
+def test_set_text_variables_2(test_dir):
+    """ KiCad 6 variables, test volatile changes (project restored) """
+    prj = 'test_vars'
+    ctx = context.TestContextSCH(test_dir, prj, 'set_text_variables_2', '')
+    ctx.run()
+    file = os.path.join(ctx.get_board_dir(), ctx.board_name+context.PRO_EXT)
+    file_back = file + '-bak'
+    assert os.path.isfile(file_back), file_back
+    assert os.path.getsize(file_back) > 0
+    try:
+        logging.debug(file)
+        cmd = ['/bin/bash', '-c', "git log -1 --format='%h' " + ctx.sch_file]
+        hash = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True).stdout.strip()
+        with open(file, 'rt') as f:
+            c = f.read()
+        data = json.loads(c)
+        assert 'text_variables' in data
+        assert 'Comment4' not in data['text_variables']
+    finally:
+        os.rename(file_back, file)
+    ctx.expect_out_file(prj+'-bom_'+hash+'.csv')
+    ctx.clean_up(keep_project=True)

@@ -692,6 +692,8 @@ global:
                     Immersion Ag, ImAu, Immersion Gold, Immersion Au, Immersion Tin, Immersion Nickel, OSP and HT_OSP.
     - `pcb_material`: [string='FR4'] PCB core material. Currently used for documentation and to choose default colors.
                       Currently known are FR1 to FR5.
+    - `restore_project`: [boolean=false] Restore the KiCad project after execution.
+                         Note that this option will undo operations like `set_text_variables`.
     - `silk_screen_color`: [string='white'] Color for the markings. Currently used for documentation and to choose default colors.
                            KiCad 6: you should set this in the Board Setup -> Physical Stackup.
                            Currently known are black and white.

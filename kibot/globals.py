@@ -147,6 +147,9 @@ class Globals(FiltersOptions):
             self.pcb_material = 'FR4'
             """ PCB core material. Currently used for documentation and to choose default colors.
                 Currently known are FR1 to FR5 """
+            self.restore_project = False
+            """ Restore the KiCad project after execution.
+                Note that this option will undo operations like `set_text_variables` """
             self.silk_screen_color = 'white'
             """ Color for the markings. Currently used for documentation and to choose default colors.
                 KiCad 6: you should set this in the Board Setup -> Physical Stackup.

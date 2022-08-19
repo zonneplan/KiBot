@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Try to download missing tools and Python modules.
   The user also gets more information when something is missing.
   It can be disabled from the command line.
-- A global option to cross components without a body (#219)
+- Global options:
+  - Cross components without a body (#219)
+  - Restore the project at exit (#250)
 - Imports:
   - Now you can nest imports (import from an imported file) (#218)
   - Preflights can be imported (#181)

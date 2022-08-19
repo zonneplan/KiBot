@@ -118,6 +118,7 @@ class GS(object):
     global_output = None
     global_pcb_finish = None
     global_pcb_material = None
+    global_restore_project = None
     global_silk_screen_color = None
     global_silk_screen_color_bottom = None
     global_silk_screen_color_top = None

@@ -373,7 +373,7 @@ def run_output(out, dont_stop=False):
             raise
 
 
-def generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop=False):
+def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
     # Make a list of target outputs
     n = len(targets)
@@ -430,6 +430,18 @@ def generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority,
         if config_output(out, dont_stop=dont_stop):
             logger.info('- '+str(out))
             run_output(out, dont_stop)
+
+
+def generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop=False):
+    prj = None
+    if GS.global_restore_project:
+        # Memorize the project content to restore it at exit
+        prj = GS.read_pro()
+    try:
+        _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop)
+    finally:
+        # Restore the project file
+        GS.write_pro(prj)
 
 
 def adapt_file_name(name):
