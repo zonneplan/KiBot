@@ -387,7 +387,7 @@ class BoMOptions(BaseOptions):
             self.ignore_dnf = True
             """ *Exclude DNF (Do Not Fit) components """
             self.fit_field = 'Config'
-            """ Field name used for internal filters """
+            """ Field name used for internal filters (not for variants) """
             self.use_alt = False
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
             self.columns = BoMColumns
@@ -411,13 +411,16 @@ class BoMOptions(BaseOptions):
             # * Filters
             self.exclude_filter = Optionable
             """ [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
-                The default filter excludes test points, fiducial marks, mounting holes, etc """
+                The default filter excludes test points, fiducial marks, mounting holes, etc.
+                This option is for simple cases, consider using a full variant for complex cases """
             self.dnf_filter = Optionable
             """ [string|list(string)='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
-                The default filter marks components with a DNF value or DNF in the Config field """
+                The default filter marks components with a DNF value or DNF in the Config field.
+                This option is for simple cases, consider using a full variant for complex cases """
             self.dnc_filter = Optionable
             """ [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
-                The default filter marks components with a DNC value or DNC in the Config field """
+                The default filter marks components with a DNC value or DNC in the Config field.
+                This option is for simple cases, consider using a full variant for complex cases """
             # * Grouping criteria
             self.group_connectors = True
             """ Connectors with the same footprints will be grouped together, independent of the name of the connector """

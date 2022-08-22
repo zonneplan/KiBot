@@ -1396,15 +1396,18 @@ Notes:
         - `distributors`: [string|list(string)] Include this distributors list. Default is all the available.
         - `dnc_filter`: [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
                         The default filter marks components with a DNC value or DNC in the Config field.
+                        This option is for simple cases, consider using a full variant for complex cases.
         - `dnf_filter`: [string|list(string)='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
                         The default filter marks components with a DNF value or DNF in the Config field.
+                        This option is for simple cases, consider using a full variant for complex cases.
         - `exclude_filter`: [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
                             The default filter excludes test points, fiducial marks, mounting holes, etc.
+                            This option is for simple cases, consider using a full variant for complex cases.
         - `expand_text_vars`: [boolean=true] Expand KiCad 6 text variables after applying all filters and variants.
                               This is done using a **_expand_text_vars** filter.
                               If you need to customize the filter, or apply it before, you can disable this option and
                               add a custom filter to the filter chain.
-        - `fit_field`: [string='Config'] Field name used for internal filters.
+        - `fit_field`: [string='Config'] Field name used for internal filters (not for variants).
         - `footprint_populate_values`: [string|list(string)='no,yes'] Values for the `Footprint Populate` column.
         - `footprint_type_values`: [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column.
         - `group_connectors`: [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector.
