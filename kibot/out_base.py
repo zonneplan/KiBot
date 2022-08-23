@@ -384,7 +384,7 @@ class VariantOptions(BaseOptions):
         for m in GS.get_modules_board(board):
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
-            if not c.included:
+            if c is not None and not c.included:
                 # Remove any graphical item in the *.Fab layers
                 for gi in m.GraphicalItems():
                     l_gi = gi.GetLayer()
