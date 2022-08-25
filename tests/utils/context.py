@@ -341,10 +341,11 @@ class TestContext(object):
             if e.stdout:
                 logging.debug('- Output from command: '+e.stdout.decode())
             raise
+        finally:
+            if chdir_out:
+                os.chdir(cwd)
         if res.stdout:
             logging.debug('- Output from command: '+res.stdout.decode())
-        if chdir_out:
-            os.chdir(cwd)
         return res.stdout.decode().rstrip()
 
     def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None, no_out_dir=False, no_board_file=False,
