@@ -1278,13 +1278,19 @@ def test_diff_file_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+def git_init(ctx):
+    ctx.run_command(['git', 'init', '.'], chdir_out=True)
+    ctx.run_command(['git', 'config', 'user.email', 'pytest@nowherem.com'], chdir_out=True)
+    ctx.run_command(['git', 'config', 'user.name', 'KiBot test'], chdir_out=True)
+
+
 def test_diff_git_1(test_dir):
     """ Difference between the current PCB and the git HEAD """
     prj = 'light_control'
     yaml = 'diff_git_1'
     ctx = context.TestContext(test_dir, prj, yaml)
     # Create a git repo
-    ctx.run_command(['git', 'init', '.'], chdir_out=True)
+    git_init(ctx)
     # Copy the "old" file
     pcb = prj+'.kicad_pcb'
     file = ctx.get_out_path(pcb)
@@ -1308,7 +1314,7 @@ def test_diff_git_2(test_dir):
     yaml = 'diff_git_2'
     ctx = context.TestContext(test_dir, prj, yaml)
     # Create a git repo
-    ctx.run_command(['git', 'init', '.'], chdir_out=True)
+    git_init(ctx)
     # Copy the "old" file
     pcb = prj+'.kicad_pcb'
     file = ctx.get_out_path(pcb)
