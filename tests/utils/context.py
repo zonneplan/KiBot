@@ -329,6 +329,24 @@ class TestContext(object):
             os.close(f_err)
             self.err = self.err.decode()
 
+    def run_command(self, cmd, chdir_out=False):
+        if chdir_out:
+            cwd = os.getcwd()
+            os.chdir(self.output_dir)
+        logging.debug('Executing: '+str(cmd))
+        try:
+            res = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            logging.error('Running {} returned {}'.format(e.cmd, e.returncode))
+            if e.stdout:
+                logging.debug('- Output from command: '+e.stdout.decode())
+            raise
+        if res.stdout:
+            logging.debug('- Output from command: '+res.stdout.decode())
+        if chdir_out:
+            os.chdir(cwd)
+        return res.stdout.decode().rstrip()
+
     def run(self, ret_val=None, extra=None, use_a_tty=False, filename=None, no_out_dir=False, no_board_file=False,
             no_yaml_file=False, chdir_out=False, no_verbose=False, extra_debug=False, do_locale=False, kicost=False):
         logging.debug('Running '+self.test_name)

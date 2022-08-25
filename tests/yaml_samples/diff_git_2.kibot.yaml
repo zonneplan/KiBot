@@ -1,0 +1,14 @@
+kibot:
+  version: 1
+
+outputs:
+  - name: 'diff_pcb'
+    comment: "PCB difference with git HEAD"
+    type: diff
+    layers: ['F.Cu', 'In1.Cu']
+    options:
+      old: KIBOT_LAST-1
+      old_type: git
+      new: HEAD
+      new_type: git
+      cache_dir: .cache

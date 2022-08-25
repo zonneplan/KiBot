@@ -407,6 +407,43 @@ outputs:
       # [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options
       output: '%f-%i%I%v.%x'
       # `remove_files` is an alias for `move_files`
+  # Diff:
+  - name: 'diff_example'
+    comment: 'Generates a PDF with the differences between two PCBs or schematics'
+    type: 'diff'
+    dir: 'Example/diff_dir'
+    options:
+      # [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache
+      cache_dir: ''
+      # [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
+      # The `stats` mode is used to meassure the amount of difference. In this mode all
+      # changes are red, but you can abort if the difference is bigger than certain threshold
+      diff_mode: 'red_green'
+      # [number=5] [0,100] Color tolerance (fuzzyness) for the `stats` mode
+      fuzz: 5
+      # [string=''] The file you want to compare. Leave it blank for the current PCB/SCH
+      new: ''
+      # [string='file'] [git,file] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+      # Use `file` for a file name
+      new_type: 'file'
+      # [string='HEAD'] Reference file. When using git use `HEAD` to refer to the last commit.
+      # Use `HEAD~` to refer the previous to the last commit.
+      # As `HEAD` is for the whole repo you can use `KIBOT_LAST-n` to make
+      # reference to the changes in the PCB/SCH. The `n` value is how many
+      # changes in the history you want to go back. A 0 is the same as `HEAD`,
+      # a 1 means the last time the PCB/SCH was changed, etc
+      old: 'HEAD'
+      # [string='git'] [git,file] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
+      # Use `file` for a file name
+      old_type: 'git'
+      # [string='%f-%i%I%v.%x'] Filename for the output (%i=diff, %x=pdf). Affected by global options
+      output: '%f-%i%I%v.%x'
+      # [boolean=true] Compare the PCB, otherwise compare the schematic
+      pcb: true
+      # [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
+      # difference bigger than the indicated value will make the diff fail
+      threshold: 0
+    layers: all
   # Datasheets downloader:
   - name: 'download_datasheets_example'
     comment: 'Downloads the datasheets for the project'

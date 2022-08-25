@@ -91,17 +91,23 @@ deps = '{\
         "downloader_str": "git",\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 3,\
+        "importance": 4,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
         "name": "Git",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "pcb_replace",\
+        "output": "diff",\
         "plugin_dirs": null,\
         "pypi_name": "Git",\
         "roles": [\
+            {\
+                "desc": "Compare with files in the repo",\
+                "mandatory": false,\
+                "output": "diff",\
+                "version": null\
+            },\
             {\
                 "desc": "Find commit hash and/or date",\
                 "mandatory": false,\
@@ -379,6 +385,35 @@ deps = '{\
         ],\
         "url": "https://github.com/INTI-CMNB/KiAuto",\
         "url_down": "https://github.com/INTI-CMNB/KiAuto/releases"\
+    },\
+    "KiCad PCB/SCH Diff": {\
+        "command": "kicad-diff.py",\
+        "comments": [],\
+        "deb_package": "kicad pcb/sch diff",\
+        "downloader": {},\
+        "downloader_str": "pytool",\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 10000,\
+        "in_debian": false,\
+        "is_kicad_plugin": false,\
+        "is_python": false,\
+        "name": "KiCad PCB/SCH Diff",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "diff",\
+        "plugin_dirs": null,\
+        "pypi_name": "kidiff",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "output": "diff",\
+                "version": null\
+            }\
+        ],\
+        "url": "https://github.com/INTI-CMNB/KiDiff",\
+        "url_down": "https://github.com/INTI-CMNB/KiDiff/releases"\
     },\
     "KiCost": {\
         "command": "kicost",\

@@ -83,6 +83,7 @@ For example, it's common that you might want for each board rev:
 * Pick and place files
 * PCB 3D model in STEP format
 * PCB 3D render in PNG format
+* Compare PCB/SCHs
 
 You want to do this in a one-touch way, and make sure everything you need to
 do so is securely saved in version control, not on the back of an old
@@ -140,6 +141,9 @@ Notes:
 [**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiBoM) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `kibom`
 
+[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Mandatory for `diff`
+
 [**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `pcb_print`
 
@@ -159,6 +163,7 @@ Notes:
 
 [**Git**](https://git-scm.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://git-scm.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/git) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
+  - Compare with files in the repo for `diff`
   - Find commit hash and/or date for `pcb_replace`
   - Find commit hash and/or date for `sch_replace`
   - Find commit hash and/or date for `set_text_variables`
@@ -1474,6 +1479,54 @@ Notes:
     - `extends`: [string=''] Copy the `options` section from the indicated output.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
+* Diff
+  * Type: `diff`
+  * Description: Generates a PDF with the differences between two PCBs or schematics
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+                    List of PCB layers to use. When empty all available layers are used.
+                    Note that if you want to support adding/removing layers you should specify a list here.
+      * Valid keys:
+        - `description`: [string=''] A description for the layer, for documentation purposes.
+        - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+        - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `diff` output.
+      * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=diff, %x=pdf). Affected by global options.
+        - `cache_dir`: [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache.
+        - `diff_mode`: [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
+                       The `stats` mode is used to meassure the amount of difference. In this mode all
+                       changes are red, but you can abort if the difference is bigger than certain threshold.
+        - `fuzz`: [number=5] [0,100] Color tolerance (fuzzyness) for the `stats` mode.
+        - `new`: [string=''] The file you want to compare. Leave it blank for the current PCB/SCH.
+        - `new_type`: [string='file'] [git,file] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+                      Use `file` for a file name.
+        - `old`: [string='HEAD'] Reference file. When using git use `HEAD` to refer to the last commit.
+                 Use `HEAD~` to refer the previous to the last commit.
+                 As `HEAD` is for the whole repo you can use `KIBOT_LAST-n` to make
+                 reference to the changes in the PCB/SCH. The `n` value is how many
+                 changes in the history you want to go back. A 0 is the same as `HEAD`,
+                 a 1 means the last time the PCB/SCH was changed, etc.
+        - `old_type`: [string='git'] [git,file] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
+                      Use `file` for a file name.
+        - `pcb`: [boolean=true] Compare the PCB, otherwise compare the schematic.
+        - `threshold`: [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
+                       difference bigger than the indicated value will make the diff fail.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
