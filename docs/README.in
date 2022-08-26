@@ -23,7 +23,7 @@
 * [Introduction](#introduction)
 * [Installation](#installation)
   * [Dependencies](#dependencies)
-  * [Installation on Ubuntu/Debian](#installation-on-ubuntu/debian)
+  * [Installation on Ubuntu/Debian](#installation-on-ubuntu-debian)
   * [Installation using pip](#installation-using-pip)
   * [Notes about virtualenv](#notes-about-virtualenv)
   * [Installation on other targets](#installation-on-other-targets)
@@ -105,7 +105,7 @@ You can also run KiBot using docker images in a CI/CD environment like GitHub or
 ### Dependencies
 
 Notes:
-- When installing from the Debian repo you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
+- When installing from the [Debian repo](https://set-soft.github.io/debian/) you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
 - When installing using `pip` the dependencies marked with ![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) will be automatically installed.
 - The dependencies marked with ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png) can be downloaded on-demand by KiBot.
   Note this is experimental and is mostly oriented to 64 bits Linux systems.
