@@ -23,7 +23,7 @@
 * [Introduction](#introduction)
 * [Installation](#installation)
   * [Dependencies](#dependencies)
-  * [Installation on Ubuntu/Debian](#installation-on-ubuntu-debian)
+  * [Installation on Ubuntu or Debian](#installation-on-ubuntu-or-debian)
   * [Installation using pip](#installation-using-pip)
   * [Notes about virtualenv](#notes-about-virtualenv)
   * [Installation on other targets](#installation-on-other-targets)
@@ -191,7 +191,7 @@ Notes:
 
 
 
-### Installation on Ubuntu/Debian
+### Installation on Ubuntu or Debian
 
 The easiest way is to use the [repo](https://set-soft.github.io/debian/), but if you want to manually install the individual `.deb` files you can:
 
