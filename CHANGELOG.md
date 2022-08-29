@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SCH Print and Netlist: name collisions. When the default name used by KiCad
   belongs to an already existing file. (#244)
 - Install checker: fixed problems to detect iBoM installed as plugin. (#209)
+- Internal Netlist generation (i.e. iBoM with variants): problems withg
+  components that doesn't specify a library. (See #242)
 
 ### Changed
 - The order in which main sections are parsed is now fixed.

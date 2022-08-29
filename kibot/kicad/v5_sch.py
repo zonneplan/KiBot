@@ -1949,7 +1949,11 @@ class Schematic(object):
                 continue
             libpart = SubElement(libparts, 'libpart')
             res = k.split(':')
-            if res:
+            cres = len(res)
+            if cres == 1:
+                libpart.set('lib', '')
+                libpart.set('part', res[0])
+            elif cres == 2:
                 libpart.set('lib', res[0])
                 libpart.set('part', res[1])
             if v.alias:
