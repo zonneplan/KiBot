@@ -400,6 +400,8 @@ outputs:
           # By default this pattern is applied to the output dir specified with `-d` command line option.
           # See the `from_cwd` option
           source: '*'
+      # [boolean=true] Store the file pointed by symlinks, not the symlink
+      follow_links: true
       # [string='ZIP'] [ZIP,TAR,RAR] Output file format
       format: 'ZIP'
       # [boolean=false] Move the files to the archive. In other words: remove the files after adding them to the archive

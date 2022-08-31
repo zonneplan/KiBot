@@ -1471,6 +1471,7 @@ Notes:
         - **`format`**: [string='ZIP'] [ZIP,TAR,RAR] Output file format.
         - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
         - `compression`: [string='auto'] [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one.
+        - `follow_links`: [boolean=true] Store the file pointed by symlinks, not the symlink.
         - `move_files`: [boolean=false] Move the files to the archive. In other words: remove the files after adding them to the archive.
         - *remove_files*: Alias for move_files.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.

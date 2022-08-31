@@ -78,6 +78,8 @@ class CompressOptions(BaseOptions):
             """ Move the files to the archive. In other words: remove the files after adding them to the archive """
             self.remove_files = None
             """ {move_files} """
+            self.follow_links = True
+            """ Store the file pointed by symlinks, not the symlink """
         super().__init__()
 
     def config(self, parent):
@@ -176,7 +178,7 @@ class CompressOptions(BaseOptions):
                     logger.debug('- Pattern {} list of files: {}'.format(source, files_list))
             # Filter and adapt them
             for fname in filter(re.compile(f.filter).match, files_list):
-                fname_real = os.path.realpath(fname)
+                fname_real = os.path.realpath(fname) if self.follow_links else os.path.abspath(fname)
                 # Avoid including the output
                 if fname_real == output_real:
                     continue
