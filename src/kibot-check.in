@@ -398,6 +398,9 @@ for name, d in dependencies.items():
     sev, ver = check_version(version, d['roles'])
     d['sev'] = sev
     version = version.split('\n')[0]
+    pypi_name = d['pypi_name']
+    if pypi_name and pypi_name.lower() != name.lower():
+        name += ' ({})'.format(pypi_name)
     print(name+': '+do_color(version, sev, version=ver))
 
 # ######################################################################################################################
