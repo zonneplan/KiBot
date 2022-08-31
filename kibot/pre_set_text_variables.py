@@ -116,7 +116,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
             os.environ['KIBOT_SCH_NAME'] = GS.sch_file
         for r in o:
             text = r.text
-            if not text:
+            if not text and r.command:
                 command = r.command
                 if re_git.search(command):
                     git_command = self.ensure_tool('git')
@@ -127,8 +127,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                     logger.error('Failed to execute:\n{}\nreturn code {}'.format(r.command, result.returncode))
                     sys.exit(FAILED_EXECUTE)
                 if not result.stdout:
-                    logger.warning(W_EMPTREP+"Empty value from `{}` skipping it".format(r.command))
-                    continue
+                    logger.warning(W_EMPTREP+"Empty value from `{}`".format(r.command))
                 text = result.stdout.strip()
             text = r.before + text + r.after
             logger.debug('  - ' + r.name + ' -> ' + text)
