@@ -409,7 +409,11 @@ deps = '{\
                 "desc": null,\
                 "mandatory": true,\
                 "output": "diff",\
-                "version": null\
+                "version": [\
+                    2,\
+                    4,\
+                    1\
+                ]\
             }\
         ],\
         "url": "https://github.com/INTI-CMNB/KiDiff",\
