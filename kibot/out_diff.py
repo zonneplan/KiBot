@@ -144,7 +144,7 @@ class DiffOptions(BaseOptions):
     def undo_git(self):
         if self.checkedout:
             logger.debug('Restoring point '+self.branch)
-            self.run_git(['checkout', self.branch])
+            self.run_git(['checkout', '--recurse-submodules', self.branch])
         if self.stashed:
             logger.debug('Restoring changes')
             # We don't know if we stashed anything (push always returns 0)
@@ -201,7 +201,7 @@ class DiffOptions(BaseOptions):
             # Checkout the target
             name = self.solve_git_name(name)
             logger.debug('Changing to '+name)
-            self.run_git(['checkout', name])
+            self.run_git(['checkout', '--recurse-submodules', name])
             self.checkedout = True
             # Populate the cache
             hash = self.cache_file()
