@@ -251,17 +251,27 @@ deps = '{\
         "downloader_str": "pytool",\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 110001,\
+        "importance": 110002,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
         "name": "KiCad Automation tools",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "gencad",\
+        "output": "diff",\
         "plugin_dirs": null,\
         "pypi_name": "kiauto",\
         "roles": [\
+            {\
+                "desc": "Compare schematics",\
+                "mandatory": false,\
+                "output": "diff",\
+                "version": [\
+                    2,\
+                    0,\
+                    0\
+                ]\
+            },\
             {\
                 "desc": null,\
                 "mandatory": true,\

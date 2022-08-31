@@ -15,6 +15,9 @@ Dependencies:
     id: KiDiff
   - from: Git
     role: Compare with files in the repo
+  - from: KiAuto
+    role: Compare schematics
+    version: 2.0.0
 """
 from hashlib import sha1
 import os
@@ -234,6 +237,9 @@ class DiffOptions(BaseOptions):
         self.command = self.ensure_tool('KiDiff')
         if self.old_type == 'git' or self.new_type == 'git':
             self.git_command = self.ensure_tool('Git')
+        if not self.pcb:
+            # We need eeschema_do for this
+            self.ensure_tool('KiAuto')
         # Solve the cache dir
         remove_cache = False
         if not self.cache_dir:

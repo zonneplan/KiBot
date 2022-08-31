@@ -124,7 +124,9 @@ Notes:
 
 [**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v2.0.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `gencad`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`
-- Optional to print the page frame in GUI mode for `pcb_print`
+- Optional to:
+  - Compare schematics for `diff` (v2.0.0)
+  - Print the page frame in GUI mode for `pcb_print` (v1.6.7)
 
 [**KiCost**](https://github.com/hildogjr/KiCost) v1.1.8 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/hildogjr/KiCost) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `kicost`
