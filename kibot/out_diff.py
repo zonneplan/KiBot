@@ -6,6 +6,7 @@
 """
 Dependencies:
   - name: KiCad PCB/SCH Diff
+    version: 2.4.1
     role: mandatory
     github: INTI-CMNB/KiDiff
     command: kicad-diff.py
@@ -30,6 +31,7 @@ from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+STASH_MSG = 'KiBot_Changes_Entry'
 
 
 def debug_output(res):
@@ -145,7 +147,11 @@ class DiffOptions(BaseOptions):
             self.run_git(['checkout', self.branch])
         if self.stashed:
             logger.debug('Restoring changes')
-            self.run_git(['stash', 'pop'])
+            # We don't know if we stashed anything (push always returns 0)
+            # So we check that the last stash contains our message
+            res = self.run_git(['stash', 'list', 'stash@{0}'])
+            if STASH_MSG in res:
+                self.run_git(['stash', 'pop', '--index'])
 
     def solve_git_name(self, name):
         ori = name
@@ -184,7 +190,7 @@ class DiffOptions(BaseOptions):
         try:
             # Save current changes
             logger.debug('Saving current changes')
-            self.run_git(['stash', 'push'])
+            self.run_git(['stash', 'push', '-m', STASH_MSG])
             self.stashed = True
             # Find the current branch
             self.branch = self.run_git(['rev-parse', '--abbrev-ref', 'HEAD'])

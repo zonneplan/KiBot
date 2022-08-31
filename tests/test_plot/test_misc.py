@@ -1309,7 +1309,7 @@ def test_diff_git_1(test_dir):
 
 
 def test_diff_git_2(test_dir):
-    """ Difference between the two repo points """
+    """ Difference between the two repo points, wipe the current file """
     prj = 'light_control'
     yaml = 'diff_git_2'
     ctx = context.TestContext(test_dir, prj, yaml)
@@ -1337,6 +1337,39 @@ def test_diff_git_2(test_dir):
     ctx.run_command(['git', 'commit', '-m', 'New version'], chdir_out=True)
     # Now just wipe the current file
     shutil.copy2(ctx.board_file.replace(prj, '3Rs'), file)
+    # Run the test
+    ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
+    ctx.compare_pdf(prj+'-diff.pdf')
+    ctx.clean_up(keep_project=True)
+
+
+def test_diff_git_3(test_dir):
+    """ Difference between the two repo points, no changes to stash """
+    prj = 'light_control'
+    yaml = 'diff_git_2'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    # Create a git repo
+    git_init(ctx)
+    # Copy the "old" file
+    pcb = prj+'.kicad_pcb'
+    file = ctx.get_out_path(pcb)
+    shutil.copy2(ctx.board_file, file)
+    shutil.copy2(ctx.board_file.replace('.kicad_pcb', context.KICAD_SCH_EXT),
+                 file.replace('.kicad_pcb', context.KICAD_SCH_EXT))
+    # Add it to the repo
+    ctx.run_command(['git', 'add', pcb], chdir_out=True)
+    ctx.run_command(['git', 'commit', '-m', 'Reference'], chdir_out=True)
+    # Add an extra commit
+    dummy = ctx.get_out_path('dummy')
+    with open(dummy, 'wt') as f:
+        f.write('dummy\n')
+    ctx.run_command(['git', 'add', 'dummy'], chdir_out=True)
+    ctx.run_command(['git', 'commit', '-m', 'Dummy noise'], chdir_out=True)
+    # Copy the "new" file
+    shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), file)
+    # Add it to the repo
+    ctx.run_command(['git', 'add', pcb], chdir_out=True)
+    ctx.run_command(['git', 'commit', '-m', 'New version'], chdir_out=True)
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
     ctx.compare_pdf(prj+'-diff.pdf')

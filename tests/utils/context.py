@@ -333,7 +333,7 @@ class TestContext(object):
         if chdir_out:
             cwd = os.getcwd()
             os.chdir(self.output_dir)
-        logging.debug('Executing: '+str(cmd))
+        logging.debug('Executing: '+usable_cmd(cmd))
         try:
             res = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
