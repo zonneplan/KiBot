@@ -270,7 +270,7 @@ class DiffOptions(BaseOptions):
             run_command(cmd)
             if self.add_link_id:
                 name_comps = os.path.splitext(name)
-                os.symlink(name, name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1])
+                os.symlink(os.path.basename(name), name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1])
         finally:
             # Clean-up
             if remove_cache:
