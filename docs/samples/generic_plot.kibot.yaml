@@ -413,6 +413,9 @@ outputs:
     type: 'diff'
     dir: 'Example/diff_dir'
     options:
+      # [boolean=false] When enabled we create a symlink to the output file with a name that contains the
+      # git hashes involved in the comparison
+      add_link_id: false
       # [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache
       cache_dir: ''
       # [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.

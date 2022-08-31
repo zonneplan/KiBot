@@ -84,6 +84,9 @@ class DiffOptions(BaseOptions):
             self.threshold = 0
             """ [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
                 difference bigger than the indicated value will make the diff fail """
+            self.add_link_id = False
+            """ When enabled we create a symlink to the output file with a name that contains the
+                git hashes involved in the comparison """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -203,6 +206,8 @@ class DiffOptions(BaseOptions):
             logger.debug('Changing to '+name)
             self.run_git(['checkout', '--recurse-submodules', name])
             self.checkedout = True
+            # A short version of the current hash
+            self.git_hash = self.run_git(['rev-parse', '--short', 'HEAD'])
             # Populate the cache
             hash = self.cache_file()
         finally:
@@ -210,7 +215,8 @@ class DiffOptions(BaseOptions):
         return hash
 
     def cache_obj(self, name, type):
-        return self.cache_git(name) if type == 'git' else self.cache_file(name)
+        self.git_hash = 'None'
+        return self.cache_git(name) if type == 'git' else self.cache_file(name), self.git_hash
 
     def create_layers_incl(self, layers):
         incl_file = None
@@ -242,8 +248,8 @@ class DiffOptions(BaseOptions):
             # List of layers
             self.incl_file = self.create_layers_incl(self.layers)
             # Populate the cache
-            old_hash = self.cache_obj(self.old, self.old_type)
-            new_hash = self.cache_obj(self.new, self.new_type)
+            old_hash, gh1 = self.cache_obj(self.old, self.old_type)
+            new_hash, gh2 = self.cache_obj(self.new, self.new_type)
             # Compute the diff using the cache
             cmd = [self.command, '--no_reader', '--new_file_hash', new_hash, '--old_file_hash', old_hash,
                    '--cache_dir', self.cache_dir, '--output_dir', dir_name, '--output_name', file_name,
@@ -256,6 +262,9 @@ class DiffOptions(BaseOptions):
             if GS.debug_enabled:
                 cmd.insert(1, '-'+'v'*GS.debug_level)
             run_command(cmd)
+            if self.add_link_id:
+                name_comps = os.path.splitext(name)
+                os.symlink(name, name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1])
         finally:
             # Clean-up
             if remove_cache:

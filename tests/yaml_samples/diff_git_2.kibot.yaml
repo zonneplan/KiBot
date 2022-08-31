@@ -12,3 +12,4 @@ outputs:
       new: HEAD
       new_type: git
       cache_dir: .cache
+      add_link_id: true
