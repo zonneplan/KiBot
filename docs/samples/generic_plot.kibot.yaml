@@ -416,7 +416,8 @@ outputs:
     dir: 'Example/diff_dir'
     options:
       # [boolean=false] When enabled we create a symlink to the output file with a name that contains the
-      # git hashes involved in the comparison
+      # git hashes involved in the comparison. If you plan to compress the output don't
+      # forget to disable the `follow_links` option
       add_link_id: false
       # [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache
       cache_dir: ''

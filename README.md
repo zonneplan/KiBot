@@ -1504,7 +1504,8 @@ Notes:
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=diff, %x=pdf). Affected by global options.
         - `add_link_id`: [boolean=false] When enabled we create a symlink to the output file with a name that contains the
-                         git hashes involved in the comparison.
+                         git hashes involved in the comparison. If you plan to compress the output don't
+                         forget to disable the `follow_links` option.
         - `cache_dir`: [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache.
         - `diff_mode`: [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
                        The `stats` mode is used to meassure the amount of difference. In this mode all

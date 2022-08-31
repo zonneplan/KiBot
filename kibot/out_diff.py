@@ -89,7 +89,8 @@ class DiffOptions(BaseOptions):
                 difference bigger than the indicated value will make the diff fail """
             self.add_link_id = False
             """ When enabled we create a symlink to the output file with a name that contains the
-                git hashes involved in the comparison """
+                git hashes involved in the comparison. If you plan to compress the output don't
+                forget to disable the `follow_links` option """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
