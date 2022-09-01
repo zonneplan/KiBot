@@ -318,14 +318,29 @@ class QR_LibOptions(BaseOptions):
             f.write(dumps(lib))
             f.write('\n')
 
+    @staticmethod
+    def find_layer(sexp, def_layer):
+        """ Determine the layer.
+            The user could move the footprint to the bottom layer """
+        # Look for the polys
+        poly = next(filter(lambda s: is_symbol('fp_poly', s), sexp), None)
+        if not poly:
+            return def_layer
+        layer = next(filter(lambda s: is_symbol('layer', s), poly), None)
+        if not layer or len(layer) != 2:
+            return def_layer
+        return layer[1]
+
     def update_footprint(self, name, sexp, qr):
         logger.debug('- Updating QR footprint: '+name)
         # Compute the size
         qrc, size, full_size, center, size_rect = compute_size(qr, is_sch=False)
+        # In which layer are the drawings? (default to the original)
+        layer = self.find_layer(sexp, qr.layer)
         # Remove old drawing
         sexp[:] = list(filter(lambda s: not is_symbol('fp_poly', s), sexp))
         # Add the new drawings
-        sexp.extend(self.qr_draw_fp(size, size_rect, center, qrc, qr.pcb_negative, qr.layer, do_sep=False))
+        sexp.extend(self.qr_draw_fp(size, size_rect, center, qrc, qr.pcb_negative, layer, do_sep=False))
         # Update the fields
         for s in sexp:
             if (is_symbol('fp_text', s) and len(s) > 2 and isinstance(s[1], Symbol) and s[1].value() == 'user' and

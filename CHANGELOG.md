@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal Netlist generation (i.e. iBoM with variants): problems withg
   components that doesn't specify a library. (See #242)
 - Problems when setting a text variable to an empty string. (#268)
+- QR lib update: Problems when moving the footprint to the bottom. (#271)
 
 ### Changed
 - The order in which main sections are parsed is now fixed.
