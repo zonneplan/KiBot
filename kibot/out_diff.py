@@ -58,7 +58,7 @@ class DiffOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ *Filename for the output (%i=diff, %x=pdf) """
+            """ *Filename for the output (%i=diff_pcb/diff_sch, %x=pdf) """
             self.pcb = True
             """ Compare the PCB, otherwise compare the schematic """
             self.old = 'HEAD'
@@ -94,6 +94,10 @@ class DiffOptions(BaseOptions):
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
+
+    def config(self, parent):
+        super().config(parent)
+        self._expand_id = 'diff'+'_pcb' if self.pcb else '_sch'
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]

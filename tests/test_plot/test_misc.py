@@ -1304,7 +1304,7 @@ def test_diff_git_1(test_dir):
     shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), file)
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True)
-    ctx.compare_pdf(prj+'-diff.pdf')
+    ctx.compare_pdf(prj+'-diff_pcb.pdf')
     ctx.clean_up(keep_project=True)
 
 
@@ -1339,7 +1339,7 @@ def test_diff_git_2(test_dir):
     shutil.copy2(ctx.board_file.replace(prj, '3Rs'), file)
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
-    ctx.compare_pdf(prj+'-diff.pdf')
+    ctx.compare_pdf(prj+'-diff_pcb.pdf')
     ctx.clean_up(keep_project=True)
 
 
@@ -1372,5 +1372,5 @@ def test_diff_git_3(test_dir):
     ctx.run_command(['git', 'commit', '-m', 'New version'], chdir_out=True)
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
-    ctx.compare_pdf(prj+'-diff.pdf')
+    ctx.compare_pdf(prj+'-diff_pcb.pdf')
     ctx.clean_up(keep_project=True)

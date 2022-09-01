@@ -442,7 +442,7 @@ outputs:
       # [string='git'] [git,file] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
       # Use `file` for a file name
       old_type: 'git'
-      # [string='%f-%i%I%v.%x'] Filename for the output (%i=diff, %x=pdf). Affected by global options
+      # [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=true] Compare the PCB, otherwise compare the schematic
       pcb: true

@@ -1502,7 +1502,7 @@ Notes:
     - **`name`**: [string=''] Used to identify this particular output definition.
     - **`options`**: [dict] Options for the `diff` output.
       * Valid keys:
-        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=diff, %x=pdf). Affected by global options.
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options.
         - `add_link_id`: [boolean=false] When enabled we create a symlink to the output file with a name that contains the
                          git hashes involved in the comparison. If you plan to compress the output don't
                          forget to disable the `follow_links` option.
