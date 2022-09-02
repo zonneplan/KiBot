@@ -174,13 +174,15 @@ class GS(object):
     @staticmethod
     def read_pro():
         if GS.pro_file:
-            with open(GS.pro_file, 'rt') as f:
+            # Note: We use binary mode to preserve the original end of lines
+            # Otherwise git could see changes in the file
+            with open(GS.pro_file, 'rb') as f:
                 return f.read()
 
     @staticmethod
     def write_pro(prj):
         if GS.pro_file and prj:
-            with open(GS.pro_file, 'wt') as f:
+            with open(GS.pro_file, 'wb') as f:
                 f.write(prj)
 
     @staticmethod
