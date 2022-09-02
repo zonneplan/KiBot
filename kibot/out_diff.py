@@ -97,7 +97,7 @@ class DiffOptions(BaseOptions):
 
     def config(self, parent):
         super().config(parent)
-        self._expand_id = 'diff'+'_pcb' if self.pcb else '_sch'
+        self._expand_id = 'diff'+('_pcb' if self.pcb else '_sch')
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
@@ -257,7 +257,12 @@ class DiffOptions(BaseOptions):
             self.cache_dir = mkdtemp()
             remove_cache = True
         # A valid name, not really used
-        file = GS.pcb_file or GS.sch_file
+        if self.pcb:
+            GS.check_pcb()
+            file = GS.pcb_file
+        else:
+            GS.check_sch()
+            file = GS.sch_file
         dir_name = os.path.dirname(name)
         file_name = os.path.basename(name)
         self.incl_file = None

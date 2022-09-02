@@ -1274,7 +1274,7 @@ def test_diff_file_1(test_dir):
     yaml = 'diff_file_'+('k5' if context.ki5() else 'k6')
     ctx = context.TestContext(test_dir, prj, yaml)
     ctx.run()
-    ctx.compare_pdf(prj+'-diff.pdf', reference='light_control-diff.pdf')
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', reference='light_control-diff_pcb.pdf')
     ctx.clean_up(keep_project=True)
 
 
@@ -1373,4 +1373,14 @@ def test_diff_git_3(test_dir):
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
     ctx.compare_pdf(prj+'-diff_pcb.pdf')
+    ctx.clean_up(keep_project=True)
+
+
+def test_diff_file_sch_1(test_dir):
+    """ Difference between the current Schematic and a reference file """
+    prj = 'light_control_diff'
+    yaml = 'diff_file_sch_'+('k5' if context.ki5() else 'k6')
+    ctx = context.TestContext(test_dir, prj, yaml)
+    ctx.run()
+    ctx.compare_pdf(prj+'-diff_sch.pdf')
     ctx.clean_up(keep_project=True)
