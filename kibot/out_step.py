@@ -13,6 +13,7 @@ Dependencies:
 """
 import os
 import re
+import shlex
 from subprocess import check_output, STDOUT, CalledProcessError
 from shutil import rmtree
 from .error import KiPlotConfigurationError
@@ -88,7 +89,7 @@ class STEPOptions(Base3DOptions):
         cmd.append(board_name)
         cmd, video_remove = add_extra_options(cmd)
         # Execute and inform is successful
-        logger.debug('Executing: '+str(cmd))
+        logger.debug('Executing: '+shlex.join(cmd))
         # Ensure KIPRJMOD is correct:
         # KiCad sets KIPRJMOD each time we call BOARD.Save() but then Python `os.environ` becomes unsynchronized
         # We don't even know the actual value and any call to Save could destroy it

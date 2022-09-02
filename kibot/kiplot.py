@@ -13,6 +13,7 @@ import os
 import re
 from sys import exit
 from sys import path as sys_path
+import shlex
 from shutil import which
 from subprocess import run, PIPE, Popen
 from glob import glob
@@ -139,9 +140,10 @@ def extract_errors(text):
 
 
 def exec_with_retry(cmd):
-    logger.debug('Executing: '+' '.join(cmd))
+    cmd_str = shlex.join(cmd)
+    logger.debug('Executing: '+cmd_str)
     if GS.debug_level > 2:
-        logger.debug('Command line: '+' '.join(cmd))
+        logger.debug('Command line: '+cmd_str)
     retry = 2
     while retry:
         result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)

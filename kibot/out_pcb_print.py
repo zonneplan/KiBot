@@ -36,6 +36,7 @@ import os
 import subprocess
 import importlib
 from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask, ZONE_FILLER
+import shlex
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
 from .error import KiPlotConfigurationError
@@ -71,7 +72,7 @@ kicad_worksheet = None  # Also needs svgutils
 
 
 def _run_command(cmd):
-    logger.debug('- Executing: '+str(cmd))
+    logger.debug('- Executing: '+shlex.join(cmd))
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:

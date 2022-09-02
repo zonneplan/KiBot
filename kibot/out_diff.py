@@ -21,6 +21,7 @@ Dependencies:
 """
 from hashlib import sha1
 import os
+import shlex
 from shutil import rmtree, copy2
 from subprocess import run, CalledProcessError, STDOUT, PIPE
 from tempfile import mkdtemp, NamedTemporaryFile
@@ -43,7 +44,7 @@ def debug_output(res):
 
 
 def run_command(command, change_to=None):
-    logger.debug('Executing: '+str(command))
+    logger.debug('Executing: '+shlex.join(command))
     try:
         res = run(command, check=True, stdout=PIPE, stderr=STDOUT, cwd=change_to)
     except CalledProcessError as e:

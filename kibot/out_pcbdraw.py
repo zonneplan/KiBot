@@ -14,6 +14,7 @@ Dependencies:
 """
 import os
 from tempfile import NamedTemporaryFile
+import shlex
 # Here we import the whole module to make monkeypatch work
 import subprocess
 from .misc import (PCBDRAW_ERR, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK, PCB_MAT_COLORS,
@@ -108,7 +109,7 @@ def _get_tmp_name(ext):
 
 
 def _run_command(cmd, tmp_remap=False, tmp_style=False):
-    logger.debug('Executing: '+str(cmd))
+    logger.debug('Executing: '+shlex.join(cmd))
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
