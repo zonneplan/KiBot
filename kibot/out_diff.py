@@ -124,7 +124,10 @@ class DiffOptions(BaseOptions):
         run_command(cmd)
 
     def cache_pcb(self, name):
-        if not name:
+        if name:
+            if not os.path.isfile(name):
+                raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
+        else:
             GS.check_pcb()
             name = GS.pcb_file
         hash = self.get_digest(name)
@@ -132,7 +135,10 @@ class DiffOptions(BaseOptions):
         return hash
 
     def cache_sch(self, name):
-        if not name:
+        if name:
+            if not os.path.isfile(name):
+                raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
+        else:
             GS.check_sch()
             name = GS.sch_file
         # Schematics can have sub-sheets
