@@ -293,6 +293,8 @@ class DiffOptions(BaseOptions):
                 if self.copy_instead_of_link:
                     copy2(name, target)
                 else:
+                    if os.path.isfile(target):
+                        os.remove(target)
                     os.symlink(os.path.basename(name), target)
         finally:
             # Clean-up
