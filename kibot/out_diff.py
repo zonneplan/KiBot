@@ -21,7 +21,7 @@ Dependencies:
 """
 from hashlib import sha1
 import os
-from shutil import rmtree
+from shutil import rmtree, copy2
 from subprocess import run, CalledProcessError, STDOUT, PIPE
 from tempfile import mkdtemp, NamedTemporaryFile
 from .error import KiPlotConfigurationError
@@ -91,6 +91,9 @@ class DiffOptions(BaseOptions):
             """ When enabled we create a symlink to the output file with a name that contains the
                 git hashes involved in the comparison. If you plan to compress the output don't
                 forget to disable the `follow_links` option """
+            self.copy_instead_of_link = False
+            """ When `add_link_id` is enabled creates a copy of the file instead of a symlink.
+                Useful for some Windows setups """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -286,7 +289,11 @@ class DiffOptions(BaseOptions):
             run_command(cmd)
             if self.add_link_id:
                 name_comps = os.path.splitext(name)
-                os.symlink(os.path.basename(name), name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1])
+                target = name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1]
+                if self.copy_instead_of_link:
+                    copy2(name, target)
+                else:
+                    os.symlink(os.path.basename(name), target)
         finally:
             # Clean-up
             if remove_cache:

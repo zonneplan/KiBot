@@ -9,4 +9,6 @@ outputs:
       old: tests/board_samples/kicad_6/light_control.kicad_sch
       pcb: false
       old_type: file
+      add_link_id: true
+      copy_instead_of_link: true
       cache_dir: .cache
