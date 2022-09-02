@@ -192,6 +192,8 @@ class DiffOptions(BaseOptions):
         num = str(num)
         # Return its hash
         res = self.run_git(['log', '--pretty=format:%H', '--skip='+num, '-n', '1', '--', self.file])
+        if not res:
+            raise KiPlotConfigurationError("The `{}` doesn't resolve to a valid hash".format(ori))
         logger.debug('- '+res)
         return res
 
