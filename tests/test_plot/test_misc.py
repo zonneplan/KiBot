@@ -1376,6 +1376,8 @@ def test_diff_git_3(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
+@pytest.mark.eeschema
 def test_diff_file_sch_1(test_dir):
     """ Difference between the current Schematic and a reference file """
     prj = 'light_control_diff'
