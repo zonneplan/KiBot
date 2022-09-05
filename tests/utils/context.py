@@ -332,7 +332,7 @@ class TestContext(object):
     def run_command(self, cmd, chdir_out=False):
         if chdir_out:
             cwd = os.getcwd()
-            os.chdir(self.output_dir)
+            os.chdir(self.output_dir if isinstance(chdir_out, bool) else chdir_out)
         logging.debug('Executing: '+usable_cmd(cmd))
         try:
             res = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)

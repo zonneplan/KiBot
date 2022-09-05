@@ -1278,10 +1278,10 @@ def test_diff_file_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
-def git_init(ctx):
-    ctx.run_command(['git', 'init', '.'], chdir_out=True)
-    ctx.run_command(['git', 'config', 'user.email', 'pytest@nowherem.com'], chdir_out=True)
-    ctx.run_command(['git', 'config', 'user.name', 'KiBot test'], chdir_out=True)
+def git_init(ctx, cwd=True):
+    ctx.run_command(['git', 'init', '.'], chdir_out=cwd)
+    ctx.run_command(['git', 'config', 'user.email', 'pytest@nowherem.com'], chdir_out=cwd)
+    ctx.run_command(['git', 'config', 'user.name', 'KiBot test'], chdir_out=cwd)
 
 
 def test_diff_git_1(test_dir):
@@ -1313,33 +1313,54 @@ def test_diff_git_2(test_dir):
     prj = 'light_control'
     yaml = 'diff_git_2'
     ctx = context.TestContext(test_dir, prj, yaml)
+    # Create something to use as submodule
+    sub_dir = os.path.join(ctx.output_dir, 'sub')
+    os.makedirs(sub_dir)
+    git_init(ctx, sub_dir)
+    some_file = os.path.join(sub_dir, 'some_file.txt')
+    with open(some_file, 'wt') as f:
+        f.write('Hello!\n')
+    ctx.run_command(['git', 'add', 'some_file.txt'], chdir_out=sub_dir)
+    ctx.run_command(['git', 'commit', '-m', 'Some change'], chdir_out=sub_dir)
     # Create a git repo
-    git_init(ctx)
+    repo_dir = os.path.join(ctx.output_dir, 'repo')
+    os.makedirs(repo_dir)
+    git_init(ctx, repo_dir)
     # Copy the "old" file
     pcb = prj+'.kicad_pcb'
-    file = ctx.get_out_path(pcb)
+    file = os.path.join(repo_dir, pcb)
     shutil.copy2(ctx.board_file, file)
     shutil.copy2(ctx.board_file.replace('.kicad_pcb', context.KICAD_SCH_EXT),
                  file.replace('.kicad_pcb', context.KICAD_SCH_EXT))
     # Add it to the repo
-    ctx.run_command(['git', 'add', pcb], chdir_out=True)
-    ctx.run_command(['git', 'commit', '-m', 'Reference'], chdir_out=True)
+    ctx.run_command(['git', 'add', pcb], chdir_out=repo_dir)
+    ctx.run_command(['git', 'commit', '-m', 'Reference'], chdir_out=repo_dir)
+    # Add a submodule
+    ctx.run_command(['git', 'submodule', 'add', '../sub'], chdir_out=repo_dir)
     # Add an extra commit
-    dummy = ctx.get_out_path('dummy')
+    dummy = os.path.join(repo_dir, 'dummy')
     with open(dummy, 'wt') as f:
         f.write('dummy\n')
-    ctx.run_command(['git', 'add', 'dummy'], chdir_out=True)
-    ctx.run_command(['git', 'commit', '-m', 'Dummy noise'], chdir_out=True)
+    ctx.run_command(['git', 'add', 'dummy'], chdir_out=repo_dir)
+    ctx.run_command(['git', 'commit', '-m', 'Dummy noise'], chdir_out=repo_dir)
     # Copy the "new" file
     shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), file)
     # Add it to the repo
-    ctx.run_command(['git', 'add', pcb], chdir_out=True)
-    ctx.run_command(['git', 'commit', '-m', 'New version'], chdir_out=True)
+    ctx.run_command(['git', 'add', pcb], chdir_out=repo_dir)
+    ctx.run_command(['git', 'commit', '-m', 'New version'], chdir_out=repo_dir)
     # Now just wipe the current file
     shutil.copy2(ctx.board_file.replace(prj, '3Rs'), file)
+    # Change the file in the submodule
+    some_file = os.path.join(repo_dir, 'sub', 'some_file.txt')
+    with open(some_file, 'wt') as f:
+        f.write('Bye!\n')
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
     ctx.compare_pdf(prj+'-diff_pcb.pdf')
+    # Check the submodule was restored
+    with open(some_file, 'rt') as f:
+        msg = f.read()
+    assert msg == 'Bye!\n'
     ctx.clean_up(keep_project=True)
 
 

@@ -21,6 +21,7 @@ Dependencies:
 """
 from hashlib import sha1
 import os
+import re
 from shutil import rmtree, copy2
 from tempfile import mkdtemp, NamedTemporaryFile
 from .error import KiPlotConfigurationError
@@ -139,8 +140,31 @@ class DiffOptions(BaseOptions):
     def cache_file(self, name=None):
         return self.cache_pcb(name) if self.pcb else self.cache_sch(name)
 
-    def run_git(self, cmd):
-        return run_command([self.git_command]+cmd, change_to=self.repo_dir)
+    def run_git(self, cmd, cwd=None):
+        if cwd is None:
+            cwd = self.repo_dir
+        return run_command([self.git_command]+cmd, change_to=cwd)
+
+    def stash_pop(self, cwd=None):
+        # We don't know if we stashed anything (push always returns 0)
+        # So we check that the last stash contains our message
+        res = self.run_git(['stash', 'list', 'stash@{0}'], cwd)
+        if STASH_MSG in res:
+            self.run_git(['stash', 'pop', '--index'], cwd)
+
+    def git_submodules(self):
+        res = self.run_git(['submodule'])
+        reg = re.compile(r'^\s*([\da-z]+)\s+(\S+)\s+')
+        subs = []
+        for ln in res.split('\n'):
+            rm = reg.search(ln)
+            if rm:
+                subm = os.path.join(self.repo_dir, rm.group(2))
+                subs.append(subm)
+                if not os.path.isdir(subm):
+                    KiPlotConfigurationError('Missing git submodule `{}`'.format(subm))
+        logger.debug('Git submodules '+str(subs))
+        return subs
 
     def undo_git(self):
         if self.checkedout:
@@ -148,11 +172,10 @@ class DiffOptions(BaseOptions):
             self.run_git(['checkout', '--recurse-submodules', self.branch])
         if self.stashed:
             logger.debug('Restoring changes')
-            # We don't know if we stashed anything (push always returns 0)
-            # So we check that the last stash contains our message
-            res = self.run_git(['stash', 'list', 'stash@{0}'])
-            if STASH_MSG in res:
-                self.run_git(['stash', 'pop', '--index'])
+            self.stash_pop()
+            # Do the same for each submodule
+            for sub in self.git_submodules():
+                self.stash_pop(sub)
 
     def solve_git_name(self, name):
         ori = name
@@ -195,6 +218,8 @@ class DiffOptions(BaseOptions):
             logger.debug('Saving current changes')
             self.run_git(['stash', 'push', '-m', STASH_MSG])
             self.stashed = True
+            #  Also save the submodules
+            self.run_git(['submodule', 'foreach', 'git stash push -m '+STASH_MSG])
             # Find the current branch
             self.branch = self.run_git(['rev-parse', '--abbrev-ref', 'HEAD'])
             if self.branch == 'HEAD':
@@ -291,7 +316,8 @@ class DiffOptions(BaseOptions):
 @output_class
 class Diff(BaseOutput):  # noqa: F821
     """ Diff
-        Generates a PDF with the differences between two PCBs or schematics """
+        Generates a PDF with the differences between two PCBs or schematics.
+        Recursive git submodules aren't supported (submodules inside submodules) """
     def __init__(self):
         super().__init__()
         self._category = ['PCB/docs', 'Schematic/docs']
