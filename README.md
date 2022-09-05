@@ -1487,7 +1487,8 @@ Notes:
 
 * Diff
   * Type: `diff`
-  * Description: Generates a PDF with the differences between two PCBs or schematics
+  * Description: Generates a PDF with the differences between two PCBs or schematics.
+                 Recursive git submodules aren't supported (submodules inside submodules)
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -1512,6 +1513,11 @@ Notes:
         - `diff_mode`: [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
                        The `stats` mode is used to meassure the amount of difference. In this mode all
                        changes are red, but you can abort if the difference is bigger than certain threshold.
+        - `force_checkout`: [boolean=false] When `old_type` and/or `new_type` are `git` KiBot will checkout the indicated point.
+                            Before doing it KiBot will stash any change. Under some circumstances git could fail
+                            to do a checkout, even after stashing, this option can workaround the problem.
+                            Note that using it you could potentially lose modified files. For more information
+                            read https://stackoverflow.com/questions/1248029/git-pull-error-entry-foo-not-uptodate-cannot-merge.
         - `fuzz`: [number=5] [0,100] Color tolerance (fuzzyness) for the `stats` mode.
         - `new`: [string=''] The file you want to compare. Leave it blank for the current PCB/SCH.
         - `new_type`: [string='file'] [git,file] How to interpret the `new` name. Use `git` for a git hash, branch, etc.

@@ -12,6 +12,7 @@ outputs:
       new: HEAD
       new_type: git
       cache_dir: .cache
+      force_checkout: true
       add_link_id: true
 
   - name: result

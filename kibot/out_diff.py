@@ -76,6 +76,12 @@ class DiffOptions(BaseOptions):
             self.copy_instead_of_link = False
             """ When `add_link_id` is enabled creates a copy of the file instead of a symlink.
                 Useful for some Windows setups """
+            self.force_checkout = False
+            """ When `old_type` and/or `new_type` are `git` KiBot will checkout the indicated point.
+                Before doing it KiBot will stash any change. Under some circumstances git could fail
+                to do a checkout, even after stashing, this option can workaround the problem.
+                Note that using it you could potentially lose modified files. For more information
+                read https://stackoverflow.com/questions/1248029/git-pull-error-entry-foo-not-uptodate-cannot-merge """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -169,7 +175,7 @@ class DiffOptions(BaseOptions):
     def undo_git(self):
         if self.checkedout:
             logger.debug('Restoring point '+self.branch)
-            self.run_git(['checkout', '--recurse-submodules', self.branch])
+            self.run_git(['checkout', '--force', '--recurse-submodules', self.branch])
         if self.stashed:
             logger.debug('Restoring changes')
             self.stash_pop()
@@ -230,7 +236,10 @@ class DiffOptions(BaseOptions):
             name_ori = name
             name = self.solve_git_name(name)
             logger.debug('Changing to '+name)
-            self.run_git(['checkout', '--recurse-submodules', name])
+            ops = ['checkout']
+            if self.force_checkout:
+                ops.append('--force')
+            self.run_git(ops+['--recurse-submodules', name])
             self.checkedout = True
             # A short version of the current hash
             self.git_hash = '{}({})'.format(name_ori, self.run_git(['rev-parse', '--short', 'HEAD']))
