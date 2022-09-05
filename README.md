@@ -1508,8 +1508,8 @@ Notes:
                          git hashes involved in the comparison. If you plan to compress the output don't
                          forget to disable the `follow_links` option.
         - `cache_dir`: [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache.
-        - `copy_instead_of_link`: [boolean=false] When `add_link_id` is enabled creates a copy of the file instead of a symlink.
-                                  Useful for some Windows setups.
+        - `copy_instead_of_link`: [boolean=false] Modifies the behavior of `add_link_id` to create a copy of the file instead of a
+                                  symlink. Useful for some Windows setups.
         - `diff_mode`: [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
                        The `stats` mode is used to meassure the amount of difference. In this mode all
                        changes are red, but you can abort if the difference is bigger than certain threshold.

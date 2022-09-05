@@ -74,8 +74,8 @@ class DiffOptions(BaseOptions):
                 git hashes involved in the comparison. If you plan to compress the output don't
                 forget to disable the `follow_links` option """
             self.copy_instead_of_link = False
-            """ When `add_link_id` is enabled creates a copy of the file instead of a symlink.
-                Useful for some Windows setups """
+            """ Modifies the behavior of `add_link_id` to create a copy of the file instead of a
+                symlink. Useful for some Windows setups """
             self.force_checkout = False
             """ When `old_type` and/or `new_type` are `git` KiBot will checkout the indicated point.
                 Before doing it KiBot will stash any change. Under some circumstances git could fail
