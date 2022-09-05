@@ -22,14 +22,17 @@ deps = '@json_dep@'
 kicad_plugins_dirs = []
 NOT_AVAIL = 'Not available'
 UNKNOWN = '*UNKNOWN*'
-CSI = '\033['
-RED = CSI+str(31)+'m'
-GREEN = CSI+str(32)+'m'
-YELLOW = CSI+str(33)+'m'
-YELLOW2 = CSI+str(93)+'m'
-RESET = CSI+str(39)+'m'
-BRIGHT = CSI+";1;4"+'m'
-NORMAL = CSI+'0'+'m'
+if sys.stdout.isatty():
+    CSI = '\033['
+    RED = CSI+str(31)+'m'
+    GREEN = CSI+str(32)+'m'
+    YELLOW = CSI+str(33)+'m'
+    YELLOW2 = CSI+str(93)+'m'
+    RESET = CSI+str(39)+'m'
+    BRIGHT = CSI+";1;4"+'m'
+    NORMAL = CSI+'0'+'m'
+else:
+    RED = GREEN = YELLOW = YELLOW2 = RESET = BRIGHT = NORMAL = ''
 last_ok = False
 is_x86 = is_64 = is_linux = False
 ver_re = re.compile(r'(\d+)\.(\d+)(?:\.(\d+))?(?:[\.-](\d+))?')
@@ -463,9 +466,10 @@ for name, d in dependencies.items():
         binary_tool(d['sev'], d['name'], d['url'], d['url_down'], d['deb_package'], d['in_debian'], d['extra_deb'],
                     d['roles'], d['downloader_str'], d['comments'])
 
-labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory for an output', 'mandatory for general use')
-text = ', '.join([sev2color(c)+l+RESET for c, l in enumerate(labels)])
-print(do_bright('\nColor reference:')+' '+text)
+if sys.stdout.isatty():
+    labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory for an output', 'mandatory for general use')
+    text = ', '.join([sev2color(c)+l+RESET for c, l in enumerate(labels)])
+    print(do_bright('\nColor reference:')+' '+text)
 
-print('\nDid this help? Please consider commenting it on https://github.com/INTI-CMNB/KiBot/discussions/categories/kibot-check')
+    print('\nDid this help? Please consider commenting it on https://github.com/INTI-CMNB/KiBot/discussions/categories/kibot-check')
 
