@@ -15,7 +15,7 @@ from sys import exit
 from sys import path as sys_path
 import shlex
 from shutil import which
-from subprocess import run, PIPE, Popen
+from subprocess import run, PIPE, STDOUT, Popen, CalledProcessError
 from glob import glob
 from importlib.util import spec_from_file_location, module_from_spec
 from collections import OrderedDict
@@ -25,7 +25,7 @@ from .registrable import RegOutput
 from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, version_str2tuple,
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
-                   NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS)
+                   NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -137,6 +137,23 @@ def extract_errors(text):
     elif in_warning:
         in_warning = False
         logger.warning(W_KIAUTO+msg.rstrip())
+
+
+def debug_output(res):
+    if res.stdout:
+        logger.debug('- Output from command: '+res.stdout.decode())
+
+
+def run_command(command, change_to=None):
+    logger.debug('Executing: '+shlex.join(command))
+    try:
+        res = run(command, check=True, stdout=PIPE, stderr=STDOUT, cwd=change_to)
+    except CalledProcessError as e:
+        logger.error('Running {} returned {}'.format(e.cmd, e.returncode))
+        debug_output(e)
+        exit(FAILED_EXECUTE)
+    debug_output(res)
+    return res.stdout.decode().rstrip()
 
 
 def exec_with_retry(cmd):

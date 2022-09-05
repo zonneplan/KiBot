@@ -1507,6 +1507,8 @@ Notes:
                          git hashes involved in the comparison. If you plan to compress the output don't
                          forget to disable the `follow_links` option.
         - `cache_dir`: [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache.
+        - `copy_instead_of_link`: [boolean=false] When `add_link_id` is enabled creates a copy of the file instead of a symlink.
+                                  Useful for some Windows setups.
         - `diff_mode`: [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
                        The `stats` mode is used to meassure the amount of difference. In this mode all
                        changes are red, but you can abort if the difference is bigger than certain threshold.
@@ -1916,6 +1918,32 @@ Notes:
                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
+* Info
+  * Type: `info`
+  * Description: Records information about the current run.
+                 It can be used to know more about the environment used to generate the files.
+                 Please don't rely on the way things are reported, its content could change,
+                 adding or removing information.
+                 It current shows the `kibot-check` output
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `info` output.
+      * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=info, %x=txt). Affected by global options.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.

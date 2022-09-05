@@ -21,38 +21,18 @@ Dependencies:
 """
 from hashlib import sha1
 import os
-import shlex
 from shutil import rmtree, copy2
-from subprocess import run, CalledProcessError, STDOUT, PIPE
 from tempfile import mkdtemp, NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .kiplot import load_any_sch
+from .kiplot import load_any_sch, run_command
 from .layer import Layer
-from .misc import FAILED_EXECUTE
 from .optionable import BaseOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
 STASH_MSG = 'KiBot_Changes_Entry'
-
-
-def debug_output(res):
-    if res.stdout:
-        logger.debug('- Output from command: '+res.stdout.decode())
-
-
-def run_command(command, change_to=None):
-    logger.debug('Executing: '+shlex.join(command))
-    try:
-        res = run(command, check=True, stdout=PIPE, stderr=STDOUT, cwd=change_to)
-    except CalledProcessError as e:
-        logger.error('Running {} returned {}'.format(e.cmd, e.returncode))
-        debug_output(e)
-        exit(FAILED_EXECUTE)
-    debug_output(res)
-    return res.stdout.decode().rstrip()
 
 
 class DiffOptions(BaseOptions):

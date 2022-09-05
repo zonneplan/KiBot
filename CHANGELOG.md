@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- New output to compute differences between PCBs and SCHs.(INTI-CMNB/KiAuto#14)
+- New outputs:
+  - Diff: to compute differences between PCBs and SCHs. (INTI-CMNB/KiAuto#14)
+  - Info: collects info about the environment. (See #209)
 - Try to download missing tools and Python modules.
   The user also gets more information when something is missing.
   It can be disabled from the command line.
