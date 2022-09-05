@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems with filtered/modified PCBs
   - Problems with zones on multiple layers (#226)
   - Problems with `hide_excluded: true` and components not in the SCH (#258)
+  - Text vars generated in the same run didn't show up (#280)
 - SCH Variants on KiCad 6: Problems with missing values in the title block.
 - Report: Converted file wasn't stored at `dir` (#238)
 - Datasheet download: Time-outs on some servers expecting modern browsers (#240)

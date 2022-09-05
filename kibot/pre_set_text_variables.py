@@ -8,11 +8,12 @@ Dependencies:
   - from: Git
     role: Find commit hash and/or date
 """
-import os
-import sys
 import json
+import os
+import pcbnew
 import re
 from subprocess import run, PIPE
+import sys
 from .error import KiPlotConfigurationError
 from .misc import FAILED_EXECUTE, W_EMPTREP
 from .optionable import Optionable
@@ -147,5 +148,9 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         GS.make_bkp(pro_name)
         with open(pro_name, 'wt') as f:
             f.write(json.dumps(data, sort_keys=True, indent=2))
+        # Force a project reload
+        sm = pcbnew.GetSettingsManager()
+        sm.UnloadProject(GS.board.GetProject(), False)
+        assert sm.LoadProject(pro_name)
         # Force the PCB reload (will reload the project file)
         GS.board = None
