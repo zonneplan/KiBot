@@ -202,12 +202,13 @@ class DiffOptions(BaseOptions):
                 self.branch = self.run_git(['rev-parse', 'HEAD'])
             logger.debug('Current branch is '+self.branch)
             # Checkout the target
+            name_ori = name
             name = self.solve_git_name(name)
             logger.debug('Changing to '+name)
             self.run_git(['checkout', '--recurse-submodules', name])
             self.checkedout = True
             # A short version of the current hash
-            self.git_hash = self.run_git(['rev-parse', '--short', 'HEAD'])
+            self.git_hash = '{}({})'.format(name_ori, self.run_git(['rev-parse', '--short', 'HEAD']))
             # Populate the cache
             hash = self.cache_file()
         finally:
