@@ -148,9 +148,10 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         GS.make_bkp(pro_name)
         with open(pro_name, 'wt') as f:
             f.write(json.dumps(data, sort_keys=True, indent=2))
-        # Force a project reload
-        sm = pcbnew.GetSettingsManager()
-        sm.UnloadProject(GS.board.GetProject(), False)
-        assert sm.LoadProject(pro_name)
-        # Force the PCB reload (will reload the project file)
-        GS.board = None
+        if GS.board:
+            # Force a project reload
+            sm = pcbnew.GetSettingsManager()
+            sm.UnloadProject(GS.board.GetProject(), False)
+            assert sm.LoadProject(pro_name)
+            # Force the PCB reload (will reload the project file)
+            GS.board = None
