@@ -217,7 +217,7 @@ class PCB_PrintOptions(VariantOptions):
             self.output_name = None
             """ {output} """
             self.output = GS.def_global_output
-            """ *Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg)"""
+            """ *Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps)"""
             self.hide_excluded = False
             """ Hide components in the Fab layer that are marked as excluded by a variant """
             self.color_theme = '_builtin_classic'

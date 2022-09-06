@@ -2187,7 +2187,7 @@ Notes:
         - **`force_edge_cuts`**: [boolean=false] Add the `Edge.Cuts` to all the pages.
         - **`format`**: [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
                         Note that for PS you need `ghostscript` which isn't part of the default docker images.
-        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg). Affected by global options.
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps). Affected by global options.
         - *output_name*: Alias for output.
         - **`pages`**: [list(dict)] List of pages to include in the output document.
                        Each page contains one or more layers of the PCB.

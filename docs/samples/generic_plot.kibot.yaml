@@ -1108,7 +1108,7 @@ outputs:
       keep_temporal_files: false
       # [string=''] Color used for micro `colored_vias`
       micro_via_color: ''
-      # [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf)/(%i=assembly_page_NN, %x=svg). Affected by global options
+      # [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps). Affected by global options
       output: '%f-%i%I%v.%x'
       # `output_name` is an alias for `output`
       # [string=''] Color used for `colored_pads`
