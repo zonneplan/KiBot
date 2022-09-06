@@ -2227,6 +2227,7 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
+        - `forced_edge_cuts_color`: [string=''] Color used for the `force_edge_cuts` option.
         - `frame_plot_mechanism`: [string='internal'] [gui,internal,plot] Plotting the frame from Python is problematic.
                                   This option selects a workaround strategy.
                                   gui: uses KiCad GUI to do it. Is slow but you get the correct frame.

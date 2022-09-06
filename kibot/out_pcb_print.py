@@ -264,6 +264,8 @@ class PCB_PrintOptions(VariantOptions):
             """ Store the temporal page and layer files in the output dir and don't delete them """
             self.force_edge_cuts = False
             """ *Add the `Edge.Cuts` to all the pages """
+            self.forced_edge_cuts_color = ''
+            """ Color used for the `force_edge_cuts` option """
             self.scaling = 1.0
             """ *Default scale factor (0 means autoscaling)"""
             self.realistic_solder_mask = True
@@ -303,6 +305,8 @@ class PCB_PrintOptions(VariantOptions):
                 self.validate_color(member)
             else:
                 setattr(self, member, getattr(self._color_theme, color))
+        if self.forced_edge_cuts_color:
+            self.validate_color('forced_edge_cuts_color')
         if self.frame_plot_mechanism == 'plot' and GS.ki5:
             raise KiPlotConfigurationError("You can't use `plot` for `frame_plot_mechanism` with KiCad 5. It will crash.")
         KiConf.init(GS.pcb_file)
@@ -921,11 +925,14 @@ class PCB_PrintOptions(VariantOptions):
         if self.force_edge_cuts:
             edge_layer = LayerOptions.create_layer('Edge.Cuts')
             edge_id = edge_layer._id
-            layer_id2color = self._color_theme.layer_id2color
-            if edge_id in layer_id2color:
-                edge_layer.color = layer_id2color[edge_id]
+            if self.forced_edge_cuts_color:
+                edge_layer.color = self.forced_edge_cuts_color
             else:
-                edge_layer.color = "#000000"
+                layer_id2color = self._color_theme.layer_id2color
+                if edge_id in layer_id2color:
+                    edge_layer.color = layer_id2color[edge_id]
+                else:
+                    edge_layer.color = "#000000"
         # Generate the output, page by page
         pages = []
         for n, p in enumerate(self.pages):

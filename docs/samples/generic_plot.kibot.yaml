@@ -1090,6 +1090,8 @@ outputs:
       drill_marks: 'full'
       # [boolean=false] Add the `Edge.Cuts` to all the pages
       force_edge_cuts: false
+      # [string=''] Color used for the `force_edge_cuts` option
+      forced_edge_cuts_color: ''
       # [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
       # Note that for PS you need `ghostscript` which isn't part of the default docker images
       format: 'PDF'

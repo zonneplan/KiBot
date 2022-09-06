@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   KiCad bug [11562](https://gitlab.com/kicad/code/kicad/-/issues/11562)
 - Internal BoM: KiCad 6 text variables expansion in the fields (#247)
 - Compress: Option to store symlinks. (See #265)
+- PCB Print: Option to configure the forced edge color. (#281)
 
 ### Fixed
 - OAR computation (Report) (#225)
