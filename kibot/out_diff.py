@@ -23,6 +23,7 @@ from hashlib import sha1
 import os
 import re
 from shutil import rmtree, copy2
+from subprocess import CalledProcessError
 from tempfile import mkdtemp, NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .gs import GS
@@ -146,10 +147,10 @@ class DiffOptions(BaseOptions):
     def cache_file(self, name=None):
         return self.cache_pcb(name) if self.pcb else self.cache_sch(name)
 
-    def run_git(self, cmd, cwd=None):
+    def run_git(self, cmd, cwd=None, just_raise=False):
         if cwd is None:
             cwd = self.repo_dir
-        return run_command([self.git_command]+cmd, change_to=cwd)
+        return run_command([self.git_command]+cmd, change_to=cwd, just_raise=just_raise)
 
     def stash_pop(self, cwd=None):
         # We don't know if we stashed anything (push always returns 0)
@@ -207,6 +208,22 @@ class DiffOptions(BaseOptions):
         logger.debug('- '+res)
         return res
 
+    def get_git_point_desc(self, user_name):
+        branch = self.run_git(['rev-parse', '--abbrev-ref', 'HEAD'])
+        if branch == 'HEAD':
+            # Detached
+            # Try to find the name relative to a tag
+            try:
+                name = self.run_git(['describe', '--tags', '--dirty'], just_raise=True)
+            except CalledProcessError:
+                logger.debug("Can't find a tag name")
+                name = None
+            if not name:
+                name = user_name
+        else:
+            name = branch
+        return '{}({})'.format(self.run_git(['rev-parse', '--short', 'HEAD']), name)
+
     def cache_git(self, name):
         self.stashed = False
         self.checkedout = False
@@ -242,7 +259,7 @@ class DiffOptions(BaseOptions):
             self.run_git(ops+['--recurse-submodules', name])
             self.checkedout = True
             # A short version of the current hash
-            self.git_hash = '{}({})'.format(name_ori, self.run_git(['rev-parse', '--short', 'HEAD']))
+            self.git_hash = self.get_git_point_desc(name_ori)
             # Populate the cache
             hash = self.cache_file()
         finally:

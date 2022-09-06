@@ -144,11 +144,13 @@ def debug_output(res):
         logger.debug('- Output from command: '+res.stdout.decode())
 
 
-def run_command(command, change_to=None):
+def run_command(command, change_to=None, just_raise=False):
     logger.debug('Executing: '+shlex.join(command))
     try:
         res = run(command, check=True, stdout=PIPE, stderr=STDOUT, cwd=change_to)
     except CalledProcessError as e:
+        if just_raise:
+            raise
         logger.error('Running {} returned {}'.format(e.cmd, e.returncode))
         debug_output(e)
         exit(FAILED_EXECUTE)
