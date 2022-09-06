@@ -27,6 +27,7 @@ Tests miscellaneous stuff.
 For debug information use:
 pytest-3 --log-cli-level debug
 """
+from glob import glob
 import os
 import re
 import shutil
@@ -1335,6 +1336,8 @@ def test_diff_git_2(test_dir):
     # Add it to the repo
     ctx.run_command(['git', 'add', pcb], chdir_out=repo_dir)
     ctx.run_command(['git', 'commit', '-m', 'Reference'], chdir_out=repo_dir)
+    # Tag it, just to test the link name
+    ctx.run_command(['git', 'tag', '-a', 'v1', '-m', 'Tag description'], chdir_out=repo_dir)
     # Add a submodule
     ctx.run_command(['git', 'submodule', 'add', '../sub'], chdir_out=repo_dir)
     # Add an extra commit
@@ -1361,6 +1364,8 @@ def test_diff_git_2(test_dir):
     with open(some_file, 'rt') as f:
         msg = f.read()
     assert msg == 'Bye!\n'
+    # Check the link
+    assert glob(os.path.join(ctx.output_dir, prj+'-diff_pcb_*(v1)-*(master).pdf'))
     ctx.clean_up(keep_project=True)
 
 
