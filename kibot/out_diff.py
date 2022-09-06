@@ -209,21 +209,32 @@ class DiffOptions(BaseOptions):
         return res
 
     def get_git_point_desc(self, user_name):
-        branch = self.run_git(['rev-parse', '--abbrev-ref', 'HEAD'])
-        if branch == 'HEAD':
-            # Detached
-            # Try to find the name relative to a tag
-            try:
-                name = self.run_git(['describe', '--tags', '--dirty'], just_raise=True)
-            except CalledProcessError:
-                logger.debug("Can't find a tag name")
-                name = None
-            if not name:
-                name = user_name
-        else:
-            name = branch
+        # Are we at a tagged point?
+        try:
+            name = self.run_git(['describe', '--exact-match', '--tags', 'HEAD'], just_raise=True)
             if user_name == 'Dirty':
                 name += '-dirty'
+        except CalledProcessError:
+            logger.debug("Not at a tag point")
+            name = None
+        if name is None:
+            # Are we at the HEAD of a branch?
+            branch = self.run_git(['rev-parse', '--abbrev-ref', 'HEAD'])
+            if branch == 'HEAD':
+                # Detached state
+                # Try to find the name relative to a tag
+                try:
+                    name = self.run_git(['describe', '--tags', '--dirty'], just_raise=True)
+                except CalledProcessError:
+                    logger.debug("Can't find a tag name")
+                    name = None
+                if not name:
+                    # Nothing usable, use what the user specified
+                    name = user_name
+            else:
+                name = branch
+                if user_name == 'Dirty':
+                    name += '-dirty'
         return '{}({})'.format(self.run_git(['rev-parse', '--short', 'HEAD']), name)
 
     def git_dirty(self):
