@@ -222,7 +222,12 @@ class DiffOptions(BaseOptions):
                 name = user_name
         else:
             name = branch
+            if user_name == 'Dirty':
+                name += '-dirty'
         return '{}({})'.format(self.run_git(['rev-parse', '--short', 'HEAD']), name)
+
+    def git_dirty(self):
+        return self.run_git(['status', '--porcelain', '-uno'])
 
     def cache_git(self, name):
         self.stashed = False
@@ -237,27 +242,30 @@ class DiffOptions(BaseOptions):
         # Place where we know we have a repo
         self.repo_dir = os.path.dirname(os.path.abspath(self.file))
         try:
-            # Save current changes
-            logger.debug('Saving current changes')
-            self.run_git(['stash', 'push', '-m', STASH_MSG])
-            self.stashed = True
-            #  Also save the submodules
-            self.run_git(['submodule', 'foreach', 'git stash push -m '+STASH_MSG])
-            # Find the current branch
-            self.branch = self.run_git(['rev-parse', '--abbrev-ref', 'HEAD'])
-            if self.branch == 'HEAD':
-                # Detached
-                self.branch = self.run_git(['rev-parse', 'HEAD'])
-            logger.debug('Current branch is '+self.branch)
-            # Checkout the target
-            name_ori = name
-            name = self.solve_git_name(name)
-            logger.debug('Changing to '+name)
-            ops = ['checkout']
-            if self.force_checkout:
-                ops.append('--force')
-            self.run_git(ops+['--recurse-submodules', name])
-            self.checkedout = True
+            if name:
+                # Save current changes
+                logger.debug('Saving current changes')
+                self.run_git(['stash', 'push', '-m', STASH_MSG])
+                self.stashed = True
+                #  Also save the submodules
+                self.run_git(['submodule', 'foreach', 'git stash push -m '+STASH_MSG])
+                # Find the current branch
+                self.branch = self.run_git(['rev-parse', '--abbrev-ref', 'HEAD'])
+                if self.branch == 'HEAD':
+                    # Detached
+                    self.branch = self.run_git(['rev-parse', 'HEAD'])
+                logger.debug('Current branch is '+self.branch)
+                # Checkout the target
+                name_ori = name
+                name = self.solve_git_name(name)
+                logger.debug('Changing to '+name)
+                ops = ['checkout']
+                if self.force_checkout:
+                    ops.append('--force')
+                self.run_git(ops+['--recurse-submodules', name])
+                self.checkedout = True
+            else:
+                name_ori = 'Dirty' if self.git_dirty() else 'HEAD'
             # A short version of the current hash
             self.git_hash = self.get_git_point_desc(name_ori)
             # Populate the cache
