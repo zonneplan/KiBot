@@ -7,16 +7,12 @@
 """
 Dependencies:
   - from: RSVG
-    role: Create PDF, PNG and PS formats
+    role: Create PDF, PNG, PS and EPS formats
     id: rsvg1
-  - from: RSVG
-    role: Create EPS format
-    version: '2.40'
-    id: rsvg2
   - from: Ghostscript
-    role: Create PS files
+    role: Create PNG, PS and EPS formats
   - from: ImageMagick
-    role: Create monochrome prints
+    role: Create monochrome prints and scaled PNG files
   - from: PcbDraw
     role: Create realistic solder masks
   # The plot_frame_gui() needs KiAuto to print the frame
@@ -31,6 +27,13 @@ Dependencies:
     role: mandatory
     downloader: python
 """
+# Direct SVG to EPS conversion is problematic.
+# If we use 72 dpi the page size is ok, but some objects (currently the solder mask) have low resolution.
+# So we create a PDF and then use GS to create the EPS files.
+#   - from: RSVG
+#     role: Create EPS format
+#     version: '2.40'
+#     id: rsvg2
 import re
 import os
 import subprocess
@@ -247,7 +250,10 @@ class PCB_PrintOptions(VariantOptions):
             """ *[PDF,SVG,PNG,EPS,PS] Format for the output file/s.
                 Note that for PS you need `ghostscript` which isn't part of the default docker images """
             self.png_width = 1280
-            """ Width of the PNG in pixels """
+            """ [0,7680] Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size """
+            self.dpi = 360
+            """ [36,1200] Resolution (Dots Per Inch) for the output file. Most objects are vectors, but thing
+                like the the solder mask are handled as images by the conversion tools """
             self.colored_pads = True
             """ Plot through-hole in a different color. Like KiCad GUI does """
             self.pad_color = ''
@@ -860,40 +866,66 @@ class PCB_PrintOptions(VariantOptions):
 
     def svg_to_pdf(self, input_folder, svg_file, pdf_file):
         # Note: rsvg-convert uses 90 dpi but KiCad (and the docs I found) says SVG pt is 72 dpi
-        cmd = [self.rsvg_command, '-d', '72', '-p', '72', '-f', 'pdf', '-o', os.path.join(input_folder, pdf_file),
+        # We use a 5x scale and then reduce it to maintain the page size
+        dpi = str(self.dpi)
+        cmd = [self.rsvg_command, '-d', dpi, '-p', dpi, '-f', 'pdf', '-o', os.path.join(input_folder, pdf_file),
                os.path.join(input_folder, svg_file)]
         _run_command(cmd)
 
-    def svg_to_png(self, input_folder, svg_file, png_file, width):
-        cmd = [self.rsvg_command, '-w', str(width), '-f', 'png', '-o', os.path.join(input_folder, png_file),
-               os.path.join(input_folder, svg_file)]
+    # We can't control the resolution in this way
+    # def svg_to_png(self, input_folder, svg_file, png_file, width):
+    #     cmd = [self.rsvg_command, '-w', str(width), '-f', 'png', '-o', os.path.join(input_folder, png_file),
+    #            os.path.join(input_folder, svg_file)]
+    #     _run_command(cmd)
+
+    # Poor resolution or wrong page size, using a PDF + GS solves it
+    # def svg_to_eps(self, input_folder, svg_file, eps_file):
+    #     cmd = [self.rsvg_command_eps, '-d', '72', '-p', '72', '-f', 'eps', '-o', os.path.join(input_folder, eps_file),
+    #            os.path.join(input_folder, svg_file)]
+    #     _run_command(cmd)
+
+    def run_gs(self, pdf_file, output, device, use_dpi=False):
+        cmd = [self.gs_command, '-q', '-dNOPAUSE', '-dBATCH', '-P-', '-dSAFER', '-sDEVICE='+device,
+               '-sOutputFile='+output, '-c', 'save', 'pop', '-f', pdf_file]
+        if use_dpi:
+            cmd.insert(1, '-r'+str(self.dpi))
         _run_command(cmd)
 
-    def svg_to_eps(self, input_folder, svg_file, eps_file):
-        cmd = [self.rsvg_command_eps, '-d', '72', '-p', '72', '-f', 'eps', '-o', os.path.join(input_folder, eps_file),
-               os.path.join(input_folder, svg_file)]
-        _run_command(cmd)
+    def pdf_to_ps(self, pdf_file, output):
+        self.run_gs(pdf_file, output, 'ps2write')
 
-    def pdf_to_ps(self, ps_file, output):
-        cmd = [self.gs_command, '-q', '-dNOPAUSE', '-dBATCH', '-P-', '-dSAFER', '-sDEVICE=ps2write', '-sOutputFile='+output,
-               '-c', 'save', 'pop', '-f', ps_file]
-        _run_command(cmd)
+    def pdf_to_eps(self, pdf_file, output):
+        self.run_gs(pdf_file, output, 'eps2write')
+
+    def pdf_to_png(self, pdf_file, output):
+        self.run_gs(pdf_file, output, 'png16m', use_dpi=True)
+        if self.png_width:
+            # Adjust the width
+            convert_command = self.ensure_tool('ImageMagick')
+            size = str(self.png_width)+'x'
+            for n in range(len(self.pages)):
+                file = output % (n+1)
+                cmd = [convert_command, file, '-resize', size, file]
+                _run_command(cmd)
 
     def create_pdf_from_svg_pages(self, input_folder, input_files, output_fn):
+        """ Convert individual SVG files into individual PDF files using 360 dpi.
+            Then join the individual PDF files into one PDF file scaled to the right page size. """
         svg_files = []
         for svg_file in input_files:
             pdf_file = svg_file.replace('.svg', '.pdf')
+            logger.debug('- Creating {} from {}'.format(pdf_file, svg_file))
             self.svg_to_pdf(input_folder, svg_file, pdf_file)
             svg_files.append(os.path.join(input_folder, pdf_file))
-        create_pdf_from_pages(svg_files, output_fn)
+        logger.debug('- Joining {} into {}'.format(svg_files, output_fn))
+        create_pdf_from_pages(svg_files, output_fn, scale=72.0/self.dpi)
 
     def check_tools(self):
         if self.format != 'SVG':
             self.rsvg_command = self.ensure_tool('rsvg1')
-        if self.format == 'PS':
             self.gs_command = self.ensure_tool('Ghostscript')
-        if self.format == 'EPS':
-            self.rsvg_command_eps = self.ensure_tool('rsvg2')
+        # if self.format == 'EPS':
+        #    self.rsvg_command_eps = self.ensure_tool('rsvg2')
 
     def generate_output(self, output):
         self.check_tools()
@@ -990,24 +1022,31 @@ class PCB_PrintOptions(VariantOptions):
                 assembly_file = GS.pcb_basename+".svg"
             logger.debug('- Merging layers to {}'.format(assembly_file))
             self.merge_svg(temp_dir, filelist, temp_dir, assembly_file, p)
-            if self.format in ['PNG', 'EPS']:
-                id = self._expand_id+('_page_'+page_str)
-                out_file = self.expand_filename(output_dir, self.output, id, self._expand_ext)
-                if self.format == 'PNG':
-                    self.svg_to_png(temp_dir, assembly_file, out_file, self.png_width)
-                else:
-                    self.svg_to_eps(temp_dir, assembly_file, out_file)
             pages.append(os.path.join(page_str, assembly_file))
             self.restore_title()
         # Join all pages in one file
-        if self.format in ['PDF', 'PS']:
-            logger.debug('- Creating output file {}'.format(output))
+        if self.format != 'SVG':
             if self.format == 'PDF':
+                logger.debug('- Creating output file {}'.format(output))
                 self.create_pdf_from_svg_pages(temp_dir_base, pages, output)
             else:
-                ps_file = os.path.join(temp_dir, GS.pcb_basename+'.ps')
-                self.create_pdf_from_svg_pages(temp_dir_base, pages, ps_file)
-                self.pdf_to_ps(ps_file, output)
+                logger.debug('- Creating output files')
+                # PS and EPS using Ghostscript
+                # Create a PDF (but in a temporal place)
+                pdf_file = os.path.join(temp_dir, GS.pcb_basename+'_joined.pdf')
+                self.create_pdf_from_svg_pages(temp_dir_base, pages, pdf_file)
+                if self.format == 'PS':
+                    # Use GS to create one PS
+                    self.pdf_to_ps(pdf_file, output)
+                else:  # EPS and PNG
+                    id = self._expand_id+('_page_%02d')
+                    out_file = self.expand_filename(output_dir, self.output, id, self._expand_ext, make_safe=False)
+                    if self.format == 'EPS':
+                        # Use GS to create one EPS per page
+                        self.pdf_to_eps(pdf_file, out_file)
+                    else:
+                        # Use GS to create one PNG per page and then scale to the wanted width
+                        self.pdf_to_png(pdf_file, out_file)
         # Remove the temporal files
         if not self.keep_temporal_files:
             rmtree(temp_dir_base)

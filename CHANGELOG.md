@@ -26,7 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   KiCad bug [11562](https://gitlab.com/kicad/code/kicad/-/issues/11562)
 - Internal BoM: KiCad 6 text variables expansion in the fields (#247)
 - Compress: Option to store symlinks. (See #265)
-- PCB Print: Option to configure the forced edge color. (#281)
+- PCB Print:
+  - Option to configure the forced edge color. (#281)
+  - Option to control the resolution (DPI). (See #259)
 
 ### Fixed
 - OAR computation (Report) (#225)
@@ -36,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems with zones on multiple layers (#226)
   - Problems with `hide_excluded: true` and components not in the SCH (#258)
   - Text vars generated in the same run didn't show up (#280)
+  - Low resolution for the solder mask. (See #259)
 - SCH Variants on KiCad 6: Problems with missing values in the title block.
 - Report: Converted file wasn't stored at `dir` (#238)
 - Datasheet download: Time-outs on some servers expecting modern browsers (#240)
@@ -53,6 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   kiplot/kibot, import, global, filters, variants, preflight, outputs
 - Datasheet download:
   - Continue downloading if an SSL certificate error found (#239)
+- PCB_Print: PNGs no longer has transparent background. This is because now we
+  use a PDF as intermediate step.
 
 
 ## [1.2.0] - 2022-06-15

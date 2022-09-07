@@ -1086,6 +1086,9 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
+      # [number=360] [36,1200] Resolution (Dots Per Inch) for the output file. Most objects are vectors, but thing
+      # like the the solder mask are handled as images by the conversion tools
+      dpi: 360
       # [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale)
       drill_marks: 'full'
       # [boolean=false] Add the `Edge.Cuts` to all the pages
@@ -1164,7 +1167,7 @@ outputs:
           title: ''
       # [boolean=true] Include the title-block (worksheet, frame, etc.)
       plot_sheet_reference: true
-      # [number=1280] Width of the PNG in pixels
+      # [number=1280] [0,7680] Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size
       png_width: 1280
       # [boolean=true] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
       # In order to get a good looking select a color with transparency, i.e. '#14332440'.

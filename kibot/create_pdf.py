@@ -8,7 +8,7 @@
 from . import PyPDF2
 
 
-def create_pdf_from_pages(input_files, output_fn):
+def create_pdf_from_pages(input_files, output_fn, scale=1.0):
     output = PyPDF2.PdfFileWriter()
     # Collect all pages
     open_files = []
@@ -17,6 +17,8 @@ def create_pdf_from_pages(input_files, output_fn):
         open_files.append(file)
         pdf_reader = PyPDF2.PdfFileReader(file)
         page_obj = pdf_reader.getPage(0)
+        if scale != 1.0:
+            page_obj.scaleBy(scale)
         page_obj.compressContentStreams()
         output.addPage(page_obj)
     # Write all pages to a file

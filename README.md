@@ -155,14 +155,6 @@ Notes:
 [**Colorama**](https://pypi.org/project/Colorama/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/Colorama/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/Colorama/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-colorama)
 - Optional to get color messages in a portable way for general use
 
-[**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) v2.40 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://gitlab.gnome.org/GNOME/librsvg) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/librsvg2-bin) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Optional to:
-  - Create outputs preview for `navigate_results`
-  - Create PNG icons for `navigate_results`
-  - Create PDF, PNG and PS formats for `pcb_print`
-  - Create EPS format for `pcb_print` (v2.40)
-  - Create PNG and JPG images for `pcbdraw`
-
 [**Git**](https://git-scm.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://git-scm.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/git) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Compare with files in the repo for `diff`
@@ -170,16 +162,23 @@ Notes:
   - Find commit hash and/or date for `sch_replace`
   - Find commit hash and/or date for `set_text_variables`
 
+[**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://gitlab.gnome.org/GNOME/librsvg) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/librsvg2-bin) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Optional to:
+  - Create outputs preview for `navigate_results`
+  - Create PNG icons for `navigate_results`
+  - Create PDF, PNG, PS and EPS formats for `pcb_print`
+  - Create PNG and JPG images for `pcbdraw`
+
 [**ImageMagick**](https://imagemagick.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://imagemagick.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Create outputs preview for `navigate_results`
-  - Create monochrome prints for `pcb_print`
+  - Create monochrome prints and scaled PNG files for `pcb_print`
   - Create JPG images for `pcbdraw`
 
 [**Ghostscript**](https://www.ghostscript.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.ghostscript.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/ghostscript) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Create outputs preview for `navigate_results`
-  - Create PS files for `pcb_print`
+  - Create PNG, PS and EPS formats for `pcb_print`
 
 [**Pandoc**](https://pandoc.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://pandoc.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`
@@ -2226,6 +2225,8 @@ Notes:
         - `colored_vias`: [boolean=true] Plot vias in a different color. Like KiCad GUI does.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
+        - `dpi`: [number=360] [36,1200] Resolution (Dots Per Inch) for the output file. Most objects are vectors, but thing
+                 like the the solder mask are handled as images by the conversion tools.
         - `drill_marks`: [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
         - `forced_edge_cuts_color`: [string=''] Color used for the `force_edge_cuts` option.
         - `frame_plot_mechanism`: [string='internal'] [gui,internal,plot] Plotting the frame from Python is problematic.
@@ -2240,7 +2241,7 @@ Notes:
         - `keep_temporal_files`: [boolean=false] Store the temporal page and layer files in the output dir and don't delete them.
         - `micro_via_color`: [string=''] Color used for micro `colored_vias`.
         - `pad_color`: [string=''] Color used for `colored_pads`.
-        - `png_width`: [number=1280] Width of the PNG in pixels.
+        - `png_width`: [number=1280] [0,7680] Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size.
         - `realistic_solder_mask`: [boolean=true] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
                                    In order to get a good looking select a color with transparency, i.e. '#14332440'.
                                    PcbDraw must be installed in order to use this option.

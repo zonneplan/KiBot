@@ -400,12 +400,12 @@ class BaseOptions(Optionable):
         """ Looks for a dependency """
         return GS.check_tool_dep(self._parent.type, name, fatal=False)
 
-    def expand_filename(self, dir, name, id, ext):
+    def expand_filename(self, dir, name, id, ext, make_safe=True):
         cur_id = self._expand_id
         cur_ext = self._expand_ext
         self._expand_id = id
         self._expand_ext = ext
-        name = self.expand_filename_both(name, is_sch=self._parent._sch_related)
+        name = self.expand_filename_both(name, is_sch=self._parent._sch_related, make_safe=make_safe)
         res = os.path.abspath(os.path.join(dir, name))
         self._expand_id = cur_id
         self._expand_ext = cur_ext

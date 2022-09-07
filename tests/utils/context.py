@@ -576,9 +576,9 @@ class TestContext(object):
         cmd = ['pdfinfo', file]
         logging.debug('Analyzing PDF size: '+usable_cmd(cmd))
         res = subprocess.run(cmd, stderr=subprocess.STDOUT, check=True, stdout=subprocess.PIPE).stdout.decode()
-        m = re.search(r'Page size:\s+(\d+) x (\d+) pts', res)
-        assert m is not None
-        return int(m.group(1))/72.0*25.4, int(m.group(2))/72.0*25.4
+        m = re.search(r'Page size:\s+([\d\.]+) x ([\d\.]+) pts', res)
+        assert m is not None, res
+        return float(m.group(1))/72.0*25.4, float(m.group(2))/72.0*25.4
 
     def expect_gerber_flash_at(self, file, res, pos):
         """

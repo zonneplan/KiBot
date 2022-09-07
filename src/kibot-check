@@ -74,7 +74,7 @@ deps = '{\
                 "version": null\
             },\
             {\
-                "desc": "Create PS files",\
+                "desc": "Create PNG, PS and EPS formats",\
                 "mandatory": false,\
                 "output": "pcb_print",\
                 "version": null\
@@ -156,7 +156,7 @@ deps = '{\
                 "version": null\
             },\
             {\
-                "desc": "Create monochrome prints",\
+                "desc": "Create monochrome prints and scaled PNG files",\
                 "mandatory": false,\
                 "output": "pcb_print",\
                 "version": null\
@@ -680,7 +680,7 @@ deps = '{\
         "downloader_str": "rsvg",\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 5,\
+        "importance": 4,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -704,19 +704,10 @@ deps = '{\
                 "version": null\
             },\
             {\
-                "desc": "Create PDF, PNG and PS formats",\
+                "desc": "Create PDF, PNG, PS and EPS formats",\
                 "mandatory": false,\
                 "output": "pcb_print",\
                 "version": null\
-            },\
-            {\
-                "desc": "Create EPS format",\
-                "mandatory": false,\
-                "output": "pcb_print",\
-                "version": [\
-                    2,\
-                    40\
-                ]\
             },\
             {\
                 "desc": "Create PNG and JPG images",\
