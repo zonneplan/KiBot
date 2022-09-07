@@ -1093,13 +1093,12 @@ class PCB_Print(BaseOutput):  # noqa: F821
         if GS.check_tool(name, 'rsvg1') is None:
             logger.warning(W_MISSTOOL+'Disabling most printed formats')
             disabled |= {'PDF', 'PNG', 'EPS', 'PS'}
-        elif GS.check_tool(name, 'rsvg2') is None:
-            logger.warning(W_MISSTOOL+'Disabling EPS PCB print')
-            disabled.add('EPS')
         # Check we can convert to PS
         if GS.check_tool(name, 'Ghostscript') is None:
             logger.warning(W_MISSTOOL+'Disabling postscript/PDF printed format')
-            disabled |= {'PDF', 'EPS', 'PS'}
+            disabled |= {'PDF', 'PNG', 'EPS', 'PS'}
+        if GS.check_tool(name, 'ImageMagick') is None:
+            disabled |= {'PNG'}
         # Generate one output for each format
         for fmt in ['PDF', 'SVG', 'PNG', 'EPS', 'PS']:
             if fmt in disabled:
