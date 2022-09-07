@@ -950,8 +950,9 @@ def generate_examples(start_dir, dry, types):
         GS.debug_level = old_lvl
         logger.info('')
     # Try to open a browser
-    if os.environ.get('DISPLAY') and which('x-www-browser'):
-        Popen(['x-www-browser', os.path.join(GS.out_dir, 'index.html')])
+    index = os.path.join(GS.out_dir, 'index.html')
+    if os.environ.get('DISPLAY') and which('x-www-browser') and os.path.isfile(index):
+        Popen(['x-www-browser', index])
 
 
 # To avoid circular dependencies: Optionable needs it, but almost everything needs Optionable
