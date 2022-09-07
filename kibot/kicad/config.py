@@ -37,6 +37,7 @@ else:  # pragma: no cover (Py2)
 logger = log.get_logger()
 SYM_LIB_TABLE = 'sym-lib-table'
 KICAD_COMMON = 'kicad_common'
+reported = set()
 
 
 class KiConfError(Exception):
@@ -68,7 +69,9 @@ def expand_env(val, env, extra_env, used_extra=None):
             val = val.replace('${'+var+'}', extra_env[var])
             used_extra[0] = True
         else:
-            logger.error('Unable to expand `{}` in `{}`'.format(var, val))
+            if var not in reported:
+                logger.error('Unable to expand `{}` in `{}`'.format(var, val))
+                reported.add(var)
     return val
 
 
@@ -530,4 +533,6 @@ class KiConf(object):
             used_extra = [False]
         if not name:
             return name
-        return os.path.abspath(expand_env(un_quote(name), KiConf.kicad_env, GS.load_pro_variables(), used_extra))
+        expanded = expand_env(un_quote(name), KiConf.kicad_env, GS.load_pro_variables(), used_extra)
+        # Don't try to get the absolute path for something that starts with a variable that we couldn't expand
+        return expanded if expanded.startswith('${') else os.path.abspath(expanded)

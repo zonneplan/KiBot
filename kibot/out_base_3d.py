@@ -127,8 +127,6 @@ class Base3DOptions(VariantOptions):
                     logger.debug("- Expanded {} -> {}".format(m3d.m_Filename, full_name))
                 if not os.path.isfile(full_name):
                     # Missing 3D model
-                    if full_name not in downloaded:
-                        logger.warning(W_MISS3D+'Missing 3D model for {}: `{}`'.format(ref, full_name))
                     if self.download and (m3d.m_Filename.startswith('${KISYS3DMOD}/') or
                                           m3d.m_Filename.startswith('${KICAD6_3DMODEL_DIR}/')):
                         # This is a model from KiCad, try to download it
@@ -153,6 +151,8 @@ class Base3DOptions(VariantOptions):
                         if replace:
                             m3d.m_Filename = replace
                             models_replaced = True
+                    if full_name not in downloaded:
+                        logger.warning(W_MISS3D+'Missing 3D model for {}: `{}`'.format(ref, full_name))
                 else:  # File was found
                     if used_extra[0]:
                         # The file is there, but we got it expanding a user defined text

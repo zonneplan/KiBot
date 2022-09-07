@@ -52,6 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   components that doesn't specify a library. (See #242)
 - Problems when setting a text variable to an empty string. (#268)
 - QR lib update: Problems when moving the footprint to the bottom. (#271)
+- Misleading messages for missing 3D models that starts with ${VAR} when VAR
+  isn't defined. The old code tried to make it an absolute path.
 
 ### Changed
 - The order in which main sections are parsed is now fixed.
@@ -61,6 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Continue downloading if an SSL certificate error found (#239)
 - PCB_Print: PNGs no longer has transparent background. This is because now we
   use a PDF as intermediate step.
+- Fails to expand KiCad vars are reported once (not every time)
+- No more warnings about missing 3D models when we can download them
 
 
 ## [1.2.0] - 2022-06-15
