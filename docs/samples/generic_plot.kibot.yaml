@@ -1114,11 +1114,14 @@ outputs:
       keep_temporal_files: false
       # [string=''] Color used for micro `colored_vias`
       micro_via_color: ''
-      # [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps). Affected by global options
+      # [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps).
+      # Consult the `page_number_as_extension`. Affected by global options
       output: '%f-%i%I%v.%x'
       # `output_name` is an alias for `output`
       # [string=''] Color used for `colored_pads`
       pad_color: ''
+      # [boolean=false] When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png)
+      page_number_as_extension: false
       # [list(dict)] List of pages to include in the output document.
       # Each page contains one or more layers of the PCB
       pages:

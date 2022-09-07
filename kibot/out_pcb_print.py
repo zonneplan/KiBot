@@ -220,7 +220,10 @@ class PCB_PrintOptions(VariantOptions):
             self.output_name = None
             """ {output} """
             self.output = GS.def_global_output
-            """ *Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps)"""
+            """ *Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps).
+                Consult the `page_number_as_extension` """
+            self.page_number_as_extension = False
+            """ When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png) """
             self.hide_excluded = False
             """ Hide components in the Fab layer that are marked as excluded by a variant """
             self.color_theme = '_builtin_classic'
@@ -348,12 +351,18 @@ class PCB_PrintOptions(VariantOptions):
         if self.hide_excluded:
             self.restore_fab(GS.board, comps_hash)
 
+    def get_id_and_ext(self, n=None):
+        pn_str = '%02d' % (n+1) if n is not None else '%02d'
+        if self.page_number_as_extension:
+            return self._expand_id, pn_str+'.'+self._expand_ext
+        return self._expand_id+'_page_'+pn_str, self._expand_ext
+
     def get_targets(self, out_dir):
         if self.format in ['SVG', 'PNG', 'EPS']:
             files = []
             for n in range(len(self.pages)):
-                id = self._expand_id+('_page_%02d' % (n+1))
-                files.append(self.expand_filename(out_dir, self.output, id, self._expand_ext))
+                id, ext = self.get_id_and_ext(n)
+                files.append(self.expand_filename(out_dir, self.output, id, ext))
             return files
         return [self._parent.expand_filename(out_dir, self.output)]
 
@@ -1016,8 +1025,8 @@ class PCB_PrintOptions(VariantOptions):
                 filelist.append((GS.pcb_basename+"-frame.svg", color))
             # 3) Stack all layers in one file
             if self.format == 'SVG':
-                id = self._expand_id+('_page_'+page_str)
-                assembly_file = self.expand_filename(output_dir, self.output, id, self._expand_ext)
+                id, ext = self.get_id_and_ext(n)
+                assembly_file = self.expand_filename(output_dir, self.output, id, ext)
             else:
                 assembly_file = GS.pcb_basename+".svg"
             logger.debug('- Merging layers to {}'.format(assembly_file))
@@ -1039,8 +1048,8 @@ class PCB_PrintOptions(VariantOptions):
                     # Use GS to create one PS
                     self.pdf_to_ps(pdf_file, output)
                 else:  # EPS and PNG
-                    id = self._expand_id+('_page_%02d')
-                    out_file = self.expand_filename(output_dir, self.output, id, self._expand_ext, make_safe=False)
+                    id, ext = self.get_id_and_ext()
+                    out_file = self.expand_filename(output_dir, self.output, id, ext, make_safe=False)
                     if self.format == 'EPS':
                         # Use GS to create one EPS per page
                         self.pdf_to_eps(pdf_file, out_file)

@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PCB Print:
   - Option to configure the forced edge color. (#281)
   - Option to control the resolution (DPI). (See #259)
+  - Option to move the page number to the extension (page_number_as_extension)
+    (See #283)
 
 ### Fixed
 - OAR computation (Report) (#225)

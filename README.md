@@ -2187,7 +2187,8 @@ Notes:
         - **`force_edge_cuts`**: [boolean=false] Add the `Edge.Cuts` to all the pages.
         - **`format`**: [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
                         Note that for PS you need `ghostscript` which isn't part of the default docker images.
-        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps). Affected by global options.
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps).
+                        Consult the `page_number_as_extension`. Affected by global options.
         - *output_name*: Alias for output.
         - **`pages`**: [list(dict)] List of pages to include in the output document.
                        Each page contains one or more layers of the PCB.
@@ -2242,6 +2243,7 @@ Notes:
         - `keep_temporal_files`: [boolean=false] Store the temporal page and layer files in the output dir and don't delete them.
         - `micro_via_color`: [string=''] Color used for micro `colored_vias`.
         - `pad_color`: [string=''] Color used for `colored_pads`.
+        - `page_number_as_extension`: [boolean=false] When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
         - `png_width`: [number=1280] [0,7680] Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size.
         - `realistic_solder_mask`: [boolean=true] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
                                    In order to get a good looking select a color with transparency, i.e. '#14332440'.
