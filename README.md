@@ -126,6 +126,7 @@ Notes:
 - Mandatory for: `gencad`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`
 - Optional to:
   - Compare schematics for `diff` (v2.0.0)
+  - Show KiAuto installation information for `info` (v2.0.0)
   - Print the page frame in GUI mode for `pcb_print` (v1.6.7)
 
 [**KiCost**](https://github.com/hildogjr/KiCost) v1.1.8 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/hildogjr/KiCost) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
@@ -1940,8 +1941,7 @@ Notes:
   * Description: Records information about the current run.
                  It can be used to know more about the environment used to generate the files.
                  Please don't rely on the way things are reported, its content could change,
-                 adding or removing information.
-                 It current shows the `kibot-check` output
+                 adding or removing information
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -1950,6 +1950,8 @@ Notes:
     - **`options`**: [dict] Options for the `info` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=info, %x=txt). Affected by global options.
+        - `environment`: [string='names'] [names,none,full] List environment variables.
+                         IMPORTANT: Don't use `full` unless you know you are not leaking sensitive information.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.

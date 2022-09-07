@@ -3,6 +3,12 @@
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+"""
+Dependencies:
+  - from: KiAuto
+    role: Show KiAuto installation information
+    version: 2.0.0
+"""
 import os
 import sys
 from .gs import GS
@@ -19,6 +25,9 @@ class InfoOptions(BaseOptions):
         with document:
             self.output = GS.def_global_output
             """ *Filename for the output (%i=info, %x=txt) """
+            self.environment = 'names'
+            """ [names,none,full] List environment variables.
+                IMPORTANT: Don't use `full` unless you know you are not leaking sensitive information """
         super().__init__()
         self._expand_id = 'info'
         self._expand_ext = 'txt'
@@ -29,9 +38,23 @@ class InfoOptions(BaseOptions):
 
     def run(self, name):
         dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-        ret = run_command([os.path.join(dir, 'kibot-check')])
+        ret = run_command([os.path.join(dir, 'kibot-check'), '-p'])
         with open(name, 'wt') as f:
             f.write(ret+'\n')
+            # Environment
+            if self.environment == 'names':
+                f.write('\nEnvironment:\n')
+                for n in sorted(os.environ.keys()):
+                    f.write(n+'\n')
+            elif self.environment == 'full':
+                f.write('\nEnvironment:\n')
+                for n in sorted(os.environ.keys()):
+                    f.write(n+'='+os.environ[n]+'\n')
+            # KiAuto
+            command = self.check_tool('KiAuto')
+            if command:
+                ret = run_command([command, '--info'])
+                f.write('\nKiAuto:\n'+ret+'\n')
 
 
 @output_class
@@ -40,8 +63,7 @@ class Info(BaseOutput):  # noqa: F821
         Records information about the current run.
         It can be used to know more about the environment used to generate the files.
         Please don't rely on the way things are reported, its content could change,
-        adding or removing information.
-        It current shows the `kibot-check` output """
+        adding or removing information """
     def __init__(self):
         super().__init__()
         self._category = ['PCB/docs', 'Schematic/docs']

@@ -6,3 +6,5 @@ outputs:
   - name: 'do_info'
     comment: "Information about the run"
     type: info
+    options:
+      environment: full
