@@ -22,7 +22,8 @@ class DXFOptions(DrillMarks):
             self.use_aux_axis_as_origin = False
             """ Use the auxiliary axis as origin for coordinates """
             self.polygon_mode = True
-            """ Plot using the contour, instead of the center line """
+            """ Plot using the contour, instead of the center line.
+                You must disable it to get the dimensions (See https://gitlab.com/kicad/code/kicad/-/issues/11901) """
             self.metric_units = False
             """ Use mm instead of inches """
             self.sketch_plot = False

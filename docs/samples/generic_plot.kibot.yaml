@@ -525,7 +525,8 @@ outputs:
       # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
-      # [boolean=true] Plot using the contour, instead of the center line
+      # [boolean=true] Plot using the contour, instead of the center line.
+      # You must disable it to get the dimensions (See https://gitlab.com/kicad/code/kicad/-/issues/11901)
       polygon_mode: true
       # [boolean=false] Don't fill objects, just draw the outline
       sketch_plot: false

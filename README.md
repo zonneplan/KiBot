@@ -1613,6 +1613,7 @@ Notes:
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `polygon_mode`: [boolean=true] Plot using the contour, instead of the center line.
+                          You must disable it to get the dimensions (See https://gitlab.com/kicad/code/kicad/-/issues/11901).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
