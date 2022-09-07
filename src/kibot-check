@@ -6,6 +6,7 @@
 # Project: KiBot (formerly KiPlot)
 #
 # This is the installation checker, should help people to detect installation issues and install needed tools
+import argparse
 from contextlib import contextmanager
 import importlib
 import json
@@ -251,7 +252,7 @@ deps = '{\
         "downloader_str": "pytool",\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 110002,\
+        "importance": 110003,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -280,6 +281,16 @@ deps = '{\
                     1,\
                     6,\
                     5\
+                ]\
+            },\
+            {\
+                "desc": "Show KiAuto installation information",\
+                "mandatory": false,\
+                "output": "info",\
+                "version": [\
+                    2,\
+                    0,\
+                    0\
                 ]\
             },\
             {\
@@ -797,6 +808,7 @@ if sys.stdout.isatty():
 else:
     RED = GREEN = YELLOW = YELLOW2 = RESET = BRIGHT = NORMAL = ''
 last_ok = False
+last_cmd = None
 is_x86 = is_64 = is_linux = False
 ver_re = re.compile(r'(\d+)\.(\d+)(?:\.(\d+))?(?:[\.-](\d+))?')
 
@@ -822,6 +834,7 @@ def check_tool_binary_local(name):
 
 def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
     global last_ok
+    global last_cmd
     cmd_full = which(cmd[0])
     if not cmd_full:
         cmd_full = check_tool_binary_python(cmd[0])
@@ -831,8 +844,10 @@ def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
         last_ok = False
         return NOT_AVAIL
     cmd[0] = cmd_full
+    last_cmd = None
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
+        last_cmd = cmd[0]
     except FileNotFoundError as e:
         last_ok = False
         return NOT_AVAIL
@@ -1020,6 +1035,10 @@ def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, role
     print(RESET)
 
 
+parser = argparse.ArgumentParser(description='KiBot installation checker')
+parser.add_argument('--show-paths', '-p', help='Show paths to tools', action='store_true')
+args = parser.parse_args()
+
 # Force iBoM to avoid the use of graphical stuff
 os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = 'True'
 
@@ -1035,6 +1054,8 @@ system = platform.system()
 if system == 'Linux':
     linux_version = simple_run_command(['uname', '-a'])
     print('Linux: '+linux_version)
+    if args.show_paths:
+        print('  '+str(which('uname')))
     os_ok = True
     is_x86 = 'x86' in linux_version
     is_64 = ('x86_64' in linux_version) or ('amd64' in linux_version)
@@ -1050,6 +1071,9 @@ else:
     py_ok = False
     sev = 4
 print('Python: '+do_color(sys.version.replace('\n', ' '), sev))
+if args.show_paths:
+    print('  '+os.__file__)
+    print('  '+str(which('python3')))
 # KiCad
 home = None
 try:
@@ -1107,16 +1131,23 @@ if kicad_version >= (5, 1, 6) and kicad_version < (6, 99):
 else:
     sev = 4
 print('KiCad: '+do_color(version, sev))
+if args.show_paths and kicad_ok:
+    print('  '+pcbnew.__file__)
+    print('  '+str(which('kicad')))
 # KiBot version
 try:
-    from kibot.__main__ import __version__
+    import kibot.__main__
+    version = kibot.__main__.__version__
     kibot_ok = True
     sev = 0
 except:
-    __version__ = NOT_AVAIL
+    version = NOT_AVAIL
     kibot_ok = False
     sev = 4
-print('Kibot: '+do_color(__version__, sev))
+print('Kibot: '+do_color(version, sev))
+if args.show_paths and kibot_ok:
+    print('  '+kibot.__main__.__file__)
+    print('  '+str(which('kibot')))
 if kibot_ok and which('kibot') is None:
     print(sev2color(4)+'* KiBot is installed but not available in your PATH')
     import kibot
@@ -1132,6 +1163,7 @@ print(do_bright('\nModules:'))
 for name, d in dependencies.items():
     if not d['is_python']:
         continue
+    mod = None
     try:
         mod = importlib.import_module(d['module_name'])
         if hasattr(mod, '__version__'):
@@ -1144,6 +1176,8 @@ for name, d in dependencies.items():
     d['sev'] = sev
     version = version.split('\n')[0]
     print(name+': '+do_color(version, sev, version=ver))
+    if args.show_paths and mod:
+        print('  '+mod.__file__)
 
 print(do_bright('\nTools:'))
 for name, d in dependencies.items():
@@ -1168,6 +1202,8 @@ for name, d in dependencies.items():
     if pypi_name and pypi_name.lower() != name.lower():
         name += ' ({})'.format(pypi_name)
     print(name+': '+do_color(version, sev, version=ver))
+    if args.show_paths and last_cmd:
+        print('  '+last_cmd)
 
 # ######################################################################################################################
 #  Recommendations
