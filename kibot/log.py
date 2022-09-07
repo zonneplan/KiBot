@@ -36,6 +36,9 @@ def get_logger(name=None):
     """Get a module for a submodule or the root logger if no name is
        provided"""
     # print('get_logger '+str(name))
+    global root_logger
+    if root_logger is None:
+        init()
     if name:
         if name.startswith(domain):
             return logging.getLogger(name)
@@ -181,9 +184,14 @@ class FilterNoInfo(object):
 
 def init():
     """Initialize the logging feature using a custom format"""
+    global root_logger
+    if root_logger is not None:
+        return root_logger
     # Use a class to count and filter warnings
     logging.setLoggerClass(MyLogger)
-    logger = get_logger()
+    # get_logger will call init is the root_logger is None, avoid a loop
+    root_logger = True
+    root_logger = logger = get_logger()
     # Handler for all but info.
     # Outputs to stderr
     ch = logging.StreamHandler()
@@ -196,8 +204,6 @@ def init():
     ch.addFilter(FilterOnlyInfo())
     ch.setFormatter(CustomFormatter(sys.stdout))
     logger.addHandler(ch)
-    global root_logger
-    root_logger = logger
     return logger
 
 
