@@ -383,6 +383,44 @@ class Diff(BaseOutput):  # noqa: F821
                 List of PCB layers to use. When empty all available layers are used.
                 Note that if you want to support adding/removing layers you should specify a list here """
 
+    @staticmethod
+    def layer2dict(la):
+        return {'layer': la.layer, 'suffix': la.suffix, 'description': la.description}
+
+    @staticmethod
+    def has_repo(git_command, file):
+        try:
+            run_command([git_command, 'ls-files', '--error-unmatch', file], change_to=os.path.dirname(file), just_raise=True)
+        except CalledProcessError:
+            logger.debug("File `{}` not inside a repo".format(file))
+            return False
+        return True
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        outs = []
+        git_command = GS.check_tool(name, 'Git')
+        if GS.pcb_file and Diff.has_repo(git_command, GS.pcb_file):
+            gb = {}
+            gb['name'] = 'basic_{}_pcb'.format(name)
+            gb['comment'] = 'PCB diff between the last two changes'
+            gb['type'] = name
+            gb['dir'] = 'diff'
+            gb['layers'] = [Diff.layer2dict(la) for la in layers]
+            gb['options'] = {'old': 'KIBOT_LAST-1', 'old_type': 'git', 'new': 'HEAD', 'new_type': 'git',
+                             'cache_dir': os.path.abspath('.cache'), 'add_link_id': True}
+            outs.append(gb)
+        if GS.sch_file and Diff.has_repo(git_command, GS.sch_file):
+            gb = {}
+            gb['name'] = 'basic_{}_sch'.format(name)
+            gb['comment'] = 'Schematic diff between the last two changes'
+            gb['type'] = name
+            gb['dir'] = 'diff'
+            gb['options'] = {'old': 'KIBOT_LAST-1', 'old_type': 'git', 'new': 'HEAD', 'new_type': 'git',
+                             'cache_dir': os.path.abspath('.cache'), 'add_link_id': True, 'pcb': False}
+            outs.append(gb)
+        return outs
+
     def run(self, name):
         self.options.layers = self.layers
         super().run(name)
