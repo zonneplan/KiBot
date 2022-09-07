@@ -210,13 +210,13 @@ class DiffOptions(BaseOptions):
 
     def get_git_point_desc(self, user_name):
         # Are we at a tagged point?
+        name = None
         try:
             name = self.run_git(['describe', '--exact-match', '--tags', 'HEAD'], just_raise=True)
             if user_name == 'Dirty':
                 name += '-dirty'
         except CalledProcessError:
             logger.debug("Not at a tag point")
-            name = None
         if name is None:
             # Are we at the HEAD of a branch?
             branch = self.run_git(['rev-parse', '--abbrev-ref', 'HEAD'])
@@ -227,13 +227,21 @@ class DiffOptions(BaseOptions):
                     name = self.run_git(['describe', '--tags', '--dirty'], just_raise=True)
                 except CalledProcessError:
                     logger.debug("Can't find a tag name")
-                    name = None
                 if not name:
                     # Nothing usable, use what the user specified
                     name = user_name
             else:
+                # We are at the HEAD of a branch
                 name = branch
-                if user_name == 'Dirty':
+                # Do we have a tag in this branch
+                extra = None
+                try:
+                    extra = self.run_git(['describe', '--tags', '--abbrev=0', '--dirty'], just_raise=True)
+                except CalledProcessError:
+                    logger.debug("Can't find a tag name")
+                if extra:
+                    name += '['+extra+']'
+                elif user_name == 'Dirty':
                     name += '-dirty'
         return '{}({})'.format(self.run_git(['rev-parse', '--short', 'HEAD']), name)
 
