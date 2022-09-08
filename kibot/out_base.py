@@ -408,6 +408,24 @@ class VariantOptions(BaseOptions):
         for gi in self.old_bfab:
             gi.SetLayer(self.bfab)
 
+    def filter_pcb_components(self, board):
+        if not self._comps:
+            return False
+        self.comps_hash = self.get_refs_hash()
+        self.cross_modules(board, self.comps_hash)
+        self.remove_paste_and_glue(board, self.comps_hash)
+        if hasattr(self, 'hide_excluded') and self.hide_excluded:
+            self.remove_fab(board, self.comps_hash)
+        return True
+
+    def unfilter_pcb_components(self, board):
+        if not self._comps:
+            return
+        self.uncross_modules(board, self.comps_hash)
+        self.restore_paste_and_glue(board, self.comps_hash)
+        if hasattr(self, 'hide_excluded') and self.hide_excluded:
+            self.restore_fab(board, self.comps_hash)
+
     def set_title(self, title):
         self.old_title = None
         if title:

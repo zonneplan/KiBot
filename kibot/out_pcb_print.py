@@ -337,24 +337,6 @@ class PCB_PrintOptions(VariantOptions):
                     if not ln.startswith('<?xml') and not ln.startswith('<!DOCTYPE svg'):
                         raise KiPlotConfigurationError("Background image must be an SVG ({})".format(self.background_image))
 
-    def filter_components(self):
-        if not self._comps:
-            return
-        comps_hash = self.get_refs_hash()
-        self.cross_modules(GS.board, comps_hash)
-        self.remove_paste_and_glue(GS.board, comps_hash)
-        if self.hide_excluded:
-            self.remove_fab(GS.board, comps_hash)
-
-    def unfilter_components(self):
-        if not self._comps:
-            return
-        comps_hash = self.get_refs_hash()
-        self.uncross_modules(GS.board, comps_hash)
-        self.restore_paste_and_glue(GS.board, comps_hash)
-        if self.hide_excluded:
-            self.restore_fab(GS.board, comps_hash)
-
     def get_id_and_ext(self, n=None, id='%02d'):
         try:
             pn_str = id % (n+1) if n is not None else id
@@ -1086,9 +1068,9 @@ class PCB_PrintOptions(VariantOptions):
         svgutils = importlib.import_module('.svgutils.transform', package=__package__)
         global kicad_worksheet
         kicad_worksheet = importlib.import_module('.kicad.worksheet', package=__package__)
-        self.filter_components()
+        self.filter_pcb_components(GS.board)
         self.generate_output(output)
-        self.unfilter_components()
+        self.unfilter_pcb_components(GS.board)
 
 
 @output_class

@@ -53,20 +53,13 @@ class Any_PCB_PrintOptions(VariantOptions):
         super().config(parent)
         self.drill_marks = DRILL_MARKS_MAP[self.drill_marks]
 
-    def filter_components(self, board, force_copy):
+    def filter_components(self, force_copy):
         if not self._comps and not force_copy:
             return GS.pcb_file, None
-        comps_hash = self.get_refs_hash()
-        self.cross_modules(board, comps_hash)
-        self.remove_paste_and_glue(board, comps_hash)
-        if self.hide_excluded:
-            self.remove_fab(board, comps_hash)
+        self.filter_pcb_components(GS.board)
         # Save the PCB to a temporal dir
         fname, pcb_dir = self.save_tmp_dir_board('pdf_pcb_print')
-        self.uncross_modules(board, comps_hash)
-        self.restore_paste_and_glue(board, comps_hash)
-        if self.hide_excluded:
-            self.restore_fab(board, comps_hash)
+        self.unfilter_pcb_components(GS.board)
         return fname, pcb_dir
 
     def get_targets(self, out_dir):
@@ -93,7 +86,7 @@ class Any_PCB_PrintOptions(VariantOptions):
         if svg:
             cmd.append('--svg')
         self.set_title(self.title)
-        board_name, board_dir = self.filter_components(GS.board, self.title != '')
+        board_name, board_dir = self.filter_components(self.title != '')
         cmd.extend([board_name, os.path.dirname(output)])
         cmd, video_remove = add_extra_options(cmd)
         # Add the layers

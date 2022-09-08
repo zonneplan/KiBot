@@ -94,18 +94,6 @@ class AnyLayerOptions(VariantOptions):
         # We'll come back to this on a per-layer basis
         po.SetSkipPlotNPTH_Pads(False)
 
-    def filter_components(self, board):
-        """  Apply the variants and filters """
-        if not self._comps:
-            return None
-        self.comps_hash = self.get_refs_hash()
-        self.cross_modules(board, self.comps_hash)
-        return self.remove_paste_and_glue(board, self.comps_hash)
-
-    def unfilter_components(self, board):
-        self.uncross_modules(board, self.comps_hash)
-        self.restore_paste_and_glue(board, self.comps_hash)
-
     def compute_name(self, k_filename, output_dir, output, id, suffix):
         if output:
             filename = self.expand_filename(output_dir, output, suffix, os.path.splitext(k_filename)[1][1:])
@@ -136,7 +124,7 @@ class AnyLayerOptions(VariantOptions):
             jobfile_writer = GERBER_JOBFILE_WRITER(GS.board)
         plot_ctrl.SetColorMode(True)
         # Apply the variants and filters
-        exclude = self.filter_components(GS.board)
+        exclude = self.filter_pcb_components(GS.board)
         # Plot every layer in the output
         generated = {}
         layers = Layer.solve(layers)
@@ -193,7 +181,7 @@ class AnyLayerOptions(VariantOptions):
                 f.write(content)
         # Restore the eliminated layers
         if exclude:
-            self.unfilter_components(GS.board)
+            self.unfilter_pcb_components(GS.board)
 
     def solve_extension(self, layer):
         if self._plot_format == PLOT_FORMAT_GERBER and self.use_protel_extensions:
