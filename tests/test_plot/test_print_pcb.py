@@ -124,8 +124,8 @@ def test_pcb_print_simple_1(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'pcb_print_2')
     ctx.run()
-    ctx.expect_out_file(prj+'-assembly_page_01.png')
-    ctx.expect_out_file(prj+'-assembly_page_02.png')
+    ctx.expect_out_file(prj+'-F_Cu_mono.png')
+    ctx.expect_out_file(prj+'-F_Cu_color.png')
     ctx.expect_out_file(prj+'-assembly_page_01.eps')
     ctx.expect_out_file(prj+'-assembly_page_01.svg')
     ctx.expect_out_file(prj+'-assembly.ps')

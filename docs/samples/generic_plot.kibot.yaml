@@ -1117,12 +1117,13 @@ outputs:
       # [string=''] Color used for micro `colored_vias`
       micro_via_color: ''
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps).
-      # Consult the `page_number_as_extension`. Affected by global options
+      # Consult the `page_number_as_extension` and `page_id` options. Affected by global options
       output: '%f-%i%I%v.%x'
       # `output_name` is an alias for `output`
       # [string=''] Color used for `colored_pads`
       pad_color: ''
-      # [boolean=false] When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png)
+      # [boolean=false] When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
+      # Note: page numbers can be customized using the `page_id` option for each page
       page_number_as_extension: false
       # [list(dict)] List of pages to include in the output document.
       # Each page contains one or more layers of the PCB
@@ -1134,7 +1135,8 @@ outputs:
           # [string='#000000'] Color used for the holes when `colored_holes` is enabled
           holes_color: '#000000'
           # [list(dict)|list(string)|string] List of layers printed in this page.
-          # Order is important, the last goes on top
+          # Order is important, the last goes on top.
+          # You can reuse other layers lists, some options aren't used here, but they are valid
           layers:
             # [string=''] Color used for this layer
             - color: ''
@@ -1158,6 +1160,8 @@ outputs:
           monochrome: false
           # [boolean=false] Invert black and white. Only useful for a single layer
           negative_plot: false
+          # [string='%02d'] Text to differentiate the pages. Use %d (like in C) to get the page number
+          page_id: '%02d'
           # [number=1.0] Scale factor (0 means autoscaling)
           scaling: 1.0
           # [string='Assembly'] Text to use for the `sheet` in the title block

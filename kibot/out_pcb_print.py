@@ -189,7 +189,10 @@ class PagesOptions(Optionable):
             """ *Try to sort the layers in the same order that uses KiCad for printing """
             self.layers = LayerOptions
             """ *[list(dict)|list(string)|string] List of layers printed in this page.
-                Order is important, the last goes on top """
+                Order is important, the last goes on top.
+                You can reuse other layers lists, some options aren't used here, but they are valid """
+            self.page_id = '%02d'
+            """ Text to differentiate the pages. Use %d (like in C) to get the page number """
         self._scaling_example = 1.0
 
     def config(self, parent):
@@ -221,9 +224,10 @@ class PCB_PrintOptions(VariantOptions):
             """ {output} """
             self.output = GS.def_global_output
             """ *Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps).
-                Consult the `page_number_as_extension` """
+                Consult the `page_number_as_extension` and `page_id` options """
             self.page_number_as_extension = False
-            """ When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png) """
+            """ When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
+                Note: page numbers can be customized using the `page_id` option for each page """
             self.hide_excluded = False
             """ Hide components in the Fab layer that are marked as excluded by a variant """
             self.color_theme = '_builtin_classic'
@@ -351,8 +355,12 @@ class PCB_PrintOptions(VariantOptions):
         if self.hide_excluded:
             self.restore_fab(GS.board, comps_hash)
 
-    def get_id_and_ext(self, n=None):
-        pn_str = '%02d' % (n+1) if n is not None else '%02d'
+    def get_id_and_ext(self, n=None, id='%02d'):
+        try:
+            pn_str = id % (n+1) if n is not None else id
+        except TypeError:
+            # If id doesn't contain %d we get this exception
+            pn_str = id
         if self.page_number_as_extension:
             return self._expand_id, pn_str+'.'+self._expand_ext
         return self._expand_id+'_page_'+pn_str, self._expand_ext
@@ -360,8 +368,8 @@ class PCB_PrintOptions(VariantOptions):
     def get_targets(self, out_dir):
         if self.format in ['SVG', 'PNG', 'EPS']:
             files = []
-            for n in range(len(self.pages)):
-                id, ext = self.get_id_and_ext(n)
+            for n, p in enumerate(self.pages):
+                id, ext = self.get_id_and_ext(n, p.page_id)
                 files.append(self.expand_filename(out_dir, self.output, id, ext))
             return files
         return [self._parent.expand_filename(out_dir, self.output)]
@@ -936,6 +944,15 @@ class PCB_PrintOptions(VariantOptions):
         # if self.format == 'EPS':
         #    self.rsvg_command_eps = self.ensure_tool('rsvg2')
 
+    def rename_pages(self, output_dir):
+        for n, p in enumerate(self.pages):
+            id, ext = self.get_id_and_ext(n)
+            cur_name = self.expand_filename(output_dir, self.output, id, ext)
+            id, ext = self.get_id_and_ext(n, p.page_id)
+            user_name = self.expand_filename(output_dir, self.output, id, ext)
+            if cur_name != user_name and os.path.isfile(cur_name):
+                os.rename(cur_name, user_name)
+
     def generate_output(self, output):
         self.check_tools()
         output_dir = os.path.dirname(output)
@@ -1025,7 +1042,7 @@ class PCB_PrintOptions(VariantOptions):
                 filelist.append((GS.pcb_basename+"-frame.svg", color))
             # 3) Stack all layers in one file
             if self.format == 'SVG':
-                id, ext = self.get_id_and_ext(n)
+                id, ext = self.get_id_and_ext(n, p.page_id)
                 assembly_file = self.expand_filename(output_dir, self.output, id, ext)
             else:
                 assembly_file = GS.pcb_basename+".svg"
@@ -1056,6 +1073,7 @@ class PCB_PrintOptions(VariantOptions):
                     else:
                         # Use GS to create one PNG per page and then scale to the wanted width
                         self.pdf_to_png(pdf_file, out_file)
+                    self.rename_pages(output_dir)
         # Remove the temporal files
         if not self.keep_temporal_files:
             rmtree(temp_dir_base)

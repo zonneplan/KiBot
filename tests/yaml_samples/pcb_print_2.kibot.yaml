@@ -19,6 +19,8 @@ outputs:
       # enable_ki6_frame_fix: true
       add_background: true
       background_image: "tests/data/confidential_optimized.svg"
+      output: '%f-%I%v%x'
+      page_number_as_extension: true
       pages:
         - layers:
             - layer: F.Cu
@@ -26,6 +28,7 @@ outputs:
               color: '#14332440'
             - layer: Edge.Cuts
               color: "#004040"
+          page_id: F_Cu_color
         - monochrome: true
           layers:
             - layer: F.Cu
@@ -33,6 +36,7 @@ outputs:
               color: '#14332440'
             - layer: Edge.Cuts
               color: "#004040"
+          page_id: F_Cu_mono
 
   - name: 'print_bottom'
     comment: "Experiment"

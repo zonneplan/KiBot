@@ -2190,13 +2190,14 @@ Notes:
         - **`format`**: [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
                         Note that for PS you need `ghostscript` which isn't part of the default docker images.
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps).
-                        Consult the `page_number_as_extension`. Affected by global options.
+                        Consult the `page_number_as_extension` and `page_id` options. Affected by global options.
         - *output_name*: Alias for output.
         - **`pages`**: [list(dict)] List of pages to include in the output document.
                        Each page contains one or more layers of the PCB.
           * Valid keys:
             - **`layers`**: [list(dict)|list(string)|string] List of layers printed in this page.
                             Order is important, the last goes on top.
+                            You can reuse other layers lists, some options aren't used here, but they are valid.
               * Valid keys:
                 - `color`: [string=''] Color used for this layer.
                 - `description`: [string=''] A description for the layer, for documentation purposes.
@@ -2214,6 +2215,7 @@ Notes:
             - `mirror`: [boolean=false] Print mirrored (X axis inverted).
             - `monochrome`: [boolean=false] Print in gray scale.
             - `negative_plot`: [boolean=false] Invert black and white. Only useful for a single layer.
+            - `page_id`: [string='%02d'] Text to differentiate the pages. Use %d (like in C) to get the page number.
             - `sheet`: [string='Assembly'] Text to use for the `sheet` in the title block.
             - `sheet_reference_color`: [string=''] Color to use for the frame and title block.
             - `tent_vias`: [boolean=true] Cover the vias.
@@ -2246,6 +2248,7 @@ Notes:
         - `micro_via_color`: [string=''] Color used for micro `colored_vias`.
         - `pad_color`: [string=''] Color used for `colored_pads`.
         - `page_number_as_extension`: [boolean=false] When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
+                                      Note: page numbers can be customized using the `page_id` option for each page.
         - `png_width`: [number=1280] [0,7680] Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size.
         - `realistic_solder_mask`: [boolean=true] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
                                    In order to get a good looking select a color with transparency, i.e. '#14332440'.
