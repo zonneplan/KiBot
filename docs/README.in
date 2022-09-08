@@ -14,9 +14,10 @@
   Consult: [Github Actions tags](#github-actions-tags)
 - When using KiCad 6 you must migrate the whole project and pass the migrated files to KiBot.
 
-**New on v1.2.0**
-- Navigate results output. Here is an [example](https://inti-cmnb.github.io/kibot_variants_arduprog_site/Browse/t1-navigate.html)
-  using the following [example repo](https://inti-cmnb.github.io/kibot_variants_arduprog/).
+**New on v1.3.0**
+- Diff and Info outputs
+- KiBot tries to download missing tools
+- More flexible imports
 
 ## Index
 
