@@ -5,5 +5,5 @@ __license__ = 'GPL v3+'
 __email__ = 'stropea@inti.gob.ar'
 __url__ = 'https://github.com/INTI-CMNB/KiBot/'
 __status__ = 'stable'
-__version__ = '1.2.1'
+__version__ = '1.3.0'
 __pypi_deps__ = ['kiauto', 'pyyaml', 'xlsxwriter', 'colorama', 'requests', 'qrcodegen']

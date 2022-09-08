@@ -1,3 +1,25 @@
+kibot (1.3.0-1) stable; urgency=medium
+
+  * New outputs: Diff and Info
+  * Download missing tools
+  * New global options: to cross components without body and restore project
+  * Nested imports and preflight imports
+  * Option to continue on errors
+  * PDF/SVG PCB Print: option to print all pages/single page
+  * iBoM: Support for variants that change component fields
+  * Workaround for problems with DRC exclusions
+  * Internal BoM: KiCad 6 text variables expansion in the fields
+  * Compress: Option to store symlinks
+  * PCB Print:
+    - Option to configure the forced edge color.
+    - Option to control the resolution (DPI).
+    - Option to move the page number to the extension (page_number_as_extension)
+    - Option to customize the page numbers (See #283)
+  * Installation checker: option to show the tool paths.
+  * Various fixes
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Thu, 08 Sep 2022 09:00:51 -0300
+
 kibot (1.2.0-1) stable; urgency=medium
 
   * The outputs help now display the more relevant options first and
