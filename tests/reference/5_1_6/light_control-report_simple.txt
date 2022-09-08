@@ -3,7 +3,7 @@ Size:
 
 - 59.69x48.26 mm
 
-Class: 10C
+Class: 6D
 
 Track width: ≥ 0.15 mm
 

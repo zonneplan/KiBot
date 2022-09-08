@@ -32,6 +32,10 @@ from . import log
 
 logger = log.get_logger()
 INF = float('inf')
+# This OAR is the minimum Eurocircuits does without extra charge
+EC_SMALL_OAR = 0.125*pcbnew.IU_PER_MM
+# The minimum drill tool
+EC_MIN_DRILL = 0.1*pcbnew.IU_PER_MM
 
 
 def do_round(v, dig):
@@ -194,6 +198,10 @@ class ReportOptions(BaseOptions):
                 Note that the extension should match the `convert_to` value """
             self.eurocircuits_class_target = '10F'
             """ Which Eurocircuits class are we aiming at """
+            self.eurocircuits_reduce_holes = 0.45
+            """ When computing the Eurocircuits category: Final holes sizes smaller or equal to this given
+                diameter can be reduced to accommodate the correct annular ring values.
+                Use 0 to disable it """
         super().__init__()
         self._expand_id = 'report'
         self._expand_ext = 'txt'
@@ -463,6 +471,20 @@ class ReportOptions(BaseOptions):
             self.bb_w = x2-x1
             self.bb_h = y2-y1
 
+    def compute_oar(self, pad, hole):
+        """ Compute the OAR and the corrected OAR for Eurocircuits """
+        oar_ec = oar = (pad-hole)/2
+        if oar < EC_SMALL_OAR and oar > 0 and hole < self.eurocircuits_reduce_holes*pcbnew.IU_PER_MM:
+            # This hole is classified as "via hole" and has a problematic OAR
+            hole_ec = max(adjust_drill(pad-2*EC_SMALL_OAR, is_pth=False), EC_MIN_DRILL)
+            oar_ec = (pad-hole_ec)/2
+            if GS.debug_level > 2:
+                logger.debug('Adjusting drill from {} to {} to get an OAR of {}'.
+                             format(to_mm(hole), to_mm(hole_ec), to_mm(oar_ec)))
+        else:
+            hole_ec = hole
+        return oar, oar_ec, hole_ec
+
     def collect_data(self, board):
         ds = board.GetDesignSettings()
         self.extra_pth_drill = GS.global_extra_pth_drill*pcbnew.IU_PER_MM
@@ -505,10 +527,12 @@ class ReportOptions(BaseOptions):
         ###########################################################
         self.track_d = ds.m_TrackMinWidth
         tracks = board.GetTracks()
-        self.oar_vias = self.track = INF
+        self.oar_vias = self.oar_vias_ec = self.track = INF
         self._vias = {}
+        self._vias_ec = {}
         self._tracks_m = {}
         self._drills_real = {}
+        self._drills_ec = {}
         track_type = 'TRACK' if GS.ki5 else 'PCB_TRACK'
         via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
         for t in tracks:
@@ -522,8 +546,13 @@ class ReportOptions(BaseOptions):
                 via_id = (via.GetDrill(), via.GetWidth())
                 self._vias[via_id] = self._vias.get(via_id, 0) + 1
                 d = adjust_drill(via_id[0])
-                self.oar_vias = min(self.oar_vias, (via_id[1] - d) / 2)
+                oar, oar_ec, d_ec = self.compute_oar(via_id[1], d)
+                via_id_ec = (d_ec, via_id[1])
+                self._vias_ec[via_id_ec] = self._vias.get(via_id_ec, 0) + 1
+                self.oar_vias = min(self.oar_vias, oar)
+                self.oar_vias_ec = min(self.oar_vias_ec, oar_ec)
                 self._drills_real[d] = self._drills_real.get(d, 0) + 1
+                self._drills_ec[d_ec] = self._drills_ec.get(d_ec, 0) + 1
         self.track_min = min(self.track_d, self.track)
         ###########################################################
         # Drill (min)
@@ -531,7 +560,7 @@ class ReportOptions(BaseOptions):
         modules = board.GetModules() if GS.ki5 else board.GetFootprints()
         self._drills = {}
         self._drills_oval = {}
-        self.oar_pads = self.pad_drill = self.pad_drill_real = INF
+        self.oar_pads = self.oar_pads_ec = self.pad_drill = self.pad_drill_real = self.pad_drill_real_ec = INF
         self.slot = INF
         self.top_smd = self.top_tht = self.bot_smd = self.bot_tht = 0
         top_layer = board.GetLayerID('F.Cu')
@@ -581,11 +610,16 @@ class ReportOptions(BaseOptions):
                     # print('{} @ {}'.format(dr, pad.GetPosition()))
                     self._drills_real[d_r] = self._drills_real.get(d_r, 0) + 1
                 pad_sz = pad.GetSize()
-                oar_x = (pad_sz.x - dr_x_real) / 2
-                oar_y = (pad_sz.y - dr_y_real) / 2
+                oar_x, oar_ec_x, dr_x_ec = self.compute_oar(pad_sz.x, dr_x_real)
+                oar_y, oar_ec_y, dr_y_ec = self.compute_oar(pad_sz.y, dr_y_real)
+                dr_ec = min(dr_x_ec, dr_y_ec)
+                self._drills_ec[dr_ec] = self._drills_ec.get(dr_ec, 0) + 1
+                self.pad_drill_real_ec = min(dr_ec, self.pad_drill_real_ec)
                 oar_t = min(oar_x, oar_y)
+                oar_ec_t = min(oar_ec_x, oar_ec_y)
                 if oar_t > 0:
                     self.oar_pads = min(self.oar_pads, oar_t)
+                    self.oar_pads_ec = min(self.oar_pads_ec, oar_ec_t)
                     if oar_t < min_oar:
                         logger.warning(W_WRONGOAR+"Really small OAR detected ({} mm) for pad {}".
                                        format(to_mm(oar_t, 4), get_pad_info(pad)))
@@ -594,6 +628,7 @@ class ReportOptions(BaseOptions):
                 elif oar_t == 0 and is_pth:
                     logger.warning(W_WRONGOAR+"Plated pad without copper "+get_pad_info(pad))
         self._vias_m = sorted(self._vias.keys())
+        self._vias_ec_m = sorted(self._vias_ec.keys())
         # Via Pad size
         self.via_pad_d = ds.m_ViasMinSize
         self.via_pad = self._vias_m[0][1] if self._vias_m else INF
@@ -603,14 +638,18 @@ class ReportOptions(BaseOptions):
         self.via_drill_d = ds.m_ViasMinDrill if GS.ki5 else ds.m_MinThroughDrill
         self.via_drill = self._vias_m[0][0] if self._vias_m else INF
         self.via_drill_min = min(self.via_drill_d, self.via_drill)
+        self.via_drill_real_ec = self.via_drill_ec = self._vias_ec_m[0][0] if self._vias_ec_m else INF
+        self.via_drill_ec_min = min(self.via_drill_d, self.via_drill_ec)
         # Via Drill size before platting
         self.via_drill_real_d = adjust_drill(self.via_drill_d)
         self.via_drill_real = adjust_drill(self.via_drill)
         self.via_drill_real_min = adjust_drill(self.via_drill_min)
+        self.via_drill_real_ec_min = adjust_drill(self.via_drill_ec_min)
         # Pad Drill
         # No minimum defined (so no _d)
         self.pad_drill_min = self.pad_drill if GS.ki5 else ds.m_MinThroughDrill
         self.pad_drill_real_min = self.pad_drill_real if GS.ki5 else adjust_drill(ds.m_MinThroughDrill, False)
+        self.pad_drill_real_ec_min = self.pad_drill_real_ec if GS.ki5 else adjust_drill(ds.m_MinThroughDrill, False)
         # Drill overall
         self.drill_d = min(self.via_drill_d, self.pad_drill)
         self.drill = min(self.via_drill, self.pad_drill)
@@ -619,6 +658,9 @@ class ReportOptions(BaseOptions):
         self.drill_real_d = min(self.via_drill_real_d, self.pad_drill_real)
         self.drill_real = min(self.via_drill_real, self.pad_drill_real)
         self.drill_real_min = min(self.via_drill_real_min, self.pad_drill_real_min)
+        self.drill_real_ec_d = min(self.via_drill_real_d, self.pad_drill_real_ec)
+        self.drill_real_ec = min(self.via_drill_real_ec, self.pad_drill_real_ec)
+        self.drill_real_ec_min = min(self.via_drill_real_ec_min, self.pad_drill_real_ec_min)
         self.top_comp_type = to_smd_tht(self.top_smd, self.top_tht)
         self.bot_comp_type = to_smd_tht(self.bot_smd, self.bot_tht)
         ###########################################################
@@ -631,13 +673,15 @@ class ReportOptions(BaseOptions):
         via_sizes = board.GetViasDimensionsList()
         self._vias_defined = set()
         self._via_sizes_sorted = []
-        self.oar_vias_d = INF
+        self.oar_vias_d = self.oar_vias_ec_d = INF
         for v in sorted(via_sizes, key=lambda x: (x.m_Diameter, x.m_Drill)):
             d = v.m_Diameter
             h = v.m_Drill
             if not d and not h:
                 continue  # KiCad 6
-            self.oar_vias_d = min(self.oar_vias_d, (d - adjust_drill(h)) / 2)
+            oar, oar_ec, _ = self.compute_oar(d, adjust_drill(h))
+            self.oar_vias_d = min(self.oar_vias_d, oar)
+            self.oar_vias_ec_d = min(self.oar_vias_ec_d, oar_ec)
             self._vias_defined.add((h, d))
             self._via_sizes_sorted.append((h, d))
         ###########################################################
@@ -648,18 +692,24 @@ class ReportOptions(BaseOptions):
         self.oar = min(self.oar_vias, self.oar_pads)
         self.oar_min = min(self.oar_d, self.oar)
         self.oar_vias_min = min(self.oar_vias_d, self.oar_vias)
+        # Eurocircuits OAR
+        self.oar_pads_ec_min = self.oar_pads_ec
+        self.oar_ec_d = min(self.oar_vias_ec_d, self.oar_pads_ec)
+        self.oar_ec = min(self.oar_vias_ec, self.oar_pads_ec)
+        self.oar_ec_min = min(self.oar_ec_d, self.oar_ec)
+        self.oar_vias_ec_min = min(self.oar_vias_ec_d, self.oar_vias_ec)
         ###########################################################
         # Eurocircuits class
         # https://www.eurocircuits.com/pcb-design-guidelines-classification/
         ###########################################################
         # Pattern class
-        self.pattern_class_min = get_pattern_class(self.track_min, self.clearance, self.oar_min, 'minimum')
-        self.pattern_class = get_pattern_class(self.track, self.clearance, self.oar, 'measured', self._ec_pat)
-        self.pattern_class_d = get_pattern_class(self.track_d, self.clearance, self.oar_d, 'defined')
+        self.pattern_class_min = get_pattern_class(self.track_min, self.clearance, self.oar_ec_min, 'minimum')
+        self.pattern_class = get_pattern_class(self.track, self.clearance, self.oar_ec, 'measured', self._ec_pat)
+        self.pattern_class_d = get_pattern_class(self.track_d, self.clearance, self.oar_ec_d, 'defined')
         # Drill class
-        self.drill_class_min = get_drill_class(self.drill_real_min, 'minimum')
-        self.drill_class = get_drill_class(self.drill_real, 'measured', self._ec_drl)
-        self.drill_class_d = get_drill_class(self.drill_real_d, 'defined')
+        self.drill_class_min = get_drill_class(self.drill_real_ec_min, 'minimum')
+        self.drill_class = get_drill_class(self.drill_real_ec, 'measured', self._ec_drl)
+        self.drill_class_d = get_drill_class(self.drill_real_ec_d, 'defined')
         ###########################################################
         # General stats
         ###########################################################

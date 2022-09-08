@@ -69,6 +69,7 @@ Outer Annular Ring: ${oar_mm} mm (${oar_mils} mils)
 - By design rules: ${oar_d_mm} mm (${oar_d_mils} mils)
 
 Eurocircuits class: ${pattern_class}${drill_class}
+- Using min drill ${drill_real_ec_mm} mm for an OAR of ${oar_ec_mm} mm
 
 
 # General stats
