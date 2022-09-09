@@ -1773,6 +1773,15 @@ class SchematicV6(Schematic):
         fparts = os.path.splitext(file)
         sch.flat_file = fparts[0]+'_'+str(len(self.sheet_names))+fparts[1]
 
+    def get_title(self):
+        return self.title_ori
+
+    def set_title(self, title):
+        """ Used only to save a variant """
+        old_title = self.title_ori
+        self.title_ori = title
+        return old_title
+
     def load(self, fname, project, parent=None):  # noqa: C901
         """ Load a v6.x KiCad Schematic.
             The caller must be sure the file exists.

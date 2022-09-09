@@ -28,6 +28,7 @@ outputs:
     options:
       variant: default
       copy_project: true
+      title: '+ (%V)'
 
   - name: 'sch_production'
     comment: "Schematic w/production variant"
@@ -36,6 +37,7 @@ outputs:
     options:
       variant: production
       copy_project: true
+      title: '+ (%V)'
 
   - name: 'sch_test'
     comment: "Schematic w/test variant"
@@ -44,6 +46,7 @@ outputs:
     options:
       variant: test
       copy_project: true
+      title: '+ (%V)'
 
   - name: 'diff_sch'
     comment: "Schematic difference with variant"

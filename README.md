@@ -2806,6 +2806,8 @@ Notes:
                           Disabled by default for compatibility with older versions.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.

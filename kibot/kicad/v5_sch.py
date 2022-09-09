@@ -1831,6 +1831,18 @@ class Schematic(object):
             f.write(')\n')
         return fname
 
+    def get_title(self):
+        return self.title_block.get('Title', '')
+
+    def set_title(self, title):
+        """ Used only to save a variant """
+        old_title = self.title_block.get('Title')
+        if title is None:
+            del self.title_block['Title']
+        else:
+            self.title_block['Title'] = title
+        return old_title
+
     def file_names_variant(self, dest_dir):
         """ Returns a list of file names created by save_variant() """
         fnames = [os.path.join(dest_dir, 'y.lib'),

@@ -605,19 +605,28 @@ class VariantOptions(BaseOptions):
             # Re-enable the modules that aren't for this variant
             self.apply_3D_variant_aspect(board, enable=True)
 
-    def set_title(self, title):
+    def set_title(self, title, sch=False):
         self.old_title = None
         if title:
-            tb = GS.board.GetTitleBlock()
-            self.old_title = tb.GetTitle()
+            if sch:
+                self.old_title = GS.sch.get_title()
+            else:
+                tb = GS.board.GetTitleBlock()
+                self.old_title = tb.GetTitle()
             text = self.expand_filename_pcb(title)
             if text[0] == '+':
                 text = self.old_title+text[1:]
-            tb.SetTitle(text)
+            if sch:
+                self.old_title = GS.sch.set_title(text)
+            else:
+                tb.SetTitle(text)
 
-    def restore_title(self):
+    def restore_title(self, sch=False):
         if self.old_title is not None:
-            GS.board.GetTitleBlock().SetTitle(self.old_title)
+            if sch:
+                GS.sch.set_title(self.old_title)
+            else:
+                GS.board.GetTitleBlock().SetTitle(self.old_title)
             self.old_title = None
 
     def sch_fields_to_pcb(self, comps, board):

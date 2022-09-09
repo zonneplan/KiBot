@@ -15,6 +15,9 @@ class Sch_Variant_Options(VariantOptions):
             self.copy_project = False
             """ Copy the KiCad project to the destination directory.
                 Disabled by default for compatibility with older versions """
+            self.title = ''
+            """ Text used to replace the sheet title. %VALUE expansions are allowed.
+                If it starts with `+` the text is concatenated """
         super().__init__()
 
     def get_targets(self, out_dir):
@@ -23,7 +26,9 @@ class Sch_Variant_Options(VariantOptions):
     def run(self, output_dir):
         super().run(output_dir)
         # Create the schematic
+        self.set_title(self.title, sch=True)
         GS.sch.save_variant(output_dir)
+        self.restore_title(sch=True)
         if self.copy_project:
             GS.copy_project(os.path.join(output_dir, GS.sch_basename+'.kicad_pcb'))
 
