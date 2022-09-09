@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for Eurocircuits drill adjust to fix small OARs.
   Option `eurocircuits_reduce_holes`. (#227)
 - Diff: mechanism to compare using a variant (See #278)
+- Sch Variant: option to copy the project. Needed for text variables.
 
 ### Fixed
 - Problems to compress netlists. (#287)

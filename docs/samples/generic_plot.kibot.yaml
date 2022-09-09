@@ -1678,6 +1678,9 @@ outputs:
     type: 'sch_variant'
     dir: 'Example/sch_variant_dir'
     options:
+      # [boolean=false] Copy the KiCad project to the destination directory.
+      # Disabled by default for compatibility with older versions
+      copy_project: false
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'

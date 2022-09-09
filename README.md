@@ -2802,6 +2802,8 @@ Notes:
     - **`name`**: [string=''] Used to identify this particular output definition.
     - **`options`**: [dict] Options for the `sch_variant` output.
       * Valid keys:
+        - `copy_project`: [boolean=false] Copy the KiCad project to the destination directory.
+                          Disabled by default for compatibility with older versions.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant to apply.

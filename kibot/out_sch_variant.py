@@ -3,6 +3,7 @@
 # Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+import os
 from .gs import GS
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
@@ -10,6 +11,10 @@ from .macros import macros, document, output_class  # noqa: F401
 
 class Sch_Variant_Options(VariantOptions):
     def __init__(self):
+        with document:
+            self.copy_project = False
+            """ Copy the KiCad project to the destination directory.
+                Disabled by default for compatibility with older versions """
         super().__init__()
 
     def get_targets(self, out_dir):
@@ -19,6 +24,8 @@ class Sch_Variant_Options(VariantOptions):
         super().run(output_dir)
         # Create the schematic
         GS.sch.save_variant(output_dir)
+        if self.copy_project:
+            GS.copy_project(os.path.join(output_dir, GS.sch_basename+'.kicad_pcb'))
 
 
 @output_class
@@ -33,6 +40,9 @@ class Sch_Variant(BaseOutput):  # noqa: F821
             self.options = Sch_Variant_Options
             """ *[dict] Options for the `sch_variant` output """
         self._sch_related = True
+
+    def get_output_sch_name(self, out_dir):
+        return os.path.join(out_dir, os.path.basename(GS.sch_file))
 
     def run(self, output_dir):
         # No output member, just a dir
