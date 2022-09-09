@@ -18,6 +18,11 @@ class PCB_Variant_Options(VariantOptions):
             """ Hide components in the Fab layer that are marked as excluded by a variant """
             self.output = GS.def_global_output
             """ *Filename for the output (%i=variant, %x=kicad_pcb) """
+            self.copy_project = True
+            """ Copy the KiCad project to the destination directory """
+            self.title = ''
+            """ Text used to replace the sheet title. %VALUE expansions are allowed.
+                If it starts with `+` the text is concatenated """
         super().__init__()
         self._expand_id = 'variant'
         self._expand_ext = 'kicad_pcb'
@@ -27,11 +32,14 @@ class PCB_Variant_Options(VariantOptions):
 
     def run(self, output):
         super().run(output)
+        self.set_title(self.title)
         self.filter_pcb_components(GS.board, do_3D=True)
         logger.debug('Saving PCB to '+output)
         GS.board.Save(output)
-        GS.copy_project(output)
+        if self.copy_project:
+            GS.copy_project(output)
         self.unfilter_pcb_components(GS.board, do_3D=True)
+        self.restore_title()
 
 
 @output_class

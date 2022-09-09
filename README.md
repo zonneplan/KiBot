@@ -2283,9 +2283,12 @@ Notes:
     - **`options`**: [dict] Options for the `pcb_variant` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=variant, %x=kicad_pcb). Affected by global options.
+        - `copy_project`: [boolean=true] Copy the KiCad project to the destination directory.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.

@@ -14,5 +14,4 @@ outputs:
     type: pcb_variant
     options:
       variant: default
-      scaling: 0
       title: 'Hello %V'

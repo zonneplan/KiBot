@@ -1202,6 +1202,8 @@ outputs:
     type: 'pcb_variant'
     dir: 'Example/pcb_variant_dir'
     options:
+      # [boolean=true] Copy the KiCad project to the destination directory
+      copy_project: true
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
@@ -1209,6 +1211,9 @@ outputs:
       hide_excluded: false
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=variant, %x=kicad_pcb). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+      # If it starts with `+` the text is concatenated
+      title: ''
       # [string=''] Board variant to apply
       variant: ''
   # PcbDraw - Beautiful 2D PCB render:
