@@ -56,7 +56,6 @@ class Base3DOptions(VariantOptions):
         KiConf.init(GS.pcb_file)
         # List of models we already downloaded
         downloaded = set()
-        self.undo_3d_models = {}
         extra_debug = GS.debug_level > 3
         # Look for all the footprints
         for m in GS.get_modules():
@@ -133,7 +132,6 @@ class Base3DOptions(VariantOptions):
         return list(models)
 
     def filter_components(self):
-        self.undo_3d_models_rep = {}
         if not self._comps:
             # No variant/filter to apply
             if self.download_models():
