@@ -2270,6 +2270,34 @@ Notes:
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* PCB with variant generator
+  * Type: `pcb_variant`
+  * Description: Creates a copy of the PCB with all the filters and variants applied.
+                 This copy isn't intended for development.
+                 Is just a tweaked version of the original where you can look at the results.
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `pcb_variant` output.
+      * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=variant, %x=kicad_pcb). Affected by global options.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+        - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * PcbDraw - Beautiful 2D PCB render
   * Type: `pcbdraw`
   * Description: Exports the PCB as a 2D model (SVG, PNG or JPG).
@@ -2741,6 +2769,9 @@ Notes:
         - `converted_output`: [string='%f-%i%I%v.%x'] Converted output file name (%i='report', %x=`convert_to`).
                               Note that the extension should match the `convert_to` value. Affected by global options.
         - `eurocircuits_class_target`: [string='10F'] Which Eurocircuits class are we aiming at.
+        - `eurocircuits_reduce_holes`: [number=0.45] When computing the Eurocircuits category: Final holes sizes smaller or equal to this given
+                                       diameter can be reduced to accommodate the correct annular ring values.
+                                       Use 0 to disable it.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.

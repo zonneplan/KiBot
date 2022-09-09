@@ -243,6 +243,8 @@ SILK_COLORS = {'black': "0b1013", 'white': "d5dce4"}
 KICAD5_SVG_SCALE = 116930/297002200
 # Some browser name to pretend
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'
+# Text used to disable 3D models
+DISABLE_3D_MODEL_TEXT = '_Disabled_by_KiBot'
 
 
 class Rect(object):

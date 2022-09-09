@@ -4,19 +4,16 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-import re
 import requests
 import tempfile
-from .error import KiPlotConfigurationError
-from .misc import W_MISS3D, W_FAILDL
-from .gs import (GS)
+from .misc import W_MISS3D, W_FAILDL, DISABLE_3D_MODEL_TEXT
+from .gs import GS
 from .out_base import VariantOptions, BaseOutput
 from .kicad.config import KiConf
 from .macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-DISABLE_TEXT = '_Disabled_by_KiBot'
 
 
 class Base3DOptions(VariantOptions):
@@ -49,56 +46,11 @@ class Base3DOptions(VariantOptions):
             f.write(r.content)
         return dest
 
-    def undo_3d_models_rename(self):
-        """ Restores the file name for any renamed 3D module """
-        for m in GS.get_modules():
-            # Get the model references
-            models = m.Models()
-            models_l = []
-            while not models.empty():
-                models_l.append(models.pop())
-            # Fix any changed path
-            replaced = self.undo_3d_models_rep.get(m.GetReference())
-            for i, m3d in enumerate(models_l):
-                if m3d.m_Filename in self.undo_3d_models:
-                    m3d.m_Filename = self.undo_3d_models[m3d.m_Filename]
-                if replaced:
-                    m3d.m_Filename = replaced[i]
-            # Push the models back
-            for model in models_l:
-                models.push_front(model)
-
-    def replace_models(self, models, new_model, c):
-        """ Changes the 3D model using a provided model """
-        logger.debug('Changing 3D models for '+c.ref)
-        # Get the model references
-        models_l = []
-        while not models.empty():
-            models_l.append(models.pop())
-        # Check if we have more than one model
-        c_models = len(models_l)
-        if c_models > 1:
-            new_model = new_model.split(',')
-            c_replace = len(new_model)
-            if c_models != c_replace:
-                raise KiPlotConfigurationError('Found {} models in component {}, but {} replacements provided'.
-                                               format(c_models, c, c_replace))
-        else:
-            new_model = [new_model]
-        # Change the models
-        replaced = []
-        for i, m3d in enumerate(models_l):
-            replaced.append(m3d.m_Filename)
-            m3d.m_Filename = new_model[i]
-        self.undo_3d_models_rep[c.ref] = replaced
-        # Push the models back
-        for model in models_l:
-            models.push_front(model)
-
     def download_models(self):
         """ Check we have the 3D models.
             Inform missing models.
-            Try to download the missing models """
+            Try to download the missing models
+            Stores changes in self.undo_3d_models_rep """
         models_replaced = False
         # Load KiCad configuration so we can expand the 3D models path
         KiConf.init(GS.pcb_file)
@@ -116,7 +68,7 @@ class Base3DOptions(VariantOptions):
                 models_l.append(models.pop())
             # Look for all the 3D models for this footprint
             for m3d in models_l:
-                if m3d.m_Filename.endswith(DISABLE_TEXT):
+                if m3d.m_Filename.endswith(DISABLE_3D_MODEL_TEXT):
                     # Skip models we intentionally disabled using a bogus name
                     if extra_debug:
                         logger.debug("- Skipping {} (disabled)".format(m3d.m_Filename))
@@ -180,77 +132,6 @@ class Base3DOptions(VariantOptions):
                     models.add(full_name)
         return list(models)
 
-    def apply_list_of_models(self, enable, slots, m, var):
-        # Disable the unused models adding bogus text to the end
-        slots = [int(v) for v in slots if v]
-        models = m.Models()
-        m_objs = []
-        # Extract the models, we get a copy
-        while not models.empty():
-            m_objs.insert(0, models.pop())
-        for i, m3d in enumerate(m_objs):
-            if self.extra_debug:
-                logger.debug('- {} {} {} {}'.format(var, i+1, i+1 in slots, m3d.m_Filename))
-            if i+1 not in slots:
-                if enable:
-                    # Revert the added text
-                    m3d.m_Filename = m3d.m_Filename[:-self.len_disable]
-                else:
-                    # Not used, add text to make their name invalid
-                    m3d.m_Filename += DISABLE_TEXT
-            # Push it back to the module
-            models.push_back(m3d)
-
-    def apply_variant_aspect(self, enable=False):
-        """ Disable/Enable the 3D models that aren't for this variant.
-            This mechanism uses the MTEXT attributes. """
-        # The magic text is %variant:slot1,slot2...%
-        field_regex = re.compile(r'\%([^:]+):([\d,]*)\%')     # Generic (by name)
-        field_regex_sp = re.compile(r'\$([^:]*):([\d,]*)\$')  # Variant specific
-        self.extra_debug = extra_debug = GS.debug_level > 3
-        if extra_debug:
-            logger.debug("{} 3D models that aren't for this variant".format('Enable' if enable else 'Disable'))
-        self.len_disable = len(DISABLE_TEXT)
-        variant_name = self.variant.name
-        for m in GS.get_modules():
-            if extra_debug:
-                logger.debug("Processing module " + m.GetReference())
-            default = None
-            matched = False
-            # Look for text objects
-            for gi in m.GraphicalItems():
-                if gi.GetClass() == 'MTEXT':
-                    # Check if the text matches the magic style
-                    text = gi.GetText().strip()
-                    match = field_regex.match(text)
-                    if match:
-                        # Check if this is for the current variant
-                        var = match.group(1)
-                        slots = match.group(2).split(',') if match.group(2) else []
-                        # Do the match
-                        if var == '_default_':
-                            default = slots
-                            if self.extra_debug:
-                                logger.debug('- Found defaults: {}'.format(slots))
-                        else:
-                            matched = var == variant_name
-                        if matched:
-                            self.apply_list_of_models(enable, slots, m, var)
-                            break
-                    else:
-                        # Try with the variant specific pattern
-                        match = field_regex_sp.match(text)
-                        if match:
-                            var = match.group(1)
-                            slots = match.group(2).split(',') if match.group(2) else []
-                            # Do the match
-                            matched = self.variant.matches_variant(var)
-                            if matched:
-                                self.apply_list_of_models(enable, slots, m, var)
-                                break
-            if not matched and default is not None:
-                self.apply_list_of_models(enable, slots, m, '_default_')
-
     def filter_components(self):
         self.undo_3d_models_rep = {}
         if not self._comps:
@@ -259,47 +140,14 @@ class Base3DOptions(VariantOptions):
                 # Some missing components found and we downloaded them
                 # Save the fixed board
                 ret = self.save_tmp_board()
-                # Undo the changes
-                self.undo_3d_models_rename()
+                # Undo the changes done during download
+                self.undo_3d_models_rename(GS.board)
                 return ret
             return GS.pcb_file
-        comps_hash = self.get_refs_hash()
-        # Disable the models that aren't for this variant
-        self.apply_variant_aspect()
-        # Remove the 3D models for not fitted components
-        rem_models = []
-        for m in GS.get_modules():
-            ref = m.GetReference()
-            c = comps_hash.get(ref, None)
-            if c:
-                # The filter/variant knows about this component
-                models = m.Models()
-                if c.included and not c.fitted:
-                    # Not fitted, remove the 3D model
-                    rem_m_models = []
-                    while not models.empty():
-                        rem_m_models.append(models.pop())
-                    rem_models.append(rem_m_models)
-                else:
-                    # Fitted
-                    new_model = c.get_field_value(GS.global_field_3D_model)
-                    if new_model:
-                        # We will change the 3D model
-                        self.replace_models(models, new_model, c)
+        self.filter_pcb_components(GS.board, do_3D=True, do_2D=False)
         self.download_models()
         fname = self.save_tmp_board()
-        self.undo_3d_models_rename()
-        # Undo the removing
-        for m in GS.get_modules():
-            ref = m.GetReference()
-            c = comps_hash.get(ref, None)
-            if c and c.included and not c.fitted:
-                models = m.Models()
-                restore = rem_models.pop(0)
-                for model in restore:
-                    models.push_front(model)
-        # Re-enable the modules that aren't for this variant
-        self.apply_variant_aspect(enable=True)
+        self.unfilter_pcb_components(GS.board, do_3D=True, do_2D=False)
         return fname
 
     def get_targets(self, out_dir):
