@@ -1410,6 +1410,6 @@ def test_diff_file_sch_1(test_dir):
     yaml = 'diff_file_sch_'+('k5' if context.ki5() else 'k6')
     ctx = context.TestContext(test_dir, prj, yaml)
     ctx.run()
-    ctx.expect_out_file(prj+'-diff_sch_None-None.pdf')
+    ctx.expect_out_file(prj+'-diff_sch_FILE-Current.pdf')
     ctx.compare_pdf(prj+'-diff_sch.pdf')
     ctx.clean_up(keep_project=True)

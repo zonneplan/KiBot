@@ -305,10 +305,10 @@ class DiffOptions(BaseOptions):
                 self.checkedout = True
             else:
                 name_ori = 'Dirty' if self.git_dirty() else 'HEAD'
-            # A short version of the current hash
-            self.git_hash = self.get_git_point_desc(name_ori)
             # Populate the cache
             hash = self.cache_file()
+            # A short version of the current hash
+            self.git_hash = self.get_git_point_desc(name_ori)
         finally:
             self.undo_git()
         return hash
