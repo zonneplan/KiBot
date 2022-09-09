@@ -20,6 +20,7 @@ Dependencies:
     version: 2.0.0
 """
 from hashlib import sha1
+from itertools import combinations
 import os
 import re
 from shutil import rmtree, copy2
@@ -53,13 +54,17 @@ class DiffOptions(BaseOptions):
                 changes in the history you want to go back. A 0 is the same as `HEAD`,
                 a 1 means the last time the PCB/SCH was changed, etc """
             self.old_type = 'git'
-            """ [git,file,output] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
-                Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output """
+            """ [git,file,output,multivar] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
+                Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output.
+                Use `multivar` to specify a reference file when `new_type` is also `multivar` """
             self.new = ''
-            """ The file you want to compare. Leave it blank for the current PCB/SCH """
+            """ [string|list(string)] The file you want to compare. Leave it blank for the current PCB/SCH.
+                A list is accepted only for the `multivar` type """
             self.new_type = 'file'
-            """ [git,file,output] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
-                Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output """
+            """ [git,file,output,multivar] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+                Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output.
+                Use `multivar` to compare a set of variants, in this mode `new` is the list of variants.
+                If `old` is also `multivar` then it becomes the reference, otherwise we compare using pairs of variants """
             self.cache_dir = ''
             """ Directory to cache the intermediate files. Leave it blank to disable the cache """
             self.diff_mode = 'red_green'
@@ -91,6 +96,16 @@ class DiffOptions(BaseOptions):
     def config(self, parent):
         super().config(parent)
         self._expand_id = 'diff'+('_pcb' if self.pcb else '_sch')
+        if self.new_type == 'multivar':
+            if isinstance(self.new, str):
+                raise KiPlotConfigurationError('`new` must be a list when using the `multivar` type')
+            if len(self.new) < 2:
+                raise KiPlotConfigurationError('`new` must contain at least two variants when using the `multivar` type')
+        else:
+            if isinstance(self.new, list):
+                raise KiPlotConfigurationError('`new` must be a single string for `{}` type'.format(self.new_type))
+        if self.old_type == 'multivar' and self.new_type != 'multivar':
+            raise KiPlotConfigurationError("`old_type` can't be `multivar` when `new_type` isn't (`{}`)".format(self.new_type))
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
@@ -330,6 +345,36 @@ class DiffOptions(BaseOptions):
                     f.write(str(la.id)+'\n')
         return incl_file
 
+    def do_compare(self, old, old_type, new, new_type, name):
+        dir_name = os.path.dirname(name)
+        file_name = os.path.basename(name)
+        # Populate the cache
+        old_hash = self.cache_obj(old, old_type)
+        gh1 = self.git_hash
+        new_hash = self.cache_obj(new, new_type)
+        gh2 = self.git_hash
+        # Compute the diff using the cache
+        cmd = [self.command, '--no_reader', '--new_file_hash', new_hash, '--old_file_hash', old_hash,
+               '--cache_dir', self.cache_dir, '--output_dir', dir_name, '--output_name', file_name,
+               '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz)]
+        if self.incl_file:
+            cmd.extend(['--layers', self.incl_file])
+        if self.threshold:
+            cmd.extend(['--threshold', str(self.threshold)])
+        cmd.extend([self.file_exist, self.file_exist])
+        if GS.debug_enabled:
+            cmd.insert(1, '-'+'v'*GS.debug_level)
+        run_command(cmd)
+        if self.add_link_id:
+            name_comps = os.path.splitext(name)
+            target = name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1]
+            if self.copy_instead_of_link:
+                copy2(name, target)
+            else:
+                if os.path.isfile(target):
+                    os.remove(target)
+                os.symlink(os.path.basename(name), target)
+
     def run(self, name):
         self.command = self.ensure_tool('KiDiff')
         if self.old_type == 'git' or self.new_type == 'git':
@@ -345,42 +390,36 @@ class DiffOptions(BaseOptions):
         # A valid name, not really used
         if self.pcb:
             GS.check_pcb()
-            file = GS.pcb_file
+            self.file_exist = GS.pcb_file
         else:
             GS.check_sch()
-            file = GS.sch_file
-        dir_name = os.path.dirname(name)
-        file_name = os.path.basename(name)
+            self.file_exist = GS.sch_file
         self.incl_file = None
         try:
             # List of layers
             self.incl_file = self.create_layers_incl(self.layers)
-            # Populate the cache
-            old_hash = self.cache_obj(self.old, self.old_type)
-            gh1 = self.git_hash
-            new_hash = self.cache_obj(self.new, self.new_type)
-            gh2 = self.git_hash
-            # Compute the diff using the cache
-            cmd = [self.command, '--no_reader', '--new_file_hash', new_hash, '--old_file_hash', old_hash,
-                   '--cache_dir', self.cache_dir, '--output_dir', dir_name, '--output_name', file_name,
-                   '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz)]
-            if self.incl_file:
-                cmd.extend(['--layers', self.incl_file])
-            if self.threshold:
-                cmd.extend(['--threshold', str(self.threshold)])
-            cmd.extend([file, file])
-            if GS.debug_enabled:
-                cmd.insert(1, '-'+'v'*GS.debug_level)
-            run_command(cmd)
-            if self.add_link_id:
-                name_comps = os.path.splitext(name)
-                target = name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1]
-                if self.copy_instead_of_link:
-                    copy2(name, target)
-                else:
-                    if os.path.isfile(target):
-                        os.remove(target)
-                    os.symlink(os.path.basename(name), target)
+            if self.new_type == 'multivar' and self.old_type != 'multivar':
+                # Special case, we generate various files
+                base_id = self._expand_id
+                for pair in combinations(self.new, 2):
+                    logger.debug('Using variants '+str(pair))
+                    logger.info(' - {} vs {}'.format(pair[0], pair[1]))
+                    self._expand_id = '{}_variants_{}_VS_{}'.format(base_id, pair[0], pair[1])
+                    name = self._parent.expand_filename(self._parent.output_dir, self.output)
+                    self.do_compare(pair[0], 'output', pair[1], 'output', name)
+                self._expand_id = base_id
+            elif self.new_type == 'multivar' and self.old_type == 'multivar':
+                # Special case, we generate various files
+                base_id = self._expand_id
+                for new_variant in self.new:
+                    ref_name = self.old if self.old else 'current'
+                    logger.info(' - {} vs {}'.format(ref_name, new_variant))
+                    self._expand_id = '{}_variant_{}'.format(base_id, new_variant)
+                    name = self._parent.expand_filename(self._parent.output_dir, self.output)
+                    self.do_compare(self.old, 'file', new_variant, 'output', name)
+                self._expand_id = base_id
+            else:
+                self.do_compare(self.old, self.old_type, self.new, self.new_type, name)
         finally:
             # Clean-up
             if remove_cache:
