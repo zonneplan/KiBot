@@ -27,9 +27,10 @@ from subprocess import CalledProcessError
 from tempfile import mkdtemp, NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .kiplot import load_any_sch, run_command
+from .kiplot import load_any_sch, run_command, config_output, get_output_dir, run_output
 from .layer import Layer
 from .optionable import BaseOptions
+from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -52,13 +53,13 @@ class DiffOptions(BaseOptions):
                 changes in the history you want to go back. A 0 is the same as `HEAD`,
                 a 1 means the last time the PCB/SCH was changed, etc """
             self.old_type = 'git'
-            """ [git,file] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
-                Use `file` for a file name """
+            """ [git,file,output] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
+                Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output """
             self.new = ''
             """ The file you want to compare. Leave it blank for the current PCB/SCH """
             self.new_type = 'file'
-            """ [git,file] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
-                Use `file` for a file name """
+            """ [git,file,output] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+                Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output """
             self.cache_dir = ''
             """ Directory to cache the intermediate files. Leave it blank to disable the cache """
             self.diff_mode = 'red_green'
@@ -293,9 +294,29 @@ class DiffOptions(BaseOptions):
             self.undo_git()
         return hash
 
+    def cache_output(self, name):
+        logger.debugl(2, 'From output `{}`'.format(name))
+        out = RegOutput.get_output(name)
+        if out is None:
+            raise KiPlotConfigurationError('Unknown output `{}`'.format(name))
+        if out.type != 'pcb_variant':
+            raise KiPlotConfigurationError('Output `{}` must be `pcb_variant` type, not `{}`'.format(name, out.type))
+        config_output(out)
+        out_dir = get_output_dir(out.dir, out, dry=True)
+        fname = out.get_targets(out_dir)[0]
+        logger.debug('File from output {} is {}'.format(name, fname))
+        if not out._done:
+            run_output(out)
+        self.git_hash = out.options.variant.name+'_variant'
+        return self.cache_file(fname)
+
     def cache_obj(self, name, type):
         self.git_hash = 'None'
-        return self.cache_git(name) if type == 'git' else self.cache_file(name), self.git_hash
+        if type == 'git':
+            return self.cache_git(name)
+        if type == 'file':
+            return self.cache_file(name)
+        return self.cache_output(name)
 
     def create_layers_incl(self, layers):
         incl_file = None
@@ -335,8 +356,10 @@ class DiffOptions(BaseOptions):
             # List of layers
             self.incl_file = self.create_layers_incl(self.layers)
             # Populate the cache
-            old_hash, gh1 = self.cache_obj(self.old, self.old_type)
-            new_hash, gh2 = self.cache_obj(self.new, self.new_type)
+            old_hash = self.cache_obj(self.old, self.old_type)
+            gh1 = self.git_hash
+            new_hash = self.cache_obj(self.new, self.new_type)
+            gh2 = self.git_hash
             # Compute the diff using the cache
             cmd = [self.command, '--no_reader', '--new_file_hash', new_hash, '--old_file_hash', old_hash,
                    '--cache_dir', self.cache_dir, '--output_dir', dir_name, '--output_name', file_name,

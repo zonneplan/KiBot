@@ -1521,16 +1521,16 @@ Notes:
                             read https://stackoverflow.com/questions/1248029/git-pull-error-entry-foo-not-uptodate-cannot-merge.
         - `fuzz`: [number=5] [0,100] Color tolerance (fuzzyness) for the `stats` mode.
         - `new`: [string=''] The file you want to compare. Leave it blank for the current PCB/SCH.
-        - `new_type`: [string='file'] [git,file] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
-                      Use `file` for a file name.
+        - `new_type`: [string='file'] [git,file,output] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+                      Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output.
         - `old`: [string='HEAD'] Reference file. When using git use `HEAD` to refer to the last commit.
                  Use `HEAD~` to refer the previous to the last commit.
                  As `HEAD` is for the whole repo you can use `KIBOT_LAST-n` to make
                  reference to the changes in the PCB/SCH. The `n` value is how many
                  changes in the history you want to go back. A 0 is the same as `HEAD`,
                  a 1 means the last time the PCB/SCH was changed, etc.
-        - `old_type`: [string='git'] [git,file] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
-                      Use `file` for a file name.
+        - `old_type`: [string='git'] [git,file,output] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
+                      Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output.
         - `pcb`: [boolean=true] Compare the PCB, otherwise compare the schematic.
         - `threshold`: [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
                        difference bigger than the indicated value will make the diff fail.

@@ -439,8 +439,8 @@ outputs:
       fuzz: 5
       # [string=''] The file you want to compare. Leave it blank for the current PCB/SCH
       new: ''
-      # [string='file'] [git,file] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
-      # Use `file` for a file name
+      # [string='file'] [git,file,output] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+      # Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output
       new_type: 'file'
       # [string='HEAD'] Reference file. When using git use `HEAD` to refer to the last commit.
       # Use `HEAD~` to refer the previous to the last commit.
@@ -449,8 +449,8 @@ outputs:
       # changes in the history you want to go back. A 0 is the same as `HEAD`,
       # a 1 means the last time the PCB/SCH was changed, etc
       old: 'HEAD'
-      # [string='git'] [git,file] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
-      # Use `file` for a file name
+      # [string='git'] [git,file,output] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
+      # Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output
       old_type: 'git'
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options
       output: '%f-%i%I%v.%x'

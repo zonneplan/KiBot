@@ -15,3 +15,13 @@ outputs:
     options:
       variant: default
       title: 'Hello %V'
+
+  - name: 'diff_pcb'
+    comment: "PCB difference with variant"
+    type: diff
+    layers: ['F.Cu', 'F.Fab']
+    options:
+      old: pcb_default
+      old_type: output
+      cache_dir: .cache
+      add_link_id: true
