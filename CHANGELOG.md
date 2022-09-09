@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Problems to compress netlists. (#287)
 
+### Changed
+- Diff: when comparing a file now the links says Current/FILE instead of None
+
 
 ## [1.3.0] - 2022-09-08
 ### Added

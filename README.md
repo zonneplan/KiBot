@@ -1538,6 +1538,8 @@ Notes:
         - `pcb`: [boolean=true] Compare the PCB, otherwise compare the schematic.
         - `threshold`: [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
                        difference bigger than the indicated value will make the diff fail.
+        - `use_file_id`: [boolean=false] When creating the link name of an output file related to a variant use the variant
+                         `file_id` instead of its name.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.

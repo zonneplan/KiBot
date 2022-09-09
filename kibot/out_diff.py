@@ -89,6 +89,9 @@ class DiffOptions(BaseOptions):
                 to do a checkout, even after stashing, this option can workaround the problem.
                 Note that using it you could potentially lose modified files. For more information
                 read https://stackoverflow.com/questions/1248029/git-pull-error-entry-foo-not-uptodate-cannot-merge """
+            self.use_file_id = False
+            """ When creating the link name of an output file related to a variant use the variant
+                `file_id` instead of its name """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -161,6 +164,7 @@ class DiffOptions(BaseOptions):
         return hash
 
     def cache_file(self, name=None):
+        self.git_hash = 'Current' if not name else 'FILE'
         return self.cache_pcb(name) if self.pcb else self.cache_sch(name)
 
     def run_git(self, cmd, cwd=None, just_raise=False):
@@ -329,11 +333,11 @@ class DiffOptions(BaseOptions):
         logger.debug('File from output {} is {}'.format(name, fname))
         if not out._done:
             run_output(out)
-        self.git_hash = out.options.variant.name+'_variant'
-        return self.cache_file(fname)
+        res = self.cache_file(fname)
+        self.git_hash = out.options.variant.file_id if self.use_file_id else out.options.variant.name+'_variant'
+        return res
 
     def cache_obj(self, name, type):
-        self.git_hash = 'None'
         if type == 'git':
             return self.cache_git(name)
         if type == 'file':
@@ -352,7 +356,7 @@ class DiffOptions(BaseOptions):
                     f.write(str(la.id)+'\n')
         return incl_file
 
-    def do_compare(self, old, old_type, new, new_type, name):
+    def do_compare(self, old, old_type, new, new_type, name, name_ori):
         dir_name = os.path.dirname(name)
         file_name = os.path.basename(name)
         # Populate the cache
@@ -373,7 +377,7 @@ class DiffOptions(BaseOptions):
             cmd.insert(1, '-'+'v'*GS.debug_level)
         run_command(cmd)
         if self.add_link_id:
-            name_comps = os.path.splitext(name)
+            name_comps = os.path.splitext(name_ori)
             target = name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1]
             if self.copy_instead_of_link:
                 copy2(name, target)
@@ -402,6 +406,7 @@ class DiffOptions(BaseOptions):
             GS.check_sch()
             self.file_exist = GS.sch_file
         self.incl_file = None
+        name_ori = name
         try:
             # List of layers
             self.incl_file = self.create_layers_incl(self.layers)
@@ -413,7 +418,7 @@ class DiffOptions(BaseOptions):
                     logger.info(' - {} vs {}'.format(pair[0], pair[1]))
                     self._expand_id = '{}_variants_{}_VS_{}'.format(base_id, pair[0], pair[1])
                     name = self._parent.expand_filename(self._parent.output_dir, self.output)
-                    self.do_compare(pair[0], 'output', pair[1], 'output', name)
+                    self.do_compare(pair[0], 'output', pair[1], 'output', name, name_ori)
                 self._expand_id = base_id
             elif self.new_type == 'multivar' and self.old_type == 'multivar':
                 # Special case, we generate various files
@@ -423,10 +428,10 @@ class DiffOptions(BaseOptions):
                     logger.info(' - {} vs {}'.format(ref_name, new_variant))
                     self._expand_id = '{}_variant_{}'.format(base_id, new_variant)
                     name = self._parent.expand_filename(self._parent.output_dir, self.output)
-                    self.do_compare(self.old, 'file', new_variant, 'output', name)
+                    self.do_compare(self.old, 'file', new_variant, 'output', name, name_ori)
                 self._expand_id = base_id
             else:
-                self.do_compare(self.old, self.old_type, self.new, self.new_type, name)
+                self.do_compare(self.old, self.old_type, self.new, self.new_type, name, name_ori)
         finally:
             # Clean-up
             if remove_cache:
