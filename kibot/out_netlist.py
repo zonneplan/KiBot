@@ -43,6 +43,9 @@ class NetlistOptions(BaseOptions):
             self._expand_ext = 'd356'
             self._category = 'PCB/fabrication/verification'
 
+    def get_targets(self, out_dir):
+        return [self._parent.expand_filename(out_dir, self.output)]
+
     def run(self, name):
         command = self.ensure_tool('KiAuto')
         if self.format == 'ipc':
