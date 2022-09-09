@@ -55,14 +55,14 @@ class DiffOptions(BaseOptions):
                 a 1 means the last time the PCB/SCH was changed, etc """
             self.old_type = 'git'
             """ [git,file,output,multivar] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
-                Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output.
+                Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
                 Use `multivar` to specify a reference file when `new_type` is also `multivar` """
             self.new = ''
             """ [string|list(string)] The file you want to compare. Leave it blank for the current PCB/SCH.
                 A list is accepted only for the `multivar` type """
             self.new_type = 'file'
             """ [git,file,output,multivar] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
-                Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output.
+                Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
                 Use `multivar` to compare a set of variants, in this mode `new` is the list of variants.
                 If `old` is also `multivar` then it becomes the reference, otherwise we compare using pairs of variants """
             self.cache_dir = ''
@@ -309,16 +309,23 @@ class DiffOptions(BaseOptions):
             self.undo_git()
         return hash
 
+    @staticmethod
+    def check_output_type(out, must_be):
+        if out.type != must_be:
+            raise KiPlotConfigurationError('Output `{}` must be `{}` type, not `{}`'.format(out.name, must_be, out.type))
+
     def cache_output(self, name):
         logger.debugl(2, 'From output `{}`'.format(name))
         out = RegOutput.get_output(name)
         if out is None:
             raise KiPlotConfigurationError('Unknown output `{}`'.format(name))
-        if out.type != 'pcb_variant':
-            raise KiPlotConfigurationError('Output `{}` must be `pcb_variant` type, not `{}`'.format(name, out.type))
+        self.check_output_type(out, 'pcb_variant' if self.pcb else 'sch_variant')
         config_output(out)
         out_dir = get_output_dir(out.dir, out, dry=True)
-        fname = out.get_targets(out_dir)[0]
+        if self.pcb:
+            fname = out.get_targets(out_dir)[0]
+        else:
+            fname = out.get_output_sch_name(out_dir)
         logger.debug('File from output {} is {}'.format(name, fname))
         if not out._done:
             run_output(out)

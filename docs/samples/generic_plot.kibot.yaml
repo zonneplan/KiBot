@@ -441,7 +441,7 @@ outputs:
       # A list is accepted only for the `multivar` type
       new: ''
       # [string='file'] [git,file,output,multivar] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
-      # Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output.
+      # Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
       # Use `multivar` to compare a set of variants, in this mode `new` is the list of variants.
       # If `old` is also `multivar` then it becomes the reference, otherwise we compare using pairs of variants
       new_type: 'file'
@@ -453,7 +453,7 @@ outputs:
       # a 1 means the last time the PCB/SCH was changed, etc
       old: 'HEAD'
       # [string='git'] [git,file,output,multivar] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
-      # Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output.
+      # Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
       # Use `multivar` to specify a reference file when `new_type` is also `multivar`
       old_type: 'git'
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options

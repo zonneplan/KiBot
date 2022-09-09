@@ -1523,7 +1523,7 @@ Notes:
         - `new`: [string|list(string)] The file you want to compare. Leave it blank for the current PCB/SCH.
                  A list is accepted only for the `multivar` type.
         - `new_type`: [string='file'] [git,file,output,multivar] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
-                      Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output.
+                      Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
                       Use `multivar` to compare a set of variants, in this mode `new` is the list of variants.
                       If `old` is also `multivar` then it becomes the reference, otherwise we compare using pairs of variants.
         - `old`: [string='HEAD'] Reference file. When using git use `HEAD` to refer to the last commit.
@@ -1533,7 +1533,7 @@ Notes:
                  changes in the history you want to go back. A 0 is the same as `HEAD`,
                  a 1 means the last time the PCB/SCH was changed, etc.
         - `old_type`: [string='git'] [git,file,output,multivar] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
-                      Use `file` for a file name. Use `output` to specify the name of a `pcb_variant` output.
+                      Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
                       Use `multivar` to specify a reference file when `new_type` is also `multivar`.
         - `pcb`: [boolean=true] Compare the PCB, otherwise compare the schematic.
         - `threshold`: [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
