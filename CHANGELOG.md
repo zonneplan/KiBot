@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - New outputs:
   - PCB_Variant: saves a PCB with filters and variants applied.
+  - File_Copy: used to copy files to the output directory. (#279)
 - Support for Eurocircuits drill adjust to fix small OARs.
   Option `eurocircuits_reduce_holes`. (#227)
 - Diff: mechanism to compare using a variant (See #278)

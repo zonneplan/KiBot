@@ -409,6 +409,33 @@ outputs:
       # [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options
       output: '%f-%i%I%v.%x'
       # `remove_files` is an alias for `move_files`
+  # Files copier:
+  # Useful when an external tool is used to compress the output directory.
+  # Note that you can use the `compress` output to create archives
+  - name: 'copy_files_example'
+    comment: 'Used to copy files to the output directory.'
+    type: 'copy_files'
+    dir: 'Example/copy_files_dir'
+    options:
+      # [list(dict)] Which files will be included
+      files:
+        # [string=''] Destination directory inside the output dir, empty means the same of the file
+        - dest: ''
+          # [string='.*'] A regular expression that source files must match
+          filter: '.*'
+          # [boolean=false] Use the output dir specified with `-d` command line option, not the working dir
+          from_outdir: false
+          # [string=''] Collect files from the selected output.
+          # When used the `source` option is ignored
+          from_output: ''
+          # [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
+          # By default this pattern is applied to the current working dir.
+          # See the `from_outdir` option
+          source: '*'
+      # [boolean=true] Store the file pointed by symlinks, not the symlink
+      follow_links: true
+      # [boolean=false] Create symlinks instead of copying files
+      link_no_copy: false
   # Diff:
   # Recursive git submodules aren't supported (submodules inside submodules)
   - name: 'diff_example'

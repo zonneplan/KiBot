@@ -1486,6 +1486,41 @@ Notes:
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* Files copier
+  * Type: `copy_files`
+  * Description: Used to copy files to the output directory.
+                 Useful when an external tool is used to compress the output directory.
+                 Note that you can use the `compress` output to create archives
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `copy_files` output.
+      * Valid keys:
+        - **`files`**: [list(dict)] Which files will be included.
+          * Valid keys:
+            - **`from_output`**: [string=''] Collect files from the selected output.
+                                 When used the `source` option is ignored.
+            - **`source`**: [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
+                            By default this pattern is applied to the current working dir.
+                            See the `from_outdir` option.
+            - `dest`: [string=''] Destination directory inside the output dir, empty means the same of the file.
+            - `filter`: [string='.*'] A regular expression that source files must match.
+            - `from_outdir`: [boolean=false] Use the output dir specified with `-d` command line option, not the working dir.
+        - `follow_links`: [boolean=true] Store the file pointed by symlinks, not the symlink.
+        - `link_no_copy`: [boolean=false] Create symlinks instead of copying files.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=11] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * Diff
   * Type: `diff`
   * Description: Generates a PDF with the differences between two PCBs or schematics.

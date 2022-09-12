@@ -1,0 +1,20 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: result
+    comment: Test tarball compress
+    type: copy_files
+    dir: juan
+    options:
+      files:
+        - source: tests/board_samples/kicad_5/%f.*
+          #from_cwd: true
+          dest: source
+        - source: tests/board_samples/kicad_5/deeper.sch
+          #from_cwd: true
+          dest: source
+        - source: tests/board_samples/kicad_5/sub-sheet.sch
+          #from_cwd: true
+          dest: source

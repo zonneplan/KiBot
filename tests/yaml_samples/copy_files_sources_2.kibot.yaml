@@ -1,0 +1,20 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: result
+    type: copy_files
+    dir: 'test.%x'
+    options:
+      # link_no_copy: true
+      files:
+        - source: tests/board_samples/kicad_5/test_v5.*
+          #from_cwd: true
+          dest: source
+        - source: tests/board_samples/kicad_5/deeper.sch
+          #from_cwd: true
+          dest: source
+        - source: tests/board_samples/kicad_5/sub-sheet.sch
+          #from_cwd: true
+          dest: source
