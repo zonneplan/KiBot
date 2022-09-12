@@ -550,7 +550,10 @@ outputs:
       inner_extension_pattern: ''
       # [boolean=false] Use mm instead of inches
       metric_units: false
-      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
+      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+      # IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+      # For this reason you must avoid generating two variants at the same directory when one of
+      # them uses the default KiCad name. Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=true] Include the footprint references
       plot_footprint_refs: true
@@ -705,7 +708,10 @@ outputs:
       inner_extension_pattern: ''
       # [number=0.1] [0.02,2] Line_width for objects without width [mm] (KiCad 5)
       line_width: 0.1
-      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
+      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+      # IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+      # For this reason you must avoid generating two variants at the same directory when one of
+      # them uses the default KiCad name. Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=true] Include the footprint references
       plot_footprint_refs: true
@@ -764,7 +770,10 @@ outputs:
       inner_extension_pattern: ''
       # [boolean=false] Plot mirrored
       mirror_plot: false
-      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
+      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+      # IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+      # For this reason you must avoid generating two variants at the same directory when one of
+      # them uses the default KiCad name. Affected by global options
       output: '%f-%i%I%v.%x'
       # [number=1] [1,16] Pen number
       pen_number: 1
@@ -1351,7 +1360,10 @@ outputs:
       mirror_plot: false
       # [boolean=false] Invert black and white
       negative_plot: false
-      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
+      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+      # IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+      # For this reason you must avoid generating two variants at the same directory when one of
+      # them uses the default KiCad name. Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=true] Include the footprint references
       plot_footprint_refs: true
@@ -1531,7 +1543,10 @@ outputs:
       mirror_plot: false
       # [boolean=false] Invert black and white
       negative_plot: false
-      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
+      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+      # IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+      # For this reason you must avoid generating two variants at the same directory when one of
+      # them uses the default KiCad name. Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=true] Include the footprint references
       plot_footprint_refs: true
@@ -1801,7 +1816,10 @@ outputs:
       mirror_plot: false
       # [boolean=false] Invert black and white
       negative_plot: false
-      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options
+      # [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+      # IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+      # For this reason you must avoid generating two variants at the same directory when one of
+      # them uses the default KiCad name. Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=true] Include the footprint references
       plot_footprint_refs: true

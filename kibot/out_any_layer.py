@@ -58,7 +58,10 @@ class AnyLayerOptions(VariantOptions):
             self.force_plot_invisible_refs_vals = False
             """ Include references and values even when they are marked as invisible """
             self.output = GS.def_global_output
-            """ *Output file name, the default KiCad name if empty """
+            """ *Output file name, the default KiCad name if empty.
+                IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+                For this reason you must avoid generating two variants at the same directory when one of
+                them uses the default KiCad name """
             self.tent_vias = True
             """ Cover the vias """
             self.uppercase_extensions = False
@@ -152,7 +155,7 @@ class AnyLayerOptions(VariantOptions):
             logger.debug("Plotting layer `{}` to `{}`".format(la, filename))
             plot_ctrl.PlotLayer()
             plot_ctrl.ClosePlot()
-            if self.output:
+            if self.output and k_filename != filename:
                 os.rename(k_filename, filename)
             if create_job:
                 jobfile_writer.AddGbrFile(id, os.path.basename(filename))

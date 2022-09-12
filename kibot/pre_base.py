@@ -139,10 +139,14 @@ class BasePreFlight(Registrable):
 
     def _find_variant(self):
         # Preflights doesn't have a variant, but we could have one global default
+        if hasattr(self, '_variant') and self._variant:
+            return self._variant.file_id
         return Optionable._find_global_variant()
 
     def _find_variant_name(self):
         # Preflights doesn't have a variant, but we could have one global default
+        if hasattr(self, '_variant') and self._variant:
+            return self._variant.name
         return Optionable._find_global_variant_name()
 
     def ensure_tool(self, name):

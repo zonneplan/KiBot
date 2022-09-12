@@ -702,6 +702,10 @@ global:
                       Currently known are FR1 to FR5.
     - `restore_project`: [boolean=false] Restore the KiCad project after execution.
                          Note that this option will undo operations like `set_text_variables`.
+    - `set_text_variables_before_output`: [boolean=false] Run the `set_text_variables` preflight before running each output that involves variants.
+                                          This can be used when a text variable uses the variant and you want to create more than
+                                          one variant in the same run. Note that this could be slow because it forces a board
+                                          reload each time you run an output that uses variants.
     - `silk_screen_color`: [string='white'] Color for the markings. Currently used for documentation and to choose default colors.
                            KiCad 6: you should set this in the Board Setup -> Physical Stackup.
                            Currently known are black and white.
@@ -1634,7 +1638,10 @@ Notes:
     - **`name`**: [string=''] Used to identify this particular output definition.
     - **`options`**: [dict] Options for the `dxf` output.
       * Valid keys:
-        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+                        IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+                        For this reason you must avoid generating two variants at the same directory when one of
+                        them uses the default KiCad name. Affected by global options.
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -1801,7 +1808,10 @@ Notes:
       * Valid keys:
         - **`create_gerber_job_file`**: [boolean=true] Creates a file with information about all the generated gerbers.
                                         You can use it in gerbview to load all gerbers at once.
-        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+                        IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+                        For this reason you must avoid generating two variants at the same directory when one of
+                        them uses the default KiCad name. Affected by global options.
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - **`subtract_mask_from_silk`**: [boolean=false] Subtract the solder mask from the silk screen.
@@ -1860,7 +1870,10 @@ Notes:
     - **`name`**: [string=''] Used to identify this particular output definition.
     - **`options`**: [dict] Options for the `hpgl` output.
       * Valid keys:
-        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+                        IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+                        For this reason you must avoid generating two variants at the same directory when one of
+                        them uses the default KiCad name. Affected by global options.
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -2413,7 +2426,10 @@ Notes:
     - **`name`**: [string=''] Used to identify this particular output definition.
     - **`options`**: [dict] Options for the `pdf` output.
       * Valid keys:
-        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+                        IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+                        For this reason you must avoid generating two variants at the same directory when one of
+                        them uses the default KiCad name. Affected by global options.
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -2439,7 +2455,10 @@ Notes:
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
-    - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+    - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+                    IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+                    For this reason you must avoid generating two variants at the same directory when one of
+                    them uses the default KiCad name. Affected by global options.
     - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
                                   The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -2643,7 +2662,10 @@ Notes:
     - **`name`**: [string=''] Used to identify this particular output definition.
     - **`options`**: [dict] Options for the `ps` output.
       * Valid keys:
-        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+                        IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+                        For this reason you must avoid generating two variants at the same directory when one of
+                        them uses the default KiCad name. Affected by global options.
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
@@ -2918,7 +2940,10 @@ Notes:
     - **`name`**: [string=''] Used to identify this particular output definition.
     - **`options`**: [dict] Options for the `svg` output.
       * Valid keys:
-        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty. Affected by global options.
+        - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+                        IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
+                        For this reason you must avoid generating two variants at the same directory when one of
+                        them uses the default KiCad name. Affected by global options.
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.

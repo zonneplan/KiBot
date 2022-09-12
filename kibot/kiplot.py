@@ -375,6 +375,12 @@ def config_output(out, dry=False, dont_stop=False):
 def run_output(out, dont_stop=False):
     if out._done:
         return
+    if GS.global_set_text_variables_before_output and hasattr(out.options, 'variant'):
+        pre = BasePreFlight.get_preflight('set_text_variables')
+        if pre:
+            pre._variant = out.options.variant
+            pre.apply()
+            load_board()
     GS.current_output = out.name
     try:
         out.run(get_output_dir(out.dir, out))
