@@ -1581,6 +1581,8 @@ outputs:
       background2: '#CCCCE5'
       # [string='#332B16'] Color for the board without copper or solder mask
       board: '#332B16'
+      # [boolean=true] Clip silkscreen at via annuli (KiCad 6)
+      clip_silk_on_via_annulus: true
       # [string='#8b898c'] Color for the copper
       copper: '#8b898c'
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
@@ -1619,12 +1621,22 @@ outputs:
       # [number=0] Steps to rotate around the Z axis, positive is clockwise.
       # Each step is currently 10 degrees. Only for KiCad 6
       rotate_z: 0
+      # [boolean=true] Show the silkscreen layers (KiCad 6)
+      show_silkscreen: true
+      # [boolean=true] Show the solder mask layers (KiCad 6)
+      show_soldermask: true
+      # [boolean=true] Show the solder paste layers (KiCad 6)
+      show_solderpaste: true
+      # [boolean=true] Show filled areas in zones (KiCad 6)
+      show_zones: true
       # [string='#d5dce4'] Color for the silk screen
       silk: '#d5dce4'
       # [string='#208b47'] Color for the solder mask
       solder_mask: '#208b47'
       # [string='#808080'] Color for the solder paste
       solder_paste: '#808080'
+      # [boolean=true] Clip silkscreen at solder mask edges (KiCad 6)
+      subtract_mask_from_silk: true
       # [string=''] Board variant to apply
       variant: ''
       # [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view

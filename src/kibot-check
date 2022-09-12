@@ -338,9 +338,9 @@ deps = '{\
                 "mandatory": true,\
                 "output": "render_3d",\
                 "version": [\
-                    1,\
-                    6,\
-                    13\
+                    2,\
+                    0,\
+                    4\
                 ]\
             },\
             {\

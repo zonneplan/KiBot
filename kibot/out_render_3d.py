@@ -8,7 +8,7 @@
 Dependencies:
   - from: KiAuto
     role: mandatory
-    version: 1.6.13
+    version: 2.0.4
 """
 import os
 from shutil import rmtree
@@ -91,6 +91,18 @@ class Render3DOptions(Base3DOptions):
             """ Image height (aprox.) """
             self.orthographic = False
             """ Enable the orthographic projection mode (top view looks flat) """
+            self.show_silkscreen = True
+            """ Show the silkscreen layers (KiCad 6) """
+            self.show_soldermask = True
+            """ Show the solder mask layers (KiCad 6) """
+            self.show_solderpaste = True
+            """ Show the solder paste layers (KiCad 6) """
+            self.show_zones = True
+            """ Show filled areas in zones (KiCad 6) """
+            self.clip_silk_on_via_annulus = True
+            """ Clip silkscreen at via annuli (KiCad 6) """
+            self.subtract_mask_from_silk = True
+            """ Clip silkscreen at solder mask edges (KiCad 6) """
         super().__init__()
         self._expand_ext = 'png'
 
@@ -141,16 +153,7 @@ class Render3DOptions(Base3DOptions):
         if steps:
             cmd.extend([ops, str(steps)])
 
-    def run(self, output):
-        super().run(output)
-        if GS.ki6 and GS.kicad_version_n < KICAD_VERSION_6_0_2:
-            logger.error("3D Viewer not supported for KiCad 6.0.0/1\n"
-                         "Please upgrade KiCad to 6.0.2 or newer")
-            exit(MISSING_TOOL)
-        command = self.ensure_tool('KiAuto')
-        # Base command with overwrite
-        cmd = [command, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),
-               '3d_view', '--output_name', output]
+    def add_options(self, cmd):
         # Add user options
         if not self.no_virtual:
             cmd.append('--virtual')
@@ -178,6 +181,30 @@ class Render3DOptions(Base3DOptions):
             cmd.append('--orthographic')
         if self.view != 'z':
             cmd.extend(['--view', self.view])
+        if not self.show_silkscreen:
+            cmd.append('--hide_silkscreen')
+        if not self.show_soldermask:
+            cmd.append('--hide_soldermask')
+        if not self.show_solderpaste:
+            cmd.append('--hide_solderpaste')
+        if not self.show_zones:
+            cmd.append('--hide_zones')
+        if not self.clip_silk_on_via_annulus:
+            cmd.append('--dont_clip_silk_on_via_annulus')
+        if not self.subtract_mask_from_silk:
+            cmd.append('--dont_substrack_mask_from_silk')
+
+    def run(self, output):
+        super().run(output)
+        if GS.ki6 and GS.kicad_version_n < KICAD_VERSION_6_0_2:
+            logger.error("3D Viewer not supported for KiCad 6.0.0/1\n"
+                         "Please upgrade KiCad to 6.0.2 or newer")
+            exit(MISSING_TOOL)
+        command = self.ensure_tool('KiAuto')
+        # Base command with overwrite
+        cmd = [command, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),
+               '3d_view', '--output_name', output]
+        self.add_options(cmd)
         # The board
         board_name = self.filter_components()
         cmd.extend([board_name, os.path.dirname(output)])

@@ -123,7 +123,7 @@ Notes:
 [**Requests**](https://pypi.org/project/Requests/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/Requests/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/Requests/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-requests)
 - Mandatory
 
-[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v2.0.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v2.0.4 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `gencad`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`
 - Optional to:
   - Compare schematics for `diff` (v2.0.0)
@@ -2723,6 +2723,7 @@ Notes:
         - `background1`: [string='#66667F'] First color for the background gradient.
         - `background2`: [string='#CCCCE5'] Second color for the background gradient.
         - `board`: [string='#332B16'] Color for the board without copper or solder mask.
+        - `clip_silk_on_via_annulus`: [boolean=true] Clip silkscreen at via annuli (KiCad 6).
         - `copper`: [string='#8b898c'] Color for the copper.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
@@ -2731,9 +2732,14 @@ Notes:
         - `no_smd`: [boolean=false] Used to exclude 3D models for surface mount components.
         - `no_tht`: [boolean=false] Used to exclude 3D models for through hole components.
         - `orthographic`: [boolean=false] Enable the orthographic projection mode (top view looks flat).
+        - `show_silkscreen`: [boolean=true] Show the silkscreen layers (KiCad 6).
+        - `show_soldermask`: [boolean=true] Show the solder mask layers (KiCad 6).
+        - `show_solderpaste`: [boolean=true] Show the solder paste layers (KiCad 6).
+        - `show_zones`: [boolean=true] Show filled areas in zones (KiCad 6).
         - `silk`: [string='#d5dce4'] Color for the silk screen.
         - `solder_mask`: [string='#208b47'] Color for the solder mask.
         - `solder_paste`: [string='#808080'] Color for the solder paste.
+        - `subtract_mask_from_silk`: [boolean=true] Clip silkscreen at solder mask edges (KiCad 6).
         - `variant`: [string=''] Board variant to apply.
         - *wait_ray_tracing*: Alias for wait_render.
         - `wait_render`: [number=-600] How many seconds we must wait before capturing the render (ray tracing or normal).

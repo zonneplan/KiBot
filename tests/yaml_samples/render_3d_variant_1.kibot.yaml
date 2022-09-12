@@ -26,3 +26,4 @@ outputs:
     options:
       variant: default
       ray_tracing: true
+      # show_solderpaste: false
