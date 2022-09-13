@@ -7,6 +7,8 @@ global:
 #   remove_adhesive_for_dnp: false
 #   cross_footprints_for_dnp: false
   hide_excluded: true
+  pcb_finish: ENIG
+  solder_mask_color: blue
 
 variants:
   - name: 'production'
@@ -47,6 +49,14 @@ outputs:
     options:
       variant: test
       title: 'Hello %V'
+
+  - name: '3d_default'
+    comment: "3D view w/variant"
+    type: render_3d
+    options:
+      variant: default
+      ray_tracing: true
+      #show_solderpaste: false
 
   - name: 'diff_pcb'
     comment: "PCB difference with variant"
