@@ -59,6 +59,7 @@
     * [Importing outputs from another file](#importing-outputs-from-another-file)
     * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
     * [Importing filters and variants from another file](#importing-filters-and-variants-from-another-file)
+  * [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing)
 * [Usage](#usage)
 * [Usage for CI/CD](#usage-for-cicd)
   * [Github Actions](#usage-of-github-actions)
@@ -3423,6 +3424,21 @@ import:
 This will import all outputs and filters, but not variants or globals.
 Also note that imported globals has more precedence than the ones defined in the same file.
 
+### Doing YAML substitution or preprocessing
+
+Sometimes you could want to change values in the YAML depending on external stuff,
+or just want to be able to change something for each variant run.
+
+In this case you can use external tools to create various YAML files using a template,
+but you can also use KiBot's definitions.
+
+The definitions allows you to replace tags like `@VARIABLE@` by some specified value.
+These definitions can be specified at the command line using the `-E` option.
+As an example: `-E UNITS=millimeters` will replace all `@UNITS@` markers by `millimeters`.
+This is applied to all YAML files loaded, so this propagates to all the imported YAML files.
+
+You can use `-E` as many times as you need.
+
 ## Usage
 
 For a quick start just go to the project's dir and run:
@@ -3526,7 +3542,8 @@ KiBot: KiCad automation tool for documents generation
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
-         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ... [TARGET...]
+         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
+         [-E DEF] ... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
@@ -3552,6 +3569,7 @@ Options:
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -D, --dont-stop                  Try to continue if an output fails
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
+  -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)

@@ -86,6 +86,8 @@ class GS(object):
     test_boolean = True
     test_number = 5
     stackup = None
+    # Preprocessor definitions
+    cli_defines = {}
     #
     # Global defaults
     #

@@ -9,6 +9,7 @@
 Class to read KiBot config files
 """
 
+import io
 import os
 import json
 from sys import (exit, maxsize)
@@ -446,6 +447,17 @@ class CfgYamlReader(object):
         return all_collected
 
     def load_yaml(self, fstream):
+        if GS.cli_defines:
+            # Load the file to memory so we can preprocess it
+            content = fstream.read()
+            logger.debug('Applying preprocessor definitions')
+            # Replace all
+            for k, v in GS.cli_defines.items():
+                key = '@'+k+'@'
+                logger.debugl(2, '- Replacing {} -> {}'.format(key, v))
+                content = content.replace(key, v)
+            # Create an stream from the string
+            fstream = io.StringIO(content)
         try:
             data = yaml.safe_load(fstream)
         except yaml.YAMLError as e:

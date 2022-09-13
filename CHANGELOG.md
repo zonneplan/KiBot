@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- General things:
+  - Some basic preprocessing, now you can parametrize the YAML config.
+    (See #233 #243)
 - New outputs:
   - PCB_Variant: saves a PCB with filters and variants applied.
   - File_Copy: used to copy files to the output directory. (#279)

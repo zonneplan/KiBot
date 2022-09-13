@@ -143,6 +143,27 @@ def test_position_csv_cols(test_dir):
     ctx.clean_up()
 
 
+def test_position_3Rs_pre_csv(test_dir):
+    """ Test using preprocessor """
+    ctx = context.TestContext(test_dir, '3Rs', 'simple_position_csv_pre', POS_DIR+'_millimeters')
+    ctx.run(extra=['-E', 'UNITS=millimeters'])
+    pos_top = ctx.get_pos_top_csv_filename()
+    pos_bot = ctx.get_pos_bot_csv_filename()
+    ctx.expect_out_file(pos_top)
+    ctx.expect_out_file(pos_bot)
+    expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'], csv=True)
+    expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'], csv=True)
+    ctx.sub_dir = POS_DIR+'_inches'
+    ctx.run(extra=['-E', 'UNITS=inches'])
+    pos_top = ctx.get_pos_top_csv_filename()
+    pos_bot = ctx.get_pos_bot_csv_filename()
+    ctx.expect_out_file(pos_top)
+    ctx.expect_out_file(pos_bot)
+    expect_position(ctx, pos_top, ['R1'], ['R2', 'R3'], csv=True, inches=True)
+    expect_position(ctx, pos_bot, ['R2'], ['R1', 'R3'], csv=True, inches=True)
+    ctx.clean_up()
+
+
 def test_position_3Rs_unified_csv(test_dir):
     """ Also test the quiet mode """
     ctx = context.TestContext(test_dir, '3Rs', 'simple_position_unified_csv', POS_DIR)

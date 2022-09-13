@@ -9,7 +9,8 @@
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
-         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ... [TARGET...]
+         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
+         [-E DEF] ... [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
@@ -35,6 +36,7 @@ Options:
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -D, --dont-stop                  Try to continue if an output fails
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
+  -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
@@ -240,6 +242,24 @@ def detect_kicad():
         logger.debug('KiCad config path {}'.format(GS.kicad_conf_path))
 
 
+def parse_defines(args):
+    for define in args.define:
+        if '=' not in define:
+            logger.error('Malformed `define` option, must be VARIABLE=VALUE ({})'.format(define))
+            sys.exit(EXIT_BAD_ARGS)
+        var = define.split('=')[0]
+        GS.cli_defines[var] = define[len(var)+1:]
+
+
+def parse_global_redef(args):
+    for redef in args.global_redef:
+        if '=' not in redef:
+            logger.error('Malformed global-redef option, must be VARIABLE=VALUE ({})'.format(redef))
+            sys.exit(EXIT_BAD_ARGS)
+        var = redef.split('=')[0]
+        GS.cli_global_defs[var] = redef[len(var)+1:]
+
+
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -257,12 +277,7 @@ def main():
     os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = 'True'
 
     # Parse global overwrite options
-    for redef in args.global_redef:
-        if '=' not in redef:
-            logger.error('Malformed global-redef option, must be VARIABLE=VALUE ({})'.format(redef))
-            sys.exit(EXIT_BAD_ARGS)
-        var = redef.split('=')[0]
-        GS.cli_global_defs[var] = redef[len(var)+1:]
+    parse_global_redef(args)
 
     # Disable auto-download if needed
     if args.no_auto_download:
@@ -313,13 +328,19 @@ def main():
     # Determine the project file
     GS.set_pro(solve_project_file())
 
+    # Parse preprocessor defines
+    parse_defines(args)
+
     # Read the config file
     cr = CfgYamlReader()
     outputs = None
     try:
         # The Python way ...
         with gzip.open(plot_config) as cf_file:
-            outputs = cr.read(cf_file)
+            try:
+                outputs = cr.read(cf_file)
+            except KiPlotConfigurationError as e:
+                config_error(str(e))
     except OSError:
         pass
     if outputs is None:
