@@ -790,7 +790,7 @@ class BoMOptions(BaseOptions):
                          format(prj.name, prj.file, prj.ref_id))
             self.qtys[prj.name] = prj.number
             ext = os.path.splitext(prj.file)[1]
-            if ext == 'sch' or ext == 'kicad_sch':
+            if ext == '.sch' or ext == '.kicad_sch':
                 prj.sch = load_any_sch(prj.file, prj.name)
             else:
                 prj.sch = self.load_csv(prj.file, prj.name, prj.delimiter)
