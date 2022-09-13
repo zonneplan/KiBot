@@ -100,6 +100,8 @@ class Globals(FiltersOptions):
             self.copper_thickness = 35
             """ [number|string] Copper thickness in micrometers (1 Oz is 35 micrometers).
                 KiCad 6: you should set this in the Board Setup -> Physical Stackup """
+            self.cross_footprints_for_dnp = True
+            """ Draw a cross for excluded components in the `Fab` layer """
             self.cross_no_body = False
             """ Cross components even when they don't have a body. Only for KiCad 6 """
             self.date_format = '%Y-%m-%d'
@@ -130,6 +132,8 @@ class Globals(FiltersOptions):
                 For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/ """
             self.field_3D_model = '_3D_model'
             """ Name for the field controlling the 3D models used for a component """
+            self.hide_excluded = False
+            """ Default value for the `hide_excluded` option of various PCB outputs """
             self.kiauto_time_out_scale = 0.0
             """ Time-out multiplier for KiAuto operations """
             self.kiauto_wait_start = 0
@@ -147,6 +151,10 @@ class Globals(FiltersOptions):
             self.pcb_material = 'FR4'
             """ PCB core material. Currently used for documentation and to choose default colors.
                 Currently known are FR1 to FR5 """
+            self.remove_solder_paste_for_dnp = True
+            """ When applying filters and variants remove the solder paste for components that won't be included """
+            self.remove_adhesive_for_dnp = True
+            """ When applying filters and variants remove the adhesive (glue) for components that won't be included """
             self.restore_project = False
             """ Restore the KiCad project after execution.
                 Note that this option will undo operations like `set_text_variables` """

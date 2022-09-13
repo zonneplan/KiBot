@@ -34,7 +34,8 @@ class Any_PCB_PrintOptions(VariantOptions):
             self.mirror = False
             """ Print mirrored (X axis inverted). ONLY for KiCad 6 """
             self.hide_excluded = False
-            """ Hide components in the Fab layer that are marked as excluded by a variant """
+            """ Hide components in the Fab layer that are marked as excluded by a variant.
+                Affected by global options """
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """

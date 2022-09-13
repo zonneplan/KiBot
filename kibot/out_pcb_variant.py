@@ -15,7 +15,8 @@ class PCB_Variant_Options(VariantOptions):
     def __init__(self):
         with document:
             self.hide_excluded = False
-            """ Hide components in the Fab layer that are marked as excluded by a variant """
+            """ Hide components in the Fab layer that are marked as excluded by a variant.
+                Affected by global options """
             self.output = GS.def_global_output
             """ *Filename for the output (%i=variant, %x=kicad_pcb) """
             self.copy_project = True

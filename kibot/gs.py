@@ -99,6 +99,7 @@ class GS(object):
     class_for_global_opts = None
     global_castellated_pads = None
     global_copper_thickness = None
+    global_cross_footprints_for_dnp = None
     global_cross_no_body = None
     global_date_format = None
     global_date_time_format = None
@@ -109,6 +110,7 @@ class GS(object):
     global_edge_plating = None
     global_extra_pth_drill = None
     global_field_3D_model = None
+    global_hide_excluded = None
     global_kiauto_time_out_scale = None
     global_kiauto_wait_start = None
     global_impedance_controlled = None
@@ -118,6 +120,8 @@ class GS(object):
     global_output = None
     global_pcb_finish = None
     global_pcb_material = None
+    global_remove_solder_paste_for_dnp = None
+    global_remove_adhesive_for_dnp = None
     global_restore_project = None
     global_set_text_variables_before_output = None
     global_silk_screen_color = None

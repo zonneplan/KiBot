@@ -229,7 +229,8 @@ class PCB_PrintOptions(VariantOptions):
             """ When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
                 Note: page numbers can be customized using the `page_id` option for each page """
             self.hide_excluded = False
-            """ Hide components in the Fab layer that are marked as excluded by a variant """
+            """ Hide components in the Fab layer that are marked as excluded by a variant.
+                Affected by global options """
             self.color_theme = '_builtin_classic'
             """ *Selects the color theme. Only applies to KiCad 6.
                 To use the KiCad 6 default colors select `_builtin_default`.

@@ -252,7 +252,7 @@ class VariantOptions(BaseOptions):
 
     def cross_modules(self, board, comps_hash):
         """ Draw a cross in all 'not fitted' modules using *.Fab layer """
-        if comps_hash is None:
+        if comps_hash is None or not GS.global_cross_footprints_for_dnp:
             return
         # Cross the affected components
         ffab = board.GetLayerID('F.Fab')
@@ -289,7 +289,7 @@ class VariantOptions(BaseOptions):
 
     def uncross_modules(self, board, comps_hash):
         """ Undo the crosses in *.Fab layer """
-        if comps_hash is None:
+        if comps_hash is None or not GS.global_cross_footprints_for_dnp:
             return
         # Undo the drawings
         for m in GS.get_modules_board(board):
@@ -307,7 +307,7 @@ class VariantOptions(BaseOptions):
 
     def remove_paste_and_glue(self, board, comps_hash):
         """ Remove from solder paste layers the filtered components. """
-        if comps_hash is None:
+        if comps_hash is None or not (GS.global_remove_solder_paste_for_dnp or GS.global_remove_adhesive_for_dnp):
             return
         exclude = LSET()
         fpaste = board.GetLayerID('F.Paste')
@@ -327,28 +327,30 @@ class VariantOptions(BaseOptions):
             c = comps_hash.get(ref, None)
             if c and c.included and not c.fitted:
                 # Remove all pads from *.Paste
-                old_c_layers = []
-                for p in m.Pads():
-                    pad_layers = p.GetLayerSet()
-                    is_front = fpaste in pad_layers.Seq()
-                    old_c_layers.append(pad_layers.FmtHex())
-                    pad_layers.removeLayerSet(exclude)
-                    if len(pad_layers.Seq()) == 0:
-                        # No layers at all. Ridiculous, but happends.
-                        # At least add an F.Mask
-                        pad_layers.addLayer(fmask if is_front else bmask)
-                        logger.warning(W_WRONGPASTE+'Pad with solder paste, but no copper or solder mask aperture in '+ref)
-                    p.SetLayerSet(pad_layers)
-                old_layers.append(old_c_layers)
+                if GS.global_remove_solder_paste_for_dnp:
+                    old_c_layers = []
+                    for p in m.Pads():
+                        pad_layers = p.GetLayerSet()
+                        is_front = fpaste in pad_layers.Seq()
+                        old_c_layers.append(pad_layers.FmtHex())
+                        pad_layers.removeLayerSet(exclude)
+                        if len(pad_layers.Seq()) == 0:
+                            # No layers at all. Ridiculous, but happends.
+                            # At least add an F.Mask
+                            pad_layers.addLayer(fmask if is_front else bmask)
+                            logger.warning(W_WRONGPASTE+'Pad with solder paste, but no copper or solder mask aperture in '+ref)
+                        p.SetLayerSet(pad_layers)
+                    old_layers.append(old_c_layers)
                 # Remove any graphical item in the *.Adhes layers
-                for gi in m.GraphicalItems():
-                    l_gi = gi.GetLayer()
-                    if l_gi == fadhes:
-                        gi.SetLayer(rescue)
-                        old_fadhes.append(gi)
-                    if l_gi == badhes:
-                        gi.SetLayer(rescue)
-                        old_badhes.append(gi)
+                if GS.global_remove_adhesive_for_dnp:
+                    for gi in m.GraphicalItems():
+                        l_gi = gi.GetLayer()
+                        if l_gi == fadhes:
+                            gi.SetLayer(rescue)
+                            old_fadhes.append(gi)
+                        if l_gi == badhes:
+                            gi.SetLayer(rescue)
+                            old_badhes.append(gi)
         # Store the data to undo the above actions
         self.old_layers = old_layers
         self.old_fadhes = old_fadhes
@@ -360,20 +362,22 @@ class VariantOptions(BaseOptions):
     def restore_paste_and_glue(self, board, comps_hash):
         if comps_hash is None:
             return
-        for m in GS.get_modules_board(board):
-            ref = m.GetReference()
-            c = comps_hash.get(ref, None)
-            if c and c.included and not c.fitted:
-                restore = self.old_layers.pop(0)
-                for p in m.Pads():
-                    pad_layers = p.GetLayerSet()
-                    res = restore.pop(0)
-                    pad_layers.ParseHex(res, len(res))
-                    p.SetLayerSet(pad_layers)
-        for gi in self.old_fadhes:
-            gi.SetLayer(self.fadhes)
-        for gi in self.old_badhes:
-            gi.SetLayer(self.badhes)
+        if GS.global_remove_solder_paste_for_dnp:
+            for m in GS.get_modules_board(board):
+                ref = m.GetReference()
+                c = comps_hash.get(ref, None)
+                if c and c.included and not c.fitted:
+                    restore = self.old_layers.pop(0)
+                    for p in m.Pads():
+                        pad_layers = p.GetLayerSet()
+                        res = restore.pop(0)
+                        pad_layers.ParseHex(res, len(res))
+                        p.SetLayerSet(pad_layers)
+        if GS.global_remove_adhesive_for_dnp:
+            for gi in self.old_fadhes:
+                gi.SetLayer(self.fadhes)
+            for gi in self.old_badhes:
+                gi.SetLayer(self.badhes)
 
     def remove_fab(self, board, comps_hash):
         """ Remove from Fab the excluded components. """

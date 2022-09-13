@@ -2,6 +2,12 @@
 kibot:
   version: 1
 
+global:
+#   remove_solder_paste_for_dnp: false
+#   remove_adhesive_for_dnp: false
+#   cross_footprints_for_dnp: false
+  hide_excluded: true
+
 variants:
   - name: 'production'
     comment: 'Production variant'
@@ -45,7 +51,7 @@ outputs:
   - name: 'diff_pcb'
     comment: "PCB difference with variant"
     type: diff
-    layers: ['F.Cu', 'F.Fab']
+    layers: ['F.Cu', 'F.Fab', 'F.Adhes', 'F.Paste']
     options:
       # old: pcb_default
       # old_type: output

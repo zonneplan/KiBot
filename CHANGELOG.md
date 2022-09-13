@@ -11,8 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - File_Copy: used to copy files to the output directory. (#279)
 - Support for Eurocircuits drill adjust to fix small OARs.
   Option `eurocircuits_reduce_holes`. (#227)
-- Support for changing text variables with variants during outputs creation.
-  Option `set_text_variables_before_output`. (See #233)
+- Global options:
+  - Support for changing text variables with variants during outputs creation.
+    Option `set_text_variables_before_output`. (See #233)
+  - Options to control which stuff is changed on PCB variants: (See #270)
+    - cross_footprints_for_dnp
+    - remove_adhesive_for_dnp
+    - remove_solder_paste_for_dnp
+    - hide_excluded (default value)
 - Diff: mechanism to compare using a variant (See #278)
 - Sch Variant:
   - Option to copy the project. Needed for text variables.

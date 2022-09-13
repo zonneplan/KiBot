@@ -644,6 +644,7 @@ global:
     - *copper_finish*: Alias for pcb_finish.
     - `copper_thickness`: [number|string] Copper thickness in micrometers (1 Oz is 35 micrometers).
                           KiCad 6: you should set this in the Board Setup -> Physical Stackup.
+    - `cross_footprints_for_dnp`: [boolean=true] Draw a cross for excluded components in the `Fab` layer.
     - `cross_no_body`: [boolean=false] Cross components even when they don't have a body. Only for KiCad 6.
     - `date_format`: [string='%Y-%m-%d'] Format used for the day we started the script.
                      Is also used for the PCB/SCH date formatting when `time_reformat` is enabled (default behavior).
@@ -688,6 +689,7 @@ global:
         - `number`: [number=0] Error number we want to exclude. KiCad 5 only.
         - `regex`: [string=''] Regular expression to match the text for the error we want to exclude.
         - *regexp*: Alias for regex.
+    - `hide_excluded`: [boolean=false] Default value for the `hide_excluded` option of various PCB outputs.
     - `impedance_controlled`: [boolean=false] The PCB needs specific dielectric characteristics.
                               KiCad 6: you should set this in the Board Setup -> Physical Stackup.
     - `kiauto_time_out_scale`: [number=0.0] Time-out multiplier for KiAuto operations.
@@ -700,6 +702,8 @@ global:
                     Immersion Ag, ImAu, Immersion Gold, Immersion Au, Immersion Tin, Immersion Nickel, OSP and HT_OSP.
     - `pcb_material`: [string='FR4'] PCB core material. Currently used for documentation and to choose default colors.
                       Currently known are FR1 to FR5.
+    - `remove_adhesive_for_dnp`: [boolean=true] When applying filters and variants remove the adhesive (glue) for components that won't be included.
+    - `remove_solder_paste_for_dnp`: [boolean=true] When applying filters and variants remove the solder paste for components that won't be included.
     - `restore_project`: [boolean=false] Restore the KiCad project after execution.
                          Note that this option will undo operations like `set_text_variables`.
     - `set_text_variables_before_output`: [boolean=false] Run the `set_text_variables` preflight before running each output that involves variants.
@@ -2305,6 +2309,7 @@ Notes:
                                   plot: uses KiCad Python API. Only available for KiCad 6.
                                   You get the default frame and some substitutions doesn't work.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+                           Affected by global options.
         - `keep_temporal_files`: [boolean=false] Store the temporal page and layer files in the output dir and don't delete them.
         - `micro_via_color`: [string=''] Color used for micro `colored_vias`.
         - `pad_color`: [string=''] Color used for `colored_pads`.
@@ -2347,6 +2352,7 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+                           Affected by global options.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
@@ -2530,6 +2536,7 @@ Notes:
                              KiCad 5 forces it by default, and you can't control it from config files.
                              Same for KiCad 6 when printing to separated pages.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+                           Affected by global options.
         - `mirror`: [boolean=false] Print mirrored (X axis inverted). ONLY for KiCad 6.
         - `monochrome`: [boolean=false] Print in black and white.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
@@ -3021,6 +3028,7 @@ Notes:
                              KiCad 5 forces it by default, and you can't control it from config files.
                              Same for KiCad 6 when printing to separated pages.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+                           Affected by global options.
         - `mirror`: [boolean=false] Print mirrored (X axis inverted). ONLY for KiCad 6.
         - `monochrome`: [boolean=false] Print in black and white.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.

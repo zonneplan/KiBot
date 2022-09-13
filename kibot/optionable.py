@@ -43,7 +43,7 @@ class Optionable(object):
         self._expand_id = ''
         self._expand_ext = ''
         super().__init__()
-        for var in ['output', 'variant', 'units']:
+        for var in ['output', 'variant', 'units', 'hide_excluded']:
             glb = getattr(GS, 'global_'+var)
             if glb and hasattr(self, var):
                 setattr(self, var, glb)
