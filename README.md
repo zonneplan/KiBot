@@ -1368,7 +1368,13 @@ Notes:
                 - `level`: [number=0] Used to group columns. The XLSX output uses it to collapse columns.
             - `style`: [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
         - `aggregate`: [list(dict)] Add components from other projects.
+                       You can use CSV files, the first row must contain the names of the fields.
+                       The `Reference` and `Value` are mandatory, in most cases `Part` is also needed.
+                       The `Part` column should contain the name/type of the component. This is important for
+                       passive components (R, L, C, etc.). If this information isn't available consider
+                       configuring the grouping to exclude the `Part`..
           * Valid keys:
+            - `delimiter`: [string=','] Delimiter used for CSV files.
             - `file`: [string=''] Name of the schematic to aggregate.
             - `name`: [string=''] Name to identify this source. If empty we use the name of the schematic.
             - `number`: [number=1] Number of boards to build (components multiplier). Use negative to subtract.

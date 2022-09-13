@@ -988,10 +988,7 @@ class SchematicComponentV6(SchematicComponent):
     def set_ref(self, ref):
         self.ref = ref
         # Separate the reference in its components
-        m = SchematicComponent.ref_re.match(ref)
-        if not m:
-            raise SchError('Malformed component reference `{}`'.format(ref))
-        self.ref_prefix, self.ref_suffix = m.groups()
+        self.split_ref()
         self.set_field('Reference', ref)
 
     def set_value(self, value):

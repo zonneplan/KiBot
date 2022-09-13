@@ -16,15 +16,17 @@ Dependencies:
     debian: python3-xlsxwriter
     downloader: python
 """
+import csv
+from copy import deepcopy
 import os
 import re
-from copy import deepcopy
 from .gs import GS
-from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, IFILT_EXPAND_TEXT_VARS
+from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, IFILT_EXPAND_TEXT_VARS, W_NOPART
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
 from .kiplot import get_board_comps_data, load_any_sch
+from .kicad.v5_sch import SchematicComponent, SchematicField
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
 from .var_kibom import KiBoM
@@ -45,6 +47,20 @@ DEFAULT_ALIASES = [['r', 'r_small', 'res', 'resistor'],
                    ['zener', 'zenersmall'],
                    ['d', 'diode', 'd_small'],
                    ]
+
+
+class CompsFromCSV(object):
+    """ Class used to fake an schematic using a CSV file """
+    def __init__(self, fname, comps):
+        super().__init__()
+        self.revision = ''
+        self.date = GS.format_date('', fname, 'SCH')
+        self.title = os.path.basename(fname)
+        self.company = ''
+        self.comps = comps
+
+    def get_components(self):
+        return self.comps
 
 
 class BoMJoinField(Optionable):
@@ -361,6 +377,8 @@ class Aggregate(Optionable):
             """ A prefix to add to all the references from this project """
             self.number = 1
             """ Number of boards to build (components multiplier). Use negative to subtract """
+            self.delimiter = ','
+            """ Delimiter used for CSV files """
 
     def config(self, parent):
         super().config(parent)
@@ -454,7 +472,12 @@ class BoMOptions(BaseOptions):
                 By default the field indicated in `fit_field`, the field used for variants and
                 the field `part` are excluded """
             self.aggregate = Aggregate
-            """ [list(dict)] Add components from other projects """
+            """ [list(dict)] Add components from other projects.
+                You can use CSV files, the first row must contain the names of the fields.
+                The `Reference` and `Value` are mandatory, in most cases `Part` is also needed.
+                The `Part` column should contain the name/type of the component. This is important for
+                passive components (R, L, C, etc.). If this information isn't available consider
+                configuring the grouping to exclude the `Part`. """
             self.ref_id = ''
             """ A prefix to add to all the references from this project. Used for multiple projects """
             self.source_by_id = False
@@ -683,6 +706,81 @@ class BoMOptions(BaseOptions):
         (self.columns_ce, self.column_levels_ce, self.column_comments_ce, self.column_rename_ce,
          self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, extra_columns, add_all=False)
 
+    def load_csv(self, fname, project, delimiter):
+        """ Load components from a CSV file """
+        comps = []
+        logger.debug('Importing components from `{}`'.format(fname))
+        with open(fname) as csvfile:
+            reader = csv.reader(csvfile, delimiter=delimiter)
+            header = [x.lower() for x in next(reader)]
+            logger.debugl(1, '- CSV header {}'.format(header))
+            # The header must contain at least the reference and the value
+            ref_n = ColumnList.COL_REFERENCE_L
+            try:
+                ref_index = header.index(ref_n)
+            except ValueError:
+                try:
+                    ref_index = header.index(ref_n[:-1])
+                except ValueError:
+                    raise KiPlotConfigurationError('Missing `{}` in aggregated file `{}`'.format(ref_n, fname))
+            try:
+                val_index = header.index(ColumnList.COL_VALUE_L)
+            except ValueError:
+                raise KiPlotConfigurationError('Missing `{}` in aggregated file `{}`'.format(ColumnList.COL_VALUE_L, fname))
+            # Optional important fields:
+            fp_index = None
+            try:
+                fp_index = header.index(ColumnList.COL_FP_L)
+            except ValueError:
+                pass
+            ds_index = None
+            try:
+                ds_index = header.index(ColumnList.COL_DATASHEET_L)
+            except ValueError:
+                pass
+            pn_index = None
+            try:
+                pn_index = header.index(ColumnList.COL_PART_L)
+            except ValueError:
+                logger.warning(W_NOPART+'No `Part` specified, using `Value` instead, this can impact the grouping')
+            min_num = len(header)
+            for r in reader:
+                c = SchematicComponent()
+                c.unit = 0
+                c.project = project
+                c.lib = ''
+                c.sheet_path_h = '/'+project
+                for n, f in enumerate(r):
+                    number = None
+                    if n == ref_index:
+                        c.ref = c.f_ref = str(f)
+                        c.split_ref()
+                        number = 0
+                    elif n == val_index:
+                        c.value = str(f)
+                        if pn_index is None:
+                            c.name = str(f)
+                        number = 1
+                    elif n == fp_index:
+                        c.footprint = str(f)
+                        c.footprint_lib = None
+                        number = 2
+                    elif ds_index:
+                        c.datasheet = str(f)
+                        number = 3
+                    elif n == pn_index:
+                        c.name = str(f)
+                        number = -1
+                    fld = SchematicField()
+                    fld.number = min_num+n if number is None else number
+                    fld.value = str(f)
+                    fld.name = header[n]
+                    c.add_field(fld)
+                comps.append(c)
+                logger.debugl(2, '- Adding component {}'.format(c))
+        comps.sort(key=lambda g: g.ref)
+        return CompsFromCSV(fname, comps)
+
     def aggregate_comps(self, comps):
         self.qtys = {GS.sch_basename: self.number}
         for prj in self.aggregate:
@@ -691,7 +789,11 @@ class BoMOptions(BaseOptions):
             logger.debug('Adding components from project {} ({}) using reference id `{}`'.
                          format(prj.name, prj.file, prj.ref_id))
             self.qtys[prj.name] = prj.number
-            prj.sch = load_any_sch(prj.file, prj.name)
+            ext = os.path.splitext(prj.file)[1]
+            if ext == 'sch' or ext == 'kicad_sch':
+                prj.sch = load_any_sch(prj.file, prj.name)
+            else:
+                prj.sch = self.load_csv(prj.file, prj.name, prj.delimiter)
             new_comps = prj.sch.get_components()
             for c in new_comps:
                 c.ref = prj.ref_id+c.ref

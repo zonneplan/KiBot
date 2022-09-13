@@ -1,0 +1,21 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: result
+    comment: Test RAR compress
+    type: compress
+    options:
+      output: 'test.%x'
+      format: RAR
+      files:
+        - source: tests/board_samples/kicad_5/test_v5.*
+          from_cwd: true
+          dest: source
+        - source: tests/board_samples/kicad_5/deeper.sch
+          from_cwd: true
+          dest: source
+        - source: tests/board_samples/kicad_5/sub-sheet.sch
+          from_cwd: true
+          dest: source

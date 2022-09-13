@@ -1573,11 +1573,39 @@ def test_int_bom_merge_csv_1(test_dir):
     ctx.clean_up()
 
 
+def test_int_bom_merge_csv_2(test_dir):
+    prj = 'merge_1'
+    yaml = 'int_bom_merge_csv_2'
+    ctx = context.TestContextSCH(test_dir, prj, yaml, BOM_DIR)
+    ctx.run(extra_debug=True)
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 4, None, MERGED_COMPS)
+    src_column = header.index(SOURCE_BOM_COLUMN_NAME)
+    check_source(rows, 'A:R1', ref_column, src_column, MERGED_R1_SRC)
+    ctx.search_err(r'Stats for')
+    ctx.clean_up()
+
+
 def test_int_bom_merge_html_1(test_dir):
     prj = 'merge_1'
     yaml = 'int_bom_merge_html_1'
     if context.ki6():
         yaml += '_k6'
+    ctx = context.TestContextSCH(test_dir, prj, yaml, BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_html(prj+'-bom.html')
+    logging.debug(rows[0])
+    ref_column = header[0].index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows[0], ref_column, 4, None, MERGED_COMPS)
+    src_column = header[0].index(SOURCE_BOM_COLUMN_NAME)
+    check_source(rows[0], 'A:R1', ref_column, src_column, MERGED_R1_SRC)
+    ctx.clean_up()
+
+
+def test_int_bom_merge_html_2(test_dir):
+    prj = 'merge_1'
+    yaml = 'int_bom_merge_html_2'
     ctx = context.TestContextSCH(test_dir, prj, yaml, BOM_DIR)
     ctx.run()
     rows, header, info = ctx.load_html(prj+'-bom.html')
@@ -1604,11 +1632,37 @@ def test_int_bom_merge_xlsx_1(test_dir):
     ctx.clean_up()
 
 
+def test_int_bom_merge_xlsx_2(test_dir):
+    prj = 'merge_1'
+    yaml = 'int_bom_merge_xlsx_2'
+    ctx = context.TestContextSCH(test_dir, prj, yaml, BOM_DIR)
+    ctx.run()
+    rows, header, info = ctx.load_xlsx(prj+'-bom.xlsx')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 4, None, MERGED_COMPS)
+    src_column = header.index(SOURCE_BOM_COLUMN_NAME)
+    check_source(rows, 'A:R1', ref_column, src_column, MERGED_R1_SRC)
+    ctx.clean_up()
+
+
 def test_int_bom_merge_xml_1(test_dir):
     prj = 'merge_1'
     yaml = 'int_bom_merge_xml_1'
     if context.ki6():
         yaml += '_k6'
+    ctx = context.TestContextSCH(test_dir, prj, yaml, BOM_DIR)
+    ctx.run()
+    rows, header = ctx.load_xml(prj+'-bom.xml')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 4, None, MERGED_COMPS)
+    src_column = header.index(SOURCE_BOM_COLUMN_NAME.replace(' ', '_'))
+    check_source(rows, 'A:R1', ref_column, src_column, MERGED_R1_SRC)
+    ctx.clean_up()
+
+
+def test_int_bom_merge_xml_2(test_dir):
+    prj = 'merge_1'
+    yaml = 'int_bom_merge_xml_2'
     ctx = context.TestContextSCH(test_dir, prj, yaml, BOM_DIR)
     ctx.run()
     rows, header = ctx.load_xml(prj+'-bom.xml')

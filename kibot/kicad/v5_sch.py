@@ -1040,6 +1040,15 @@ class SchematicComponent(object):
             return '{} ({})'.format(ref, self.name)
         return '{} ({} {})'.format(ref, self.name, self.value)
 
+    def split_ref(self, f=None):
+        m = SchematicComponent.ref_re.match(self.ref)
+        if not m:
+            if f:
+                raise SchFileError('Malformed component reference', self.ref, f)
+            else:
+                raise SchError('Malformed component reference `{}`'.format(self.ref))
+        self.ref_prefix, self.ref_suffix = m.groups()
+
     @staticmethod
     def load(f, project, sheet_path, sheet_path_h, libs, fields, fields_lc):
         # L lib:name reference
@@ -1132,10 +1141,7 @@ class SchematicComponent(object):
             logger.warning(W_NOANNO + 'Component {} is not annotated'.format(comp))
             comp.annotation_error = True
         # Separate the reference in its components
-        m = SchematicComponent.ref_re.match(comp.ref)
-        if not m:
-            raise SchFileError('Malformed component reference', comp.ref, f)
-        comp.ref_prefix, comp.ref_suffix = m.groups()
+        comp.split_ref(f)
         # Location in the project
         comp.sheet_path = sheet_path
         comp.sheet_path_h = sheet_path_h

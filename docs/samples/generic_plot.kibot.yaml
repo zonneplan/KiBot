@@ -107,10 +107,17 @@ outputs:
     type: 'bom'
     dir: 'Example/bom_dir'
     options:
-      # [list(dict)] Add components from other projects
+      # [list(dict)] Add components from other projects.
+      # You can use CSV files, the first row must contain the names of the fields.
+      # The `Reference` and `Value` are mandatory, in most cases `Part` is also needed.
+      # The `Part` column should contain the name/type of the component. This is important for
+      # passive components (R, L, C, etc.). If this information isn't available consider
+      # configuring the grouping to exclude the `Part`.
       aggregate:
-        # [string=''] Name of the schematic to aggregate
-        - file: ''
+        # [string=','] Delimiter used for CSV files
+        - delimiter: ','
+          # [string=''] Name of the schematic to aggregate
+          file: ''
           # [string=''] Name to identify this source. If empty we use the name of the schematic
           name: ''
           # [number=1] Number of boards to build (components multiplier). Use negative to subtract
