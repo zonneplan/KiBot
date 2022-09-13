@@ -12,7 +12,8 @@ exclude:
   .*error.*\.yaml|
   experiments/.*|
   submodules/.*|
-  kibot/PyPDF2/.*
+  kibot/PyPDF2/.*|
+  tests/yaml_samples/simple_position_csv_pre.kibot.yaml
   )$
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
