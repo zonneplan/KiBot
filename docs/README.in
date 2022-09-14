@@ -68,6 +68,7 @@
 * [Notes about Gerber format](#notes-about-gerber-format)
 * [Notes about the position file](#notes-about-the-position-file)
   * [XYRS files](#xyrs-files)
+* [Notes about 3D models](#notes-about-3d-models)
 * [Credits](#credits)
 
 ## Introduction
@@ -1754,6 +1755,60 @@ Additionally we support:
 
 Important: These files doesn't support manual panelization with repeated reference names, you'll get the coordinates for just one component because this is a BoM.
 
+## Notes about 3D models
+
+This section contains some notes and advices about the use of 3D models.
+There are many strategies and you can choose the mix that better suits your needs.
+If you have any suggestion don't hesitate in contacting me to add them.
+
+### 3D models and docker images
+
+The default KiCad 3D models aren't included in the KiBot docker images.
+This is because the 3D models currently needs around 5 GB and the current docker images are between 1 and 1.6 GB.
+So adding them means a huge increase in size.
+
+This is not a big problem because KiBot will download any missing 3D model from KiCad's repo.
+
+As a side effect you'll get errors and/or warnings about the missing 3D models and/or KiCad environment variables pointing to them.
+
+### Self contained projects
+
+Try to make your project self contained.
+If you are using a repo this means the repo should contain anything needed to work with your project.
+
+KiCad 6 helps a lot in this regard. Now schematic files are self contained, you don't need external files to work with them.
+Even with this I think including the used symbols and footprints isn't a bad idea.
+If you expect other people to edit your project then is much simpler if the originals are in the project.
+
+The 3D models are a very special case. KiCad doesn't help much in this regard.
+I strongly suggest including all used 3D models in your repo.
+You can then use `${KIPRJMOD}` as base for the path to the models, this will be expanded to the current path to your project.
+So you can use things like `${KIPRJMOD}/3D/MODEL_NAME` and store all the 3D models in the *3D* folder inside your project folder.
+
+### 3D models aliases
+
+This is a very limited feature in KiCad. You can define an `ALIAS` and then use `ALIAS:MODEL_NAME`.
+The `ALIAS` will say where to look for `MODEL_NAME`. This looks coherent with the way KiCad handles symbols and footprints.
+But it currently has a huge limitation: this information is stored along with the user configuration and there is no way to
+complement it at project level. I don't recommend using aliases because it makes quite complicated to create self contained
+projects.
+
+KiBot offers some mechanisms to help using aliases:
+
+1. You can define your aliases in the `global` section using the `aliases_for_3d_models` option.
+2. You can use environment and text variables to define aliases. This can be disabled using the `disable_3d_alias_as_env` option.
+
+The problem with this is that you must keep two lists synchronized, one for KiCad and the other to make your project self contained.
+
+### How to handle addons
+
+KiCad 6 introduces a *Plugin and Content Manager*, they can contain footprints and 3D models.
+Using 3D models aliases looks like a good solution here, but this isn't.
+The best solution here is to use the `KICAD6_3RD_PARTY` variable.
+Instead of defining an alias pointing to the content you can just use `${KICAD6_3RD_PARTY}/3dmodels/FULL_PLUGIN_NAME/MODEL_NAME`.
+I know this is long, but this will make your project portable.
+The user will need to download the plugin, but won't need to define any alias.
+
 ## Credits
 
 - **KiBot project**: Salvador E. Tropea (@set-soft)
@@ -1779,6 +1834,7 @@ Important: These files doesn't support manual panelization with repeated referen
   - **Easier README navigation**: Robin Vobruba (@hoijui)
   - **Typos corrections**: Seth Kaz (@sethkaz) and Sebastian Grau (@SebastianGrau)
   - **Various tools suggested**: MDW (@mdeweerd)
+  - **Various tools suggested**: Chris Wilson (@cdwilson)
   - **GENCAD export for KiAuto**: Theo Hussey (@flaminggoat)
   - **Various fixes**: Henning Kleen (@hkleen)
   - **SCH print all-pages option**: Kevin Dong (@kevin-dong-nai-jia)
