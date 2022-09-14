@@ -640,6 +640,18 @@ global:
 
 global:
   * Valid keys:
+    - `aliases_for_3d_models`: [list(dict)] List of aliases for the 3D models (KiCad 6).
+                               KiCad stores 3D aliases with the user settings, not locally.
+                               This makes impossible to create self contained projects.
+                               You can define aliases here to workaround this problem.
+                               The values defined here has precedence over the KiCad configuration.
+                               Related to https://gitlab.com/kicad/code/kicad/-/issues/3792.
+      * Valid keys:
+        - *alias*: Alias for name.
+        - `name`: [string=''] Name of the alias.
+        - *text*: Alias for value.
+        - `value`: [string=''] Path to the 3D model.
+        - *variable*: Alias for name.
     - `castellated_pads`: [boolean=false] Has the PCB castelletad pads?
                           KiCad 6: you should set this in the Board Setup -> Board Finish -> Has castellated pads.
     - *copper_finish*: Alias for pcb_finish.

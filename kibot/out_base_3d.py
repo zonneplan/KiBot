@@ -17,12 +17,26 @@ logger = log.get_logger()
 
 
 def do_expand_env(fname, used_extra, extra_debug):
+    # Is it using ALIAS:xxxxx?
+    force_used_extra = False
+    if ':' in fname:
+        ind = fname.index(':')
+        alias_name = fname[:ind]
+        rest = fname[ind+1:]
+        if alias_name in KiConf.aliases_3D:
+            # Yes, replace the alias
+            fname = os.path.join(KiConf.aliases_3D[alias_name], rest)
+            # Make sure the name we created is what kicad2step gets
+            force_used_extra = True
+            if extra_debug:
+                logger.debug("- Replaced alias {} -> {}".format(alias_name+':'+rest, fname))
     full_name = KiConf.expand_env(fname, used_extra)
     if extra_debug:
         logger.debug("- Expanded {} -> {}".format(fname, full_name))
     if os.path.isfile(full_name) or ':' not in fname or GS.global_disable_3d_alias_as_env:
+        if force_used_extra:
+            used_extra[0] = True
         return full_name
-    # Is it using ALIAS:xxxxx?
     ind = fname.index(':')
     alias_name = fname[:ind]
     rest = fname[ind+1:]
@@ -31,6 +45,7 @@ def do_expand_env(fname, used_extra, extra_debug):
     if extra_debug:
         logger.debug("- Expanded {} -> {}".format(new_fname, new_full_name))
     if os.path.isfile(new_full_name):
+        used_extra[0] = True
         return new_full_name
     return full_name
 

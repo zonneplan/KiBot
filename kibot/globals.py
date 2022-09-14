@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
+from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
 from .kicad.config import expand_env
@@ -11,6 +12,7 @@ from .macros import macros, document  # noqa: F401
 from .pre_filters import FiltersOptions
 from .log import get_logger, set_filters
 from .misc import W_MUSTBEINT
+from .kicad.config import KiConf
 from .kicad.sexpdata import load, SExpData, sexp_iter, Symbol
 from .kicad.v6_sch import PCBLayer
 
@@ -87,11 +89,41 @@ class Environment(Optionable):
                 os.environ[n] = v
 
 
+class KiCadAlias(Optionable):
+    """ KiCad alias (for 3D models) """
+    def __init__(self):
+        super().__init__()
+        self._unkown_is_error = True
+        with document:
+            self.name = ''
+            """ Name of the alias """
+            self.variable = None
+            """ {name} """
+            self.alias = None
+            """ {name} """
+            self.value = ''
+            """ Path to the 3D model """
+            self.text = None
+            """ {value} """
+
+    def config(self, parent):
+        super().config(parent)
+        if not self.name:
+            raise KiPlotConfigurationError("Missing variable name ({})".format(str(self._tree)))
+
+
 class Globals(FiltersOptions):
     """ Global options """
     def __init__(self):
         super().__init__()
         with document:
+            self.aliases_for_3d_models = KiCadAlias
+            """ [list(dict)] List of aliases for the 3D models (KiCad 6).
+                KiCad stores 3D aliases with the user settings, not locally.
+                This makes impossible to create self contained projects.
+                You can define aliases here to workaround this problem.
+                The values defined here has precedence over the KiCad configuration.
+                Related to https://gitlab.com/kicad/code/kicad/-/issues/3792 """
             self.castellated_pads = False
             """ Has the PCB castelletad pads?
                 KiCad 6: you should set this in the Board Setup -> Board Finish -> Has castellated pads """
@@ -337,6 +369,14 @@ class Globals(FiltersOptions):
             if not GS.global_silk_screen_color_bottom:
                 GS.global_silk_screen_color_bottom = GS.global_silk_screen_color
         set_filters(self.unparsed)
+        # 3D models aliases
+        if isinstance(self.aliases_for_3d_models, list):
+            KiConf.init(GS.pcb_file or GS.sch_file)
+            logger.debug('Adding 3D models aliases from global config')
+            for alias in self.aliases_for_3d_models:
+                KiConf.aliases_3D[alias.name] = alias.value
+                logger.debugl(1, '- {}={}'.format(alias.name, alias.value))
+            logger.debugl(1, 'Finished adding aliases')
 
 
 logger = get_logger(__name__)

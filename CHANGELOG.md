@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - General things:
   - Some basic preprocessing, now you can parametrize the YAML config.
     (See #233 #243)
+  - Support for 3D models aliases and also a global option to define
+    them in the KiBot configuration (See #261)
   - Environment and text variables now can be used as 3D model aliases.
     (See #261)
   - Environment and text variables expansion is now recursive.

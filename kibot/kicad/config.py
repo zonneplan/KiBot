@@ -14,18 +14,19 @@ Notes about coverage:
 I'm excluding all the Darwin and Windows code from coverage.
 I'm not even sure the values are correct.
 """
-import os
-import re
-import sys
-import json
-from io import StringIO
+import csv
 from glob import glob
-from shutil import copy2
+from io import StringIO
+import json
+import os
 import platform
+import re
+from shutil import copy2
+import sys
 import sysconfig
 from ..gs import GS
 from .. import log
-from ..misc import W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB, MISSING_WKS, W_MAXDEPTH
+from ..misc import W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB, MISSING_WKS, W_MAXDEPTH, W_3DRESVER
 
 # Check python version to determine which version of ConfirParser to import
 if sys.version_info.major >= 3:
@@ -56,6 +57,21 @@ def un_quote(val):
         val.replace('\"', '"')
         val = val[1:-1]
     return val
+
+
+def parse_len_str(val):
+    if ':' not in val:
+        return val
+    pos = val.index(':')
+    try:
+        c = int(val[:pos])
+    except ValueError:
+        c = None
+        logger.error('Malformed 3D alias entry: '+val)
+    value = val[pos+1:]
+    if c is not None and c != len(value):
+        logger.error('3D alias entry error, expected len {}, but found {}'.format(c, len(value)))
+    return value
 
 
 def expand_env(val, env, extra_env, used_extra=None):
@@ -131,6 +147,7 @@ class KiConf(object):
     footprint_dir = None
     kicad_env = {}
     lib_aliases = {}
+    aliases_3D = {}
 
     def __init__(self):
         raise AssertionError("KiConf is fully static, no instances allowed")
@@ -144,6 +161,7 @@ class KiConf(object):
         KiConf.kicad_env['KIPRJMOD'] = KiConf.dirname
         KiConf.load_kicad_common()
         KiConf.load_all_lib_aliases()
+        KiConf.load_3d_aliases()
         KiConf.loaded = True
 
     def find_kicad_common():
@@ -459,6 +477,30 @@ class KiConf(object):
                     KiConf.lib_aliases[alias.name] = alias
         # Load the project's table
         KiConf.load_lib_aliases(os.path.join(KiConf.dirname, SYM_LIB_TABLE))
+
+    def load_3d_aliases():
+        if not KiConf.config_dir:
+            return
+        fname = os.path.join(KiConf.config_dir, '3d', '3Dresolver.cfg')
+        if not os.path.isfile(fname):
+            logger.debug('No 3D aliases ({})'.format(fname))
+            return
+        logger.debug('Loading 3D aliases from '+fname)
+        with open(fname) as f:
+            reader = csv.reader(f)
+            head = next(reader)
+            if len(head) != 1 or head[0] != '#V1':
+                logger.warning(W_3DRESVER, 'Unsupported 3D resolver version ({})'.format(head))
+            for r in reader:
+                if len(r) != 3:
+                    logger.error("3D resolver doesn't contain three values ({})".format(r))
+                    continue
+                name = parse_len_str(r[0])
+                value = parse_len_str(r[1])
+                # Discard the comment (2)
+                logger.debugl(1, '- {}={}'.format(name, value))
+                KiConf.aliases_3D[name] = value
+        logger.debugl(1, 'Finished loading 3D aliases')
 
     def fix_page_layout_k6_key(key, data, dest_dir):
         if key in data:
