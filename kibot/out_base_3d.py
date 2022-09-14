@@ -6,7 +6,7 @@
 import os
 import requests
 import tempfile
-from .misc import W_MISS3D, W_FAILDL, DISABLE_3D_MODEL_TEXT
+from .misc import W_MISS3D, W_FAILDL, W_DOWN3D, DISABLE_3D_MODEL_TEXT
 from .gs import GS
 from .out_base import VariantOptions, BaseOutput
 from .kicad.config import KiConf
@@ -147,6 +147,8 @@ class Base3DOptions(VariantOptions):
             # Push the models back
             for model in models_l:
                 models.push_front(model)
+        if downloaded:
+            logger.warning(W_DOWN3D+' {} 3D models downloaded'.format(len(downloaded)))
         return models_replaced
 
     def list_models(self):
