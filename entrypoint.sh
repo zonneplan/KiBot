@@ -12,6 +12,7 @@ DIR=""
 VARIANT=""
 TARGETS=""
 QUICKSTART="NO"
+INSTALL3D="NO"
 
 # Exit error code
 EXIT_ERROR=1
@@ -44,6 +45,7 @@ function msg_help {
     echo -e "  '-s PRES' skip preflights, comma separated or 'all'"
     echo -e "  '-t TARGETS' list of targets to generate separated by spaces. To only run preflights use __NONE__."
     echo -e "  '-V VARIANT' global variant"
+    echo -e "  '-i YES' install the 3D models."
 
     echo -e "\nMiscellaneous:"
     echo -e "  '-v LEVEL' annotate program execution"
@@ -123,6 +125,8 @@ function args_process {
                ;;
            -q) QUICKSTART="$VAL"
                ;;
+           -i) INSTALL3D="$VAL"
+               ;;
            -s) if [ "$VAL" == "__NONE__" ]; then
                    SKIP=""
                else
@@ -155,6 +159,10 @@ function args_process {
 function run {
     if [ -d .git ]; then
         /usr/bin/kicad-git-filters.py
+    fi
+
+    if [ $INSTALL3D == "YES" ]; then
+        /usr/bin/kicad_3d_install.sh
     fi
 
     if [ $QUICKSTART == "YES" ]; then

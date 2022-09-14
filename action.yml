@@ -39,6 +39,10 @@ inputs:
     description: 'Global variant to use [default: no variants]'
     required: false
     default: '__NONE__'
+  install3D:
+    description: 'Install the 3D models, use YES [default: NO]'
+    required: false
+    default: 'NO'
   verbose:
     description: 'Verbosity level [default: 0]'
     required: false
@@ -56,6 +60,7 @@ runs:
     -  -t ${{ inputs.targets }}
     -  -v ${{ inputs.verbose }}
     -  -V ${{ inputs.variant }}
+    -  -i ${{ inputs.install3D }}
 branding:
   icon: 'cpu'
   color: 'green'
