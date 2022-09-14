@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Problems to compress netlists. (#287)
 - 2D PCB processing didn't show in 3D targets (i.e. solder paste not removed in
   the 3D render). (See #270)
+- KiBot exited when downloading a datasheet and got a connection error
+  (#289 #290)
 
 ### Changed
 - Diff: when comparing a file now the links says Current/FILE instead of None

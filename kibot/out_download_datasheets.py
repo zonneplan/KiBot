@@ -68,6 +68,9 @@ class Download_Datasheets_Options(VariantOptions):
                 except requests.exceptions.ReadTimeout:
                     logger.warning(W_FAILDL+'Timeout during download `{}`'.format(ds))
                     return None
+                except requests.exceptions.ConnectionError:
+                    logger.warning(W_FAILDL+'Connection error during download `{}`'.format(ds))
+                    return None
                 except requests.exceptions.SSLError:
                     logger.warning(W_FAILDL+'SSL Error during download `{}`'.format(ds))
                     return None
