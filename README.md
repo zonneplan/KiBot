@@ -4072,6 +4072,11 @@ This is not a big problem because KiBot will download any missing 3D model from 
 
 As a side effect you'll get errors and/or warnings about the missing 3D models and/or KiCad environment variables pointing to them.
 
+If you need to install the KiCad 3D models in one of the `kicad_debian`, `kicad_auto` or `kicad_auto_test` images just run the
+`/usr/bin/kicad_3d_install.sh` script included with the current images.
+
+If you are running the Github action and you want to install the KiCad 3D models use the `install3D: YES` option.
+
 ### Self contained projects
 
 Try to make your project self contained.
