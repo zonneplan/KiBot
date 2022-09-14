@@ -50,6 +50,7 @@ class AnyLayerOptions(VariantOptions):
             """ Do not plot the component pads in the silk screen (KiCad 5.x only) """
             self.plot_sheet_reference = False
             """ *Include the frame and title block. Only available for KiCad 6 and you get a poor result
+                (i.e. always the default worksheet style, also problems expanding text variables).
                 The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs """
             self.plot_footprint_refs = True
             """ Include the footprint references """

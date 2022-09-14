@@ -567,6 +567,7 @@ outputs:
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
       # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [boolean=true] Plot using the contour, instead of the center line.
@@ -725,6 +726,7 @@ outputs:
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
       # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [boolean=false] Subtract the solder mask from the silk screen
@@ -793,6 +795,7 @@ outputs:
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
       # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [number=0] Scale factor (0 means autoscaling)
@@ -1379,6 +1382,7 @@ outputs:
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
       # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [boolean=true] Cover the vias
@@ -1563,6 +1567,7 @@ outputs:
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
       # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [number=1.0] Fine grain adjust for the X scale (floating point multiplier)
@@ -1836,6 +1841,7 @@ outputs:
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
       # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
       # [boolean=true] Cover the vias
