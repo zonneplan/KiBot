@@ -4,7 +4,8 @@ kibot:
 
 outputs:
 
-  - name: 'position'
+  - name: 'position_@UNITS@'
+    comment: 'Position file in @UNITS@ units'
     type: position
     dir: positiondir_@UNITS@
     options:

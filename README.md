@@ -3544,7 +3544,7 @@ Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
          [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [TARGET...]
-  kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] --list
+  kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [-E DEF] ... --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
          --quick-start
