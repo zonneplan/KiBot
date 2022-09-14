@@ -16,6 +16,25 @@ from . import log
 logger = log.get_logger()
 
 
+def do_expand_env(fname, used_extra, extra_debug):
+    full_name = KiConf.expand_env(fname, used_extra)
+    if extra_debug:
+        logger.debug("- Expanded {} -> {}".format(fname, full_name))
+    if os.path.isfile(full_name) or ':' not in fname or GS.global_disable_3d_alias_as_env:
+        return full_name
+    # Is it using ALIAS:xxxxx?
+    ind = fname.index(':')
+    alias_name = fname[:ind]
+    rest = fname[ind+1:]
+    new_fname = '${'+alias_name+'}'+os.path.sep+rest
+    new_full_name = KiConf.expand_env(new_fname, used_extra)
+    if extra_debug:
+        logger.debug("- Expanded {} -> {}".format(new_fname, new_full_name))
+    if os.path.isfile(new_full_name):
+        return new_full_name
+    return full_name
+
+
 class Base3DOptions(VariantOptions):
     def __init__(self):
         with document:
@@ -73,9 +92,7 @@ class Base3DOptions(VariantOptions):
                         logger.debug("- Skipping {} (disabled)".format(m3d.m_Filename))
                     continue
                 used_extra = [False]
-                full_name = KiConf.expand_env(m3d.m_Filename, used_extra)
-                if extra_debug:
-                    logger.debug("- Expanded {} -> {}".format(m3d.m_Filename, full_name))
+                full_name = do_expand_env(m3d.m_Filename, used_extra, extra_debug)
                 if not os.path.isfile(full_name):
                     # Missing 3D model
                     if self.download and (m3d.m_Filename.startswith('${KISYS3DMOD}/') or

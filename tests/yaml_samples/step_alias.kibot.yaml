@@ -1,0 +1,24 @@
+kiplot:
+  version: 1
+
+global:
+  disable_3d_alias_as_env: false
+
+preflight:
+  set_text_variables:
+    - variable: 'ALIAS1'
+      text: '${KIPRJMOD}/../../data/metrico/Resistor_SMD.3dshapes'
+      # The following error is detected and informed as a warning
+      # text: '${ALIAS1}/../../data/metrico/Resistor_SMD.3dshapes'
+
+outputs:
+  - name: Step
+    comment: "Generate 3D model (STEP)"
+    type: step
+    dir: 3D
+    options:
+      metric_units: true
+      origin: drill        # "grid" or "drill" o "X,Y" i.e. 3.2,-10
+      #no_virtual: false  # exclude 3D models for components with 'virtual' attribute
+      #min_distance: 0.01 # Minimum distance between points to treat them as separate ones (default 0.01 mm)
+      #output: project.step

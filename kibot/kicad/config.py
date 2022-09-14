@@ -25,7 +25,7 @@ import platform
 import sysconfig
 from ..gs import GS
 from .. import log
-from ..misc import W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB, MISSING_WKS
+from ..misc import W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB, MISSING_WKS, W_MAXDEPTH
 
 # Check python version to determine which version of ConfirParser to import
 if sys.version_info.major >= 3:
@@ -37,6 +37,7 @@ else:  # pragma: no cover (Py2)
 logger = log.get_logger()
 SYM_LIB_TABLE = 'sym-lib-table'
 KICAD_COMMON = 'kicad_common'
+MAXDEPTH = 20
 reported = set()
 
 
@@ -62,16 +63,28 @@ def expand_env(val, env, extra_env, used_extra=None):
     if used_extra is None:
         used_extra = [False]
     used_extra[0] = False
-    for var in re.findall(r'\$\{(\S+?)\}', val):
-        if var in env:
-            val = val.replace('${'+var+'}', env[var])
-        elif var in extra_env:
-            val = val.replace('${'+var+'}', extra_env[var])
-            used_extra[0] = True
-        else:
-            if var not in reported:
-                logger.error('Unable to expand `{}` in `{}`'.format(var, val))
-                reported.add(var)
+    success = replaced = True
+    depth = 0
+    ori_val = val
+    while success and replaced and depth < MAXDEPTH:
+        replaced = False
+        depth += 1
+        if depth == MAXDEPTH:
+            logger.warning(W_MAXDEPTH+'Too much nested variables replacements, possible loop ({})'.format(ori_val))
+            success = False
+        for var in re.findall(r'\$\{(\S+?)\}', val):
+            if var in env:
+                val = val.replace('${'+var+'}', env[var])
+                replaced = True
+            elif var in extra_env:
+                val = val.replace('${'+var+'}', extra_env[var])
+                used_extra[0] = True
+                replaced = True
+            else:
+                success = False
+                if var not in reported:
+                    logger.error('Unable to expand `{}` in `{}`'.format(var, val))
+                    reported.add(var)
     return val
 
 

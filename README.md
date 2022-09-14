@@ -652,6 +652,7 @@ global:
                      Uses the `strftime` format.
     - `date_time_format`: [string='%Y-%m-%d_%H-%M-%S'] Format used for the PCB and schematic date when using the file timestamp. Uses the `strftime` format.
     - `dir`: [string=''] Default pattern for the output directories.
+    - `disable_3d_alias_as_env`: [boolean=false] Disable the use of environment and text variables as 3D models aliases.
     - `drc_exclusions_workaround`: [boolean=false] KiCad 6 introduced DRC exclusions. They are stored in the project but ignored by the Python API.
                                    This is reported as bug number 11562 (https://gitlab.com/kicad/code/kicad/-/issues/11562).
                                    If you really need exclusions enable this option, this will use the GUI version of the DRC (slower).
