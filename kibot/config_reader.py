@@ -21,7 +21,6 @@ from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
-from .var_base import BaseVariant
 from . import __pypi_deps__
 # Logger
 from . import log
@@ -658,6 +657,7 @@ def print_preflights_help():
 
 
 def print_variants_help():
+    from .var_base import BaseVariant
     vars = BaseVariant.get_registered()
     logger.debug('{} supported variants'.format(len(vars)))
     print('Supported variants:\n')
