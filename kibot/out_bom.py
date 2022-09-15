@@ -763,7 +763,6 @@ class BoMOptions(BaseOptions):
                         number = 1
                     elif n == fp_index:
                         c.footprint = str(f)
-                        c.footprint_lib = None
                         number = 2
                     elif ds_index:
                         c.datasheet = str(f)
