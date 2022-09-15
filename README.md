@@ -3534,6 +3534,10 @@ import:
 ...
 ```
 
+Another important detail is that global options that are lists gets the values merged.
+The last set of values found is inserted at the beginning of the list.
+You can collect filters for all the imported global sections.
+
 ### Doing YAML substitution or preprocessing
 
 Sometimes you could want to change values in the YAML depending on external stuff,

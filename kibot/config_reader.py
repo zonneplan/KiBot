@@ -9,6 +9,7 @@
 Class to read KiBot config files
 """
 
+import collections
 import io
 import os
 import json
@@ -49,6 +50,17 @@ except ImportError:
     exit(NO_YAML_MODULE)
 
 
+def update_dict(d, u):
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update_dict(d.get(k, {}), v)
+        elif isinstance(v, list) and k in d:
+            d[k] = v+d[k]
+        else:
+            d[k] = v
+    return d
+
+
 class CollectedImports(object):
     def __init__(self):
         super().__init__()
@@ -65,6 +77,7 @@ class CfgYamlReader(object):
         super().__init__()
         self.imported_globals = {}
         self.no_run_by_default = []
+        self.imported_global_has_less_priority = False
 
     def _check_version(self, v):
         if not isinstance(v, dict):
@@ -219,10 +232,10 @@ class CfgYamlReader(object):
             raise KiPlotConfigurationError("Incorrect `global` section (must be a dict)")
         if self.imported_globals:
             if self.imported_global_has_less_priority:
-                self.imported_globals.update(gb)
+                update_dict(self.imported_globals, gb)
                 gb = self.imported_globals
             else:
-                gb.update(self.imported_globals)
+                update_dict(gb, self.imported_globals)
             logger.debug("Global options + imported: {}".format(gb))
         # Parse all keys inside it
         glb = GS.class_for_global_opts()
@@ -347,7 +360,7 @@ class CfgYamlReader(object):
             if not isinstance(i_globals, dict):
                 raise KiPlotConfigurationError("Incorrect `global` section (must be a dict), while importing from {}".
                                                format(fn_rel))
-            imported.globals.update(i_globals)
+            update_dict(imported.globals, i_globals)
             i_globals = imported.globals
             if globals is not None:
                 for f in globals:
@@ -449,7 +462,7 @@ class CfgYamlReader(object):
             # Variants
             all_collected.variants.update(self._parse_import_variants(vars, explicit_vars, fn_rel, data, imported))
             # Globals
-            all_collected.globals.update(self._parse_import_globals(globals, explicit_globals, fn_rel, data, imported))
+            update_dict(all_collected.globals, self._parse_import_globals(globals, explicit_globals, fn_rel, data, imported))
         if apply:
             # This is the main import (not a recursive one) apply the results
             RegOutput.add_filters(all_collected.filters)

@@ -48,6 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Diff: when comparing a file now the links says Current/FILE instead of None
 - Now the global `dir` option also applies to the preflights, can be disabled
   using `use_dir_for_preflights`. (#292)
+- When importing globals now options that are lists or dicts are merged, not
+  just replaced. (#291)
 
 
 ## [1.3.0] - 2022-09-08
