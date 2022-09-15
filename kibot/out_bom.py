@@ -706,6 +706,22 @@ class BoMOptions(BaseOptions):
         (self.columns_ce, self.column_levels_ce, self.column_comments_ce, self.column_rename_ce,
          self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, extra_columns, add_all=False)
 
+    def get_ref_index(self, header, fname):
+        ref_n = ColumnList.COL_REFERENCE_L
+        ref_index = None
+        try:
+            ref_index = header.index(ref_n)
+        except ValueError:
+            try:
+                ref_index = header.index(ref_n[:-1])
+            except ValueError:
+                msg = 'Missing `{}` in aggregated file `{}`'.format(ref_n, fname)
+                if GS.global_csv_accept_no_ref:
+                    logger.warning(msg)
+                else:
+                    raise KiPlotConfigurationError(msg)
+        return ref_index
+
     def load_csv(self, fname, project, delimiter):
         """ Load components from a CSV file """
         comps = []
@@ -715,14 +731,7 @@ class BoMOptions(BaseOptions):
             header = [x.lower() for x in next(reader)]
             logger.debugl(1, '- CSV header {}'.format(header))
             # The header must contain at least the reference and the value
-            ref_n = ColumnList.COL_REFERENCE_L
-            try:
-                ref_index = header.index(ref_n)
-            except ValueError:
-                try:
-                    ref_index = header.index(ref_n[:-1])
-                except ValueError:
-                    raise KiPlotConfigurationError('Missing `{}` in aggregated file `{}`'.format(ref_n, fname))
+            ref_index = self.get_ref_index(header, fname)
             try:
                 val_index = header.index(ColumnList.COL_VALUE_L)
             except ValueError:
@@ -749,6 +758,8 @@ class BoMOptions(BaseOptions):
                 c.unit = 0
                 c.project = project
                 c.lib = ''
+                c.ref = c.f_ref = c.ref_prefix = ''
+                c.ref_suffix = '?'
                 c.sheet_path_h = '/'+project
                 for n, f in enumerate(r):
                     number = None

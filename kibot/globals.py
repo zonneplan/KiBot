@@ -136,6 +136,8 @@ class Globals(FiltersOptions):
             """ Draw a cross for excluded components in the `Fab` layer """
             self.cross_no_body = False
             """ Cross components even when they don't have a body. Only for KiCad 6 """
+            self.csv_accept_no_ref = False
+            """ Accept aggregating CSV files without references (Experimental) """
             self.date_format = '%Y-%m-%d'
             """ Format used for the day we started the script.
                 Is also used for the PCB/SCH date formatting when `time_reformat` is enabled (default behavior).

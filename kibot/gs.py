@@ -103,6 +103,7 @@ class GS(object):
     global_copper_thickness = None
     global_cross_footprints_for_dnp = None
     global_cross_no_body = None
+    global_csv_accept_no_ref = None
     global_date_format = None
     global_date_time_format = None
     global_drc_exclusions_workaround = None
