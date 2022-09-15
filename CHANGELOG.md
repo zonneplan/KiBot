@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - remove_adhesive_for_dnp
     - remove_solder_paste_for_dnp
     - hide_excluded (default value)
+  - Mechanism to give more priority to local globals. (See #291)
 - Diff: mechanism to compare using a variant (See #278)
 - Sch Variant:
   - Option to copy the project. Needed for text variables.

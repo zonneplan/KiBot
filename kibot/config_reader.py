@@ -56,6 +56,7 @@ class CollectedImports(object):
         self.variants = {}
         self.globals = {}
         self.preflights = []
+        self.imported_global_has_less_priority = False
 
 
 class CfgYamlReader(object):
@@ -74,6 +75,14 @@ class CfgYamlReader(object):
         if version != 1:
             raise KiPlotConfigurationError("Unknown KiBot config version: "+str(version))
         return version
+
+    def _check_globals_priority(self, v):
+        ops = 'imported_global_has_less_priority'
+        if ops in v:
+            value = v[ops]
+            if not isinstance(value, bool):
+                raise KiPlotConfigurationError(ops+" must be boolean")
+            self.imported_global_has_less_priority = value
 
     def _parse_output(self, o_tree):
         try:
@@ -208,7 +217,11 @@ class CfgYamlReader(object):
         if not isinstance(gb, dict):
             raise KiPlotConfigurationError("Incorrect `global` section (must be a dict)")
         if self.imported_globals:
-            gb.update(self.imported_globals)
+            if self.imported_global_has_less_priority:
+                self.imported_globals.update(gb)
+                gb = self.imported_globals
+            else:
+                gb.update(self.imported_globals)
             logger.debug("Global options + imported: {}".format(gb))
         # Parse all keys inside it
         glb = GS.class_for_global_opts()
@@ -483,8 +496,9 @@ class CfgYamlReader(object):
             raise KiPlotConfigurationError("Use `kibot` or `kiplot` but not both.")
         if not v1 and not v2:
             raise KiPlotConfigurationError("YAML config needs `kibot.version`.")
-        if v1 or v2:
-            self._check_version(v1 or v2)
+        main_sec = v1 or v2
+        self._check_version(main_sec)
+        self._check_globals_priority(main_sec)
         # Look for imports
         v1 = data.get('import', None)
         if v1:

@@ -3523,6 +3523,16 @@ import:
 
 This will import all outputs and filters, but not variants or globals.
 Also note that imported globals has more precedence than the ones defined in the same file.
+If you want give more priority to the local values use:
+
+```
+kibot:
+  version: 1
+  imported_global_has_less_priority: true
+
+import:
+...
+```
 
 ### Doing YAML substitution or preprocessing
 
