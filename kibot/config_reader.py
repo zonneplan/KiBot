@@ -37,6 +37,7 @@ PY_LOGO = ('![Python module]('+GITHUB_RAW+'Python-logo-notext-22x22.png)')
 TOOL_LOGO = '![Tool]('+GITHUB_RAW+'llave-inglesa-22x22.png)'
 AUTO_DOWN = '![Auto-download]('+GITHUB_RAW+'auto_download-22x22.png)'
 VALID_SECTIONS = {'kiplot', 'kibot', 'import', 'global', 'filters', 'variants', 'preflight', 'outputs'}
+VALID_KIBOT_SEC = {'version', 'imported_global_has_less_priority'}
 
 
 try:
@@ -481,6 +482,12 @@ class CfgYamlReader(object):
             del data['globals']
         return data
 
+    def _check_invalid_in_kibot(self, main_sec):
+        defined_in_kibot = set(main_sec.keys())
+        invalid_in_kibot = defined_in_kibot-VALID_KIBOT_SEC
+        for k in invalid_in_kibot:
+            raise KiPlotConfigurationError('Unknown option `{}` in kibot/kiplot.'.format(k))
+
     def read(self, fstream):
         """
         Read a file object into a config object
@@ -499,6 +506,7 @@ class CfgYamlReader(object):
         main_sec = v1 or v2
         self._check_version(main_sec)
         self._check_globals_priority(main_sec)
+        self._check_invalid_in_kibot(main_sec)
         # Look for imports
         v1 = data.get('import', None)
         if v1:
