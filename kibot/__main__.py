@@ -22,6 +22,7 @@ Usage:
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] --help-outputs
   kibot [-v...] --help-preflights
+  kibot [-v...] --help-variants
   kibot -h | --help
   kibot --version
 
@@ -65,6 +66,7 @@ Help options:
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details
   --help-preflights                List supported preflights and details
+  --help-variants                  List supported variants and details
 
 """
 import os
@@ -99,7 +101,7 @@ from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_std
 from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError, config_error
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
-                            print_filters_help, print_global_options_help, print_dependencies)
+                            print_filters_help, print_global_options_help, print_dependencies, print_variants_help)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
                      solve_board_file, solve_project_file, check_board_file)
 GS.kibot_version = __version__
@@ -297,6 +299,9 @@ def main():
         sys.exit(0)
     if args.help_preflights:
         print_preflights_help()
+        sys.exit(0)
+    if args.help_variants:
+        print_variants_help()
         sys.exit(0)
     if args.help_filters:
         print_filters_help()

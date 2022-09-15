@@ -19,7 +19,7 @@ class KiBoM(BaseVariant):  # noqa: F821
     """ KiBoM variant style
         The Config field (configurable) contains a comma separated list of variant directives.
         -VARIANT excludes a component from VARIANT.
-        +VARIANT includes the component only if we are using this variant. """
+        +VARIANT includes the component only if we are using this variant """
     def __init__(self):
         super().__init__()
         self._def_exclude_filter = None

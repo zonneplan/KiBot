@@ -19,7 +19,7 @@ class IBoM(BaseVariant):  # noqa: F821
     """ IBoM variant style
         The Config field (configurable) contains a value.
         If this value matches with a value in the whitelist is included.
-        If this value matches with a value in the blacklist is excluded. """
+        If this value matches with a value in the blacklist is excluded """
     def __init__(self):
         super().__init__()
         with document:

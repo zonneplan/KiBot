@@ -882,6 +882,7 @@ class SchematicComponent(object):
         self.field_ref = ''
         self.value = ''
         self.footprint = ''
+        self.footprint_lib = None
         self.datasheet = ''
         self.desc = ''
         self.fields = []

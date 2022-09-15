@@ -49,6 +49,7 @@
     * [Supported filters](#supported-filters)
     * [Examples for filters](#examples-for-filters)
     * [Built-in filters](#built-in-filters)
+    * [Supported variants](#supported-variants)
     * [Changing the 3D model, simple mechanism](#changing-the-3d-model-simple-mechanism)
     * [Changing the 3D model, complex mechanism](#changing-the-3d-model-complex-mechanism)
     * [DNF and DNC internal keys](#dnf-and-dnc-internal-keys)
@@ -941,6 +942,82 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
 - **_var_rename_kicost** is a default `var_rename_kicost` filter
 
 Note that the **_kibom_...** filters uses a field named `Config`, but you can customise them invoking **_kibom_dnf_FIELD**. This will create an equivalent filter, but using the indicated **FIELD**.
+
+
+#### Supported variants:
+
+- `ibom`: IBoM variant style
+        The Config field (configurable) contains a value.
+        If this value matches with a value in the whitelist is included.
+        If this value matches with a value in the blacklist is excluded.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dnc_filter`: [string|list(string)=''] Name of the filter to mark components as 'Do Not Change'.
+                    Use '_kibom_dnc' for the default KiBoM behavior.
+    - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as 'Do Not Fit'.
+                    Use '_kibom_dnf' for the default KiBoM behavior.
+                    Use '_kicost_dnp'' for the default KiCost behavior.
+    - `exclude_filter`: [string|list(string)=''] Name of the filter to exclude components from BoM processing.
+                        Use '_mechanical' for the default KiBoM behavior.
+    - `file_id`: [string=''] Text to use as the replacement for %v expansion.
+    - `name`: [string=''] Used to identify this particular variant definition.
+    - `pre_transform`: [string|list(string)=''] Name of the filter to transform fields before applying other filters.
+                       Use '_var_rename' to transform VARIANT:FIELD fields.
+                       Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
+                       Use '_kicost_rename' to apply KiCost field rename rules.
+    - `variant_field`: [string='Config'] Name of the field that stores board variant for component.
+    - `variants_blacklist`: [string|list(string)=''] List of board variants to exclude from the BOM.
+    - `variants_whitelist`: [string|list(string)=''] List of board variants to include in the BOM.
+- `kibom`: KiBoM variant style
+        The Config field (configurable) contains a comma separated list of variant directives.
+        -VARIANT excludes a component from VARIANT.
+        +VARIANT includes the component only if we are using this variant.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `config_field`: [string='Config'] Name of the field used to classify components.
+    - `dnc_filter`: [string|list(string)=''] Name of the filter to mark components as 'Do Not Change'.
+                    Use '_kibom_dnc' for the default KiBoM behavior.
+    - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as 'Do Not Fit'.
+                    Use '_kibom_dnf' for the default KiBoM behavior.
+                    Use '_kicost_dnp'' for the default KiCost behavior.
+    - `exclude_filter`: [string|list(string)=''] Name of the filter to exclude components from BoM processing.
+                        Use '_mechanical' for the default KiBoM behavior.
+    - `file_id`: [string=''] Text to use as the replacement for %v expansion.
+    - `name`: [string=''] Used to identify this particular variant definition.
+    - `pre_transform`: [string|list(string)=''] Name of the filter to transform fields before applying other filters.
+                       Use '_var_rename' to transform VARIANT:FIELD fields.
+                       Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
+                       Use '_kicost_rename' to apply KiCost field rename rules.
+    - `variant`: [string|list(string)=''] Board variant(s).
+- `kicost`: KiCost variant style
+        The `variant` field (configurable) contains one or more values.
+        If any of these values matches the variant regex the component is included.
+        By default a pre-transform filter is applied to support kicost.VARIANT:FIELD and
+        field name aliases used by KiCost.
+        Also a default `dnf_filter` implements the KiCost DNP mechanism.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `dnc_filter`: [string|list(string)=''] Name of the filter to mark components as 'Do Not Change'.
+                    Use '_kibom_dnc' for the default KiBoM behavior.
+    - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as 'Do Not Fit'.
+                    Use '_kibom_dnf' for the default KiBoM behavior.
+                    Use '_kicost_dnp'' for the default KiCost behavior.
+    - `exclude_filter`: [string|list(string)=''] Name of the filter to exclude components from BoM processing.
+                        Use '_mechanical' for the default KiBoM behavior.
+    - `file_id`: [string=''] Text to use as the replacement for %v expansion.
+    - `name`: [string=''] Used to identify this particular variant definition.
+    - `pre_transform`: [string|list(string)=''] Name of the filter to transform fields before applying other filters.
+                       Use '_var_rename' to transform VARIANT:FIELD fields.
+                       Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
+                       Use '_kicost_rename' to apply KiCost field rename rules.
+    - `separators`: [string=',;/ '] Valid separators for variants in the variant field.
+                    Each character is a valid separator.
+                    Only supported internally, don't use it if you plan to use KiCost.
+    - `variant`: [string=''] Variants to match (regex).
+    - `variant_field`: [string='variant'] Name of the field that stores board variant/s for component.
+                       Only supported internally, don't use it if you plan to use KiCost.
+
+
 
 #### Changing the 3D model, simple mechanism
 
@@ -3576,6 +3653,7 @@ Usage:
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] --help-outputs
   kibot [-v...] --help-preflights
+  kibot [-v...] --help-variants
   kibot -h | --help
   kibot --version
 
@@ -3619,6 +3697,7 @@ Help options:
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details
   --help-preflights                List supported preflights and details
+  --help-variants                  List supported variants and details
 
 ```
 

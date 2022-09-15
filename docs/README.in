@@ -49,6 +49,7 @@
     * [Supported filters](#supported-filters)
     * [Examples for filters](#examples-for-filters)
     * [Built-in filters](#built-in-filters)
+    * [Supported variants](#supported-variants)
     * [Changing the 3D model, simple mechanism](#changing-the-3d-model-simple-mechanism)
     * [Changing the 3D model, complex mechanism](#changing-the-3d-model-complex-mechanism)
     * [DNF and DNC internal keys](#dnf-and-dnc-internal-keys)
@@ -548,6 +549,10 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
 - **_var_rename_kicost** is a default `var_rename_kicost` filter
 
 Note that the **_kibom_...** filters uses a field named `Config`, but you can customise them invoking **_kibom_dnf_FIELD**. This will create an equivalent filter, but using the indicated **FIELD**.
+
+
+#### @variants@
+
 
 #### Changing the 3D model, simple mechanism
 
