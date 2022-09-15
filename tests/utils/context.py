@@ -193,8 +193,8 @@ class TestContext(object):
         if os.path.isfile(fp_cache):
             os.remove(fp_cache)
 
-    def get_out_path(self, filename):
-        return os.path.join(self.output_dir, filename)
+    def get_out_path(self, filename, sub=False):
+        return os.path.join(self.output_dir, filename) if not sub else os.path.join(self.output_dir, self.sub_dir, filename)
 
     def get_gerber_job_filename(self):
         return os.path.join(self.sub_dir, self.board_name+'-job.gbrjob')
@@ -256,8 +256,8 @@ class TestContext(object):
     def get_npth_pdf_drl_filename(self):
         return os.path.join(self.sub_dir, self.board_name+'-NPTH-drl_map.pdf')
 
-    def expect_out_file(self, filename):
-        file = self.get_out_path(filename)
+    def expect_out_file(self, filename, sub=False):
+        file = self.get_out_path(filename, sub)
         assert os.path.isfile(file), file
         assert os.path.getsize(file) > 0
         logging.debug(filename+' OK')

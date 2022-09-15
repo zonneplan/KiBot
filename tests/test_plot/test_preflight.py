@@ -72,10 +72,10 @@ def test_erc_warning_1(test_dir):
 def test_erc_warning_2(test_dir):
     """ Using an SCH with ERC warnings as errors """
     prj = 'warning-project'
-    ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc_no_w', '')
+    ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc_no_w', 'def_dir')
     ctx.run(ERC_ERROR)
     # Check all outputs are there
-    ctx.expect_out_file(prj+'-erc.txt')
+    ctx.expect_out_file(prj+'-erc.txt', sub=True)
     ctx.search_err(r"ERROR:1 ERC errors detected")
     ctx.clean_up()
 
@@ -92,11 +92,11 @@ def test_drc_1(test_dir):
 def test_drc_filter_1(test_dir):
     """ Test using internal filters """
     prj = 'fail-project'
-    ctx = context.TestContext(test_dir, prj, 'drc_filter', '')
+    ctx = context.TestContext(test_dir, prj, 'drc_filter', 'def_dir')
     ctx.run(extra_debug=True)
     # Check all outputs are there
-    ctx.expect_out_file(prj+'-drc.txt')
-    ctx.expect_out_file('kibot_errors.filter')
+    ctx.expect_out_file(prj+'-drc.txt', sub=True)
+    ctx.expect_out_file('kibot_errors.filter', sub=True)
     ctx.clean_up(keep_project=True)
 
 

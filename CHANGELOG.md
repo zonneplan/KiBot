@@ -45,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Diff: when comparing a file now the links says Current/FILE instead of None
+- Now the global `dir` option also applies to the preflights, can be disabled
+  using `use_dir_for_preflights`. (#292)
 
 
 ## [1.3.0] - 2022-09-08

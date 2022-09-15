@@ -136,6 +136,7 @@ class GS(object):
     global_time_format = None
     global_time_reformat = None
     global_units = None
+    global_use_dir_for_preflights = None
     global_variant = None
 
     @staticmethod

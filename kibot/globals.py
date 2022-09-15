@@ -143,7 +143,8 @@ class Globals(FiltersOptions):
             self.date_time_format = '%Y-%m-%d_%H-%M-%S'
             """ Format used for the PCB and schematic date when using the file timestamp. Uses the `strftime` format """
             self.dir = ''
-            """ Default pattern for the output directories """
+            """ Default pattern for the output directories. It also applies to the preflights, unless
+                `use_dir_for_preflights` is disabled """
             self.disable_3d_alias_as_env = False
             """ Disable the use of environment and text variables as 3D models aliases """
             self.drc_exclusions_workaround = False
@@ -224,6 +225,8 @@ class Globals(FiltersOptions):
                 This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD) """
             self.units = ''
             """ [millimeters,inches,mils] Default units. Affects `position` and `bom` outputs. Also KiCad 6 dimensions """
+            self.use_dir_for_preflights = True
+            """ Use the global `dir` as subdir for the preflights """
             self.variant = ''
             """ Default variant to apply to all outputs """
             self.out_dir = ''

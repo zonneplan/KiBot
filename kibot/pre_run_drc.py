@@ -40,11 +40,16 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         load_board()
         out_pattern = GS.global_output if GS.global_output is not None else GS.def_global_output
         name = Optionable.expand_filename_pcb(self, out_pattern)
-        return [os.path.abspath(os.path.join(self.expand_dirname(GS.out_dir), name))]
+        out_dir = self.expand_dirname(GS.out_dir)
+        logger.error(GS.global_dir)
+        if GS.global_dir and GS.global_use_dir_for_preflights:
+            out_dir = os.path.join(out_dir, self.expand_dirname(GS.global_dir))
+        return [os.path.abspath(os.path.join(out_dir, name))]
 
     def run(self):
         command = self.ensure_tool('KiAuto')
         output = self.get_targets()[0]
+        os.makedirs(os.path.dirname(output), exist_ok=True)
         logger.debug('DRC report: '+output)
         cmd = [command, 'run_drc', '-o', output]
         if GS.filter_file:

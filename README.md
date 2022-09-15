@@ -665,7 +665,8 @@ global:
                      Is also used for the PCB/SCH date formatting when `time_reformat` is enabled (default behavior).
                      Uses the `strftime` format.
     - `date_time_format`: [string='%Y-%m-%d_%H-%M-%S'] Format used for the PCB and schematic date when using the file timestamp. Uses the `strftime` format.
-    - `dir`: [string=''] Default pattern for the output directories.
+    - `dir`: [string=''] Default pattern for the output directories. It also applies to the preflights, unless
+             `use_dir_for_preflights` is disabled.
     - `disable_3d_alias_as_env`: [boolean=false] Disable the use of environment and text variables as 3D models aliases.
     - `drc_exclusions_workaround`: [boolean=false] KiCad 6 introduced DRC exclusions. They are stored in the project but ignored by the Python API.
                                    This is reported as bug number 11562 (https://gitlab.com/kicad/code/kicad/-/issues/11562).
@@ -744,6 +745,7 @@ global:
     - `time_reformat`: [boolean=true] Tries to reformat the PCB/SCH date using the `date_format`.
                        This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD).
     - `units`: [string=''] [millimeters,inches,mils] Default units. Affects `position` and `bom` outputs. Also KiCad 6 dimensions.
+    - `use_dir_for_preflights`: [boolean=true] Use the global `dir` as subdir for the preflights.
     - `variant`: [string=''] Default variant to apply to all outputs.
 
 

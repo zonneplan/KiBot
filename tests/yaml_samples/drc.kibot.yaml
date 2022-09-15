@@ -2,5 +2,9 @@
 kibot:
   version: 1
 
+global:
+  dir: 'def_dir'
+  use_dir_for_preflights: false
+
 preflight:
   run_drc: true
