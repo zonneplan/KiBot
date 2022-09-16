@@ -1,0 +1,14 @@
+kibot:
+  version: 1
+
+preflight:
+  check_zone_fills: true
+
+outputs:
+  - name: 'diff_pcb'
+    comment: "PCB difference with git HEAD"
+    type: diff
+    layers: ['F.Cu', 'B.Cu']
+    options:
+      cache_dir: .cache
+      # pcb: false
