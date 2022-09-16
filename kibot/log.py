@@ -54,8 +54,9 @@ def set_domain(name):
 
 def set_filters(f):
     """Set the list of warning filters"""
-    global filters
-    filters = f+filters
+    if f:
+        global filters
+        filters = f+filters
 
 
 class MyLogger(logging.Logger):
