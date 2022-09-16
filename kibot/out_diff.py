@@ -78,7 +78,8 @@ class DiffOptions(BaseOptions):
             """ [0,100] Color tolerance (fuzzyness) for the `stats` mode """
             self.threshold = 0
             """ [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
-                difference bigger than the indicated value will make the diff fail """
+                difference bigger than the indicated value will make the diff fail.
+                KiBot will return error level 29 and the diff generation will be aborted """
             self.add_link_id = False
             """ When enabled we create a symlink to the output file with a name that contains the
                 git hashes involved in the comparison. If you plan to compress the output don't
