@@ -26,7 +26,7 @@ else:
     colorama_init()
 # Default domain, base name for the tool
 domain = 'kilog'
-filters = None
+filters = []
 root_logger = None
 visual_level = None
 debug_level = 0
@@ -55,7 +55,7 @@ def set_domain(name):
 def set_filters(f):
     """Set the list of warning filters"""
     global filters
-    filters = f
+    filters = f+filters
 
 
 class MyLogger(logging.Logger):

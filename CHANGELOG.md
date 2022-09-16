@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (See #261)
   - Environment and text variables expansion is now recursive.
     So in `${VAR}` the *VAR* can contain `${OTHER_VAR}`
+  - Command line option to specify warnings to be excluded. Useful for
+    warnings issued before applying the global options (i.e during
+    import). (#296)
 - New outputs:
   - PCB_Variant: saves a PCB with filters and variants applied.
   - File_Copy: used to copy files to the output directory. (#279)

@@ -10,7 +10,7 @@
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
          [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
-         [-E DEF] ... [TARGET...]
+         [-E DEF] ... [-w LIST] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [-E DEF] ... --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
@@ -49,6 +49,7 @@ Options:
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
   -v, --verbose                    Show debugging information
   -V, --version                    Show program's version number and exit
+  -w, --no-warn LIST               Exclude the mentioned warnings (comma sep)
   -x, --example                    Create a template configuration file
 
 Quick start options:
@@ -69,13 +70,13 @@ Help options:
   --help-variants                  List supported variants and details
 
 """
-import os
-import sys
-from sys import path as sys_path
-import re
+from glob import glob
 import gzip
 import locale
-from glob import glob
+import os
+import re
+import sys
+from sys import path as sys_path
 from . import __version__, __copyright__, __license__
 # Import log first to set the domain
 from . import log
@@ -262,6 +263,21 @@ def parse_global_redef(args):
         GS.cli_global_defs[var] = redef[len(var)+1:]
 
 
+class SimpleFilter(object):
+    def __init__(self, num):
+        self.number = num
+        self.regex = re.compile('')
+
+
+def apply_warning_filter(args):
+    if args.no_warn:
+        try:
+            log.set_filters([SimpleFilter(int(n)) for n in args.no_warn.split(',')])
+        except ValueError:
+            logger.error('-w/--no-warn must specify a comma separated list of numbers ({})'.format(args.no_warn))
+            sys.exit(EXIT_BAD_ARGS)
+
+
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -272,6 +288,7 @@ def main():
     GS.debug_enabled = log.set_verbosity(logger, args.verbose, args.quiet)
     log.debug_level = GS.debug_level = args.verbose
     logger.debug('KiBot {} verbose level: {}'.format(__version__, args.verbose))
+    apply_warning_filter(args)
     # Now we have the debug level set we can check (and optionally inform) KiCad info
     detect_kicad()
 

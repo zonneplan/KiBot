@@ -3659,7 +3659,7 @@ KiBot: KiCad automation tool for documents generation
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
          [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
-         [-E DEF] ... [TARGET...]
+         [-E DEF] ... [-w LIST] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [-E DEF] ... --list
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
@@ -3698,6 +3698,7 @@ Options:
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
   -v, --verbose                    Show debugging information
   -V, --version                    Show program's version number and exit
+  -w, --no-warn LIST               Exclude the mentioned warnings (comma sep)
   -x, --example                    Create a template configuration file
 
 Quick start options:
