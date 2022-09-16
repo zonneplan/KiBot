@@ -55,6 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The default was to compare the current file on storage, now is the current
     file on memory. It includes the zone refill indicated in the preflights.
     (See #295)
+  - Now the error about differences bigger than the threshold is more clear.
+    KiBot also returns a distinct error level.
 - Now the global `dir` option also applies to the preflights, can be disabled
   using `use_dir_for_preflights`. (#292)
 - When importing globals now options that are lists or dicts are merged, not

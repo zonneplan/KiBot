@@ -39,6 +39,7 @@ FAILED_EXECUTE = 25
 KICOST_ERROR = 26
 MISSING_WKS = 27
 MISSING_FILES = 28
+DIFF_TOO_BIG = 29
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
@@ -67,6 +68,8 @@ error_level_to_name = ['NONE',
                        'FAILED_EXECUTE',
                        'KICOST_ERROR',
                        'MISSING_WKS',
+                       'MISSING_FILES',
+                       'DIFF_TOO_BIG',
                        ]
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 EXAMPLE_CFG = 'example_template.kibot.yaml'

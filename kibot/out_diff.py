@@ -30,6 +30,7 @@ from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import load_any_sch, run_command, config_output, get_output_dir, run_output
 from .layer import Layer
+from .misc import DIFF_TOO_BIG, FAILED_EXECUTE
 from .optionable import BaseOptions
 from .out_base import VariantOptions
 from .registrable import RegOutput
@@ -392,7 +393,16 @@ class DiffOptions(BaseOptions):
         cmd.extend([self.file_exist, self.file_exist])
         if GS.debug_enabled:
             cmd.insert(1, '-'+'v'*GS.debug_level)
-        run_command(cmd)
+        try:
+            run_command(cmd, just_raise=True)
+        except CalledProcessError as e:
+            if e.returncode == 10:
+                logger.error('Diff above the thresold')
+                exit(DIFF_TOO_BIG)
+            logger.error('Running {} returned {}'.format(e.cmd, e.returncode))
+            if e.stdout:
+                logger.debug('- Output from command: '+e.stdout.decode())
+            exit(FAILED_EXECUTE)
         if self.add_link_id:
             name_comps = os.path.splitext(name_ori)
             target = name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1]
