@@ -42,7 +42,6 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         out_pattern = GS.global_output if GS.global_output is not None else GS.def_global_output
         name = Optionable.expand_filename_sch(self, out_pattern)
         out_dir = self.expand_dirname(GS.out_dir)
-        logger.error(GS.global_dir)
         if GS.global_dir and GS.global_use_dir_for_preflights:
             out_dir = os.path.join(out_dir, self.expand_dirname(GS.global_dir))
         return [os.path.abspath(os.path.join(out_dir, name))]
