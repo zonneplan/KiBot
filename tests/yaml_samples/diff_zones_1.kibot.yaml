@@ -1,0 +1,28 @@
+kibot:
+  version: 1
+
+preflight:
+  check_zone_fills: true
+
+outputs:
+  - name: 'diff_pcb_show'
+    comment: "Show differences for the zone fill"
+    type: diff
+    layers: copper
+    options:
+      cache_dir: .cache
+      old: ''
+      old_type: file
+      new_type: current
+
+  - name: 'diff_pcb_check'
+    comment: "Check the zone fill doesn't generate important changes"
+    type: diff
+    layers: copper
+    options:
+      cache_dir: .cache
+      diff_mode: stats
+      threshold: 100
+      old: ''
+      old_type: file
+      new_type: current
