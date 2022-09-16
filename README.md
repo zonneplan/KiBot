@@ -661,6 +661,7 @@ global:
                           KiCad 6: you should set this in the Board Setup -> Physical Stackup.
     - `cross_footprints_for_dnp`: [boolean=true] Draw a cross for excluded components in the `Fab` layer.
     - `cross_no_body`: [boolean=false] Cross components even when they don't have a body. Only for KiCad 6.
+    - `csv_accept_no_ref`: [boolean=false] Accept aggregating CSV files without references (Experimental).
     - `date_format`: [string='%Y-%m-%d'] Format used for the day we started the script.
                      Is also used for the PCB/SCH date formatting when `time_reformat` is enabled (default behavior).
                      Uses the `strftime` format.
@@ -1665,7 +1666,8 @@ Notes:
         - `fuzz`: [number=5] [0,100] Color tolerance (fuzzyness) for the `stats` mode.
         - `new`: [string|list(string)] The file you want to compare. Leave it blank for the current PCB/SCH.
                  A list is accepted only for the `multivar` type.
-        - `new_type`: [string='file'] [git,file,output,multivar] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+        - `new_type`: [string='current'] [git,file,output,multivar,current] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+                      Use `current` for the currently loaded PCB/Schematic.
                       Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
                       Use `multivar` to compare a set of variants, in this mode `new` is the list of variants.
                       If `old` is also `multivar` then it becomes the reference, otherwise we compare using pairs of variants.

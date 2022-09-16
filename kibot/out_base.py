@@ -679,7 +679,8 @@ class VariantOptions(BaseOptions):
                 else:
                     m.SetValue(data)
 
-    def save_tmp_board(self, dir=None):
+    @staticmethod
+    def save_tmp_board(dir=None):
         """ Save the PCB to a temporal file.
             Advantage: all relative paths inside the file remains valid
             Disadvantage: the name of the file gets altered """
@@ -692,7 +693,8 @@ class VariantOptions(BaseOptions):
         GS.copy_project(fname)
         return fname
 
-    def save_tmp_dir_board(self, id):
+    @staticmethod
+    def save_tmp_dir_board(id):
         """ Save the PCB to a temporal dir.
             Disadvantage: all relative paths inside the file becomes useless
             Aadvantage: the name of the file remains the same """

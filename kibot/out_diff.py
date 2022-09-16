@@ -31,6 +31,7 @@ from .gs import GS
 from .kiplot import load_any_sch, run_command, config_output, get_output_dir, run_output
 from .layer import Layer
 from .optionable import BaseOptions
+from .out_base import VariantOptions
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -60,8 +61,9 @@ class DiffOptions(BaseOptions):
             self.new = ''
             """ [string|list(string)] The file you want to compare. Leave it blank for the current PCB/SCH.
                 A list is accepted only for the `multivar` type """
-            self.new_type = 'file'
-            """ [git,file,output,multivar] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+            self.new_type = 'current'
+            """ [git,file,output,multivar,current] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+                Use `current` for the currently loaded PCB/Schematic.
                 Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
                 Use `multivar` to compare a set of variants, in this mode `new` is the list of variants.
                 If `old` is also `multivar` then it becomes the reference, otherwise we compare using pairs of variants """
@@ -337,11 +339,26 @@ class DiffOptions(BaseOptions):
         self.git_hash = out.options.variant.file_id if self.use_file_id else out.options.variant.name+'_variant'
         return res
 
+    def cache_current(self):
+        """ The file as we interpreted it """
+        if self.pcb:
+            fname, dir_name = VariantOptions.save_tmp_dir_board('diff')
+        else:
+            dir_name = mkdtemp()
+            fname = GS.sch.save_variant(dir_name)
+        try:
+            res = self.cache_file(os.path.join(dir_name, fname))
+        finally:
+            rmtree(dir_name)
+        return res
+
     def cache_obj(self, name, type):
         if type == 'git':
             return self.cache_git(name)
         if type == 'file':
             return self.cache_file(name)
+        if type == 'current':
+            return self.cache_current()
         return self.cache_output(name)
 
     def create_layers_incl(self, layers):
