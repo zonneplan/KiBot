@@ -21,7 +21,7 @@ from copy import deepcopy
 import os
 import re
 from .gs import GS
-from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, IFILT_EXPAND_TEXT_VARS, W_NOPART
+from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, IFILT_EXPAND_TEXT_VARS, W_NOPART, W_MISSREF
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
@@ -717,7 +717,7 @@ class BoMOptions(BaseOptions):
             except ValueError:
                 msg = 'Missing `{}` in aggregated file `{}`'.format(ref_n, fname)
                 if GS.global_csv_accept_no_ref:
-                    logger.warning(msg)
+                    logger.warning(W_MISSREF+msg)
                 else:
                     raise KiPlotConfigurationError(msg)
         return ref_index
