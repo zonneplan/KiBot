@@ -171,7 +171,7 @@ class Generic(BaseFilter):  # noqa: F821
         if self.exclude_empty_val and (value == '' or value == '~'):
             return exclude
         # Exclude all ref == #*
-        if self.exclude_all_hash_ref and comp.ref[0] == '#':
+        if self.exclude_all_hash_ref and comp.ref and comp.ref[0] == '#':
             return exclude
         # KiCad 5 PCB classification
         if self.exclude_virtual and comp.virtual:
