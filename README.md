@@ -362,12 +362,16 @@ This section is used to specify tasks that will be executed before generating an
 - `erc_warnings`: [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
 - `fill_zones`: [boolean=false] Fill all zones again and save the PCB.
 - `filters`: [list(dict)] A list of entries to filter out ERC/DRC messages.
+        Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).
+        To farther ignore these warnings use the `filters` option in the `global` section.
   * Valid keys:
-    - `error`: [string=''] Error id we want to exclude. A name for KiCad 6 or a number for KiCad 5, but always a string.
+    - `error`: [string=''] Error id we want to exclude.
+               A name for KiCad 6 or a number for KiCad 5, but always a string.
     - *error_number*: Alias for number.
     - `filter`: [string=''] Name for the filter, for documentation purposes.
     - *filter_msg*: Alias for filter.
-    - `number`: [number=0] Error number we want to exclude. KiCad 5 only.
+    - `number`: [number=0] Error number we want to exclude.
+                KiCad 5 only.
     - `regex`: [string=''] Regular expression to match the text for the error we want to exclude.
     - *regexp*: Alias for regex.
 - `ignore_unconnected`: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
@@ -700,11 +704,11 @@ global:
     - `field_3D_model`: [string='_3D_model'] Name for the field controlling the 3D models used for a component.
     - `filters`: [list(dict)] KiBot warnings to be ignored.
       * Valid keys:
-        - `error`: [string=''] Error id we want to exclude. A name for KiCad 6 or a number for KiCad 5, but always a string.
+        - `error`: [string=''] Error id we want to exclude.
         - *error_number*: Alias for number.
         - `filter`: [string=''] Name for the filter, for documentation purposes.
         - *filter_msg*: Alias for filter.
-        - `number`: [number=0] Error number we want to exclude. KiCad 5 only.
+        - `number`: [number=0] Error number we want to exclude.
         - `regex`: [string=''] Regular expression to match the text for the error we want to exclude.
         - *regexp*: Alias for regex.
     - `hide_excluded`: [boolean=false] Default value for the `hide_excluded` option of various PCB outputs.

@@ -87,12 +87,13 @@ class MyLogger(logging.Logger):
             pos_end = buf.find(')')
             if pos_end > 0:
                 num_str = buf[2:pos_end]
+                id = buf[1:pos_end]
                 if num_str[0] == 'C':
                     number = int(buf[3:pos_end])+1000
                 else:
                     number = int(num_str)
                 for f in filters:
-                    if f.number == number and f.regex.search(buf):
+                    if (f.number == number or f.error == id) and f.regex.search(buf):
                         MyLogger.n_filtered += 1
                         return
         MyLogger.warn_cnt += 1
@@ -125,7 +126,7 @@ class MyLogger(logging.Logger):
             super(self.__class__, self).debug(msg, *args, **kwargs)
 
     def log_totals(self):
-        if MyLogger.warn_cnt:
+        if MyLogger.warn_cnt or MyLogger.warn_tcnt:
             filt_msg = ''
             if MyLogger.n_filtered:
                 filt_msg = ', {} filtered'.format(MyLogger.n_filtered)

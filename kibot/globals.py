@@ -9,7 +9,7 @@ from .gs import GS
 from .optionable import Optionable
 from .kicad.config import expand_env
 from .macros import macros, document  # noqa: F401
-from .pre_filters import FiltersOptions
+from .pre_filters import FiltersOptions, FilterOptionsKiBot
 from .log import get_logger, set_filters
 from .misc import W_MUSTBEINT
 from .kicad.config import KiConf
@@ -241,6 +241,7 @@ class Globals(FiltersOptions):
                 The KIPRJMOD is also available for expansion """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
+        self.filters = FilterOptionsKiBot
         self._unkown_is_error = True
         self._error_context = 'global '
 

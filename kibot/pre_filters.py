@@ -16,7 +16,7 @@ from .log import get_logger
 logger = get_logger(__name__)
 
 
-class FilterOptions(Optionable):
+class FilterOptionsKiBot(Optionable):
     """ Valid options for a filter entry """
     def __init__(self):
         super().__init__()
@@ -27,15 +27,23 @@ class FilterOptions(Optionable):
             self.filter_msg = None
             """ {filter} """
             self.error = ''
-            """ Error id we want to exclude. A name for KiCad 6 or a number for KiCad 5, but always a string """
+            """ Error id we want to exclude """
             self.number = 0
-            """ Error number we want to exclude. KiCad 5 only """
+            """ Error number we want to exclude """
             self.error_number = None
             """ {number} """
             self.regex = ''
             """ Regular expression to match the text for the error we want to exclude """
             self.regexp = None
             """ {regex} """
+
+
+class FilterOptions(FilterOptionsKiBot):
+    """ Valid options for a filter entry """
+    def __init__(self):
+        super().__init__()
+        self.add_to_doc('error', 'A name for KiCad 6 or a number for KiCad 5, but always a string')
+        self.add_to_doc('number', 'KiCad 5 only')
 
 
 class FiltersOptions(Optionable):
@@ -78,7 +86,9 @@ class FiltersOptions(Optionable):
 
 @pre_class
 class Filters(BasePreFlight):  # noqa: F821
-    """ [list(dict)] A list of entries to filter out ERC/DRC messages """
+    """ [list(dict)] A list of entries to filter out ERC/DRC messages.
+        Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).
+        To farther ignore these warnings use the `filters` option in the `global` section """
     def __init__(self, name, value):
         f = FiltersOptions()
         f.set_tree({'filters': value})

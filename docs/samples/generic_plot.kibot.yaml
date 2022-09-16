@@ -33,6 +33,8 @@ preflight:
   # [boolean=false] Fill all zones again and save the PCB.
   fill_zones: true
   # [list(dict)] A list of entries to filter out ERC/DRC messages.
+  # Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).
+  # To farther ignore these warnings use the `filters` option in the `global` section.
   filters:
     - filter: 'Filter description'
       error: '10'
