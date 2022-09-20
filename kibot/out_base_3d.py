@@ -35,6 +35,10 @@ def do_expand_env(fname, used_extra, extra_debug):
     if extra_debug:
         logger.debug("- Expanded {} -> {}".format(fname, full_name))
     if os.path.isfile(full_name) or ':' not in fname or GS.global_disable_3d_alias_as_env:
+        full_name_cwd = KiConf.expand_env(fname, used_extra, ref_dir=os.getcwd())
+        if os.path.isfile(full_name_cwd):
+            full_name = full_name_cwd
+            force_used_extra = True
         if force_used_extra:
             used_extra[0] = True
         return full_name
