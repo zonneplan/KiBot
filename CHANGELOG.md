@@ -20,7 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     import). (#296)
 - New outputs:
   - PCB_Variant: saves a PCB with filters and variants applied.
-  - File_Copy: used to copy files to the output directory. (#279)
+  - Copy_Files: used to copy files to the output directory. (#279)
+                You can also copy the 3D models.
 - Support for Eurocircuits drill adjust to fix small OARs.
   Option `eurocircuits_reduce_holes`. (#227)
 - Global options:

@@ -442,9 +442,9 @@ class TestContext(object):
             logging.debug('error match: `{}` (`{}`) OK'.format(text, m.group(0)))
         return m
 
-    def search_in_file(self, file, texts):
+    def search_in_file(self, file, texts, sub=False):
         logging.debug('Searching in "'+file+'" output')
-        with open(self.get_out_path(file)) as f:
+        with open(self.get_out_path(file, sub=sub)) as f:
             txt = f.read()
         res = []
         for t in texts:

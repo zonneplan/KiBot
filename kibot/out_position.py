@@ -111,7 +111,8 @@ class PositionOptions(VariantOptions):
             topf = open(topf_name, 'w')
             botf = open(botf_name, 'w')
         else:
-            bothf = open(self.expand_filename(output_dir, self.output, 'both_pos', 'pos'), 'w')
+            fname = self.expand_filename(output_dir, self.output, 'both_pos', 'pos')
+            bothf = open(fname, 'w')
 
         files = [f for f in [topf, botf, bothf] if f is not None]
         for f in files:

@@ -426,25 +426,44 @@ outputs:
     type: 'copy_files'
     dir: 'Example/copy_files_dir'
     options:
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD
+      download: true
       # [list(dict)] Which files will be included
       files:
         # [string=''] Destination directory inside the output dir, empty means the same of the file
+        # relative to the source directory.
+        # For the `3d_models` type you can use DIR+ to create subdirs under DIR
         - dest: ''
           # [string='.*'] A regular expression that source files must match
           filter: '.*'
-          # [boolean=false] Use the output dir specified with `-d` command line option, not the working dir
-          from_outdir: false
-          # [string=''] Collect files from the selected output.
-          # When used the `source` option is ignored
-          from_output: ''
+          # [boolean=false] Only usable for the `3d_models` mode.
+          # Save a PCB copy modified to use the copied 3D models
+          save_pcb: false
           # [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
           # By default this pattern is applied to the current working dir.
           # See the `from_outdir` option
           source: '*'
+          # [string='files'] [files,out_files,output,3d_models] How to interpret `source`.
+          # `files`: is a pattern for files relative to the working directory.
+          # `out_files`: is a pattern for files relative to output dir specified
+          # with `-d` command line option.
+          # `output`: is the name of an `output`.
+          # `3d_models`: is a pattern to match the name of the 3D models extracted
+          # from the PCB.
+          source_type: 'files'
       # [boolean=true] Store the file pointed by symlinks, not the symlink
       follow_links: true
+      # [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models
+      kicad_3d_url: 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
       # [boolean=false] Create symlinks instead of copying files
       link_no_copy: false
+      # [boolean=false] Used to exclude 3D models for components with 'virtual' attribute
+      no_virtual: false
+      # [string=''] Board variant to apply
+      variant: ''
   # Diff:
   # Recursive git submodules aren't supported (submodules inside submodules)
   - name: 'diff_example'

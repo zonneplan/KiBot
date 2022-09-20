@@ -1413,3 +1413,59 @@ def test_diff_file_sch_1(test_dir):
     ctx.expect_out_file(prj+'-diff_sch_FILE-Current.pdf')
     ctx.compare_pdf(prj+'-diff_sch.pdf')
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(context.ki5(), reason="KiCad 6 aliases used")
+def test_copy_files_1(test_dir):
+    """ Copy files and 3D models """
+    prj = 'copy_files'
+    ctx = context.TestContext(test_dir, prj, 'copy_files_1', 'test.files')
+    ctx.run(kicost=True)  # We use the fake web server
+    # The modified PCB
+    ctx.expect_out_file(prj+'.kicad_pcb', sub=True)
+    # The 3D models
+    ctx.expect_out_file('3d_models/C_0805_2012Metric.wrl', sub=True)
+    ctx.expect_out_file('3d_models/R_0805_2012Metric.wrl', sub=True)
+    ctx.expect_out_file('3d_models/R_0805_2012Metrico.wrl', sub=True)
+    ctx.expect_out_file('3d_models/test.wrl', sub=True)
+    # From output with dest
+    ctx.expect_out_file('my_position/'+prj+'-both_pos.pos', sub=True)
+    # From output without dest
+    ctx.expect_out_file('positiondir/'+prj+'-both_pos.pos', sub=True)
+    # From output dir
+    ctx.expect_out_file('my_position2/'+prj+'-both_pos.pos', sub=True)
+    # From outside the output dir
+    ctx.expect_out_file('source/test_v5.sch', sub=True)
+    ctx.expect_out_file('source/deeper.sch', sub=True)
+    ctx.expect_out_file('source/sub-sheet.sch', sub=True)
+    ctx.expect_out_file('source/test_v5.kicad_pcb', sub=True)
+    # Some warnings
+    ctx.search_err([r'WARNING:\(W098\)  2 3D models downloaded',   # 2 models are missing and they are downloaded
+                    r'WARNING:\(W100\)'])  # 2 models has the same name
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(context.ki5(), reason="KiCad 6 aliases used")
+def test_copy_files_2(test_dir):
+    """ Copy files and 3D models """
+    prj = 'copy_files'
+    ctx = context.TestContext(test_dir, prj, 'copy_files_2', 'test.files')
+    ctx.run(kicost=True)  # We use the fake web server
+    # The modified PCB
+    ctx.expect_out_file(prj+'.kicad_pcb', sub=True)
+    # The 3D models
+    MODELS = ['3d_models/3d/1/test.wrl', '3d_models/3d/2/test.wrl',
+              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metrico.step',
+              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metrico.wrl',
+              '3d_models/Capacitor_SMD.3dshapes/C_0805_2012Metric.step',
+              '3d_models/Capacitor_SMD.3dshapes/C_0805_2012Metric.wrl',
+              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metric.step',
+              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl']
+    for m in MODELS:
+        ctx.expect_out_file(m, sub=True)
+    # Make sure the PCB points to them
+    ctx.search_in_file(prj+'.kicad_pcb', ['model "{}"'.format(m) for m in MODELS if m.endswith('wrl')], sub=True)
+    # Some warnings
+    ctx.search_err(r'WARNING:\(W098\)  2 3D models downloaded')   # 2 models are missing and they are downloaded
+    ctx.search_err(r'WARNING:\(W100\)', invert=True)   # 2 models has the same name, but goes to different target
+    ctx.clean_up()

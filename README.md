@@ -1611,18 +1611,32 @@ Notes:
     - **`name`**: [string=''] Used to identify this particular output definition.
     - **`options`**: [dict] Options for the `copy_files` output.
       * Valid keys:
+        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
         - **`files`**: [list(dict)] Which files will be included.
           * Valid keys:
-            - **`from_output`**: [string=''] Collect files from the selected output.
-                                 When used the `source` option is ignored.
             - **`source`**: [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
                             By default this pattern is applied to the current working dir.
                             See the `from_outdir` option.
-            - `dest`: [string=''] Destination directory inside the output dir, empty means the same of the file.
+            - **`source_type`**: [string='files'] [files,out_files,output,3d_models] How to interpret `source`.
+                                 `files`: is a pattern for files relative to the working directory.
+                                 `out_files`: is a pattern for files relative to output dir specified
+                                 with `-d` command line option.
+                                 `output`: is the name of an `output`.
+                                 `3d_models`: is a pattern to match the name of the 3D models extracted
+                                 from the PCB..
+            - `dest`: [string=''] Destination directory inside the output dir, empty means the same of the file
+                      relative to the source directory.
+                      For the `3d_models` type you can use DIR+ to create subdirs under DIR.
             - `filter`: [string='.*'] A regular expression that source files must match.
-            - `from_outdir`: [boolean=false] Use the output dir specified with `-d` command line option, not the working dir.
+            - `save_pcb`: [boolean=false] Only usable for the `3d_models` mode.
+                          Save a PCB copy modified to use the copied 3D models.
+        - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `follow_links`: [boolean=true] Store the file pointed by symlinks, not the symlink.
+        - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
         - `link_no_copy`: [boolean=false] Create symlinks instead of copying files.
+        - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.

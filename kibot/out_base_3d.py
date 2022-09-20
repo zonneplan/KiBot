@@ -3,6 +3,7 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+from fnmatch import fnmatch
 import os
 import requests
 import tempfile
@@ -30,7 +31,7 @@ def do_expand_env(fname, used_extra, extra_debug):
             force_used_extra = True
             if extra_debug:
                 logger.debug("- Replaced alias {} -> {}".format(alias_name+':'+rest, fname))
-    full_name = KiConf.expand_env(fname, used_extra)
+    full_name = KiConf.expand_env(fname, used_extra, ref_dir=GS.pcb_dir)
     if extra_debug:
         logger.debug("- Expanded {} -> {}".format(fname, full_name))
     if os.path.isfile(full_name) or ':' not in fname or GS.global_disable_3d_alias_as_env:
@@ -64,15 +65,20 @@ class Base3DOptions(VariantOptions):
         super().__init__()
         self._expand_id = '3D'
 
-    def download_model(self, url, fname):
+    def download_model(self, url, fname, rel_dirs):
         """ Download the 3D model from the provided URL """
         logger.debug('Downloading `{}`'.format(url))
-        r = requests.get(url, allow_redirects=True)
-        if r.status_code != 200:
+        failed = False
+        try:
+            r = requests.get(url, allow_redirects=True)
+        except Exception:
+            failed = True
+        if failed or r.status_code != 200:
             logger.warning(W_FAILDL+'Failed to download `{}`'.format(url))
             return None
         if self._tmp_dir is None:
             self._tmp_dir = tempfile.mkdtemp()
+            rel_dirs.append(self._tmp_dir)
             logger.debug('Using `{}` as temporal dir for downloaded files'.format(self._tmp_dir))
         dest = os.path.join(self._tmp_dir, fname)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
@@ -80,7 +86,7 @@ class Base3DOptions(VariantOptions):
             f.write(r.content)
         return dest
 
-    def download_models(self):
+    def download_models(self, rename_filter=None, rename_function=None, rename_data=None):
         """ Check we have the 3D models.
             Inform missing models.
             Try to download the missing models
@@ -90,6 +96,10 @@ class Base3DOptions(VariantOptions):
         KiConf.init(GS.pcb_file)
         # List of models we already downloaded
         downloaded = set()
+        # For the mode where we copy the 3D models
+        source_models = set()
+        is_copy_mode = rename_filter is not None
+        rel_dirs = getattr(rename_data, 'rel_dirs', [])
         extra_debug = GS.debug_level > 3
         # Look for all the footprints
         for m in GS.get_modules():
@@ -106,9 +116,13 @@ class Base3DOptions(VariantOptions):
                     if extra_debug:
                         logger.debug("- Skipping {} (disabled)".format(m3d.m_Filename))
                     continue
+                if is_copy_mode and not fnmatch(m3d.m_Filename, rename_filter):
+                    # Skip filtered footprints
+                    continue
                 used_extra = [False]
                 full_name = do_expand_env(m3d.m_Filename, used_extra, extra_debug)
                 if not os.path.isfile(full_name):
+                    logger.debugl(2, 'Missing 3D model file {} ({})'.format(full_name, m3d.m_Filename))
                     # Missing 3D model
                     if self.download and (m3d.m_Filename.startswith('${KISYS3DMOD}/') or
                                           m3d.m_Filename.startswith('${KICAD6_3DMODEL_DIR}/')):
@@ -121,26 +135,33 @@ class Base3DOptions(VariantOptions):
                         else:
                             # Download the model
                             url = self.kicad_3d_url+fname
-                            replace = self.download_model(url, fname)
+                            replace = self.download_model(url, fname, rel_dirs)
                             if replace:
                                 # Successfully downloaded
                                 downloaded.add(full_name)
-                                self.undo_3d_models[replace] = m3d.m_Filename
                                 # If this is a .wrl also download the .step
                                 if url.endswith('.wrl'):
                                     url = url[:-4]+'.step'
                                     fname = fname[:-4]+'.step'
-                                    self.download_model(url, fname)
+                                    self.download_model(url, fname, rel_dirs)
                         if replace:
-                            m3d.m_Filename = replace
+                            source_models.add(replace)
+                            old_name = m3d.m_Filename
+                            new_name = replace if not is_copy_mode else rename_function(rename_data, replace)
+                            self.undo_3d_models[new_name] = old_name
+                            m3d.m_Filename = new_name
                             models_replaced = True
                     if full_name not in downloaded:
                         logger.warning(W_MISS3D+'Missing 3D model for {}: `{}`'.format(ref, full_name))
                 else:  # File was found
-                    if used_extra[0]:
+                    if used_extra[0] or is_copy_mode:
                         # The file is there, but we got it expanding a user defined text
                         # This is completely valid for KiCad, but kicad2step doesn't support it
-                        m3d.m_Filename = full_name
+                        source_models.add(full_name)
+                        old_name = m3d.m_Filename
+                        new_name = full_name if not is_copy_mode else rename_function(rename_data, full_name)
+                        self.undo_3d_models[new_name] = old_name
+                        m3d.m_Filename = new_name
                         if not models_replaced and extra_debug:
                             logger.debug('- Modifying models with text vars')
                         models_replaced = True
@@ -149,7 +170,7 @@ class Base3DOptions(VariantOptions):
                 models.push_front(model)
         if downloaded:
             logger.warning(W_DOWN3D+' {} 3D models downloaded'.format(len(downloaded)))
-        return models_replaced
+        return models_replaced if not is_copy_mode else list(source_models)
 
     def list_models(self):
         """ Get the list of 3D models """

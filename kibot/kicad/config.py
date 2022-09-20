@@ -145,6 +145,8 @@ class KiConf(object):
     sym_lib_dir = None
     template_dir = None
     footprint_dir = None
+    models_3d_dir = None
+    party_3rd_dir = None
     kicad_env = {}
     lib_aliases = {}
     aliases_3D = {}
@@ -399,6 +401,7 @@ class KiConf(object):
                     os.environ[old] = val
             else:
                 logger.warning(W_NOLIBS + 'Unable to find KiCad '+desc)
+        return val
 
     def load_kicad_common():
         # Try to figure out KiCad configuration file
@@ -583,11 +586,13 @@ class KiConf(object):
             return KiConf.fix_page_layout_k5(project, dry)
         return KiConf.fix_page_layout_k6(project, dry)
 
-    def expand_env(name, used_extra=None):
+    def expand_env(name, used_extra=None, ref_dir=None):
         if used_extra is None:
             used_extra = [False]
         if not name:
             return name
         expanded = expand_env(un_quote(name), KiConf.kicad_env, GS.load_pro_variables(), used_extra)
         # Don't try to get the absolute path for something that starts with a variable that we couldn't expand
-        return expanded if expanded.startswith('${') else os.path.abspath(expanded)
+        if ref_dir is None:
+            ref_dir = os.getcwd()
+        return expanded if expanded.startswith('${') else os.path.normpath(os.path.join(ref_dir, expanded))

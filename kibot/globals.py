@@ -44,8 +44,8 @@ class Environment(Optionable):
         if self.symbols:
             defs['KICAD_SYMBOL_DIR'] = self.symbols
         if self.footprints:
-            defs['KICAD_FOOTPRINT_DIR'] = self.symbols
-            defs['KISYSMOD'] = self.symbols
+            defs['KICAD_FOOTPRINT_DIR'] = self.footprints
+            defs['KISYSMOD'] = self.footprints
         if self.models_3d:
             defs['KISYS3DMOD'] = self.models_3d
         if self.templates:
@@ -57,7 +57,7 @@ class Environment(Optionable):
         if self.symbols:
             defs['KICAD6_SYMBOL_DIR'] = self.symbols
         if self.footprints:
-            defs['KICAD6_FOOTPRINT_DIR'] = self.symbols
+            defs['KICAD6_FOOTPRINT_DIR'] = self.footprints
         if self.models_3d:
             defs['KICAD6_3DMODEL_DIR'] = self.models_3d
         if self.templates:
