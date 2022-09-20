@@ -686,6 +686,8 @@ class SymLib(object):
             f = LibLineReader(fh, file)
             line = f.get_line()
             if not line.startswith('EESchema-LIBRARY'):
+                if file.endswith('kicad_sym'):
+                    raise SchLibError('Mixing KiCad 5 and KiCad 6 files is not allowed', line, f)
                 raise SchLibError('Missing library signature', line, f)
             line = f.get_line()
             translate = {k.replace(':', '_'): k for k, v in needed.items() if v is None} if lib_alias is None else None
