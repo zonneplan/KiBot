@@ -25,7 +25,9 @@ logger = get_logger(__name__)
 @pre_class
 class Run_DRC(BasePreFlight):  # noqa: F821
     """ [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
-        The report file name is controlled by the global output pattern (%i=drc %x=txt) """
+        The report file name is controlled by the global output pattern (%i=drc %x=txt).
+        Note that the KiCad 6 *Test for parity between PCB and schematic* option is not supported.
+        If you need to check the parity use the `update_xml` preflight """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):

@@ -42,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Render_3D: Options to disable some technical layers and control the
   silkscreen clipping. (#282)
 - Internal BoM: Now you can aggregate components using CSV files. (See #248)
+- Now you can check PCB and schematic parity using the `update_xml` preflight
+  (See #297)
 
 ### Fixed
 - Problems to compress netlists. (#287)

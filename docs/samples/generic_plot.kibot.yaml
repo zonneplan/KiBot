@@ -53,6 +53,8 @@ preflight:
         after: '>'
   # [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
   # The report file name is controlled by the global output pattern (%i=drc %x=txt).
+  # Note that the KiCad 6 *Test for parity between PCB and schematic* option is not supported.
+  # If you need to check the parity use the `update_xml` preflight.
   run_drc: true
   # [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
   # The report file name is controlled by the global output pattern (%i=erc %x=txt).
@@ -80,9 +82,10 @@ preflight:
   # Complements the `qr_lib` output.
   # The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.
   update_qr: true
-  # [boolean=false] Update the XML version of the BoM (Bill of Materials).
+  # [boolean=false|dict] Update the XML version of the BoM (Bill of Materials).
   # To ensure our generated BoM is up to date.
   # Note that this isn't needed when using the internal BoM generator (`bom`).
+  # You can compare the PCB and schematic netlists using it.
   update_xml: true
 
 outputs:

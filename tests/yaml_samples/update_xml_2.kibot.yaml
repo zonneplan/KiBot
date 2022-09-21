@@ -1,0 +1,9 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  update_xml:
+    enabled: true
+    check_pcb_parity: true
+    as_warnings: false

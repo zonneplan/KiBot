@@ -20,7 +20,7 @@ import os
 import re
 from subprocess import run, PIPE
 from . import context
-from kibot.misc import DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH, EXIT_BAD_CONFIG
+from kibot.misc import DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH, EXIT_BAD_CONFIG, NETLIST_DIFF
 
 
 @pytest.mark.slow
@@ -170,6 +170,29 @@ def test_update_xml_1(test_dir):
     finally:
         os.remove(xml)
         os.rename(xml+'-bak', xml)
+    ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.eeschema
+@pytest.mark.skipif(context.ki5(), reason="KiCad 6 implementation")
+def test_update_xml_2(test_dir):
+    prj = 'pcb_parity'
+    ctx = context.TestContext(test_dir, prj, 'update_xml_2', '')
+    # The XML should be created where the schematic is located
+    xml = os.path.abspath(os.path.join(ctx.get_board_dir(), prj+'.xml'))
+    ctx.run(ret_val=NETLIST_DIFF)
+    # Check all outputs are there
+    # ctx.expect_out_file(prj+'.csv')
+    assert os.path.isfile(xml)
+    assert os.path.getsize(xml) > 0
+    logging.debug(os.path.basename(xml)+' OK')
+    ctx.search_err(["C1 footprint mismatch",
+                    "F1 found in PCB, but not in schematic",
+                    "FID1 found in schematic, but not in PCB",
+                    "Net count mismatch .PCB 3 vs schematic 4.",
+                    "PCB net code 2 name mismatch",
+                    "PCB net code 2 extra connection/s: C1 pin 1"])
     ctx.clean_up()
 
 

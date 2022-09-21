@@ -40,6 +40,7 @@ KICOST_ERROR = 26
 MISSING_WKS = 27
 MISSING_FILES = 28
 DIFF_TOO_BIG = 29
+NETLIST_DIFF = 30
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
@@ -70,6 +71,7 @@ error_level_to_name = ['NONE',
                        'MISSING_WKS',
                        'MISSING_FILES',
                        'DIFF_TOO_BIG',
+                       'NETLIST_DIFF',
                        ]
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 EXAMPLE_CFG = 'example_template.kibot.yaml'
@@ -233,6 +235,7 @@ W_3DRESVER = '(W097) '
 W_DOWN3D = '(W098) '
 W_MISSREF = '(W099) '
 W_COPYOVER = '(W100) '
+W_PARITY = '(W101) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",

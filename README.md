@@ -398,6 +398,8 @@ This section is used to specify tasks that will be executed before generating an
         - `text`: [string=''] Text to insert instead of the tag.
 - `run_drc`: [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
         The report file name is controlled by the global output pattern (%i=drc %x=txt).
+        Note that the KiCad 6 *Test for parity between PCB and schematic* option is not supported.
+        If you need to check the parity use the `update_xml` preflight.
 - `run_erc`: [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
         The report file name is controlled by the global output pattern (%i=erc %x=txt).
 - `sch_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
@@ -437,9 +439,16 @@ This section is used to specify tasks that will be executed before generating an
 - `update_qr`: [boolean=false] Update the QR codes.
         Complements the `qr_lib` output.
         The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.
-- `update_xml`: [boolean=false] Update the XML version of the BoM (Bill of Materials).
+- `update_xml`: [boolean=false|dict] Update the XML version of the BoM (Bill of Materials).
         To ensure our generated BoM is up to date.
         Note that this isn't needed when using the internal BoM generator (`bom`).
+        You can compare the PCB and schematic netlists using it.
+  * Valid keys:
+    - **`check_pcb_parity`**: [boolean=false] Check if the PCB and Schematic are synchronized.
+                              This is equivalent to the *Test for parity between PCB and schematic* of the DRC dialog.
+                              Only available for KiCad 6.
+    - `as_warnings`: [boolean=false] Inform the problems as warnings and don't stop.
+    - `enabled`: [boolean=true] Enable the update. This is the replacement for the boolean value.
 
 
 Here is an example of a *preflight* section:
