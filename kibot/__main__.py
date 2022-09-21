@@ -267,6 +267,7 @@ class SimpleFilter(object):
     def __init__(self, num):
         self.number = num
         self.regex = re.compile('')
+        self.error = ''
 
 
 def apply_warning_filter(args):
