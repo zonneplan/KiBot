@@ -59,6 +59,8 @@ class Update_XML(BasePreFlight):  # noqa: F821
             self._check_pcb_parity = f.check_pcb_parity
             self.options = f
             self._pcb_related = True
+        else:
+            raise KiPlotConfigurationError('must be boolean or dict')
         self._sch_related = True
 
     @classmethod

@@ -350,7 +350,7 @@ def test_error_wrong_type_3(test_dir):
 
 def test_error_wrong_type_4(test_dir):
     """ update_xml = number """
-    ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_4')
+    ctx = context.TestContextSCH(test_dir, 'bom', 'error_pre_wrong_type_4')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err("In preflight 'update_xml': must be boolean")
     ctx.clean_up(keep_project=True)

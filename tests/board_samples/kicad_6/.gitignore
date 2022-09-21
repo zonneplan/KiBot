@@ -4,3 +4,4 @@ test_v5/
 zone-refill.pro
 fp-info-cache
 *-bak
+pcb_parity.xml
