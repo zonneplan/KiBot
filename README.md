@@ -4239,6 +4239,31 @@ Instead of defining an alias pointing to the content you can just use `${KICAD6_
 I know this is long, but this will make your project portable.
 The user will need to download the plugin, but won't need to define any alias.
 
+### Getting a self contained PCB
+
+In order to help users to create self contained projects KiBot offers some help.
+The following configuration:
+
+```yaml
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: export_pcb
+    comment: 'Copy 3D models'
+    type: copy_files
+    dir: 'expoted_pcb'
+    options:
+      files:
+        - source_type: 3d_models
+          dest: 3d_models+
+          save_pcb: true
+```
+
+Will create a new PCB inside a directory called `expoted_pcb`, this PCB will use the 3D models copied to `expoted_pcb/3d_models` using
+relative paths. So you can move the new PCB file to any place, as long as the `3d_models` directory is in the same place as the PCB.
+
 ## Credits
 
 - **KiBot project**: Salvador E. Tropea (@set-soft)
