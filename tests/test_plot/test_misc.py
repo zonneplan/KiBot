@@ -1464,7 +1464,8 @@ def test_copy_files_2(test_dir):
     for m in MODELS:
         ctx.expect_out_file(m, sub=True)
     # Make sure the PCB points to them
-    ctx.search_in_file(prj+'.kicad_pcb', ['model "{}"'.format(m) for m in MODELS if m.endswith('wrl')], sub=True)
+    ctx.search_in_file(prj+'.kicad_pcb', ['model "{}"'.format(r'\$\{KIPRJMOD\}/'+m) for m in MODELS if m.endswith('wrl')],
+                       sub=True)
     # Some warnings
     ctx.search_err(r'WARNING:\(W098\)  2 3D models downloaded')   # 2 models are missing and they are downloaded
     ctx.search_err(r'WARNING:\(W100\)', invert=True)   # 2 models has the same name, but goes to different target

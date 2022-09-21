@@ -71,7 +71,7 @@ class FilesList(Optionable):
                 dest = os.path.basename(fname)
         else:
             dest = os.path.relpath(fname, os.getcwd())
-        return os.path.join(self.output_dir, dest)
+        return '${KIPRJMOD}/'+os.path.join(self.output_dir, dest)
 
 
 class Copy_FilesOptions(Base3DOptions):
