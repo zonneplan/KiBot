@@ -150,10 +150,11 @@ def test_print_sch_variant_ni_2(test_dir):
 
 def test_sch_missing_1(test_dir):
     """ R1 exists in l1.lib, but the lib isn't specified.
-        R2 is bogus, completely missing """
+        R2 is bogus, completely missing.
+        Test for the -w/--no-warn option (only in CI/CD where we get W008+W009) """
     prj = 'missing'
     ctx = context.TestContextSCH(test_dir, prj, 'sch_no_inductors_1')
-    ctx.run()
+    ctx.run(extra=['-w', '8,9'])
     o_name = os.path.join(NI_DIR, prj+context.KICAD_SCH_EXT)
     ctx.expect_out_file(o_name)
     if context.ki5():
