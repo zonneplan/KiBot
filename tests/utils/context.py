@@ -21,6 +21,9 @@ if sys.path[0] != prev_dir:
 from kibot.misc import (error_level_to_name)
 
 COVERAGE_SCRIPT = 'python3-coverage'
+if shutil.which(COVERAGE_SCRIPT) is None:
+    COVERAGE_SCRIPT = 'coverage3'
+    assert shutil.which(COVERAGE_SCRIPT) is not None
 KICAD_PCB_EXT = '.kicad_pcb'
 KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_6_0_0 = 6000000
