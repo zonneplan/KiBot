@@ -45,7 +45,7 @@ MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_
               'print_front', 'svg_sch_def', 'svg_sch_int', 'pdf_sch_def', 'pdf_sch_int', 'fake_sch', 'update_xml',
               'run_drc']
 # If we are not running on Debian skip the text part at the top of diff PDFs
-OFFSET_Y = '0' if os.path.isfile('/etc/debian_version') is not None else '80'
+OFFSET_Y = '0' if os.path.isfile('/etc/debian_version') else '80'
 
 
 def test_skip_pre_and_outputs(test_dir):
