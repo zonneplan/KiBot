@@ -241,8 +241,10 @@ def pip_install(pip_command, dest=None, name='.'):
     cmd = [pip_command, 'install', '-U', '--no-warn-script-location']
     if name == '.':
         # Applied only when installing a downloaded tarball
-        # This is what -U (--user) means, but Debian's pip installs to /usr/local when used by root
-        cmd.extend(['--root', os.path.dirname(site.USER_BASE), '--prefix', os.path.basename(site.USER_BASE)])
+        # This is what --user means, but Debian's pip installs to /usr/local when used by root
+        cmd.extend(['--root', os.path.dirname(site.USER_BASE), '--prefix', os.path.basename(site.USER_BASE),
+                    # If we have an older version installed don't remove it
+                    '--ignore-installed'])
     cmd.append(name)
     logger.debug('- Running: {}'.format(cmd))
     try:
