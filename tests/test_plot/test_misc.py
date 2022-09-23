@@ -44,6 +44,8 @@ POS_DIR = 'positiondir'
 MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render',
               'print_front', 'svg_sch_def', 'svg_sch_int', 'pdf_sch_def', 'pdf_sch_int', 'fake_sch', 'update_xml',
               'run_drc']
+# If we are not running on Debian skip the text part at the top of diff PDFs
+OFFSET_Y = '0' if os.path.isfile('/etc/debian_version') is not None else '80'
 
 
 def test_skip_pre_and_outputs(test_dir):
@@ -1275,7 +1277,7 @@ def test_diff_file_1(test_dir):
     yaml = 'diff_file_'+('k5' if context.ki5() else 'k6')
     ctx = context.TestContext(test_dir, prj, yaml)
     ctx.run()
-    ctx.compare_pdf(prj+'-diff_pcb.pdf', reference='light_control-diff_pcb.pdf')
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', reference='light_control-diff_pcb.pdf', off_y=OFFSET_Y)
     ctx.clean_up(keep_project=True)
 
 
@@ -1305,7 +1307,7 @@ def test_diff_git_1(test_dir):
     shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), file)
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True)
-    ctx.compare_pdf(prj+'-diff_pcb.pdf')
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y)
     ctx.clean_up(keep_project=True)
 
 
@@ -1359,7 +1361,7 @@ def test_diff_git_2(test_dir):
         f.write('Bye!\n')
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
-    ctx.compare_pdf(prj+'-diff_pcb.pdf')
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y)
     # Check the submodule was restored
     with open(some_file, 'rt') as f:
         msg = f.read()
@@ -1398,7 +1400,7 @@ def test_diff_git_3(test_dir):
     ctx.run_command(['git', 'commit', '-m', 'New version'], chdir_out=True)
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
-    ctx.compare_pdf(prj+'-diff_pcb.pdf')
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y)
     ctx.clean_up(keep_project=True)
 
 
