@@ -7,6 +7,7 @@ pytest-3 --log-cli-level debug
 import os
 from . import context
 PS_DIR = 'PDF'
+DIFF_TOL = 0 if os.path.isfile('/etc/debian_version') else 250
 
 
 def test_pdf(test_dir):
@@ -38,7 +39,7 @@ def test_pdf_refill_2(test_dir):
         ctx.run()
         b_cu = ctx.get_gerber_filename('B_Cu', '.pdf')
         ctx.expect_out_file(b_cu)
-        ctx.compare_image(b_cu)
+        ctx.compare_image(b_cu, tol=DIFF_TOL)
         assert os.path.isfile(bkp)
     finally:
         if os.path.isfile(bkp):
@@ -52,8 +53,8 @@ def test_pdf_variant_1(test_dir):
     ctx.run()
     fname = prj+'-F_Fab.pdf'
     ctx.expect_out_file(fname)
-    ctx.compare_image(fname)
+    ctx.compare_image(fname, tol=DIFF_TOL)
     fname = prj+'-B_Fab.pdf'
     ctx.expect_out_file(fname)
-    ctx.compare_image(fname)
+    ctx.compare_image(fname, tol=DIFF_TOL)
     ctx.clean_up()
