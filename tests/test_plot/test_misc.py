@@ -1308,7 +1308,7 @@ def test_diff_git_1(test_dir):
     shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), file)
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True)
-    ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y)
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
     ctx.clean_up(keep_project=True)
 
 
@@ -1362,7 +1362,7 @@ def test_diff_git_2(test_dir):
         f.write('Bye!\n')
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
-    ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y)
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
     # Check the submodule was restored
     with open(some_file, 'rt') as f:
         msg = f.read()
@@ -1401,7 +1401,7 @@ def test_diff_git_3(test_dir):
     ctx.run_command(['git', 'commit', '-m', 'New version'], chdir_out=True)
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
-    ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y)
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
     ctx.clean_up(keep_project=True)
 
 
