@@ -22,9 +22,10 @@ def create_pdf_from_pages(input_files, output_fn, forced_width=None):
         page_obj = pdf_reader.getPage(0)
         if forced_width is not None:
             width = float(page_obj.mediaBox.getWidth())*25.4/72
-            scale = forced_width/width
+            scale = round(forced_width/width, 4)
             logger.debugl(1, 'PDF scale {} ({} -> {})'.format(scale, width, forced_width))
-            page_obj.scaleBy(scale)
+            if abs(1.0-scale) > 0.0001:
+                page_obj.scaleBy(scale)
         page_obj.compressContentStreams()
         output.addPage(page_obj)
     # Write all pages to a file
