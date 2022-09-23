@@ -130,7 +130,7 @@ class DiffOptions(BaseOptions):
         return self.h.hexdigest()
 
     def add_to_cache(self, name, hash):
-        cmd = [self.command, '--only_cache', '--old_file_hash', hash, '--cache_dir', self.cache_dir]
+        cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash, '--cache_dir', self.cache_dir]
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])
         if GS.debug_enabled:
