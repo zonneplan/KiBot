@@ -13,7 +13,8 @@ sudo pacman -S python-pip --noconfirm
 sudo pacman -S kicad kicad-library --noconfirm
 # KiBot graphic deps
 # Note: librsvg is already installed for KiCad
-sudo pacman -S ghostscript imagemagick librsvg --noconfirm
+# Note: gsfonts provides Helvetica, the default imagemagick font
+sudo pacman -S ghostscript gsfonts imagemagick librsvg --noconfirm
 # Install rar (from AUR KiBot optional)
 yay -S --noconfirm rar
 # Install pandoc (KiBot optional)
@@ -61,6 +62,7 @@ yay -S python-svgpathtools-git --noconfirm
 # Install PcbDraw, clean install, no extra packages
 git clone https://github.com/INTI-CMNB/PcbDraw.git
 cd PcbDraw/
+git submodule update --init --recursive
 git checkout v0.9.0_maintain
 sudo pip install .
 cd ..
