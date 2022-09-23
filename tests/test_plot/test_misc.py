@@ -46,6 +46,7 @@ MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_
               'run_drc']
 # If we are not running on Debian skip the text part at the top of diff PDFs
 OFFSET_Y = '0' if os.path.isfile('/etc/debian_version') else '80'
+DIFF_TOL = 0 if os.path.isfile('/etc/debian_version') else 1200
 
 
 def test_skip_pre_and_outputs(test_dir):
@@ -1277,7 +1278,7 @@ def test_diff_file_1(test_dir):
     yaml = 'diff_file_'+('k5' if context.ki5() else 'k6')
     ctx = context.TestContext(test_dir, prj, yaml)
     ctx.run()
-    ctx.compare_pdf(prj+'-diff_pcb.pdf', reference='light_control-diff_pcb.pdf', off_y=OFFSET_Y)
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', reference='light_control-diff_pcb.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
     ctx.clean_up(keep_project=True)
 
 

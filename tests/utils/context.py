@@ -520,7 +520,7 @@ class TestContext(object):
             os.remove(png_image)
         assert ae <= tol
 
-    def compare_pdf(self, gen, reference=None, diff='diff-{}.png', height='87%', off_y='0'):
+    def compare_pdf(self, gen, reference=None, diff='diff-{}.png', height='87%', off_y='0', tol=0):
         """ For multi-page PDFs """
         if reference is None:
             reference = gen
@@ -545,7 +545,7 @@ class TestContext(object):
         # Compare each page
         for page in range(len(ref_pages)):
             self.compare_image('gen-'+str(page)+'.png', 'ref-'+str(page)+'.png', diff.format(page), ref_out_dir=True,
-                               height=height, off_y=off_y)
+                               height=height, off_y=off_y, tol=tol)
 
     def compare_txt(self, text, reference=None, diff='diff.txt'):
         if reference is None:
