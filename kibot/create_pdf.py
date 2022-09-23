@@ -21,7 +21,7 @@ def create_pdf_from_pages(input_files, output_fn, forced_width=None):
         pdf_reader = PyPDF2.PdfFileReader(file)
         page_obj = pdf_reader.getPage(0)
         if forced_width is not None:
-            width = page_obj.mediaBox.getWidth()*25.4/72
+            width = float(page_obj.mediaBox.getWidth())*25.4/72
             scale = forced_width/width
             logger.debugl(1, 'PDF scale {} ({} -> {})'.format(scale, width, forced_width))
             page_obj.scaleBy(scale)
