@@ -867,6 +867,7 @@ class PCB_PrintOptions(VariantOptions):
     def svg_to_pdf(self, input_folder, svg_file, pdf_file):
         # Note: rsvg-convert uses 90 dpi but KiCad (and the docs I found) says SVG pt is 72 dpi
         # We use a 5x scale and then reduce it to maintain the page size
+        # Note: rsvg 2.50.3 has this problem 2.54.5 doesn't, so we ensure the size is correct, not a fixed scale
         dpi = str(self.dpi)
         cmd = [self.rsvg_command, '-d', dpi, '-p', dpi, '-f', 'pdf', '-o', os.path.join(input_folder, pdf_file),
                os.path.join(input_folder, svg_file)]
@@ -917,8 +918,8 @@ class PCB_PrintOptions(VariantOptions):
             logger.debug('- Creating {} from {}'.format(pdf_file, svg_file))
             self.svg_to_pdf(input_folder, svg_file, pdf_file)
             svg_files.append(os.path.join(input_folder, pdf_file))
-        logger.debug('- Joining {} into {}'.format(svg_files, output_fn))
-        create_pdf_from_pages(svg_files, output_fn, scale=72.0/self.dpi)
+        logger.debug('- Joining {} into {} ({}x{})'.format(svg_files, output_fn, self.paper_w, self.paper_h))
+        create_pdf_from_pages(svg_files, output_fn, forced_width=self.paper_w)
 
     def check_tools(self):
         if self.format != 'SVG':

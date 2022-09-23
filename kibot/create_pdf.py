@@ -6,9 +6,12 @@
 # Project: KiBot (formerly KiPlot)
 # Base idea: https://gitlab.com/dennevi/Board2Pdf/ (Released as Public Domain)
 from . import PyPDF2
+from . import log
+
+logger = log.get_logger()
 
 
-def create_pdf_from_pages(input_files, output_fn, scale=1.0):
+def create_pdf_from_pages(input_files, output_fn, forced_width=None):
     output = PyPDF2.PdfFileWriter()
     # Collect all pages
     open_files = []
@@ -17,7 +20,10 @@ def create_pdf_from_pages(input_files, output_fn, scale=1.0):
         open_files.append(file)
         pdf_reader = PyPDF2.PdfFileReader(file)
         page_obj = pdf_reader.getPage(0)
-        if scale != 1.0:
+        if forced_width is not None:
+            width = page_obj.mediaBox.getWidth()*25.4/72
+            scale = forced_width/width
+            logger.debugl(1, 'PDF scale {} ({} -> {})'.format(scale, width, forced_width))
             page_obj.scaleBy(scale)
         page_obj.compressContentStreams()
         output.addPage(page_obj)
