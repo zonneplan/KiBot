@@ -1,6 +1,6 @@
 #!/usr/bin/make
-PY_COV=python3-coverage
-PYTEST=pytest-3
+PY_COV?=python3-coverage
+PYTEST?=pytest-3
 REFDIR=tests/reference/5_1_7/
 REFILL=tests/board_samples/zone-refill.kicad_pcb
 CWD := $(abspath $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST))))))
