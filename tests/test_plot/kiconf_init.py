@@ -64,14 +64,15 @@ GS.kicad_conf_path = None if args.no_conf_path else ki_path
 
 
 def do_init():
-    with context.cover_it(cov):
-        KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
-        # Check we can call it again and nothing is done
-        KiConf.init('bogus')
+    KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
+    # Check we can call it again and nothing is done
+    KiConf.init('bogus')
 
 
 if args.patch_get_path:
-    with patch("sysconfig.get_path", lambda a, b: ''):
-        do_init()
+    with context.cover_it(cov):
+        with patch("sysconfig.get_path", lambda a, b=None: ''):
+            do_init()
 else:
-    do_init()
+    with context.cover_it(cov):
+        do_init()
