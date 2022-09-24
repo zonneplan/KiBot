@@ -10,13 +10,16 @@ Dependencies:
     python_module: true
     role: Get color messages in a portable way
     debian: python3-colorama
+    arch: python-colorama
   - name: Requests
     python_module: true
     role: mandatory
     debian: python3-requests
+    arch: python-requests
   - name: PyYAML
     python_module: true
     debian: python3-yaml
+    arch: python-yaml
     module_name: yaml
     role: mandatory
   # Base dependencies used by various outputs
@@ -30,9 +33,11 @@ Dependencies:
     url: https://git-scm.com/
     downloader: git
     debian: git
+    arch: git
   - name: RSVG tools
     url: https://gitlab.gnome.org/GNOME/librsvg
     debian: librsvg2-bin
+    arch: librsvg
     command: rsvg-convert
     downloader: rsvg
     id: RSVG
@@ -40,6 +45,7 @@ Dependencies:
     url: https://www.ghostscript.com/
     url_down: https://github.com/ArtifexSoftware/ghostpdl-downloads/releases
     debian: ghostscript
+    arch: ghostscript
     command: gs
     downloader: gs
   - name: ImageMagick
@@ -48,6 +54,8 @@ Dependencies:
     command: convert
     downloader: convert
     debian: imagemagick
+    arch: imagemagick
+    extra_arch: ['gsfonts']
   - name: PcbDraw
     # 0.9.0 implements KiCad 6 support
     # 0.9.0.3 Fixes KiCad 5 problems
@@ -789,7 +797,16 @@ def check_tool_dep(context, dep, fatal=False):
         if dep.deb_package:
             do_log_err('Debian package: '+dep.deb_package, fatal)
             if dep.extra_deb:
-                do_log_err('- Recommended extra Debian packages: '+' '.join(dep.deb_package), fatal)
+                do_log_err('- Recommended extra Debian packages: '+' '.join(dep.extra_deb), fatal)
+        if dep.arch:
+            arch = dep.arch
+            kind = 'Arch'
+            if arch.endswith('(AUR)'):
+                kind = 'AUR'
+                arch = arch[:-5]
+            do_log_err(kind+' package: '+dep.arch, fatal)
+            if dep.extra_arch:
+                do_log_err('- Recommended extra Arch packages: '+' '.join(dep.extra_arch), fatal)
         for comment in dep.comments:
             do_log_err(comment, fatal)
         show_roles(dep.roles, fatal)
@@ -820,7 +837,7 @@ class ToolDependency(object):
     """ Class used to define tools needed for an output """
     def __init__(self, output, name, url=None, url_down=None, is_python=False, deb=None, in_debian=True, extra_deb=None,
                  roles=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
-                 help_option=None, no_cmd_line_version_old=False, downloader=None):
+                 help_option=None, no_cmd_line_version_old=False, downloader=None, arch=None, extra_arch=None):
         # The associated output
         self.output = output
         # Name of the tool
@@ -843,6 +860,9 @@ class ToolDependency(object):
         self.pypi_name = pypi_name if pypi_name is not None else name
         # Extra Debian packages needed to complement it
         self.extra_deb = extra_deb
+        # Arch Linux
+        self.arch = arch
+        self.extra_arch = extra_arch
         # URLs
         self.url = url
         self.url_down = url_down
@@ -897,6 +917,8 @@ def register_dep(context, dep):
     deb = dep.get('debian', None)
     in_debian = deb is not None
     extra_deb = dep.get('extra_deb', None)
+    arch = dep.get('arch', None)
+    extra_arch = dep.get('extra_arch', None)
     is_python = dep.get('python_module', False)
     module_name = dep.get('module_name', None)
     plugin_dirs = dep.get('plugin_dirs', None)
@@ -913,7 +935,8 @@ def register_dep(context, dep):
     td = ToolDependency(context, name, roles=role, url=url, url_down=url_down, deb=deb, in_debian=in_debian,
                         extra_deb=extra_deb, is_python=is_python, module_name=module_name, plugin_dirs=plugin_dirs,
                         command=command, help_option=help_option, pypi_name=pypi_name,
-                        no_cmd_line_version_old=no_cmd_line_version_old, downloader=downloader)
+                        no_cmd_line_version_old=no_cmd_line_version_old, downloader=downloader, arch=arch,
+                        extra_arch=extra_arch)
     # Extra comments
     comments = dep.get('comments', [])
     if isinstance(comments, str):

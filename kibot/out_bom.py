@@ -14,6 +14,7 @@ Dependencies:
     role: Create XLSX files
     python_module: true
     debian: python3-xlsxwriter
+    arch: python-xlsxwriter
     downloader: python
 """
 import csv

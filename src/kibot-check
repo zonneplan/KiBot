@@ -20,11 +20,13 @@ import sys
 
 deps = '{\
     "Colorama": {\
+        "arch": "python-colorama",\
         "command": "colorama",\
         "comments": [],\
         "deb_package": "python3-colorama",\
         "downloader": null,\
         "downloader_str": null,\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 100,\
@@ -50,11 +52,13 @@ deps = '{\
         "url_down": null\
     },\
     "Ghostscript": {\
+        "arch": "ghostscript",\
         "command": "gs",\
         "comments": [],\
         "deb_package": "ghostscript",\
         "downloader": {},\
         "downloader_str": "gs",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 2,\
@@ -85,11 +89,13 @@ deps = '{\
         "url_down": "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases"\
     },\
     "Git": {\
+        "arch": "git",\
         "command": "git",\
         "comments": [],\
         "deb_package": "git",\
         "downloader": {},\
         "downloader_str": "git",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 4,\
@@ -132,11 +138,15 @@ deps = '{\
         "url_down": null\
     },\
     "ImageMagick": {\
+        "arch": "imagemagick",\
         "command": "convert",\
         "comments": [],\
         "deb_package": "imagemagick",\
         "downloader": {},\
         "downloader_str": "convert",\
+        "extra_arch": [\
+            "gsfonts"\
+        ],\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 3,\
@@ -173,11 +183,13 @@ deps = '{\
         "url_down": "https://imagemagick.org/script/download.php"\
     },\
     "Interactive HTML BoM": {\
+        "arch": null,\
         "command": "generate_interactive_bom.py",\
         "comments": [],\
         "deb_package": "interactive html bom",\
         "downloader": {},\
         "downloader_str": "pytool",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -212,11 +224,13 @@ deps = '{\
         "url_down": "https://github.com/INTI-CMNB/InteractiveHtmlBom/releases"\
     },\
     "KiBoM": {\
+        "arch": null,\
         "command": "KiBOM_CLI.py",\
         "comments": [],\
         "deb_package": "kibom",\
         "downloader": {},\
         "downloader_str": "pytool",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -245,11 +259,13 @@ deps = '{\
         "url_down": "https://github.com/INTI-CMNB/KiBoM/releases"\
     },\
     "KiCad Automation tools": {\
+        "arch": null,\
         "command": "pcbnew_do",\
         "comments": [],\
         "deb_package": "kicad automation tools",\
         "downloader": {},\
         "downloader_str": "pytool",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 110003,\
@@ -408,11 +424,13 @@ deps = '{\
         "url_down": "https://github.com/INTI-CMNB/KiAuto/releases"\
     },\
     "KiCad PCB/SCH Diff": {\
+        "arch": null,\
         "command": "kicad-diff.py",\
         "comments": [],\
         "deb_package": "kicad pcb/sch diff",\
         "downloader": {},\
         "downloader_str": "pytool",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -441,11 +459,13 @@ deps = '{\
         "url_down": "https://github.com/INTI-CMNB/KiDiff/releases"\
     },\
     "KiCost": {\
+        "arch": null,\
         "command": "kicost",\
         "comments": [],\
         "deb_package": "kicost",\
         "downloader": {},\
         "downloader_str": "pytool",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10001,\
@@ -484,11 +504,13 @@ deps = '{\
         "url_down": "https://github.com/hildogjr/KiCost/releases"\
     },\
     "LXML": {\
+        "arch": "python-lxml",\
         "command": "lxml",\
         "comments": [],\
         "deb_package": "python3-lxml",\
         "downloader": {},\
         "downloader_str": "python",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -514,6 +536,7 @@ deps = '{\
         "url_down": null\
     },\
     "Pandoc": {\
+        "arch": "pandoc",\
         "command": "pandoc",\
         "comments": [\
             "In CI/CD environments: the `kicad_auto_test` docker image contains it."\
@@ -521,6 +544,9 @@ deps = '{\
         "deb_package": "pandoc",\
         "downloader": null,\
         "downloader_str": null,\
+        "extra_arch": [\
+            "texlive-core"\
+        ],\
         "extra_deb": [\
             "texlive-latex-base",\
             "texlive-latex-recommended"\
@@ -548,6 +574,7 @@ deps = '{\
         "url_down": "https://github.com/jgm/pandoc/releases"\
     },\
     "PcbDraw": {\
+        "arch": null,\
         "command": "pcbdraw",\
         "comments": [\
             "Currently the upstream version is broken, please use the mentioned fork"\
@@ -555,6 +582,7 @@ deps = '{\
         "deb_package": "pcbdraw",\
         "downloader": {},\
         "downloader_str": "pytool",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10001,\
@@ -595,11 +623,13 @@ deps = '{\
         "url_down": "https://github.com/INTI-CMNB/pcbdraw/releases"\
     },\
     "PyYAML": {\
+        "arch": "python-yaml",\
         "command": "pyyaml",\
         "comments": [],\
         "deb_package": "python3-yaml",\
         "downloader": null,\
         "downloader_str": null,\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 1000000,\
@@ -625,11 +655,13 @@ deps = '{\
         "url_down": null\
     },\
     "QRCodeGen": {\
+        "arch": null,\
         "command": "qrcodegen",\
         "comments": [],\
         "deb_package": "python3-qrcodegen",\
         "downloader": {},\
         "downloader_str": "python",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 10000,\
@@ -655,11 +687,13 @@ deps = '{\
         "url_down": null\
     },\
     "RAR": {\
+        "arch": "rar(AUR)",\
         "command": "rar",\
         "comments": [],\
         "deb_package": "rar",\
         "downloader": {},\
         "downloader_str": "rar",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "-?",\
         "importance": 1,\
@@ -684,11 +718,13 @@ deps = '{\
         "url_down": "https://www.rarlab.com/download.htm"\
     },\
     "RSVG tools": {\
+        "arch": "librsvg",\
         "command": "rsvg-convert",\
         "comments": [],\
         "deb_package": "librsvg2-bin",\
         "downloader": {},\
         "downloader_str": "rsvg",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 4,\
@@ -731,11 +767,13 @@ deps = '{\
         "url_down": null\
     },\
     "Requests": {\
+        "arch": "python-requests",\
         "command": "requests",\
         "comments": [],\
         "deb_package": "python3-requests",\
         "downloader": null,\
         "downloader_str": null,\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 1000000,\
@@ -761,11 +799,13 @@ deps = '{\
         "url_down": null\
     },\
     "XLSXWriter": {\
+        "arch": "python-xlsxwriter",\
         "command": "xlsxwriter",\
         "comments": [],\
         "deb_package": "python3-xlsxwriter",\
         "downloader": {},\
         "downloader_str": "python",\
+        "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
         "importance": 1,\
@@ -993,7 +1033,7 @@ def show_roles(roles):
                 print(sev2color(o['sev'])+'    - {} for {}{}'.format(o['desc'], o['output'], ver))
 
 
-def python_module(severity, name, deb_package, roles):
+def python_module(severity, name, deb_package, roles, arch):
     if not severity:
         return
     print(sev2color(severity)+'* Python module `{}` not installed or too old'.format(name))
@@ -1001,6 +1041,10 @@ def python_module(severity, name, deb_package, roles):
         if deb_package is None:
             deb_package = 'python3-'+name
         print('  Install the `{0}` package, i.e.: `sudo apt-get install {0}`'.format(deb_package))
+    elif arch_support:
+        if arch is None:
+            arch = 'python-'+name
+        print('  Install the `{0}` package, i.e.: `sudo pacman -S {0}`'.format(arch))
     elif pip_ok:
         print('  run `{} install {}` as root,'.format(pip_command, name))
         print('  or run `{} install --user {}` as a regular user'.format(pip_command, name))
@@ -1010,7 +1054,7 @@ def python_module(severity, name, deb_package, roles):
     print(RESET)
 
 
-def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, roles, downloader, comments):
+def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, roles, downloader, comments, arch, extra_arch):
     if not severity:
         return
     print(sev2color(severity)+'* {} not installed or too old'.format(name))
@@ -1020,6 +1064,13 @@ def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, role
         print('  Install the `{0}` package, i.e.: `sudo apt-get install {0}`'.format(deb_package))
         if extra_deb:
             print('  You should also install the following packages: '+', '.join(extra_deb))
+    elif arch and arch_support:
+        if arch.endswith('(AUR)'):
+            print('  Install the `{0}` package, i.e.: `sudo yay -S {0}`'.format(arch[:-5]))
+        else:
+            print('  Install the `{0}` package, i.e.: `sudo pacman -S {0}`'.format(arch))
+        if extra_arch:
+            print('  You should also install the following packages: '+', '.join(extra_arch))
     else:
         print('  Visit: '+url)
         if url_down:
@@ -1214,6 +1265,9 @@ print()
 debian_support = False
 if which('apt-get'):
     debian_support = True
+arch_support = False
+if which('pacman'):
+    arch_support = True
 pip_ok = False
 if which('pip3'):
     pip_ok = True
@@ -1260,10 +1314,10 @@ if not kibot_ok:
 
 for name, d in dependencies.items():
     if d['is_python']:
-        python_module(d['sev'], d['pypi_name'], d['deb_package'], d['roles'])
+        python_module(d['sev'], d['pypi_name'], d['deb_package'], d['roles'], d['arch'])
     else:
         binary_tool(d['sev'], d['name'], d['url'], d['url_down'], d['deb_package'], d['in_debian'], d['extra_deb'],
-                    d['roles'], d['downloader_str'], d['comments'])
+                    d['roles'], d['downloader_str'], d['comments'], d['arch'], d['extra_arch'])
 
 if sys.stdout.isatty():
     labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory for an output', 'mandatory for general use')

@@ -220,7 +220,7 @@ def show_roles(roles):
                 print(sev2color(o['sev'])+'    - {} for {}{}'.format(o['desc'], o['output'], ver))
 
 
-def python_module(severity, name, deb_package, roles):
+def python_module(severity, name, deb_package, roles, arch):
     if not severity:
         return
     print(sev2color(severity)+'* Python module `{}` not installed or too old'.format(name))
@@ -228,6 +228,10 @@ def python_module(severity, name, deb_package, roles):
         if deb_package is None:
             deb_package = 'python3-'+name
         print('  Install the `{0}` package, i.e.: `sudo apt-get install {0}`'.format(deb_package))
+    elif arch_support:
+        if arch is None:
+            arch = 'python-'+name
+        print('  Install the `{0}` package, i.e.: `sudo pacman -S {0}`'.format(arch))
     elif pip_ok:
         print('  run `{} install {}` as root,'.format(pip_command, name))
         print('  or run `{} install --user {}` as a regular user'.format(pip_command, name))
@@ -237,7 +241,7 @@ def python_module(severity, name, deb_package, roles):
     print(RESET)
 
 
-def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, roles, downloader, comments):
+def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, roles, downloader, comments, arch, extra_arch):
     if not severity:
         return
     print(sev2color(severity)+'* {} not installed or too old'.format(name))
@@ -247,6 +251,13 @@ def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, role
         print('  Install the `{0}` package, i.e.: `sudo apt-get install {0}`'.format(deb_package))
         if extra_deb:
             print('  You should also install the following packages: '+', '.join(extra_deb))
+    elif arch and arch_support:
+        if arch.endswith('(AUR)'):
+            print('  Install the `{0}` package, i.e.: `sudo yay -S {0}`'.format(arch[:-5]))
+        else:
+            print('  Install the `{0}` package, i.e.: `sudo pacman -S {0}`'.format(arch))
+        if extra_arch:
+            print('  You should also install the following packages: '+', '.join(extra_arch))
     else:
         print('  Visit: '+url)
         if url_down:
@@ -441,6 +452,9 @@ print()
 debian_support = False
 if which('apt-get'):
     debian_support = True
+arch_support = False
+if which('pacman'):
+    arch_support = True
 pip_ok = False
 if which('pip3'):
     pip_ok = True
@@ -487,10 +501,10 @@ if not kibot_ok:
 
 for name, d in dependencies.items():
     if d['is_python']:
-        python_module(d['sev'], d['pypi_name'], d['deb_package'], d['roles'])
+        python_module(d['sev'], d['pypi_name'], d['deb_package'], d['roles'], d['arch'])
     else:
         binary_tool(d['sev'], d['name'], d['url'], d['url_down'], d['deb_package'], d['in_debian'], d['extra_deb'],
-                    d['roles'], d['downloader_str'], d['comments'])
+                    d['roles'], d['downloader_str'], d['comments'], d['arch'], d['extra_arch'])
 
 if sys.stdout.isatty():
     labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory for an output', 'mandatory for general use')

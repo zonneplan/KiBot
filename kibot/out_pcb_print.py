@@ -24,6 +24,7 @@ Dependencies:
   - name: LXML
     python_module: true
     debian: python3-lxml
+    arch: python-lxml
     role: mandatory
     downloader: python
 """

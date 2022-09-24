@@ -12,6 +12,7 @@ Dependencies:
     downloader: rar
     role: Compress in RAR format
     debian: rar
+    arch: rar(AUR)
 """
 import re
 import os
