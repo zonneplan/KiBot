@@ -1,0 +1,44 @@
+# This example shows how to use the 'bom'-type output to generate xy position output.
+# The reason for doing this was to get a populate yes/no column (requested by my board assembler).
+# It makes sense for inspection reasons - you can check the file if inspection determines a part is missing.
+# My assembler also wants fiducials in the xy-file, so these are included in the output (I mark them as not populated using the _mechanical filter).
+
+# Config format documentation: https://github.com/INTI-CMNB/KiBot
+
+kibot:
+  version: 1
+
+filters:
+- name: exclude_virtual
+  comment: "Exclude virtual footprints (when using bom output for generating XY file)"
+  type: generic
+  exclude_virtual: true
+
+outputs:
+# Use bom output to generate position file
+# Must include fiducials in order for pick/place to calculate footprint locations
+- name: assy_position
+  comment: "Board assembly position file (CSV)"
+  type: bom
+  options:
+    format: CSV
+    columns:
+    - field: "References"
+      name: "Ref"
+    - field: "Footprint"
+    - field: "Footprint Type"
+      name: "Type"
+    - field: "Footprint X"
+      name: "PosX"
+    - field: "Footprint Y"
+      name: "PosY"
+    - field: "Footprint Rot"
+      name: "Rot"
+    - field: "Footprint Side"
+      name: "Side"
+    - field: "Footprint Populate"
+      name: "Populate"
+    group_fields: [] # disable grouping
+    exclude_filter: exclude_virtual # remove test points, mounting holes, edge connectors, etc.
+    dnf_filter: _mechanical # to also mark fiducials as DNF
+    ignore_dnf: false
