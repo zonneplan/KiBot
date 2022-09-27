@@ -7,12 +7,11 @@
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
 
-**Important for KiCad 6 users**:
-- You need KiBot 1.0.0 or newer
-- The docker images tagged `ki6` and `dev_k6` has KiCad 6.
+**Important for CI/CD**:
+- We are now uploading docker images to GitHub, the new tags are much more simple.
+  Consult: [Usage for CI/CD](#usage-for-cicd)
 - The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
   Consult: [Github Actions tags](#github-actions-tags)
-- When using KiCad 6 you must migrate the whole project and pass the migrated files to KiBot.
 
 **New on v1.3.0**
 - Diff and Info outputs
@@ -1344,21 +1343,34 @@ This workflow collects the generated files in `Automatic_outputs.zip`.
 Examples of how to use KiBot can be found [here for GitHub](https://github.com/INTI-CMNB/kicad_ci_test) and [here for GitLab](https://gitlab.com/set-soft/kicad-ci-test).
 
 In order to run KiBot on these environments you need a lot of software installed. The usual mechanism to achieve this is using [docker](https://www.docker.com/).
-Docker images containing KiBot, all the supporting scripts and a corresponding KiCad can be found at [Docker Hub](https://hub.docker.com/) as [setsoft/kicad_auto:latest](https://hub.docker.com/repository/docker/setsoft/kicad_auto).
-This image is based on [setsoft/kicad_debian:latest](https://hub.docker.com/repository/docker/setsoft/kicad_debian), containing KiCad on Debian GNU/Linux.
+Docker images containing KiBot, all the supporting scripts and a corresponding KiCad can be found in the
+[kicad5_auto](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto) and
+[kicad6_auto](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto) GitHub packages.
+More complete images, with Pandoc and testing tools, can be found in the following packages:
+[kicad5_auto_full](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto_full) and
+[kicad6_auto_full](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto_full) GitHub packages.
+Old images can be found at [Docker Hub](https://hub.docker.com/) as [setsoft/kicad_auto](https://hub.docker.com/repository/docker/setsoft/kicad_auto) and
+[setsoft/kicad_auto_test](https://hub.docker.com/repository/docker/setsoft/kicad_auto_test).
 
-If you need to run the current development version of KiBot you can use the following docker image: [setsoft/kicad_auto:dev](https://hub.docker.com/repository/docker/setsoft/kicad_auto).
+The images are based on [kicad5_debian](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_debian) and
+[kicad6_debian](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_debian)
+([setsoft/kicad_debian](https://hub.docker.com/repository/docker/setsoft/kicad_debian) on Docker Hub), containing KiCad on Debian GNU/Linux.
+
+If you need to run the current development version of KiBot you can use the following docker images:
+[ghcr.io/inti-cmnb/kicad5_auto:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto) or
+[ghcr.io/inti-cmnb/kicad6_auto:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto)
+([setsoft/kicad_auto:dev](https://hub.docker.com/repository/docker/setsoft/kicad_auto)).
 
 The most important images are:
 
-| Name           | KiBot        | KiCad |
-| :------------- | ------------ | ----: |
-| latest         | last release | 5.1.9 |
-| ki6            | last release | 6.x   |
-| dev            | git code     | 5.1.9 |
-| dev_k6         | git code     | 6.x   |
-| 10.4-5.1.9     | 1.2.0        | 5.1.9 |
-| ki6.0.5_Debian | 1.2.0        | 6.0.5 |
+| Name                                 | KiBot        | KiCad |
+| :----------------------------------- | ------------ | ----: |
+| ghcr.io/inti-cmnb/kicad5_auto:latest | last release | 5.1.9 |
+| ghcr.io/inti-cmnb/kicad6_auto:latest | last release | 6.x   |
+| ghcr.io/inti-cmnb/kicad5_auto:dev    | git code     | 5.1.9 |
+| ghcr.io/inti-cmnb/kicad6_auto:dev    | git code     | 6.x   |
+| ghcr.io/inti-cmnb/kicad5_auto:1.2.0  | 1.2.0        | 5.1.9 |
+| ghcr.io/inti-cmnb/kicad6_auto:1.2.0  | 1.2.0        | 6.0.5 |
 
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
