@@ -192,6 +192,7 @@ jobs:
         images: |
           setsoft/kicad_auto
           ghcr.io/inti-cmnb/kicad_auto
+          ghcr.io/inti-cmnb/kicad5_auto
         tags: |
           type=raw,dev
 
@@ -235,6 +236,7 @@ jobs:
         images: |
           setsoft/kicad_auto
           ghcr.io/inti-cmnb/kicad_auto
+          ghcr.io/inti-cmnb/kicad6_auto
         tags: |
           type=raw,dev_k6
 
@@ -243,7 +245,10 @@ jobs:
       with:
         context: tools/dev_image_k6
         push: true
-        tags: ${{ steps.meta.outputs.tags }}
+        tags: |
+          setsoft/kicad_auto:dev_k6
+          ghcr.io/inti-cmnb/kicad_auto:dev_k6
+          ghcr.io/inti-cmnb/kicad6_auto:dev
         labels: ${{ steps.meta.outputs.labels }}
 
   coveralls:
