@@ -39,7 +39,7 @@ import re
 import os
 import subprocess
 import importlib
-from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, wxSize, F_Mask, B_Mask, ZONE_FILLER
+from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, F_Mask, B_Mask, ZONE_FILLER
 import shlex
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
@@ -482,7 +482,6 @@ class PCB_PrintOptions(VariantOptions):
         removed = []
         vias = []
         zones = GS.zones()
-        wxSize(0, 0)
         for m in GS.get_modules():
             for gi in m.GraphicalItems():
                 if gi.GetLayer() == id:
@@ -522,7 +521,7 @@ class PCB_PrintOptions(VariantOptions):
             if e.GetClass() == via_type:
                 vias.append((e, e.GetDrill(), e.GetWidth()))
                 e.SetDrill(0)
-                e.SetWidth(0)
+                e.SetWidth(self.min_w)
             elif e.GetLayer() == id:
                 e.SetLayer(tmp_layer)
                 moved.append(e)
@@ -556,7 +555,6 @@ class PCB_PrintOptions(VariantOptions):
         removed = []
         vias = []
         zones = GS.zones()
-        wxSize(0, 0)
         for m in GS.get_modules():
             for gi in m.GraphicalItems():
                 if gi.GetLayer() == id:
@@ -612,7 +610,7 @@ class PCB_PrintOptions(VariantOptions):
                     w = e.GetWidth()
                     d = e.GetDrill()
                     vias.append((e, d, w, top, bottom))
-                    e.SetWidth(0)
+                    e.SetWidth(self.min_w)
             elif e.GetLayer() == id:
                 e.SetLayer(tmp_layer)
                 moved.append(e)
@@ -940,6 +938,8 @@ class PCB_PrintOptions(VariantOptions):
 
     def generate_output(self, output):
         self.check_tools()
+        # Avoid KiCad 5 complaining about fake vias diameter == drill == 0
+        self.min_w = 2 if GS.ki5 else 0
         output_dir = os.path.dirname(output)
         if self.keep_temporal_files:
             temp_dir_base = output_dir

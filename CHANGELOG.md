@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the 3D render). (See #270)
 - KiBot exited when downloading a datasheet and got a connection error
   (#289 #290)
+- KiCad 5 "assert "lower <= upper" failed in Clamp()" (#304)
 
 ### Changed
 - Diff:
