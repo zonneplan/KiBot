@@ -146,6 +146,8 @@ def debug_output(res):
 
 def run_command(command, change_to=None, just_raise=False):
     logger.debug('Executing: '+shlex.join(command))
+    if change_to is not None:
+        logger.debug('- CWD: '+change_to)
     try:
         res = run(command, check=True, stdout=PIPE, stderr=STDOUT, cwd=change_to)
     except CalledProcessError as e:
