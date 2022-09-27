@@ -10,10 +10,10 @@ all: ../README.md  samples/generic_plot.kibot.yaml ../kibot/report_templates/rep
 ../kibot/config_templates/bom/%.kibot.yaml: samples/%.kibot.yaml
 	cp $< $@
 
-../README.md: README.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/fil_*.py ../kibot/__main__.py ../kibot/config_reader.py ../kibot/globals.py ../kibot/dep_downloader.py
+../README.md: README.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/var_*.py ../kibot/fil_*.py ../kibot/__main__.py ../kibot/config_reader.py ../kibot/globals.py ../kibot/dep_downloader.py
 	cat README.in | perl replace_tags.pl > ../README.md
 
-../src/kibot-check: ../src/kibot-check.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/registrable.py ../kibot/misc.py ../kibot/config_reader.py ../kibot/dep_downloader.py
+../src/kibot-check: ../src/kibot-check.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/var_*.py ../kibot/registrable.py ../kibot/misc.py ../kibot/config_reader.py ../kibot/dep_downloader.py
 	cat ../src/kibot-check.in | perl replace_tags.pl > ../src/kibot-check
 
 samples/generic_plot.kibot.yaml: ../kibot/out_*.py ../kibot/pre_*.py ../kibot/config_reader.py

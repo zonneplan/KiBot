@@ -30,6 +30,14 @@ class KiBoM(BaseVariant):  # noqa: F821
             """ Name of the field used to classify components """
             self.variant = Optionable
             """ [string|list(string)=''] Board variant(s) """
+        self.fix_doc('exclude_filter', IFILT_MECHANICAL)
+        self.fix_doc('dnf_filter', '_kibom_dnf_CONFIG_FIELD')
+        self.fix_doc('dnc_filter', '_kibom_dnc_CONFIG_FIELD')
+
+    def fix_doc(self, name, value):
+        d, _, _ = self.get_doc(name)
+        d = d.replace("''", "'"+value+"'")
+        self.set_doc(name, d)
 
     def get_variant_field(self):
         """ Returns the name of the field used to determine if the component belongs to the variant """

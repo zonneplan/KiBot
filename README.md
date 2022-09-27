@@ -990,12 +990,12 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `config_field`: [string='Config'] Name of the field used to classify components.
-    - `dnc_filter`: [string|list(string)=''] Name of the filter to mark components as 'Do Not Change'.
+    - `dnc_filter`: [string|list(string)='_kibom_dnc_CONFIG_FIELD'] Name of the filter to mark components as 'Do Not Change'.
                     Use '_kibom_dnc' for the default KiBoM behavior.
-    - `dnf_filter`: [string|list(string)=''] Name of the filter to mark components as 'Do Not Fit'.
+    - `dnf_filter`: [string|list(string)='_kibom_dnf_CONFIG_FIELD'] Name of the filter to mark components as 'Do Not Fit'.
                     Use '_kibom_dnf' for the default KiBoM behavior.
-                    Use '_kicost_dnp'' for the default KiCost behavior.
-    - `exclude_filter`: [string|list(string)=''] Name of the filter to exclude components from BoM processing.
+                    Use '_kicost_dnp'_kibom_dnf_CONFIG_FIELD' for the default KiCost behavior.
+    - `exclude_filter`: [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
                         Use '_mechanical' for the default KiBoM behavior.
     - `file_id`: [string=''] Text to use as the replacement for %v expansion.
     - `name`: [string=''] Used to identify this particular variant definition.
