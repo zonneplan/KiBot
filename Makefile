@@ -182,4 +182,26 @@ pypi_upload: py_clean py_build
 py_clean:
 	@rm -rf .pybuild build dist kibot.egg-info
 
+# Update the Github Action
+# /Dockerfile.* must be updated
+update_gha:
+	cp Dockerfile_k5 Dockerfile
+	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 5 latest" Dockerfile
+	git tag -f -a v2 -m "GitHub Action v2 for KiCad 5"
+	git push origin -f --tags
+	cp Dockerfile_dk5 Dockerfile
+	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 5 development" Dockerfile
+	git tag -f -a v2_d -m "GitHub Action v2 for KiCad 5 (development)"
+	git tag -f -a v2_dk5 -m "GitHub Action v2 for KiCad 5 (development)"
+	git push origin -f --tags
+	cp Dockerfile_dk6 Dockerfile
+	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 6 development" Dockerfile
+	git tag -f -a v2_dk6 -m "GitHub Action v2 for KiCad 6 (development)"
+	git push origin -f --tags
+	cp Dockerfile_k6 Dockerfile
+	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 6 latest" Dockerfile
+	git tag -f -a v2_k6 -m "GitHub Action v2 for KiCad 6"
+	git push origin -f --tags
+
+
 .PHONY: deb deb_clean lint test test_local gen_ref doc py_build pypi_upload py_clean
