@@ -899,6 +899,7 @@ class SchematicComponent(object):
         self.footprint_rot = 0.0
         self.footprint_x = self.footprint_y = 0
         self.footprint_w = self.footprint_h = 0
+        self.has_pcb_info = False
         self.qty = 1
         self.annotation_error = False
         # KiCad 5 PCB flags (mutually exclusive)

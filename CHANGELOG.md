@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - KiBot exited when downloading a datasheet and got a connection error
   (#289 #290)
 - KiCad 5 "assert "lower <= upper" failed in Clamp()" (#304)
+- Missing XYRS information for components with multiple units (#306)
 
 ### Changed
 - Diff:

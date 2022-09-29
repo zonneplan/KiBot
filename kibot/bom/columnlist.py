@@ -95,6 +95,18 @@ class ColumnList:
         COL_SOURCE_BOM,
     ]
 
+    # Columns from the footprint
+    COLUMNS_FP_L = [
+        COL_FP_X_L,
+        COL_FP_Y_L,
+        COL_FP_ROT_L,
+        COL_FP_SIDE_L,
+        COL_FP_TYPE_L,
+        COL_FP_FIT_L,
+        COL_FP_XS_L,
+        COL_FP_YS_L,
+    ]
+
     # Not included by default
     COLUMNS_EXTRA = [
         COL_FP_X,

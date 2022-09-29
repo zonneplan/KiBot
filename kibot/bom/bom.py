@@ -15,7 +15,7 @@ from math import ceil
 from .units import compare_values, comp_match, get_last_warning
 from .bom_writer import write_bom
 from .columnlist import ColumnList
-from ..misc import DNF, W_FIELDCONF
+from ..misc import DNF, W_FIELDCONF, W_MISSFPINFO
 from ..gs import GS
 from .. import log
 
@@ -304,7 +304,7 @@ class ComponentGroup(object):
             self.fields[field] += " " + value
 
     def update_fields(self, conv, bottom_negative_x, x_origin, y_origin, angle_positive, footprint_populate_values,
-                      footprint_type_values, usealt=False):
+                      footprint_type_values, uses_fp_info, usealt=False):
         for c in self.components:
             for f, v in c.get_user_fields():
                 self.update_field(f, v, c.ref)
@@ -332,6 +332,8 @@ class ComponentGroup(object):
         self.fields[ColumnList.COL_PART_LIB_L] = comp.lib
         self.fields[ColumnList.COL_DATASHEET_L] = comp.datasheet
         self.fields[ColumnList.COL_FP_L] = comp.footprint
+        if uses_fp_info and not comp.has_pcb_info:
+            logger.warning(W_MISSFPINFO+'Missing footprint information for {}'.format(comp.ref))
         pos_x = (comp.footprint_x - x_origin) * conv
         if bottom_negative_x and comp.bottom:
             pos_x = -pos_x
@@ -469,6 +471,8 @@ def group_components(cfg, components):
         decimal_point = locale.localeconv()['decimal_point']
         if decimal_point == '.':
             decimal_point = None
+    # Determine if we need information from the PCB
+    uses_fp_info = len(set(ColumnList.COLUMNS_FP_L).intersection({c.lower() for c in cfg.columns})) != 0
     # Coordinates origin for XYRS
     x_origin = 0.0
     y_origin = 0.0
@@ -481,7 +485,7 @@ def group_components(cfg, components):
         g.sort_components()
         # Fill the columns
         g.update_fields(cfg.conv_units, cfg.bottom_negative_x, x_origin, y_origin, cfg.angle_positive,
-                        cfg.footprint_populate_values, cfg.footprint_type_values, cfg.use_alt)
+                        cfg.footprint_populate_values, cfg.footprint_type_values, uses_fp_info, cfg.use_alt)
         if cfg.normalize_values:
             g.fields[ColumnList.COL_VALUE_L] = normalize_value(g.components[0], decimal_point)
     # Sort the groups

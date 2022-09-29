@@ -279,36 +279,43 @@ def get_board_comps_data(comps):
     if not GS.pcb_file:
         return
     load_board()
-    comps_hash = {c.ref: c for c in comps}
+    # Each reference could be more than one sub-units
+    # So this hash is ref -> [List of units]
+    comps_hash = {}
+    for c in comps:
+        cur_list = comps_hash.get(c.ref, [])
+        cur_list.append(c)
+        comps_hash[c.ref] = cur_list
     for m in GS.get_modules():
         ref = m.GetReference()
         if ref not in comps_hash:
             logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
             continue
-        c = comps_hash[ref]
-        c.bottom = m.IsFlipped()
-        c.footprint_rot = m.GetOrientationDegrees()
-        center = GS.get_center(m)
-        c.footprint_x = center.x
-        c.footprint_y = center.y
-        (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
-        attrs = m.GetAttributes()
-        if GS.ki5:
-            # KiCad 5
-            if attrs == UI_SMD:
-                c.smd = True
-            elif attrs == UI_VIRTUAL:
-                c.virtual = True
+        for c in comps_hash[ref]:
+            c.bottom = m.IsFlipped()
+            c.footprint_rot = m.GetOrientationDegrees()
+            center = GS.get_center(m)
+            c.footprint_x = center.x
+            c.footprint_y = center.y
+            (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
+            c.has_pcb_info = True
+            attrs = m.GetAttributes()
+            if GS.ki5:
+                # KiCad 5
+                if attrs == UI_SMD:
+                    c.smd = True
+                elif attrs == UI_VIRTUAL:
+                    c.virtual = True
+                else:
+                    c.tht = True
             else:
-                c.tht = True
-        else:
-            # KiCad 6
-            if attrs & MOD_SMD:
-                c.smd = True
-            if attrs & MOD_THROUGH_HOLE:
-                c.tht = True
-            if attrs & MOD_VIRTUAL == MOD_VIRTUAL:
-                c.virtual = True
+                # KiCad 6
+                if attrs & MOD_SMD:
+                    c.smd = True
+                if attrs & MOD_THROUGH_HOLE:
+                    c.tht = True
+                if attrs & MOD_VIRTUAL == MOD_VIRTUAL:
+                    c.virtual = True
 
 
 def preflight_checks(skip_pre, targets):
