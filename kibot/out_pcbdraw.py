@@ -208,7 +208,7 @@ class PcbDrawOptions(VariantOptions):
         self._expand_ext = self.format
 
     def _create_remap(self):
-        with NamedTemporaryFile(mode='w', delete=False) as f:
+        with NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
             f.write('{\n')
             first = True
             for k, v in self.remap.items():
@@ -222,7 +222,7 @@ class PcbDrawOptions(VariantOptions):
             return f.name
 
     def _create_style(self):
-        with NamedTemporaryFile(mode='w', delete=False) as f:
+        with NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
             f.write('{\n')
             first = True
             for k, v in self.style.items():
