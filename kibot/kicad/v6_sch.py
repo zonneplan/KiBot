@@ -1733,11 +1733,12 @@ class SchematicV6(Schematic):
             _add_items_list('sheet_instances', self.sheet_instances, sch)
             # Symbol instances
             # Copy potentially modified data from components
-            for s in self.symbol_instances:
-                comp = s.component
-                s.reference = comp.ref
-                s.value = comp.value
-                s.footprint = comp.footprint_lib+':'+comp.footprint if comp.footprint_lib else comp.footprint
+            if base_sheet == self:
+                for s in self.symbol_instances:
+                    comp = s.component
+                    s.reference = comp.ref
+                    s.value = comp.value
+                    s.footprint = comp.footprint_lib+':'+comp.footprint if comp.footprint_lib else comp.footprint
             _add_items_list('symbol_instances', self.symbol_instances, sch)
             logger.debug('Saving schematic: `{}`'.format(fname))
             # Keep a back-up of existing files
