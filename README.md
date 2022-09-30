@@ -1698,7 +1698,7 @@ Notes:
                             read https://stackoverflow.com/questions/1248029/git-pull-error-entry-foo-not-uptodate-cannot-merge.
         - `fuzz`: [number=5] [0,100] Color tolerance (fuzzyness) for the `stats` mode.
         - `new`: [string|list(string)] The file you want to compare. Leave it blank for the current PCB/SCH.
-                 A list is accepted only for the `multivar` type.
+                 A list is accepted only for the `multivar` type. Consult the `old` option for more information.
         - `new_type`: [string='current'] [git,file,output,multivar,current] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
                       Use `current` for the currently loaded PCB/Schematic.
                       Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
@@ -1710,6 +1710,8 @@ Notes:
                  reference to the changes in the PCB/SCH. The `n` value is how many
                  changes in the history you want to go back. A 0 is the same as `HEAD`,
                  a 1 means the last time the PCB/SCH was changed, etc.
+                 Important: when using the `checkout` GitHub action you just get the
+                 last commit. To clone the full repo use `fetch-depth: '0'`.
         - `old_type`: [string='git'] [git,file,output,multivar] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
                       Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
                       Use `multivar` to specify a reference file when `new_type` is also `multivar`.
