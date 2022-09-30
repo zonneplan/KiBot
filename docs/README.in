@@ -13,6 +13,9 @@
 - The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
   Consult: [Github Actions tags](#github-actions-tags)
 
+**Important note about PcbDraw 1.0.0
+- This release is incompatible with 0.9.0, I'm trying to fix some issues in the upstream package.
+
 **New on v1.3.0**
 - Diff and Info outputs
 - KiBot tries to download missing tools
