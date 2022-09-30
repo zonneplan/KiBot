@@ -7,7 +7,7 @@ from .registrable import RegFilter, Registrable, RegOutput
 from .optionable import Optionable
 from .gs import GS
 from .misc import (IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT, IFILT_KICOST_RENAME, DISTRIBUTORS,
-                   IFILT_VAR_RENAME_KICOST, IFILT_KICOST_DNP, IFILT_EXPAND_TEXT_VARS)
+                   IFILT_VAR_RENAME_KICOST, IFILT_KICOST_DNP, IFILT_EXPAND_TEXT_VARS, IFILT_DATASHEET_LINK)
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
 from .macros import macros, document  # noqa: F401
@@ -252,6 +252,14 @@ class BaseFilter(RegFilter):
         return o_tree
 
     @staticmethod
+    def _create_datasheet_link(name):
+        o_tree = {'name': name}
+        o_tree['type'] = 'urlify'
+        o_tree['comment'] = 'Internal datasheet URL to HTML link'
+        logger.debug('Creating internal filter: '+str(o_tree))
+        return o_tree
+
+    @staticmethod
     def _create_kibom_dnx(name):
         type = name[7:10]
         if len(name) > 11:
@@ -318,6 +326,8 @@ class BaseFilter(RegFilter):
             tree = BaseFilter._create_kicost_dnp(name)
         elif name == IFILT_EXPAND_TEXT_VARS:
             tree = BaseFilter._create_expand_text_vars(name)
+        elif name == IFILT_DATASHEET_LINK:
+            tree = BaseFilter._create_datasheet_link(name)
         else:
             return None
         filter = RegFilter.get_class_for(tree['type'])()

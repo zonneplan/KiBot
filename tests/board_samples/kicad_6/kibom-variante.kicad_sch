@@ -77,7 +77,7 @@
     (property "Footprint" "Resistor_SMD:R_0805_2012Metric" (id 2) (at 54.102 64.77 90)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "~" (id 3) (at 55.88 64.77 0)
+    (property "Datasheet" "https://www.vishay.com/docs/28705/mcx0x0xpro.pdf" (id 3) (at 55.88 64.77 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 49c4dcb9-cb9b-421e-b7b9-e495c75a42b7))

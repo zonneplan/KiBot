@@ -893,6 +893,12 @@ filters:
     - `split_fields_expand`: [boolean=false] When `true` the fields in `split_fields` are added to the internal names.
     - `use_ref_sep_for_first`: [boolean=true] Force the reference separator use even for the first component in the list (KiCost behavior).
     - `value_alt_field`: [string='value_subparts'] Field containing replacements for the `Value` field. So we get real values for split parts.
+- urlify: URLify
+        Converts URL text in fields to HTML URLs.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `fields`: [string|list(string)='Datasheet'] Fields to convert.
+    - `name`: [string=''] Used to identify this particular filter definition.
 - var_rename: Var_Rename
         This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
   * Valid keys:
@@ -930,6 +936,7 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
 
 #### Built-in filters
 
+- **_datasheet_link** converts Datasheet fields containing URLs into HTML links
 - **_expand_text_vars** is a default `expand_text_vars` filter
 - **_kibom_dnc_Config** it uses the internal `dnc_list` to exclude components with
   - Value matching any of the keys

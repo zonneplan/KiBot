@@ -1923,7 +1923,7 @@ class Schematic(object):
             SubElement(comp, 'value').text = c.value
             if c.footprint:
                 SubElement(comp, 'footprint').text = c.footprint
-            if len(c.datasheet) and not (self.netlist_version == 'E' and c.datasheet != '~'):
+            if len(c.datasheet) and not (self.netlist_version == 'E' and c.datasheet == '~'):
                 SubElement(comp, 'datasheet').text = c.datasheet
             user_fields = c.get_user_fields()
             if user_fields:

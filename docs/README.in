@@ -521,6 +521,7 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
 
 #### Built-in filters
 
+- **_datasheet_link** converts Datasheet fields containing URLs into HTML links
 - **_expand_text_vars** is a default `expand_text_vars` filter
 - **_kibom_dnc_Config** it uses the internal `dnc_list` to exclude components with
   - Value matching any of the keys

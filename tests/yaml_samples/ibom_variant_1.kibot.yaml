@@ -2,11 +2,11 @@
 kibot:
   version: 1
 
-
 variants:
   - name: 'default'
     comment: 'Default KiBoM variant'
     type: kibom
+    pre_transform: _datasheet_link
 
   - name: 't1_v1'
     comment: 'Test 1 Variant V1'
@@ -39,6 +39,7 @@ outputs:
     dir: BoM
     options:
       variant: 'default'
+      extra_fields: Datasheet
 
   - name: 'bom_internal_v1'
     comment: "Bill of Materials in CSV format for variant t1_v1"

@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal BoM: Now you can aggregate components using CSV files. (See #248)
 - Now you can check PCB and schematic parity using the `update_xml` preflight
   (See #297)
+- New filter `urlify` to convert URLs in fields to HTML links (#311)
 
 ### Fixed
 - Problems to compress netlists. (#287)
