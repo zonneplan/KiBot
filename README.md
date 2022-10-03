@@ -799,6 +799,20 @@ filters:
     - `include_kicad_env`: [boolean=true] Also expand KiCad environment variables.
     - `include_os_env`: [boolean=false] Also expand system environment variables.
     - `name`: [string=''] Used to identify this particular filter definition.
+- field_modify: Field_Modify
+        Changes the content of one or more fields.
+  * Valid keys:
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `fields`: [string|list(string)='Datasheet'] Fields to convert.
+    - `include`: [string|list(string)=''] Name of the filter to select which components will be affected.
+                 Applied to all if nothing specified here.
+    - `name`: [string=''] Used to identify this particular filter definition.
+    - `regex`: [string='(https?://\S+)'] Regular expression to match the field content.
+               Only fields that matches will be modified.
+               An empty regex will match anything.
+               The example matches an HTTP URL.
+    - `replace`: [string='<a href="\1">\1</a>'] Text to replace, can contain references to sub-expressions.
+                 The example converts an HTTP URL into an HTML link, like the URLify filter.
 - field_rename: Field_Rename
         This filter implements a field renamer.
         The internal `_kicost_rename` filter emulates the KiCost behavior.
@@ -1561,6 +1575,8 @@ Notes:
                          the field `part` are excluded.
         - `no_distributors`: [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`.
         - `normalize_locale`: [boolean=false] When normalizing values use the locale decimal point.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           This option is for simple cases, consider using a full variant for complex cases.
         - `ref_id`: [string=''] A prefix to add to all the references from this project. Used for multiple projects.
         - `ref_separator`: [string=' '] Separator used for the list of references.
         - `source_by_id`: [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name.
@@ -1654,6 +1670,8 @@ Notes:
         - `follow_links`: [boolean=true] Store the file pointed by symlinks, not the symlink.
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
         - `link_no_copy`: [boolean=false] Create symlinks instead of copying files.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
@@ -1753,6 +1771,8 @@ Notes:
         - `link_repeated`: [boolean=true] Instead of download things we already downloaded use symlinks.
         - `output`: [string='${VALUE}.pdf'] Name used for the downloaded datasheet.
                     ${FIELD} will be replaced by the FIELD content.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `repeated`: [boolean=false] Download URLs that we already downloaded.
                       It only makes sense if the `output` field makes their output different.
         - `variant`: [string=''] Board variant to apply.
@@ -1811,6 +1831,8 @@ Notes:
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `polygon_mode`: [boolean=true] Plot using the contour, instead of the center line.
                           You must disable it to get the dimensions (See https://gitlab.com/kicad/code/kicad/-/issues/11901).
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
@@ -1986,6 +2008,8 @@ Notes:
         - `line_width`: [number=0.1] [0.02,2] Line_width for objects without width [mm] (KiCad 5).
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
@@ -2046,6 +2070,8 @@ Notes:
         - `pen_width`: [number=15] [0,100] Pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `scaling`: [number=0] Scale factor (0 means autoscaling).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
@@ -2119,6 +2145,8 @@ Notes:
                                   IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `no_compression`: [boolean=false] Disable compression of pcb data.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `show_fabrication`: [boolean=false] Show fabrication layer by default.
         - `sort_order`: [string='C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'] Default sort order for components. Must contain '~' once.
         - `variant`: [string=''] Board variant to apply.
@@ -2305,6 +2333,8 @@ Notes:
         - `ignore_fields`: [string|list(string)] List of fields to be ignored.
         - `kicost_variant`: [string=''] Regular expression to match the variant field (KiCost option, not internal variants).
         - `no_collapse`: [boolean=false] Do not collapse the part references (collapse=R1-R4).
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `show_cat_url`: [boolean=false] Include the catalogue links in the catalogue code.
         - `split_extra_fields`: [string|list(string)] Declare part fields to include in multipart split process.
         - `translate_fields`: [list(dict)] Fields to rename (KiCost option, not internal filters).
@@ -2455,6 +2485,8 @@ Notes:
         - `page_number_as_extension`: [boolean=false] When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
                                       Note: page numbers can be customized using the `page_id` option for each page.
         - `png_width`: [number=1280] [0,7680] Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `realistic_solder_mask`: [boolean=true] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
                                    In order to get a good looking select a color with transparency, i.e. '#14332440'.
                                    PcbDraw must be installed in order to use this option.
@@ -2492,6 +2524,8 @@ Notes:
                         A short-cut to use for simple cases where a variant is an overkill.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
                            Affected by global options.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
@@ -2543,6 +2577,8 @@ Notes:
         - `libs`: [list(string)=[]] List of libraries.
         - `no_drillholes`: [boolean=false] Do not make holes transparent.
         - `placeholder`: [boolean=false] Show placeholder for missing components.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
         - `variant`: [string=''] Board variant to apply.
         - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
@@ -2604,6 +2640,8 @@ Notes:
         - `negative_plot`: [boolean=false] Invert black and white.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
@@ -2638,6 +2676,8 @@ Notes:
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `plot_footprint_refs`: [boolean=true] Include the footprint references.
     - `plot_footprint_values`: [boolean=true] Include the footprint values.
+    - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                       A short-cut to use for simple cases where a variant is an overkill.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
@@ -2682,6 +2722,8 @@ Notes:
         - `monochrome`: [boolean=false] Print in black and white.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
         - *output_name*: Alias for output.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
@@ -2714,6 +2756,8 @@ Notes:
                         A short-cut to use for simple cases where a variant is an overkill.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -2785,6 +2829,8 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `include_virtual`: [boolean=false] Include virtual components. For special purposes, not pick & place.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -2845,6 +2891,8 @@ Notes:
         - `negative_plot`: [boolean=false] Invert black and white.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `scale_adjust_x`: [number=1.0] Fine grain adjust for the X scale (floating point multiplier).
         - `scale_adjust_y`: [number=1.0] Fine grain adjust for the Y scale (floating point multiplier).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
@@ -2944,6 +2992,8 @@ Notes:
         - `no_smd`: [boolean=false] Used to exclude 3D models for surface mount components.
         - `no_tht`: [boolean=false] Used to exclude 3D models for through hole components.
         - `orthographic`: [boolean=false] Enable the orthographic projection mode (top view looks flat).
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `show_silkscreen`: [boolean=true] Show the silkscreen layers (KiCad 6).
         - `show_soldermask`: [boolean=true] Show the solder mask layers (KiCad 6).
         - `show_solderpaste`: [boolean=true] Show the solder paste layers (KiCad 6).
@@ -3026,6 +3076,8 @@ Notes:
                           Disabled by default for compatibility with older versions.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
@@ -3063,6 +3115,8 @@ Notes:
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
         - `metric_units`: [boolean=true] Use metric units instead of inches.
         - `min_distance`: [number=-1] The minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `subst_models`: [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -3122,6 +3176,8 @@ Notes:
         - `negative_plot`: [boolean=false] Invert black and white.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
@@ -3174,6 +3230,8 @@ Notes:
                            Affected by global options.
         - `mirror`: [boolean=false] Print mirrored (X axis inverted). ONLY for KiCad 6.
         - `monochrome`: [boolean=false] Print in black and white.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
@@ -3205,6 +3263,8 @@ Notes:
                         A short-cut to use for simple cases where a variant is an overkill.
         - `monochrome`: [boolean=false] Generate a monochromatic PDF.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.

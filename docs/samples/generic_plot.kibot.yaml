@@ -299,6 +299,9 @@ outputs:
       number: 1
       # [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # This option is for simple cases, consider using a full variant for complex cases
+      pre_transform: '_none'
       # [string=''] A prefix to add to all the references from this project. Used for multiple projects
       ref_id: ''
       # [string=' '] Separator used for the list of references
@@ -465,6 +468,9 @@ outputs:
       link_no_copy: false
       # [boolean=false] Used to exclude 3D models for components with 'virtual' attribute
       no_virtual: false
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [string=''] Board variant to apply
       variant: ''
   # Diff:
@@ -548,6 +554,9 @@ outputs:
       # [string='${VALUE}.pdf'] Name used for the downloaded datasheet.
       # ${FIELD} will be replaced by the FIELD content
       output: '${VALUE}.pdf'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=false] Download URLs that we already downloaded.
       # It only makes sense if the `output` field makes their output different
       repeated: false
@@ -602,6 +611,9 @@ outputs:
       # [boolean=true] Plot using the contour, instead of the center line.
       # You must disable it to get the dimensions (See https://gitlab.com/kicad/code/kicad/-/issues/11901)
       polygon_mode: true
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=false] Don't fill objects, just draw the outline
       sketch_plot: false
       # [boolean=true] Cover the vias
@@ -758,6 +770,9 @@ outputs:
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=false] Subtract the solder mask from the silk screen
       subtract_mask_from_silk: false
       # [boolean=true] Cover the vias
@@ -827,6 +842,9 @@ outputs:
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [number=0] Scale factor (0 means autoscaling)
       scaling: 0
       # [boolean=false] Don't fill objects, just draw the outline
@@ -912,6 +930,9 @@ outputs:
       normalize_field_case: false
       # [string='%f-%i%I%v.%x'] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=false] Show fabrication layer by default
       show_fabrication: false
       # [string=''] Comma separated list of fields to show in the BOM.
@@ -1106,6 +1127,9 @@ outputs:
       number: 100
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=kicost, %x=xlsx). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=false] Include the catalogue links in the catalogue code
       show_cat_url: false
       # [string|list(string)] Declare part fields to include in multipart split process
@@ -1262,6 +1286,9 @@ outputs:
       plot_sheet_reference: true
       # [number=1280] [0,7680] Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size
       png_width: 1280
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=true] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
       # In order to get a good looking select a color with transparency, i.e. '#14332440'.
       # PcbDraw must be installed in order to use this option
@@ -1295,6 +1322,9 @@ outputs:
       hide_excluded: false
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=variant, %x=kicad_pcb). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''
@@ -1329,6 +1359,9 @@ outputs:
       output: '%f-%i%I%v.%x'
       # [boolean=false] Show placeholder for missing components
       placeholder: false
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [dict|None] Replacements for PCB references using components (lib:component)
       remap:
       # [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
@@ -1414,6 +1447,9 @@ outputs:
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=true] Cover the vias
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
@@ -1455,6 +1491,9 @@ outputs:
       # `output_name` is an alias for `output`
       # [boolean=true] Include the title-block
       plot_sheet_reference: true
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [number=1.0] Scale factor (0 means autoscaling). You should disable `plot_sheet_reference` when using it
       scaling: 1.0
       # [boolean=false] Print layers in separated pages
@@ -1484,6 +1523,9 @@ outputs:
       monochrome: false
       # [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [string=''] Board variant to apply.
       # Not fitted components are crossed
       variant: ''
@@ -1538,6 +1580,9 @@ outputs:
       # [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv').
       # Important: when using separate files you must use `%i` to differentiate them. Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=true] Generate two separated files, one for the top and another for the bottom
       separate_files_for_front_and_back: true
       # [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options
@@ -1599,6 +1644,9 @@ outputs:
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [number=1.0] Fine grain adjust for the X scale (floating point multiplier)
       scale_adjust_x: 1.0
       # [number=1.0] Fine grain adjust for the Y scale (floating point multiplier)
@@ -1696,6 +1744,9 @@ outputs:
       orthographic: false
       # [string='%f-%i%I%v.%x'] Name for the generated image file (%i='3D_$VIEW' %x='png'). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`
       ray_tracing: false
       # [number=0] Steps to rotate around the X axis, positive is clockwise.
@@ -1785,6 +1836,9 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''
@@ -1817,6 +1871,9 @@ outputs:
       origin: 'grid'
       # [string='%f-%i%I%v.%x'] Name for the generated STEP file (%i='3D' %x='step'). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models
       subst_models: true
       # [string=''] Board variant to apply
@@ -1873,6 +1930,9 @@ outputs:
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=true] Cover the vias
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
@@ -1917,6 +1977,9 @@ outputs:
       # `output_name` is an alias for `output`
       # [boolean=true] Include the title-block
       plot_sheet_reference: true
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [number=1.0] Scale factor (0 means autoscaling). You should disable `plot_sheet_reference` when using it
       scaling: 1.0
       # [boolean=false] Print layers in separated pages
@@ -1945,6 +2008,9 @@ outputs:
       monochrome: false
       # [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [string=''] Board variant to apply.
       # Not fitted components are crossed
       variant: ''
