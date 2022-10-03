@@ -428,6 +428,9 @@ class BoMOptions(BaseOptions):
             self.csv = BoMCSV
             """ *[dict] Options for the CSV, TXT and TSV formats """
             # * Filters
+            self.pre_transform = Optionable
+            """ [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                This option is for simple cases, consider using a full variant for complex cases """
             self.exclude_filter = Optionable
             """ [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
                 The default filter excludes test points, fiducial marks, mounting holes, etc.
@@ -551,8 +554,8 @@ class BoMOptions(BaseOptions):
             self.variant.variant = []
             self.variant.name = 'default'
             # Delegate any filter to the variant
-            self.variant.set_def_filters(self.exclude_filter, self.dnf_filter, self.dnc_filter)
-            self.exclude_filter = self.dnf_filter = self.dnc_filter = None
+            self.variant.set_def_filters(self.exclude_filter, self.dnf_filter, self.dnc_filter, self.pre_transform)
+            self.exclude_filter = self.dnf_filter = self.dnc_filter = self.pre_transform = None
             self.variant.config(self)  # Fill or adjust any detail
 
     def process_columns_config(self, cols, valid_columns, extra_columns, add_all=True):
@@ -662,6 +665,7 @@ class BoMOptions(BaseOptions):
         if isinstance(self.component_aliases, type):
             self.component_aliases = DEFAULT_ALIASES
         # Filters
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform')
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
@@ -840,6 +844,7 @@ class BoMOptions(BaseOptions):
         self.aggregate_comps(comps)
         # Apply all the filters
         reset_filters(comps)
+        comps = apply_pre_transform(comps, self.pre_transform)
         apply_exclude_filter(comps, self.exclude_filter)
         apply_fitted_filter(comps, self.dnf_filter)
         apply_fixed_filter(comps, self.dnc_filter)

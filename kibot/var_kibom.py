@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements the KiBoM variants mechanism.
@@ -22,6 +22,7 @@ class KiBoM(BaseVariant):  # noqa: F821
         +VARIANT includes the component only if we are using this variant """
     def __init__(self):
         super().__init__()
+        self._def_pre_transform = None
         self._def_exclude_filter = None
         self._def_dnf_filter = None
         self._def_dnc_filter = None
@@ -43,22 +44,25 @@ class KiBoM(BaseVariant):  # noqa: F821
         """ Returns the name of the field used to determine if the component belongs to the variant """
         return self.config_field
 
-    def set_def_filters(self, exclude_filter, dnf_filter, dnc_filter):
+    def set_def_filters(self, exclude_filter, dnf_filter, dnc_filter, pre_transform):
         """ Filters delegated to the variant """
         self._def_exclude_filter = exclude_filter
         self._def_dnf_filter = dnf_filter
         self._def_dnc_filter = dnc_filter
+        self._def_pre_transform = pre_transform
 
     def config(self, parent):
         # Now we can let the parent initialize the filters
         super().config(parent)
         # Variants, ensure a lowercase list
         self.variant = [v.lower() for v in self.force_list(self.variant)]
-        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         # Filters priority:
         # 1) Defined here
         # 2) Delegated from the output format
         # 3) KiBoM default behavior
+        # pre_transform
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', self._def_pre_transform,
+                                                     is_transform=True)
         # exclude_filter
         if not self._def_exclude_filter:
             self._def_exclude_filter = IFILT_MECHANICAL

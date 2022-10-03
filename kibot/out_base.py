@@ -22,7 +22,7 @@ else:
     from pcbnew import EDGE_MODULE, wxPoint, LSET
 from .registrable import RegOutput
 from .optionable import Optionable, BaseOptions
-from .fil_base import BaseFilter, apply_fitted_filter, reset_filters
+from .fil_base import BaseFilter, apply_fitted_filter, reset_filters, apply_pre_transform
 from .kicad.config import KiConf
 from .macros import macros, document  # noqa: F401
 from .error import KiPlotConfigurationError
@@ -196,6 +196,9 @@ class VariantOptions(BaseOptions):
             self.dnf_filter = Optionable
             """ [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                 A short-cut to use for simple cases where a variant is an overkill """
+            self.pre_transform = Optionable
+            """ [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
         self._comps = None
         self.undo_3d_models = {}
@@ -205,6 +208,7 @@ class VariantOptions(BaseOptions):
         super().config(parent)
         self.variant = RegOutput.check_variant(self.variant)
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
 
     def get_refs_hash(self):
         if not self._comps:
@@ -715,7 +719,7 @@ class VariantOptions(BaseOptions):
 
     def run(self, output_dir):
         """ Makes the list of components available """
-        if not self.dnf_filter and not self.variant:
+        if not self.dnf_filter and not self.variant and not self.pre_transform:
             return
         load_sch()
         # Get the components list from the schematic
@@ -723,6 +727,7 @@ class VariantOptions(BaseOptions):
         get_board_comps_data(comps)
         # Apply the filter
         reset_filters(comps)
+        comps = apply_pre_transform(comps, self.pre_transform)
         apply_fitted_filter(comps, self.dnf_filter)
         # Apply the variant
         if self.variant:

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Command line option to specify warnings to be excluded. Useful for
     warnings issued before applying the global options (i.e during
     import). (#296)
+  - `pre_transform` filter to outputs supporting variants.
 - New outputs:
   - PCB_Variant: saves a PCB with filters and variants applied.
   - Copy_Files: used to copy files to the output directory. (#279)
@@ -45,7 +46,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal BoM: Now you can aggregate components using CSV files. (See #248)
 - Now you can check PCB and schematic parity using the `update_xml` preflight
   (See #297)
-- New filter `urlify` to convert URLs in fields to HTML links (#311)
+- New filters:
+  - `urlify` to convert URLs in fields to HTML links (#311)
+  - `field_modify` a more generic field transformer
 
 ### Fixed
 - Problems to compress netlists. (#287)

@@ -202,7 +202,7 @@ class IBoMOptions(VariantOptions):
         self.blacklist += to_remove
         # Convert attributes into options
         for k, v in self.get_attrs_gen():
-            if not v or k in ['output', 'variant', 'dnf_filter']:
+            if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform']:
                 continue
             cmd.append(BaseOutput.attr2longopt(k))  # noqa: F821
             if not isinstance(v, bool):  # must be str/(int, float)
