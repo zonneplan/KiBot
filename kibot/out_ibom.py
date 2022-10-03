@@ -180,7 +180,7 @@ class IBoMOptions(VariantOptions):
                 GS.sch.save_netlist(f, self._comps)
             # Write a board with the filtered values applied
             self.sch_fields_to_pcb(self._comps, GS.board)
-            pcb_name = self.save_tmp_board(dir=net_dir)
+            pcb_name, _ = self.save_tmp_dir_board('ibom', force_dir=net_dir)
         else:
             # Check if the user wants extra_fields but there is no data about them (#68)
             if self.need_extra_fields() and not os.path.isfile(self.extra_data_file):

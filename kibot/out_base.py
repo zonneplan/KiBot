@@ -694,11 +694,11 @@ class VariantOptions(BaseOptions):
         return fname
 
     @staticmethod
-    def save_tmp_dir_board(id):
+    def save_tmp_dir_board(id, force_dir=None):
         """ Save the PCB to a temporal dir.
             Disadvantage: all relative paths inside the file becomes useless
             Aadvantage: the name of the file remains the same """
-        pcb_dir = mkdtemp(prefix='tmp-kibot-'+id+'-')
+        pcb_dir = mkdtemp(prefix='tmp-kibot-'+id+'-') if force_dir is None else force_dir
         fname = os.path.join(pcb_dir, GS.pcb_basename+'.kicad_pcb')
         logger.debug('Storing modified PCB to `{}`'.format(fname))
         GS.board.Save(fname)

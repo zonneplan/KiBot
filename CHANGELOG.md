@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Missing XYRS information for components with multiple units (#306)
 - Schematic v6: Problems when creating a variant of a sub-sheet that was edited
   as a standalone sheet (#307)
+- iBoM: Name displayed in the HTML when using filters and/or variants.
 
 ### Changed
 - Diff:
