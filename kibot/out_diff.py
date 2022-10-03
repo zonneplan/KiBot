@@ -55,6 +55,7 @@ class DiffOptions(BaseOptions):
                 reference to the changes in the PCB/SCH. The `n` value is how many
                 changes in the history you want to go back. A 0 is the same as `HEAD`,
                 a 1 means the last time the PCB/SCH was changed, etc.
+                Use `KIBOT_TAG-n` to search for the last tag skipping `n` tags.
                 Important: when using the `checkout` GitHub action you just get the
                 last commit. To clone the full repo use `fetch-depth: '0'` """
             self.old_type = 'git'
@@ -210,29 +211,38 @@ class DiffOptions(BaseOptions):
             for sub in self.git_submodules():
                 self.stash_pop(sub)
 
-    def solve_git_name(self, name):
+    def solve_kibot_magic(self, name, tag):
+        # The magic KIBOT_*
         ori = name
-        if not name.startswith('KIBOT_LAST'):
-            return name
-        logger.debug('Finding '+name)
-        # The magic KIBOT_LAST
-        malformed = 'Malformed `KIBOT_LAST` value, must be `KIBOT_LAST-n`, not: '+ori
-        name = name[10:]
+        malformed = 'Malformed `{0}` value, must be `{0}-n`, not: {1}'.format(tag, ori)
+        name = name[len(tag):]
         # How many changes?
         num = 0
-        if name[0] != '-':
-            raise KiPlotConfigurationError(malformed)
-        try:
-            num = int(name[1:])
-        except ValueError:
-            raise KiPlotConfigurationError(malformed)
+        if len(name):
+            if name[0] != '-':
+                raise KiPlotConfigurationError(malformed)
+            try:
+                num = int(name[1:])
+            except ValueError:
+                raise KiPlotConfigurationError(malformed)
         num = str(num)
         # Return its hash
-        res = self.run_git(['log', '--pretty=format:%H', '--skip='+num, '-n', '1', '--', self.file])
+        if tag == 'KIBOT_LAST':
+            res = self.run_git(['log', '--pretty=format:%H', '--skip='+num, '-n', '1', '--', self.file])
+        else:  # KIBOT_TAG
+            res = self.run_git(['rev-list', '--tags', '--skip='+num, '--max-count=1'])
         if not res:
             raise KiPlotConfigurationError("The `{}` doesn't resolve to a valid hash".format(ori))
         logger.debug('- '+res)
         return res
+
+    def solve_git_name(self, name):
+        logger.debug('Finding '+name)
+        if name.startswith('KIBOT_LAST'):
+            return self.solve_kibot_magic(name, 'KIBOT_LAST')
+        if name.startswith('KIBOT_TAG'):
+            return self.solve_kibot_magic(name, 'KIBOT_TAG')
+        return name
 
     def get_git_point_desc(self, user_name):
         # Are we at a tagged point?

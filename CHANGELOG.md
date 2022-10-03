@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Diff:
   - Mechanism to compare using a variant (See #278)
   - Mechanism to specify the current PCB/Schematic in memory (See #295)
+  - Mechanism to compare with the last Nth tag (See #312)
 - Sch Variant:
   - Option to copy the project. Needed for text variables.
   - Option to change the title (similar to PCB Variant)

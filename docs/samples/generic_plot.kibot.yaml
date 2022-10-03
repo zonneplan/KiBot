@@ -510,6 +510,7 @@ outputs:
       # reference to the changes in the PCB/SCH. The `n` value is how many
       # changes in the history you want to go back. A 0 is the same as `HEAD`,
       # a 1 means the last time the PCB/SCH was changed, etc.
+      # Use `KIBOT_TAG-n` to search for the last tag skipping `n` tags.
       # Important: when using the `checkout` GitHub action you just get the
       # last commit. To clone the full repo use `fetch-depth: '0'`
       old: 'HEAD'
