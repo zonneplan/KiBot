@@ -36,6 +36,8 @@ else:
     RED = GREEN = YELLOW = YELLOW2 = RESET = BRIGHT = NORMAL = ''
 last_ok = False
 last_cmd = None
+tests_ok = True
+tests_msg = ''
 is_x86 = is_64 = is_linux = False
 ver_re = re.compile(r'(\d+)\.(\d+)(?:\.(\d+))?(?:[\.-](\d+))?')
 
@@ -59,14 +61,19 @@ def check_tool_binary_local(name):
     return full_name
 
 
+def look_for_command(command):
+    cmd_full = which(command)
+    if not cmd_full:
+        cmd_full = check_tool_binary_python(command)
+    if not cmd_full:
+        cmd_full = check_tool_binary_local(command)
+    return cmd_full
+
+
 def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
     global last_ok
     global last_cmd
-    cmd_full = which(cmd[0])
-    if not cmd_full:
-        cmd_full = check_tool_binary_python(cmd[0])
-    if not cmd_full:
-        cmd_full = check_tool_binary_local(cmd[0])
+    cmd_full = look_for_command(cmd[0])
     if not cmd_full:
         last_ok = False
         return NOT_AVAIL
@@ -131,13 +138,48 @@ def do_int(v):
     return int(v) if v is not None else 0
 
 
-def check_version(version, roles, no_ver=False):
+def check_tests(tests):
+    global tests_ok
+    global tests_msg
+    for t in tests:
+        cmd = t['command']
+        cmd_full = look_for_command(cmd[0])
+        if cmd_full is None:
+            tests_ok = False
+            tests_msg = 'Missing test tool `{}`'.format(cmd[0])
+            return True
+        cmd[0] = cmd_full
+        try:
+            cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except FileNotFoundError as e:
+            tests_ok = False
+            tests_msg = 'Missing test tool `{}`'.format(cmd[0])
+            return True
+        except subprocess.CalledProcessError as e:
+            tests_ok = False
+            tests_msg = 'Failed to run %s, error %d' % (cmd[0], e.returncode)
+            if e.output:
+                tests_msg += '\nOutput from command: '+e.output.decode()
+            return True
+        res = cmd_output.decode().strip()
+        if not re.search(t['search'], res):
+            tests_ok = False
+            tests_msg = t['error']
+            return True
+    return False
+
+
+def check_version(version, roles, no_ver=False, tests=None):
     res = ver_re.search(version)
     if res:
         ver = list(map(do_int, res.groups()))
     else:
         ver = [0, 0, 0]
     not_avail = version == NOT_AVAIL or version == UNKNOWN
+    global tests_ok
+    tests_ok = True
+    if tests and res and not not_avail:
+        not_avail = check_tests(tests)
     severity = 0
     for r in roles:
         mandatory = r['mandatory']
@@ -433,13 +475,15 @@ for name, d in dependencies.items():
             # It will just confuse run_command thinking we need to check Python
             cmd.insert(0, 'python3')
         version = run_command(cmd, no_err_2=d['no_cmd_line_version_old'])
-    sev, ver = check_version(version, d['roles'])
+    sev, ver = check_version(version, d['roles'], tests=d['tests'])
     d['sev'] = sev
     version = version.split('\n')[0]
     pypi_name = d['pypi_name']
     if pypi_name and pypi_name.lower() != name.lower():
         name += ' ({})'.format(pypi_name)
     print(name+': '+do_color(version, sev, version=ver))
+    if not tests_ok:
+        print('- '+do_color(tests_msg, sev))
     if args.show_paths and last_cmd:
         print('  '+last_cmd)
 

@@ -41,6 +41,10 @@ Dependencies:
     command: rsvg-convert
     downloader: rsvg
     id: RSVG
+    tests:
+      - command: [convert, -list, font]
+        search: Helvetica
+        error: Missing Helvetica font, try installing Ghostscript fonts
   - name: Ghostscript
     url: https://www.ghostscript.com/
     url_down: https://github.com/ArtifexSoftware/ghostpdl-downloads/releases
@@ -837,7 +841,7 @@ class ToolDependency(object):
     """ Class used to define tools needed for an output """
     def __init__(self, output, name, url=None, url_down=None, is_python=False, deb=None, in_debian=True, extra_deb=None,
                  roles=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
-                 help_option=None, no_cmd_line_version_old=False, downloader=None, arch=None, extra_arch=None):
+                 help_option=None, no_cmd_line_version_old=False, downloader=None, arch=None, extra_arch=None, tests=None):
         # The associated output
         self.output = output
         # Name of the tool
@@ -875,6 +879,7 @@ class ToolDependency(object):
         self.no_cmd_line_version = no_cmd_line_version
         self.no_cmd_line_version_old = no_cmd_line_version_old  # An old version doesn't have version
         self.help_option = help_option if help_option is not None else '--version'
+        self.tests = tests
         # Roles
         if roles is None:
             roles = [ToolDependencyRole()]
@@ -930,13 +935,14 @@ def register_dep(context, dep):
     if downloader:
         downloader = getattr(modules[__name__], downloader+'_downloader')
     name = dep['name']
+    tests = dep.get('tests', [])
     # logger.error('{}:{} {} {}'.format(context, name, downloader, pypi_name))
     # TODO: Make it *ARGS
     td = ToolDependency(context, name, roles=role, url=url, url_down=url_down, deb=deb, in_debian=in_debian,
                         extra_deb=extra_deb, is_python=is_python, module_name=module_name, plugin_dirs=plugin_dirs,
                         command=command, help_option=help_option, pypi_name=pypi_name,
                         no_cmd_line_version_old=no_cmd_line_version_old, downloader=downloader, arch=arch,
-                        extra_arch=extra_arch)
+                        extra_arch=extra_arch, tests=tests)
     # Extra comments
     comments = dep.get('comments', [])
     if isinstance(comments, str):
