@@ -139,7 +139,7 @@ Notes:
 - Mandatory for `kicost`
 - Optional to find components costs and specs for `bom`
 
-[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0.3 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/pcbdraw) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0.3 (<1.0) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/pcbdraw) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `pcbdraw`
 - Optional to create realistic solder masks for `pcb_print`
 - Note: Currently the upstream version is broken, please use the mentioned fork

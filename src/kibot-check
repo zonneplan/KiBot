@@ -44,6 +44,7 @@ deps = '{\
             {\
                 "desc": "Get color messages in a portable way",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "global",\
                 "version": null\
             }\
@@ -76,12 +77,14 @@ deps = '{\
             {\
                 "desc": "Create outputs preview",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "navigate_results",\
                 "version": null\
             },\
             {\
                 "desc": "Create PNG, PS and EPS formats",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "pcb_print",\
                 "version": null\
             }\
@@ -114,24 +117,28 @@ deps = '{\
             {\
                 "desc": "Compare with files in the repo",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "diff",\
                 "version": null\
             },\
             {\
                 "desc": "Find commit hash and/or date",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "pcb_replace",\
                 "version": null\
             },\
             {\
                 "desc": "Find commit hash and/or date",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "sch_replace",\
                 "version": null\
             },\
             {\
                 "desc": "Find commit hash and/or date",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "set_text_variables",\
                 "version": null\
             }\
@@ -166,18 +173,21 @@ deps = '{\
             {\
                 "desc": "Create outputs preview",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "navigate_results",\
                 "version": null\
             },\
             {\
                 "desc": "Create monochrome prints and scaled PNG files",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "pcb_print",\
                 "version": null\
             },\
             {\
                 "desc": "Create JPG images",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "pcbdraw",\
                 "version": null\
             }\
@@ -215,6 +225,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "ibom",\
                 "version": [\
                     2,\
@@ -252,6 +263,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "kibom",\
                 "version": [\
                     1,\
@@ -288,6 +300,7 @@ deps = '{\
             {\
                 "desc": "Compare schematics",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "diff",\
                 "version": [\
                     2,\
@@ -298,6 +311,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "gencad",\
                 "version": [\
                     1,\
@@ -308,6 +322,7 @@ deps = '{\
             {\
                 "desc": "Show KiAuto installation information",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "info",\
                 "version": [\
                     2,\
@@ -318,6 +333,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "netlist",\
                 "version": [\
                     2,\
@@ -328,6 +344,7 @@ deps = '{\
             {\
                 "desc": "Print the page frame in GUI mode",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "pcb_print",\
                 "version": [\
                     1,\
@@ -338,6 +355,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "pdf_pcb_print",\
                 "version": [\
                     1,\
@@ -348,6 +366,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "pdf_sch_print",\
                 "version": [\
                     2,\
@@ -358,6 +377,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "render_3d",\
                 "version": [\
                     2,\
@@ -368,6 +388,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "step",\
                 "version": [\
                     1,\
@@ -378,6 +399,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "svg_pcb_print",\
                 "version": [\
                     1,\
@@ -388,6 +410,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "svg_sch_print",\
                 "version": [\
                     2,\
@@ -398,6 +421,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "run_drc",\
                 "version": [\
                     2,\
@@ -408,6 +432,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "run_erc",\
                 "version": [\
                     1,\
@@ -418,6 +443,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "update_xml",\
                 "version": [\
                     1,\
@@ -454,6 +480,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "diff",\
                 "version": [\
                     2,\
@@ -490,6 +517,7 @@ deps = '{\
             {\
                 "desc": "Find components costs and specs",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "bom",\
                 "version": [\
                     1,\
@@ -500,6 +528,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "kicost",\
                 "version": [\
                     1,\
@@ -537,6 +566,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "pcb_print",\
                 "version": null\
             }\
@@ -576,6 +606,7 @@ deps = '{\
             {\
                 "desc": "Create PDF/ODF/DOCX files",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "report",\
                 "version": null\
             }\
@@ -610,6 +641,10 @@ deps = '{\
             {\
                 "desc": "Create realistic solder masks",\
                 "mandatory": false,\
+                "max_version": [\
+                    1,\
+                    0\
+                ],\
                 "output": "pcb_print",\
                 "version": [\
                     0,\
@@ -621,6 +656,10 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": [\
+                    1,\
+                    0\
+                ],\
                 "output": "pcbdraw",\
                 "version": [\
                     0,\
@@ -659,6 +698,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "global",\
                 "version": null\
             }\
@@ -692,6 +732,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "qr_lib",\
                 "version": null\
             }\
@@ -724,6 +765,7 @@ deps = '{\
             {\
                 "desc": "Compress in RAR format",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "compress",\
                 "version": null\
             }\
@@ -756,24 +798,28 @@ deps = '{\
             {\
                 "desc": "Create outputs preview",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "navigate_results",\
                 "version": null\
             },\
             {\
                 "desc": "Create PNG icons",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "navigate_results",\
                 "version": null\
             },\
             {\
                 "desc": "Create PDF, PNG, PS and EPS formats",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "pcb_print",\
                 "version": null\
             },\
             {\
                 "desc": "Create PNG and JPG images",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "pcbdraw",\
                 "version": null\
             }\
@@ -817,6 +863,7 @@ deps = '{\
             {\
                 "desc": null,\
                 "mandatory": true,\
+                "max_version": null,\
                 "output": "global",\
                 "version": null\
             }\
@@ -850,6 +897,7 @@ deps = '{\
             {\
                 "desc": "Create XLSX files",\
                 "mandatory": false,\
+                "max_version": null,\
                 "output": "bom",\
                 "version": null\
             }\
@@ -1026,7 +1074,8 @@ def check_version(version, roles, no_ver=False, tests=None):
         mandatory = r['mandatory']
         glb = r['output'] == 'global'
         this_sever = 0
-        if not_avail or (r['version'] and ver < r['version']):
+        max_version = r.get('max_version')
+        if not_avail or (r['version'] and ver < r['version']) or (max_version and ver >= max_version):
             if mandatory:
                 this_sever = 4 if glb else 3
             else:
@@ -1106,7 +1155,7 @@ def show_roles(roles):
 def python_module(severity, name, deb_package, roles, arch):
     if not severity:
         return
-    print(sev2color(severity)+'* Python module `{}` not installed or too old'.format(name))
+    print(sev2color(severity)+'* Python module `{}` not installed, too old or incompatible'.format(name))
     if debian_support:
         if deb_package is None:
             deb_package = 'python3-'+name

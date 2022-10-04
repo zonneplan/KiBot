@@ -873,6 +873,23 @@ def print_dep_comments(dep):
             print('  - '+comment)
 
 
+def compose_version(version, max_version):
+    ver = ' v'+'.'.join(map(str, version)) if version else ''
+    ver += ' (<'+'.'.join(map(str, max_version))+')' if max_version else ''
+    return ver
+
+
+def print_needed(needed):
+    if needed:
+        if len(needed) == 1:
+            if needed[0] == 'general use':
+                print('- Mandatory')
+            else:
+                print('- Mandatory for '+needed[0])
+        else:
+            print('- Mandatory for: '+', '.join(sorted(needed)))
+
+
 def print_dependencies(markdown=True, jsn=False):
     # Compute the importance of each dependency
     for dep in RegDependency.get_registered().values():
@@ -915,6 +932,7 @@ def print_dependencies(markdown=True, jsn=False):
         needed = []
         optional = []
         version = None
+        max_version = None
         for r in dep.roles:
             if r.mandatory:
                 needed.append(global2human(r.output))
@@ -922,16 +940,11 @@ def print_dependencies(markdown=True, jsn=False):
                 optional.append(r)
             if r.version and (version is None or r.version > version):
                 version = r.version
-        ver = ' v'+'.'.join(map(str, version)) if version else ''
+            if r.max_version and (max_version is None or r.max_version < max_version):
+                max_version = r.max_version
+        ver = compose_version(version, max_version)
         print(name+ver+dtype+is_pypi_dep+deb+has_dowloader)
-        if needed:
-            if len(needed) == 1:
-                if needed[0] == 'general use':
-                    print('- Mandatory')
-                else:
-                    print('- Mandatory for '+needed[0])
-            else:
-                print('- Mandatory for: '+', '.join(sorted(needed)))
+        print_needed(needed)
         if optional:
             if len(optional) == 1:
                 o = optional[0]

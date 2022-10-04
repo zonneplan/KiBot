@@ -64,6 +64,7 @@ Dependencies:
     # 0.9.0 implements KiCad 6 support
     # 0.9.0.3 Fixes KiCad 5 problems
     version: 0.9.0.3
+    max_version: 1.0
     github: INTI-CMNB/pcbdraw
     pypi: PcbDraw
     downloader: pytool
@@ -826,13 +827,14 @@ GS.check_tool_dep = check_tool_dep
 
 class ToolDependencyRole(object):
     """ Class used to define the role of a tool """
-    def __init__(self, desc=None, version=None, output=None):
+    def __init__(self, desc=None, version=None, output=None, max_version=None):
         # Is this tool mandatory
         self.mandatory = desc is None
         # If not mandatory, for what?
         self.desc = desc
         # Which version is needed?
         self.version = version
+        self.max_version = max_version
         # Which output needs it?
         self.output = output
 
@@ -909,7 +911,10 @@ def register_dep(context, dep):
     version = dep.get('version', None)
     if version is not None:
         version = version_str2tuple(str(version))
-    role = ToolDependencyRole(desc=desc, version=version)
+    max_version = dep.get('max_version', None)
+    if max_version is not None:
+        max_version = version_str2tuple(str(max_version))
+    role = ToolDependencyRole(desc=desc, version=version, max_version=max_version)
     # Solve the URLs
     github = dep.get('github', None)
     url_def = url_down_def = None
