@@ -121,6 +121,12 @@ test_docker_local_ki6:
 	$(PY_COV) report
 	x-www-browser htmlcov/index.html
 
+test_docker_local_manjaro:
+	rm -rf output_manjaro
+	rm -f tests/.local
+	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto:manjaro_k6 \
+		/bin/bash -c "sudo pacman -S flake8 python-pytest python-pytest-xdist python-wheel diffutils fluxbox x11vnc wmctrl unzip zbar python-coverage wget --noconfirm ; sudo pacman -S --noconfirm  make python-pre-commit ; yay -S --noconfirm  python-xlsx2csv ; src/kibot --help-outputs ; pytest --test_dir=output_manjaro ; chown -R $(USER_ID):$(GROUP_ID) output_manjaro/ tests/board_samples/"
+
 docker_shell:
 	docker run  -it --rm -v $(CWD):$(CWD) --workdir="$(CWD)" \
 	-v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$(DISPLAY) \
