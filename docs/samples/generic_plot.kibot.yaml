@@ -524,6 +524,9 @@ outputs:
       # Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
       # Use `multivar` to specify a reference file when `new_type` is also `multivar`
       old_type: 'git'
+      # [boolean=false] Only include the pages with differences in the output PDF.
+      # Note that when no differeces are found we get a page saying *No diff*
+      only_different: false
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=true] Compare the PCB, otherwise compare the schematic

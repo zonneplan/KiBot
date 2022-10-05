@@ -13,7 +13,7 @@
 - The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
   Consult: [Github Actions tags](#github-actions-tags)
 
-**Important note about PcbDraw 1.0.0
+**Important note about PcbDraw 1.0.0**
 - This release is incompatible with 0.9.0, I'm trying to fix some issues in the upstream package.
 
 **New on v1.3.0**
@@ -150,7 +150,7 @@ Notes:
 [**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiBoM) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `kibom`
 
-[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.1 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.2 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `diff`
 
 [**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
@@ -1737,6 +1737,8 @@ Notes:
         - `old_type`: [string='git'] [git,file,output,multivar] How to interpret the `old` name. Use `git` for a git hash, branch, etc.
                       Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
                       Use `multivar` to specify a reference file when `new_type` is also `multivar`.
+        - `only_different`: [boolean=false] Only include the pages with differences in the output PDF.
+                            Note that when no differeces are found we get a page saying *No diff*.
         - `pcb`: [boolean=true] Compare the PCB, otherwise compare the schematic.
         - `threshold`: [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
                        difference bigger than the indicated value will make the diff fail.

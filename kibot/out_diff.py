@@ -6,7 +6,7 @@
 """
 Dependencies:
   - name: KiCad PCB/SCH Diff
-    version: 2.4.1
+    version: 2.4.2
     role: mandatory
     github: INTI-CMNB/KiDiff
     command: kicad-diff.py
@@ -99,6 +99,9 @@ class DiffOptions(BaseOptions):
             self.use_file_id = False
             """ When creating the link name of an output file related to a variant use the variant
                 `file_id` instead of its name """
+            self.only_different = False
+            """ Only include the pages with differences in the output PDF.
+                Note that when no differeces are found we get a page saying *No diff* """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -403,6 +406,8 @@ class DiffOptions(BaseOptions):
             cmd.extend(['--layers', self.incl_file])
         if self.threshold:
             cmd.extend(['--threshold', str(self.threshold)])
+        if self.only_different:
+            cmd.append('--only_different')
         cmd.extend([self.file_exist, self.file_exist])
         if GS.debug_enabled:
             cmd.insert(1, '-'+'v'*GS.debug_level)
