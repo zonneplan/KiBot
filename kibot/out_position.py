@@ -72,6 +72,9 @@ class PositionOptions(VariantOptions):
             """ *[millimeters,inches,mils] Units used for the positions. Affected by global options """
             self.columns = PosColumns
             """ [list(dict)|list(string)] Which columns are included in the output """
+            self.right_digits = 4
+            """ number of digits for mantissa part of coordinates (0 is auto) """
+            self.columns = PosColumns
             self.bottom_negative_x = False
             """ Use negative X coordinates for footprints on bottom layer """
             self.use_aux_axis_as_origin = True
@@ -264,6 +267,10 @@ class PositionOptions(VariantOptions):
             if (self.only_smd and is_pure_smd(m)) or (not self.only_smd and (is_not_virtual(m) or self.include_virtual)):
                 # KiCad: PLACE_FILE_EXPORTER::GenPositionData() in export_footprints_placefile.cpp
                 row = []
+                if self.right_digits != 0:
+                    float_format = "{{:.{}f}}".format(self.right_digits)
+                else:
+                    float_format = "{}"
                 for k in self.columns:
                     if k == 'Ref':
                         row.append(quote_char+ref+quote_char)
@@ -275,11 +282,11 @@ class PositionOptions(VariantOptions):
                         pos_x = (center_x - x_origin) * conv
                         if self.bottom_negative_x and is_bottom:
                             pos_x = -pos_x
-                        row.append("{:.4f}".format(pos_x))
+                        row.append(float_format.format(pos_x, rd=self.right_digits))
                     elif k == 'PosY':
-                        row.append("{:.4f}".format(-(center_y - y_origin) * conv))
+                        row.append(float_format.format(-(center_y - y_origin) * conv, rd=self.right_digits))
                     elif k == 'Rot':
-                        row.append("{:.4f}".format(rotation))
+                        row.append(float_format.format(rotation, rd=self.right_digits))
                     elif k == 'Side':
                         row.append("bottom" if is_bottom else "top")
                 modules.append(row)
