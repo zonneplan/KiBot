@@ -1590,6 +1590,8 @@ outputs:
       separate_files_for_front_and_back: true
       # [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options
       units: 'millimeters'
+      # [number=4] number of digits for mantissa part of coordinates (0 is auto)
+      right_digits: 4
       # [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default)
       use_aux_axis_as_origin: true
       # [string=''] Board variant to apply

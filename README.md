@@ -2823,6 +2823,7 @@ Notes:
                         Important: when using separate files you must use `%i` to differentiate them. Affected by global options.
         - **`separate_files_for_front_and_back`**: [boolean=true] Generate two separated files, one for the top and another for the bottom.
         - **`units`**: [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
+	- **`right_digits`**: [number=4] number of digits for mantissa part of coordinates and rotation (0 is auto).
         - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer.
         - `columns`: [list(dict)|list(string)] Which columns are included in the output.
           * Valid keys:
