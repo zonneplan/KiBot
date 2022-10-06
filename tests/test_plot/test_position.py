@@ -140,6 +140,10 @@ def test_position_csv_cols(test_dir):
     ctx.expect_out_file(pos_top)
     ctx.expect_out_file(pos_bot)
     assert ctx.search_in_file(pos_top, ["Ref,Value,Center X"]) is not None
+    ctx.search_in_file(pos_top, ['^"R1",'])
+    ctx.search_not_in_file(pos_top, ['^"R2",', '^"R3",'])
+    ctx.search_in_file(pos_bot, ['^"R2",'])
+    ctx.search_not_in_file(pos_bot, ['^"R1",', '^"R3",'])
     ctx.clean_up()
 
 

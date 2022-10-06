@@ -62,6 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Schematic v6: Problems when creating a variant of a sub-sheet that was edited
   as a standalone sheet (#307)
 - iBoM: Name displayed in the HTML when using filters and/or variants.
+- Position: Components wrongly separated by side when the side column wasn't
+  the last column (#313)
 
 ### Changed
 - Diff:
