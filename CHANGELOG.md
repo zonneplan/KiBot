@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New filters:
   - `urlify` to convert URLs in fields to HTML links (#311)
   - `field_modify` a more generic field transformer
+- Position: option to set the resolution for floating values (#314)
 
 ### Fixed
 - Problems to compress netlists. (#287)
