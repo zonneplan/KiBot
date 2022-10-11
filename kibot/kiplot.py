@@ -25,7 +25,8 @@ from .registrable import RegOutput
 from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, version_str2tuple,
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
-                   NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE)
+                   NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE,
+                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -316,6 +317,14 @@ def get_board_comps_data(comps):
                     c.tht = True
                 if attrs & MOD_VIRTUAL == MOD_VIRTUAL:
                     c.virtual = True
+                if attrs & MOD_EXCLUDE_FROM_POS_FILES:
+                    c.in_pos = False
+                # The PCB contains another flag for the BoM
+                # I guess it should be in sync, but: why should somebody want to unsync it?
+                if attrs & MOD_EXCLUDE_FROM_BOM:
+                    c.in_bom_pcb = False
+                if attrs & MOD_BOARD_ONLY:
+                    c.in_pcb_only = True
 
 
 def preflight_checks(skip_pre, targets):

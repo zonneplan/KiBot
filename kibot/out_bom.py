@@ -514,6 +514,12 @@ class BoMOptions(BaseOptions):
                 This is done using a **_expand_text_vars** filter.
                 If you need to customize the filter, or apply it before, you can disable this option and
                 add a custom filter to the filter chain """
+            self.exclude_marked_in_sch = True
+            """ Exclude components marked with *Exclude from bill of materials* in the schematic.
+                This is a KiCad 6 option """
+            self.exclude_marked_in_pcb = False
+            """ Exclude components marked with *Exclude from BOM* in the PCB.
+                This is a KiCad 6 option """
         self._format_example = 'CSV'
         self._footprint_populate_values_example = 'no,yes'
         self._footprint_type_values_example = 'SMD,THT,VIRTUAL'
@@ -844,6 +850,14 @@ class BoMOptions(BaseOptions):
         self.aggregate_comps(comps)
         # Apply all the filters
         reset_filters(comps)
+        if self.exclude_marked_in_sch:
+            for c in comps:
+                if c.included:
+                    c.included = c.in_bom
+        if self.exclude_marked_in_pcb:
+            for c in comps:
+                if c.included:
+                    c.included = c.in_bom_pcb
         comps = apply_pre_transform(comps, self.pre_transform)
         apply_exclude_filter(comps, self.exclude_filter)
         apply_fitted_filter(comps, self.dnf_filter)

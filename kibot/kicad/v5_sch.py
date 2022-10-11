@@ -906,6 +906,13 @@ class SchematicComponent(object):
         self.smd = False
         self.virtual = False
         self.tht = False
+        # KiCad 6 SCH flags
+        self.in_bom = True
+        self.on_board = True
+        # KiCad 6 PCB flags
+        self.in_bom_pcb = True
+        self.in_pos = True
+        self.in_pcb_only = False
 
     def get_field_value(self, field):
         field = field.lower()

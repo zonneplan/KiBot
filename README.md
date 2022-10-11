@@ -1556,6 +1556,10 @@ Notes:
         - `exclude_filter`: [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
                             The default filter excludes test points, fiducial marks, mounting holes, etc.
                             This option is for simple cases, consider using a full variant for complex cases.
+        - `exclude_marked_in_pcb`: [boolean=false] Exclude components marked with *Exclude from BOM* in the PCB.
+                                   This is a KiCad 6 option.
+        - `exclude_marked_in_sch`: [boolean=true] Exclude components marked with *Exclude from bill of materials* in the schematic.
+                                   This is a KiCad 6 option.
         - `expand_text_vars`: [boolean=true] Expand KiCad 6 text variables after applying all filters and variants.
                               This is done using a **_expand_text_vars** filter.
                               If you need to customize the filter, or apply it before, you can disable this option and
@@ -2823,7 +2827,6 @@ Notes:
                         Important: when using separate files you must use `%i` to differentiate them. Affected by global options.
         - **`separate_files_for_front_and_back`**: [boolean=true] Generate two separated files, one for the top and another for the bottom.
         - **`units`**: [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
-	- **`right_digits`**: [number=4] number of digits for mantissa part of coordinates and rotation (0 is auto).
         - `bottom_negative_x`: [boolean=false] Use negative X coordinates for footprints on bottom layer.
         - `columns`: [list(dict)|list(string)] Which columns are included in the output.
           * Valid keys:
@@ -2834,6 +2837,7 @@ Notes:
         - `include_virtual`: [boolean=false] Include virtual components. For special purposes, not pick & place.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `right_digits`: [number=4] number of digits for mantissa part of coordinates (0 is auto).
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.

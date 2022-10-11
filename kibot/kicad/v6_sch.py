@@ -760,8 +760,8 @@ class LibComponent(object):
         self.pin_numbers_hide = None
         self.pin_names_hide = None
         self.pin_names_offset = None
-        self.in_bom = False
-        self.on_board = False
+        self.in_bom = True
+        self.on_board = True
         self.is_power = False
         self.unit = 0
         self.draw = []
@@ -947,10 +947,10 @@ class LibComponent(object):
             if s.pin_names_hide is not None:
                 aux.append(Symbol('hide'))
             sdata.append(_symbol('pin_names', aux))
-        if s.in_bom:
-            sdata.append(_symbol('in_bom', [Symbol('yes')]))
-        if s.on_board:
-            sdata.append(_symbol('on_board', [Symbol('yes')]))
+        if not s.in_bom:
+            sdata.append(_symbol('in_bom', [Symbol('no')]))
+        if not s.on_board:
+            sdata.append(_symbol('on_board', [Symbol('no')]))
         sdata.append(Sep())
         # Properties
         for f in s.fields:
@@ -973,8 +973,6 @@ class LibComponent(object):
 class SchematicComponentV6(SchematicComponent):
     def __init__(self):
         super().__init__()
-        self.in_bom = False
-        self.on_board = False
         self.pins = OrderedDict()
         self.unit = 1
         self.unit_specified = False
@@ -1129,11 +1127,11 @@ class SchematicComponentV6(SchematicComponent):
         if self.convert is not None:
             data.append(_symbol('convert', [self.convert]))
         data.append(Sep())
-        if self.in_bom or self.on_board or self.fields_autoplaced:
-            if self.in_bom:
-                data.append(_symbol('in_bom', [Symbol('yes')]))
-            if self.on_board:
-                data.append(_symbol('on_board', [Symbol('yes')]))
+        if not self.in_bom or not self.on_board or self.fields_autoplaced:
+            if not self.in_bom:
+                data.append(_symbol('in_bom', [Symbol('no')]))
+            if not self.on_board:
+                data.append(_symbol('on_board', [Symbol('no')]))
             if self.fields_autoplaced:
                 data.append(_symbol('fields_autoplaced'))
             data.append(Sep())

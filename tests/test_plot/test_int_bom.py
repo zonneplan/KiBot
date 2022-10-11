@@ -73,6 +73,8 @@ KIBOM_RENAME_HEAD = [COMP_COLUMN_NAME_R, REF_COLUMN_NAME_R, 'Componente', 'Valor
 CONN_HEAD = [COMP_COLUMN_NAME, 'Description', 'Part', REF_COLUMN_NAME, 'Value', 'Footprint', QTY_COLUMN_NAME, 'Status',
              DATASHEET_COLUMN_NAME]
 KIBOM_TEST_COMPONENTS = ['C1', 'C2', 'C3', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R9', 'R10']
+KIBOM_TEST_COMPONENTS_FIL = ['C1', 'C2', 'C4', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R10']
+KIBOM_TEST_COMPONENTS_FIL2 = ['C1', 'C2', 'R1', 'R2', 'R3', 'R4', 'R5', 'R7', 'R8', 'R10']
 KIBOM_TEST_COMPONENTS_ALT = ['C1-C4', 'R9', 'R10', 'R7', 'R8', 'R1-R5']
 KIBOM_TEST_COMPONENTS_ALT2 = ['C1-C4', 'R9', 'R10', 'R7', 'R8', 'R1', 'R2', 'R4', 'R5', 'R3']
 KIBOM_TEST_EXCLUDE = ['R6']
@@ -100,14 +102,14 @@ MERGED_R1_SRC = 'A:(3) B:(3) C:(1)'
 def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps, ref_sep=' '):
     """ Checks the kibom-test.sch expected results """
     # Groups
-    assert len(rows) == groups
+    assert len(rows) == groups, "Number of groups"
     logging.debug(str(groups) + " groups OK")
     # Components
     if comps:
         components = []
         for r in rows:
             components.extend(r[ref_column].split(ref_sep))
-        assert len(components) == len(comps)
+        assert len(components) == len(comps), "Number of components"
         logging.debug(str(len(comps)) + " components OK")
     # Excluded
     if exclude:
@@ -718,6 +720,40 @@ def test_int_bom_use_alt_1(test_dir):
     ref_column = header.index(REF_COLUMN_NAME)
     status_column = header.index(STATUS_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS_ALT)
+    check_dnc(rows, 'R7', ref_column, status_column)
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(context.ki5(), reason="needs KiCad 6 sch attributes")
+def test_int_bom_marked_1(test_dir):
+    """ Components marked as `Exclude from bill of materials` """
+    prj = 'kibom-test-marked'
+    ext = 'csv'
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_simple_csv', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header, info = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS_FIL)
+    check_dnc(rows, 'R7', ref_column, status_column)
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(context.ki5(), reason="needs KiCad 6 PCB attributes")
+def test_int_bom_marked_2(test_dir):
+    """ Components marked as `Exclude from bill of materials`, also PCB """
+    prj = 'kibom-test-marked'
+    ext = 'csv'
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_simple_csv_npcb', BOM_DIR)
+    ctx.run()
+    out = prj + '-bom.' + ext
+    rows, header, info = ctx.load_csv(out)
+    assert header == KIBOM_TEST_HEAD
+    ref_column = header.index(REF_COLUMN_NAME)
+    status_column = header.index(STATUS_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, KIBOM_TEST_GROUPS, KIBOM_TEST_EXCLUDE, KIBOM_TEST_COMPONENTS_FIL2)
     check_dnc(rows, 'R7', ref_column, status_column)
     ctx.clean_up()
 
