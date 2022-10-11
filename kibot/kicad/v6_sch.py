@@ -21,6 +21,7 @@ from .sexpdata import load, SExpData, Symbol, dumps, Sep
 
 logger = log.get_logger()
 CROSSED_LIB = 'kibot_crossed'
+NO_YES = ['no', 'yes']
 
 
 def _check_is_symbol_list(e, allow_orphan_symbol=()):
@@ -947,10 +948,9 @@ class LibComponent(object):
             if s.pin_names_hide is not None:
                 aux.append(Symbol('hide'))
             sdata.append(_symbol('pin_names', aux))
-        if not s.in_bom:
-            sdata.append(_symbol('in_bom', [Symbol('no')]))
-        if not s.on_board:
-            sdata.append(_symbol('on_board', [Symbol('no')]))
+        if s.units:
+            sdata.append(_symbol('in_bom', [Symbol(NO_YES[s.in_bom])]))
+            sdata.append(_symbol('on_board', [Symbol(NO_YES[s.on_board])]))
         sdata.append(Sep())
         # Properties
         for f in s.fields:
@@ -1127,14 +1127,11 @@ class SchematicComponentV6(SchematicComponent):
         if self.convert is not None:
             data.append(_symbol('convert', [self.convert]))
         data.append(Sep())
-        if not self.in_bom or not self.on_board or self.fields_autoplaced:
-            if not self.in_bom:
-                data.append(_symbol('in_bom', [Symbol('no')]))
-            if not self.on_board:
-                data.append(_symbol('on_board', [Symbol('no')]))
-            if self.fields_autoplaced:
-                data.append(_symbol('fields_autoplaced'))
-            data.append(Sep())
+        data.append(_symbol('in_bom', [Symbol(NO_YES[self.in_bom])]))
+        data.append(_symbol('on_board', [Symbol(NO_YES[self.on_board])]))
+        if self.fields_autoplaced:
+            data.append(_symbol('fields_autoplaced'))
+        data.append(Sep())
         data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         for f in self.fields:
             d = f.write()
