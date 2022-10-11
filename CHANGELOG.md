@@ -60,8 +60,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (#289 #290)
 - KiCad 5 "assert "lower <= upper" failed in Clamp()" (#304)
 - Missing XYRS information for components with multiple units (#306)
-- Schematic v6: Problems when creating a variant of a sub-sheet that was edited
-  as a standalone sheet (#307)
+- Schematic v6:
+  - Problems when creating a variant of a sub-sheet that was edited as a
+    standalone sheet (#307)
+  - Autoplace fields could be lost in variants.
 - iBoM: Name displayed in the HTML when using filters and/or variants.
 - Position: Components wrongly separated by side when the side column wasn't
   the last column (#313)

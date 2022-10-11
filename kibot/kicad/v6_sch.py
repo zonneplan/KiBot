@@ -1129,7 +1129,7 @@ class SchematicComponentV6(SchematicComponent):
         if self.convert is not None:
             data.append(_symbol('convert', [self.convert]))
         data.append(Sep())
-        if self.in_bom or self.on_board:
+        if self.in_bom or self.on_board or self.fields_autoplaced:
             if self.in_bom:
                 data.append(_symbol('in_bom', [Symbol('yes')]))
             if self.on_board:
