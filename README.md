@@ -7,6 +7,9 @@
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
 
+# **This is the documentation for the current development KiBot, not yet released.**
+
+
 **Important for CI/CD**:
 - We are now uploading docker images to GitHub, the new tags are much more simple.
   Consult: [Usage for CI/CD](#usage-for-cicd)
