@@ -1,3 +1,61 @@
+kibot (1.4.0-1) stable; urgency=medium
+
+  * New outputs: PCB_Variant and Copy_Files.
+  * General things:
+    - Some basic preprocessing, now you can parametrize the YAML config.
+    - Support for 3D models aliases
+    - Environment and text variables now can be used as 3D model aliases.
+    - Environment and text variables expansion is now recursive.
+    - Command line option to specify warnings to be excluded.
+    - `pre_transform` filter to outputs supporting variants.
+  * Support for Eurocircuits drill adjust to fix small OARs.
+  * Global options:
+    - Support for changing text variables with variants during outputs
+      creation.
+    - Options to control which stuff is changed on PCB variants
+    - Mechanism to give more priority to local globals.
+  * Diff added mechanisms to:
+    - Compare using a variant
+    - Specify the current PCB/Schematic in memory
+    - Compare with the last Nth tag
+    - Skip pages with no differences
+  * Sch Variant options to:
+    - Copy the project.
+    - Change the title.
+  * Render_3D: Options to disable some technical layers and control the
+    silkscreen clipping.
+  * Internal BoM:
+    - Now you can aggregate components using CSV files.
+    - Added some basic support for "Exclude from BoM" flag
+  * Now you can check PCB and schematic parity using the `update_xml` preflight
+  * New filters:
+    - `urlify` to convert URLs in fields to HTML links
+    - `field_modify` a more generic field transformer
+  * Position: option to set the resolution for floating values (#314)
+  * Fixed problems to compress netlists.
+  * Fixed 2D PCB processing didn't show in 3D targets
+  * Fixed KiBot exited when downloading a datasheet and got a connection error
+  * Fixed KiCad 5 "assert "lower <= upper" failed in Clamp()"
+  * Fixed missing XYRS information for components with multiple units
+  * Fixed Schematic v6:
+    - Problems when creating a variant of a sub-sheet that was edited as a
+      standalone sheet
+    - Autoplace fields could be lost in variants.
+  * Fixed iBoM: Name displayed in the HTML when using filters and/or variants.
+  * Fixed Position: Components wrongly separated by side when the side column
+    wasn't the last column
+  * Changed in diff:
+    - When comparing a file now the links says Current/FILE instead of None
+    - The default was to compare the current file on storage, now is the current
+      file on memory. It includes the zone refill indicated in the preflights.
+    - Now the error about differences bigger than the threshold is more clear.
+      KiBot also returns a distinct error level.
+  * Changed: Now the global `dir` option also applies to the preflights
+  * Changed: When importing globals now options that are lists or dicts are
+    merged, not just replaced.
+
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Wed, 12 Oct 2022 10:08:16 -0300
+
 kibot (1.3.0-1) stable; urgency=medium
 
   * New outputs: Diff and Info

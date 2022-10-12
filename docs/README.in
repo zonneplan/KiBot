@@ -16,10 +16,10 @@
 **Important note about PcbDraw 1.0.0**
 - This release is incompatible with 0.9.0, I'm trying to fix some issues in the upstream package.
 
-**New on v1.3.0**
-- Diff and Info outputs
-- KiBot tries to download missing tools
-- More flexible imports
+**New on v1.4.0**
+- PCB_Variant and Copy_Files outputs
+- urlify and field_modify filters
+- Basic pre-processing
 
 ## Index
 
