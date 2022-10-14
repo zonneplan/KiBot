@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Diff:
+  - Option to compare only the first schematic page. (See #319)
+
+### Changed
+- Diff:
+  - Now the default is to compare all the schematic pages. (#319)
+
 
 ## [1.4.0] - 2022-10-12
 ### Added

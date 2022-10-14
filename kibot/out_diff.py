@@ -6,7 +6,7 @@
 """
 Dependencies:
   - name: KiCad PCB/SCH Diff
-    version: 2.4.2
+    version: 2.4.3
     role: mandatory
     github: INTI-CMNB/KiDiff
     command: kicad-diff.py
@@ -102,6 +102,8 @@ class DiffOptions(BaseOptions):
             self.only_different = False
             """ Only include the pages with differences in the output PDF.
                 Note that when no differeces are found we get a page saying *No diff* """
+            self.only_first_sch_page = False
+            """ Compare only the main schematic page (root page) """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -139,9 +141,12 @@ class DiffOptions(BaseOptions):
         cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash, '--cache_dir', self.cache_dir]
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])
+        if not self.only_first_sch_page:
+            cmd.append('--all_pages')
         if GS.debug_enabled:
             cmd.insert(1, '-'+'v'*GS.debug_level)
         cmd.extend([name, name])
+        self.name_used_for_cache = name
         run_command(cmd)
 
     def cache_pcb(self, name):
@@ -362,11 +367,10 @@ class DiffOptions(BaseOptions):
             fname, dir_name = VariantOptions.save_tmp_dir_board('diff')
         else:
             dir_name = mkdtemp()
+            self.dirs_to_remove.append(dir_name)
             fname = GS.sch.save_variant(dir_name)
-        try:
-            res = self.cache_file(os.path.join(dir_name, fname))
-        finally:
-            rmtree(dir_name)
+        res = self.cache_file(os.path.join(dir_name, fname))
+        self.git_hash = 'Current'
         return res
 
     def cache_obj(self, name, type):
@@ -396,19 +400,23 @@ class DiffOptions(BaseOptions):
         # Populate the cache
         old_hash = self.cache_obj(old, old_type)
         gh1 = self.git_hash
+        name_used_for_old = self.name_used_for_cache
         new_hash = self.cache_obj(new, new_type)
         gh2 = self.git_hash
+        name_used_for_new = self.name_used_for_cache
         # Compute the diff using the cache
         cmd = [self.command, '--no_reader', '--new_file_hash', new_hash, '--old_file_hash', old_hash,
                '--cache_dir', self.cache_dir, '--output_dir', dir_name, '--output_name', file_name,
-               '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz)]
+               '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz), '--no_exist_check']
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])
         if self.threshold:
             cmd.extend(['--threshold', str(self.threshold)])
         if self.only_different:
             cmd.append('--only_different')
-        cmd.extend([self.file_exist, self.file_exist])
+        if not self.only_first_sch_page:
+            cmd.append('--all_pages')
+        cmd.extend([name_used_for_old, name_used_for_new])
         if GS.debug_enabled:
             cmd.insert(1, '-'+'v'*GS.debug_level)
         try:
@@ -439,17 +447,10 @@ class DiffOptions(BaseOptions):
             # We need eeschema_do for this
             self.ensure_tool('KiAuto')
         # Solve the cache dir
-        remove_cache = False
+        self.dirs_to_remove = []
         if not self.cache_dir:
             self.cache_dir = mkdtemp()
-            remove_cache = True
-        # A valid name, not really used
-        if self.pcb:
-            GS.check_pcb()
-            self.file_exist = GS.pcb_file
-        else:
-            GS.check_sch()
-            self.file_exist = GS.sch_file
+            self.dirs_to_remove.append(self.cache_dir)
         self.incl_file = None
         name_ori = name
         try:
@@ -479,8 +480,8 @@ class DiffOptions(BaseOptions):
                 self.do_compare(self.old, self.old_type, self.new, self.new_type, name, name_ori)
         finally:
             # Clean-up
-            if remove_cache:
-                rmtree(self.cache_dir)
+            for d in self.dirs_to_remove:
+                rmtree(d)
             if self.incl_file:
                 os.remove(self.incl_file)
 
