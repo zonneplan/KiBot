@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Diff:
   - Now the default is to compare all the schematic pages. (#319)
 
+### Fixed
+- QR lib update: Problems when moving the footprint to the bottom for
+  KiCad 5.
+
 
 ## [1.4.0] - 2022-10-12
 ### Added
