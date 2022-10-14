@@ -13,6 +13,7 @@ VARIANT=""
 TARGETS=""
 QUICKSTART="NO"
 INSTALL3D="NO"
+EXTRA_ARGS=""
 
 # Exit error code
 EXIT_ERROR=1
@@ -41,11 +42,12 @@ function msg_help {
     echo -e "  '-d DIR' output path. Default: current dir, will be used as prefix of dir configured in config file"
     echo -e "  '-b FILE' .kicad_pcb board file. Use __SCAN__ to get the first board file found in current folder."
     echo -e "  '-e FILE' .sch schematic file.  Use __SCAN__ to get the first schematic file found in current folder."
+    echo -e "  '-i YES' install the 3D models."
     echo -e "  '-q YES' generate configs and outputs automagically (-b, -e, -s, -V, -c are ignored)."
     echo -e "  '-s PRES' skip preflights, comma separated or 'all'"
     echo -e "  '-t TARGETS' list of targets to generate separated by spaces. To only run preflights use __NONE__."
     echo -e "  '-V VARIANT' global variant"
-    echo -e "  '-i YES' install the 3D models."
+    echo -e "  '-x EXTRA_ARGS' extra arguments to concatenate"
 
     echo -e "\nMiscellaneous:"
     echo -e "  '-v LEVEL' annotate program execution"
@@ -145,6 +147,8 @@ function args_process {
                    VERBOSE="-vvvv"
                fi
                ;;
+           -x) EXTRA_ARGS="$VAL"
+               ;;
            -h) help
                exit
                ;;
@@ -169,8 +173,8 @@ function run {
         echo Quick-start options: $VERBOSE --quick-start
         /bin/bash -c "kibot $VERBOSE --quick-start"
     else
-        echo Options: $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS
-        /bin/bash -c "kibot $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS"
+        echo Options: $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS $EXTRA_ARGS
+        /bin/bash -c "kibot $CONFIG $DIR $BOARD $SCHEMA $SKIP $VERBOSE $VARIANT $TARGETS $EXTRA_ARGS"
     fi
 }
 
