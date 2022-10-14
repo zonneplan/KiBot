@@ -1435,9 +1435,11 @@ Another example, but using variants can be found [here](https://github.com/INTI-
 
 The available options are:
 
+- **additional_args**: Additional text to add to the KiBot invocation. This is experimental and only intended for advanced use.
 - **config**: The KiBot config file to use. The first file that matches `*.kibot.yaml` is used when omitted.
 - **dir**: Output directory for the generated files. The current directory is used when omitted.
 - **board**: Name of the PCB file. The first file that matches `*.kicad_pcb` is used when omitted.
+- **install3D**: When `YES` installs the KiCad 3D models. Note that this will download more than 360 MiB and install more than 5 GiB of files.
 - **quickstart**: When `YES` ignores all the other options and runs in `--quick-start` mode. No configuration needed.
 - **schema**: Name of the schematic file. The first file that matches `*.*sch` is used when omitted.
 - **skip**: Skip preflights, comma separated or *all*. Nothing is skipped when omitted.
