@@ -65,7 +65,7 @@ runs:
     -  -t ${{ inputs.targets }}
     -  -v ${{ inputs.verbose }}
     -  -V ${{ inputs.variant }}
-    -  -x ${{ additional_args }}
+    -  -x ${{ inputs.additional_args }}
 branding:
   icon: 'cpu'
   color: 'green'
