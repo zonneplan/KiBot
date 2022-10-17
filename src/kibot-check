@@ -159,7 +159,7 @@ deps = '{\
         ],\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 3,\
+        "importance": 2,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -182,13 +182,6 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "pcb_print",\
-                "version": null\
-            },\
-            {\
-                "desc": "Create JPG images",\
-                "mandatory": false,\
-                "max_version": null,\
-                "output": "pcbdraw",\
                 "version": null\
             }\
         ],\
@@ -485,7 +478,7 @@ deps = '{\
                 "version": [\
                     2,\
                     4,\
-                    2\
+                    3\
                 ]\
             }\
         ],\
@@ -627,7 +620,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 10001,\
+        "importance": 1,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -646,21 +639,6 @@ deps = '{\
                     0\
                 ],\
                 "output": "pcb_print",\
-                "version": [\
-                    0,\
-                    9,\
-                    0,\
-                    3\
-                ]\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "max_version": [\
-                    1,\
-                    0\
-                ],\
-                "output": "pcbdraw",\
                 "version": [\
                     0,\
                     9,\
@@ -784,7 +762,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 4,\
+        "importance": 3,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -814,13 +792,6 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "pcb_print",\
-                "version": null\
-            },\
-            {\
-                "desc": "Create PNG and JPG images",\
-                "mandatory": false,\
-                "max_version": null,\
-                "output": "pcbdraw",\
                 "version": null\
             }\
         ],\

@@ -7,7 +7,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
 
-# **This is the documentation for the current development KiBot, not yet released.**
+# **This is the documentation for KiBot v1.4.0 for the current development read [here](https://github.com/INTI-CMNB/KiBot/tree/dev).**
 
 
 **Important for CI/CD**:
@@ -142,18 +142,13 @@ Notes:
 - Mandatory for `kicost`
 - Optional to find components costs and specs for `bom`
 
-[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0.3 (<1.0) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/pcbdraw) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Mandatory for `pcbdraw`
-- Optional to create realistic solder masks for `pcb_print`
-- Note: Currently the upstream version is broken, please use the mentioned fork
-
 [**Interactive HTML BoM**](https://github.com/INTI-CMNB/InteractiveHtmlBom) v2.4.1.4 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/InteractiveHtmlBom) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `ibom`
 
 [**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiBoM) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `kibom`
 
-[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.2 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.3 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `diff`
 
 [**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
@@ -177,22 +172,24 @@ Notes:
   - Create outputs preview for `navigate_results`
   - Create PNG icons for `navigate_results`
   - Create PDF, PNG, PS and EPS formats for `pcb_print`
-  - Create PNG and JPG images for `pcbdraw`
-
-[**ImageMagick**](https://imagemagick.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://imagemagick.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Optional to:
-  - Create outputs preview for `navigate_results`
-  - Create monochrome prints and scaled PNG files for `pcb_print`
-  - Create JPG images for `pcbdraw`
 
 [**Ghostscript**](https://www.ghostscript.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.ghostscript.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/ghostscript) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PNG, PS and EPS formats for `pcb_print`
 
+[**ImageMagick**](https://imagemagick.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://imagemagick.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Optional to:
+  - Create outputs preview for `navigate_results`
+  - Create monochrome prints and scaled PNG files for `pcb_print`
+
 [**Pandoc**](https://pandoc.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://pandoc.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`
 - Note: In CI/CD environments: the `kicad_auto_test` docker image contains it.
+
+[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0.3 (<1.0) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/pcbdraw) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Optional to create realistic solder masks for `pcb_print`
+- Note: Currently the upstream version is broken, please use the mentioned fork
 
 [**RAR**](https://www.rarlab.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.rarlab.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/rar) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to compress in RAR format for `compress`
@@ -1746,6 +1743,7 @@ Notes:
                       Use `multivar` to specify a reference file when `new_type` is also `multivar`.
         - `only_different`: [boolean=false] Only include the pages with differences in the output PDF.
                             Note that when no differeces are found we get a page saying *No diff*.
+        - `only_first_sch_page`: [boolean=false] Compare only the main schematic page (root page).
         - `pcb`: [boolean=true] Compare the PCB, otherwise compare the schematic.
         - `threshold`: [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
                        difference bigger than the indicated value will make the diff fail.
@@ -2566,7 +2564,7 @@ Notes:
         - **`mirror`**: [boolean=false] Mirror the board.
         - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated file. Affected by global options.
         - **`show_components`**: [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
-                                 The default is none.
+                                 The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied.
         - **`style`**: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
           * Valid keys:
             - **`board`**: [string='#208b47'] Color for the board without copper (covered by solder mask).

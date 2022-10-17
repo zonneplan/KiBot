@@ -533,6 +533,8 @@ outputs:
       # [boolean=false] Only include the pages with differences in the output PDF.
       # Note that when no differeces are found we get a page saying *No diff*
       only_different: false
+      # [boolean=false] Compare only the main schematic page (root page)
+      only_first_sch_page: false
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=true] Compare the PCB, otherwise compare the schematic
@@ -1374,7 +1376,7 @@ outputs:
       # [dict|None] Replacements for PCB references using components (lib:component)
       remap:
       # [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
-      # The default is none
+      # The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied
       show_components: none
       # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
       style:

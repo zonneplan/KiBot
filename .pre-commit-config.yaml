@@ -13,6 +13,7 @@ exclude:
   experiments/.*|
   submodules/.*|
   kibot/PyPDF2/.*|
+  kibot/PcbDraw/.*|
   tests/yaml_samples/simple_position_csv_pre.kibot.yaml
   )$
 repos:

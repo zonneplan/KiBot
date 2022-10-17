@@ -3,29 +3,37 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-"""
-Dependencies:
-  - from: RSVG
-    role: Create PNG and JPG images
-  - from: ImageMagick
-    role: Create JPG images
-  - from: PcbDraw
-    role: mandatory
-"""
+# TODO: PIL dependency? pcbnewTransition? numpy?
+# TODO: Package resources
+# """
+# Dependencies:
+#   - from: RSVG
+#     role: Create PNG and JPG images
+#   - from: ImageMagick
+#     role: Create JPG images
+#   - from: PcbDraw
+#     role: mandatory
+# """
 import os
 from tempfile import NamedTemporaryFile
-import shlex
 # Here we import the whole module to make monkeypatch work
-import subprocess
-from .misc import (PCBDRAW_ERR, W_AMBLIST, W_UNRETOOL, W_USESVG2, W_USEIMAGICK, PCB_MAT_COLORS,
-                   PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS)
+from .error import KiPlotConfigurationError
+from .misc import (PCBDRAW_ERR, W_AMBLIST, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
+                   W_PCBDRAW)
 from .gs import GS
 from .optionable import Optionable
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
+from .PcbDraw.plot import (PcbPlotter, PlotPaste, PlotPlaceholders, PlotSubstrate, PlotVCuts, mm2ki, PlotComponents)
+from .PcbDraw.convert import save
+
 
 logger = log.get_logger()
+
+
+def pcbdraw_warnings(tag, msg):
+    logger.warning('{}({}) {}'.format(W_PCBDRAW, tag, msg))
 
 
 class PcbDrawStyle(Optionable):
@@ -102,31 +110,6 @@ class PcbDrawRemap(Optionable):
         pass
 
 
-def _get_tmp_name(ext):
-    with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
-        f.close()
-    return f.name
-
-
-def _run_command(cmd, tmp_remap=False, tmp_style=False):
-    logger.debug('Executing: '+shlex.join(cmd))
-    try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
-        if e.output:
-            logger.debug('Output from command: '+e.output.decode())
-        exit(PCBDRAW_ERR)
-    finally:
-        if tmp_remap:
-            os.remove(tmp_remap)
-        if tmp_style:
-            os.remove(tmp_style)
-    out = cmd_output.decode()
-    if out.strip():
-        logger.debug('Output from command:\n'+out)
-
-
 class PcbDrawOptions(VariantOptions):
     def __init__(self):
         with document:
@@ -148,7 +131,7 @@ class PcbDrawOptions(VariantOptions):
             """ [list(string)=[]] List of components to highlight """
             self.show_components = Optionable
             """ *[list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
-                The default is none """
+                The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied """
             self.vcuts = False
             """ Render V-CUTS on the Cmts.User layer """
             self.warnings = 'visible'
@@ -170,32 +153,39 @@ class PcbDrawOptions(VariantOptions):
         super().config(parent)
         # Libs
         if isinstance(self.libs, type):
-            self.libs = None
+            self.libs = ['KiCAD-base']
         else:
             self.libs = ','.join(self.libs)
         # Highlight
         if isinstance(self.highlight, type):
             self.highlight = None
-        else:
-            self.highlight = ','.join(self.highlight)
         # Filter
         if isinstance(self.show_components, type):
-            self.show_components = ''
+            self.show_components = None
         elif isinstance(self.show_components, str):
             if self.variant or self.dnf_filter:
                 logger.warning(W_AMBLIST + 'Ambiguous list of components to show `{}` vs variant/filter'.
                                format(self.show_components))
             if self.show_components == 'none':
-                self.show_components = ''
-            else:
                 self.show_components = None
-        else:
-            self.show_components = ','.join(self.show_components)
+            else:
+                self.show_components = []
+
         # Remap
+        # TODO: Better remap option, like - ref: xxx\nlib: xxxx\ncomponent: xxxx
         if isinstance(self.remap, type):
-            self.remap = None
+            self.remap = {}
         elif isinstance(self.remap, PcbDrawRemap):
-            self.remap = self.remap._tree
+            parsed_remap = {}
+            for ref, v in self.remap._tree.items():
+                if not isinstance(v, str):
+                    raise KiPlotConfigurationError("Wrong PcbDraw remap, must be `ref: lib:component` ({}: {})".format(ref, v))
+                lib_comp = v.split(':')
+                if len(lib_comp) == 2:
+                    parsed_remap[ref] = lib_comp
+                else:
+                    raise KiPlotConfigurationError("Wrong PcbDraw remap, must be `ref: lib:component` ({}: {})".format(ref, v))
+            self.remap = parsed_remap
         # Style
         if isinstance(self.style, type):
             # Apply the global defaults
@@ -206,20 +196,6 @@ class PcbDrawOptions(VariantOptions):
             self.style = self.style.to_dict()
         self._expand_id = 'bottom' if self.bottom else 'top'
         self._expand_ext = self.format
-
-    def _create_remap(self):
-        with NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-            f.write('{\n')
-            first = True
-            for k, v in self.remap.items():
-                if first:
-                    first = False
-                else:
-                    f.write(',\n')
-                f.write('  "{}": "{}"'.format(k, v))
-            f.write('\n}\n')
-            f.close()
-            return f.name
 
     def _create_style(self):
         with NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
@@ -240,89 +216,99 @@ class PcbDrawOptions(VariantOptions):
             f.close()
             return f.name
 
-    def _append_output(self, cmd, output):
-        svg = None
-        if self.format == 'svg':
-            cmd.append(output)
-        else:
-            # PNG and JPG outputs are unreliable
-            self.rsvg_command = self.check_tool('RSVG')
-            if self.rsvg_command is None:
-                logger.warning(W_UNRETOOL + '`RSVG` not installed, using unreliable PNG/JPG conversion')
-                logger.warning(W_USESVG2 + 'If you experiment problems install it')
-                cmd.append(output)
-            else:
-                self.convert_command = self.check_tool('ImageMagick')
-                if self.convert_command is None:
-                    logger.warning(W_UNRETOOL + '`ImageMagick` not installed, using unreliable PNG/JPG conversion')
-                    logger.warning(W_USEIMAGICK + 'If you experiment problems install it')
-                    cmd.append(output)
-                else:
-                    svg = _get_tmp_name('.svg')
-                    cmd.append(svg)
-        return svg
-
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
 
+    def build_plot_components(self):
+        remapping = self.remap
+
+        def remapping_fun(ref, lib, name):
+            if ref in remapping:
+                remapped_lib, remapped_name = remapping[ref]
+                if name.endswith('.back'):
+                    return remapped_lib, remapped_name + '.back'
+                else:
+                    return remapped_lib, remapped_name
+            return lib, name
+
+        resistor_values = {}
+        # TODO: Implement resistor_values_input and resistor_flip
+#         for mapping in resistor_values_input:
+#             key, value = tuple(mapping.split(":"))
+#             resistor_values[key] = ResistorValue(value=value)
+#         for ref in resistor_flip:
+#             field = resistor_values.get(ref, ResistorValue())
+#             field.flip_bands = True
+#             resistor_values[ref] = field
+
+        plot_components = PlotComponents(remapping=remapping_fun,
+                                         resistor_values=resistor_values,
+                                         no_warn_back=self.warnings == 'visible')
+
+        if self._comps or self.show_components:
+            comps = self.get_fitted_refs()
+            if self.show_components:
+                comps += self.show_components
+            filter_set = set(comps)
+            plot_components.filter = lambda ref: ref in filter_set
+
+        if self.highlight is not None:
+            highlight_set = set(self.highlight)
+            plot_components.highlight = lambda ref: ref in highlight_set
+        return plot_components
+
     def run(self, name):
         super().run(name)
-        pcbdraw_command = self.ensure_tool('PcbDraw')
-        # Base command with overwrite
-        cmd = [pcbdraw_command]
-        # Add user options
-        tmp_style = None
-        if self.style:
-            if isinstance(self.style, str):
-                cmd.extend(['-s', self.style])
-            else:
-                tmp_style = self._create_style()
-                cmd.extend(['-s', tmp_style])
-        if self.libs:
-            cmd.extend(['-l', self.libs])
-        if self.placeholder:
-            cmd.append('--placeholder')
-        if self.no_drillholes:
-            cmd.append('--no-drillholes')
-        if self.bottom:
-            cmd.append('-b')
-        if self.mirror:
-            cmd.append('--mirror')
-        if self.highlight:
-            cmd.extend(['-a', self.highlight])
-        if self.show_components is not None:
-            to_add = ','.join(self.get_fitted_refs())
-            if self.show_components and to_add:
-                self.show_components += ','
-            self.show_components += to_add
-            cmd.extend(['-f', self.show_components])
-        if self.vcuts:
-            cmd.append('-v')
-        if self.warnings == 'visible':
-            cmd.append('--no-warn-back')
-        elif self.warnings == 'none':
-            cmd.append('--silent')
-        if self.dpi:
-            cmd.extend(['--dpi', str(self.dpi)])
-        if self.remap:
-            tmp_remap = self._create_remap()
-            cmd.extend(['-m', tmp_remap])
-        else:
-            tmp_remap = None
-        # The board & output
-        cmd.append(GS.pcb_file)
-        svg = self._append_output(cmd, name)
-        # Execute and inform is successful
-        _run_command(cmd, tmp_remap, tmp_style)
-        if svg is not None:
-            # Manually convert the SVG to PNG
-            png = _get_tmp_name('.png')
-            _run_command([self.rsvg_command, '-d', str(self.dpi), '-p', str(self.dpi), svg, '-o', png], svg)
-            cmd = [self.convert_command, '-trim', png]
-            if self.format == 'jpg':
-                cmd += ['-quality', '85%']
-            cmd.append(name)
-            _run_command(cmd, png)
+
+        try:
+            # TODO: Avoid loading the PCB again
+            plotter = PcbPlotter(GS.pcb_file)
+            # TODO: Review the paths, most probably add the system KiBot dir
+            # Read libs from current dir
+            # plotter.setup_arbitrary_data_path(".")
+            # Libs indicated by PCBDRAW_LIB_PATH
+            plotter.setup_env_data_path()
+            # Libs from resources relative to the script
+            plotter.setup_builtin_data_path()
+            # Libs from the user HOME and the system
+            plotter.setup_global_data_path()
+            plotter.yield_warning = pcbdraw_warnings
+            plotter.libs = self.libs
+            plotter.render_back = self.bottom
+            plotter.mirror = self.mirror
+            # TODO: Allow margin configuration
+            plotter.margin = mm2ki(1.5)
+            # TODO: Pass it directly? If no: remove file?
+            tmp_style = None
+            if self.style:
+                if isinstance(self.style, str):
+                    plotter.resolve_style(self.style)
+                else:
+                    tmp_style = self._create_style()
+                    plotter.resolve_style(tmp_style)
+            # TODO: Make aoutline_width configurable
+            plotter.plot_plan = [PlotSubstrate(drill_holes=not self.no_drillholes, outline_width=mm2ki(0.15))]
+            # TODO: Make paste optional
+            plotter.plot_plan.append(PlotPaste())
+            if self.vcuts:
+                # TODO: Make layer configurable
+                plotter.plot_plan.append(PlotVCuts(layer=41))
+            # Two filtering mechanism: 1) Specified list and 2) KiBot filters and variants
+            if self.show_components is not None or self._comps:
+                plotter.plot_plan.append(self.build_plot_components())
+            if self.placeholder:
+                plotter.plot_plan.append(PlotPlaceholders())
+
+            image = plotter.plot()
+        # Most errors are reported as RuntimeError
+        # When the PCB can't be loaded we get IOError
+        # When the SVG contains errors we get SyntaxError
+        except (RuntimeError, SyntaxError, IOError) as e:
+            logger.error('PcbDraw error: '+str(e))
+            exit(PCBDRAW_ERR)
+
+        save(image, name, self.dpi)
+        return
 
 
 @output_class
