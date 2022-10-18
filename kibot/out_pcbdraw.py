@@ -320,14 +320,11 @@ class PcbDrawOptions(VariantOptions):
             plotter.render_back = self.bottom
             plotter.mirror = self.mirror
             plotter.margin = mm2ki(self.margin)
-            # TODO: Pass it directly? If no: remove file?
-            tmp_style = None
             if self.style:
                 if isinstance(self.style, str):
                     plotter.resolve_style(self.style)
                 else:
-                    tmp_style = self._create_style()
-                    plotter.resolve_style(tmp_style)
+                    plotter.style = self.style
             plotter.plot_plan = [PlotSubstrate(drill_holes=not self.no_drillholes, outline_width=mm2ki(self.outline_width))]
             if self.show_solderpaste:
                 plotter.plot_plan.append(PlotPaste())
@@ -346,9 +343,6 @@ class PcbDrawOptions(VariantOptions):
         except (RuntimeError, SyntaxError, IOError) as e:
             logger.error('PcbDraw error: '+str(e))
             exit(PCBDRAW_ERR)
-        finally:
-            if tmp_style:
-                os.remove(tmp_style)
 
         save(image, save_output_name, self.dpi, format=save_output_format)
         # Do we need to convert the saved file?
