@@ -648,35 +648,44 @@ class PlotInterface:
         raise NotImplementedError("Plot interface wasn't implemented")
 
 
+SUBSTRATE_ELEMENTS = {
+    "board": (pcbnew.Edge_Cuts, pcbnew.Edge_Cuts),
+    "clad": (pcbnew.F_Mask, pcbnew.B_Mask),
+    "copper": (pcbnew.F_Cu, pcbnew.B_Cu),
+    "pads": (pcbnew.F_Cu, pcbnew.B_Cu),
+    "pads-mask": (pcbnew.F_Mask, pcbnew.B_Mask),
+    "silk": (pcbnew.F_SilkS, pcbnew.B_SilkS),
+    "outline": (pcbnew.Edge_Cuts, pcbnew.Edge_Cuts)
+}
+ELEMENTS_USED = (
+    # Normal plot, all the elements
+    ("board", "clad", "copper", "pads", "pads-mask", "silk", "outline"),
+    # Solder mask plot
+    ("board", "pads-mask")
+)
+
+
 @dataclass
 class PlotSubstrate(PlotInterface):
     drill_holes: bool = True
     outline_width: int = mm2ki(0.1)
+    only_mask: bool = False
 
     def render(self, plotter: PcbPlotter) -> None:
         self._plotter = plotter # ...so we don't have to pass it explicitly
+        SUBSTRATE_PROCESS = {
+            "board": self._process_baselayer,
+            "clad": self._process_layer,
+            "copper": self._process_layer,
+            "pads": self._process_layer,
+            "pads-mask": self._process_mask,
+            "silk": self._process_layer,
+            "outline": self._process_outline
+        }
 
         to_plot: List[PlotAction] = []
-        if plotter.render_back:
-            to_plot = [
-                PlotAction("board", [pcbnew.Edge_Cuts], self._process_baselayer),
-                PlotAction("clad", [pcbnew.B_Mask], self._process_layer),
-                PlotAction("copper", [pcbnew.B_Cu], self._process_layer),
-                PlotAction("pads", [pcbnew.B_Cu], self._process_layer),
-                PlotAction("pads-mask", [pcbnew.B_Mask], self._process_mask),
-                PlotAction("silk", [pcbnew.B_SilkS], self._process_layer),
-                PlotAction("outline", [pcbnew.Edge_Cuts], self._process_outline)
-            ]
-        else:
-            to_plot = [
-                PlotAction("board", [pcbnew.Edge_Cuts], self._process_baselayer),
-                PlotAction("clad", [pcbnew.F_Mask], self._process_layer),
-                PlotAction("copper", [pcbnew.F_Cu], self._process_layer),
-                PlotAction("pads", [pcbnew.F_Cu], self._process_layer),
-                PlotAction("pads-mask", [pcbnew.F_Mask], self._process_mask),
-                PlotAction("silk", [pcbnew.F_SilkS], self._process_layer),
-                PlotAction("outline", [pcbnew.Edge_Cuts], self._process_outline)
-            ]
+        for e in ELEMENTS_USED[self.only_mask]:
+            to_plot.append(PlotAction(e, [SUBSTRATE_ELEMENTS[e][plotter.render_back]], SUBSTRATE_PROCESS[e]))
 
         self._container = etree.Element("g", id="substrate")
         self._container.attrib["clip-path"] = "url(#cut-off)"
