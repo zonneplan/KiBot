@@ -3,7 +3,7 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-# TODO: PIL dependency? numpy?
+# TODO: PIL dependency?
 # TODO: Package resources
 # TODO: replace unit.py
 # """

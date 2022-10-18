@@ -175,3 +175,10 @@ index f8990722..17f90185 100644
 
 - Changed `pcbnewTransition` to be locally included.
   - Just 2.8 kiB no worth the effort of pulling a dependency
+
+- Replaced `numpy` by a very simple code
+  - Currently svgpathtool is disabled, it really needs numpy
+  - `numpy` is used to:
+    - Multiply matrices (1 line code)
+    - Find the index of the smaller element (1 line code)
+    - I added a replacemt for the `array` function, it just makes all matrix elements float

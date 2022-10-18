@@ -14,19 +14,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Callable, Dict, List, Optional, Tuple, TypeVar, Union, Any
 
-import numpy as np
-# We import the typing under try-catch to allow runtime for systems that have
-# old Numpy that don't feature the numpy.typing module, but we want to preserve
-# type checking.
-try:
-    import numpy.typing
-
-    # Note that we also have to define all the numpy-related types under the
-    # try-catch values as annotations can be ignored, but value can't
-    Matrix = np.typing.NDArray[np.float32]
-
-except ImportError:
-    pass
+from . import np
 from .unit import read_resistance
 # import svgpathtools # type: ignore
 from lxml import etree, objectify # type: ignore
@@ -36,6 +24,7 @@ T = TypeVar("T")
 Numeric = Union[int, float]
 Point = Tuple[Numeric, Numeric]
 Box = Tuple[Numeric, Numeric, Numeric, Numeric]
+Matrix = List[List[float]]
 
 
 PKG_BASE = os.path.dirname(__file__)
