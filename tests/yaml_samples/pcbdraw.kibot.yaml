@@ -47,6 +47,7 @@ outputs:
       warnings: visible
       dpi: 600
       # margin: 2
+      # outline_width: 3
 
   - name: PcbDraw2
     comment: "PcbDraw test bottom"

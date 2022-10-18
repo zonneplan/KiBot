@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PcbDraw:
   - BMP output format
   - Image margin
+  - Outline width
 
 ### Changed
 - Diff:

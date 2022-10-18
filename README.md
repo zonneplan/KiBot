@@ -2573,7 +2573,7 @@ Notes:
             - **`pads`**: [string='#8b898c'] Color for the exposed pads (metal finish).
             - **`silk`**: [string='#d5dce4'] Color for the silk screen.
             - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
-            - `highlight_padding`: [number=1.5] [0,1000] how much the highlight extends around the component [mm].
+            - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
             - `highlight_style`: [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style.
             - `vcut`: [string='#bf2600'] Color for the V-CUTS.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
@@ -2581,8 +2581,10 @@ Notes:
         - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
         - `highlight`: [list(string)=[]] List of components to highlight.
         - `libs`: [list(string)=[]] List of libraries.
-        - `margin`: [number=0] [0,100] Margin around the generated image in millimeters.
+        - `margin`: [number=0] [0,100] Margin around the generated image [mm].
         - `no_drillholes`: [boolean=false] Do not make holes transparent.
+        - `outline_width`: [number=0.15] [0,10] Width of the trace to draw the PCB border [mm].
+                           Note this also affects the drill holes.
         - `placeholder`: [boolean=false] Show placeholder for missing components.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.

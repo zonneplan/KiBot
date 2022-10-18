@@ -78,7 +78,7 @@ class PcbDrawStyle(Optionable):
             self.highlight_style = "stroke:none;fill:#ff0000;opacity:0.5;"
             """ SVG code for the highlight style """
             self.highlight_padding = 1.5
-            """ [0,1000] how much the highlight extends around the component [mm] """
+            """ [0,1000] How much the highlight extends around the component [mm] """
 
     def config(self, parent):
         # Apply global defaults
@@ -162,7 +162,10 @@ class PcbDrawOptions(VariantOptions):
             self.output = GS.def_global_output
             """ *Name for the generated file """
             self.margin = 0
-            """ [0,100] Margin around the generated image in millimeters """
+            """ [0,100] Margin around the generated image [mm] """
+            self.outline_width = 0.15
+            """ [0,10] Width of the trace to draw the PCB border [mm].
+                Note this also affects the drill holes """
         super().__init__()
 
     def config(self, parent):
@@ -318,8 +321,7 @@ class PcbDrawOptions(VariantOptions):
                 else:
                     tmp_style = self._create_style()
                     plotter.resolve_style(tmp_style)
-            # TODO: Make aoutline_width configurable
-            plotter.plot_plan = [PlotSubstrate(drill_holes=not self.no_drillholes, outline_width=mm2ki(0.15))]
+            plotter.plot_plan = [PlotSubstrate(drill_holes=not self.no_drillholes, outline_width=mm2ki(self.outline_width))]
             # TODO: Make paste optional
             plotter.plot_plan.append(PlotPaste())
             if self.vcuts:

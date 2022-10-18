@@ -1362,12 +1362,15 @@ outputs:
       highlight: []
       # [list(string)=[]] List of libraries
       libs: []
-      # [number=0] [0,100] Margin around the generated image in millimeters
+      # [number=0] [0,100] Margin around the generated image [mm]
       margin: 0
       # [boolean=false] Mirror the board
       mirror: false
       # [boolean=false] Do not make holes transparent
       no_drillholes: false
+      # [number=0.15] [0,10] Width of the trace to draw the PCB border [mm].
+      # Note this also affects the drill holes
+      outline_width: 0.15
       # [string='%f-%i%I%v.%x'] Name for the generated file. Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=false] Show placeholder for missing components
@@ -1390,7 +1393,7 @@ outputs:
         copper: '#285e3a'
         # [boolean=false] Highlight over the component (not under)
         highlight_on_top: false
-        # [number=1.5] [0,1000] how much the highlight extends around the component [mm]
+        # [number=1.5] [0,1000] How much the highlight extends around the component [mm]
         highlight_padding: 1.5
         # [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style
         highlight_style: 'stroke:none;fill:#ff0000;opacity:0.5;'
