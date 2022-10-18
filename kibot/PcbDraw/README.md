@@ -17,6 +17,61 @@ Currently only the `plot` module is included.
 ### convert.py
 
 - Made the `pcbdraw` import relative
+- Removed PIL as dependency
+  - So now the save function only supports SVG as input and SVG/PNG as output
+  - All other cases are handled from outside
+  - This is because KiBot heavily uses ImageMagick and migrating to PIL is not something simple
+  - There is no point in using PIL just for file conversion, as we don't use `render` this is the only use
+
+```diff
+diff --git a/kibot/PcbDraw/convert.py b/kibot/PcbDraw/convert.py
+index ba856a69..7fe64738 100644
+--- a/kibot/PcbDraw/convert.py
++++ b/kibot/PcbDraw/convert.py
+@@ -6,7 +6,7 @@ import textwrap
+ import os
+ from typing import Union
+ from tempfile import TemporaryDirectory
+-from PIL import Image
++# from PIL import Image
+ from lxml.etree import _ElementTree # type: ignore
+ 
+ # Converting SVG to bitmap is a hard problem. We used Wand (and thus
+@@ -66,17 +66,17 @@ def svgToPng(inputFilename: str, outputFilename: str, dpi: int=300) -> None:
+         message += textwrap.indent(m, "  ")
+     raise RuntimeError(message)
+ 
+-def save(image: Union[_ElementTree, Image.Image], filename: str, dpi: int=600) -> None:
++def save(image: _ElementTree, filename: str, dpi: int=600, format: str=None) -> None:
+     """
+     Given an SVG tree or an image, save to a filename. The format is deduced
+     from the extension.
+     """
+-    ftype = os.path.splitext(filename)[1][1:].lower()
+-    if isinstance(image, Image.Image):
+-        if ftype not in ["jpg", "jpeg", "png", "bmp"]:
+-            raise TypeError(f"Cannot save bitmap image into {ftype}")
+-        image.save(filename)
+-        return
++    ftype = os.path.splitext(filename)[1][1:].lower() if format is None else format
++#     if isinstance(image, Image.Image):
++#         if ftype not in ["jpg", "jpeg", "png", "bmp"]:
++#             raise TypeError(f"Cannot save bitmap image into {ftype}")
++#         image.save(filename)
++#         return
+     if isinstance(image, _ElementTree):
+         if ftype == "svg":
+             image.write(filename)
+@@ -91,6 +91,6 @@ def save(image: Union[_ElementTree, Image.Image], filename: str, dpi: int=600) -
+             svgToPng(svg_filename, png_filename, dpi=dpi)
+             if ftype == "png":
+                 return
+-            Image.open(png_filename).convert("RGB").save(filename)
+-            return
++#             Image.open(png_filename).convert("RGB").save(filename)
++#             return
+     raise TypeError(f"Unknown image type: {type(image)}")
+```
 
 ### convert_common.py
 
@@ -32,7 +87,9 @@ No current changes
 
 ### unit.py
 
-No current changes
+- Replaced `unit` code.
+  - So we have only one units conversion
+  - I think the only difference is that KiBot code currently supports the locales decimal point
 
 ### plot.py
 
@@ -183,6 +240,3 @@ index f8990722..17f90185 100644
     - Find the index of the smaller element (1 line code)
     - I added a replacemt for the `array` function, it just makes all matrix elements float
 
-- Replaced `unit` code.
-  - So we have only one units conversion
-  - I think the only difference is that KiBot code currently supports the locales decimal point

@@ -3,19 +3,18 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-# TODO: PIL dependency?
 # TODO: Package resources
 # TODO: wxApp messages
-# """
-# Dependencies:
-#   - from: RSVG
-#     role: Create PNG and JPG images
-#   - from: ImageMagick
-#     role: Create JPG images
-#   - from: PcbDraw
-#     role: mandatory
-# """
+"""
+Dependencies:
+  - from: RSVG
+    role: Create PNG, JPG and BMP images
+  - from: ImageMagick
+    role: Create JPG and BMP images
+"""
 import os
+import shlex
+import subprocess
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 from .error import KiPlotConfigurationError
@@ -35,6 +34,26 @@ logger = log.get_logger()
 
 def pcbdraw_warnings(tag, msg):
     logger.warning('{}({}) {}'.format(W_PCBDRAW, tag, msg))
+
+
+def _get_tmp_name(ext):
+    with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
+        f.close()
+    return f.name
+
+
+def _run_command(cmd):
+    logger.debug('Executing: '+shlex.join(cmd))
+    try:
+        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
+        if e.output:
+            logger.debug('Output from command: '+e.output.decode())
+        exit(PCBDRAW_ERR)
+    out = cmd_output.decode()
+    if out.strip():
+        logger.debug('Output from command:\n'+out)
 
 
 class PcbDrawStyle(Optionable):
@@ -140,7 +159,7 @@ class PcbDrawOptions(VariantOptions):
             self.dpi = 300
             """ [10,1200] Dots per inch (resolution) of the generated image """
             self.format = 'svg'
-            """ *[svg,png,jpg] Output format. Only used if no `output` is specified """
+            """ *[svg,png,jpg,bmp] Output format. Only used if no `output` is specified """
             self.output = GS.def_global_output
             """ *Name for the generated file """
         super().__init__()
@@ -260,6 +279,19 @@ class PcbDrawOptions(VariantOptions):
 
     def run(self, name):
         super().run(name)
+        # Select a name and format that PcbDraw can handle
+        save_output_name = name
+        save_output_format = self.format
+        self.convert_command = None
+        # Check we have the tools needed for the output format
+        if self.format != 'svg':
+            # We need RSVG for anything other than SVG
+            self.ensure_tool('RSVG')
+            # We need ImageMagick for anything other than SVG and PNG
+            if self.format != 'png':
+                self.convert_command = self.ensure_tool('ImageMagick')
+                save_output_name = _get_tmp_name('.png')
+                save_output_format = 'png'
 
         try:
             # TODO: Avoid loading the PCB again
@@ -311,7 +343,15 @@ class PcbDrawOptions(VariantOptions):
             if tmp_style:
                 os.remove(tmp_style)
 
-        save(image, name, self.dpi)
+        save(image, save_output_name, self.dpi, format=save_output_format)
+        # Do we need to convert the saved file?
+        if self.convert_command is not None:
+            cmd = [self.convert_command, save_output_name]
+            if self.format == 'jpg':
+                cmd += ['-quality', '85%']
+            cmd.append(name)
+            _run_command(cmd)
+            os.remove(save_output_name)
         return
 
 

@@ -159,7 +159,7 @@ deps = '{\
         ],\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 2,\
+        "importance": 3,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -182,6 +182,13 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "pcb_print",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create JPG and BMP images",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "pcbdraw",\
                 "version": null\
             }\
         ],\
@@ -719,7 +726,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 3,\
+        "importance": 4,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -749,6 +756,13 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "pcb_print",\
+                "version": null\
+            },\
+            {\
+                "desc": "Create PNG, JPG and BMP images",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "pcbdraw",\
                 "version": null\
             }\
         ],\

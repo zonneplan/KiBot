@@ -1356,7 +1356,7 @@ outputs:
       dnf_filter: '_none'
       # [number=300] [10,1200] Dots per inch (resolution) of the generated image
       dpi: 300
-      # [string='svg'] [svg,png,jpg] Output format. Only used if no `output` is specified
+      # [string='svg'] [svg,png,jpg,bmp] Output format. Only used if no `output` is specified
       format: 'svg'
       # [list(string)=[]] List of components to highlight
       highlight: []

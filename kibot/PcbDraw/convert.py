@@ -6,7 +6,7 @@ import textwrap
 import os
 from typing import Union
 from tempfile import TemporaryDirectory
-from PIL import Image
+# from PIL import Image
 from lxml.etree import _ElementTree # type: ignore
 
 # Converting SVG to bitmap is a hard problem. We used Wand (and thus
@@ -66,17 +66,17 @@ def svgToPng(inputFilename: str, outputFilename: str, dpi: int=300) -> None:
         message += textwrap.indent(m, "  ")
     raise RuntimeError(message)
 
-def save(image: Union[_ElementTree, Image.Image], filename: str, dpi: int=600) -> None:
+def save(image: _ElementTree, filename: str, dpi: int=600, format: str=None) -> None:
     """
     Given an SVG tree or an image, save to a filename. The format is deduced
     from the extension.
     """
-    ftype = os.path.splitext(filename)[1][1:].lower()
-    if isinstance(image, Image.Image):
-        if ftype not in ["jpg", "jpeg", "png", "bmp"]:
-            raise TypeError(f"Cannot save bitmap image into {ftype}")
-        image.save(filename)
-        return
+    ftype = os.path.splitext(filename)[1][1:].lower() if format is None else format
+#     if isinstance(image, Image.Image):
+#         if ftype not in ["jpg", "jpeg", "png", "bmp"]:
+#             raise TypeError(f"Cannot save bitmap image into {ftype}")
+#         image.save(filename)
+#         return
     if isinstance(image, _ElementTree):
         if ftype == "svg":
             image.write(filename)
@@ -91,6 +91,6 @@ def save(image: Union[_ElementTree, Image.Image], filename: str, dpi: int=600) -
             svgToPng(svg_filename, png_filename, dpi=dpi)
             if ftype == "png":
                 return
-            Image.open(png_filename).convert("RGB").save(filename)
-            return
+#             Image.open(png_filename).convert("RGB").save(filename)
+#             return
     raise TypeError(f"Unknown image type: {type(image)}")

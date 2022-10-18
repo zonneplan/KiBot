@@ -173,16 +173,18 @@ Notes:
   - Create outputs preview for `navigate_results`
   - Create PNG icons for `navigate_results`
   - Create PDF, PNG, PS and EPS formats for `pcb_print`
-
-[**Ghostscript**](https://www.ghostscript.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.ghostscript.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/ghostscript) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Optional to:
-  - Create outputs preview for `navigate_results`
-  - Create PNG, PS and EPS formats for `pcb_print`
+  - Create PNG, JPG and BMP images for `pcbdraw`
 
 [**ImageMagick**](https://imagemagick.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://imagemagick.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create monochrome prints and scaled PNG files for `pcb_print`
+  - Create JPG and BMP images for `pcbdraw`
+
+[**Ghostscript**](https://www.ghostscript.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.ghostscript.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/ghostscript) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Optional to:
+  - Create outputs preview for `navigate_results`
+  - Create PNG, PS and EPS formats for `pcb_print`
 
 [**Pandoc**](https://pandoc.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://pandoc.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`
@@ -2557,7 +2559,7 @@ Notes:
     - **`options`**: [dict] Options for the `pcbdraw` output.
       * Valid keys:
         - **`bottom`**: [boolean=false] Render the bottom side of the board (default is top side).
-        - **`format`**: [string='svg'] [svg,png,jpg] Output format. Only used if no `output` is specified.
+        - **`format`**: [string='svg'] [svg,png,jpg,bmp] Output format. Only used if no `output` is specified.
         - **`mirror`**: [boolean=false] Mirror the board.
         - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated file. Affected by global options.
         - **`show_components`**: [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
