@@ -182,3 +182,7 @@ index f8990722..17f90185 100644
     - Multiply matrices (1 line code)
     - Find the index of the smaller element (1 line code)
     - I added a replacemt for the `array` function, it just makes all matrix elements float
+
+- Replaced `unit` code.
+  - So we have only one units conversion
+  - I think the only difference is that KiBot code currently supports the locales decimal point

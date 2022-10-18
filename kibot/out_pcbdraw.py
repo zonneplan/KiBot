@@ -5,7 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 # TODO: PIL dependency?
 # TODO: Package resources
-# TODO: replace unit.py
+# TODO: wxApp messages
 # """
 # Dependencies:
 #   - from: RSVG

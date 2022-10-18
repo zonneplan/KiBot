@@ -1,3 +1,4 @@
+from decimal import Decimal as D
 import os
 import re
 import pytest
@@ -18,6 +19,7 @@ from kibot.bom.units import get_prefix
 from kibot.__main__ import detect_kicad
 from kibot.kicad.config import KiConf
 from kibot.globals import Globals
+from kibot.PcbDraw.unit import read_resistance
 
 cov = coverage.Coverage()
 mocked_check_output_FNF = True
@@ -334,3 +336,23 @@ def test_makefile_kibot_sys(test_dir):
         generate_makefile(ctx.get_out_path('Makefile'), 'pp', [], kibot_sys=True)
     ctx.search_in_file('Makefile', [r'KIBOT\?=kibot'])
     ctx.clean_up()
+
+
+def test_read_resistance():
+    assert read_resistance("4k7") == D("4700")
+    assert read_resistance("4k7") == D("4700")
+    assert read_resistance("4.7R") == D("4.7")
+    assert read_resistance("4R7") == D("4.7")
+    assert read_resistance("0R47") == D("0.47")
+    assert read_resistance("4700k") == D("4700000")
+    assert read_resistance("470m") == D("0.47")
+    assert read_resistance("470M") == D("470000000")
+    assert read_resistance("4M7") == D("4700000")
+    assert read_resistance("470") == D("470")
+    assert read_resistance("470Ω") == D("470")
+    assert read_resistance("470 Ω") == D("470")
+    assert read_resistance("470Ohm") == D("470")
+    assert read_resistance("470 Ohms") == D("470")
+    assert read_resistance("R47") == D("0.47")
+    assert read_resistance("1G") == D("1000000000")
+    assert read_resistance("4k7000") == D("4700")
