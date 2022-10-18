@@ -143,4 +143,32 @@ index af473cdb..f8990722 100644
          self._container.attrib["clip-path"] = "url(#cut-off)"
 ```
 
+- Fixed the `collect_holes` function to support KiCad 5
+  - pad.GetDrillSizeX() and pad.GetDrillSizeY() are KiCad 6 specific, you must use pad.GetDrillSize()
+  - KiCad 5 vias were skipped
+  - Vias detection crashed on KiCad 5
 
+```diff
+diff --git a/kibot/PcbDraw/plot.py b/kibot/PcbDraw/plot.py
+index f8990722..17f90185 100644
+--- a/kibot/PcbDraw/plot.py
++++ b/kibot/PcbDraw/plot.py
+@@ -626,13 +626,15 @@ def collect_holes(board: pcbnew.BOARD) -> List[Hole]:
+             continue
+         for pad in module.Pads():
+             pos = pad.GetPosition()
++            drs = pad.GetDrillSize()
+             holes.append(Hole(
+                 position=(pos[0], pos[1]),
+                 orientation=pad.GetOrientation(),
+-                drillsize=(pad.GetDrillSizeX(), pad.GetDrillSizeY())
++                drillsize=(drs.x, drs.y)
+             ))
++    via_type = 'VIA' if not isV6(KICAD_VERSION) else 'PCB_VIA'
+     for track in board.GetTracks():
+-        if not isinstance(track, pcbnew.PCB_VIA) or not isV6(KICAD_VERSION):
++        if track.GetClass() != via_type:
+             continue
+         pos = track.GetPosition()
+         holes.append(Hole(
+```
