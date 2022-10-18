@@ -307,6 +307,9 @@ class PcbDrawOptions(VariantOptions):
         except (RuntimeError, SyntaxError, IOError) as e:
             logger.error('PcbDraw error: '+str(e))
             exit(PCBDRAW_ERR)
+        finally:
+            if tmp_style:
+                os.remove(tmp_style)
 
         save(image, name, self.dpi)
         return
