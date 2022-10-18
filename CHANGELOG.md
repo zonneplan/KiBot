@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Diff:
   - Option to compare only the first schematic page. (See #319)
 - PcbDraw:
-  - Support for BMP output
+  - BMP output format
+  - Image margin
 
 ### Changed
 - Diff:

@@ -97,6 +97,7 @@ No current changes
 - Disabled `shrink_svg`
   - Changes the old behavior, so this should be optional
   - Pulls a problematic dependency: svgpathtool
+  - But we keep the margin addition
 - Changed calls to `ComputeBoundingBox()` to use `aBoardEdgesOnly=True`
   - To get the same behavior as 0.9.0-5
   - This changes the size of the SVG to the size of the board

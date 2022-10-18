@@ -1362,6 +1362,8 @@ outputs:
       highlight: []
       # [list(string)=[]] List of libraries
       libs: []
+      # [number=0] [0,100] Margin around the generated image in millimeters
+      margin: 0
       # [boolean=false] Mirror the board
       mirror: false
       # [boolean=false] Do not make holes transparent

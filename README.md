@@ -2581,6 +2581,7 @@ Notes:
         - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
         - `highlight`: [list(string)=[]] List of components to highlight.
         - `libs`: [list(string)=[]] List of libraries.
+        - `margin`: [number=0] [0,100] Margin around the generated image in millimeters.
         - `no_drillholes`: [boolean=false] Do not make holes transparent.
         - `placeholder`: [boolean=false] Show placeholder for missing components.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.

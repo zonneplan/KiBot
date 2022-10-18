@@ -46,6 +46,7 @@ outputs:
       vcuts: True
       warnings: visible
       dpi: 600
+      # margin: 2
 
   - name: PcbDraw2
     comment: "PcbDraw test bottom"

@@ -161,6 +161,8 @@ class PcbDrawOptions(VariantOptions):
             """ *[svg,png,jpg,bmp] Output format. Only used if no `output` is specified """
             self.output = GS.def_global_output
             """ *Name for the generated file """
+            self.margin = 0
+            """ [0,100] Margin around the generated image in millimeters """
         super().__init__()
 
     def config(self, parent):
@@ -307,8 +309,7 @@ class PcbDrawOptions(VariantOptions):
             plotter.libs = self.libs
             plotter.render_back = self.bottom
             plotter.mirror = self.mirror
-            # TODO: Allow margin configuration
-            plotter.margin = mm2ki(1.5)
+            plotter.margin = mm2ki(self.margin)
             # TODO: Pass it directly? If no: remove file?
             tmp_style = None
             if self.style:

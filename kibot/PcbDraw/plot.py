@@ -506,11 +506,11 @@ def merge_bbox(left: Box, right: Box) -> Box:
 def hack_is_valid_bbox(box: Any): # type: ignore
     return all(-1e15 < c < 1e15 for c in box)
 
-# def shrink_svg(svg: etree.ElementTree, margin: int) -> None:
-#     """
-#     Shrink the SVG canvas to the size of the drawing. Add margin in
-#     KiCAD units.
-#     """
+def shrink_svg(svg: etree.ElementTree, margin: int) -> None:
+    """
+    Shrink the SVG canvas to the size of the drawing. Add margin in
+    KiCAD units.
+    """
 #     # We have to overcome the limitation of different base types between
 #     # PcbDraw and svgpathtools
 #     from xml.etree.ElementTree import fromstring as xmlParse
@@ -533,18 +533,23 @@ def hack_is_valid_bbox(box: Any): # type: ignore
 #             continue
 #         bbox = merge_bbox(bbox, box)
 #     bbox = list(bbox)
-#     bbox[0] -= ki2svg(margin)
-#     bbox[1] += ki2svg(margin)
-#     bbox[2] -= ki2svg(margin)
-#     bbox[3] += ki2svg(margin)
-#
-#     root = svg.getroot()
-#     root.attrib["viewBox"] = "{} {} {} {}".format(
-#         bbox[0], bbox[2],
-#         bbox[1] - bbox[0], bbox[3] - bbox[2]
-#     )
-#     root.attrib["width"] = str(ki2mm(svg2ki(bbox[1] - bbox[0]))) + "mm"
-#     root.attrib["height"] = str(ki2mm(svg2ki(bbox[3] - bbox[2]))) + "mm"
+    # Get the current viewBox
+    root = svg.getroot()
+    x, y, vw, vh = [float(x) for x in root.attrib["viewBox"].split()]
+    bbox = [x, x+vw, y, y+vh]
+
+    # Apply the margin
+    bbox[0] -= ki2svg(margin)
+    bbox[1] += ki2svg(margin)
+    bbox[2] -= ki2svg(margin)
+    bbox[3] += ki2svg(margin)
+
+    root.attrib["viewBox"] = "{} {} {} {}".format(
+        bbox[0], bbox[2],
+        bbox[1] - bbox[0], bbox[3] - bbox[2]
+    )
+    root.attrib["width"] = str(ki2mm(svg2ki(bbox[1] - bbox[0]))) + "mm"
+    root.attrib["height"] = str(ki2mm(svg2ki(bbox[3] - bbox[2]))) + "mm"
 
 def remove_empty_elems(tree: etree.Element) -> None:
     """
@@ -1068,7 +1073,7 @@ class PcbPlotter():
             plotter.render(self)
         remove_empty_elems(self._document.getroot())
         remove_inkscape_annotation(self._document.getroot())
-        # shrink_svg(self._document, self.margin)
+        shrink_svg(self._document, self.margin)
         return self._document
 
 
