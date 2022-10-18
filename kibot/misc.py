@@ -295,8 +295,10 @@ def hide_stderr():
     devnull = os.open('/dev/null', os.O_WRONLY)
     os.dup2(devnull, 2)
     os.close(devnull)
-    yield
-    os.dup2(newstderr, 2)
+    try:
+        yield
+    finally:
+        os.dup2(newstderr, 2)
 
 
 def version_str2tuple(ver):
