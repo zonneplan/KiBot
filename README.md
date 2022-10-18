@@ -2591,7 +2591,8 @@ Notes:
         - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
         - `show_solderpaste`: [boolean=true] Show the solder paste layers.
         - `variant`: [string=''] Board variant to apply.
-        - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
+        - `vcuts`: [boolean=false] Render V-CUTS on the `vcuts_layer` layer.
+        - `vcuts_layer`: [string='Cmts.User'] Layer to render the V-CUTS, only used when `vcuts` is enabled.
         - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.

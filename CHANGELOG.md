@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Image margin
   - Outline width
   - Solder paste removal
+  - V-CUTS layer
 
 ### Changed
 - Diff:

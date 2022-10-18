@@ -1409,8 +1409,10 @@ outputs:
         vcut: '#bf2600'
       # [string=''] Board variant to apply
       variant: ''
-      # [boolean=false] Render V-CUTS on the Cmts.User layer
+      # [boolean=false] Render V-CUTS on the `vcuts_layer` layer
       vcuts: false
+      # [string='Cmts.User'] Layer to render the V-CUTS, only used when `vcuts` is enabled
+      vcuts_layer: 'Cmts.User'
       # [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated
       warnings: 'visible'
   # PDF (Portable Document Format):

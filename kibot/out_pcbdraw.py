@@ -20,6 +20,7 @@ from .error import KiPlotConfigurationError
 from .misc import (PCBDRAW_ERR, W_AMBLIST, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    W_PCBDRAW)
 from .gs import GS
+from .layer import Layer
 from .optionable import Optionable
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
@@ -152,7 +153,9 @@ class PcbDrawOptions(VariantOptions):
             """ *[list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
                 The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied """
             self.vcuts = False
-            """ Render V-CUTS on the Cmts.User layer """
+            """ Render V-CUTS on the `vcuts_layer` layer """
+            self.vcuts_layer = 'Cmts.User'
+            """ Layer to render the V-CUTS, only used when `vcuts` is enabled """
             self.warnings = 'visible'
             """ [visible,all,none] Using visible only the warnings about components in the visible side are generated """
             self.dpi = 300
@@ -182,6 +185,8 @@ class PcbDrawOptions(VariantOptions):
             self.libs = ['KiCAD-base']
         else:
             self.libs = ','.join(self.libs)
+        # V-CUTS layer
+        self._vcuts_layer = Layer.solve(self.vcuts_layer)[0]._id
         # Highlight
         if isinstance(self.highlight, type):
             self.highlight = None
@@ -327,8 +332,7 @@ class PcbDrawOptions(VariantOptions):
             if self.show_solderpaste:
                 plotter.plot_plan.append(PlotPaste())
             if self.vcuts:
-                # TODO: Make layer configurable
-                plotter.plot_plan.append(PlotVCuts(layer=41))
+                plotter.plot_plan.append(PlotVCuts(layer=self._vcuts_layer))
             # Two filtering mechanism: 1) Specified list and 2) KiBot filters and variants
             if self.show_components is not None or self._comps:
                 plotter.plot_plan.append(self.build_plot_components())
