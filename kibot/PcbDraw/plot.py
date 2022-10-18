@@ -30,7 +30,7 @@ except ImportError:
 from .unit import read_resistance
 # import svgpathtools # type: ignore
 from lxml import etree, objectify # type: ignore
-from pcbnewTransition import KICAD_VERSION, isV6, pcbnew # type: ignore
+from .pcbnew_transition import KICAD_VERSION, isV6, pcbnew # type: ignore
 
 T = TypeVar("T")
 Numeric = Union[int, float]

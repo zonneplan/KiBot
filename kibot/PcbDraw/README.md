@@ -172,3 +172,6 @@ index f8990722..17f90185 100644
          pos = track.GetPosition()
          holes.append(Hole(
 ```
+
+- Changed `pcbnewTransition` to be locally included.
+  - Just 2.8 kiB no worth the effort of pulling a dependency
