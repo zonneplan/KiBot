@@ -13,14 +13,11 @@ Dependencies:
     role: Create PNG, PS and EPS formats
   - from: ImageMagick
     role: Create monochrome prints and scaled PNG files
-  - from: PcbDraw
-    role: Create realistic solder masks
   # The plot_frame_gui() needs KiAuto to print the frame
   - from: KiAuto
     command: pcbnew_do
     role: Print the page frame in GUI mode
     version: 1.6.7
-  # SVGUtils dependency. But this is also a PcbDraw dependency
   - name: LXML
     python_module: true
     debian: python3-lxml
@@ -52,12 +49,14 @@ from .kicad.patch_svg import patch_svg_file
 from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
-from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL
+from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW
 from .kiplot import exec_with_retry, add_extra_options
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
 from .layer import Layer, get_priority
+from .PcbDraw.plot import PcbPlotter, PlotSubstrate
+from .PcbDraw.convert import save
 from . import __version__
 from . import log
 
@@ -73,6 +72,10 @@ EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
 # They are just helpers and we solve their dependencies
 svgutils = None  # Will be loaded during dependency check
 kicad_worksheet = None  # Also needs svgutils
+
+
+def pcbdraw_warnings(tag, msg):
+    logger.warning('{}({}) {}'.format(W_PCBDRAW, tag, msg))
 
 
 def _run_command(cmd):
@@ -767,23 +770,46 @@ class PCB_PrintOptions(VariantOptions):
                 self.plot_vias(la, pc, p, filelist, VIATYPE_BLIND_BURIED, self.blind_via_color)
                 self.plot_vias(la, pc, p, filelist, VIATYPE_MICROVIA, self.micro_via_color)
 
+    def pcbdraw_by_module(self, pcbdraw_file, back):
+        # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
+        try:
+            # TODO: Avoid loading the PCB again
+            plotter = PcbPlotter(GS.pcb_file)
+            # TODO: Review the paths, most probably add the system KiBot dir
+            # Read libs from current dir
+            # plotter.setup_arbitrary_data_path(".")
+            # Libs indicated by PCBDRAW_LIB_PATH
+            plotter.setup_env_data_path()
+            # Libs from resources relative to the script
+            plotter.setup_builtin_data_path()
+            # Libs from the user HOME and the system
+            plotter.setup_global_data_path()
+            plotter.yield_warning = pcbdraw_warnings
+            plotter.render_back = back
+            plotter.plot_plan = [PlotSubstrate(only_mask=True)]
+            image = plotter.plot()
+        # Most errors are reported as RuntimeError
+        # When the PCB can't be loaded we get IOError
+        # When the SVG contains errors we get SyntaxError
+        except (RuntimeError, SyntaxError, IOError) as e:
+            logger.error('PcbDraw error: '+str(e))
+            exit(PCBDRAW_ERR)
+
+        if GS.debug_level > 1:
+            # Save the SVG only for debug purposes
+            save(image, pcbdraw_file, 300)
+        # Return the SVG as a string
+        from lxml.etree import tostring
+        return tostring(image).decode()
+
     def plot_realistic_solder_mask(self, id, temp_dir, out_file, color, mirror, scale):
         """ Plot the solder mask closer to reality, not the apertures """
         if not self.realistic_solder_mask or (id != F_Mask and id != B_Mask):
             return
         logger.debug('- Plotting realistic solder mask using PcbDraw')
-        # Check PcbDraw is available
-        pcbdraw_command = self.ensure_tool('PcbDraw')
-        # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
         pcbdraw_file = os.path.join(temp_dir, out_file.replace('.svg', '-pcbdraw.svg'))
-        cmd = [pcbdraw_command, '--no-warn-back', '-f', '']
-        if id == B_Mask:
-            cmd.append('-b')
-        cmd.extend([GS.pcb_file, pcbdraw_file])
-        _run_command(cmd)
-        # Load the SVG created by PcbDraw
-        with open(pcbdraw_file, 'rt') as f:
-            svg = svgutils.fromstring(f.read())
+        # Create an SVG using PcbDraw engine to generate the solder mask
+        svg = svgutils.fromstring(self.pcbdraw_by_module(pcbdraw_file, id == B_Mask))
         # Load the plot file from KiCad to get the real coordinates system
         out_file = os.path.join(temp_dir, out_file)
         with open(out_file, 'rt') as f:
@@ -1097,10 +1123,6 @@ class PCB_Print(BaseOutput):  # noqa: F821
             DRAWING_LAYERS.extend(['User.'+str(c+1) for c in range(9)])
         extra = {la._id for la in Layer.solve(EXTRA_LAYERS)}
         disabled = set()
-        # Check we can use PcbDraw
-        realistic_solder_mask = GS.check_tool(name, 'PcbDraw') is not None
-        if not realistic_solder_mask:
-            logger.warning(W_MISSTOOL+'Missing PcbDraw tool, disabling `realistic_solder_mask`')
         # Check we can convert SVGs
         if GS.check_tool(name, 'rsvg1') is None:
             logger.warning(W_MISSTOOL+'Disabling most printed formats')
@@ -1146,17 +1168,14 @@ class PCB_Print(BaseOutput):  # noqa: F821
                         page['mirror'] = True
                     if la.description:
                         page['sheet'] = la.description
-                    if realistic_solder_mask:
-                        # Change the color of the masks
-                        for ly in page['layers']:
-                            if ly['layer'].endswith('.Mask'):
-                                ly['color'] = '#14332440'
+                    # Change the color of the masks
+                    for ly in page['layers']:
+                        if ly['layer'].endswith('.Mask'):
+                            ly['color'] = '#14332440'
                     pages.append(page)
             ops = {'format': fmt, 'pages': pages, 'keep_temporal_files': True}
             if fmt in ['PNG', 'SVG']:
                 ops['add_background'] = True
-            if not realistic_solder_mask:
-                ops['realistic_solder_mask'] = False
             gb['options'] = ops
             outs.append(gb)
         return outs

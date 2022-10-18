@@ -16,8 +16,9 @@
 - The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
   Consult: [Github Actions tags](#github-actions-tags)
 
-**Important note about PcbDraw 1.0.0**
-- This release is incompatible with 0.9.0, I'm trying to fix some issues in the upstream package.
+**Important note about PcbDraw**
+- This release incorporates PcbDraw, so you don't need to install it as a separated tool.
+- Please report PcbDraw issues to the KiBot project.
 
 **New on v1.4.0**
 - PCB_Variant and Copy_Files outputs
@@ -186,10 +187,6 @@ Notes:
 [**Pandoc**](https://pandoc.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://pandoc.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`
 - Note: In CI/CD environments: the `kicad_auto_test` docker image contains it.
-
-[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0.3 (<1.0) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/pcbdraw) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Optional to create realistic solder masks for `pcb_print`
-- Note: Currently the upstream version is broken, please use the mentioned fork
 
 [**RAR**](https://www.rarlab.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.rarlab.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/rar) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to compress in RAR format for `compress`
