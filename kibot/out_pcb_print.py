@@ -773,8 +773,7 @@ class PCB_PrintOptions(VariantOptions):
     def pcbdraw_by_module(self, pcbdraw_file, back):
         # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
         try:
-            # TODO: Avoid loading the PCB again
-            plotter = PcbPlotter(GS.pcb_file)
+            plotter = PcbPlotter(GS.board)
             # TODO: Review the paths, most probably add the system KiBot dir
             # Read libs from current dir
             # plotter.setup_arbitrary_data_path(".")

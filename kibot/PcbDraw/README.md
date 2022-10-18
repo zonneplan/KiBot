@@ -240,3 +240,5 @@ index f8990722..17f90185 100644
     - Find the index of the smaller element (1 line code)
     - I added a replacemt for the `array` function, it just makes all matrix elements float
 
+- Allow constructing PcbPlotter() using an already loaded board
+  - So we don't load it again

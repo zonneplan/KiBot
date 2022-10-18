@@ -293,8 +293,7 @@ class PcbDrawOptions(VariantOptions):
                 save_output_format = 'png'
 
         try:
-            # TODO: Avoid loading the PCB again
-            plotter = PcbPlotter(GS.pcb_file)
+            plotter = PcbPlotter(GS.board)
             # TODO: Review the paths, most probably add the system KiBot dir
             # Read libs from current dir
             # plotter.setup_arbitrary_data_path(".")
