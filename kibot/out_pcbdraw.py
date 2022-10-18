@@ -166,6 +166,8 @@ class PcbDrawOptions(VariantOptions):
             self.outline_width = 0.15
             """ [0,10] Width of the trace to draw the PCB border [mm].
                 Note this also affects the drill holes """
+            self.show_solderpaste = True
+            """ Show the solder paste layers """
         super().__init__()
 
     def config(self, parent):
@@ -322,8 +324,8 @@ class PcbDrawOptions(VariantOptions):
                     tmp_style = self._create_style()
                     plotter.resolve_style(tmp_style)
             plotter.plot_plan = [PlotSubstrate(drill_holes=not self.no_drillholes, outline_width=mm2ki(self.outline_width))]
-            # TODO: Make paste optional
-            plotter.plot_plan.append(PlotPaste())
+            if self.show_solderpaste:
+                plotter.plot_plan.append(PlotPaste())
             if self.vcuts:
                 # TODO: Make layer configurable
                 plotter.plot_plan.append(PlotVCuts(layer=41))

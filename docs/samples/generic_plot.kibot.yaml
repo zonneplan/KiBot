@@ -1383,6 +1383,8 @@ outputs:
       # [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
       # The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied
       show_components: none
+      # [boolean=true] Show the solder paste layers
+      show_solderpaste: true
       # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
       style:
         # [string='#208b47'] Color for the board without copper (covered by solder mask)

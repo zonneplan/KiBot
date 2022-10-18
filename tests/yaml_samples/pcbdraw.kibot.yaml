@@ -48,6 +48,7 @@ outputs:
       dpi: 600
       # margin: 2
       # outline_width: 3
+      # show_solderpaste: false
 
   - name: PcbDraw2
     comment: "PcbDraw test bottom"

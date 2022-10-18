@@ -2589,6 +2589,7 @@ Notes:
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
         - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
+        - `show_solderpaste`: [boolean=true] Show the solder paste layers.
         - `variant`: [string=''] Board variant to apply.
         - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
         - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
