@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Solder paste removal
   - V-CUTS layer
   - Resistor remap and flip
+  - A `remap_components` option with better type checks
 
 ### Changed
 - Diff:

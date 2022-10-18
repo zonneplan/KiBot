@@ -2588,7 +2588,17 @@ Notes:
         - `placeholder`: [boolean=false] Show placeholder for missing components.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
-        - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
+        - `remap`: [dict|None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+                   Use `remap_components` instead.
+        - `remap_components`: [list(dict)] Replacements for PCB references using specified components.
+                              Replaces `remap` with type check.
+          * Valid keys:
+            - **`comp`**: [string=''] Component to use (from `lib`).
+            - *component*: Alias for comp.
+            - **`lib`**: [string=''] Library to use.
+            - *library*: Alias for lib.
+            - **`ref`**: [string=''] Reference for the component to change.
+            - *reference*: Alias for ref.
         - `resistor_flip`: [string|list(string)=''] List of resistors to flip its bands.
         - `resistor_remap`: [list(dict)] List of resitors to be remapped. You can change the value of the resistors here.
           * Valid keys:

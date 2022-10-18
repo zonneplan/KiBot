@@ -26,8 +26,6 @@ outputs:
         L_G1: "LEDs:LED-5MM_green"
         L_B1: "LEDs:LED-5MM_blue"
         L_Y1: "LEDs:LED-5MM_yellow"
-        PHOTO1: "yaqwsx:R_PHOTO_7mm"
-        J8: "yaqwsx:Pin_Header_Straight_1x02_circle"
         'REF**': "dummy:dummy"
         G***: "dummy:dummy"
         svg2mod: "dummy:dummy"
@@ -35,6 +33,13 @@ outputs:
         JP2: "dummy:dummy"
         JP3: "dummy:dummy"
         JP4: "dummy:dummy"
+      remap_components:
+        - ref: PHOTO1
+          lib: yaqwsx
+          comp: R_PHOTO_7mm
+        - reference: J8
+          library: yaqwsx
+          component: Pin_Header_Straight_1x02_circle
       no_drillholes: False
       mirror: False
       highlight:

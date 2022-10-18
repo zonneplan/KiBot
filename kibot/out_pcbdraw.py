@@ -151,6 +151,30 @@ class PcbDrawResistorRemap(Optionable):
             raise KiPlotConfigurationError("The resistors remapping must specify a `ref` and a `val`")
 
 
+class PcbDrawRemapComponents(Optionable):
+    """ Reference -> Library + Footprint """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.ref = ''
+            """ *Reference for the component to change """
+            self.reference = None
+            """ {ref} """
+            self.lib = ''
+            """ *Library to use """
+            self.library = None
+            """ {lib} """
+            self.comp = ''
+            """ *Component to use (from `lib`) """
+            self.component = None
+            """ {comp} """
+
+    def config(self, parent):
+        super().config(parent)
+        if not self.ref or not self.lib or not self.comp:
+            raise KiPlotConfigurationError("The component remapping must specify a `ref`, a `lib` and a `comp`")
+
+
 class PcbDrawOptions(VariantOptions):
     def __init__(self):
         with document:
@@ -161,7 +185,11 @@ class PcbDrawOptions(VariantOptions):
             self.placeholder = False
             """ Show placeholder for missing components """
             self.remap = PcbDrawRemap
-            """ [dict|None] Replacements for PCB references using components (lib:component) """
+            """ [dict|None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+                Use `remap_components` instead """
+            self.remap_components = PcbDrawRemapComponents
+            """ [list(dict)] Replacements for PCB references using specified components.
+                Replaces `remap` with type check """
             self.no_drillholes = False
             """ Do not make holes transparent """
             self.bottom = False
@@ -231,20 +259,19 @@ class PcbDrawOptions(VariantOptions):
             self.resistor_remap = []
         self.resistor_flip = Optionable.force_list(self.resistor_flip)
         # Remap
-        # TODO: Better remap option, like - ref: xxx\nlib: xxxx\ncomponent: xxxx
-        if isinstance(self.remap, type):
-            self.remap = {}
-        elif isinstance(self.remap, PcbDrawRemap):
-            parsed_remap = {}
+        self._remap = {}
+        if isinstance(self.remap, PcbDrawRemap):
             for ref, v in self.remap._tree.items():
                 if not isinstance(v, str):
                     raise KiPlotConfigurationError("Wrong PcbDraw remap, must be `ref: lib:component` ({}: {})".format(ref, v))
                 lib_comp = v.split(':')
                 if len(lib_comp) == 2:
-                    parsed_remap[ref] = lib_comp
+                    self._remap[ref] = tuple(lib_comp)
                 else:
                     raise KiPlotConfigurationError("Wrong PcbDraw remap, must be `ref: lib:component` ({}: {})".format(ref, v))
-            self.remap = parsed_remap
+        if isinstance(self.remap_components, list):
+            for mapping in self.remap_components:
+                self._remap[mapping.ref] = (mapping.lib, mapping.comp)
         # Style
         if isinstance(self.style, type):
             # Apply the global defaults
@@ -279,7 +306,7 @@ class PcbDrawOptions(VariantOptions):
         return [self._parent.expand_filename(out_dir, self.output)]
 
     def build_plot_components(self):
-        remapping = self.remap
+        remapping = self._remap
 
         def remapping_fun(ref, lib, name):
             if ref in remapping:
