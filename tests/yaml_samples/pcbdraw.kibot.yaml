@@ -49,6 +49,12 @@ outputs:
       # margin: 2
       # outline_width: 3
       # show_solderpaste: false
+      resistor_remap:
+        - ref: R1
+          val: 10K
+        - ref: R2
+          val: 4k7
+      resistor_flip: "R2"
 
   - name: PcbDraw2
     comment: "PcbDraw test bottom"

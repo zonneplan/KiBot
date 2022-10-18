@@ -25,7 +25,8 @@ from .optionable import Optionable
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
-from .PcbDraw.plot import (PcbPlotter, PlotPaste, PlotPlaceholders, PlotSubstrate, PlotVCuts, mm2ki, PlotComponents)
+from .PcbDraw.plot import (PcbPlotter, PlotPaste, PlotPlaceholders, PlotSubstrate, PlotVCuts, mm2ki, PlotComponents,
+                           ResistorValue)
 from .PcbDraw.convert import save
 
 
@@ -130,6 +131,26 @@ class PcbDrawRemap(Optionable):
         pass
 
 
+class PcbDrawResistorRemap(Optionable):
+    """ Reference -> New value """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.ref = ''
+            """ *Reference for the resistor to change """
+            self.reference = None
+            """ {ref} """
+            self.val = ''
+            """ *Value to use for `ref` """
+            self.value = None
+            """ {val} """
+
+    def config(self, parent):
+        super().config(parent)
+        if not self.ref or not self.val:
+            raise KiPlotConfigurationError("The resistors remapping must specify a `ref` and a `val`")
+
+
 class PcbDrawOptions(VariantOptions):
     def __init__(self):
         with document:
@@ -171,6 +192,10 @@ class PcbDrawOptions(VariantOptions):
                 Note this also affects the drill holes """
             self.show_solderpaste = True
             """ Show the solder paste layers """
+            self.resistor_remap = PcbDrawResistorRemap
+            """ [list(dict)] List of resitors to be remapped. You can change the value of the resistors here """
+            self.resistor_flip = Optionable
+            """ [string|list(string)=''] List of resistors to flip its bands """
         super().__init__()
 
     def config(self, parent):
@@ -201,7 +226,10 @@ class PcbDrawOptions(VariantOptions):
                 self.show_components = None
             else:
                 self.show_components = []
-
+        # Resistors remap/flip
+        if isinstance(self.resistor_remap, type):
+            self.resistor_remap = []
+        self.resistor_flip = Optionable.force_list(self.resistor_flip)
         # Remap
         # TODO: Better remap option, like - ref: xxx\nlib: xxxx\ncomponent: xxxx
         if isinstance(self.remap, type):
@@ -263,14 +291,12 @@ class PcbDrawOptions(VariantOptions):
             return lib, name
 
         resistor_values = {}
-        # TODO: Implement resistor_values_input and resistor_flip
-#         for mapping in resistor_values_input:
-#             key, value = tuple(mapping.split(":"))
-#             resistor_values[key] = ResistorValue(value=value)
-#         for ref in resistor_flip:
-#             field = resistor_values.get(ref, ResistorValue())
-#             field.flip_bands = True
-#             resistor_values[ref] = field
+        for mapping in self.resistor_remap:
+            resistor_values[mapping.ref] = ResistorValue(value=mapping.val)
+        for ref in self.resistor_flip:
+            field = resistor_values.get(ref, ResistorValue())
+            field.flip_bands = True
+            resistor_values[ref] = field
 
         plot_components = PlotComponents(remapping=remapping_fun,
                                          resistor_values=resistor_values,

@@ -1380,6 +1380,16 @@ outputs:
       pre_transform: '_none'
       # [dict|None] Replacements for PCB references using components (lib:component)
       remap:
+      # [string|list(string)=''] List of resistors to flip its bands
+      resistor_flip: ''
+      # [list(dict)] List of resitors to be remapped. You can change the value of the resistors here
+      resistor_remap:
+        # [string=''] Reference for the resistor to change
+        - ref: ''
+          # `reference` is an alias for `ref`
+          # [string=''] Value to use for `ref`
+          val: ''
+          # `value` is an alias for `val`
       # [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
       # The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied
       show_components: none

@@ -2589,6 +2589,13 @@ Notes:
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
         - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
+        - `resistor_flip`: [string|list(string)=''] List of resistors to flip its bands.
+        - `resistor_remap`: [list(dict)] List of resitors to be remapped. You can change the value of the resistors here.
+          * Valid keys:
+            - **`ref`**: [string=''] Reference for the resistor to change.
+            - *reference*: Alias for ref.
+            - **`val`**: [string=''] Value to use for `ref`.
+            - *value*: Alias for val.
         - `show_solderpaste`: [boolean=true] Show the solder paste layers.
         - `variant`: [string=''] Board variant to apply.
         - `vcuts`: [boolean=false] Render V-CUTS on the `vcuts_layer` layer.
