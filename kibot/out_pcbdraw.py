@@ -4,7 +4,6 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # TODO: Package resources
-# TODO: wxApp messages
 """
 Dependencies:
   - from: RSVG
