@@ -5,6 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 # TODO: PIL dependency? pcbnewTransition? numpy?
 # TODO: Package resources
+# TODO: replace unit.py
 # """
 # Dependencies:
 #   - from: RSVG
@@ -332,8 +333,6 @@ class PcbDraw(BaseOutput):  # noqa: F821
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
-        if GS.check_tool(name, 'PcbDraw') is None:
-            return None
         outs = []
         for la in layers:
             is_top = la.is_top()
