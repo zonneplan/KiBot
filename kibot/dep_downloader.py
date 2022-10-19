@@ -64,6 +64,11 @@ Dependencies:
     github: hildogjr/KiCost
     pypi: KiCost
     downloader: pytool
+  - name: LXML
+    python_module: true
+    debian: python3-lxml
+    arch: python-lxml
+    downloader: python
 """
 import importlib
 import os

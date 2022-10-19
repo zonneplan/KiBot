@@ -60,6 +60,9 @@ outputs:
         - ref: R2
           val: 4k7
       resistor_flip: "R2"
+      size_detection: svg_paths
+      # size_detection: kicad_all
+      # size_detection: kicad_edge
 
   - name: PcbDraw2
     comment: "PcbDraw test bottom"

@@ -18,12 +18,8 @@ Dependencies:
     command: pcbnew_do
     role: Print the page frame in GUI mode
     version: 1.6.7
-  - name: LXML
-    python_module: true
-    debian: python3-lxml
-    arch: python-lxml
+  - from: LXML
     role: mandatory
-    downloader: python
 """
 # Direct SVG to EPS conversion is problematic.
 # If we use 72 dpi the page size is ok, but some objects (currently the solder mask) have low resolution.

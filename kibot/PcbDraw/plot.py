@@ -16,7 +16,6 @@ from typing import Callable, Dict, List, Optional, Tuple, TypeVar, Union, Any
 
 from . import np
 from .unit import read_resistance
-# import svgpathtools # type: ignore
 from lxml import etree, objectify # type: ignore
 from .pcbnew_transition import KICAD_VERSION, isV6, pcbnew # type: ignore
 
@@ -506,37 +505,43 @@ def merge_bbox(left: Box, right: Box) -> Box:
 def hack_is_valid_bbox(box: Any): # type: ignore
     return all(-1e15 < c < 1e15 for c in box)
 
-def shrink_svg(svg: etree.ElementTree, margin: int) -> None:
+def shrink_svg(svg: etree.ElementTree, margin: int, compute_bbox: bool=False) -> None:
     """
     Shrink the SVG canvas to the size of the drawing. Add margin in
     KiCAD units.
     """
-#     # We have to overcome the limitation of different base types between
-#     # PcbDraw and svgpathtools
-#     from xml.etree.ElementTree import fromstring as xmlParse
-#
-#     from lxml.etree import tostring as serializeXml # type: ignore
-#     paths = svgpathtools.document.flattened_paths(xmlParse(serializeXml(svg)))
-#
-#     if len(paths) == 0:
-#         return
-#     bbox = paths[0].bbox()
-#     for x in paths:
-#         b = x.bbox()
-#         if hack_is_valid_bbox(b):
-#             bbox = b
-#             break
-#     for x in paths:
-#         box = x.bbox()
-#         if not hack_is_valid_bbox(box):
-#             # This is a hack due to instability in svpathtools
-#             continue
-#         bbox = merge_bbox(bbox, box)
-#     bbox = list(bbox)
-    # Get the current viewBox
     root = svg.getroot()
-    x, y, vw, vh = [float(x) for x in root.attrib["viewBox"].split()]
-    bbox = [x, x+vw, y, y+vh]
+    if compute_bbox:
+        # Compute the bbox using the SVG drawings, so things outside the PCB
+        # outline are counted.
+        # We have to overcome the limitation of different base types between
+        # PcbDraw and svgpathtools
+        from xml.etree.ElementTree import fromstring as xmlParse
+
+        from lxml.etree import tostring as serializeXml # type: ignore
+        from . import svgpathtools # type: ignore
+        paths = svgpathtools.document.flattened_paths(xmlParse(serializeXml(svg)))
+
+        if len(paths) == 0:
+            return
+        bbox = paths[0].bbox()
+        for x in paths:
+            b = x.bbox()
+            if hack_is_valid_bbox(b):
+                bbox = b
+                break
+        for x in paths:
+            box = x.bbox()
+            if not hack_is_valid_bbox(box):
+                # This is a hack due to instability in svpathtools
+                continue
+            bbox = merge_bbox(bbox, box)
+        bbox = list(bbox)
+    else:
+        # Get the current viewBox
+        # This is computed by KiCad using the PCB edge
+        x, y, vw, vh = [float(x) for x in root.attrib["viewBox"].split()]
+        bbox = [x, x+vw, y, y+vh]
 
     # Apply the margin
     bbox[0] -= ki2svg(margin)
@@ -685,7 +690,7 @@ class PlotSubstrate(PlotInterface):
 
         self._container = etree.Element("g", id="substrate")
         self._container.attrib["clip-path"] = "url(#cut-off)"
-        self._boardsize = self._plotter.board.ComputeBoundingBox(aBoardEdgesOnly=True)
+        self._boardsize = self._plotter.boardsize
         self._plotter.execute_plot_plan(to_plot)
 
         if self.drill_holes:
@@ -778,7 +783,7 @@ class PlotSubstrate(PlotInterface):
         mask = self._plotter.get_def_slot(tag_name="mask", id="hole-mask")
         container = etree.SubElement(mask, "g")
 
-        bb = self._plotter.board.ComputeBoundingBox(aBoardEdgesOnly=True)
+        bb = self._plotter.boardsize
         bg = etree.SubElement(container, "rect", x="0", y="0", fill="white")
         bg.attrib["x"] = str(ki2svg(bb.GetX()))
         bg.attrib["y"] = str(ki2svg(bb.GetY()))
@@ -1059,6 +1064,8 @@ class PcbPlotter():
         self._libs_path: List[str] = []
         self.style: Any = {}     # Color scheme
         self.margin: int = 0 # Margin of the resulting document
+        self.compute_bbox: bool = False  # Adjust the bbox using the SVG drawings
+        self.kicad_bb_only_edge: bool = False  # Use the PCB edge when asking the BBox to KiCad
 
         self.yield_warning: Callable[[str, str], None] = lambda tag, msg: None # Handle warnings
 
@@ -1073,7 +1080,7 @@ class PcbPlotter():
             plotter.render(self)
         remove_empty_elems(self._document.getroot())
         remove_inkscape_annotation(self._document.getroot())
-        shrink_svg(self._document, self.margin)
+        shrink_svg(self._document, self.margin, self.compute_bbox)
         return self._document
 
 
@@ -1241,7 +1248,8 @@ class PcbPlotter():
                         action.action(action.name, os.path.join(tmp, svg_file))
 
     def _setup_document(self, render_back: bool, mirror: bool) -> None:
-        bb = self.board.ComputeBoundingBox(aBoardEdgesOnly=True)
+        bb = self.board.ComputeBoundingBox(aBoardEdgesOnly=self.kicad_bb_only_edge)
+        self.boardsize = bb
         transform_string = ""
         # Let me briefly explain what's going on. KiCAD outputs SVG in user units,
         # where 1 unit is 1/10 of an inch (in v5) or KiCAD native unit (v6). So to

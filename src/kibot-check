@@ -551,7 +551,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 10000,\
+        "importance": 20000,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": true,\
@@ -568,6 +568,13 @@ deps = '{\
                 "mandatory": true,\
                 "max_version": null,\
                 "output": "pcb_print",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "pcbdraw",\
                 "version": null\
             }\
         ],\
@@ -841,6 +848,40 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "bom",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": null,\
+        "url_down": null\
+    },\
+    "numpy": {\
+        "arch": "python-numpy",\
+        "command": "numpy",\
+        "comments": [],\
+        "deb_package": "python3-numpy",\
+        "downloader": {},\
+        "downloader_str": "python",\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 1,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": true,\
+        "module_name": "numpy",\
+        "name": "numpy",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "pcbdraw",\
+        "plugin_dirs": null,\
+        "pypi_name": "numpy",\
+        "roles": [\
+            {\
+                "desc": "Automatically adjust SVG margin",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "pcbdraw",\
                 "version": null\
             }\
         ],\

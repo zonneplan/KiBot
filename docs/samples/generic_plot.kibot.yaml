@@ -1408,6 +1408,14 @@ outputs:
       show_components: none
       # [boolean=true] Show the solder paste layers
       show_solderpaste: true
+      # [string='kicad_edge'] [kicad_edge,kicad_all,svg_paths] Method used to detect the size of the resulting image.
+      # The `kicad_edge` method uses the size of the board as reported by KiCad,
+      # components that extend beyond the PCB limit will be cropped. You can manually
+      # adjust the margins to make them visible.
+      # The `kicad_all` method uses the whole size reported by KiCad. Usually includes extra space.
+      # The `svg_paths` uses all visible drawings in the image. To use this method you
+      # must install the `numpy` Python module (may not be available in docker images)
+      size_detection: 'kicad_edge'
       # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
       style:
         # [string='#208b47'] Color for the board without copper (covered by solder mask)

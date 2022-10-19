@@ -10,6 +10,14 @@ Dependencies:
     role: Create PNG, JPG and BMP images
   - from: ImageMagick
     role: Create JPG and BMP images
+  - from: LXML
+    role: mandatory
+  - name: numpy
+    python_module: true
+    debian: python3-numpy
+    arch: python-numpy
+    downloader: python
+    role: Automatically adjust SVG margin
 """
 import os
 import shlex
@@ -224,6 +232,14 @@ class PcbDrawOptions(VariantOptions):
             """ [list(dict)] List of resitors to be remapped. You can change the value of the resistors here """
             self.resistor_flip = Optionable
             """ [string|list(string)=''] List of resistors to flip its bands """
+            self.size_detection = 'kicad_edge'
+            """ [kicad_edge,kicad_all,svg_paths] Method used to detect the size of the resulting image.
+                The `kicad_edge` method uses the size of the board as reported by KiCad,
+                components that extend beyond the PCB limit will be cropped. You can manually
+                adjust the margins to make them visible.
+                The `kicad_all` method uses the whole size reported by KiCad. Usually includes extra space.
+                The `svg_paths` uses all visible drawings in the image. To use this method you
+                must install the `numpy` Python module (may not be available in docker images) """
         super().__init__()
 
     def config(self, parent):
@@ -388,6 +404,11 @@ class PcbDrawOptions(VariantOptions):
                 plotter.plot_plan.append(self.build_plot_components())
             if self.placeholder:
                 plotter.plot_plan.append(PlotPlaceholders())
+            plotter.compute_bbox = self.size_detection == 'svg_paths'
+            # Make sure we can use svgpathtools
+            if plotter.compute_bbox:
+                self.ensure_tool('numpy')
+            plotter.kicad_bb_only_edge = self.size_detection == 'kicad_edge'
 
             image = plotter.plot()
         # Most errors are reported as RuntimeError

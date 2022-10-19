@@ -94,14 +94,15 @@ No current changes
 ### plot.py
 
 - Made the `pcbdraw` import relative
-- Disabled `shrink_svg`
-  - Changes the old behavior, so this should be optional
-  - Pulls a problematic dependency: svgpathtool
-  - But we keep the margin addition
-- Changed calls to `ComputeBoundingBox()` to use `aBoardEdgesOnly=True`
+- Disabled `shrink_svg` by default
+  - Pulls a problematic dependency: numpy
+  - We keep the margin addition
+  - The svgpathtool computation can be optionally enabled (plotter.compute_bbox)
+- Changed calls to `ComputeBoundingBox()` to optionally use `aBoardEdgesOnly=True`
   - To get the same behavior as 0.9.0-5
   - This changes the size of the SVG to the size of the board
-  - `shrink_svg` must be disabled or it reverts the size to the detected
+  - Controlled by plotter.kicad_bb_only_edge
+  - We now also store the bbox in the plotter.boardsize member, avoiding repeated calls to KiCad API
 - Added `no_warn_back` option to disable warnings on the opposite side
 
 ```diff
