@@ -25,8 +25,7 @@ import subprocess
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 from .error import KiPlotConfigurationError
-from .misc import (PCBDRAW_ERR, W_AMBLIST, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
-                   W_PCBDRAW)
+from .misc import (PCBDRAW_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, W_PCBDRAW)
 from .gs import GS
 from .layer import Layer
 from .optionable import Optionable
@@ -224,6 +223,13 @@ class PcbDrawOptions(VariantOptions):
             self.show_components = Optionable
             """ *[list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
                 The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied """
+            self.add_to_variant = True
+            """ The `show_components` list is added to the list of components indicated by the variant (fitted and not
+                excluded).
+                This is the old behavior, but isn't intuitive because the `show_components` meaning changes when a variant
+                is used.
+                To get a more coherent behavior disable this option, and `none` will always be `none`.
+                Also `all` will be what the variant says """
             self.vcuts = False
             """ Render V-CUTS on the `vcuts_layer` layer """
             self.vcuts_layer = 'Cmts.User'
@@ -286,14 +292,13 @@ class PcbDrawOptions(VariantOptions):
             self.margin = (margin, margin, margin, margin)
         # Filter
         if isinstance(self.show_components, type):
+            # Default option is 'none'
             self.show_components = None
         elif isinstance(self.show_components, str):
-            if self.variant or self.dnf_filter:
-                logger.warning(W_AMBLIST + 'Ambiguous list of components to show `{}` vs variant/filter'.
-                               format(self.show_components))
             if self.show_components == 'none':
                 self.show_components = None
             else:
+                # Empty list: means we don't filter
                 self.show_components = []
         # Resistors remap/flip
         if isinstance(self.resistor_remap, type):
@@ -351,12 +356,34 @@ class PcbDrawOptions(VariantOptions):
                                          resistor_values=resistor_values,
                                          no_warn_back=self.warnings == 'visible')
 
-        if self._comps or self.show_components:
-            comps = self.get_fitted_refs()
+        filter_set = None
+        if self._comps:
+            # A variant is applied, filter the DNF components
+            all_comps = set(self.get_fitted_refs())
+            if self.add_to_variant:
+                # Old behavior
+                all_comps.update(self.show_components)
+                filter_set = all_comps
+            else:
+                # Something more coherent
+                if self.show_components:
+                    # The user supplied a list of components
+                    # Use only the valid ones, but only if fitted
+                    filter_set = set(self.show_components).intersection(all_comps)
+                else:
+                    # Empty list means all, but here is all fitted
+                    filter_set = all_comps
+        else:
+            # No variant applied
             if self.show_components:
-                comps += self.show_components
-            filter_set = set(comps)
+                # The user supplied a list of components
+                # Note: if the list is empty this means we don't filter
+                filter_set = set(self.show_components)
+        if filter_set is not None:
+            logger.debug('List of filtered components: '+str(filter_set))
             plot_components.filter = lambda ref: ref in filter_set
+        else:
+            logger.debug('Using all components')
 
         if self.highlight is not None:
             highlight_set = set(self.highlight)
@@ -378,6 +405,9 @@ class PcbDrawOptions(VariantOptions):
                 self.convert_command = self.ensure_tool('ImageMagick')
                 save_output_name = _get_tmp_name('.png')
                 save_output_format = 'png'
+
+        # Apply any variant
+        self.filter_pcb_components(GS.board, do_3D=True)
 
         try:
             plotter = PcbPlotter(GS.board)
@@ -405,8 +435,14 @@ class PcbDrawOptions(VariantOptions):
                 plotter.plot_plan.append(PlotPaste())
             if self.vcuts:
                 plotter.plot_plan.append(PlotVCuts(layer=self._vcuts_layer))
-            # Two filtering mechanism: 1) Specified list and 2) KiBot filters and variants
-            if self.show_components is not None or self._comps:
+            # Adjust the show_components option if needed
+            if self.add_to_variant:
+                # Enable the old behavior
+                if self._comps and self.show_components is None:
+                    # A variant automatically adds their components
+                    # So `none` becomes `all`
+                    self.show_components = []
+            if self.show_components is not None:
                 plotter.plot_plan.append(self.build_plot_components())
             if self.placeholder:
                 plotter.plot_plan.append(PlotPlaceholders())
@@ -424,6 +460,8 @@ class PcbDrawOptions(VariantOptions):
             logger.error('PcbDraw error: '+str(e))
             exit(PCBDRAW_ERR)
 
+        # Save the result
+        logger.debug('Saving output to '+save_output_name)
         save(image, save_output_name, self.dpi, format=save_output_format)
         # Do we need to convert the saved file?
         if self.convert_command is not None:
@@ -433,7 +471,9 @@ class PcbDrawOptions(VariantOptions):
             cmd.append(name)
             _run_command(cmd)
             os.remove(save_output_name)
-        return
+
+        # Undo the variant
+        self.unfilter_pcb_components(GS.board, do_3D=True)
 
 
 @output_class

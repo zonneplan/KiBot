@@ -177,5 +177,4 @@ def test_pcbdraw_variant_3(test_dir):
     fname = prj+'-top.png'
     ctx.expect_out_file(fname)
     ctx.compare_image(fname, fuzz='40%', height='100%')
-    assert ctx.search_err("Ambiguous list of components to show .?none.? vs variant/filter")
     ctx.clean_up(keep_project=True)

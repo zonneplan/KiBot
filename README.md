@@ -2579,6 +2579,10 @@ Notes:
             - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
             - `highlight_style`: [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style.
             - `vcut`: [string='#bf2600'] Color for the V-CUTS.
+        - `add_to_variant`: [boolean=true] The `show_components` list is added to the list of components indicated by the variant (fitted and not excluded).
+                            This is the old behavior, but isn't intuitive because the `show_components` meaning changes when a variant is used.
+                            To get a more coherent behavior disable this option, and `none` will always be `none`.
+                            Also `all` will be what the variant says.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
@@ -2625,6 +2629,7 @@ Notes:
         - `variant`: [string=''] Board variant to apply.
         - `vcuts`: [boolean=false] Render V-CUTS on the `vcuts_layer` layer.
         - `vcuts_layer`: [string='Cmts.User'] Layer to render the V-CUTS, only used when `vcuts` is enabled.
+                         Note that any other content from this layer will be included.
         - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.

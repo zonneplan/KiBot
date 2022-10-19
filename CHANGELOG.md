@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - V-CUTS layer
   - Resistor remap and flip
   - A `remap_components` option with better type checks
+  - Better support for variants
 
 ### Changed
 - Diff:
