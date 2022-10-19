@@ -227,7 +227,8 @@ class PcbDrawOptions(VariantOptions):
             self.vcuts = False
             """ Render V-CUTS on the `vcuts_layer` layer """
             self.vcuts_layer = 'Cmts.User'
-            """ Layer to render the V-CUTS, only used when `vcuts` is enabled """
+            """ Layer to render the V-CUTS, only used when `vcuts` is enabled.
+                Note that any other content from this layer will be included """
             self.warnings = 'visible'
             """ [visible,all,none] Using visible only the warnings about components in the visible side are generated """
             self.dpi = 300
@@ -270,7 +271,7 @@ class PcbDrawOptions(VariantOptions):
         else:
             self.libs = ','.join(self.libs)
         # V-CUTS layer
-        self._vcuts_layer = Layer.solve(self.vcuts_layer)[0]._id
+        self._vcuts_layer = Layer.solve(self.vcuts_layer)[0]._id if self.vcuts else 41
         # Highlight
         if isinstance(self.highlight, type):
             self.highlight = None
