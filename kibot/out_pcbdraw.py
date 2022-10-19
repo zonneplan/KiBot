@@ -324,25 +324,6 @@ class PcbDrawOptions(VariantOptions):
         self._expand_id = 'bottom' if self.bottom else 'top'
         self._expand_ext = self.format
 
-    def _create_style(self):
-        with NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-            f.write('{\n')
-            first = True
-            for k, v in self.style.items():
-                if first:
-                    first = False
-                else:
-                    f.write(',\n')
-                if isinstance(v, str):
-                    f.write('  "{}": "{}"'.format(k, v))
-                elif isinstance(v, bool):
-                    f.write('  "{}": {}'.format(k, str(v).lower()))
-                else:
-                    f.write('  "{}": {}'.format(k, v))
-            f.write('\n}\n')
-            f.close()
-            return f.name
-
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
 
