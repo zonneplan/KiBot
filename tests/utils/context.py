@@ -308,7 +308,7 @@ class TestContext(object):
         ret_code = process.wait()
         logging.debug('ret_code '+str(ret_code))
         if use_a_tty:
-            self.err = os.read(master)
+            self.err = os.read(master, 10000)
             self.err = self.err.decode()
             self.out = self.err
         exp_ret = 0 if ret_val is None else ret_val
@@ -323,12 +323,12 @@ class TestContext(object):
         else:
             # Read stdout
             os.lseek(f_out, 0, os.SEEK_SET)
-            self.out = os.read(f_out)
+            self.out = os.read(f_out, 10000000)
             os.close(f_out)
             self.out = self.out.decode()
             # Read stderr
             os.lseek(f_err, 0, os.SEEK_SET)
-            self.err = os.read(f_err)
+            self.err = os.read(f_err, 10000000)
             os.close(f_err)
             self.err = self.err.decode()
 
