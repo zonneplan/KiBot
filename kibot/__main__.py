@@ -279,6 +279,12 @@ def apply_warning_filter(args):
             sys.exit(EXIT_BAD_ARGS)
 
 
+def debug_arguments(args):
+    if GS.debug_level > 1:
+        logger.debug('Command line arguments:\n'+str(sys.argv))
+        logger.debug('Command line parsed:\n'+str(args))
+
+
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -292,6 +298,7 @@ def main():
     apply_warning_filter(args)
     # Now we have the debug level set we can check (and optionally inform) KiCad info
     detect_kicad()
+    debug_arguments(args)
 
     # Force iBoM to avoid the use of graphical stuff
     os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = 'True'
