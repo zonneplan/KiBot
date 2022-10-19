@@ -7,7 +7,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
 
-# **This is the documentation for KiBot v1.4.0 for the current development read [here](https://github.com/INTI-CMNB/KiBot/tree/dev).**
+# **This is the documentation for the current development KiBot, not yet released.**
 
 
 **Important for CI/CD**:
@@ -2579,8 +2579,10 @@ Notes:
             - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
             - `highlight_style`: [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style.
             - `vcut`: [string='#bf2600'] Color for the V-CUTS.
-        - `add_to_variant`: [boolean=true] The `show_components` list is added to the list of components indicated by the variant (fitted and not excluded).
-                            This is the old behavior, but isn't intuitive because the `show_components` meaning changes when a variant is used.
+        - `add_to_variant`: [boolean=true] The `show_components` list is added to the list of components indicated by the variant (fitted and not
+                            excluded).
+                            This is the old behavior, but isn't intuitive because the `show_components` meaning changes when a variant
+                            is used.
                             To get a more coherent behavior disable this option, and `none` will always be `none`.
                             Also `all` will be what the variant says.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
