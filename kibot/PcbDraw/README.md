@@ -244,3 +244,5 @@ index f8990722..17f90185 100644
 
 - Allow constructing PcbPlotter() using an already loaded board
   - So we don't load it again
+
+- Changed the margin to be a tuple, so the user can control the margins individually

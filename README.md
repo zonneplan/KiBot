@@ -2584,7 +2584,12 @@ Notes:
         - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
         - `highlight`: [list(string)=[]] List of components to highlight.
         - `libs`: [list(string)=[]] List of libraries.
-        - `margin`: [number=0] [0,100] Margin around the generated image [mm].
+        - `margin`: [number|dict] Margin around the generated image [mm].
+          * Valid keys:
+            - `bottom`: [number=0] Bottom margin [mm].
+            - `left`: [number=0] Left margin [mm].
+            - `right`: [number=0] Right margin [mm].
+            - `top`: [number=0] Top margin [mm].
         - `no_drillholes`: [boolean=false] Do not make holes transparent.
         - `outline_width`: [number=0.15] [0,10] Width of the trace to draw the PCB border [mm].
                            Note this also affects the drill holes.

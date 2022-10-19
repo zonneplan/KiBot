@@ -505,7 +505,7 @@ def merge_bbox(left: Box, right: Box) -> Box:
 def hack_is_valid_bbox(box: Any): # type: ignore
     return all(-1e15 < c < 1e15 for c in box)
 
-def shrink_svg(svg: etree.ElementTree, margin: int, compute_bbox: bool=False) -> None:
+def shrink_svg(svg: etree.ElementTree, margin: tuple, compute_bbox: bool=False) -> None:
     """
     Shrink the SVG canvas to the size of the drawing. Add margin in
     KiCAD units.
@@ -544,10 +544,10 @@ def shrink_svg(svg: etree.ElementTree, margin: int, compute_bbox: bool=False) ->
         bbox = [x, x+vw, y, y+vh]
 
     # Apply the margin
-    bbox[0] -= ki2svg(margin)
-    bbox[1] += ki2svg(margin)
-    bbox[2] -= ki2svg(margin)
-    bbox[3] += ki2svg(margin)
+    bbox[0] -= ki2svg(margin[0])
+    bbox[1] += ki2svg(margin[1])
+    bbox[2] -= ki2svg(margin[2])
+    bbox[3] += ki2svg(margin[3])
 
     root.attrib["viewBox"] = "{} {} {} {}".format(
         bbox[0], bbox[2],
@@ -1063,7 +1063,7 @@ class PcbPlotter():
         self.libs: List[str] = [] # Names of available libraries
         self._libs_path: List[str] = []
         self.style: Any = {}     # Color scheme
-        self.margin: int = 0 # Margin of the resulting document
+        self.margin: tuple = (0, 0, 0, 0)  # Margin of the resulting document
         self.compute_bbox: bool = False  # Adjust the bbox using the SVG drawings
         self.kicad_bb_only_edge: bool = False  # Use the PCB edge when asking the BBox to KiCad
 
