@@ -63,7 +63,7 @@ def load_color_theme(name):
         logger.warning(W_COLORTHEME, "KiCad 5 doesn't support color themes ({})".format(name))
         return None
     if is_built_in:
-        fn = os.path.join(os.path.dirname(__file__), '..', 'kicad_colors', name+'.json')
+        fn = os.path.join(GS.get_resource_path('kicad_colors'), name+'.json')
     else:
         KiConf.init(GS.pcb_file)
         fn = os.path.join(KiConf.config_dir, 'colors', name+'.json')

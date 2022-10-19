@@ -222,7 +222,7 @@ class ReportOptions(BaseOptions):
             self.template = self.template[:-6]
             self.to_ascii = True
         if self.template.lower() in ('full', 'simple', 'full_svg'):
-            self.template = os.path.abspath(os.path.join(os.path.dirname(__file__), 'report_templates',
+            self.template = os.path.abspath(os.path.join(GS.get_resource_path('report_templates'),
                                             'report_'+self.template.lower()+'.txt'))
         if not os.path.isabs(self.template):
             self.template = os.path.expandvars(os.path.expanduser(self.template))

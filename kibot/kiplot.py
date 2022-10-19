@@ -873,7 +873,7 @@ def generate_one_example(dest_dir, types):
                 logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
             # Look for templates
-            tpls = glob(os.path.join(os.path.dirname(__file__), 'config_templates', n, '*.kibot.yaml'))
+            tpls = glob(os.path.join(GS.get_resource_path('config_templates'), n, '*.kibot.yaml'))
             if tpls:
                 # Load the templates
                 tpl_names = tpls

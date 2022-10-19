@@ -1,10 +1,12 @@
 include MANIFEST.in
 include LICENSE
 include README.md
-include kibot/report_templates/*.txt
-include kibot/kicad_colors/*.json
-include kibot/kicad_layouts/*.kicad_wks
-include kibot/config_templates/gerber/*.yaml
-include kibot/config_templates/bom/*.yaml
-include kibot/images/*.svg
-include kibot/images/*.ico
+include kibot/resources/report_templates/*.txt
+include kibot/resources/kicad_colors/*.json
+include kibot/resources/kicad_layouts/*.kicad_wks
+include kibot/resources/config_templates/gerber/*.yaml
+include kibot/resources/config_templates/bom/*.yaml
+include kibot/resources/images/*.svg
+include kibot/resources/images/*.ico
+include kibot/resources/pcbdraw/styles/*.json
+recursive-include kibot/resources/pcbdraw/footprints/ *.svg LICENCE *.md *.py *.pl *.png

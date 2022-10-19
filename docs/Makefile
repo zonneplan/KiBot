@@ -1,13 +1,13 @@
 #!/usr/bin/make
 
-all: ../README.md  samples/generic_plot.kibot.yaml ../kibot/report_templates/report_full_svg.txt ../kibot/config_templates/bom/MacroFab_XYRS.kibot.yaml \
-	../kibot/config_templates/gerber/Elecrow.kibot.yaml ../kibot/config_templates/gerber/FusionPCB.kibot.yaml \
-	../kibot/config_templates/gerber/JLCPCB.kibot.yaml ../kibot/config_templates/gerber/PCBWay.kibot.yaml ../src/kibot-check
+all: ../README.md  samples/generic_plot.kibot.yaml ../kibot/resources/report_templates/report_full_svg.txt ../kibot/resources/config_templates/bom/MacroFab_XYRS.kibot.yaml \
+	../kibot/resources/config_templates/gerber/Elecrow.kibot.yaml ../kibot/resources/config_templates/gerber/FusionPCB.kibot.yaml \
+	../kibot/resources/config_templates/gerber/JLCPCB.kibot.yaml ../kibot/resources/config_templates/gerber/PCBWay.kibot.yaml ../src/kibot-check
 
-../kibot/config_templates/gerber/%.kibot.yaml: samples/%.kibot.yaml
+../kibot/resources/config_templates/gerber/%.kibot.yaml: samples/%.kibot.yaml
 	cp $< $@
 
-../kibot/config_templates/bom/%.kibot.yaml: samples/%.kibot.yaml
+../kibot/resources/config_templates/bom/%.kibot.yaml: samples/%.kibot.yaml
 	cp $< $@
 
 ../README.md: README.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/var_*.py ../kibot/fil_*.py ../kibot/__main__.py ../kibot/config_reader.py ../kibot/globals.py ../kibot/dep_downloader.py
@@ -21,5 +21,5 @@ samples/generic_plot.kibot.yaml: ../kibot/out_*.py ../kibot/pre_*.py ../kibot/co
 	../src/kibot -v --example
 	mv example_template.kibot.yaml $@
 
-../kibot/report_templates/report_full_svg.txt: ../kibot/report_templates/report_full.txt
+../kibot/resources/report_templates/report_full_svg.txt: ../kibot/resources/report_templates/report_full.txt
 	sed -e 's/layer_pdfs/layer_svgs/' $< > $@

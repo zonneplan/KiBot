@@ -770,22 +770,10 @@ class PCB_PrintOptions(VariantOptions):
         # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
         try:
             plotter = PcbPlotter(GS.board)
-            # TODO: Review the paths, most probably add the system KiBot dir
-            # Read libs from current dir
-            # plotter.setup_arbitrary_data_path(".")
-            # Libs indicated by PCBDRAW_LIB_PATH
-            plotter.setup_env_data_path()
-            # Libs from resources relative to the script
-            plotter.setup_builtin_data_path()
-            # Libs from the user HOME and the system
-            plotter.setup_global_data_path()
             plotter.yield_warning = pcbdraw_warnings
             plotter.render_back = back
             plotter.plot_plan = [PlotSubstrate(only_mask=True)]
             image = plotter.plot()
-        # Most errors are reported as RuntimeError
-        # When the PCB can't be loaded we get IOError
-        # When the SVG contains errors we get SyntaxError
         except (RuntimeError, SyntaxError, IOError) as e:
             logger.error('PcbDraw error: '+str(e))
             exit(PCBDRAW_ERR)
@@ -975,7 +963,7 @@ class PCB_PrintOptions(VariantOptions):
             # Find the layout file
             layout = KiConf.fix_page_layout(GS.pro_file, dry=True)[1]
         if not layout or not os.path.isfile(layout):
-            layout = os.path.abspath(os.path.join(os.path.dirname(__file__), 'kicad_layouts', 'default.kicad_wks'))
+            layout = os.path.abspath(os.path.join(GS.get_resource_path('kicad_layouts'), 'default.kicad_wks'))
         logger.debug('- Using layout: '+layout)
         self.layout = layout
         # Plot options

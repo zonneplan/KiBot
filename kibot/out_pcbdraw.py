@@ -3,7 +3,6 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-# TODO: Package resources
 """
 Dependencies:
   - from: RSVG
@@ -411,14 +410,11 @@ class PcbDrawOptions(VariantOptions):
 
         try:
             plotter = PcbPlotter(GS.board)
-            # TODO: Review the paths, most probably add the system KiBot dir
-            # Read libs from current dir
-            # plotter.setup_arbitrary_data_path(".")
+            # Read libs from KiBot resources
+            plotter.setup_arbitrary_data_path(GS.get_resource_path('pcbdraw'))
             # Libs indicated by PCBDRAW_LIB_PATH
             plotter.setup_env_data_path()
-            # Libs from resources relative to the script
-            plotter.setup_builtin_data_path()
-            # Libs from the user HOME and the system
+            # Libs from the user HOME and the system (for pcbdraw)
             plotter.setup_global_data_path()
             plotter.yield_warning = pcbdraw_warnings
             plotter.libs = self.libs

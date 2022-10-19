@@ -15,7 +15,7 @@ except ImportError:
 from datetime import datetime, date
 from sys import exit
 from shutil import copy2
-from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR
+from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -408,3 +408,16 @@ class GS(object):
     def check_tool(context, name):
         """ Looks for a dependency """
         return GS.check_tool_dep(context, name, fatal=False)
+
+    @staticmethod
+    def get_resource_path(name):
+        # Try relative to the script
+        dir_name = os.path.join(os.path.dirname(__file__), 'resources', name)
+        if os.path.isdir(dir_name):
+            return dir_name
+        # Try using the system level path
+        dir_name = os.path.join('usr', 'share', 'kibot', name)
+        if os.path.isdir(dir_name):
+            return dir_name
+        logger.error('Missing resource directory `{}`'.format(name))
+        exit(WRONG_INSTALL)

@@ -189,7 +189,7 @@ class Navigate_ResultsOptions(BaseOptions):
         if img_w in self.copied_images:
             # Already copied, just return its name
             return self.copied_images[img_w]
-        src = os.path.join(self.img_src_dir, 'images', img+'.svg')
+        src = os.path.join(self.img_src_dir, img+'.svg')
         dst = os.path.join(self.out_dir, 'images', img_w)
         id = img_w
         if self.rsvg_command is not None and self.svg_to_png(src, dst+'.png', width):
@@ -428,7 +428,7 @@ class Navigate_ResultsOptions(BaseOptions):
 
     def run(self, name):
         self.out_dir = os.path.dirname(name)
-        self.img_src_dir = os.path.dirname(__file__)
+        self.img_src_dir = GS.get_resource_path('images')
         self.img_dst_dir = os.path.join(self.out_dir, 'images')
         os.makedirs(self.img_dst_dir, exist_ok=True)
         self.copied_images = {}
@@ -454,7 +454,7 @@ class Navigate_ResultsOptions(BaseOptions):
         self.home = name
         self.back_img = self.copy('back', MID_ICON)
         self.home_img = self.copy('home', MID_ICON)
-        copy2(os.path.join(self.img_src_dir, 'images', 'favicon.ico'), os.path.join(self.out_dir, 'favicon.ico'))
+        copy2(os.path.join(self.img_src_dir, 'favicon.ico'), os.path.join(self.out_dir, 'favicon.ico'))
         self.generate_page_for(o_tree, name)
         # Link it?
         if self.link_from_root:
