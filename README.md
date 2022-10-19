@@ -16,8 +16,9 @@
 - The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
   Consult: [Github Actions tags](#github-actions-tags)
 
-**Important note about PcbDraw 1.0.0**
-- This release is incompatible with 0.9.0, I'm trying to fix some issues in the upstream package.
+**Important note about PcbDraw**
+- This release incorporates PcbDraw, so you don't need to install it as a separated tool.
+- Please report PcbDraw issues to the KiBot project.
 
 **New on v1.4.0**
 - PCB_Variant and Copy_Files outputs
@@ -138,14 +139,12 @@ Notes:
   - Show KiAuto installation information for `info` (v2.0.0)
   - Print the page frame in GUI mode for `pcb_print` (v1.6.7)
 
+[**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Mandatory for: `pcb_print`, `pcbdraw`
+
 [**KiCost**](https://github.com/hildogjr/KiCost) v1.1.8 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/hildogjr/KiCost) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `kicost`
 - Optional to find components costs and specs for `bom`
-
-[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0.3 (<1.0) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/pcbdraw) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Mandatory for `pcbdraw`
-- Optional to create realistic solder masks for `pcb_print`
-- Note: Currently the upstream version is broken, please use the mentioned fork
 
 [**Interactive HTML BoM**](https://github.com/INTI-CMNB/InteractiveHtmlBom) v2.4.1.4 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/InteractiveHtmlBom) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `ibom`
@@ -153,11 +152,8 @@ Notes:
 [**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiBoM) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `kibom`
 
-[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.2 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.3 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `diff`
-
-[**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Mandatory for `pcb_print`
 
 [**QRCodeGen**](https://pypi.org/project/QRCodeGen/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/QRCodeGen/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/QRCodeGen/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-qrcodegen) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `qr_lib`
@@ -177,18 +173,21 @@ Notes:
   - Create outputs preview for `navigate_results`
   - Create PNG icons for `navigate_results`
   - Create PDF, PNG, PS and EPS formats for `pcb_print`
-  - Create PNG and JPG images for `pcbdraw`
+  - Create PNG, JPG and BMP images for `pcbdraw`
 
 [**ImageMagick**](https://imagemagick.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://imagemagick.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create monochrome prints and scaled PNG files for `pcb_print`
-  - Create JPG images for `pcbdraw`
+  - Create JPG and BMP images for `pcbdraw`
 
 [**Ghostscript**](https://www.ghostscript.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.ghostscript.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/ghostscript) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PNG, PS and EPS formats for `pcb_print`
+
+[**numpy**](https://pypi.org/project/numpy/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/numpy/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-numpy) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Optional to automatically adjust SVG margin for `pcbdraw`
 
 [**Pandoc**](https://pandoc.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://pandoc.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`
@@ -1746,6 +1745,7 @@ Notes:
                       Use `multivar` to specify a reference file when `new_type` is also `multivar`.
         - `only_different`: [boolean=false] Only include the pages with differences in the output PDF.
                             Note that when no differeces are found we get a page saying *No diff*.
+        - `only_first_sch_page`: [boolean=false] Compare only the main schematic page (root page).
         - `pcb`: [boolean=true] Compare the PCB, otherwise compare the schematic.
         - `threshold`: [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
                        difference bigger than the indicated value will make the diff fail.
@@ -2562,11 +2562,11 @@ Notes:
     - **`options`**: [dict] Options for the `pcbdraw` output.
       * Valid keys:
         - **`bottom`**: [boolean=false] Render the bottom side of the board (default is top side).
-        - **`format`**: [string='svg'] [svg,png,jpg] Output format. Only used if no `output` is specified.
+        - **`format`**: [string='svg'] [svg,png,jpg,bmp] Output format. Only used if no `output` is specified.
         - **`mirror`**: [boolean=false] Mirror the board.
         - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated file. Affected by global options.
         - **`show_components`**: [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
-                                 The default is none.
+                                 The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied.
         - **`style`**: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
           * Valid keys:
             - **`board`**: [string='#208b47'] Color for the board without copper (covered by solder mask).
@@ -2576,21 +2576,62 @@ Notes:
             - **`pads`**: [string='#8b898c'] Color for the exposed pads (metal finish).
             - **`silk`**: [string='#d5dce4'] Color for the silk screen.
             - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
-            - `highlight_padding`: [number=1.5] [0,1000] how much the highlight extends around the component [mm].
+            - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
             - `highlight_style`: [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style.
             - `vcut`: [string='#bf2600'] Color for the V-CUTS.
+        - `add_to_variant`: [boolean=true] The `show_components` list is added to the list of components indicated by the variant (fitted and not
+                            excluded).
+                            This is the old behavior, but isn't intuitive because the `show_components` meaning changes when a variant
+                            is used.
+                            To get a more coherent behavior disable this option, and `none` will always be `none`.
+                            Also `all` will be what the variant says.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
         - `highlight`: [list(string)=[]] List of components to highlight.
         - `libs`: [list(string)=[]] List of libraries.
+        - `margin`: [number|dict] Margin around the generated image [mm].
+          * Valid keys:
+            - `bottom`: [number=0] Bottom margin [mm].
+            - `left`: [number=0] Left margin [mm].
+            - `right`: [number=0] Right margin [mm].
+            - `top`: [number=0] Top margin [mm].
         - `no_drillholes`: [boolean=false] Do not make holes transparent.
+        - `outline_width`: [number=0.15] [0,10] Width of the trace to draw the PCB border [mm].
+                           Note this also affects the drill holes.
         - `placeholder`: [boolean=false] Show placeholder for missing components.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
-        - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
+        - `remap`: [dict|None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+                   Use `remap_components` instead.
+        - `remap_components`: [list(dict)] Replacements for PCB references using specified components.
+                              Replaces `remap` with type check.
+          * Valid keys:
+            - **`comp`**: [string=''] Component to use (from `lib`).
+            - *component*: Alias for comp.
+            - **`lib`**: [string=''] Library to use.
+            - *library*: Alias for lib.
+            - **`ref`**: [string=''] Reference for the component to change.
+            - *reference*: Alias for ref.
+        - `resistor_flip`: [string|list(string)=''] List of resistors to flip its bands.
+        - `resistor_remap`: [list(dict)] List of resitors to be remapped. You can change the value of the resistors here.
+          * Valid keys:
+            - **`ref`**: [string=''] Reference for the resistor to change.
+            - *reference*: Alias for ref.
+            - **`val`**: [string=''] Value to use for `ref`.
+            - *value*: Alias for val.
+        - `show_solderpaste`: [boolean=true] Show the solder paste layers.
+        - `size_detection`: [string='kicad_edge'] [kicad_edge,kicad_all,svg_paths] Method used to detect the size of the resulting image.
+                            The `kicad_edge` method uses the size of the board as reported by KiCad,
+                            components that extend beyond the PCB limit will be cropped. You can manually
+                            adjust the margins to make them visible.
+                            The `kicad_all` method uses the whole size reported by KiCad. Usually includes extra space.
+                            The `svg_paths` uses all visible drawings in the image. To use this method you
+                            must install the `numpy` Python module (may not be available in docker images).
         - `variant`: [string=''] Board variant to apply.
-        - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
+        - `vcuts`: [boolean=false] Render V-CUTS on the `vcuts_layer` layer.
+        - `vcuts_layer`: [string='Cmts.User'] Layer to render the V-CUTS, only used when `vcuts` is enabled.
+                         Note that any other content from this layer will be included.
         - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.

@@ -11,7 +11,7 @@ $json_dep=`../src/kibot --help-dependencies --json`;
 $json_dep=~s/\n/\\\n/g;
 $branch=`git rev-parse --abbrev-ref HEAD`;
 chomp($branch);
-if ($branch eq "dev")
+if ($branch ne "master")
   {
    $doc_id="# **This is the documentation for the current development KiBot, not yet released.**\n";
   }

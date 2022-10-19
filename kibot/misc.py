@@ -238,6 +238,7 @@ W_MISSREF = '(W099) '
 W_COPYOVER = '(W100) '
 W_PARITY = '(W101) '
 W_MISSFPINFO = '(W102) '
+W_PCBDRAW = '(W103) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
@@ -294,8 +295,10 @@ def hide_stderr():
     devnull = os.open('/dev/null', os.O_WRONLY)
     os.dup2(devnull, 2)
     os.close(devnull)
-    yield
-    os.dup2(newstderr, 2)
+    try:
+        yield
+    finally:
+        os.dup2(newstderr, 2)
 
 
 def version_str2tuple(ver):

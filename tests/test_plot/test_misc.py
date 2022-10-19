@@ -468,7 +468,7 @@ def test_pcbdraw_fail(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'pcbdraw_fail')
     ctx.run(PCBDRAW_ERR)
-    assert ctx.search_err('Failed to run')
+    assert ctx.search_err('Cannot locate resource bogus')
     ctx.clean_up()
 
 

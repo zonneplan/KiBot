@@ -185,7 +185,7 @@ deps = '{\
                 "version": null\
             },\
             {\
-                "desc": "Create JPG images",\
+                "desc": "Create JPG and BMP images",\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "pcbdraw",\
@@ -485,7 +485,7 @@ deps = '{\
                 "version": [\
                     2,\
                     4,\
-                    2\
+                    3\
                 ]\
             }\
         ],\
@@ -551,7 +551,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 10000,\
+        "importance": 20000,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": true,\
@@ -568,6 +568,13 @@ deps = '{\
                 "mandatory": true,\
                 "max_version": null,\
                 "output": "pcb_print",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "pcbdraw",\
                 "version": null\
             }\
         ],\
@@ -614,64 +621,6 @@ deps = '{\
         "tests": [],\
         "url": "https://pandoc.org/",\
         "url_down": "https://github.com/jgm/pandoc/releases"\
-    },\
-    "PcbDraw": {\
-        "arch": null,\
-        "command": "pcbdraw",\
-        "comments": [\
-            "Currently the upstream version is broken, please use the mentioned fork"\
-        ],\
-        "deb_package": "pcbdraw",\
-        "downloader": {},\
-        "downloader_str": "pytool",\
-        "extra_arch": null,\
-        "extra_deb": null,\
-        "help_option": "--version",\
-        "importance": 10001,\
-        "in_debian": false,\
-        "is_kicad_plugin": false,\
-        "is_python": false,\
-        "name": "PcbDraw",\
-        "no_cmd_line_version": false,\
-        "no_cmd_line_version_old": false,\
-        "output": "pcb_print",\
-        "plugin_dirs": null,\
-        "pypi_name": "PcbDraw",\
-        "roles": [\
-            {\
-                "desc": "Create realistic solder masks",\
-                "mandatory": false,\
-                "max_version": [\
-                    1,\
-                    0\
-                ],\
-                "output": "pcb_print",\
-                "version": [\
-                    0,\
-                    9,\
-                    0,\
-                    3\
-                ]\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "max_version": [\
-                    1,\
-                    0\
-                ],\
-                "output": "pcbdraw",\
-                "version": [\
-                    0,\
-                    9,\
-                    0,\
-                    3\
-                ]\
-            }\
-        ],\
-        "tests": [],\
-        "url": "https://github.com/INTI-CMNB/pcbdraw",\
-        "url_down": "https://github.com/INTI-CMNB/pcbdraw/releases"\
     },\
     "PyYAML": {\
         "arch": "python-yaml",\
@@ -817,7 +766,7 @@ deps = '{\
                 "version": null\
             },\
             {\
-                "desc": "Create PNG and JPG images",\
+                "desc": "Create PNG, JPG and BMP images",\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "pcbdraw",\
@@ -899,6 +848,40 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "bom",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": null,\
+        "url_down": null\
+    },\
+    "numpy": {\
+        "arch": "python-numpy",\
+        "command": "numpy",\
+        "comments": [],\
+        "deb_package": "python3-numpy",\
+        "downloader": {},\
+        "downloader_str": "python",\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 1,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": true,\
+        "module_name": "numpy",\
+        "name": "numpy",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "pcbdraw",\
+        "plugin_dirs": null,\
+        "pypi_name": "numpy",\
+        "roles": [\
+            {\
+                "desc": "Automatically adjust SVG margin",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "pcbdraw",\
                 "version": null\
             }\
         ],\

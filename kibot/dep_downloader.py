@@ -60,19 +60,15 @@ Dependencies:
     debian: imagemagick
     arch: imagemagick
     extra_arch: ['gsfonts']
-  - name: PcbDraw
-    # 0.9.0 implements KiCad 6 support
-    # 0.9.0.3 Fixes KiCad 5 problems
-    version: 0.9.0.3
-    max_version: 1.0
-    github: INTI-CMNB/pcbdraw
-    pypi: PcbDraw
-    downloader: pytool
-    comments: 'Currently the upstream version is broken, please use the mentioned fork'
   - name: KiCost
     github: hildogjr/KiCost
     pypi: KiCost
     downloader: pytool
+  - name: LXML
+    python_module: true
+    debian: python3-lxml
+    arch: python-lxml
+    downloader: python
 """
 import importlib
 import os

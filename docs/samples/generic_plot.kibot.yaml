@@ -533,6 +533,8 @@ outputs:
       # [boolean=false] Only include the pages with differences in the output PDF.
       # Note that when no differeces are found we get a page saying *No diff*
       only_different: false
+      # [boolean=false] Compare only the main schematic page (root page)
+      only_first_sch_page: false
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=true] Compare the PCB, otherwise compare the schematic
@@ -1347,6 +1349,13 @@ outputs:
     type: 'pcbdraw'
     dir: 'Example/pcbdraw_dir'
     options:
+      # [boolean=true] The `show_components` list is added to the list of components indicated by the variant (fitted and not
+      # excluded).
+      # This is the old behavior, but isn't intuitive because the `show_components` meaning changes when a variant
+      # is used.
+      # To get a more coherent behavior disable this option, and `none` will always be `none`.
+      # Also `all` will be what the variant says
+      add_to_variant: true
       # [boolean=false] Render the bottom side of the board (default is top side)
       bottom: false
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
@@ -1354,16 +1363,29 @@ outputs:
       dnf_filter: '_none'
       # [number=300] [10,1200] Dots per inch (resolution) of the generated image
       dpi: 300
-      # [string='svg'] [svg,png,jpg] Output format. Only used if no `output` is specified
+      # [string='svg'] [svg,png,jpg,bmp] Output format. Only used if no `output` is specified
       format: 'svg'
       # [list(string)=[]] List of components to highlight
       highlight: []
       # [list(string)=[]] List of libraries
       libs: []
+      # [number|dict] Margin around the generated image [mm]
+      margin:
+        # [number=0] Bottom margin [mm]
+        bottom: 0
+        # [number=0] Left margin [mm]
+        left: 0
+        # [number=0] Right margin [mm]
+        right: 0
+        # [number=0] Top margin [mm]
+        top: 0
       # [boolean=false] Mirror the board
       mirror: false
       # [boolean=false] Do not make holes transparent
       no_drillholes: false
+      # [number=0.15] [0,10] Width of the trace to draw the PCB border [mm].
+      # Note this also affects the drill holes
+      outline_width: 0.15
       # [string='%f-%i%I%v.%x'] Name for the generated file. Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=false] Show placeholder for missing components
@@ -1371,11 +1393,44 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
-      # [dict|None] Replacements for PCB references using components (lib:component)
+      # [dict|None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+      # Use `remap_components` instead
       remap:
+      # [list(dict)] Replacements for PCB references using specified components.
+      # Replaces `remap` with type check
+      remap_components:
+        # [string=''] Component to use (from `lib`)
+        - comp: ''
+          # `component` is an alias for `comp`
+          # [string=''] Library to use
+          lib: ''
+          # `library` is an alias for `lib`
+          # [string=''] Reference for the component to change
+          ref: ''
+          # `reference` is an alias for `ref`
+      # [string|list(string)=''] List of resistors to flip its bands
+      resistor_flip: ''
+      # [list(dict)] List of resitors to be remapped. You can change the value of the resistors here
+      resistor_remap:
+        # [string=''] Reference for the resistor to change
+        - ref: ''
+          # `reference` is an alias for `ref`
+          # [string=''] Value to use for `ref`
+          val: ''
+          # `value` is an alias for `val`
       # [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
-      # The default is none
+      # The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied
       show_components: none
+      # [boolean=true] Show the solder paste layers
+      show_solderpaste: true
+      # [string='kicad_edge'] [kicad_edge,kicad_all,svg_paths] Method used to detect the size of the resulting image.
+      # The `kicad_edge` method uses the size of the board as reported by KiCad,
+      # components that extend beyond the PCB limit will be cropped. You can manually
+      # adjust the margins to make them visible.
+      # The `kicad_all` method uses the whole size reported by KiCad. Usually includes extra space.
+      # The `svg_paths` uses all visible drawings in the image. To use this method you
+      # must install the `numpy` Python module (may not be available in docker images)
+      size_detection: 'kicad_edge'
       # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
       style:
         # [string='#208b47'] Color for the board without copper (covered by solder mask)
@@ -1386,7 +1441,7 @@ outputs:
         copper: '#285e3a'
         # [boolean=false] Highlight over the component (not under)
         highlight_on_top: false
-        # [number=1.5] [0,1000] how much the highlight extends around the component [mm]
+        # [number=1.5] [0,1000] How much the highlight extends around the component [mm]
         highlight_padding: 1.5
         # [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style
         highlight_style: 'stroke:none;fill:#ff0000;opacity:0.5;'
@@ -1400,8 +1455,11 @@ outputs:
         vcut: '#bf2600'
       # [string=''] Board variant to apply
       variant: ''
-      # [boolean=false] Render V-CUTS on the Cmts.User layer
+      # [boolean=false] Render V-CUTS on the `vcuts_layer` layer
       vcuts: false
+      # [string='Cmts.User'] Layer to render the V-CUTS, only used when `vcuts` is enabled.
+      # Note that any other content from this layer will be included
+      vcuts_layer: 'Cmts.User'
       # [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated
       warnings: 'visible'
   # PDF (Portable Document Format):

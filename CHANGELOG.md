@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Diff:
   - Option to compare only the first schematic page. (See #319)
+- PcbDraw:
+  - BMP output format
+  - Image margin
+  - Outline width
+  - Solder paste removal
+  - V-CUTS layer
+  - Resistor remap and flip
+  - A `remap_components` option with better type checks
+  - Better support for variants
 
 ### Changed
 - Diff:

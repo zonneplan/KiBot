@@ -26,7 +26,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE,
-                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY)
+                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -210,7 +210,8 @@ def load_board(pcb_file=None):
         GS.check_pcb()
         pcb_file = GS.pcb_file
     try:
-        board = pcbnew.LoadBoard(pcb_file)
+        with hide_stderr():
+            board = pcbnew.LoadBoard(pcb_file)
         if BasePreFlight.get_option('check_zone_fills'):
             pcbnew.ZONE_FILLER(board).Fill(board.Zones())
         if GS.global_units and GS.ki6:
