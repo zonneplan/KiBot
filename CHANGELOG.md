@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Resistor remap and flip
   - A `remap_components` option with better type checks
   - Better support for variants
+- SVG:
+  - Option to control the *SVG precision* (units scale)
 
 ### Changed
 - Diff:
@@ -25,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - QR lib update: Problems when moving the footprint to the bottom for
   KiCad 5.
+- SVG: Problems to display the outputs using Chrome and Firefox.
 
 
 ## [1.4.0] - 2022-10-12

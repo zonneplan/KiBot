@@ -3229,6 +3229,9 @@ Notes:
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `svg_precision`: [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+                           The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+                           Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.

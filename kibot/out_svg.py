@@ -22,6 +22,10 @@ class SVGOptions(DrillMarks):
             """ Plot mirrored """
             self.negative_plot = False
             """ Invert black and white """
+            self.svg_precision = 4
+            """ [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+                The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+                Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
         self._plot_format = PLOT_FORMAT_SVG
 
     def _configure_plot_ctrl(self, po, output_dir):
@@ -30,6 +34,8 @@ class SVGOptions(DrillMarks):
         if GS.ki5:
             po.SetLineWidth(FromMM(self.line_width))
         po.SetNegative(self.negative_plot)
+        if GS.ki6:
+            po.SetSvgPrecision(self.svg_precision, False)
 
     def read_vals_from_po(self, po):
         super().read_vals_from_po(po)
