@@ -2500,6 +2500,9 @@ Notes:
                                    In order to get a good looking select a color with transparency, i.e. '#14332440'.
                                    PcbDraw must be installed in order to use this option.
         - `sheet_reference_layout`: [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+        - `svg_precision`: [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+                           The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+                           Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
@@ -2628,6 +2631,9 @@ Notes:
                             The `kicad_all` method uses the whole size reported by KiCad. Usually includes extra space.
                             The `svg_paths` uses all visible drawings in the image. To use this method you
                             must install the `numpy` Python module (may not be available in docker images).
+        - `svg_precision`: [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+                           The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+                           Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.
         - `variant`: [string=''] Board variant to apply.
         - `vcuts`: [boolean=false] Render V-CUTS on the `vcuts_layer` layer.
         - `vcuts_layer`: [string='Cmts.User'] Layer to render the V-CUTS, only used when `vcuts` is enabled.

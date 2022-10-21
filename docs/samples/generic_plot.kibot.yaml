@@ -1308,6 +1308,10 @@ outputs:
       scaling: 1.0
       # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project
       sheet_reference_layout: ''
+      # [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+      # The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+      # Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5
+      svg_precision: 4
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''
@@ -1453,6 +1457,10 @@ outputs:
         silk: '#d5dce4'
         # [string='#bf2600'] Color for the V-CUTS
         vcut: '#bf2600'
+      # [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+      # The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+      # Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5
+      svg_precision: 4
       # [string=''] Board variant to apply
       variant: ''
       # [boolean=false] Render V-CUTS on the `vcuts_layer` layer

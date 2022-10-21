@@ -246,3 +246,63 @@ index f8990722..17f90185 100644
   - So we don't load it again
 
 - Changed the margin to be a tuple, so the user can control the margins individually
+
+- Added KiCad 6 SVG precision.
+  - Fixes issues with Browsers
+  - A plotter member controls the precision
+  - We adjust the ki2svg and svg2ki converters before plotting
+
+```diff
+diff --git a/kibot/PcbDraw/plot.py b/kibot/PcbDraw/plot.py
+index 01e7f523..9685d032 100644
+--- a/kibot/PcbDraw/plot.py
++++ b/kibot/PcbDraw/plot.py
+@@ -1066,6 +1066,7 @@ class PcbPlotter():
+         self.margin: tuple = (0, 0, 0, 0)  # Margin of the resulting document
+         self.compute_bbox: bool = False  # Adjust the bbox using the SVG drawings
+         self.kicad_bb_only_edge: bool = False  # Use the PCB edge when asking the BBox to KiCad
++        self.svg_precision: int = 4  # KiCad 6 SVG scale (1 mm == 10 ** svg_precision)
+ 
+         self.yield_warning: Callable[[str, str], None] = lambda tag, msg: None # Handle warnings
+ 
+@@ -1074,6 +1075,7 @@ class PcbPlotter():
+         Plot the board based on the arguments stored in this class. Returns
+         SVG tree that you can either save or post-process as you wish.
+         """
++        self._set_unit_conversion()
+         self._build_libs_path()
+         self._setup_document(self.render_back, self.mirror)
+         for plotter in self.plot_plan:
+@@ -1219,6 +1221,8 @@ class PcbPlotter():
+         with tempfile.TemporaryDirectory() as tmp:
+             pctl = pcbnew.PLOT_CONTROLLER(self.board)
+             popt = pctl.GetPlotOptions()
++            if isV6(KICAD_VERSION):
++                popt.SetSvgPrecision(self.svg_precision, False)
+             popt.SetOutputDirectory(tmp)
+             popt.SetScale(1)
+             popt.SetMirror(False)
+@@ -1280,3 +1284,22 @@ class PcbPlotter():
+         self._board_cont.attrib["id"] = "boardContainer"
+         self._comp_cont.attrib["id"] = "componentContainer"
+         self._high_cont.attrib["id"] = "highlightContainer"
++
++    def _set_unit_conversion(self):
++        """ Setup the KiCad to SVG and SVG to KiCad conversions.
++            Only needed for KiCad 6 where we can select the `SVG precision` """
++        if not isV6(KICAD_VERSION):
++            # KiCad 5 has a fixed precision
++            return
++        global ki2svg
++        global svg2ki
++        if self.svg_precision == 6:
++            # This is the default for KiCad 6, lamentably this isn't supported by
++            # Chrome and Firefox (october 2022)
++            ki2svg = (lambda x: int(x))
++            svg2ki = (lambda x: int(x))
++            return
++        # Not the default precision, must be 0 to 5
++        divider = 10.0 ** (6 - self.svg_precision)
++        ki2svg = (lambda x: x / divider)
++        svg2ki = (lambda x: int(x * divider))
+```

@@ -292,6 +292,10 @@ class PCB_PrintOptions(VariantOptions):
             """ Color for the background when `add_background` is enabled """
             self.background_image = ''
             """ Background image, must be an SVG, only when `add_background` is enabled """
+            self.svg_precision = 4
+            """ [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+                The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+                Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
         add_drill_marks(self)
         super().__init__()
         self._expand_id = 'assembly'
@@ -773,6 +777,7 @@ class PCB_PrintOptions(VariantOptions):
             plotter.yield_warning = pcbdraw_warnings
             plotter.render_back = back
             plotter.plot_plan = [PlotSubstrate(only_mask=True)]
+            plotter.svg_precision = self.svg_precision
             image = plotter.plot()
         except (RuntimeError, SyntaxError, IOError) as e:
             logger.error('PcbDraw error: '+str(e))
@@ -812,6 +817,13 @@ class PCB_PrintOptions(VariantOptions):
                 # KiCad 5 uses a different precision, we must adjust
                 board_center.x = round(board_center.x*KICAD5_SVG_SCALE)
                 board_center.y = round(board_center.y*KICAD5_SVG_SCALE)
+            elif self.svg_precision != 6:
+                # KiCad 6 can adjust the precision
+                # The default is 6 and makes 1 KiCad unit == 1 SVG unit
+                # But this isn't supported by browsers (Chrome and Firefox)
+                divider = 10.0 ** (6 - self.svg_precision)
+                board_center.x = round(board_center.x/divider)
+                board_center.y = round(board_center.y/divider)
             offset_x = round((board_center.x*scale-(paper_size_x/2.0))/scale)
             offset_y = round((board_center.y*scale-(paper_size_y/2.0))/scale)
             if mirror:
@@ -973,6 +985,8 @@ class PCB_PrintOptions(VariantOptions):
         po.SetExcludeEdgeLayer(True)   # We plot it separately
         po.SetUseAuxOrigin(False)
         po.SetAutoScale(False)
+        if GS.ki6:
+            po.SetSvgPrecision(self.svg_precision, False)
         # Helpers for force_edge_cuts
         if self.force_edge_cuts:
             edge_layer = LayerOptions.create_layer('Edge.Cuts')
