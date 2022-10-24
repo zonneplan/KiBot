@@ -175,7 +175,7 @@ def try_download_tar_ball(dep, url, name, name_in_tar=None):
         name_in_tar = name
     content = download(url)
     if content is None:
-        return None
+        return None, None
     # Try to extract the binary
     dest_file = None
     try:
@@ -186,13 +186,13 @@ def try_download_tar_ball(dep, url, name, name_in_tar=None):
                 dest_file = write_executable(name, tar.extractfile(entry).read())
     except Exception as e:
         logger.debug('- Failed to extract {}'.format(e))
-        return None
+        return None, None
     # Is this usable?
-    cmd = check_tool_binary_version(dest_file, dep, no_cache=True)
+    cmd, ver = check_tool_binary_version(dest_file, dep, no_cache=True)
     if cmd is None:
-        return None
+        return None, None
     # logger.warning(W_DOWNTOOL+'Using downloaded `{}` tool, please visit {} for details'.format(name, dep.url))
-    return cmd
+    return cmd, ver
 
 
 def untar(data):
@@ -276,10 +276,10 @@ def pytool_downloader(dep, system, plat):
     # Check if we have a github repo as download page
     logger.debug('- Download URL: '+str(dep.url_down))
     if not dep.url_down:
-        return None
+        return None, None
     res = re.match(r'^https://github.com/([^/]+)/([^/]+)/', dep.url_down)
     if res is None:
-        return None
+        return None, None
     user = res.group(1)
     prj = res.group(2)
     logger.debugl(2, '- GitHub repo: {}/{}'.format(user, prj))
@@ -287,27 +287,27 @@ def pytool_downloader(dep, system, plat):
     # Check if we have pip and wheel
     pip_command = check_pip()
     if pip_command is None:
-        return None
+        return None, None
     # Look for the last release
     data = download(url, progress=False)
     if data is None:
-        return None
+        return None, None
     try:
         data = json.loads(data)
         logger.debugl(4, 'Release information: {}'.format(data))
         url = data['tarball_url']
     except Exception as e:
         logger.debug('- Failed to find a download ({})'.format(e))
-        return None
+        return None, None
     logger.debugl(2, '- Tarball: '+url)
     # Download and uncompress the tarball
     dest = untar(download(url))
     if dest is None:
-        return None
+        return None, None
     logger.debugl(2, '- Uncompressed tarball to: '+dest)
     # Try to pip install it
     if not pip_install(pip_command, dest=dest):
-        return None
+        return None, None
     rmtree(dest)
     # Check it was successful
     return check_tool_binary_version(os.path.join(site.USER_BASE, 'bin', dep.command), dep, no_cache=True)
@@ -330,13 +330,13 @@ def git_downloader(dep, system, plat):
     # arm, arm64, mips64el and mipsel are also there, just not implemented
     if system != 'Linux' or not plat.startswith('x86_'):
         logger.debug('- No binary for this system')
-        return None
+        return None, None
     # Try to download it
     arch = 'amd64' if plat == 'x86_64' else 'i386'
     url = 'https://github.com/EXALAB/git-static/raw/master/output/'+arch+'/bin/git'
     content = download(url)
     if content is None:
-        return None
+        return None, None
     dest_bin = write_executable(dep.command+'.real', content.replace(b'/root/output', b'/tmp/kibogit'))
     # Now create the wrapper
     git_real = dest_bin
@@ -357,31 +357,31 @@ def convert_downloader(dep, system, plat):
     # Currently only for Linux x86_64
     if system != 'Linux' or plat != 'x86_64':
         logger.debug('- No binary for this system')
-        return None
+        return None, None
     # Get the download page
     content = download(dep.url_down)
     if content is None:
-        return None
+        return None, None
     # Look for the URL
     res = re.search(r'href\s*=\s*"([^"]+)">magick<', content.decode())
     if not res:
         logger.debug('- No `magick` download')
-        return None
+        return None, None
     url = res.group(1)
     # Get the binary
     content = download(url)
     if content is None:
-        return None
+        return None, None
     # Can we run the AppImage?
     dest_bin = write_executable(dep.command, content)
-    cmd = check_tool_binary_version(dest_bin, dep, no_cache=True)
+    cmd, ver = check_tool_binary_version(dest_bin, dep, no_cache=True)
     if cmd is not None:
         logger.warning(W_DOWNTOOL+'Using downloaded `{}` tool, please visit {} for details'.format(dep.name, dep.url))
-        return cmd
+        return cmd, ver
     # Was because we don't have FUSE support
     if not ('libfuse.so' in last_stderr or 'FUSE' in last_stderr or last_stderr.startswith('fuse')):
         logger.debug('- Unknown fail reason: `{}`'.format(last_stderr))
-        return None
+        return None, None
     # Uncompress it
     unc_dir = os.path.join(home_bin, 'squashfs-root')
     if os.path.isdir(unc_dir):
@@ -392,16 +392,16 @@ def convert_downloader(dep, system, plat):
         res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=home_bin)
     except Exception as e:
         logger.debug('- Failed to execute `{}` ({})'.format(cmd[0], e))
-        return None
+        return None, None
     if not os.path.isdir(unc_dir):
         logger.debug('- Failed to uncompress `{}` ({})'.format(cmd[0], res_run.stderr.decode()))
-        return None
+        return None, None
     # Now copy the important stuff
     # Binaries
     src_dir, _, bins = next(os.walk(os.path.join(unc_dir, 'usr', 'bin')))
     if not len(bins):
         logger.debug('- No binaries found after extracting {}'.format(dest_bin))
-        return None
+        return None, None
     for f in bins:
         dst_file = os.path.join(home_bin, f)
         if os.path.isfile(dst_file):
@@ -411,7 +411,7 @@ def convert_downloader(dep, system, plat):
     src_dir = os.path.join(unc_dir, 'usr', 'lib')
     if not os.path.isdir(src_dir):
         logger.debug('- No libraries found after extracting {}'.format(dest_bin))
-        return None
+        return None, None
     dst_dir = os.path.join(home_bin, '..', 'lib', 'ImageMagick')
     if os.path.isdir(dst_dir):
         rmtree(dst_dir)
@@ -422,7 +422,7 @@ def convert_downloader(dep, system, plat):
     src_dir, dirs, _ = next(os.walk(os.path.join(unc_dir, 'usr', 'etc')))
     if len(dirs) != 1:
         logger.debug('- More than one config dir found {}'.format(dirs))
-        return None
+        return None, None
     src_dir = os.path.join(src_dir, dirs[0])
     dst_dir = os.path.join(home_bin, '..', 'etc')
     os.makedirs(dst_dir, exist_ok=True)
@@ -452,13 +452,13 @@ def gs_downloader(dep, system, plat):
     # Currently only for Linux x86
     if system != 'Linux' or not plat.startswith('x86_'):
         logger.debug('- No binary for this system')
-        return None
+        return None, None
     # Get the download page
     url = 'https://api.github.com/repos/ArtifexSoftware/ghostpdl-downloads/releases/latest'
     r = requests.get(url, allow_redirects=True)
     if r.status_code != 200:
         logger.debug('- Failed to download `{}`'.format(dep.url_down))
-        return None
+        return None, None
     # Look for the valid tarball
     arch = 'x86_64' if plat == 'x86_64' else 'x86'
     url = None
@@ -472,28 +472,28 @@ def gs_downloader(dep, system, plat):
         logger.debug('- Failed to find a download ({})'.format(e))
     if url is None:
         logger.debug('- No suitable binary')
-        return None
+        return None, None
     # Try to download it
-    res = try_download_tar_ball(dep, url, 'gs', 'ghostscript-*/gs*')
+    res, ver = try_download_tar_ball(dep, url, 'gs', 'ghostscript-*/gs*')
     if res is not None:
         short_gs = res
         long_gs = res[:-2]+'ghostscript'
         if not os.path.isfile(long_gs):
             os.symlink(short_gs, long_gs)
-    return res
+    return res, ver
 
 
 def rsvg_downloader(dep, system, plat):
     # Currently only for Linux x86_64
     if system != 'Linux' or plat != 'x86_64':
         logger.debug('- No binary for this system')
-        return None
+        return None, None
     # Get the download page
     url = 'https://api.github.com/repos/set-soft/rsvg-convert-aws-lambda-binary/releases/latest'
     r = requests.get(url, allow_redirects=True)
     if r.status_code != 200:
         logger.debug('- Failed to download `{}`'.format(dep.url_down))
-        return None
+        return None, None
     # Look for the valid tarball
     url = None
     try:
@@ -505,7 +505,7 @@ def rsvg_downloader(dep, system, plat):
         logger.debug('- Failed to find a download ({})'.format(e))
     if url is None:
         logger.debug('- No suitable binary')
-        return None
+        return None, None
     # Try to download it
     return try_download_tar_ball(dep, url, 'rsvg-convert')
 
@@ -515,11 +515,11 @@ def rar_downloader(dep, system, plat):
     r = requests.get(dep.url_down, allow_redirects=True)
     if r.status_code != 200:
         logger.debug('- Failed to download `{}`'.format(dep.url_down))
-        return None
+        return None, None
     # Try to figure out the right package
     OSs = {'Linux': 'rarlinux', 'Darwin': 'rarmacos'}
     if system not in OSs:
-        return None
+        return None, None
     name = OSs[system]
     if plat == 'arm64':
         name += '-arm'
@@ -528,10 +528,10 @@ def rar_downloader(dep, system, plat):
     elif plat == 'x86_32':
         name += '-x32'
     else:
-        return None
+        return None, None
     res = re.search('href="([^"]+{}[^"]+)"'.format(name), r.content.decode())
     if not res:
-        return None
+        return None, None
     # Try to download it
     return try_download_tar_ball(dep, dep.url+res.group(1), 'rar', name_in_tar='rar/rar')
 
@@ -579,7 +579,7 @@ def check_tool_binary_version(full_name, dep, no_cache=False):
     if dep.no_cmd_line_version:
         # No way to know the version, assume we can use it
         logger.debugl(2, "- This tool doesn't have a version option")
-        return full_name
+        return full_name, None
     # Do we need a particular version?
     needs = (0, 0, 0)
     for r in dep.roles:
@@ -602,7 +602,7 @@ def check_tool_binary_version(full_name, dep, no_cache=False):
         binary_tools_cache[full_name] = version
         logger.debugl(2, '- Found version {}'.format(version))
     version_check_fail = version is None or version < needs
-    return None if version_check_fail else full_name
+    return None if version_check_fail else full_name, version
 
 
 def check_tool_binary_system(dep):
@@ -612,7 +612,7 @@ def check_tool_binary_system(dep):
     else:
         full_name = which(dep.command)
     if full_name is None:
-        return None
+        return None, None
     return check_tool_binary_version(full_name, dep)
 
 
@@ -624,14 +624,14 @@ def check_tool_binary_local(dep):
     logger.debugl(2, '- Looking for tool `{}` at user level'.format(dep.command))
     home = os.environ.get('HOME') or os.environ.get('username')
     if home is None:
-        return None
+        return None, None
     full_name = os.path.join(home_bin, dep.command)
     if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
-        return None
-    cmd = check_tool_binary_version(full_name, dep)
+        return None, None
+    cmd, ver = check_tool_binary_version(full_name, dep)
     if cmd is not None:
         using_downloaded(dep)
-    return cmd
+    return cmd, ver
 
 
 def check_tool_binary_python(dep):
@@ -639,13 +639,13 @@ def check_tool_binary_python(dep):
     logger.debugl(2, '- Looking for tool `{}` at Python user site ({})'.format(dep.command, base))
     full_name = os.path.join(base, dep.command)
     if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
-        return None
+        return None, None
     return check_tool_binary_version(full_name, dep)
 
 
 def try_download_tool_binary(dep):
     if dep.downloader is None or home_bin is None:
-        return None
+        return None, None
     logger.info('- Trying to download {} ({})'.format(dep.name, dep.url_down))
     res = None
     # Determine the platform
@@ -663,28 +663,28 @@ def try_download_tool_binary(dep):
     # res = dep.downloader(dep, system, plat)
     # return res
     try:
-        res = dep.downloader(dep, system, plat)
+        res, ver = dep.downloader(dep, system, plat)
         if res:
             using_downloaded(dep)
     except Exception as e:
         logger.error('- Failed to download {}: {}'.format(dep.name, e))
-    return res
+    return res, ver
 
 
 def check_tool_binary(dep):
     logger.debugl(2, '- Checking binary tool {}'.format(dep.name))
-    cmd = check_tool_binary_system(dep)
+    cmd, ver = check_tool_binary_system(dep)
     if cmd is not None:
-        return cmd
-    cmd = check_tool_binary_python(dep)
+        return cmd, ver
+    cmd, ver = check_tool_binary_python(dep)
     if cmd is not None:
-        return cmd
-    cmd = check_tool_binary_local(dep)
+        return cmd, ver
+    cmd, ver = check_tool_binary_local(dep)
     if cmd is not None:
-        return cmd
+        return cmd, ver
     global disable_auto_download
     if disable_auto_download:
-        return None
+        return None, None
     return try_download_tool_binary(dep)
 
 
@@ -709,7 +709,7 @@ def check_tool_python_version(mod, dep):
         version = 'Ok'
     logger.debugl(2, '- Found version {}'.format(version))
     version_check_fail = version != 'Ok' and version < needs
-    return None if version_check_fail else mod
+    return None if version_check_fail else mod, version
 
 
 def check_tool_python(dep, reload=False):
@@ -723,21 +723,21 @@ def check_tool_python(dep, reload=False):
     # Not installed, try to download it
     global disable_auto_download
     if disable_auto_download or not python_downloader(dep):
-        return None
+        return None, None
     # Check we can use it
     try:
         importlib.invalidate_caches()
         mod = importlib.import_module(dep.module_name)
         if mod.__file__ is None:
             logger.error(mod)
-            return None
-        res = check_tool_python_version(mod, dep)
+            return None, None
+        res, ver = check_tool_python_version(mod, dep)
         if res is not None and reload:
             res = importlib.reload(reload)
-        return res
+        return res, ver
     except ModuleNotFoundError:
         pass
-    return None
+    return None, None
 
 
 def do_log_err(msg, fatal):
@@ -776,14 +776,14 @@ def get_dep_data(context, dep):
     return used_deps[context+':'+dep.lower()]
 
 
-def check_tool_dep(context, dep, fatal=False):
+def check_tool_dep_get_ver(context, dep, fatal=False):
     dep = get_dep_data(context, dep)
     logger.debug('Starting tool check for {}'.format(dep.name))
     if dep.is_python:
-        cmd = check_tool_python(dep)
+        cmd, ver = check_tool_python(dep)
         type = 'python module'
     else:
-        cmd = check_tool_binary(dep)
+        cmd, ver = check_tool_binary(dep)
         type = 'command'
     logger.debug('- Returning `{}`'.format(cmd))
     if cmd is None:
@@ -814,11 +814,17 @@ def check_tool_dep(context, dep, fatal=False):
         do_log_err(TRY_INSTALL_CHECK, fatal)
         if fatal:
             exit(MISSING_TOOL)
+    return cmd, ver
+
+
+def check_tool_dep(context, dep, fatal=False):
+    cmd, ver = check_tool_dep_get_ver(context, dep, fatal)
     return cmd
 
 
 # Avoid circular deps. Optionable can use it.
 GS.check_tool_dep = check_tool_dep
+GS.check_tool_dep_get_ver = check_tool_dep_get_ver
 
 
 class ToolDependencyRole(object):

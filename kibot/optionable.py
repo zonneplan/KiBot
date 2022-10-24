@@ -396,6 +396,10 @@ class BaseOptions(Optionable):
         """ Looks for a mandatory dependency """
         return GS.check_tool_dep(self._parent.type, name, fatal=True)
 
+    def ensure_tool_get_ver(self, name):
+        """ Looks for a mandatory dependency, also returns its version """
+        return GS.check_tool_dep_get_ver(self._parent.type, name, fatal=True)
+
     def check_tool(self, name):
         """ Looks for a dependency """
         return GS.check_tool_dep(self._parent.type, name, fatal=False)

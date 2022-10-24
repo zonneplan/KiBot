@@ -2154,6 +2154,7 @@ Notes:
                                   IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `no_compression`: [boolean=false] Disable compression of pcb data.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
+        - `offset_back_rotation`: [boolean=false] Offset the back of the pcb by 180 degrees.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
         - `show_fabrication`: [boolean=false] Show fabrication layer by default.

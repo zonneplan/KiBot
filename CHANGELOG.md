@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Option to control the *SVG precision* (units scale)
 - PCB_Print:
   - Option to control the *SVG precision* (units scale)
+- iBoM:
+  - Support for the `offset_back_rotation` option
 
 ### Changed
 - Diff:

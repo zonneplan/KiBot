@@ -52,6 +52,8 @@ class IBoMOptions(VariantOptions):
             """ Do not redraw pcb on drag by default """
             self.board_rotation = 0
             """ *Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5 """
+            self.offset_back_rotation = False
+            """ Offset the back of the pcb by 180 degrees """
             self.checkboxes = 'Sourced,Placed'
             """ Comma separated list of checkbox columns """
             self.bom_view = 'left-right'
@@ -153,7 +155,7 @@ class IBoMOptions(VariantOptions):
 
     def run(self, name):
         super().run(name)
-        tool = self.ensure_tool('ibom')
+        tool, version = self.ensure_tool_get_ver('ibom')
         logger.debug('Doing Interactive BoM')
         # Tell ibom we don't want to use the screen
         os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = ''
@@ -203,6 +205,8 @@ class IBoMOptions(VariantOptions):
         # Convert attributes into options
         for k, v in self.get_attrs_gen():
             if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform']:
+                continue
+            if k == 'offset_back_rotation' and version < (2, 5, 0, 2):
                 continue
             cmd.append(BaseOutput.attr2longopt(k))  # noqa: F821
             if not isinstance(v, bool):  # must be str/(int, float)
