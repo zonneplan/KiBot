@@ -262,7 +262,7 @@ class PcbDrawOptions(VariantOptions):
                 The `svg_paths` uses all visible drawings in the image. To use this method you
                 must install the `numpy` Python module (may not be available in docker images) """
             self.svg_precision = 4
-            """ [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+            """ [3,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
                 The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
                 Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
         super().__init__()
