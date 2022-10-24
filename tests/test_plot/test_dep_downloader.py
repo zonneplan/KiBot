@@ -42,15 +42,15 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
         downloader_func = getattr(mod, downloader_name+'_downloader')
         if use_wrapper:
             dep.downloader = downloader_func
-            res = mod.try_download_tool_binary(dep)
+            res, version = mod.try_download_tool_binary(dep)
             if res:
-                res = mod.check_tool_binary_local(dep)
+                res, version = mod.check_tool_binary_local(dep)
         else:
-            res = downloader_func(dep, 'Linux', 'x86_64')
+            res, version = downloader_func(dep, 'Linux', 'x86_64')
         cov.stop()
         cov.save()
         # We should get the following name:
-        logging.debug('Result: {}'.format(res))
+        logging.debug('Result: {} Version: {}'.format(res, version))
         assert res == os.path.join(home, b_dir, dep.command)
         # We executed the file
 
@@ -69,11 +69,11 @@ def try_dependency_module(ctx, caplog, monkeypatch, docstring, name_dep, downloa
         cov.start()
         # Python module
         downloader_func = getattr(mod, downloader_name)
-        res = downloader_func(dep)
+        res, version = downloader_func(dep)
         cov.stop()
         cov.save()
         # We should get the following name:
-        logging.debug('Result: {}'.format(res))
+        logging.debug('Result: {} Version: {}'.format(res, version))
         assert res is not None
         assert res.__file__ is not None
 
