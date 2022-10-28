@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+# Author: Jan Mrázek
+# License: MIT
+
 import codecs
 import os
 import re

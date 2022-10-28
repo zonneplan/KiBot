@@ -1,4 +1,6 @@
 # coding: utf-8
+# Author: Jaroslav Kysela and Jan Mrázek
+# License: WTFPL 2
 
 """
     Markdown renderer
