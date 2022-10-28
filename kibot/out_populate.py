@@ -195,7 +195,7 @@ class Populate(BaseOutput):  # noqa: F821
         Each step shows the already soldered components and the ones to add highlighted.
         This is equivalent to the PcbDraw's Populate command, but integrated to KiBot.
         For more information about the input markdown file please consult the
-        [documentation](https://github.com/INTI-CMNB/KiBot/blob/master/docs/populate.md) """
+        [documentation](docs/populate.md) """
     def __init__(self):
         super().__init__()
         with document:
