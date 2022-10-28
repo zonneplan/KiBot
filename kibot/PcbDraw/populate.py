@@ -260,11 +260,29 @@ def prepare_params(params: List[str]) -> List[str]:
     return list(chain(*p))
 
 
+# Added for Kibot
+# The rendender selection, they are imported here
 def create_renderer(format, initial_components):
     if format == "html":
         return Renderer(HTMLRenderer, initial_components) # type: ignore
     return Renderer(mdrenderer.MdRenderer, initial_components) # type: ignore
 
+
+# The helper to look for a file, to avoid pulling LXML from pcbdraw
+def find_data_file(name: str, extension: str, data_paths: List[str], subdir: Optional[str]=None) -> Optional[str]:
+    if not name.endswith(extension):
+        name += extension
+    if os.path.isfile(name):
+        return name
+    for path in data_paths:
+        if subdir is not None:
+            fname = os.path.join(path, subdir, name)
+            if os.path.isfile(fname):
+                return fname
+        fname = os.path.join(path, name)
+        if os.path.isfile(fname):
+            return fname
+    return None
 
 # @click.command()
 # @click.argument("input", type=click.Path(exists=True, file_okay=True, dir_okay=False))

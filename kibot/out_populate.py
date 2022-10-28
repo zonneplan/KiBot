@@ -20,9 +20,6 @@ from .gs import GS
 from .kiplot import config_output, run_output
 from .optionable import Optionable
 from .out_base import VariantOptions
-from .PcbDraw.populate import (load_content, get_data_path, read_template, create_renderer, parse_content, generate_html,
-                               generate_markdown)
-from .PcbDraw.plot import find_data_file
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -72,17 +69,6 @@ class PopulateOptions(VariantOptions):
             raise KiPlotConfigurationError('You must specify an input markdown file')
         if not os.path.isfile(self.input):
             raise KiPlotConfigurationError('Missing input file `{}`'.format(self.input))
-        # Load the template
-        if self.format == 'html':
-            data_path = get_data_path()
-            data_path.insert(0, os.path.join(GS.get_resource_path('pcbdraw'), 'templates'))
-            template_file = find_data_file(self.template, '.handlebars', data_path)
-            if not template_file:
-                raise KiPlotConfigurationError('Unable to find template file `{}`'.format(self.template))
-            try:
-                self._template = read_template(template_file)
-            except IOError:
-                raise KiPlotConfigurationError('Failed to load file `{}`'.format(template_file))
         # Initial components
         self.initial_components = Optionable.force_list(self.initial_components)
         # Validate the image patter name
@@ -150,6 +136,12 @@ class PopulateOptions(VariantOptions):
         return content
 
     def run(self, dir_name):
+        # Ensure we have mistune
+        self.ensure_tool('mistune')
+        # Now we can use populate
+        from .PcbDraw.populate import (load_content, get_data_path, read_template, create_renderer, parse_content,
+                                       generate_html, generate_markdown, find_data_file)
+
         is_html = self.format == 'html'
         # Check the renderer output is valid
         out = RegOutput.get_output(self.renderer)
@@ -162,6 +154,17 @@ class PopulateOptions(VariantOptions):
             _, content = load_content(self.input)
         except IOError:
             raise KiPlotConfigurationError('Failed to load `{}`'.format(self.input))
+        # Load the template
+        if self.format == 'html':
+            data_path = get_data_path()
+            data_path.insert(0, os.path.join(GS.get_resource_path('pcbdraw'), 'templates'))
+            template_file = find_data_file(self.template, '.handlebars', data_path)
+            if not template_file:
+                raise KiPlotConfigurationError('Unable to find template file `{}`'.format(self.template))
+            try:
+                self._template = read_template(template_file)
+            except IOError:
+                raise KiPlotConfigurationError('Failed to load file `{}`'.format(template_file))
         # Initialize the output file renderer
         renderer = create_renderer(self.format, self.initial_components)
         outputfile = 'index.html' if is_html else 'index.md'
