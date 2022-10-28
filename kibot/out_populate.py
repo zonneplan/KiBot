@@ -75,8 +75,12 @@ class PopulateOptions(VariantOptions):
         if '%d' not in self.imgname:
             raise KiPlotConfigurationError('The image pattern must contain `%d` `{}`'.format(self.imgname))
 
-#    def get_targets(self, out_dir):
-#        return [self._parent.expand_filename(out_dir, self.output)]
+    def get_out_file_name(self):
+        return 'index.html' if self.format == 'html' else 'index.md'
+
+    def get_targets(self, out_dir):
+        img_dir = os.path.dirname(self._parent.expand_filename(out_dir, self.imgname))
+        return [self._parent.expand_filename(out_dir, self.get_out_file_name()), img_dir]
 
     def generate_image(self, side, components, active_components, name):
         options = self._renderer.options
@@ -167,7 +171,7 @@ class PopulateOptions(VariantOptions):
                 raise KiPlotConfigurationError('Failed to load file `{}`'.format(template_file))
         # Initialize the output file renderer
         renderer = create_renderer(self.format, self.initial_components)
-        outputfile = 'index.html' if is_html else 'index.md'
+        outputfile = self.get_out_file_name()
         # Parse the input markdown
         parsed_content = parse_content(renderer, content)
         logger.debugl(3, parsed_content)
@@ -197,8 +201,3 @@ class Populate(BaseOutput):  # noqa: F821
             self.options = PopulateOptions
             """ *[dict] Options for the `populate` output """
         self._category = 'PCB/docs'
-
-#     def get_dependencies(self):
-
-#     @staticmethod
-#     def get_conf_examples(name, layers, templates):

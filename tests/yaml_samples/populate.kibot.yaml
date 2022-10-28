@@ -76,3 +76,10 @@ outputs:
     options:
       renderer: PcbDraw
       input: tests/data/source_html.md
+
+  - name: Compressed
+    comment: "Compress the result"
+    type: compress
+    options:
+      files:
+        - from_output: Populate

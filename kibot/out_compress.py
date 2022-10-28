@@ -160,16 +160,26 @@ class CompressOptions(BaseOptions):
                     logger.error('Unknown output `{}` selected in {}'.format(f.from_output, self._parent))
                     exit(WRONG_ARGUMENTS)
                 if not no_out_run:
+                    extra_files = []
                     for file in files_list:
-                        if not os.path.isfile(file):
+                        if not os.path.exists(file):
                             # The target doesn't exist
                             if not out._done:
                                 # The output wasn't created in this run, try running it
                                 run_output(out)
-                            if not os.path.isfile(file):
+                            if not os.path.exists(file):
                                 # Still missing, something is wrong
                                 logger.error('Unable to generate `{}` from {}'.format(file, out))
                                 exit(INTERNAL_ERROR)
+                        if os.path.isdir(file):
+                            # Popultate output adds the image dirs
+                            # Computing its content is complex:
+                            # - We must parse the input markdown
+                            # - We must coinfigure and use the renderer output to do the file name expansion
+                            # This is almost as complex as generating the whole output, so it adds the dir
+                            extra_files = glob.iglob(os.path.join(file, '**'))
+                    if extra_files:
+                        files_list += extra_files
             else:
                 out_dir = out_dir_cwd if f.from_cwd else out_dir_default
                 source = f.expand_filename_both(f.source, make_safe=False)
