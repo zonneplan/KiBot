@@ -2869,7 +2869,8 @@ Notes:
   * Description: Creates a markdown and/or HTML file explaining how to assembly a PCB.
                  Each step shows the already soldered components and the ones to add highlighted.
                  This is equivalent to the PcbDraw's Populate command, but integrated to KiBot.
-                 For more information about the input markdown file please consult the PcbDraw project
+                 For more information about the input markdown file please consult the
+                 [documentation](https://github.com/INTI-CMNB/KiBot/blob/master/docs/populate.md)
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes.
     - **`dir`**: [string='./'] Output directory for the generated files.
