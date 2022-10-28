@@ -208,7 +208,7 @@ i.e. *my_project.kibot.yaml*. The format used is [YAML](https://yaml.org/).
 This is basically a text file with some structure.
 This file can be compressed using *gzip* file format.
 
-If you never used YAML read the following [explanation](https://github.com/INTI-CMNB/KiBot/blob/master/docs/KiPlotYAML.md).
+If you never used YAML read the following [explanation](docs/KiPlotYAML.md).
 Note that the explanation could be useful even if you know YAML.
 
 ### Quick start
