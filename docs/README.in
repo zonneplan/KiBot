@@ -1888,7 +1888,7 @@ relative paths. So you can move the new PCB file to any place, as long as the `3
 - **Original KiCad Automation Scripts**: Scott Bezek, Productize SPRL
 - **KiBoM**: Oliver Henry Walters (@SchrodingersGat)
 - **Interactive HTML BoM**: @qu1ck
-- **PcbDraw**: Jan Mrázek (@yaqwsx)
+- **PcbDraw/Populate**: Jan Mrázek (@yaqwsx)
 - **KiCost**: Dave Vandenbout (@devbisme) and Hildo Guillardi Júnior (@hildogjr)
 - **KiCAD to Boardview exporter**: @whitequark
 - **S-expression parser**: Takafumi Arakaki
@@ -1896,6 +1896,9 @@ relative paths. So you can move the new PCB file to any place, as long as the `3
 - **Board2Pdf**: Albin Dennevi
 - **PyPDF2**: Mathieu Fenniak
 - **svgutils**: Bartosz Telenczuk (@btel)
+- **svgpathtools**: Andy A. Port
+- **pybars**: Will Bond and Mjumbe Wawatu Ukweli (Canonical Ltd.)
+- **pymeta**: Allen Short and Waldemar Kornewald
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout

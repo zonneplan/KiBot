@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.1] - Unreleased
 ### Added
+- New output:
+  - `populate` to create step-by-step assembly instructions
 - Diff:
   - Option to compare only the first schematic page. (See #319)
 - PcbDraw:

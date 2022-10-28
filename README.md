@@ -155,6 +155,9 @@ Notes:
 [**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.3 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `diff`
 
+[**mistune**](https://pypi.org/project/mistune/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/mistune/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-mistune)
+- Mandatory for `populate`
+
 [**QRCodeGen**](https://pypi.org/project/QRCodeGen/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/QRCodeGen/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/QRCodeGen/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-qrcodegen) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `qr_lib`
 
@@ -2861,6 +2864,48 @@ Notes:
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* Populate - Assembly instructions builder
+  * Type: `populate`
+  * Description: Creates a markdown and/or HTML file explaining how to assembly a PCB.
+                 Each step shows the already soldered components and the ones to add highlighted.
+                 This is equivalent to the PcbDraw's Populate command, but integrated to KiBot.
+                 For more information about the input markdown file please consult the PcbDraw project
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `populate` output.
+      * Valid keys:
+        - **`format`**: [string='html'] [html,md] Format for the generated output.
+        - **`input`**: [string=''] Name of the input file describing the assembly. Must be a markdown file.
+                       Note that the YAML section of the file will be skipped, all the needed information
+                       comes from this output and the `renderer` output.
+        - **`renderer`**: [string=''] Name of the output used to render the PCB steps.
+                          Currently this must be a `pcbdraw` output.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `imgname`: [string='img/populating_%d.%x'] Pattern used for the image names. The `%d` is replaced by the image number.
+                     The `%x` is replaced by the extension. Note that the format is selected by the
+                     `renderer`.
+        - `initial_components`: [string|list(string)=''] List of components soldered before the first step.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `template`: [string] The name of the handlebars template used for the HTML output.
+                      The extension must be `.handlebars`, it will be added when missing.
+                      The `simple.handlebars` template is a built-in template.
+        - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * Pick & place
   * Type: `position`
   * Description: Generates the file with position information for the PCB components, used by the pick and place machine.
@@ -4430,7 +4475,7 @@ relative paths. So you can move the new PCB file to any place, as long as the `3
 - **Original KiCad Automation Scripts**: Scott Bezek, Productize SPRL
 - **KiBoM**: Oliver Henry Walters (@SchrodingersGat)
 - **Interactive HTML BoM**: @qu1ck
-- **PcbDraw**: Jan Mrázek (@yaqwsx)
+- **PcbDraw/Populate**: Jan Mrázek (@yaqwsx)
 - **KiCost**: Dave Vandenbout (@devbisme) and Hildo Guillardi Júnior (@hildogjr)
 - **KiCAD to Boardview exporter**: @whitequark
 - **S-expression parser**: Takafumi Arakaki
@@ -4438,6 +4483,9 @@ relative paths. So you can move the new PCB file to any place, as long as the `3
 - **Board2Pdf**: Albin Dennevi
 - **PyPDF2**: Mathieu Fenniak
 - **svgutils**: Bartosz Telenczuk (@btel)
+- **svgpathtools**: Andy A. Port
+- **pybars**: Will Bond and Mjumbe Wawatu Ukweli (Canonical Ltd.)
+- **pymeta**: Allen Short and Waldemar Kornewald
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout

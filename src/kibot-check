@@ -855,6 +855,40 @@ deps = '{\
         "url": null,\
         "url_down": null\
     },\
+    "mistune": {\
+        "arch": "python-mistune",\
+        "command": "mistune",\
+        "comments": [],\
+        "deb_package": "python3-mistune",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 10000,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": true,\
+        "module_name": "mistune",\
+        "name": "mistune",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "populate",\
+        "plugin_dirs": null,\
+        "pypi_name": "mistune",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "populate",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": null,\
+        "url_down": null\
+    },\
     "numpy": {\
         "arch": "python-numpy",\
         "command": "numpy",\

@@ -1630,6 +1630,42 @@ outputs:
           source: '*.pdf'
       # [boolean=false] Use the `pdfunite` tool instead of PyPDF2 Python module
       use_external_command: false
+  # Populate - Assembly instructions builder:
+  # Each step shows the already soldered components and the ones to add highlighted.
+  # This is equivalent to the PcbDraw's Populate command, but integrated to KiBot.
+  # For more information about the input markdown file please consult the PcbDraw project
+  - name: 'populate_example'
+    comment: 'Creates a markdown and/or HTML file explaining how to assembly a PCB.'
+    type: 'populate'
+    dir: 'Example/populate_dir'
+    options:
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [string='html'] [html,md] Format for the generated output
+      format: 'html'
+      # [string='img/populating_%d.%x'] Pattern used for the image names. The `%d` is replaced by the image number.
+      # The `%x` is replaced by the extension. Note that the format is selected by the
+      # `renderer`
+      imgname: 'img/populating_%d.%x'
+      # [string|list(string)=''] List of components soldered before the first step
+      initial_components: ''
+      # [string=''] Name of the input file describing the assembly. Must be a markdown file.
+      # Note that the YAML section of the file will be skipped, all the needed information
+      # comes from this output and the `renderer` output
+      input: ''
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [string=''] Name of the output used to render the PCB steps.
+      # Currently this must be a `pcbdraw` output
+      renderer: ''
+      # [string] The name of the handlebars template used for the HTML output.
+      # The extension must be `.handlebars`, it will be added when missing.
+      # The `simple.handlebars` template is a built-in template
+      template: 'simple'
+      # [string=''] Board variant to apply
+      variant: ''
   # Pick & place:
   # This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew.
   - name: 'position_example'
