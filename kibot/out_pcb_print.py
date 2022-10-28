@@ -771,7 +771,6 @@ class PCB_PrintOptions(VariantOptions):
     def pcbdraw_by_module(self, pcbdraw_file, back):
         self.ensure_tool('LXML')
         from .PcbDraw.plot import PcbPlotter, PlotSubstrate
-        from .PcbDraw.convert import save
         # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
         try:
             plotter = PcbPlotter(GS.board)
@@ -786,7 +785,7 @@ class PCB_PrintOptions(VariantOptions):
 
         if GS.debug_level > 1:
             # Save the SVG only for debug purposes
-            save(image, pcbdraw_file, 300)
+            image.write(pcbdraw_file)
         # Return the SVG as a string
         from lxml.etree import tostring
         return tostring(image).decode()

@@ -399,20 +399,19 @@ class PcbDrawOptions(VariantOptions):
         super().run(name)
         self.ensure_tool('LXML')
         from .PcbDraw.plot import PcbPlotter, PlotPaste, PlotPlaceholders, PlotSubstrate, PlotVCuts
-        from .PcbDraw.convert import save
         # Select a name and format that PcbDraw can handle
-        save_output_name = name
-        save_output_format = self.format
+        svg_save_output_name = save_output_name = name
+        self.rsvg_command = None
         self.convert_command = None
         # Check we have the tools needed for the output format
         if self.format != 'svg':
             # We need RSVG for anything other than SVG
-            self.ensure_tool('RSVG')
+            self.rsvg_command = self.ensure_tool('RSVG')
+            svg_save_output_name = _get_tmp_name('.svg')
             # We need ImageMagick for anything other than SVG and PNG
             if self.format != 'png':
                 self.convert_command = self.ensure_tool('ImageMagick')
                 save_output_name = _get_tmp_name('.png')
-                save_output_format = 'png'
 
         # Apply any variant
         self.filter_pcb_components(GS.board, do_3D=True)
@@ -468,10 +467,18 @@ class PcbDrawOptions(VariantOptions):
             exit(PCBDRAW_ERR)
 
         # Save the result
-        logger.debug('Saving output to '+save_output_name)
-        save(image, save_output_name, self.dpi, format=save_output_format)
-        # Do we need to convert the saved file?
+        logger.debug('Saving output to '+svg_save_output_name)
+        image.write(svg_save_output_name)
+        # Do we need to convert to PNG?
+        if self.rsvg_command:
+            logger.debug('Converting {} -> {}'.format(svg_save_output_name, save_output_name))
+            cmd = [self.rsvg_command, '--dpi-x', str(self.dpi), '--dpi-y', str(self.dpi),
+                   '--output', save_output_name, '--format', 'png', svg_save_output_name]
+            _run_command(cmd)
+            os.remove(svg_save_output_name)
+        # Do we need to convert the saved file? (JPG/BMP)
         if self.convert_command is not None:
+            logger.debug('Converting {} -> {}'.format(save_output_name, name))
             cmd = [self.convert_command, save_output_name]
             if self.format == 'jpg':
                 cmd += ['-quality', '85%']

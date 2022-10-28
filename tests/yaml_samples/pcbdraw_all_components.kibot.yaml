@@ -1,0 +1,22 @@
+kiplot:
+  version: 1
+
+global:
+  pcb_finish: ENIG
+
+outputs:
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDraw
+    options: &pcb_draw_ops
+      format: bmp
+      show_components: all
+
+  - name: PcbDraw2
+    comment: "PcbDraw test bottom"
+    type: pcbdraw
+    dir: PcbDraw
+    options:
+      <<: *pcb_draw_ops
+      bottom: True
