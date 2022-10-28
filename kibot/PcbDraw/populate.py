@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Author: Jan Mrázek
 # License: MIT
 
@@ -21,7 +20,7 @@ try:
 except ModuleNotFoundError:
     InlineParser = mistune.InlineLexer
     HTMLRenderer = mistune.Renderer
-import pybars # type: ignore
+from . import pybars # type: ignore
 import yaml
 
 from . import mdrenderer
