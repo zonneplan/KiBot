@@ -51,8 +51,6 @@ from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
 from .layer import Layer, get_priority
-from .PcbDraw.plot import PcbPlotter, PlotSubstrate
-from .PcbDraw.convert import save
 from . import __version__
 from . import log
 
@@ -771,6 +769,9 @@ class PCB_PrintOptions(VariantOptions):
                 self.plot_vias(la, pc, p, filelist, VIATYPE_MICROVIA, self.micro_via_color)
 
     def pcbdraw_by_module(self, pcbdraw_file, back):
+        self.ensure_tool('LXML')
+        from .PcbDraw.plot import PcbPlotter, PlotSubstrate
+        from .PcbDraw.convert import save
         # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
         try:
             plotter = PcbPlotter(GS.board)

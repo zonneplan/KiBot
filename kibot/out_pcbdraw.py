@@ -31,12 +31,13 @@ from .optionable import Optionable
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
-from .PcbDraw.plot import (PcbPlotter, PlotPaste, PlotPlaceholders, PlotSubstrate, PlotVCuts, mm2ki, PlotComponents,
-                           ResistorValue)
-from .PcbDraw.convert import save
 
 
 logger = log.get_logger()
+
+
+def mm2ki(val: float) -> int:
+    return int(val * 1000000)
 
 
 def pcbdraw_warnings(tag, msg):
@@ -336,6 +337,7 @@ class PcbDrawOptions(VariantOptions):
         return [self._parent.expand_filename(out_dir, self.output)]
 
     def build_plot_components(self):
+        from .PcbDraw.plot import PlotComponents, ResistorValue
         remapping = self._remap
 
         def remapping_fun(ref, lib, name):
@@ -395,6 +397,9 @@ class PcbDrawOptions(VariantOptions):
 
     def run(self, name):
         super().run(name)
+        self.ensure_tool('LXML')
+        from .PcbDraw.plot import PcbPlotter, PlotPaste, PlotPlaceholders, PlotSubstrate, PlotVCuts
+        from .PcbDraw.convert import save
         # Select a name and format that PcbDraw can handle
         save_output_name = name
         save_output_format = self.format
