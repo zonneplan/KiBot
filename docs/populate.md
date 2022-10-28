@@ -45,6 +45,16 @@ to render the images is contained in the input markdown file
 information comes from the KiBot configuration file, and the YAML text from
 the input markdown file is discarded.
 
+You can try the above example using the following
+[PCB example](../tests/data/ArduinoLearningKitStarter.kicad_pcb).
+From the root of the KiBot repository you can run:
+
+```shell
+src/kibot -c tests/yaml_samples/populate_simple.kibot.yaml -b tests/data/ArduinoLearningKitStarter.kicad_pcb -d example
+```
+
+Then load the generated web page: `example/PopulateSimple/index.html`
+
 
 ## Source file format
 
