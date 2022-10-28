@@ -277,8 +277,8 @@ class PcbDrawOptions(VariantOptions):
         # Libs
         if isinstance(self.libs, type):
             self.libs = ['KiCAD-base']
-        else:
-            self.libs = ','.join(self.libs)
+        # else:
+        #    self.libs = ','.join(self.libs)
         # V-CUTS layer
         self._vcuts_layer = Layer.solve(self.vcuts_layer)[0]._id if self.vcuts else 41
         # Highlight
@@ -420,6 +420,7 @@ class PcbDrawOptions(VariantOptions):
             plotter.setup_env_data_path()
             # Libs from the user HOME and the system (for pcbdraw)
             plotter.setup_global_data_path()
+            logger.debugl(3, 'PcbDraw data path: {}'.format(plotter.data_path))
             plotter.yield_warning = pcbdraw_warnings
             plotter.libs = self.libs
             plotter.render_back = self.bottom

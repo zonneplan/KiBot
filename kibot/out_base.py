@@ -160,7 +160,8 @@ class BaseOutput(RegOutput):
 
     def run(self, output_dir):
         self.output_dir = output_dir
-        self.options.run(self.expand_filename(output_dir, self.options.output))
+        output = self.options.output if hasattr(self.options, 'output') else ''
+        self.options.run(self.expand_filename(output_dir, output))
 
 
 class BoMRegex(Optionable):
