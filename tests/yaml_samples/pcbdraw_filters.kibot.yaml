@@ -1,0 +1,49 @@
+kiplot:
+  version: 1
+
+global:
+  solder_mask_color: blue
+  pcb_finish: ENIG
+
+filters:
+  - name: all_smd
+    type: generic
+    exclude_smd: true
+    invert: true
+
+  - name: all_tht
+    type: generic
+    exclude_tht: true
+    invert: true
+
+  - name: all_conn
+    type: generic
+    exclude_any:
+      - field: Value
+        regex: '.*CONN.*'
+      - field: Value
+        regex: 'SERVO.*'
+      - field: Reference
+        regex: 'JP.*'
+      - field: Reference
+        regex: 'U.*'
+    invert: true
+
+outputs:
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDrawFil
+    options: &pcb_draw_ops
+      format: png
+      show_components: ['_kf(all_tht;!all_conn)']
+      #show_components: ['_kf(all_conn)']
+      #show_components: ['_kf(all_smd)']
+
+  - name: PcbDraw2
+    comment: "PcbDraw test bottom"
+    type: pcbdraw
+    dir: PcbDrawFil
+    options:
+      <<: *pcb_draw_ops
+      bottom: True

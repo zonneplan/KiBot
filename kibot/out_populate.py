@@ -87,12 +87,15 @@ class PopulateOptions(VariantOptions):
         logger.debug('Starting renderer with side: {}, components: {}, high: {}, image: {}'.
                      format(side, components, active_components, name))
         # Configure it according to our needs
+        options._filters_to_expand = False
         options.bottom = side.startswith("back")
         options.show_components = [c for c in components if c]
         if not options.show_components:
             options.show_components = None
+        else:
+            options.show_components = options.solve_filters(options.show_components)
         options.add_to_variant = False
-        options.highlight = [c for c in active_components if c]
+        options.highlight = options.solve_filters([c for c in active_components if c])
         options.output = name
         self._renderer.dir = self._parent.dir
         self._renderer._done = False
@@ -102,6 +105,7 @@ class PopulateOptions(VariantOptions):
     def save_options(self):
         """ Save the current renderer settings """
         options = self._renderer.options
+        self.old_filters_to_expand = options._filters_to_expand
         self.old_bottom = options.bottom
         self.old_show_components = options.show_components
         self.old_add_to_variant = options.add_to_variant
@@ -113,6 +117,7 @@ class PopulateOptions(VariantOptions):
     def restore_options(self):
         """ Restore the renderer settings """
         options = self._renderer.options
+        options._filters_to_expand = self.old_filters_to_expand
         options.bottom = self.old_bottom
         options.show_components = self.old_show_components
         options.add_to_variant = self.old_add_to_variant

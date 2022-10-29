@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - A `remap_components` option with better type checks
   - Better support for variants
   - Option to control the *SVG precision* (units scale)
+  - Filter expansion in `show_components` and `highlight`
 - SVG:
   - Option to control the *SVG precision* (units scale)
 - PCB_Print:

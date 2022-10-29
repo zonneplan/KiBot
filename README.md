@@ -851,16 +851,18 @@ filters:
         - `regex`: [string=''] Regular expression to match.
         - *regexp*: Alias for regex.
         - `skip_if_no_field`: [boolean=false] Skip this test if the field doesn't exist.
+    - `exclude_bottom`: [boolean=false] Exclude components on the bottom side of the PCB.
     - `exclude_config`: [boolean=false] Exclude components containing a key value in the config field.
                         Separators are applied.
     - `exclude_empty_val`: [boolean=false] Exclude components with empty 'Value'.
     - `exclude_field`: [boolean=false] Exclude components if a field is named as any of the keys.
     - `exclude_refs`: [list(string)] List of references to be excluded.
                       Use R* for all references with R prefix.
-    - `exclude_smd`: [boolean=false] KiCad 5: exclude components marked as smd in the PCB.
-    - `exclude_tht`: [boolean=false] KiCad 5: exclude components marked as through-hole in the PCB.
+    - `exclude_smd`: [boolean=false] Exclude components marked as smd in the PCB.
+    - `exclude_tht`: [boolean=false] Exclude components marked as through-hole in the PCB.
+    - `exclude_top`: [boolean=false] Exclude components on the top side of the PCB.
     - `exclude_value`: [boolean=false] Exclude components if their 'Value' is any of the keys.
-    - `exclude_virtual`: [boolean=false] KiCad 5: exclude components marked as virtual in the PCB.
+    - `exclude_virtual`: [boolean=false] Exclude components marked as virtual in the PCB.
     - `include_only`: [list(dict)] A series of regular expressions used to include parts.
                       If there are any regex defined here, only components that match against ANY of them will be included.
                       Column/field names are case-insensitive.
@@ -2573,7 +2575,10 @@ Notes:
         - **`mirror`**: [boolean=false] Mirror the board.
         - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated file. Affected by global options.
         - **`show_components`**: [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
-                                 The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied.
+                                 The default is none.
+                                 There two ways of using this option, please consult the `add_to_variant` option.
+                                 You can use `_kf(FILTER)` as an element in the list to get all the components that pass the filter.
+                                 You can even use `_kf(FILTER1;FILTER2)` to concatenate filters.
         - **`style`**: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
           * Valid keys:
             - **`board`**: [string='#208b47'] Color for the board without copper (covered by solder mask).
@@ -2589,13 +2594,14 @@ Notes:
         - `add_to_variant`: [boolean=true] The `show_components` list is added to the list of components indicated by the variant (fitted and not
                             excluded).
                             This is the old behavior, but isn't intuitive because the `show_components` meaning changes when a variant
-                            is used.
+                            is used. In this mode you should avoid using `show_components` and variants.
                             To get a more coherent behavior disable this option, and `none` will always be `none`.
                             Also `all` will be what the variant says.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
-        - `highlight`: [list(string)=[]] List of components to highlight.
+        - `highlight`: [list(string)=[]] List of components to highlight. Filter expansion is also allowed here,
+                       see `show_components`.
         - `libs`: [list(string)=[]] List of libraries.
         - `margin`: [number|dict] Margin around the generated image [mm].
           * Valid keys:

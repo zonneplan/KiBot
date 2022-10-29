@@ -74,6 +74,29 @@ For example:
 - `[[front | R1,R2 ]]` will render front side of the board and adds R1 and R2.
 - `[[back | ]]` will render the back side and no components will be added
 
+Note that KiBot also allows to include groups of components selected by a filter.
+If you use `[[front | R1,_kf(all_smd) ]]` and you have the following filter:
+
+```yaml
+  - name: all_smd
+    type: generic
+    exclude_smd: true
+    invert: true
+```
+The list will be expanded to R1 plus all the SMD components of the board.
+But suppose you want to select all the SMD components of the top side of the board,
+you could use `[[front | _kf(all_smd;all_front) ]]` adding the following filter:
+
+```yaml
+  - name: all_front
+    type: generic
+    exclude_bottom: true
+```
+
+Note that we use `;` as separator because `,` is the separator in the list of references.
+You can also use the `!` (not) operator, like this: `[[front | _kf(all_tht;!all_conn) ]]`
+This will select all THT components that aren't connectors, assuming you provide the
+correct filters. Here is an [example to try](../tests/data/with_filter_html.md).
 
 ## Handlebars template
 

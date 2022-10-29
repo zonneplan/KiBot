@@ -24,6 +24,8 @@ import subprocess
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 from .error import KiPlotConfigurationError
+from .fil_base import BaseFilter
+from .kiplot import load_sch, get_board_comps_data
 from .misc import (PCBDRAW_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, W_PCBDRAW)
 from .gs import GS
 from .layer import Layer
@@ -219,15 +221,19 @@ class PcbDrawOptions(VariantOptions):
             self.mirror = False
             """ *Mirror the board """
             self.highlight = Optionable
-            """ [list(string)=[]] List of components to highlight """
+            """ [list(string)=[]] List of components to highlight. Filter expansion is also allowed here,
+                see `show_components` """
             self.show_components = Optionable
             """ *[list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
-                The default is none. IMPORTANT! This option is relevant only when no filters or variants are applied """
+                The default is none.
+                There two ways of using this option, please consult the `add_to_variant` option.
+                You can use `_kf(FILTER)` as an element in the list to get all the components that pass the filter.
+                You can even use `_kf(FILTER1;FILTER2)` to concatenate filters """
             self.add_to_variant = True
             """ The `show_components` list is added to the list of components indicated by the variant (fitted and not
                 excluded).
                 This is the old behavior, but isn't intuitive because the `show_components` meaning changes when a variant
-                is used.
+                is used. In this mode you should avoid using `show_components` and variants.
                 To get a more coherent behavior disable this option, and `none` will always be `none`.
                 Also `all` will be what the variant says """
             self.vcuts = False
@@ -269,6 +275,7 @@ class PcbDrawOptions(VariantOptions):
         super().__init__()
 
     def config(self, parent):
+        self._filters_to_expand = False
         # Pre-parse the bottom option
         if 'bottom' in self._tree:
             bot = self._tree['bottom']
@@ -285,6 +292,8 @@ class PcbDrawOptions(VariantOptions):
         # Highlight
         if isinstance(self.highlight, type):
             self.highlight = None
+        else:
+            self.highlight = self.solve_filters(self.highlight)
         # Margin
         if isinstance(self.margin, type):
             self.margin = (0, 0, 0, 0)
@@ -301,9 +310,11 @@ class PcbDrawOptions(VariantOptions):
         elif isinstance(self.show_components, str):
             if self.show_components == 'none':
                 self.show_components = None
-            else:
+            else:  # self.show_components == 'all'
                 # Empty list: means we don't filter
                 self.show_components = []
+        else:  # A list
+            self.show_components = self.solve_filters(self.show_components)
         # Resistors remap/flip
         if isinstance(self.resistor_remap, type):
             self.resistor_remap = []
@@ -332,6 +343,52 @@ class PcbDrawOptions(VariantOptions):
             self.style = self.style.to_dict()
         self._expand_id = 'bottom' if self.bottom else 'top'
         self._expand_ext = self.format
+
+    def solve_filters(self, components):
+        """ Solves references to KiBot filters in the list of components to show.
+            They are not yet expanded, just solved to filter objects """
+        new_list = []
+        for c in components:
+            c_s = c.strip()
+            if c_s.startswith('_kf('):
+                # A reference to a KiBot filter
+                if c_s[-1] != ')':
+                    raise KiPlotConfigurationError('Missing `)` in KiBot filter reference: `{}`'.format(c))
+                filter_name = c_s[4:-1].strip().split(';')
+                logger.debug('Expanding KiBot filter in list of components: `{}`'.format(filter_name))
+                filter = BaseFilter.solve_filter(filter_name, 'show_components')
+                if not filter:
+                    raise KiPlotConfigurationError('Unknown filter in: `{}`'.format(c))
+                new_list.append(filter)
+                self._filters_to_expand = True
+            else:
+                new_list.append(c)
+        return new_list
+
+    def expand_filtered_components(self, components):
+        """ Expands references to filters in show_components """
+        if not components or not self._filters_to_expand:
+            return components
+        new_list = []
+        if self._comps:
+            all_comps = self._comps
+        else:
+            load_sch()
+            all_comps = GS.sch.get_components()
+            get_board_comps_data(all_comps)
+        # Scan the list to show
+        for c in components:
+            if isinstance(c, str):
+                # A reference, just add it
+                new_list.append(c)
+                continue
+            # A filter, add its results
+            ext_list = []
+            for ac in all_comps:
+                if c.filter(ac):
+                    ext_list.append(ac.ref)
+            new_list += ext_list
+        return new_list
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
@@ -362,28 +419,29 @@ class PcbDrawOptions(VariantOptions):
                                          no_warn_back=self.warnings == 'visible')
 
         filter_set = None
+        show_components = self.expand_filtered_components(self.show_components)
         if self._comps:
             # A variant is applied, filter the DNF components
             all_comps = set(self.get_fitted_refs())
             if self.add_to_variant:
-                # Old behavior
-                all_comps.update(self.show_components)
+                # Old behavior: components from the variant + show_components
+                all_comps.update(show_components)
                 filter_set = all_comps
             else:
                 # Something more coherent
-                if self.show_components:
+                if show_components:
                     # The user supplied a list of components
                     # Use only the valid ones, but only if fitted
-                    filter_set = set(self.show_components).intersection(all_comps)
+                    filter_set = set(show_components).intersection(all_comps)
                 else:
                     # Empty list means all, but here is all fitted
                     filter_set = all_comps
         else:
             # No variant applied
-            if self.show_components:
+            if show_components:
                 # The user supplied a list of components
                 # Note: if the list is empty this means we don't filter
-                filter_set = set(self.show_components)
+                filter_set = set(show_components)
         if filter_set is not None:
             logger.debug('List of filtered components: '+str(filter_set))
             plot_components.filter = lambda ref: ref in filter_set
@@ -391,7 +449,7 @@ class PcbDrawOptions(VariantOptions):
             logger.debug('Using all components')
 
         if self.highlight is not None:
-            highlight_set = set(self.highlight)
+            highlight_set = set(self.expand_filtered_components(self.highlight))
             plot_components.highlight = lambda ref: ref in highlight_set
         return plot_components
 
