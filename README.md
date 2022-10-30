@@ -3087,6 +3087,8 @@ Notes:
                           Each step is currently 10 degrees. Only for KiCad 6.
         - **`rotate_z`**: [number=0] Steps to rotate around the Z axis, positive is clockwise.
                           Each step is currently 10 degrees. Only for KiCad 6.
+        - **`show_components`**: [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+                                 Unlike the `pcbdraw` output, the default is `all`.
         - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
         - **`zoom`**: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                       Same result as using the mouse wheel in the 3D viewer.
@@ -4517,3 +4519,4 @@ relative paths. So you can move the new PCB file to any place, as long as the `3
   - **Chip in assembly_simple.svg**: [oNline Web Fonts](https://www.onlinewebfonts.com/)
   - **Wrench**: [Freepik - Flaticon](https://www.flaticon.es/iconos-gratis/llave-inglesa)
   - **Most icons for the navigate_results output**: The KiCad project
+  - **PTV09A 3D Model**: Dmitry Levin (https://grabcad.com/dmitry.levin-6)

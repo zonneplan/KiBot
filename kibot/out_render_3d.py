@@ -15,7 +15,8 @@ from shutil import rmtree
 from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL)
 from .gs import GS
-from .kiplot import exec_with_retry, add_extra_options
+from .kiplot import exec_with_retry, add_extra_options, load_sch, get_board_comps_data
+from .optionable import Optionable
 from .out_base_3d import Base3DOptions, Base3D
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -103,6 +104,9 @@ class Render3DOptions(Base3DOptions):
             """ Clip silkscreen at via annuli (KiCad 6) """
             self.subtract_mask_from_silk = True
             """ Clip silkscreen at solder mask edges (KiCad 6) """
+            self.show_components = Optionable
+            """ *[list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+                Unlike the `pcbdraw` output, the default is `all` """
         super().__init__()
         self._expand_ext = 'png'
 
@@ -147,6 +151,17 @@ class Render3DOptions(Base3DOptions):
         view = self._views.get(self.view, None)
         if view is not None:
             self.view = view
+        # List of components
+        self._show_all_components = False
+        if isinstance(self.show_components, str):
+            if self.show_components == 'all':
+                self._show_all_components = True
+            self.show_components = set()
+        elif isinstance(self.show_components, type):
+            # Default is all
+            self._show_all_components = True
+        else:  # a list
+            self.show_components = set(self.show_components)
         self._expand_id += '_'+self._rviews.get(self.view)
 
     def add_step(self, cmd, steps, ops):
@@ -194,6 +209,22 @@ class Render3DOptions(Base3DOptions):
         if not self.subtract_mask_from_silk:
             cmd.append('--dont_substrack_mask_from_silk')
 
+    def apply_show_components(self):
+        if self._show_all_components:
+            # Don't change anything
+            return
+        # The user specified a list of components, we must remove the rest
+        if not self._comps:
+            # No variant or filter applied
+            # Load the components
+            load_sch()
+            self._comps = GS.sch.get_components()
+            get_board_comps_data(self._comps)
+        # If the component isn't listed by the user make it DNF
+        for c in self._comps:
+            if c.ref not in self.show_components:
+                c.fitted = False
+
     def run(self, output):
         super().run(output)
         if GS.ki6 and GS.kicad_version_n < KICAD_VERSION_6_0_2:
@@ -206,6 +237,7 @@ class Render3DOptions(Base3DOptions):
                '3d_view', '--output_name', output]
         self.add_options(cmd)
         # The board
+        self.apply_show_components()
         board_name = self.filter_components()
         cmd.extend([board_name, os.path.dirname(output)])
         cmd, video_remove = add_extra_options(cmd)

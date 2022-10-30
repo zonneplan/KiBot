@@ -544,7 +544,7 @@ class VariantOptions(BaseOptions):
         if extra_debug:
             logger.debug("{} 3D models that aren't for this variant".format('Enable' if enable else 'Disable'))
         self.len_disable = len(DISABLE_3D_MODEL_TEXT)
-        variant_name = self.variant.name
+        variant_name = self.variant.name if self.variant else 'None'
         for m in GS.get_modules_board(board):
             if extra_debug:
                 logger.debug("Processing module " + m.GetReference())

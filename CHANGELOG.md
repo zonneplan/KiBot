@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - generic filters: options to filter by PCB side
 - Diff:
   - Option to compare only the first schematic page. (See #319)
+- iBoM:
+  - Support for the `offset_back_rotation` option
 - PcbDraw:
   - BMP output format
   - Image margin
@@ -22,12 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Better support for variants
   - Option to control the *SVG precision* (units scale)
   - Filter expansion in `show_components` and `highlight`
-- SVG:
-  - Option to control the *SVG precision* (units scale)
 - PCB_Print:
   - Option to control the *SVG precision* (units scale)
-- iBoM:
-  - Support for the `offset_back_rotation` option
+- Render_3D:
+  - Option to render only some components (like in PcbDraw)
+- SVG:
+  - Option to control the *SVG precision* (units scale)
 
 ### Changed
 - Diff:

@@ -1878,6 +1878,9 @@ outputs:
       # [number=0] Steps to rotate around the Z axis, positive is clockwise.
       # Each step is currently 10 degrees. Only for KiCad 6
       rotate_z: 0
+      # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+      # Unlike the `pcbdraw` output, the default is `all`
+      show_components: all
       # [boolean=true] Show the silkscreen layers (KiCad 6)
       show_silkscreen: true
       # [boolean=true] Show the solder mask layers (KiCad 6)
