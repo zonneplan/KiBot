@@ -9,9 +9,13 @@ Dependencies:
   - from: KiAuto
     role: mandatory
     version: 2.0.4
+  - from: ImageMagick
+    role: Automatically crop images
 """
 import os
+import shlex
 from shutil import rmtree
+import subprocess
 from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL)
 from .gs import GS
@@ -22,6 +26,19 @@ from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+
+
+def _run_command(cmd):
+    logger.debug('- Executing: '+shlex.join(cmd))
+    try:
+        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
+        if e.output:
+            logger.debug('Output from command: '+e.output.decode())
+        exit(RENDER_3D_ERR)
+    if cmd_output.strip():
+        logger.debug('- Output from command:\n'+cmd_output.decode())
 
 
 class Render3DOptions(Base3DOptions):
@@ -107,6 +124,13 @@ class Render3DOptions(Base3DOptions):
             self.show_components = Optionable
             """ *[list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
                 Unlike the `pcbdraw` output, the default is `all` """
+            self.auto_crop = False
+            """ When enabled the image will be post-processed to make the background transparent and then remove the
+                empty space around the image. In this mode the `background1` and `background2` colors are ignored """
+            self.auto_crop_color = "#ff70b7"
+            """ Color used for the chroma key. Adjust it if some regions of the board becomes transparent """
+            self.auto_crop_fuzz = 15
+            """ [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels """
         super().__init__()
         self._expand_ext = 'png'
 
@@ -147,7 +171,7 @@ class Render3DOptions(Base3DOptions):
                     self.copper = "#"+color
                     break
         super().config(parent)
-        self.validate_colors(self._colors.keys())
+        self.validate_colors(list(self._colors.keys())+['auto_crop_color'])
         view = self._views.get(self.view, None)
         if view is not None:
             self.view = view
@@ -232,6 +256,9 @@ class Render3DOptions(Base3DOptions):
                          "Please upgrade KiCad to 6.0.2 or newer")
             exit(MISSING_TOOL)
         command = self.ensure_tool('KiAuto')
+        if self.auto_crop:
+            self.background1 = self.background2 = self.auto_crop_color
+            convert_command = self.ensure_tool('ImageMagick')
         # Base command with overwrite
         cmd = [command, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),
                '3d_view', '--output_name', output]
@@ -255,6 +282,12 @@ class Render3DOptions(Base3DOptions):
             video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_3d_view_screencast.ogv')
             if os.path.isfile(video_name):
                 os.remove(video_name)
+        if self.auto_crop:
+            _run_command([convert_command, output, '-fuzz', str(self.auto_crop_fuzz)+'%', '-transparent',
+                          self.color_str_to_rgb(self.auto_crop_color), output])
+            # Don't ask me why I need 2 passes
+            _run_command([convert_command, output, '-trim', '+repage', output])
+            _run_command([convert_command, output, '-trim', '+repage', output])
 
 
 @output_class

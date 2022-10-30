@@ -1829,6 +1829,13 @@ outputs:
     type: 'render_3d'
     dir: 'Example/render_3d_dir'
     options:
+      # [boolean=false] When enabled the image will be post-processed to make the background transparent and then remove the
+      # empty space around the image. In this mode the `background1` and `background2` colors are ignored
+      auto_crop: false
+      # [string='#ff70b7'] Color used for the chroma key. Adjust it if some regions of the board becomes transparent
+      auto_crop_color: '#ff70b7'
+      # [number=15] [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels
+      auto_crop_fuzz: 15
       # [string='#66667F'] First color for the background gradient
       background1: '#66667F'
       # [string='#CCCCE5'] Second color for the background gradient

@@ -14,6 +14,7 @@ from .misc import W_UNKOPS
 from . import log
 
 logger = log.get_logger()
+HEX_DIGIT = '[A-Fa-f0-9]{2}'
 
 
 def do_filter(v):
@@ -31,8 +32,10 @@ class Optionable(object):
     _str_values_re = compile(r"string=.*\] \[([^\]]+)\]")
     _num_range_re = compile(r"number=.*\] \[(-?\d+),(-?\d+)\]")
     _default = None
-    _color_re = re.compile(r"#[A-Fa-f0-9]{6}$")
-    _color_re_a = re.compile(r"#[A-Fa-f0-9]{8}$")
+
+    _color_re = re.compile(r"#("+HEX_DIGIT+"){3}$")
+    _color_re_a = re.compile(r"#("+HEX_DIGIT+"){4}$")
+    _color_re_component = re.compile(HEX_DIGIT)
 
     def __init__(self):
         self._unkown_is_error = False
@@ -372,14 +375,35 @@ class Optionable(object):
     def get_default(cls):
         return cls._default
 
+    def validate_color_str(self, color):
+        return self._color_re.match(color) or self._color_re_a.match(color)
+
     def validate_color(self, name):
-        color = getattr(self, name)
-        if not self._color_re.match(color) and not self._color_re_a.match(color):
+        if not self.validate_color_str(getattr(self, name)):
             raise KiPlotConfigurationError('Invalid color for `{}` use `#rrggbb` or `#rrggbbaa` with hex digits'.format(name))
 
     def validate_colors(self, names):
         for color in names:
             self.validate_color(color)
+
+    def parse_one_color(self, color):
+        res = self._color_re_component.findall(color)
+        alpha = 1.0
+        if len(res) > 3:
+            alpha = int(res[3], 16)/255.0
+        return (int(res[0], 16)/255.0, int(res[1], 16)/255.0, int(res[2], 16)/255.0, alpha)
+
+    def color_to_rgb(self, color):
+        index = 4 if len(color) > 4 else 0
+        alpha = color[index+3]
+        if alpha == 1.0:
+            return "rgb({}, {}, {})".format(round(color[index]*255.0), round(color[index+1]*255.0),
+                                            round(color[index+2]*255.0))
+        return "rgba({}, {}, {}, {})".format(round(color[index]*255.0), round(color[index+1]*255.0),
+                                             round(color[index+2]*255.0), alpha)
+
+    def color_str_to_rgb(self, color):
+        return self.color_to_rgb(self.parse_one_color(color))
 
 
 class BaseOptions(Optionable):

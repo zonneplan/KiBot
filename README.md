@@ -171,18 +171,19 @@ Notes:
   - Find commit hash and/or date for `sch_replace`
   - Find commit hash and/or date for `set_text_variables`
 
+[**ImageMagick**](https://imagemagick.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://imagemagick.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Optional to:
+  - Create outputs preview for `navigate_results`
+  - Create monochrome prints and scaled PNG files for `pcb_print`
+  - Create JPG and BMP images for `pcbdraw`
+  - Automatically crop images for `render_3d`
+
 [**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://gitlab.gnome.org/GNOME/librsvg) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/librsvg2-bin) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PNG icons for `navigate_results`
   - Create PDF, PNG, PS and EPS formats for `pcb_print`
   - Create PNG, JPG and BMP images for `pcbdraw`
-
-[**ImageMagick**](https://imagemagick.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://imagemagick.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Optional to:
-  - Create outputs preview for `navigate_results`
-  - Create monochrome prints and scaled PNG files for `pcb_print`
-  - Create JPG and BMP images for `pcbdraw`
 
 [**Ghostscript**](https://www.ghostscript.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.ghostscript.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/ghostscript) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
@@ -3092,6 +3093,10 @@ Notes:
         - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
         - **`zoom`**: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                       Same result as using the mouse wheel in the 3D viewer.
+        - `auto_crop`: [boolean=false] When enabled the image will be post-processed to make the background transparent and then remove the
+                       empty space around the image. In this mode the `background1` and `background2` colors are ignored.
+        - `auto_crop_color`: [string='#ff70b7'] Color used for the chroma key. Adjust it if some regions of the board becomes transparent.
+        - `auto_crop_fuzz`: [number=15] [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels.
         - `background1`: [string='#66667F'] First color for the background gradient.
         - `background2`: [string='#CCCCE5'] Second color for the background gradient.
         - `board`: [string='#332B16'] Color for the board without copper or solder mask.
@@ -4519,4 +4524,5 @@ relative paths. So you can move the new PCB file to any place, as long as the `3
   - **Chip in assembly_simple.svg**: [oNline Web Fonts](https://www.onlinewebfonts.com/)
   - **Wrench**: [Freepik - Flaticon](https://www.flaticon.es/iconos-gratis/llave-inglesa)
   - **Most icons for the navigate_results output**: The KiCad project
-  - **PTV09A 3D Model**: Dmitry Levin (https://grabcad.com/dmitry.levin-6)
+  - **PTV09A 3D Model**: Dmitry Levin ([GrabCad](https://grabcad.com/dmitry.levin-6))
+  - **PcbDraw PCB example**: [Arduino Learning Kit Starter](https://github.com/RoboticsBrno/ArduinoLearningKitStarter)

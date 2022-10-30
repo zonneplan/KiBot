@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Option to control the *SVG precision* (units scale)
 - Render_3D:
   - Option to render only some components (like in PcbDraw)
+  - Option to auto-crop the resulting PNG
 - SVG:
   - Option to control the *SVG precision* (units scale)
 

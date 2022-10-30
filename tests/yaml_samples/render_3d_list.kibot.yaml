@@ -2,18 +2,19 @@
 kibot:
   version: 1
 
+global:
+  solder_mask_color: blue
+  pcb_finish: ENIG
+
 outputs:
   - name: render_list
     comment: "Render with only some components"
     type: render_3d
     options:
-      width: 800
-      height: 600
+      width: 1280
+      height: 960
       orthographic: true
       zoom: 4
       show_components: ["RV1", "RV2", "U1", "U2", "U3"]
       ray_tracing: true
-      background1: "#ff70b7"
-      background2: "#ff70b7"
-      # background1: "#ffffff"
-      # background2: "#ffffff"
+      auto_crop: true
