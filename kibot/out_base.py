@@ -17,9 +17,10 @@ if not GS.kicad_version_n:
     detect_kicad()
 if GS.ki6:
     # New name, no alias ...
-    from pcbnew import FP_SHAPE, wxPoint, LSET
+    from pcbnew import FP_SHAPE, wxPoint, LSET, FP_3DMODEL, ToMM
 else:
-    from pcbnew import EDGE_MODULE, wxPoint, LSET
+    from pcbnew import EDGE_MODULE, wxPoint, LSET, MODULE_3D_SETTINGS, ToMM
+    FP_3DMODEL = MODULE_3D_SETTINGS
 from .registrable import RegOutput
 from .optionable import Optionable, BaseOptions
 from .fil_base import BaseFilter, apply_fitted_filter, reset_filters, apply_pre_transform
@@ -29,6 +30,26 @@ from .error import KiPlotConfigurationError
 from . import log
 
 logger = log.get_logger()
+HIGHLIGHT_3D_WRL = """#VRML V2.0 utf8
+#KiBot generated highlight
+Shape {
+  appearance Appearance {
+    material DEF RED-01 Material {
+      ambientIntensity 0.494
+      diffuseColor 0.895 0.291 0.213
+      specularColor 0.047 0.055 0.109
+      emissiveColor 0.0 0.0 0.0
+      transparency 0.5
+      shininess 0.25
+    }
+  }
+}
+Shape {
+  geometry Box { size 1 1 1 }
+  appearance Appearance {material USE RED-01 }
+}
+
+"""
 
 
 class BaseOutput(RegOutput):
@@ -204,6 +225,8 @@ class VariantOptions(BaseOptions):
         self._comps = None
         self.undo_3d_models = {}
         self.undo_3d_models_rep = {}
+        self._highlight_3D_file = None
+        self._highlighted_3D_components = None
 
     def config(self, parent):
         super().config(parent)
@@ -584,7 +607,44 @@ class VariantOptions(BaseOptions):
             if not matched and default is not None:
                 self.apply_list_of_3D_models(enable, slots, m, '_default_')
 
-    def filter_pcb_components(self, board, do_3D=False, do_2D=True):
+    def create_3D_highlight_file(self):
+        if self._highlight_3D_file:
+            return
+        with NamedTemporaryFile(mode='w', suffix='.wrl', delete=False) as f:
+            self._highlight_3D_file = f.name
+            logger.debug('Creating temporal highlight file '+f.name)
+            f.write(HIGHLIGHT_3D_WRL)
+
+    def highlight_3D_models(self, board, highlight):
+        if not highlight:
+            return
+        self.create_3D_highlight_file()
+        # TODO: Adjust? Configure?
+        z = (100.0 if self.highlight_on_top else 0.1)/2.54
+        for m in GS.get_modules_board(board):
+            if m.GetReference() not in highlight:
+                continue
+            models = m.Models()
+            bbox = m.GetBoundingBox()
+            # Create a new 3D model for the highlight
+            hl = FP_3DMODEL()
+            hl.m_Scale.x = ToMM(bbox.GetWidth()+self.highlight_padding)/2.54
+            hl.m_Scale.y = ToMM(bbox.GetHeight()+self.highlight_padding)/2.54
+            hl.m_Scale.z = z
+            hl.m_Filename = self._highlight_3D_file
+            models.push_back(hl)
+        self._highlighted_3D_components = highlight
+
+    def unhighlight_3D_models(self, board):
+        if not self._highlighted_3D_components:
+            return
+        for m in GS.get_modules_board(board):
+            if m.GetReference() not in self._highlighted_3D_components:
+                continue
+            m.Models().pop()
+        self._highlighted_3D_components = None
+
+    def filter_pcb_components(self, board, do_3D=False, do_2D=True, highlight=None):
         if not self._comps:
             return False
         self.comps_hash = self.get_refs_hash()
@@ -598,6 +658,8 @@ class VariantOptions(BaseOptions):
             self.apply_3D_variant_aspect(board)
             # Remove the 3D models for not fitted components (also rename)
             self.remove_3D_models(board, self.comps_hash)
+            # Highlight selected components
+            self.highlight_3D_models(board, highlight)
         return True
 
     def unfilter_pcb_components(self, board, do_3D=False, do_2D=True):
@@ -613,6 +675,14 @@ class VariantOptions(BaseOptions):
             self.restore_3D_models(board, self.comps_hash)
             # Re-enable the modules that aren't for this variant
             self.apply_3D_variant_aspect(board, enable=True)
+            # Remove the highlight 3D object
+            self.unhighlight_3D_models(board)
+
+    def remove_highlight_3D_file(self):
+        # Remove the highlight 3D file if it was created
+        if self._highlight_3D_file:
+            os.remove(self._highlight_3D_file)
+            self._highlight_3D_file = None
 
     def set_title(self, title, sch=False):
         self.old_title = None

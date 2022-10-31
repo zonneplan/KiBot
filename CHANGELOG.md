@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Render_3D:
   - Option to render only some components (like in PcbDraw)
   - Option to auto-crop the resulting PNG
+  - Option to highlight components
 - SVG:
   - Option to control the *SVG precision* (units scale)
 

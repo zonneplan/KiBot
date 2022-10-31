@@ -1853,6 +1853,12 @@ outputs:
       download: true
       # [number=720] Image height (aprox.)
       height: 720
+      # [list(string)=[]] List of components to highlight
+      highlight: []
+      # [boolean=false] Highlight over the component (not under)
+      highlight_on_top: false
+      # [number=1.5] [0,1000] How much the highlight extends around the component [mm]
+      highlight_padding: 1.5
       # [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models
       kicad_3d_url: 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
       # [number=0] Steps to move in the X axis, positive is to the right.

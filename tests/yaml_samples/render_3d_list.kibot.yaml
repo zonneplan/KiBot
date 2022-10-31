@@ -16,5 +16,8 @@ outputs:
       orthographic: true
       zoom: 4
       show_components: ["RV1", "RV2", "U1", "U2", "U3"]
+      highlight: ["RV1"]
+      # Looks ugly when rendered by software
+      # highlight_on_top: true
       ray_tracing: true
       auto_crop: true

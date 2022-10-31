@@ -3105,6 +3105,9 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `height`: [number=720] Image height (aprox.).
+        - `highlight`: [list(string)=[]] List of components to highlight.
+        - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
+        - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
         - `no_smd`: [boolean=false] Used to exclude 3D models for surface mount components.
         - `no_tht`: [boolean=false] Used to exclude 3D models for through hole components.

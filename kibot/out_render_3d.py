@@ -124,6 +124,12 @@ class Render3DOptions(Base3DOptions):
             self.show_components = Optionable
             """ *[list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
                 Unlike the `pcbdraw` output, the default is `all` """
+            self.highlight = Optionable
+            """ [list(string)=[]] List of components to highlight """
+            self.highlight_padding = 1.5
+            """ [0,1000] How much the highlight extends around the component [mm] """
+            self.highlight_on_top = False
+            """ Highlight over the component (not under) """
             self.auto_crop = False
             """ When enabled the image will be post-processed to make the background transparent and then remove the
                 empty space around the image. In this mode the `background1` and `background2` colors are ignored """
@@ -187,6 +193,11 @@ class Render3DOptions(Base3DOptions):
         else:  # a list
             self.show_components = set(self.show_components)
         self._expand_id += '_'+self._rviews.get(self.view)
+        # highlight
+        if isinstance(self.highlight, type):
+            self.highlight = set()
+        else:
+            self.highlight = set(self.highlight)
 
     def add_step(self, cmd, steps, ops):
         if steps:
@@ -265,13 +276,14 @@ class Render3DOptions(Base3DOptions):
         self.add_options(cmd)
         # The board
         self.apply_show_components()
-        board_name = self.filter_components()
+        board_name = self.filter_components(highlight=self.highlight)
         cmd.extend([board_name, os.path.dirname(output)])
         cmd, video_remove = add_extra_options(cmd)
         # Execute it
         ret = exec_with_retry(cmd)
         # Remove the temporal PCB
         self.remove_tmp_board(board_name)
+        self.remove_highlight_3D_file()
         # Remove the downloaded 3D models
         if self._tmp_dir:
             rmtree(self._tmp_dir)
