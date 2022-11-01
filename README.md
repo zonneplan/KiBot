@@ -3093,10 +3093,8 @@ Notes:
         - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
         - **`zoom`**: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                       Same result as using the mouse wheel in the 3D viewer.
-        - `auto_crop`: [boolean=false] When enabled the image will be post-processed to make the background transparent and then remove the
-                       empty space around the image. In this mode the `background1` and `background2` colors are ignored.
-        - `auto_crop_color`: [string='#ff70b7'] Color used for the chroma key. Adjust it if some regions of the board becomes transparent.
-        - `auto_crop_fuzz`: [number=15] [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels.
+        - `auto_crop`: [boolean=false] When enabled the image will be post-processed to remove the empty space around the image.
+                       In this mode the `background2` is changed to be the same as `background1`.
         - `background1`: [string='#66667F'] First color for the background gradient.
         - `background2`: [string='#CCCCE5'] Second color for the background gradient.
         - `board`: [string='#332B16'] Color for the board without copper or solder mask.
@@ -3122,6 +3120,10 @@ Notes:
         - `solder_mask`: [string='#208b47'] Color for the solder mask.
         - `solder_paste`: [string='#808080'] Color for the solder paste.
         - `subtract_mask_from_silk`: [boolean=true] Clip silkscreen at solder mask edges (KiCad 6).
+        - `transparent_background`: [boolean=false] When enabled the image will be post-processed to make the background transparent.
+                                    In this mode the `background1` and `background2` colors are ignored.
+        - `transparent_background_color`: [string='#00ff00'] Color used for the chroma key. Adjust it if some regions of the board becomes transparent.
+        - `transparent_background_fuzz`: [number=15] [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels.
         - `variant`: [string=''] Board variant to apply.
         - *wait_ray_tracing*: Alias for wait_render.
         - `wait_render`: [number=-600] How many seconds we must wait before capturing the render (ray tracing or normal).

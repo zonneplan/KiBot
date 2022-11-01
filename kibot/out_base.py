@@ -38,7 +38,7 @@ Shape {
     material DEF RED-01 Material {
       ambientIntensity 0.494
       diffuseColor 1.0 0.0 0.0
-      specularColor 0.047 0.055 0.109
+      specularColor 0.5 0.0 0.0
       emissiveColor 0.0 0.0 0.0
       transparency 0.5
       shininess 0.25

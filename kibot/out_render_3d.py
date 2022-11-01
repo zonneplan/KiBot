@@ -131,11 +131,14 @@ class Render3DOptions(Base3DOptions):
             self.highlight_on_top = False
             """ Highlight over the component (not under) """
             self.auto_crop = False
-            """ When enabled the image will be post-processed to make the background transparent and then remove the
-                empty space around the image. In this mode the `background1` and `background2` colors are ignored """
-            self.auto_crop_color = "#ff70b7"
+            """ When enabled the image will be post-processed to remove the empty space around the image.
+                In this mode the `background2` is changed to be the same as `background1` """
+            self.transparent_background = False
+            """ When enabled the image will be post-processed to make the background transparent.
+                In this mode the `background1` and `background2` colors are ignored """
+            self.transparent_background_color = "#00ff00"
             """ Color used for the chroma key. Adjust it if some regions of the board becomes transparent """
-            self.auto_crop_fuzz = 15
+            self.transparent_background_fuzz = 15
             """ [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels """
         super().__init__()
         self._expand_ext = 'png'
@@ -178,7 +181,7 @@ class Render3DOptions(Base3DOptions):
                     self.copper = "#"+color
                     break
         super().config(parent)
-        self.validate_colors(list(self._colors.keys())+['auto_crop_color'])
+        self.validate_colors(list(self._colors.keys())+['transparent_background_color'])
         view = self._views.get(self.view, None)
         if view is not None:
             self.view = view
@@ -279,8 +282,13 @@ class Render3DOptions(Base3DOptions):
                          "Please upgrade KiCad to 6.0.2 or newer")
             exit(MISSING_TOOL)
         command = self.ensure_tool('KiAuto')
-        if self.auto_crop:
-            self.background1 = self.background2 = self.auto_crop_color
+        if self.transparent_background:
+            # Use the chroma key color
+            self.background1 = self.background2 = self.transparent_background_color
+            convert_command = self.ensure_tool('ImageMagick')
+        elif self.auto_crop:
+            # Avoid a gradient
+            self.background2 = self.background1
             convert_command = self.ensure_tool('ImageMagick')
         # Base command with overwrite
         cmd = [command, '--rec_w', str(self.width+2), '--rec_h', str(self.height+85),
@@ -308,11 +316,10 @@ class Render3DOptions(Base3DOptions):
             if os.path.isfile(video_name):
                 os.remove(video_name)
         if self.auto_crop:
-            _run_command([convert_command, output, '-fuzz', str(self.auto_crop_fuzz)+'%', '-transparent',
-                          self.color_str_to_rgb(self.auto_crop_color), output])
-            # Don't ask me why I need 2 passes
-            _run_command([convert_command, output, '-trim', '+repage', output])
-            _run_command([convert_command, output, '-trim', '+repage', output])
+            _run_command([convert_command, output, '-trim', '+repage', '-trim', '+repage', output])
+        if self.transparent_background:
+            _run_command([convert_command, output, '-fuzz', str(self.transparent_background_fuzz)+'%', '-transparent',
+                          self.color_str_to_rgb(self.transparent_background_color), output])
 
 
 @output_class

@@ -55,12 +55,11 @@ outputs:
       orthographic: true
       zoom: 4
       ray_tracing: true
-      # DAF1FF
       background1: "#DAF1FF"
-      background2: "#DAF1FF"
-      # auto_crop: true
-      # auto_crop_color: "#00FF00"
-      # auto_crop_fuzz: 15
+      auto_crop: true
+      # transparent_background: true
+      # transparent_background_color: "#00FF00"
+      # transparent_background_fuzz: 15
 
 
   - name: Populate

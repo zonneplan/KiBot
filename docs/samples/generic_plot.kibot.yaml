@@ -1829,13 +1829,9 @@ outputs:
     type: 'render_3d'
     dir: 'Example/render_3d_dir'
     options:
-      # [boolean=false] When enabled the image will be post-processed to make the background transparent and then remove the
-      # empty space around the image. In this mode the `background1` and `background2` colors are ignored
+      # [boolean=false] When enabled the image will be post-processed to remove the empty space around the image.
+      # In this mode the `background2` is changed to be the same as `background1`
       auto_crop: false
-      # [string='#ff70b7'] Color used for the chroma key. Adjust it if some regions of the board becomes transparent
-      auto_crop_color: '#ff70b7'
-      # [number=15] [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels
-      auto_crop_fuzz: 15
       # [string='#66667F'] First color for the background gradient
       background1: '#66667F'
       # [string='#CCCCE5'] Second color for the background gradient
@@ -1910,6 +1906,13 @@ outputs:
       solder_paste: '#808080'
       # [boolean=true] Clip silkscreen at solder mask edges (KiCad 6)
       subtract_mask_from_silk: true
+      # [boolean=false] When enabled the image will be post-processed to make the background transparent.
+      # In this mode the `background1` and `background2` colors are ignored
+      transparent_background: false
+      # [string='#00ff00'] Color used for the chroma key. Adjust it if some regions of the board becomes transparent
+      transparent_background_color: '#00ff00'
+      # [number=15] [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels
+      transparent_background_fuzz: 15
       # [string=''] Board variant to apply
       variant: ''
       # [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view
