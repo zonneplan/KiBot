@@ -853,7 +853,9 @@ class VariantOptions(BaseOptions):
 
     def expand_kf_components(self, components):
         """ Expands references to filters in show_components """
-        if not components or not self._filters_to_expand:
+        if not components:
+            return []
+        if not self._filters_to_expand:
             return components
         new_list = []
         if self._comps:
