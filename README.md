@@ -2890,7 +2890,7 @@ Notes:
                        Note that the YAML section of the file will be skipped, all the needed information
                        comes from this output and the `renderer` output.
         - **`renderer`**: [string=''] Name of the output used to render the PCB steps.
-                          Currently this must be a `pcbdraw` output.
+                          Currently this must be a `pcbdraw` or `render_3d` output.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `imgname`: [string='img/populating_%d.%x'] Pattern used for the image names. The `%d` is replaced by the image number.

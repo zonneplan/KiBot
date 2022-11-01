@@ -1663,7 +1663,7 @@ outputs:
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
       # [string=''] Name of the output used to render the PCB steps.
-      # Currently this must be a `pcbdraw` output
+      # Currently this must be a `pcbdraw` or `render_3d` output
       renderer: ''
       # [string] The name of the handlebars template used for the HTML output.
       # The extension must be `.handlebars`, it will be added when missing.

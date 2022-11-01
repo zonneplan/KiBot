@@ -43,7 +43,7 @@ class PopulateOptions(VariantOptions):
         with document:
             self.renderer = ''
             """ *Name of the output used to render the PCB steps.
-                Currently this must be a `pcbdraw` output """
+                Currently this must be a `pcbdraw` or `render_3d` output """
             self.template = 'simple'
             """ [string] The name of the handlebars template used for the HTML output.
                 The extension must be `.handlebars`, it will be added when missing.
@@ -88,17 +88,21 @@ class PopulateOptions(VariantOptions):
                      format(side, components, active_components, name))
         # Configure it according to our needs
         options._filters_to_expand = False
-        options.bottom = side.startswith("back")
         options.show_components = [c for c in components if c]
         if not options.show_components:
-            options.show_components = None
+            options.show_components = None if self._renderer_is_pcbdraw else []
         else:
-            options.show_components = options.solve_filters(options.show_components)
-        options.add_to_variant = False
-        options.highlight = options.solve_filters([c for c in active_components if c])
+            options.show_components = options.solve_kf_filters(options.show_components)
+        options.highlight = options.solve_kf_filters([c for c in active_components if c])
         options.output = name
         self._renderer.dir = self._parent.dir
         self._renderer._done = False
+        if self._renderer_is_pcbdraw:
+            options.add_to_variant = False
+            options.bottom = side.startswith("back")
+        else:  # render_3D
+            options.view = 'Z' if side.startswith("back") else 'z'
+            options._show_all_components = False
         run_output(self._renderer)
         return options.expand_filename_both(name, is_sch=False)
 
@@ -106,25 +110,33 @@ class PopulateOptions(VariantOptions):
         """ Save the current renderer settings """
         options = self._renderer.options
         self.old_filters_to_expand = options._filters_to_expand
-        self.old_bottom = options.bottom
         self.old_show_components = options.show_components
-        self.old_add_to_variant = options.add_to_variant
         self.old_highlight = options.highlight
         self.old_output = options.output
         self.old_dir = self._renderer.dir
         self.old_done = self._renderer._done
+        if self._renderer_is_pcbdraw:
+            self.old_bottom = options.bottom
+            self.old_add_to_variant = options.add_to_variant
+        else:  # render_3D
+            self.old_view = options.view
+            self.old_show_all_components = options._show_all_components
 
     def restore_options(self):
         """ Restore the renderer settings """
         options = self._renderer.options
         options._filters_to_expand = self.old_filters_to_expand
-        options.bottom = self.old_bottom
         options.show_components = self.old_show_components
-        options.add_to_variant = self.old_add_to_variant
         options.highlight = self.old_highlight
         options.output = self.old_output
         self._renderer.dir = self.old_dir
         self._renderer._done = self.old_done
+        if self._renderer_is_pcbdraw:
+            options.bottom = self.old_bottom
+            options.add_to_variant = self.old_add_to_variant
+        else:  # render_3D
+            options.view = self.old_view
+            options._show_all_components = self.old_show_all_components
 
     def generate_images(self, dir_name, content):
         # Memorize the current options
@@ -157,7 +169,10 @@ class PopulateOptions(VariantOptions):
         if out is None:
             raise KiPlotConfigurationError('Unknown output `{}` selected in {}'.format(self.renderer, self._parent))
         config_output(out)
+        if out.type not in ['pcbdraw', 'render_3d']:
+            raise KiPlotConfigurationError('The `renderer` must be `pcbdraw` or `render_3d` type, not {}'.format(out.type))
         self._renderer = out
+        self._renderer_is_pcbdraw = out.type == 'pcbdraw'
         # Load the input content
         try:
             _, content = load_content(self.input)
