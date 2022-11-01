@@ -313,7 +313,7 @@ class PcbDrawOptions(VariantOptions):
                 # Empty list: means we don't filter
                 self.show_components = []
         else:  # A list
-            self.show_components = self.solve_filters(self.show_components)
+            self.show_components = self.solve_kf_filters(self.show_components)
         # Resistors remap/flip
         if isinstance(self.resistor_remap, type):
             self.resistor_remap = []
