@@ -5,12 +5,13 @@
 # Project: KiBot (formerly KiPlot)
 from copy import deepcopy
 from glob import glob
+import math
 import os
 import re
 from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
-from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT
+from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD
 if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
@@ -36,7 +37,7 @@ Shape {
   appearance Appearance {
     material DEF RED-01 Material {
       ambientIntensity 0.494
-      diffuseColor 0.895 0.291 0.213
+      diffuseColor 1.0 0.0 0.0
       specularColor 0.047 0.055 0.109
       emissiveColor 0.0 0.0 0.0
       transparency 0.5
@@ -615,6 +616,17 @@ class VariantOptions(BaseOptions):
             logger.debug('Creating temporal highlight file '+f.name)
             f.write(HIGHLIGHT_3D_WRL)
 
+    def get_crtyd_bbox(self, board, m):
+        fcrtyd = board.GetLayerID('F.CrtYd')
+        bcrtyd = board.GetLayerID('B.CrtYd')
+        bbox = Rect()
+        for gi in m.GraphicalItems():
+            if gi.GetClass() == 'MGRAPHIC':
+                l_gi = gi.GetLayer()
+                if l_gi == fcrtyd or l_gi == bcrtyd:
+                    bbox.Union(gi.GetBoundingBox().getWxRect())
+        return bbox
+
     def highlight_3D_models(self, board, highlight):
         if not highlight:
             return
@@ -622,16 +634,46 @@ class VariantOptions(BaseOptions):
         # TODO: Adjust? Configure?
         z = (100.0 if self.highlight_on_top else 0.1)/2.54
         for m in GS.get_modules_board(board):
-            if m.GetReference() not in highlight:
+            ref = m.GetReference()
+            if ref not in highlight:
                 continue
             models = m.Models()
-            bbox = m.GetBoundingBox()
+            m_pos = m.GetPosition()
+            rot = m.GetOrientationDegrees()
+            # Measure the courtyard
+            bbox = self.get_crtyd_bbox(board, m)
+            if bbox.x1 is not None:
+                # Use the courtyard as bbox
+                w = bbox.x2-bbox.x1
+                h = bbox.y2-bbox.y1
+                m_cen = wxPoint((bbox.x2+bbox.x1)/2, (bbox.y2+bbox.y1)/2)
+            else:
+                # No courtyard, ask KiCad
+                # This will include things like text
+                bbox = m.GetBoundingBox()
+                w = bbox.GetWidth()
+                h = bbox.GetHeight()
+                m_cen = m.GetCenter()
+                logger.warning(W_NOCRTYD+"Missing courtyard for `{}`".format(ref))
+            # Compute the offset
+            off_x = m_cen.x - m_pos.x
+            off_y = m_cen.y - m_pos.y
+            rrot = math.radians(rot)
+            # KiCad coordinates are inverted in the Y axis
+            off_y = -off_y
+            # Apply the component rotation
+            off_xp = off_x*math.cos(rrot)+off_y*math.sin(rrot)
+            off_yp = -off_x*math.sin(rrot)+off_y*math.cos(rrot)
             # Create a new 3D model for the highlight
             hl = FP_3DMODEL()
-            hl.m_Scale.x = ToMM(bbox.GetWidth()+self.highlight_padding)/2.54
-            hl.m_Scale.y = ToMM(bbox.GetHeight()+self.highlight_padding)/2.54
+            hl.m_Scale.x = (ToMM(w)+self.highlight_padding)/2.54
+            hl.m_Scale.y = (ToMM(h)+self.highlight_padding)/2.54
             hl.m_Scale.z = z
+            hl.m_Rotation.z = rot
+            hl.m_Offset.x = ToMM(off_xp)
+            hl.m_Offset.y = ToMM(off_yp)
             hl.m_Filename = self._highlight_3D_file
+            # Add the model
             models.push_back(hl)
         self._highlighted_3D_components = highlight
 
