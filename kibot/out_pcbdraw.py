@@ -24,7 +24,6 @@ import subprocess
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 from .error import KiPlotConfigurationError
-from .fil_base import BaseFilter
 from .kiplot import load_sch, get_board_comps_data
 from .misc import (PCBDRAW_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, W_PCBDRAW)
 from .gs import GS
@@ -293,7 +292,7 @@ class PcbDrawOptions(VariantOptions):
         if isinstance(self.highlight, type):
             self.highlight = None
         else:
-            self.highlight = self.solve_filters(self.highlight)
+            self.highlight = self.solve_kf_filters(self.highlight)
         # Margin
         if isinstance(self.margin, type):
             self.margin = (0, 0, 0, 0)
@@ -343,27 +342,6 @@ class PcbDrawOptions(VariantOptions):
             self.style = self.style.to_dict()
         self._expand_id = 'bottom' if self.bottom else 'top'
         self._expand_ext = self.format
-
-    def solve_filters(self, components):
-        """ Solves references to KiBot filters in the list of components to show.
-            They are not yet expanded, just solved to filter objects """
-        new_list = []
-        for c in components:
-            c_s = c.strip()
-            if c_s.startswith('_kf('):
-                # A reference to a KiBot filter
-                if c_s[-1] != ')':
-                    raise KiPlotConfigurationError('Missing `)` in KiBot filter reference: `{}`'.format(c))
-                filter_name = c_s[4:-1].strip().split(';')
-                logger.debug('Expanding KiBot filter in list of components: `{}`'.format(filter_name))
-                filter = BaseFilter.solve_filter(filter_name, 'show_components')
-                if not filter:
-                    raise KiPlotConfigurationError('Unknown filter in: `{}`'.format(c))
-                new_list.append(filter)
-                self._filters_to_expand = True
-            else:
-                new_list.append(c)
-        return new_list
 
     def expand_filtered_components(self, components):
         """ Expands references to filters in show_components """

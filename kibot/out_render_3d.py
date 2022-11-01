@@ -141,6 +141,7 @@ class Render3DOptions(Base3DOptions):
         self._expand_ext = 'png'
 
     def config(self, parent):
+        self._filters_to_expand = False
         # Apply global defaults
         if GS.global_pcb_material is not None:
             material = GS.global_pcb_material.lower()
@@ -186,18 +187,18 @@ class Render3DOptions(Base3DOptions):
         if isinstance(self.show_components, str):
             if self.show_components == 'all':
                 self._show_all_components = True
-            self.show_components = set()
+            self.show_components = []
         elif isinstance(self.show_components, type):
             # Default is all
             self._show_all_components = True
         else:  # a list
-            self.show_components = set(self.show_components)
+            self.show_components = self.solve_kf_filters(self.show_components)
         self._expand_id += '_'+self._rviews.get(self.view)
         # highlight
         if isinstance(self.highlight, type):
-            self.highlight = set()
+            self.highlight = None
         else:
-            self.highlight = set(self.highlight)
+            self.highlight = self.solve_kf_filters(self.highlight)
 
     def add_step(self, cmd, steps, ops):
         if steps:
@@ -256,9 +257,20 @@ class Render3DOptions(Base3DOptions):
             self._comps = GS.sch.get_components()
             get_board_comps_data(self._comps)
         # If the component isn't listed by the user make it DNF
+        show_components = set(self.expand_kf_components(self.show_components))
+        self.undo_show = set()
         for c in self._comps:
-            if c.ref not in self.show_components:
+            if c.ref not in show_components and c.fitted:
                 c.fitted = False
+                self.undo_show.add(c.ref)
+
+    def undo_show_components(self):
+        if self._show_all_components:
+            # Don't change anything
+            return
+        for c in self._comps:
+            if c.ref in self.undo_show:
+                c.fitted = True
 
     def run(self, output):
         super().run(output)
@@ -276,7 +288,8 @@ class Render3DOptions(Base3DOptions):
         self.add_options(cmd)
         # The board
         self.apply_show_components()
-        board_name = self.filter_components(highlight=self.highlight)
+        board_name = self.filter_components(highlight=set(self.expand_kf_components(self.highlight)))
+        self.undo_show_components()
         cmd.extend([board_name, os.path.dirname(output)])
         cmd, video_remove = add_extra_options(cmd)
         # Execute it

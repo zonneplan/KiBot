@@ -830,6 +830,52 @@ class VariantOptions(BaseOptions):
             for f in glob(board_name.replace('.kicad_pcb', '.*')):
                 os.remove(f)
 
+    def solve_kf_filters(self, components):
+        """ Solves references to KiBot filters in the list of components to show.
+            They are not yet expanded, just solved to filter objects """
+        new_list = []
+        for c in components:
+            c_s = c.strip()
+            if c_s.startswith('_kf('):
+                # A reference to a KiBot filter
+                if c_s[-1] != ')':
+                    raise KiPlotConfigurationError('Missing `)` in KiBot filter reference: `{}`'.format(c))
+                filter_name = c_s[4:-1].strip().split(';')
+                logger.debug('Expanding KiBot filter in list of components: `{}`'.format(filter_name))
+                filter = BaseFilter.solve_filter(filter_name, 'show_components')
+                if not filter:
+                    raise KiPlotConfigurationError('Unknown filter in: `{}`'.format(c))
+                new_list.append(filter)
+                self._filters_to_expand = True
+            else:
+                new_list.append(c)
+        return new_list
+
+    def expand_kf_components(self, components):
+        """ Expands references to filters in show_components """
+        if not components or not self._filters_to_expand:
+            return components
+        new_list = []
+        if self._comps:
+            all_comps = self._comps
+        else:
+            load_sch()
+            all_comps = GS.sch.get_components()
+            get_board_comps_data(all_comps)
+        # Scan the list to show
+        for c in components:
+            if isinstance(c, str):
+                # A reference, just add it
+                new_list.append(c)
+                continue
+            # A filter, add its results
+            ext_list = []
+            for ac in all_comps:
+                if c.filter(ac):
+                    ext_list.append(ac.ref)
+            new_list += ext_list
+        return new_list
+
     def run(self, output_dir):
         """ Makes the list of components available """
         if not self.dnf_filter and not self.variant and not self.pre_transform:
