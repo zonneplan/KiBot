@@ -3,7 +3,7 @@
 # Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-# KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/9890
+# KiCad 6/6.0.1 bug: https://gitlab.com/kicad/code/kicad/-/issues/9890
 """
 Dependencies:
   - from: KiAuto
