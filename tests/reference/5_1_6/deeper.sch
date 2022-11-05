@@ -1,1 +1,0 @@
-../../board_samples/kicad_5/deeper.sch
