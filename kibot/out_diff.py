@@ -104,6 +104,10 @@ class DiffOptions(BaseOptions):
                 Note that when no differeces are found we get a page saying *No diff* """
             self.only_first_sch_page = False
             """ Compare only the main schematic page (root page) """
+            self.always_fail_if_missing = False
+            """ Always fail if the old/new file doesn't exist. Currently we don't fail if they are from a repo.
+                So if you refer to a repo point where the file wasn't created KiBot will use an empty file.
+                Enabling this option KiBot will report an error """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -156,6 +160,13 @@ class DiffOptions(BaseOptions):
         else:
             GS.check_pcb()
             name = GS.pcb_file
+            if not os.path.isfile(name):
+                if self.always_fail_if_missing:
+                    raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
+                with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
+                    f.write("(kicad_pcb (version 20171130) (host pcbnew 5.1.5))\n")
+                    name = f.name
+                    self._to_remove.append(name)
         hash = self.get_digest(name)
         self.add_to_cache(name, hash)
         return hash
@@ -167,6 +178,26 @@ class DiffOptions(BaseOptions):
         else:
             GS.check_sch()
             name = GS.sch_file
+            ext = os.path.splitext(name)[1]
+            if not os.path.isfile(name):
+                if self.always_fail_if_missing:
+                    raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
+                with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
+                    logger.debug('Creating empty schematic: '+f.name)
+                    if ext == '.kicad_sch':
+                        f.write("(kicad_sch (version 20211123) (generator eeschema))\n")
+                    else:
+                        f.write("EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n$Descr A4 11693 8268\n"
+                                "$EndDescr\n$EndSCHEMATC\n")
+                    name = f.name
+                    self._to_remove.append(name)
+                if ext != '.kicad_sch':
+                    lib_name = os.path.splitext(name)[0]+'-cache.lib'
+                    if not os.path.isfile(lib_name):
+                        logger.debug('Creating dummy cache lib: '+lib_name)
+                        with open(lib_name, 'w') as f:
+                            f.write("EESchema-LIBRARY Version 2.4\n#\n#End Library\n")
+                        self._to_remove.append(lib_name)
         # Schematics can have sub-sheets
         sch = load_any_sch(name, os.path.splitext(os.path.basename(name))[0])
         files = sch.get_files()
@@ -441,6 +472,7 @@ class DiffOptions(BaseOptions):
 
     def run(self, name):
         self.command = self.ensure_tool('KiDiff')
+        self._to_remove = []
         if self.old_type == 'git' or self.new_type == 'git':
             self.git_command = self.ensure_tool('Git')
         if not self.pcb:
@@ -484,6 +516,8 @@ class DiffOptions(BaseOptions):
                 rmtree(d)
             if self.incl_file:
                 os.remove(self.incl_file)
+            for f in self._to_remove:
+                os.remove(f)
 
 
 @output_class

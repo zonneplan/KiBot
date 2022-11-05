@@ -1,0 +1,25 @@
+kibot:
+  version: 1
+
+outputs:
+  - name: 'diff_pcb'
+    comment: "PCB difference with git HEAD"
+    type: diff
+    layers: ['F.Cu', 'In1.Cu']
+    options:
+      old: v1
+      old_type: git
+      new: HEAD
+      new_type: git
+      cache_dir: .cache
+
+  - name: 'diff_sch'
+    comment: "SCH difference with git HEAD"
+    type: diff
+    options:
+      pcb: false
+      old: v1
+      old_type: git
+      new: HEAD
+      new_type: git
+      # always_fail_if_missing: true

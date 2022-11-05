@@ -44,7 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   KiCad 5.
 - SVG, PCB_Print, PcbDraw: Problems to display the outputs using Chrome and
   Firefox.
-
+- Diff: Problems when comparing to a repo point where the PCB/SCH didn't exist
+  yet. (#323)
 
 ## [1.4.0] - 2022-10-12
 ### Added

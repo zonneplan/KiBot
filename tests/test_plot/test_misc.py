@@ -1405,6 +1405,48 @@ def test_diff_git_3(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+def test_diff_git_4(test_dir):
+    """ Difference between the two repo points, wipe the current file, the first is missing """
+    prj = 'light_control'
+    yaml = 'diff_git_4'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    # Create a git repo
+    repo_dir = os.path.join(ctx.output_dir, 'repo')
+    os.makedirs(repo_dir)
+    git_init(ctx, repo_dir)
+    # Copy the "old" file
+    pcb = prj+'.kicad_pcb'
+    sch = prj+context.KICAD_SCH_EXT
+    file = os.path.join(repo_dir, pcb)
+    # Create a dummy
+    dummy = os.path.join(repo_dir, 'dummy')
+    with open(dummy, 'wt') as f:
+        f.write('dummy\n')
+    # Add it to the repo
+    ctx.run_command(['git', 'add', 'dummy'], chdir_out=repo_dir)
+    ctx.run_command(['git', 'commit', '-m', 'Empty repo'], chdir_out=repo_dir)
+    # Tag it
+    ctx.run_command(['git', 'tag', '-a', 'v1', '-m', 'Tag description'], chdir_out=repo_dir)
+    # Add an extra commit, now with the files
+    shutil.copy2(ctx.board_file, file)
+    shutil.copy2(ctx.board_file.replace('.kicad_pcb', context.KICAD_SCH_EXT),
+                 file.replace('.kicad_pcb', context.KICAD_SCH_EXT))
+    ctx.run_command(['git', 'add', sch, pcb], chdir_out=repo_dir)
+    ctx.run_command(['git', 'commit', '-m', 'Filled repo'], chdir_out=repo_dir)
+    # Copy the "new" file
+    shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), file)
+    # Add it to the repo
+    ctx.run_command(['git', 'add', pcb], chdir_out=repo_dir)
+    ctx.run_command(['git', 'commit', '-m', 'New version'], chdir_out=repo_dir)
+    # Now just wipe the current file
+    shutil.copy2(ctx.board_file.replace(prj, '3Rs'), file)
+    # Run the test
+    ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', prj+'-only_new.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
+    ctx.compare_pdf(prj+'-diff_sch.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
+    ctx.clean_up(keep_project=True)
+
+
 @pytest.mark.slow
 @pytest.mark.eeschema
 def test_diff_file_sch_1(test_dir):
