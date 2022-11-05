@@ -46,6 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Firefox.
 - Diff: Problems when comparing to a repo point where the PCB/SCH didn't exist
   yet. (#323)
+- Report: Problems when using NPTH holes with sizes that doesn't correspond to
+  real drill tools. It generated bogus reports about wrong OARs. (#326)
 
 ## [1.4.0] - 2022-10-12
 ### Added

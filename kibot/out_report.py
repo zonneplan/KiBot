@@ -487,6 +487,36 @@ class ReportOptions(BaseOptions):
             hole_ec = hole
         return oar, oar_ec, hole_ec
 
+    def analyze_oar(self, oar_t, oar_ec_t, is_pth, min_oar, pad, dr_x_real, dr_y_real, pad_sz, dr):
+        """ Check the computed OAR and choose if we use it or not.
+            Inform anomalies to the user. """
+        if oar_t > 0:
+            if is_pth:
+                # For plated holes we always use it and report anomalies
+                self.oar_pads = min(self.oar_pads, oar_t)
+                self.oar_pads_ec = min(self.oar_pads_ec, oar_ec_t)
+                if oar_t < min_oar:
+                    logger.warning(W_WRONGOAR+"Really small OAR detected ({} mm) for pad {} using drill tool ({}, {})".
+                                   format(to_mm(oar_t, 4), get_pad_info(pad), to_mm(dr_x_real), to_mm(dr_y_real)))
+                    if pad_sz == dr:
+                        logger.warning(W_WRONGOAR+"Try adjusting the drill size to an available drill tool")
+            else:
+                # For non plated holes we don't use values resulting from the fact that the tool is smaller
+                if oar_t < min_oar and pad_sz == dr:
+                    logger.warning(W_WRONGOAR+"Potential copper ring for pad {}, change the pad size to ({}, {})".
+                                   format(get_pad_info(pad), to_mm(dr_x_real), to_mm(dr_y_real)))
+                    logger.warning(W_WRONGOAR+"Or enlarge both to the size of an available drill tool")
+                else:
+                    self.oar_pads = min(self.oar_pads, oar_t)
+                    self.oar_pads_ec = min(self.oar_pads_ec, oar_ec_t)
+        elif oar_t < 0:
+            # The negative value can be a result of converting the drill size to a real drill size
+            # So we inform it only if the pad and drill are different
+            if pad_sz != dr and is_pth:
+                logger.warning(W_WRONGOAR+"Negative OAR detected for pad "+get_pad_info(pad))
+        elif oar_t == 0 and is_pth:
+            logger.warning(W_WRONGOAR+"Plated pad without copper "+get_pad_info(pad))
+
     def collect_data(self, board):
         ds = board.GetDesignSettings()
         self.extra_pth_drill = GS.global_extra_pth_drill*pcbnew.IU_PER_MM
@@ -619,16 +649,7 @@ class ReportOptions(BaseOptions):
                 self.pad_drill_real_ec = min(dr_ec, self.pad_drill_real_ec)
                 oar_t = min(oar_x, oar_y)
                 oar_ec_t = min(oar_ec_x, oar_ec_y)
-                if oar_t > 0:
-                    self.oar_pads = min(self.oar_pads, oar_t)
-                    self.oar_pads_ec = min(self.oar_pads_ec, oar_ec_t)
-                    if oar_t < min_oar:
-                        logger.warning(W_WRONGOAR+"Really small OAR detected ({} mm) for pad {}".
-                                       format(to_mm(oar_t, 4), get_pad_info(pad)))
-                elif oar_t < 0:
-                    logger.warning(W_WRONGOAR+"Negative OAR detected for pad "+get_pad_info(pad))
-                elif oar_t == 0 and is_pth:
-                    logger.warning(W_WRONGOAR+"Plated pad without copper "+get_pad_info(pad))
+                self.analyze_oar(oar_t, oar_ec_t, is_pth, min_oar, pad, dr_x_real, dr_y_real, pad_sz, dr)
         self._vias_m = sorted(self._vias.keys())
         self._vias_ec_m = sorted(self._vias_ec.keys())
         # Via Pad size
