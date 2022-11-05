@@ -1,0 +1,75 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: "base"
+    dir: Generated
+    type: render_3d
+    run_by_default: false
+    options:
+      ray_tracing: true
+      width: 2000
+      height: 1000
+
+  - name: "top"
+    comment: "Top view"
+    dir: Generated
+    type: render_3d
+    extends: "base"
+    options:
+      rotate_x: 3
+      rotate_z: -2
+
+  - name: "bottom"
+    comment: "Bottom view"
+    dir: Generated
+    type: render_3d
+    extends: "top"
+    options:
+      width: 1920
+      view: "bottom"
+
+  - name: 'print_sch'
+    comment: "Print schematic (PDF)"
+    dir: Generated
+    type: pdf_sch_print
+    options:
+      output: Schematic.pdf
+
+  - name: 'print_top_bot'
+    comment: "Print Top and Bottom layers"
+    type: pcb_print
+    dir: Generated
+    options:
+      format: 'PDF'
+      pages:
+        - scaling: 2.0
+          sheet: Front
+          layers:
+            - layer: Edge.Cuts
+            - layer: F.Cu
+            - layer: F.Mask
+              color: '#14332440'
+            - layer: F.Paste
+            - layer: F.SilkS
+            - layer: F.Fab
+              plot_footprint_refs: false
+              plot_footprint_values: false
+            - layer: Dwgs.User
+        - mirror: true
+          scaling: 2.0
+          layers:
+            - layer: B.Fab
+              color: "#000080"
+            - layer: Edge.Cuts
+              color: "#FF8000"
+            - layer: B.SilkS
+              color: "#626262"
+            - layer: B.Paste
+              color: "#FF8A8A"
+            - layer: B.Cu
+              color: "#B3FFB3"
+            - layer: B.Mask
+              color: '#14332480'
+            - layer: Dwgs.User
