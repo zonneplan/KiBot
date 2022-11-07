@@ -1405,6 +1405,8 @@ def test_diff_git_3(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
+@pytest.mark.eeschema
 def test_diff_git_4(test_dir):
     """ Difference between the two repo points, wipe the current file, the first is missing """
     prj = 'light_control'
