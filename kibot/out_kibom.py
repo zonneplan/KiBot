@@ -124,6 +124,8 @@ class KiBoMConfig(Optionable):
             """ Separator used for the list of references """
             self.digikey_link = Optionable
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only) """
+            self.mouser_link = Optionable
+            """ [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page (HTML only) """
             self.group_fields = GroupFields
             """ *[list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
@@ -222,6 +224,11 @@ class KiBoMConfig(Optionable):
             self.digikey_link = None
         elif isinstance(self.digikey_link, list):
             self.digikey_link = '\t'.join(self.digikey_link)
+        # mouser_link
+        if isinstance(self.mouser_link, type):
+            self.mouser_link = None
+        elif isinstance(self.mouser_link, list):
+            self.mouser_link = '\t'.join(self.mouser_link)
         # group_fields
         if isinstance(self.group_fields, type):
             self.group_fields = None
@@ -318,6 +325,7 @@ class KiBoMConfig(Optionable):
             self.write_bool('hide_pcb_info')
             self.write_str('ref_separator')
             self.write_str('digikey_link')
+            self.write_str('mouser_link')
             # Ask to keep the output name
             f.write('output_file_name = %O\n')
             self.write_vector(self.group_fields, 'GROUP_FIELDS')

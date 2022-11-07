@@ -1081,6 +1081,8 @@ outputs:
             # `regexp` is an alias for `regex`
         # [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible
         merge_blank_fields: true
+        # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page (HTML only)
+        mouser_link: ''
         # [boolean=true] First column is the row number
         number_rows: true
         # [string=' '] Separator used for the list of references

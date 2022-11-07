@@ -2300,6 +2300,7 @@ Notes:
                 - `regex`: [string=''] Regular expression to match.
                 - *regexp*: Alias for regex.
             - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
+            - `mouser_link`: [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page (HTML only).
             - `ref_separator`: [string=' '] Separator used for the list of references.
             - `test_regex`: [boolean=true] Each component group will be tested against a number of regular-expressions (see ``)..
             - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
