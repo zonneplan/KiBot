@@ -714,6 +714,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     if cfg.xlsx.datasheet_as_link and cfg.xlsx.datasheet_as_link in col_fields:
         link_datasheet = col_fields.index(cfg.xlsx.datasheet_as_link)
     link_digikey = cfg.xlsx.digikey_link
+    link_mouser = cfg.xlsx.mouser_link
     hl_empty = cfg.xlsx.highlight_empty
 
     workbook = Workbook(filename)
@@ -792,6 +793,10 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
                 # A link to Digi-Key?
                 elif link_digikey and col_fields[i] in link_digikey:
                     url = 'https://www.digikey.com/products/en?keywords=' + cell
+                    worksheet.write_url(row_count, i, url, fmt, cell)
+                # A link to Mouser?
+                elif link_mouser and col_fields[i] in link_mouser:
+                    url = 'https://www.mouser.com/ProductDetail/' + cell
                     worksheet.write_url(row_count, i, url, fmt, cell)
                 else:
                     worksheet.write_string(row_count, i, cell, fmt)

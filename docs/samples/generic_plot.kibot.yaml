@@ -277,6 +277,8 @@ outputs:
         highlight_empty: true
         # [string|boolean=''] PNG file to use as logo, use false to remove
         logo: ''
+        # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
+        mouser_link: ''
         # [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
         # Or you can provide a CSS file name. Please use .css as file extension.
         style: 'modern-blue'
@@ -361,6 +363,8 @@ outputs:
         logo_scale: 2
         # [number=60] [20,999] Maximum column width (characters)
         max_col_width: 60
+        # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
+        mouser_link: ''
         # [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
         # Works with only some KiCost APIs
         specs: false
@@ -490,6 +494,10 @@ outputs:
       # git hashes involved in the comparison. If you plan to compress the output don't
       # forget to disable the `follow_links` option
       add_link_id: false
+      # [boolean=false] Always fail if the old/new file doesn't exist. Currently we don't fail if they are from a repo.
+      # So if you refer to a repo point where the file wasn't created KiBot will use an empty file.
+      # Enabling this option KiBot will report an error
+      always_fail_if_missing: false
       # [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache
       cache_dir: ''
       # [boolean=false] Modifies the behavior of `add_link_id` to create a copy of the file instead of a

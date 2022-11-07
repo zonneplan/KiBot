@@ -10,6 +10,7 @@ outputs:
     options:
       html:
         digikey_link: ['digikey#', 'digikey_alt#']
+        mouser_link: ['mouser#', 'mouser_alt#']
       output: '%f.%x'
       columns:
         - References
@@ -18,4 +19,6 @@ outputs:
         - Quantity Per PCB
         - digikey#
         - digikey_alt#
+        - mouser#
+        - mouser_alt#
         - manf#

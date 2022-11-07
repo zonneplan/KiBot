@@ -1457,6 +1457,7 @@ Notes:
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
+            - `mouser_link`: [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
             - `style`: [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
                        Or you can provide a CSS file name. Please use .css as file extension..
         - **`ignore_dnf`**: [boolean=true] Exclude DNF (Do Not Fit) components.
@@ -1488,6 +1489,7 @@ Notes:
             - `kicost_dist_desc`: [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component.
             - `logo_scale`: [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
             - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
+            - `mouser_link`: [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
             - `specs_columns`: [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
                                'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                                Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
@@ -1718,6 +1720,9 @@ Notes:
         - `add_link_id`: [boolean=false] When enabled we create a symlink to the output file with a name that contains the
                          git hashes involved in the comparison. If you plan to compress the output don't
                          forget to disable the `follow_links` option.
+        - `always_fail_if_missing`: [boolean=false] Always fail if the old/new file doesn't exist. Currently we don't fail if they are from a repo.
+                                    So if you refer to a repo point where the file wasn't created KiBot will use an empty file.
+                                    Enabling this option KiBot will report an error.
         - `cache_dir`: [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache.
         - `copy_instead_of_link`: [boolean=false] Modifies the behavior of `add_link_id` to create a copy of the file instead of a
                                   symlink. Useful for some Windows setups.

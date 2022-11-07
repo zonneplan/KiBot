@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `populate` to create step-by-step assembly instructions
     With support for `pcbdraw` and `render_3d`.
 - generic filters: options to filter by PCB side
+- BoM:
+  - Option to link to Mouser site.
 - Diff:
   - Option to compare only the first schematic page. (See #319)
 - iBoM:

@@ -217,7 +217,7 @@ def link(text):
     return text
 
 
-def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, col_colors, dnf=False):
+def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, link_mouser, col_colors, dnf=False):
     cl = ''
     # Table start
     html.write('<table class="content-table">\n')
@@ -246,6 +246,8 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
             # A link to Digi-Key?
             if link_digikey and headings[n] in link_digikey:
                 r = '<a href="https://www.digikey.com/products/en?keywords=' + r + '">' + r + '</a>'
+            if link_mouser and headings[n] in link_mouser:
+                r = '<a href="https://www.mouser.com/ProductDetail/' + r + '">' + r + '</a>'
             # Link this column to the datasheet?
             if link_datasheet == n and datasheet.startswith('http'):
                 r = '<a href="' + datasheet + '">' + r + '</a>'
@@ -369,6 +371,7 @@ def write_html(filename, groups, headings, head_names, cfg):
     if cfg.html.datasheet_as_link and cfg.html.datasheet_as_link in headings:
         link_datasheet = headings.index(cfg.html.datasheet_as_link)
     link_digikey = cfg.html.digikey_link
+    link_mouser = cfg.html.mouser_link
     col_colors = cfg.html.col_colors
     # Compute the CSS
     style_name = cfg.html.style
@@ -442,12 +445,13 @@ def write_html(filename, groups, headings, head_names, cfg):
 
         # Fitted groups
         html.write("<h2>Component Groups</h2>\n")
-        content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, col_colors)
+        content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, link_mouser, col_colors)
 
         # DNF component groups
         if cfg.html.generate_dnf and cfg.n_total != cfg.n_fitted:
             html.write("<h2>Optional components (DNF=Do Not Fit)</h2>\n")
-            content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, col_colors, True)
+            content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, link_mouser, col_colors,
+                          True)
 
         # Color reference
         if col_colors:

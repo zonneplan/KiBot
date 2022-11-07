@@ -184,6 +184,8 @@ class BoMLinkable(Optionable):
             """ *Column with links to the datasheet """
             self.digikey_link = Optionable
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page """
+            self.mouser_link = Optionable
+            """ [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page """
             self.generate_dnf = True
             """ *Generate a separated section for DNF (Do Not Fit) components """
             self.hide_pcb_info = False
@@ -201,11 +203,9 @@ class BoMLinkable(Optionable):
 
     def config(self, parent):
         super().config(parent)
-        # digikey_link
-        if isinstance(self.digikey_link, type):
-            self.digikey_link = []
-        elif isinstance(self.digikey_link, list):
-            self.digikey_link = [c.lower() for c in self.digikey_link]
+        # *_link
+        self.digikey_link = self.force_list(self.digikey_link, comma_sep=False, lower_case=True)
+        self.mouser_link = self.force_list(self.mouser_link, comma_sep=False, lower_case=True)
         # Logo
         if isinstance(self.logo, type):
             self.logo = ''
