@@ -19,4 +19,6 @@ outputs:
         - Quantity Per PCB
         - digikey#
         - digikey_alt#
+        - mouser#
+        - mouser_alt#
         - manf#
