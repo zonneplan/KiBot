@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   yet. (#323)
 - Report: Problems when using NPTH holes with sizes that doesn't correspond to
   real drill tools. It generated bogus reports about wrong OARs. (#326)
+- BoM: Digi-key link in the HTML output.
 
 ## [1.4.0] - 2022-10-12
 ### Added

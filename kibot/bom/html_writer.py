@@ -245,7 +245,7 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
         for n, r in enumerate(row):
             # A link to Digi-Key?
             if link_digikey and headings[n] in link_digikey:
-                r = '<a href="http://search.digikey.com/scripts/DkSearch/dksus.dll?Detail&name=' + r + '">' + r + '</a>'
+                r = '<a href="https://www.digikey.com/products/en?keywords=' + r + '">' + r + '</a>'
             # Link this column to the datasheet?
             if link_datasheet == n and datasheet.startswith('http'):
                 r = '<a href="' + datasheet + '">' + r + '</a>'
