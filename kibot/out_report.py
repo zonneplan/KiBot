@@ -501,12 +501,8 @@ class ReportOptions(BaseOptions):
                     if pad_sz == dr:
                         logger.warning(W_WRONGOAR+"Try adjusting the drill size to an available drill tool")
             else:
-                # For non plated holes we don't use values resulting from the fact that the tool is smaller
-                if oar_t < min_oar and pad_sz == dr:
-                    logger.warning(W_WRONGOAR+"Potential copper ring for pad {}, change the pad size to ({}, {})".
-                                   format(get_pad_info(pad), to_mm(dr_x_real), to_mm(dr_y_real)))
-                    logger.warning(W_WRONGOAR+"Or enlarge both to the size of an available drill tool")
-                else:
+                # For non plated holes KiCad doesn't even create a pad if pad_sz == dr
+                if pad_sz != dr:
                     self.oar_pads = min(self.oar_pads, oar_t)
                     self.oar_pads_ec = min(self.oar_pads_ec, oar_ec_t)
         elif oar_t < 0:
