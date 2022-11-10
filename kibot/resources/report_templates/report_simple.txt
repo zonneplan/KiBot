@@ -39,7 +39,7 @@ Impedance controlled: YES
 #?stackup
 |----------------------|----------------------|----------|-----------|-----------------|-----------|--------------|
 #?stackup
-#stackup:| ${%-20s,name} | ${%-20s,type} | ${%-8s,color} | ${%9d,thickness} | ${%-15s,material} | ${%9.1f,epsilon_r} | ${%12.2f,loss_tangent} |
+#stackup:| ${%-20s,name} | ${%-20s,type} | ${%-8s,color} | ${%9d,thickness} | ${%-15s,material} | ${%9.1f,epsilon_r} | ${%12.3f,loss_tangent} |
 #?stackup
 
 Materials:

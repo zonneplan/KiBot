@@ -4,7 +4,7 @@ Board size: 59.69x48.26 mm (2.35x1.9 inches)
 
 - This is the size of the rectangle that contains the board
 - Thickness: 1.6 mm (63 mils)
-- Material: FR4
+- Material: FR4 / Kapton
 - Finish: ENIG
 - Layers: 4
 - Copper thickness: 35 µm
@@ -31,15 +31,16 @@ Impedance controlled: YES
 |----------------------|----------------------|----------|-----------|-----------------|-----------|--------------|
 | F.SilkS              | Top Silk Screen      | White    |           | Liquid Photo    |           |              |
 | F.Paste              | Top Solder Paste     |          |           |                 |           |              |
-| F.Mask               | Top Solder Mask      | Blue     |        10 | Liquid Ink      |       3.3 |         0.00 |
+| F.Mask               | Top Solder Mask      | Blue     |        10 | Liquid Ink      |       3.3 |        0.000 |
 | F.Cu                 | copper               |          |        35 |                 |           |              |
-| dielectric 1         | prepreg              |          |       480 | FR4             |       4.5 |         0.02 |
+| dielectric 1         | prepreg              |          |       480 | FR4             |       4.5 |        0.020 |
 | In1.Cu               | copper               |          |        35 |                 |           |              |
-| dielectric 2         | core                 |          |       480 | FR4             |       4.5 |         0.02 |
+| dielectric 2         | core                 |          |       480 | FR4             |       4.5 |        0.020 |
 | In2.Cu               | copper               |          |        35 |                 |           |              |
-| dielectric 3         | prepreg              |          |       480 | FR4             |       4.5 |         0.02 |
+| dielectric 3 (1/2)   | prepreg              |          |       240 | Kapton          |       3.2 |        0.004 |
+| dielectric 3 (2/2)   | prepreg              |          |       240 | Kapton          |       3.2 |        0.004 |
 | B.Cu                 | copper               |          |        35 |                 |           |              |
-| B.Mask               | Bottom Solder Mask   | Red      |        10 | Dry Film        |       3.3 |         0.00 |
+| B.Mask               | Bottom Solder Mask   | Red      |        10 | Dry Film        |       3.3 |        0.000 |
 | B.Paste              | Bottom Solder Paste  |          |           |                 |           |              |
 | B.SilkS              | Bottom Silk Screen   | Black    |           | Direct Printing |           |              |
 

@@ -332,9 +332,10 @@ class Globals(FiltersOptions):
                     self.impedance_controlled = value == 'yes'
                     logger.debug("- Impedance controlled: "+value)
                 elif name == 'layer':
-                    ly = PCBLayer.parse(e)
-                    stackup.append(ly)
-                    self.get_data_from_layer(ly, materials, thicknesses)
+                    lys = PCBLayer.parse(e)
+                    for ly in lys:
+                        stackup.append(ly)
+                        self.get_data_from_layer(ly, materials, thicknesses)
         if stackup:
             GS.stackup = stackup
         if len(materials):

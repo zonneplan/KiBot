@@ -1509,9 +1509,11 @@ class PCBLayer(object):
     def parse(items):
         name = 'PCB stackup layer'
         layer = PCBLayer()
+        layers = [layer]
+        n_layers = 1
         layer.name = _check_str(items, 1, name)
         for i in items[2:]:
-            i_type = _check_is_symbol_list(i)
+            i_type = _check_is_symbol_list(i, allow_orphan_symbol=('addsublayer'))
             tname = name+' '+i_type
             if i_type == 'type':
                 layer.type = _check_str(i, 1, tname)
@@ -1525,9 +1527,19 @@ class PCBLayer(object):
                 layer.epsilon_r = _check_float(i, 1, tname)
             elif i_type == 'loss_tangent':
                 layer.loss_tangent = _check_float(i, 1, tname)
+            elif i_type == 'addsublayer':
+                new_layer = PCBLayer()
+                new_layer.name = layer.name
+                new_layer.type = layer.type
+                layers.append(new_layer)
+                layer = new_layer
+                n_layers += 1
             else:
                 logger.warning('Unknown layer attribute `{}`'.format(i))
-        return layer
+        if n_layers > 1:
+            for n, layer in enumerate(layers):
+                layer.name += ' ({}/{})'.format(n+1, n_layers)
+        return layers
 
 
 def _symbol(name, content=None):

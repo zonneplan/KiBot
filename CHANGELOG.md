@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Diff:
   - Now the default is to compare all the schematic pages. (#319)
+- Report:
+  - loss tangent decimals, added one more.
 
 ### Fixed
 - QR lib update: Problems when moving the footprint to the bottom for
@@ -51,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Report: Problems when using NPTH holes with sizes that doesn't correspond to
   real drill tools. It generated bogus reports about wrong OARs. (#326)
 - BoM: Digi-key link in the HTML output.
+- Problems when using more than one dielectric in the stack-up. (#328)
 
 ## [1.4.0] - 2022-10-12
 ### Added
