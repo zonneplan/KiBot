@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   real drill tools. It generated bogus reports about wrong OARs. (#326)
 - BoM: Digi-key link in the HTML output.
 - Problems when using more than one dielectric in the stack-up. (#328)
+- Gerber: Extension used for JLCPCB inner layers. (#329)
 
 ## [1.4.0] - 2022-10-12
 ### Added
