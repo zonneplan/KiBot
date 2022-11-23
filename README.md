@@ -3165,7 +3165,7 @@ Notes:
                             The output file will be in `convert_to` format.
                             The available formats depends on the `Pandoc` installation.
                             In CI/CD environments: the `kicad_auto_test` docker image contains it.
-                            In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`.
+                            In Debian/Ubuntu environments: install `pandoc`, `texlive`, `texlive-latex-base` and `texlive-latex-recommended`.
         - **`output`**: [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options.
         - **`template`**: [string='full'] Name for one of the internal templates (full, full_svg, simple) or a custom template file.
                           Environment variables and ~ are allowed.

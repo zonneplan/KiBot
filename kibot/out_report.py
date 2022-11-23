@@ -11,7 +11,7 @@ Dependencies:
     url_down: https://github.com/jgm/pandoc/releases
     debian: pandoc
     arch: pandoc
-    extra_deb: ['texlive-latex-base', 'texlive-latex-recommended']
+    extra_deb: ['texlive', 'texlive-latex-base', 'texlive-latex-recommended']
     extra_arch: ['texlive-core']
     comments: 'In CI/CD environments: the `kicad_auto_test` docker image contains it.'
 """

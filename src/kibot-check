@@ -602,6 +602,7 @@ deps = '{\
             "texlive-core"\
         ],\
         "extra_deb": [\
+            "texlive",\
             "texlive-latex-base",\
             "texlive-latex-recommended"\
         ],\

@@ -1957,7 +1957,7 @@ outputs:
       # The output file will be in `convert_to` format.
       # The available formats depends on the `Pandoc` installation.
       # In CI/CD environments: the `kicad_auto_test` docker image contains it.
-      # In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`
+      # In Debian/Ubuntu environments: install `pandoc`, `texlive`, `texlive-latex-base` and `texlive-latex-recommended`
       do_convert: false
       # [string='10F'] Which Eurocircuits class are we aiming at
       eurocircuits_class_target: '10F'
