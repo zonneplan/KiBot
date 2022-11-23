@@ -1435,6 +1435,7 @@ Notes:
           * Valid keys:
             - **`quote_all`**: [boolean=false] Enclose all values using double quotes.
             - **`separator`**: [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
+                               Only one character can be specified.
             - `hide_header`: [boolean=false] Hide the header line (names of the columns).
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.

@@ -247,7 +247,8 @@ class BoMCSV(Optionable):
         super().__init__()
         with document:
             self.separator = ','
-            """ *CSV Separator. TXT and TSV always use tab as delimiter """
+            """ *CSV Separator. TXT and TSV always use tab as delimiter.
+                Only one character can be specified """
             self.hide_header = False
             """ Hide the header line (names of the columns) """
             self.hide_pcb_info = False
@@ -256,6 +257,11 @@ class BoMCSV(Optionable):
             """ Hide statistics information """
             self.quote_all = False
             """ *Enclose all values using double quotes """
+
+    def config(self, parent):
+        super().config(parent)
+        if len(self.separator) != 1:
+            raise KiPlotConfigurationError('The CSV separator must be one character (`{}`)'.format(self.separator))
 
 
 class BoMXLSX(BoMLinkable):

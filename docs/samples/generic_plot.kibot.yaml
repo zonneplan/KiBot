@@ -210,7 +210,8 @@ outputs:
         hide_stats_info: false
         # [boolean=false] Enclose all values using double quotes
         quote_all: false
-        # [string=','] CSV Separator. TXT and TSV always use tab as delimiter
+        # [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
+        # Only one character can be specified
         separator: ','
       # [string|list(string)] Include this distributors list. Default is all the available
       distributors:

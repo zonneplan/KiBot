@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BoM: Digi-key link in the HTML output.
 - Problems when using more than one dielectric in the stack-up. (#328)
 - Gerber: Extension used for JLCPCB inner layers. (#329)
+- BoM: The length of the CSV separator is now validated.
 
 ## [1.4.0] - 2022-10-12
 ### Added
