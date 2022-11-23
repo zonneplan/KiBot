@@ -62,6 +62,8 @@ POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stro
                    "stroke-linejoin:round;fill-rule:evenodd;")
 DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
 EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
+# Opacity to make something invisible, but not removable
+ALMOST_TRANSPARENT = '0.01'
 # The following modules will be downloaded after we solve the dependencies
 # They are just helpers and we solve their dependencies
 svgutils = None  # Will be loaded during dependency check
@@ -720,8 +722,38 @@ class PCB_PrintOptions(VariantOptions):
             svg_out.insert([root])
         svg_out.insert(svgutils.RectElement(0, 0, width, height, color=self.background_color))
 
+    def fix_opacity_for_g(self, e):
+        contains_text = False
+        for c in e:
+            # Adjust the text opacity
+            if c.tag.endswith('}text'):
+                opacity = c.get('opacity')
+                if opacity is not None and opacity == '0' and c.text is not None:
+                    c.set('opacity', ALMOST_TRANSPARENT)
+                    c.set('style', 'font-family:monospace')
+                    contains_text = True
+            elif c.tag.endswith('}g'):
+                # Process all text inside
+                self.fix_opacity_for_g(c)
+        # Adjust the graphic opacity
+        if contains_text:
+            style = e.get('style')
+            if style is not None:
+                e.set('style', style.replace('fill-opacity:0.0', 'fill-opacity:'+ALMOST_TRANSPARENT))
+
+    def fix_opacity(self, svg):
+        """ Transparent text is discarded by rsvg-convert.
+            So we make it almost invisible. """
+        logger.debug(' - Making text searchable')
+        # Scan the SVG
+        for e in svg.root:
+            # Look for graphics
+            if e.tag.endswith('}g'):
+                # Process all text inside
+                self.fix_opacity_for_g(e)
+
     def merge_svg(self, input_folder, input_files, output_folder, output_file, p):
-        """ Merge all pages into one """
+        """ Merge all layers into one page """
         first = True
         for (file, color) in input_files:
             logger.debug(' - Loading layer file '+file)
@@ -733,6 +765,8 @@ class PCB_PrintOptions(VariantOptions):
                 if p.monochrome:
                     color = to_gray_hex(color)
                 self.fill_polygons(new_layer, color)
+            # Make text searchable
+            self.fix_opacity(new_layer)
             if first:
                 svg_out = new_layer
                 # This is the width declared at the beginning of the file

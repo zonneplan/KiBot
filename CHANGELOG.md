@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Filter expansion in `show_components` and `highlight`
 - PCB_Print:
   - Option to control the *SVG precision* (units scale)
+  - Now the text in the PDF is searchable. (#331)
 - Render_3D:
   - Option to render only some components (like in PcbDraw)
   - Option to auto-crop the resulting PNG
