@@ -953,7 +953,8 @@ def test_qr_lib_1(test_dir):
     # Check the schematic
     fname = 'Schematic.pdf'
     ctx.expect_out_file(fname)
-    cmd = ['convert', '-density', '300', ctx.get_out_path(fname), ctx.get_out_path('%d.png')]
+    cmd = ['convert', '-density', '300', ctx.get_out_path(fname), '-background', 'white', '-alpha', 'remove', '-alpha',
+           'off', ctx.get_out_path('%d.png')]
     subprocess.check_call(cmd)
     cmd = ['zbarimg', ctx.get_out_path('0.png')]
     res = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
@@ -966,7 +967,8 @@ def test_qr_lib_1(test_dir):
     # Check the PCB
     fname = 'PCB.pdf'
     ctx.expect_out_file(fname)
-    cmd = ['convert', '-density', '300', ctx.get_out_path(fname), ctx.get_out_path('p%d.png')]
+    cmd = ['convert', '-density', '300', ctx.get_out_path(fname), '-background', 'white', '-alpha', 'remove', '-alpha',
+           'off', ctx.get_out_path('p%d.png')]
     subprocess.check_call(cmd)
     cmd = ['zbarimg', ctx.get_out_path('p0.png')]
     res = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
