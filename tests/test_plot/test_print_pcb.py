@@ -16,7 +16,7 @@ PDF_DIR = 'Layers'
 PDF_FILE = 'bom-F_Cu+F_SilkS.pdf'
 PDF_FILE_B = 'PCB_Bot.pdf'
 PDF_FILE_C = 'PCB_Bot_def.pdf'
-DIFF_TOL = 0 if os.path.isfile('/etc/debian_version') else 5000
+DIFF_TOL = 10 if os.path.isfile('/etc/debian_version') else 5000
 
 
 @pytest.mark.slow
