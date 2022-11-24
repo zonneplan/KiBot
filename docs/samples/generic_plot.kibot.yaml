@@ -244,8 +244,9 @@ outputs:
       footprint_populate_values: 'no,yes'
       # [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column
       footprint_type_values: 'SMD,THT,VIRTUAL'
-      # [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
+      # [string=''] [HTML,CSV,TXT,TSV,XML,XLSX,HRTXT] format for the BoM.
       # Defaults to CSV or a guess according to the options.
+      # HRTXT stands for Human Readable TeXT
       format: 'CSV'
       # [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector
       group_connectors: true
@@ -258,6 +259,20 @@ outputs:
       # [list(string)] List of fields to be used when the fields in `group_fields` are empty.
       # The first field in this list is the fallback for the first in `group_fields`, and so on
       group_fields_fallbacks:
+      # [dict] Options for the HRTXT formats
+      hrtxt:
+        # [string='-'] Separator between the header and the data
+        header_sep: '-'
+        # [boolean=false] Hide the header line (names of the columns)
+        hide_header: false
+        # [boolean=false] Hide project information
+        hide_pcb_info: false
+        # [boolean=false] Hide statistics information
+        hide_stats_info: false
+        # [string='left'] [left,right,center] Text justification
+        justify: 'left'
+        # [string='I'] Column Separator
+        separator: 'I'
       # [dict] Options for the HTML format
       html:
         # [boolean=true] Use colors to show the field type

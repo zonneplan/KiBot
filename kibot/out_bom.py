@@ -269,6 +269,33 @@ class BoMCSV(Optionable):
             raise KiPlotConfigurationError('The CSV separator must be one character (`{}`)'.format(self.separator))
 
 
+class BoMTXT(Optionable):
+    """ HRTXT options """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.separator = 'I'
+            """ *Column Separator """
+            self.header_sep = '-'
+            """ Separator between the header and the data """
+            self.justify = 'left'
+            """ [left,right,center] Text justification """
+            self.hide_header = False
+            """ Hide the header line (names of the columns) """
+            self.hide_pcb_info = False
+            """ Hide project information """
+            self.hide_stats_info = False
+            """ Hide statistics information """
+
+    def config(self, parent):
+        super().config(parent)
+        if self.separator:
+            self.separator = self.separator.replace(r'\t', '\t')
+            self.separator = self.separator.replace(r'\n', '\n')
+            self.separator = self.separator.replace(r'\r', '\r')
+            self.separator = self.separator.replace(r'\\', '\\')
+
+
 class BoMXLSX(BoMLinkable):
     """ XLSX options """
     def __init__(self):
@@ -411,8 +438,9 @@ class BoMOptions(BaseOptions):
             self.output = GS.def_global_output
             """ *filename for the output (%i=bom)"""
             self.format = ''
-            """ *[HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
-                Defaults to CSV or a guess according to the options. """
+            """ *[HTML,CSV,TXT,TSV,XML,XLSX,HRTXT] format for the BoM.
+                Defaults to CSV or a guess according to the options.
+                HRTXT stands for Human Readable TeXT """
             # Equivalent to KiBoM INI:
             self.ignore_dnf = True
             """ *Exclude DNF (Do Not Fit) components """
@@ -438,6 +466,8 @@ class BoMOptions(BaseOptions):
             """ *[dict] Options for the XLSX format """
             self.csv = BoMCSV
             """ *[dict] Options for the CSV, TXT and TSV formats """
+            self.hrtxt = BoMTXT
+            """ *[dict] Options for the HRTXT formats """
             # * Filters
             self.pre_transform = Optionable
             """ [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
@@ -553,6 +583,9 @@ class BoMOptions(BaseOptions):
             # Same for XLSX
             if not isinstance(self.xlsx, type):
                 return 'xlsx'
+            # Same for HRTXT
+            if not isinstance(self.hrtxt, type):
+                return 'hrtxt'
             # Default to a simple and common format: CSV
             return 'csv'
         # Explicit selection
@@ -639,7 +672,7 @@ class BoMOptions(BaseOptions):
         super().config(parent)
         self.format = self._guess_format()
         self._expand_id = 'bom'
-        self._expand_ext = self.format.lower()
+        self._expand_ext = 'txt' if self.format.lower() == 'hrtxt' else self.format.lower()
         # HTML options
         if self.format == 'html' and isinstance(self.html, type):
             # If no options get the defaults
@@ -1018,7 +1051,7 @@ class BoM(BaseOutput):  # noqa: F821
         if join_fields:
             logger.debug(' - Fields to join with Value: {}'.format(join_fields))
         # Create a generic version
-        SIMP_FMT = ['HTML', 'CSV', 'TXT', 'TSV', 'XML']
+        SIMP_FMT = ['HTML', 'CSV', 'HRTXT', 'TSV', 'XML']
         XYRS_FMT = ['HTML']
         if GS.check_tool(name, 'XLSXWriter') is not None:
             SIMP_FMT.append('XLSX')

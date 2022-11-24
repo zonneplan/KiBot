@@ -1443,13 +1443,22 @@ Notes:
             - `hide_header`: [boolean=false] Hide the header line (names of the columns).
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
-        - **`format`**: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
-                        Defaults to CSV or a guess according to the options..
+        - **`format`**: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX,HRTXT] format for the BoM.
+                        Defaults to CSV or a guess according to the options.
+                        HRTXT stands for Human Readable TeXT.
         - **`group_fields`**: [list(string)] List of fields used for sorting individual components into groups.
                               Components which match (comparing *all* fields) will be grouped together.
                               Field names are case-insensitive.
                               If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
                                          'Voltage', 'Tolerance', 'Current', 'Power'] is used.
+        - **`hrtxt`**: [dict] Options for the HRTXT formats.
+          * Valid keys:
+            - **`separator`**: [string='I'] Column Separator.
+            - `header_sep`: [string='-'] Separator between the header and the data.
+            - `hide_header`: [boolean=false] Hide the header line (names of the columns).
+            - `hide_pcb_info`: [boolean=false] Hide project information.
+            - `hide_stats_info`: [boolean=false] Hide statistics information.
+            - `justify`: [string='left'] [left,right,center] Text justification.
         - **`html`**: [dict] Options for the HTML format.
           * Valid keys:
             - **`datasheet_as_link`**: [string=''] Column with links to the datasheet.
