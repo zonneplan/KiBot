@@ -189,6 +189,10 @@ In this way you can change the code and you won't need to install again.
 If you try to use a Python virtual environment you'll need to find a way to make the KiCad module (`pcbnew`) available on it.
 I don't know how to make it.
 
+In addition: note that the virtual env will change the system share data paths. They will no longer point to things like `/usr/share/`
+but to a virtual env place. So you'll need to either define environment variables to tell KiBot where are the libs or just add
+symlinks from the virtual env to the system level libs.
+
 ### Installation on other targets
 
 - Install KiCad 5.1.6 or newer
