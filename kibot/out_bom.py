@@ -260,6 +260,11 @@ class BoMCSV(Optionable):
 
     def config(self, parent):
         super().config(parent)
+        if self.separator:
+            self.separator = self.separator.replace(r'\t', '\t')
+            self.separator = self.separator.replace(r'\n', '\n')
+            self.separator = self.separator.replace(r'\r', '\r')
+            self.separator = self.separator.replace(r'\\', '\\')
         if len(self.separator) != 1:
             raise KiPlotConfigurationError('The CSV separator must be one character (`{}`)'.format(self.separator))
 
