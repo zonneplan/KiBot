@@ -311,15 +311,6 @@ def test_int_bom_csv_no_extra(test_dir):
     ctx.clean_up()
 
 
-def test_int_bom_refuse_no_sep(test_dir):
-    ctx, out = kibom_setup(test_dir, 'int_bom_refuse_no_sep')
-    rows, header, info = ctx.load_csv(out)
-    kibom_verif(rows, header)
-    # Check not quoted and comma as delimiter
-    ctx.search_in_file_d(out, ['"'+KIBOM_TEST_HEAD[0]+'","'+KIBOM_TEST_HEAD[1]+'"'])
-    ctx.clean_up()
-
-
 def test_int_bom_simple_txt(test_dir):
     ctx, out = kibom_setup(test_dir, 'int_bom_simple_txt', 'txt')
     rows, header, info = ctx.load_csv(out, delimiter='\t')
