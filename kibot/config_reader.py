@@ -271,8 +271,10 @@ class CfgYamlReader(object):
 
     def _parse_import_outputs(self, outs, explicit_outs, fn_rel, data, imported):
         sel_outs = []
-        if (outs is None or len(outs) > 0) and 'outputs' in data:
-            i_outs = imported.outputs+self._parse_outputs(data['outputs'])
+        if outs is None or len(outs) > 0:
+            i_outs = imported.outputs
+            if 'outputs' in data:
+                i_outs += self._parse_outputs(data['outputs'])
             if outs is not None:
                 for o in i_outs:
                     if o.name in outs:
@@ -283,7 +285,8 @@ class CfgYamlReader(object):
             else:
                 sel_outs = i_outs
             if len(sel_outs) == 0:
-                logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
+                if explicit_outs:
+                    logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
             else:
                 logger.debug('Outputs loaded from `{}`: {}'.format(fn_rel, list(map(lambda c: c.name, sel_outs))))
         if outs is None and explicit_outs and 'outputs' not in data:
@@ -292,8 +295,10 @@ class CfgYamlReader(object):
 
     def _parse_import_preflights(self, pre, explicit_pres, fn_rel, data, imported):
         sel_pres = []
-        if (pre is None or len(pre) > 0) and 'preflight' in data:
-            i_pres = imported.preflights+self._parse_preflights(data['preflight'])
+        if pre is None or len(pre) > 0:
+            i_pres = imported.preflights
+            if 'preflight' in data:
+                i_pres += self._parse_preflights(data['preflight'])
             if pre is not None:
                 for p in i_pres:
                     if p._name in pre:
@@ -304,7 +309,8 @@ class CfgYamlReader(object):
             else:
                 sel_pres = i_pres
             if len(sel_pres) == 0:
-                logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
+                if explicit_pres:
+                    logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
             else:
                 logger.debug('Preflights loaded from `{}`: {}'.format(fn_rel, list(map(lambda c: c._name, sel_pres))))
         if pre is None and explicit_pres and 'preflight' not in data:
@@ -313,8 +319,9 @@ class CfgYamlReader(object):
 
     def _parse_import_filters(self, filters, explicit_fils, fn_rel, data, imported):
         sel_fils = {}
-        if (filters is None or len(filters) > 0) and 'filters' in data:
-            imported.filters.update(self._parse_filters(data['filters']))
+        if filters is None or len(filters) > 0:
+            if 'filters' in data:
+                imported.filters.update(self._parse_filters(data['filters']))
             i_fils = imported.filters
             if filters is not None:
                 for f in filters:
@@ -325,7 +332,8 @@ class CfgYamlReader(object):
             else:
                 sel_fils = i_fils
             if len(sel_fils) == 0:
-                logger.warning(W_NOFILTERS+"No filters found in `{}`".format(fn_rel))
+                if explicit_fils:
+                    logger.warning(W_NOFILTERS+"No filters found in `{}`".format(fn_rel))
             else:
                 logger.debug('Filters loaded from `{}`: {}'.format(fn_rel, sel_fils.keys()))
         if filters is None and explicit_fils and 'filters' not in data:
@@ -334,8 +342,9 @@ class CfgYamlReader(object):
 
     def _parse_import_variants(self, vars, explicit_vars, fn_rel, data, imported):
         sel_vars = {}
-        if (vars is None or len(vars) > 0) and 'variants' in data:
-            imported.variants.update(self._parse_variants(data['variants']))
+        if vars is None or len(vars) > 0:
+            if 'variants' in data:
+                imported.variants.update(self._parse_variants(data['variants']))
             i_vars = imported.variants
             if vars is not None:
                 for f in vars:
@@ -346,7 +355,8 @@ class CfgYamlReader(object):
             else:
                 sel_vars = i_vars
             if len(sel_vars) == 0:
-                logger.warning(W_NOVARIANTS+"No variants found in `{}`".format(fn_rel))
+                if explicit_vars:
+                    logger.warning(W_NOVARIANTS+"No variants found in `{}`".format(fn_rel))
             else:
                 logger.debug('Variants loaded from `{}`: {}'.format(fn_rel, sel_vars.keys()))
         if vars is None and explicit_vars and 'variants' not in data:
@@ -355,8 +365,8 @@ class CfgYamlReader(object):
 
     def _parse_import_globals(self, globals, explicit_globals, fn_rel, data, imported):
         sel_globals = {}
-        if (globals is None or len(globals) > 0) and 'global' in data:
-            i_globals = data['global']
+        if (globals is None or len(globals) > 0):
+            i_globals = data.get('global', {})
             if not isinstance(i_globals, dict):
                 raise KiPlotConfigurationError("Incorrect `global` section (must be a dict), while importing from {}".
                                                format(fn_rel))
@@ -371,7 +381,8 @@ class CfgYamlReader(object):
             else:
                 sel_globals = i_globals
             if len(sel_globals) == 0:
-                logger.warning(W_NOGLOBALS+"No globals found in `{}`".format(fn_rel))
+                if explicit_globals:
+                    logger.warning(W_NOGLOBALS+"No globals found in `{}`".format(fn_rel))
             else:
                 logger.debug('Globals loaded from `{}`: {}'.format(fn_rel, sel_globals.keys()))
         if globals is None and explicit_globals and 'global' not in data:
