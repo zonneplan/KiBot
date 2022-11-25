@@ -54,7 +54,7 @@ And for board B:
 
 
 
-## Solution 2: Using hierarchical sheets 1
+## Solution 2: Using hierarchical sheets A
 
 This looks a little bit more complicated, but solves various problems.
 
@@ -94,3 +94,15 @@ how they are connected.
 
 * You can't run the ERC for the whole system.
   KiCad will complain about more than one PWR_FLAG for the same node.
+
+
+
+## Solution 3: Using hierarchical sheets B
+
+This is just a hack for the second solution.
+Here we add a jumper to isolate the powers, we mark it as excluded from the BoM.
+Now the top-level looks like this:
+
+![Schematic](Hierarchy_1/Top_Level_B/Generated/Schematic.svg)
+
+And the ERC works.
