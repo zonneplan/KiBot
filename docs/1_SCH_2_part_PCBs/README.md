@@ -18,6 +18,8 @@ Here is a simple example:
 
 ![Schematic](KiKit_1/Generated/Schematic.svg)
 
+Note that we avoided the use of global powers, the GND is not explicit.
+
 Our circuit is divided in two boards. Each board contains one filter.
 They are connected with a cable between J2 and J3.
 
@@ -48,32 +50,26 @@ And for board B:
 * You need an external tool to separate the PCBs.
 * You can't check electrical rules for connections between the boards.
 
-## Solution 2: Using hierarchical sheets
+
+
+
+
+## Solution 2: Using hierarchical sheets 1
 
 This looks a little bit more complicated, but solves various problems.
 
 You create individual projects for each PCB board. In our example one project for each filter.
 
 So you have individual pages (or hierarchies) for each part of the circuit, each page belongs to its own project:
-
-![Schematic](Hierarchy_1/Filter_A/Generated/Filter_A-Filter_A.svg)
-
-![Schematic](Hierarchy_1/Filter_B/Generated/Filter_B-Filter_B.svg)
-
-Note that we added hierarchical labels to all the connectors.
-
-In order to avoid problems when running the ERC we wrap each filter using a hierarchical sheet.
-So Filter A full schematic becomes:
+Filter A:
 
 ![Schematic](Hierarchy_1/Filter_A/Generated/Schematic.svg)
 
-![Schematic](Hierarchy_1/Filter_A/Generated/Filter_A-Filter_A.svg)
-
-And Filter B schematic:
-
+Filter B:
 ![Schematic](Hierarchy_1/Filter_B/Generated/Schematic.svg)
 
-![Schematic](Hierarchy_1/Filter_B/Generated/Filter_B-Filter_B.svg)
+Note that we added hierarchical labels to all the connectors and we now can
+use global powers, but we use different names for each PCB (GND1 and GND2).
 
 With two separated projects we have two separated PCBs.
 Filter A:
@@ -94,23 +90,7 @@ how they are connected.
 ![Schematic](Hierarchy_1/Top_Level/Generated/Top_Level-Filter_A.svg)
 ![Schematic](Hierarchy_1/Top_Level/Generated/Top_Level-Filter_B.svg)
 
-Note that running the ERC will check the connection between boards.
-
-### Why we use a top-level for each sub-circuit?
-
-This allows running the ERC on each project.
-For this we need PWR_FLAG components. If we are them in the real circuit,
-not at the top-level of the individual board, we will have more than one
-PWR_FLAG connected to the same node when we join the circuits at the
-system top-level. This generates ERC errors.
-
-If you don't need to run ERC for individual boards, only for the full
-system, you can remove these sheets.
-
 ### Problems
 
-* The top level sheets for each individual board has repeated information.
-* You must be careful with the power between boards.
-  As an example: If you forget to connect GND using a connector the ERC
-  won't catch this error because its connected using the global GND.
-  As a solution you could use different GND symbols for each board.
+* You can't run the ERC for the whole system.
+  KiCad will complain about more than one PWR_FLAG for the same node.
