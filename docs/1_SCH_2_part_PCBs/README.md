@@ -56,9 +56,9 @@ You create individual projects for each PCB board. In our example one project fo
 
 So you have individual pages (or hierarchies) for each part of the circuit, each page belongs to its own project:
 
-![Schematic](Hierarchy_1/Filter_A/Generated/Filter_A-Filter A.svg)
+![Schematic](Hierarchy_1/Filter_A/Generated/Filter_A-Filter_A.svg)
 
-![Schematic](Hierarchy_1/Filter_B/Generated/Filter_B-Filter B.svg)
+![Schematic](Hierarchy_1/Filter_B/Generated/Filter_B-Filter_B.svg)
 
 Note that we added hierarchical labels to all the connectors.
 
