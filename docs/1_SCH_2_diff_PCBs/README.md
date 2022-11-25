@@ -25,6 +25,6 @@ the same circuit.
 
 [PCB](PCB_1/Generated/PCB_2-assembly.pdf)
 
-![Top view](PCB_1/Generated/PCB_2-3D_top.png)
+![Top view](PCB_2/Generated/PCB_2-3D_top.png)
 
-![Bottom view](PCB_1/Generated/PCB_2-3D_bottom.png)
+![Bottom view](PCB_2/Generated/PCB_2-3D_bottom.png)
