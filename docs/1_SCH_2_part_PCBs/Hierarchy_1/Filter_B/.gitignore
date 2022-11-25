@@ -2,3 +2,5 @@ fp-info-cache
 *.kicad_prl
 *-backups
 *-bak
+*-erc.txt
+*-drc.txt
