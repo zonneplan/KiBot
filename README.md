@@ -76,6 +76,8 @@
 * [Notes about the position file](#notes-about-the-position-file)
   * [XYRS files](#xyrs-files)
 * [Notes about 3D models](#notes-about-3d-models)
+* [Proposed advanced KiCad usage](#proposed-advanced-kicad-usage)
+  * [One circuit and more than one PCB implementation](#one-circuit-and-more-than-one-pcb-implementation)
 * [Credits](#credits)
 
 ## Introduction
@@ -4510,6 +4512,14 @@ outputs:
 
 Will create a new PCB inside a directory called `expoted_pcb`, this PCB will use the 3D models copied to `expoted_pcb/3d_models` using
 relative paths. So you can move the new PCB file to any place, as long as the `3d_models` directory is in the same place as the PCB.
+
+## Proposed advanced KiCad usage
+
+This section contains some proposed solutions for special, or advanced, KiCad usage.
+
+### One circuit and more than one PCB implementation
+
+Use hierarchical pages to share the circuit between two projects: [example](docs/1_SCH_2_diff_PCBs)
 
 ## Credits
 
