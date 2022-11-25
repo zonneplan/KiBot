@@ -30,15 +30,15 @@ The KiCad board file looks like this:
 The `Board A` and `Board B` arrows are used to name each PCB.
 After running `kikit separate` we get for board A:
 
-![Board top](KiKit_1/Board_A/Generated/KiKit_1-assembly_page_01.png)
+![Board top](KiKit_1/Board_A/Generated/board_a-assembly_page_01.png)
 
-![Board bottom](KiKit_1/Board_A/Generated/KiKit_1-assembly_page_02.png)
+![Board bottom](KiKit_1/Board_A/Generated/board_a-assembly_page_02.png)
 
 And for board B:
 
-![Board top](KiKit_1/Board_B/Generated/KiKit_1-assembly_page_01.png)
+![Board top](KiKit_1/Board_B/Generated/board_b-assembly_page_01.png)
 
-![Board bottom](KiKit_1/Board_B/Generated/KiKit_1-assembly_page_02.png)
+![Board bottom](KiKit_1/Board_B/Generated/board_b-assembly_page_02.png)
 
 ### Problems
 
@@ -67,13 +67,13 @@ So Filter A full schematic becomes:
 
 ![Schematic](Hierarchy_1/Filter_A/Generated/Schematic.svg)
 
-![Schematic](Hierarchy_1/Filter_A/Generated/Filter_A-Filter A.svg)
+![Schematic](Hierarchy_1/Filter_A/Generated/Filter_A-Filter_A.svg)
 
 And Filter B schematic:
 
 ![Schematic](Hierarchy_1/Filter_B/Generated/Schematic.svg)
 
-![Schematic](Hierarchy_1/Filter_B/Generated/Filter_B-Filter B.svg)
+![Schematic](Hierarchy_1/Filter_B/Generated/Filter_B-Filter_B.svg)
 
 With two separated projects we have two separated PCBs.
 Filter A:
@@ -90,9 +90,9 @@ In order to create a schematic for the whole system you create a third project.
 In this project you use hierarchichal sheets to join both projects and show
 how they are connected.
 
-![Schematic](Top_Level/Generated/Schematic.svg)
-![Schematic](Top_Level/Generated/Top_Level-Filter A.svg)
-![Schematic](Top_Level/Generated/Top_Level-Filter B.svg)
+![Schematic](Hierarchy_1/Top_Level/Generated/Schematic.svg)
+![Schematic](Hierarchy_1/Top_Level/Generated/Top_Level-Filter_A.svg)
+![Schematic](Hierarchy_1/Top_Level/Generated/Top_Level-Filter_B.svg)
 
 Note that running the ERC will check the connection between boards.
 
