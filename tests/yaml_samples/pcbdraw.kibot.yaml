@@ -40,15 +40,15 @@ outputs:
         - reference: J8
           library: yaqwsx
           component: Pin_Header_Straight_1x02_circle
-      no_drillholes: False
-      mirror: False
+      no_drillholes: false
+      mirror: false
       highlight:
         - L_G1
         - L_B1
         - R10
         - RV1
       show_components: all
-      vcuts: True
+      vcuts: true
       warnings: visible
       dpi: 600
       # margin:
@@ -75,7 +75,7 @@ outputs:
     options:
       <<: *pcb_draw_ops
       style: set-red-enig
-      bottom: True
+      bottom: true
       show_components:
         - L_G1
         - L_B1
