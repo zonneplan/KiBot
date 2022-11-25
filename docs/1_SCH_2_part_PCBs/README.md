@@ -106,3 +106,18 @@ Now the top-level looks like this:
 ![Schematic](Hierarchy_1/Top_Level_B/Generated/Schematic.svg)
 
 And the ERC works.
+
+
+
+## Solution 3: Using hierarchical sheets C
+
+This option doesn't allow a full ERC check of the system, you won't detect the
+output of one board connected to the output of another. But it allows creating
+BoMs that includes things like wires, terminals and crimp housings.
+
+Here the connection between boards is done using components for each element we
+need to use:
+
+![Schematic](Hierarchy_1/Top_Level_C/Generated/Schematic.svg)
+
+The ERC works, but is limited.
