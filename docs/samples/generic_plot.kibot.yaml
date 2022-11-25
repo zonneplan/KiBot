@@ -1217,6 +1217,10 @@ outputs:
     options:
       # [boolean=false] Add a background to the pages, see `background_color`
       add_background: false
+      # [number=0] Default horizontal margin used for the autoscaling mode [mm]
+      autoscale_margin_x: 0
+      # [number=0] Default vertical margin used for the autoscaling mode [mm]
+      autoscale_margin_y: 0
       # [string='#FFFFFF'] Color for the background when `add_background` is enabled
       background_color: '#FFFFFF'
       # [string=''] Background image, must be an SVG, only when `add_background` is enabled
@@ -1274,8 +1278,12 @@ outputs:
       # [list(dict)] List of pages to include in the output document.
       # Each page contains one or more layers of the PCB
       pages:
-        # [boolean=true] Change the drill holes to be colored instead of white
-        - colored_holes: true
+        # [number=0] Horizontal margin used for the autoscaling mode [mm]
+        - autoscale_margin_x: 0
+          # [number=0] Vertical margin used for the autoscaling mode [mm]
+          autoscale_margin_y: 0
+          # [boolean=true] Change the drill holes to be colored instead of white
+          colored_holes: true
           # [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only)
           exclude_pads_from_silkscreen: false
           # [string='#000000'] Color used for the holes when `colored_holes` is enabled

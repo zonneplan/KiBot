@@ -2478,6 +2478,8 @@ Notes:
                 - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
             - **`scaling`**: [number=1.0] Scale factor (0 means autoscaling).
             - **`sort_layers`**: [boolean=false] Try to sort the layers in the same order that uses KiCad for printing.
+            - `autoscale_margin_x`: [number=0] Horizontal margin used for the autoscaling mode [mm].
+            - `autoscale_margin_y`: [number=0] Vertical margin used for the autoscaling mode [mm].
             - `colored_holes`: [boolean=true] Change the drill holes to be colored instead of white.
             - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
             - `holes_color`: [string='#000000'] Color used for the holes when `colored_holes` is enabled.
@@ -2494,6 +2496,8 @@ Notes:
         - **`plot_sheet_reference`**: [boolean=true] Include the title-block (worksheet, frame, etc.).
         - **`scaling`**: [number=1.0] Default scale factor (0 means autoscaling).
         - `add_background`: [boolean=false] Add a background to the pages, see `background_color`.
+        - `autoscale_margin_x`: [number=0] Default horizontal margin used for the autoscaling mode [mm].
+        - `autoscale_margin_y`: [number=0] Default vertical margin used for the autoscaling mode [mm].
         - `background_color`: [string='#FFFFFF'] Color for the background when `add_background` is enabled.
         - `background_image`: [string=''] Background image, must be an SVG, only when `add_background` is enabled.
         - `blind_via_color`: [string=''] Color used for blind/buried `colored_vias`.

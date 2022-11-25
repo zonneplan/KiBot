@@ -166,6 +166,10 @@ class PagesOptions(Optionable):
             """ Print in gray scale """
             self.scaling = None
             """ *[number=1.0] Scale factor (0 means autoscaling)"""
+            self.autoscale_margin_x = None
+            """ [number=0] Horizontal margin used for the autoscaling mode [mm] """
+            self.autoscale_margin_y = None
+            """ [number=0] Vertical margin used for the autoscaling mode [mm] """
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
@@ -194,6 +198,8 @@ class PagesOptions(Optionable):
             self.page_id = '%02d'
             """ Text to differentiate the pages. Use %d (like in C) to get the page number """
         self._scaling_example = 1.0
+        self._autoscale_margin_x_example = 0
+        self._autoscale_margin_y_example = 0
 
     def config(self, parent):
         super().config(parent)
@@ -209,6 +215,10 @@ class PagesOptions(Optionable):
             self.validate_color('holes_color')
         if self.scaling is None:
             self.scaling = parent.scaling
+        if self.autoscale_margin_x is None:
+            self.autoscale_margin_x = parent.autoscale_margin_x
+        if self.autoscale_margin_y is None:
+            self.autoscale_margin_y = parent.autoscale_margin_y
 
 
 class PCB_PrintOptions(VariantOptions):
@@ -282,6 +292,10 @@ class PCB_PrintOptions(VariantOptions):
             """ Color used for the `force_edge_cuts` option """
             self.scaling = 1.0
             """ *Default scale factor (0 means autoscaling)"""
+            self.autoscale_margin_x = 0
+            """ Default horizontal margin used for the autoscaling mode [mm] """
+            self.autoscale_margin_y = 0
+            """ Default vertical margin used for the autoscaling mode [mm] """
             self.realistic_solder_mask = True
             """ Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
                 In order to get a good looking select a color with transparency, i.e. '#14332440'.
@@ -911,8 +925,8 @@ class PCB_PrintOptions(VariantOptions):
             po.SetScale(scaling)
             return scaling
         sz = GS.board.GetBoundingBox().GetSize()
-        scale_x = FromMM(self.paper_w)/sz.x
-        scale_y = FromMM(self.paper_h)/sz.y
+        scale_x = FromMM(self.paper_w-self.autoscale_margin_x*2)/sz.x
+        scale_y = FromMM(self.paper_h-self.autoscale_margin_y*2)/sz.y
         scale = min(scale_x, scale_y)
         po.SetScale(scale)
         logger.debug('- Autoscale: {}'.format(scale))
