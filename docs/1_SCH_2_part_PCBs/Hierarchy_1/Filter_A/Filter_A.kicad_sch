@@ -152,7 +152,7 @@
     (stroke (width 0.1524) (type solid) (color 0 0 0 0))
     (fill (color 0 0 0 0.0000))
     (uuid 15d39947-0a90-4320-80ee-416b181a0032)
-    (property "Sheet name" "Filter A" (id 0) (at 101.6 62.7884 0)
+    (property "Sheet name" "Filter_A" (id 0) (at 101.6 62.7884 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Sheet file" "Circuit.kicad_sch" (id 1) (at 101.6 89.4846 0)
