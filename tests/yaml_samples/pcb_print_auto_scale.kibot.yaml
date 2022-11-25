@@ -1,0 +1,41 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: basic_pcb_print_pdf
+    comment: PCB
+    type: pcb_print
+    dir: ./
+    options:
+      format: PDF
+      scaling: 0
+      autoscale_margin_x: 50
+      autoscale_margin_y: 25
+      output: '%f%v-PCB.%x'
+      keep_temporal_files: false
+      plot_sheet_reference: false
+      pages:
+        - layers:
+            - layer: F.Silkscreen
+            - layer: Edge.Cuts
+          sheet: Silk
+        - layers:
+            - layer: User.Drawings
+            - layer: Edge.Cuts
+          sheet: Drawings
+        - layers:
+            - layer: F.Cu
+            - layer: F.Mask
+              color: '#14332440'
+            - layer: F.Paste
+            - layer: F.Silkscreen
+            - layer: Edge.Cuts
+          sheet: Front copper
+        - layers:
+            - layer: B.Cu
+            - layer: B.Mask
+              color: '#14332440'
+            - layer: Edge.Cuts
+          mirror: true
+          sheet: Bottom copper
