@@ -78,6 +78,7 @@
 * [Notes about 3D models](#notes-about-3d-models)
 * [Proposed advanced KiCad usage](#proposed-advanced-kicad-usage)
   * [One circuit and more than one PCB implementation](#one-circuit-and-more-than-one-pcb-implementation)
+  * [System with more than one PCB](#system-with-more-than-one-pcb)
 * [Credits](#credits)
 
 ## Introduction
@@ -4520,6 +4521,10 @@ This section contains some proposed solutions for special, or advanced, KiCad us
 ### One circuit and more than one PCB implementation
 
 Use hierarchical pages to share the circuit between two projects: [example](docs/1_SCH_2_diff_PCBs)
+
+### System with more than one PCB
+
+This case is [discussed here](docs/1_SCH_2_part_PCBs)
 
 ## Credits
 

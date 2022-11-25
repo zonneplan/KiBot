@@ -1,0 +1,11 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'print_sch_svg'
+    comment: "Print schematic (SVG)"
+    type: svg_sch_print
+    dir: Generated
+    options:
+      output: Schematic.svg
