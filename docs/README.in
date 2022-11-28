@@ -1907,7 +1907,7 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
 - **Original KiCad Automation Scripts**: Scott Bezek, Productize SPRL
 - **KiBoM**: Oliver Henry Walters (@SchrodingersGat)
 - **Interactive HTML BoM**: @qu1ck
-- **PcbDraw/Populate**: Jan Mrázek (@yaqwsx)
+- **PcbDraw/Populate/KiKit**: Jan Mrázek (@yaqwsx)
 - **KiCost**: Dave Vandenbout (@devbisme) and Hildo Guillardi Júnior (@hildogjr)
 - **KiCAD to Boardview exporter**: @whitequark
 - **S-expression parser**: Takafumi Arakaki

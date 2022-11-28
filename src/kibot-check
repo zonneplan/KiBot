@@ -548,6 +548,39 @@ deps = '{\
         "url": "https://github.com/hildogjr/KiCost",\
         "url_down": "https://github.com/hildogjr/KiCost/releases"\
     },\
+    "KiKit": {\
+        "arch": null,\
+        "command": "kikit",\
+        "comments": [],\
+        "deb_package": "kikit",\
+        "downloader": {},\
+        "downloader_str": "pytool",\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 10000,\
+        "in_debian": false,\
+        "is_kicad_plugin": false,\
+        "is_python": false,\
+        "name": "KiKit",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "panelize",\
+        "plugin_dirs": null,\
+        "pypi_name": "KiKit",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "panelize",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": "https://github.com/yaqwsx/KiKit",\
+        "url_down": "https://github.com/yaqwsx/KiKit/releases"\
+    },\
     "LXML": {\
         "arch": "python-lxml",\
         "command": "lxml",\
