@@ -554,7 +554,9 @@ class PanelizeOptions(VariantOptions):
             return f.name
 
     def run(self, output):
-        cmd_kikit = self.ensure_tool('KiKit')
+        cmd_kikit, version = self.ensure_tool_get_ver('KiKit')
+        if GS.ki5 and version >= (1, 1, 0):
+            raise KiPlotConfigurationError("Installed KiKit doesn't support KiCad 5")
         super().run(output)
         to_remove = []
         # Create the input PCB
@@ -607,6 +609,9 @@ class Panelize(BaseOutput):  # noqa: F821
         Creates a panel to fabricate various copies of the PCB at once.
         It currently uses the KiKit tool, which must be available.
         Consult KiKit docs for detailed information.
+        Current versions of KiKit only support KiCad 6 and my tests using
+        KiKit 1.0.5 (the last to support KiCad 5) shown some
+        incompatibilities.
         Note that you don't need to specify the units for all distances.
         If they are omitted they are assumed to be `default_units`.
         The same is valid for angles, using `default_angles` """
