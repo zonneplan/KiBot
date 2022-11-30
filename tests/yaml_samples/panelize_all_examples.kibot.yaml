@@ -331,6 +331,8 @@ outputs:
             space: 5
           tabs:
             type: annotation
+          source:
+            tolerance: 15
         - extends: panel_examples[mill_radius_1]
 
   - name: 'spec_tabs_bones'

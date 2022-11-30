@@ -183,7 +183,7 @@ class PanelizeTabs(PanelOptions):
     def __init__(self):
         with document:
             self.type = 'spacing'
-            """ [fixed,spacing,full,annotation] Fixed: Place given number of tabs on the PCB edge.
+            """ *[fixed,spacing,full,annotation] Fixed: Place given number of tabs on the PCB edge.
                 Spacing: Place tabs on the PCB edges based on spacing.
                 Full: Create tabs that are full width of the PCB.
                 Corner: Create tabs in the corners of the PCB.
@@ -226,7 +226,7 @@ class PanelizeCuts(PanelOptions):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ [none,mousebites,vcuts,layer] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
+            """ *[none,mousebites,vcuts,layer] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
                 into a layer with this option to understand what's going on. Shouldn't be used for the final design """
             self.drill = 0.5
             """ [number|string] Drill size used for the *mousebites* """
@@ -261,7 +261,7 @@ class PanelizeFraming(PanelOptions):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ [none,railstb,railslr,frame,tightframe] Railstb: Add rails on top and bottom.
+            """ *[none,railstb,railslr,frame,tightframe] Railstb: Add rails on top and bottom.
             Railslr: Add rails on left and right.
             Frame: Add a frame around the board.
             Tighframe: Add a frame around the board which fills the whole area of the panel -
@@ -309,7 +309,7 @@ class PanelizeTooling(PanelOptions):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ [none,3hole,4hole] Add none, 3 or 4 holes to the (rail/frame of) the panel """
+            """ *[none,3hole,4hole] Add none, 3 or 4 holes to the (rail/frame of) the panel """
             self.hoffset = 0
             """ [number|string] Horizontal offset from panel edges """
             self.voffset = 0
@@ -329,7 +329,7 @@ class PanelizeFiducials(PanelOptions):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ [none,3fid,4fid] Add none, 3 or 4 fiducials to the (rail/frame of) the panel """
+            """ *[none,3fid,4fid] Add none, 3 or 4 fiducials to the (rail/frame of) the panel """
             self.hoffset = 0
             """ [number|string] Horizontal offset from panel edges """
             self.voffset = 0
@@ -351,9 +351,9 @@ class PanelizeText(PanelOptions):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works """
+            """ *[none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works """
             self.text = ''
-            """ The text to be displayed. Note that you can escape ; via \\.
+            """ *The text to be displayed. Note that you can escape ; via \\.
                 Available variables in text: *date* formats current date as <year>-<month>-<day>,
                 *time24* formats current time in 24-hour format,
                 *boardTitle* the title from the source board,
@@ -397,7 +397,7 @@ class PanelizeCopperfill(PanelOptions):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ [none,solid,hatched] How to fill non-board areas of the panel with copper """
+            """ *[none,solid,hatched] How to fill non-board areas of the panel with copper """
             self.clearance = 0.5
             """ [number|string] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
                 copper """
@@ -485,6 +485,34 @@ class PanelizeDebug(PanelOptions):
         super().__init__()
 
 
+class PanelizeSource(PanelOptions):
+    def __init__(self):
+        with document:
+            self.type = 'auto'
+            """ *[auto,rectangle,annotation] How we select the area of the PCB tu used for the panelization.
+                *auto* uses all the area reported by KiCad, *rectangle* a specified rectangle and
+                *annotation* selects a contour marked by a kikit:Board footprint """
+            self.stack = 'inherit'
+            """ [inherit,2layer,4layer,6layer] Used to reduce the number of layers used for the panel """
+            self.tolerance = 1
+            """ [number|string] Extra space around the PCB reported size to be included. Used for *auto* and *annotation* """
+            self.tlx = 0
+            """ [number|string] Top left X coordinate of the rectangle used. Used for *rectangle* """
+            self.tly = 0
+            """ [number|string] Top left Y coordinate of the rectangle used. Used for *rectangle* """
+            self.brx = 0
+            """ [number|string] Bottom right X coordinate of the rectangle used. Used for *rectangle* """
+            self.bry = 0
+            """ [number|string] Bottom right Y coordinate of the rectangle used. Used for *rectangle* """
+            self.ref = ''
+            """ Reference for the kikit:Board footprint used to select the contour. Used for *annotation* """
+        super().__init__()
+
+    def config(self, parent):
+        super().config(parent)
+        self.add_units(('tolerance', 'tlx', 'tly', 'brx', 'bry'))
+
+
 class PanelizeConfig(PanelOptions):
     def __init__(self):
         with document:
@@ -521,6 +549,8 @@ class PanelizeConfig(PanelOptions):
             """ [dict] Finishing touches to the panel """
             self.debug = PanelizeDebug
             """ [dict] Debug options """
+            self.source = PanelizeSource
+            """ [dict] Used to adjust details of which part of the PCB is panelized """
         super().__init__()
 
     def config(self, parent):
@@ -629,7 +659,6 @@ class PanelizeOptions(VariantOptions):
         update_dict(new_origin, tree)
         if level:
             tree = deepcopy(tree)
-        logger.error(tree)
         update_dict(tree, new_origin)
         if not level:
             # Remove the extends, we solved it

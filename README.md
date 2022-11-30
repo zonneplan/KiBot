@@ -2471,6 +2471,8 @@ Notes:
           * Valid keys:
             - **`cuts`**: [dict] Specify how to perform the cuts on the tabs separating the board.
               * Valid keys:
+                - **`type`**: [string='none'] [none,mousebites,vcuts,layer] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
+                              into a layer with this option to understand what's going on. Shouldn't be used for the final design.
                 - `clearance`: [number|string] Specify clearance for copper around V-cuts.
                 - *cut_curves*: Alias for cutcurves.
                 - `cutcurves`: [boolean=false] Specify if curves should be approximated by straight cuts (e.g., for cutting tabs on circular boards).
@@ -2482,18 +2484,21 @@ Notes:
                 - `prolong`: [number|string] Distance for tangential prolongation of the cuts (to cut through the internal corner fillets
                              caused by milling). Used for *mousebites* and *layer*.
                 - `spacing`: [number|string] The spacing of the holes used for the *mousebites*.
-                - `type`: [string='none'] [none,mousebites,vcuts,layer] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
-                          into a layer with this option to understand what's going on. Shouldn't be used for the final design.
             - **`fiducials`**: [dict] Used to add fiducial marks to the (rail/frame of) the panel.
               * Valid keys:
+                - **`type`**: [string='none'] [none,3fid,4fid] Add none, 3 or 4 fiducials to the (rail/frame of) the panel.
                 - *copper_size*: Alias for coppersize.
                 - `coppersize`: [number|string] Diameter of the copper spot.
                 - `hoffset`: [number|string] Horizontal offset from panel edges.
                 - `opening`: [number|string] Diameter of the solder mask opening.
-                - `type`: [string='none'] [none,3fid,4fid] Add none, 3 or 4 fiducials to the (rail/frame of) the panel.
                 - `voffset`: [number|string] Vertical offset from panel edges.
             - **`framing`**: [dict] Specify the frame around the boards.
               * Valid keys:
+                - **`type`**: [string='none'] [none,railstb,railslr,frame,tightframe] Railstb: Add rails on top and bottom.
+                              Railslr: Add rails on left and right.
+                              Frame: Add a frame around the board.
+                              Tighframe: Add a frame around the board which fills the whole area of the panel -
+                              the boards have just a milled slot around their perimeter.
                 - `chamfer`: [number|string] Specify the size of chamfer frame corners.
                 - `cuts`: [string='both'] [none,both,v,h] Specify whether to add cuts to the corners of the frame for easy removal.
                           Used for *frame*.
@@ -2508,11 +2513,6 @@ Notes:
                 - *slot_width*: Alias for slotwidth.
                 - `slotwidth`: [number|string] Width of the milled slot for *tightframe*.
                 - `space`: [number|string] Specify the space between PCB and the frame/rail. Overrides `hspace` and `vspace`.
-                - `type`: [string='none'] [none,railstb,railslr,frame,tightframe] Railstb: Add rails on top and bottom.
-                          Railslr: Add rails on left and right.
-                          Frame: Add a frame around the board.
-                          Tighframe: Add a frame around the board which fills the whole area of the panel -
-                          the boards have just a milled slot around their perimeter.
                 - `vspace`: [number|string] Specify the vertical space between PCB and the frame/rail.
                 - `width`: [number|string] Specify with of the rails or frame.
             - **`layout`**: [dict] Layout used for the panel.
@@ -2564,6 +2564,11 @@ Notes:
                 - `width`: [number|string] Width for the `custom` paper size.
             - **`tabs`**: [dict] Style of the tabs used to join the PCB copies.
               * Valid keys:
+                - **`type`**: [string='spacing'] [fixed,spacing,full,annotation] Fixed: Place given number of tabs on the PCB edge.
+                              Spacing: Place tabs on the PCB edges based on spacing.
+                              Full: Create tabs that are full width of the PCB.
+                              Corner: Create tabs in the corners of the PCB.
+                              Annotation: Add tabs based on PCB annotations.
                 - `cutout`: [number|string] When your design features open pockets on the side, this parameter specifies extra cutout depth in order to
                             ensure that a sharp corner of the pocket can be milled. Used for *full*.
                 - `hcount`: [number=1] Number of tabs in the horizontal direction. Used for *fixed*.
@@ -2574,31 +2579,26 @@ Notes:
                 - `spacing`: [number|string] The maximum spacing of the tabs. Used for *spacing*.
                 - *tab_footprints*: Alias for tabfootprints.
                 - `tabfootprints`: [string='kikit:Tab'] The footprint/s used for the *annotation* type. You can specify a list of footprints separated by comma.
-                - `type`: [string='spacing'] [fixed,spacing,full,annotation] Fixed: Place given number of tabs on the PCB edge.
-                          Spacing: Place tabs on the PCB edges based on spacing.
-                          Full: Create tabs that are full width of the PCB.
-                          Corner: Create tabs in the corners of the PCB.
-                          Annotation: Add tabs based on PCB annotations.
                 - `vcount`: [number=1] Number of tabs in the vertical direction. Used for *fixed*.
                 - `vwidth`: [number|string] The width of tabs in the vertical direction. Used for *fixed* and *spacing*.
                 - `width`: [number|string] The width of tabs in both directions. Overrides both `vwidth` and `hwidth`.
                            Used for *fixed*, *spacing*, *corner* and *annotation*.
             - **`tooling`**: [dict] Used to add tooling holes to the (rail/frame of) the panel.
               * Valid keys:
+                - **`type`**: [string='none'] [none,3hole,4hole] Add none, 3 or 4 holes to the (rail/frame of) the panel.
                 - `hoffset`: [number|string] Horizontal offset from panel edges.
                 - `paste`: [boolean=false] If True, the holes are included in the paste layer (therefore they appear on the stencil).
                 - `size`: [number|string] Diameter of the holes.
-                - `type`: [string='none'] [none,3hole,4hole] Add none, 3 or 4 holes to the (rail/frame of) the panel.
                 - `voffset`: [number|string] Vertical offset from panel edges.
             - `copperfill`: [dict] Fill non-board areas of the panel with copper.
               * Valid keys:
+                - **`type`**: [string='none'] [none,solid,hatched] How to fill non-board areas of the panel with copper.
                 - `clearance`: [number|string] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
                                copper.
                 - `layers`: [string|list(string)] List of layers to fill. Can be a comma-separated string.
                             Using *all* means all external copper layers.
                 - `orientation`: [number|string] The orientation of the hatched strokes.
                 - `spacing`: [number|string] The space between the hatched strokes.
-                - `type`: [string='none'] [none,solid,hatched] How to fill non-board areas of the panel with copper.
                 - `width`: [number|string] The width of the hatched strokes.
             - `debug`: [dict] Debug options.
               * Valid keys:
@@ -2635,8 +2635,29 @@ Notes:
                 - *script_arg*: Alias for scriptarg.
                 - `scriptarg`: [string=''] An arbitrary string passed to the user post-processing script specified in script.
                 - `type`: [string='auto'] [auto] Currently fixed.
+            - `source`: [dict] Used to adjust details of which part of the PCB is panelized.
+              * Valid keys:
+                - **`type`**: [string='auto'] [auto,rectangle,annotation] How we select the area of the PCB tu used for the panelization.
+                              *auto* uses all the area reported by KiCad, *rectangle* a specified rectangle and
+                              *annotation* selects a contour marked by a kikit:Board footprint.
+                - `brx`: [number|string] Bottom right X coordinate of the rectangle used. Used for *rectangle*.
+                - `bry`: [number|string] Bottom right Y coordinate of the rectangle used. Used for *rectangle*.
+                - `ref`: [string=''] Reference for the kikit:Board footprint used to select the contour. Used for *annotation*.
+                - `stack`: [string='inherit'] [inherit,2layer,4layer,6layer] Used to reduce the number of layers used for the panel.
+                - `tlx`: [number|string] Top left X coordinate of the rectangle used. Used for *rectangle*.
+                - `tly`: [number|string] Top left Y coordinate of the rectangle used. Used for *rectangle*.
+                - `tolerance`: [number|string] Extra space around the PCB reported size to be included. Used for *auto* and *annotation*.
             - `text`: [dict] Used to add text to the panel.
               * Valid keys:
+                - **`text`**: [string=''] The text to be displayed. Note that you can escape ; via \.
+                              Available variables in text: *date* formats current date as <year>-<month>-<day>,
+                              *time24* formats current time in 24-hour format,
+                              *boardTitle* the title from the source board,
+                              *boardDate* the date from the source board,
+                              *boardRevision* the revision from the source board,
+                              *boardCompany* the company from the source board,
+                              *boardComment1*-*boardComment9* comments from the source board.
+                - **`type`**: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `anchor`: [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                             (middle of sides), c (center). The anchors refer to the panel outline.
                 - `height`: [number|string] Height of the characters (the same parameters as KiCAD uses).
@@ -2644,21 +2665,21 @@ Notes:
                 - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                 - `layer`: [string='F.SilkS'] Specify text layer.
                 - `orientation`: [number|string] Specify the orientation (angle).
-                - `text`: [string=''] The text to be displayed. Note that you can escape ; via \.
-                          Available variables in text: *date* formats current date as <year>-<month>-<day>,
-                          *time24* formats current time in 24-hour format,
-                          *boardTitle* the title from the source board,
-                          *boardDate* the date from the source board,
-                          *boardRevision* the revision from the source board,
-                          *boardCompany* the company from the source board,
-                          *boardComment1*-*boardComment9* comments from the source board.
                 - `thickness`: [number|string] Stroke thickness.
-                - `type`: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                 - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
             - `text2`: [dict] Used to add text to the panel.
               * Valid keys:
+                - **`text`**: [string=''] The text to be displayed. Note that you can escape ; via \.
+                              Available variables in text: *date* formats current date as <year>-<month>-<day>,
+                              *time24* formats current time in 24-hour format,
+                              *boardTitle* the title from the source board,
+                              *boardDate* the date from the source board,
+                              *boardRevision* the revision from the source board,
+                              *boardCompany* the company from the source board,
+                              *boardComment1*-*boardComment9* comments from the source board.
+                - **`type`**: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `anchor`: [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                             (middle of sides), c (center). The anchors refer to the panel outline.
                 - `height`: [number|string] Height of the characters (the same parameters as KiCAD uses).
@@ -2666,21 +2687,21 @@ Notes:
                 - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                 - `layer`: [string='F.SilkS'] Specify text layer.
                 - `orientation`: [number|string] Specify the orientation (angle).
-                - `text`: [string=''] The text to be displayed. Note that you can escape ; via \.
-                          Available variables in text: *date* formats current date as <year>-<month>-<day>,
-                          *time24* formats current time in 24-hour format,
-                          *boardTitle* the title from the source board,
-                          *boardDate* the date from the source board,
-                          *boardRevision* the revision from the source board,
-                          *boardCompany* the company from the source board,
-                          *boardComment1*-*boardComment9* comments from the source board.
                 - `thickness`: [number|string] Stroke thickness.
-                - `type`: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                 - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
             - `text3`: [dict] Used to add text to the panel.
               * Valid keys:
+                - **`text`**: [string=''] The text to be displayed. Note that you can escape ; via \.
+                              Available variables in text: *date* formats current date as <year>-<month>-<day>,
+                              *time24* formats current time in 24-hour format,
+                              *boardTitle* the title from the source board,
+                              *boardDate* the date from the source board,
+                              *boardRevision* the revision from the source board,
+                              *boardCompany* the company from the source board,
+                              *boardComment1*-*boardComment9* comments from the source board.
+                - **`type`**: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `anchor`: [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                             (middle of sides), c (center). The anchors refer to the panel outline.
                 - `height`: [number|string] Height of the characters (the same parameters as KiCAD uses).
@@ -2688,21 +2709,21 @@ Notes:
                 - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                 - `layer`: [string='F.SilkS'] Specify text layer.
                 - `orientation`: [number|string] Specify the orientation (angle).
-                - `text`: [string=''] The text to be displayed. Note that you can escape ; via \.
-                          Available variables in text: *date* formats current date as <year>-<month>-<day>,
-                          *time24* formats current time in 24-hour format,
-                          *boardTitle* the title from the source board,
-                          *boardDate* the date from the source board,
-                          *boardRevision* the revision from the source board,
-                          *boardCompany* the company from the source board,
-                          *boardComment1*-*boardComment9* comments from the source board.
                 - `thickness`: [number|string] Stroke thickness.
-                - `type`: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                 - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
             - `text4`: [dict] Used to add text to the panel.
               * Valid keys:
+                - **`text`**: [string=''] The text to be displayed. Note that you can escape ; via \.
+                              Available variables in text: *date* formats current date as <year>-<month>-<day>,
+                              *time24* formats current time in 24-hour format,
+                              *boardTitle* the title from the source board,
+                              *boardDate* the date from the source board,
+                              *boardRevision* the revision from the source board,
+                              *boardCompany* the company from the source board,
+                              *boardComment1*-*boardComment9* comments from the source board.
+                - **`type`**: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `anchor`: [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                             (middle of sides), c (center). The anchors refer to the panel outline.
                 - `height`: [number|string] Height of the characters (the same parameters as KiCAD uses).
@@ -2710,16 +2731,7 @@ Notes:
                 - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                 - `layer`: [string='F.SilkS'] Specify text layer.
                 - `orientation`: [number|string] Specify the orientation (angle).
-                - `text`: [string=''] The text to be displayed. Note that you can escape ; via \.
-                          Available variables in text: *date* formats current date as <year>-<month>-<day>,
-                          *time24* formats current time in 24-hour format,
-                          *boardTitle* the title from the source board,
-                          *boardDate* the date from the source board,
-                          *boardRevision* the revision from the source board,
-                          *boardCompany* the company from the source board,
-                          *boardComment1*-*boardComment9* comments from the source board.
                 - `thickness`: [number|string] Stroke thickness.
-                - `type`: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                 - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).

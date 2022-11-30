@@ -1432,6 +1432,26 @@ outputs:
             scriptarg: ''
             # [string='auto'] [auto] Currently fixed
             type: 'auto'
+          # [dict] Used to adjust details of which part of the PCB is panelized
+          source:
+            # [number|string] Bottom right X coordinate of the rectangle used. Used for *rectangle*
+            brx: 0
+            # [number|string] Bottom right Y coordinate of the rectangle used. Used for *rectangle*
+            bry: 0
+            # [string=''] Reference for the kikit:Board footprint used to select the contour. Used for *annotation*
+            ref: ''
+            # [string='inherit'] [inherit,2layer,4layer,6layer] Used to reduce the number of layers used for the panel
+            stack: 'inherit'
+            # [number|string] Top left X coordinate of the rectangle used. Used for *rectangle*
+            tlx: 0
+            # [number|string] Top left Y coordinate of the rectangle used. Used for *rectangle*
+            tly: 0
+            # [number|string] Extra space around the PCB reported size to be included. Used for *auto* and *annotation*
+            tolerance: 1
+            # [string='auto'] [auto,rectangle,annotation] How we select the area of the PCB tu used for the panelization.
+            # *auto* uses all the area reported by KiCad, *rectangle* a specified rectangle and
+            # *annotation* selects a contour marked by a kikit:Board footprint
+            type: 'auto'
           # [dict] Style of the tabs used to join the PCB copies
           tabs:
             # [number|string] When your design features open pockets on the side, this parameter specifies extra cutout depth in order to
