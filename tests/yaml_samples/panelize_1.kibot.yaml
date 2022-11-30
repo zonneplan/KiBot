@@ -52,6 +52,7 @@ outputs:
             coppersize: 2
             opening: 1
           text:
+            type: simple
             text: My panel
             anchor: mt
             voffset: 2.5

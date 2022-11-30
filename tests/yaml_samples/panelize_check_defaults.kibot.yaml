@@ -1,0 +1,17 @@
+# Example KiBot config file for a basic panel
+kibot:
+  version: 1
+
+outputs:
+  - name: 'panel'
+    comment: "Create a 4x4 complex panel"
+    type: panelize
+    options:
+      title: '+ (Panel)'
+      default_units: mm
+      configs:
+        - layout:
+            rows: 2
+            cols: 2
+          page:
+            anchor: c

@@ -11,6 +11,8 @@ Dependencies:
     downloader: pytool
     role: mandatory
 """
+import collections
+from copy import deepcopy
 import os
 import re
 import json
@@ -22,10 +24,22 @@ from .layer import Layer
 from .misc import W_PANELEMPTY
 from .optionable import BaseOptions
 from .out_base import VariantOptions
+from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+
+
+def update_dict(d, u):
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update_dict(d.get(k, {}), v)
+        elif isinstance(v, list) and k in d:
+            d[k] = v+d[k]
+        else:
+            d[k] = v
+    return d
 
 
 class PanelOptions(BaseOptions):
@@ -336,8 +350,8 @@ class PanelizeFiducials(PanelOptions):
 class PanelizeText(PanelOptions):
     def __init__(self):
         with document:
-            self.type = 'simple'
-            """ [simple] Currently fixed """
+            self.type = 'none'
+            """ [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works """
             self.text = ''
             """ The text to be displayed. Note that you can escape ; via \\.
                 Available variables in text: *date* formats current date as <year>-<month>-<day>,
@@ -474,6 +488,11 @@ class PanelizeDebug(PanelOptions):
 class PanelizeConfig(PanelOptions):
     def __init__(self):
         with document:
+            self.name = ''
+            """ A name to identify this configuration. If empty will be the order in the list, starting with 1.
+                Don't use just a number or it will be confused as an index """
+            self.extends = ''
+            """ A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]` """
             self.page = PanelizePage
             """ *[dict] Sets page size on the resulting panel and position the panel in the page """
             self.layout = PanelizeLayout
@@ -506,6 +525,15 @@ class PanelizeConfig(PanelOptions):
 
     def config(self, parent):
         super().config(parent)
+        # Avoid confusing names
+        name_is_number = True
+        try:
+            _ = int(self.name)
+        except ValueError:
+            name_is_number = False
+        if name_is_number:
+            raise KiPlotConfigurationError("Don't use a number as name, this can be confused with an index ({})".
+                                           format(self.name))
         # Make None all things not specified
         for k, v in self.get_attrs_gen():
             if isinstance(v, type):
@@ -513,6 +541,8 @@ class PanelizeConfig(PanelOptions):
 
 
 class PanelizeOptions(VariantOptions):
+    _extends_regex = re.compile(r'(.+)\[(.+)\]')
+
     def __init__(self):
         with document:
             self.output = GS.def_global_output
@@ -533,21 +563,103 @@ class PanelizeOptions(VariantOptions):
         self._expand_id = 'panel'
         self._expand_ext = 'kicad_pcb'
 
+    def solve_cfg_name(self, cfg):
+        """ Find the name of a configuration that isn't yet configured """
+        name = cfg.get('name')
+        if name:
+            return name
+        return str(self._tree['configs'].index(cfg)+1)
+
+    def solve_extends(self, tree, level=0, used=None, our_name=None):
+        base = tree.get('extends')
+        if our_name is None:
+            our_name = '{}[{}]'.format(self._parent.name, self.solve_cfg_name(tree))
+        if used is None:
+            used = {our_name}
+        else:
+            if our_name in used:
+                raise KiPlotConfigurationError('Recursive extends detected in `extends: {}` ({})'.format(base, used))
+            used.add(our_name)
+        logger.debugl(1, "Extending from "+base)
+        # Should be an string
+        if not isinstance(base, str):
+            raise KiPlotConfigurationError('`extends` must be a string, not {}'.format(type(base)))
+        # Extract the output and config names
+        m = PanelizeOptions._extends_regex.match(base)
+        if m is None:
+            raise KiPlotConfigurationError('Malformed `extends` reference: `{}` use OUTPUT_NAME[CFG_NAME]'.format(base))
+        out_name, cfg_name = m.groups()
+        # Look for the output
+        out = RegOutput.get_output(out_name)
+        if out is None:
+            raise KiPlotConfigurationError('Unknown output `{}` in `extends: {}`'.format(out_name, base))
+        # Look for the config
+        configs = None
+        out_options = out._tree.get('options')
+        if out_options:
+            configs = out_options.get('configs')
+        if configs is None or isinstance(configs, str):
+            raise KiPlotConfigurationError("Using `extends: {}` but `{}` hasn't configs to copy". format(base, out_name))
+        cfg_name_is_number = True
+        try:
+            id = int(cfg_name)-1
+        except ValueError:
+            cfg_name_is_number = False
+        if cfg_name_is_number:
+            # Using an index, is it valid?
+            if id >= len(configs):
+                raise KiPlotConfigurationError('Using `extends: {}` but `{}` has {} configs'.
+                                               format(base, out_name, len(configs)))
+            origin = configs[id]
+        else:
+            # Using a name
+            origin = next(filter(lambda x: 'name' in x and x['name'] == cfg_name, configs), None)
+            if origin is None:
+                raise KiPlotConfigurationError("Using `extends: {}` but `{}` doesn't define `{}`".
+                                               format(base, out_name, cfg_name))
+        # Now we have the origin
+        # Does it also use extends?
+        origin_extends = origin.get('extends')
+        if origin_extends:
+            origin = self.solve_extends(origin, level=level+1, used=used, our_name=base)
+        # Copy the origin, update it and replace the current values
+        logger.debugl(1, "{} before applying {}: {}".format(our_name, base, tree))
+        logger.debugl(1, "- Should add {}".format(origin))
+        new_origin = deepcopy(origin)
+        update_dict(new_origin, tree)
+        if level:
+            tree = deepcopy(tree)
+        logger.error(tree)
+        update_dict(tree, new_origin)
+        if not level:
+            # Remove the extends, we solved it
+            del tree['extends']
+        logger.debugl(1, "After apply: {}".format(tree))
+        return tree
+
     def config(self, parent):
+        self._parent = parent
+        # Look for configs that uses extends
+        configs = self._tree.get('configs')
+        if configs:
+            list(map(self.solve_extends, filter(lambda x: 'extends' in x, configs)))
         super().config(parent)
         if isinstance(self.configs, type):
             logger.warning(W_PANELEMPTY+'Generating a panel with default options, not very useful')
             self.configs = []
         elif isinstance(self.configs, str):
             self.configs = [self.configs]
+        for c, cfg in enumerate(self.configs):
+            if not cfg.name:
+                cfg.name = str(c+1)
 
     def create_config(self, cfg):
         with NamedTemporaryFile(mode='w', delete=False, suffix='.json', prefix='kibot_panel_cfg') as f:
             logger.debug('Writing panel config to '+f.name)
             cfg_d = {}
             for k, v in cfg.get_attrs_gen():
-                if v:
-                    cfg_d[k] = {k: v for k, v in v.get_attrs_gen() if v is not None}
+                if isinstance(v, PanelOptions):
+                    cfg_d[k] = {ky: va for ky, va in v.get_attrs_gen() if va is not None and v.get_user_defined(ky)}
             js = json.dumps(cfg_d, indent=4)
             logger.debugl(1, js)
             f.write(js)
@@ -576,7 +688,7 @@ class PanelizeOptions(VariantOptions):
             fname = GS.pcb_file
 
         # Create the command
-        cmd = [cmd_kikit, 'panelize']
+        cmd = [cmd_kikit, 'panelize']  # , '--dump', 'test.json'
         # Add all the configurations
         for cfg in self.configs:
             cmd.append('--preset')

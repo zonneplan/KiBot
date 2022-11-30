@@ -1209,6 +1209,9 @@ outputs:
   # Panelize:
   # It currently uses the KiKit tool, which must be available.
   # Consult KiKit docs for detailed information.
+  # Current versions of KiKit only support KiCad 6 and my tests using
+  # KiKit 1.0.5 (the last to support KiCad 5) shown some
+  # incompatibilities.
   # Note that you don't need to specify the units for all distances.
   # If they are omitted they are assumed to be `default_units`.
   # The same is valid for angles, using `default_angles`
@@ -1275,6 +1278,8 @@ outputs:
             drawtabfail: false
             # [boolean=false] Trace
             trace: false
+          # [string=''] A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]`
+          extends: ''
           # [dict] Used to add fiducial marks to the (rail/frame of) the panel
           fiducials:
             # `copper_size` is an alias for `coppersize`
@@ -1370,6 +1375,9 @@ outputs:
             vboneskip: 0
             # [number|string] Specify the vertical gap between the boards
             vspace: 0
+          # [string=''] A name to identify this configuration. If empty will be the order in the list, starting with 1.
+          # Don't use just a number or it will be confused as an index
+          name: ''
           # [dict] Sets page size on the resulting panel and position the panel in the page
           page:
             # [string='tl'] [tl,tr,bl,br,mt,mb,ml,mr,c] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
@@ -1481,8 +1489,8 @@ outputs:
             text: ''
             # [number|string] Stroke thickness
             thickness: 0.3
-            # [string='simple'] [simple] Currently fixed
-            type: 'simple'
+            # [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works
+            type: 'none'
             # [string='center'] [left,right,center] Vertical justification of the text
             vjustify: 'center'
             # [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system
@@ -1515,8 +1523,8 @@ outputs:
             text: ''
             # [number|string] Stroke thickness
             thickness: 0.3
-            # [string='simple'] [simple] Currently fixed
-            type: 'simple'
+            # [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works
+            type: 'none'
             # [string='center'] [left,right,center] Vertical justification of the text
             vjustify: 'center'
             # [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system
@@ -1549,8 +1557,8 @@ outputs:
             text: ''
             # [number|string] Stroke thickness
             thickness: 0.3
-            # [string='simple'] [simple] Currently fixed
-            type: 'simple'
+            # [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works
+            type: 'none'
             # [string='center'] [left,right,center] Vertical justification of the text
             vjustify: 'center'
             # [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system
@@ -1583,8 +1591,8 @@ outputs:
             text: ''
             # [number|string] Stroke thickness
             thickness: 0.3
-            # [string='simple'] [simple] Currently fixed
-            type: 'simple'
+            # [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works
+            type: 'none'
             # [string='center'] [left,right,center] Vertical justification of the text
             vjustify: 'center'
             # [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system

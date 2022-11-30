@@ -2451,6 +2451,9 @@ Notes:
   * Description: Creates a panel to fabricate various copies of the PCB at once.
                  It currently uses the KiKit tool, which must be available.
                  Consult KiKit docs for detailed information.
+                 Current versions of KiKit only support KiCad 6 and my tests using
+                 KiKit 1.0.5 (the last to support KiCad 5) shown some
+                 incompatibilities.
                  Note that you don't need to specify the units for all distances.
                  If they are omitted they are assumed to be `default_units`.
                  The same is valid for angles, using `default_angles`
@@ -2605,6 +2608,9 @@ Notes:
                 - `drawboxes`: [boolean=false] Draw boxes.
                 - `drawtabfail`: [boolean=false] Draw tab fail.
                 - `trace`: [boolean=false] Trace.
+            - `extends`: [string=''] A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]`.
+            - `name`: [string=''] A name to identify this configuration. If empty will be the order in the list, starting with 1.
+                      Don't use just a number or it will be confused as an index.
             - `post`: [dict] Finishing touches to the panel.
               * Valid keys:
                 - `copperfill`: [boolean=false] Fill tabs and frame with copper (e.g., to save etchant or to increase rigidity of flex-PCB panels).
@@ -2647,7 +2653,7 @@ Notes:
                           *boardCompany* the company from the source board,
                           *boardComment1*-*boardComment9* comments from the source board.
                 - `thickness`: [number|string] Stroke thickness.
-                - `type`: [string='simple'] [simple] Currently fixed.
+                - `type`: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                 - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
@@ -2669,7 +2675,7 @@ Notes:
                           *boardCompany* the company from the source board,
                           *boardComment1*-*boardComment9* comments from the source board.
                 - `thickness`: [number|string] Stroke thickness.
-                - `type`: [string='simple'] [simple] Currently fixed.
+                - `type`: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                 - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
@@ -2691,7 +2697,7 @@ Notes:
                           *boardCompany* the company from the source board,
                           *boardComment1*-*boardComment9* comments from the source board.
                 - `thickness`: [number|string] Stroke thickness.
-                - `type`: [string='simple'] [simple] Currently fixed.
+                - `type`: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                 - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
@@ -2713,7 +2719,7 @@ Notes:
                           *boardCompany* the company from the source board,
                           *boardComment1*-*boardComment9* comments from the source board.
                 - `thickness`: [number|string] Stroke thickness.
-                - `type`: [string='simple'] [simple] Currently fixed.
+                - `type`: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                 - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).

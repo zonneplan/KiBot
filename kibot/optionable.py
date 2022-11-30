@@ -195,7 +195,18 @@ class Optionable(object):
                                 new_val.append(element)
                         v = new_val
             # Seems to be ok, map it
-            setattr(self, alias if is_alias else k, v)
+            dest_name = alias if is_alias else k
+            setattr(self, dest_name, v)
+            self.set_user_defined(dest_name)
+
+    def set_user_defined(self, name):
+        setattr(self, '_{}_user_defined'.format(name), True)
+
+    def get_user_defined(self, name):
+        name = '_{}_user_defined'.format(name)
+        if hasattr(self, name):
+            return getattr(self, name)
+        return False
 
     def set_tree(self, tree):
         self._tree = tree
