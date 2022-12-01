@@ -1,0 +1,9 @@
+# Example KiBot config file for a basic 3D stencil
+kibot:
+  version: 1
+
+outputs:
+  - name: 'stencil'
+    comment: "Creates a steel stencil and 3D register"
+    type: stencil_for_jig
+    dir: stencil/Jig

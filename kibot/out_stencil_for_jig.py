@@ -29,17 +29,17 @@ from . import log
 logger = log.get_logger()
 
 
-class Stencil_3D_Options(VariantOptions):
+class Stencil_For_Jig_Options(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ *Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
-                 %x='stl'|'scad'|'dxf') """
+            """ *Filename for the output (%i='stencil_for_jig_top'|'stencil_for_jig_bottom',
+                 %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob') """
             self.side = 'auto'
             """ [top,bottom,auto,both] Which side of the PCB we want. Using `auto` will detect which
                 side contains solder paste """
             self.include_scad = True
-            """ Include the generated OpenSCAD files. Note that this also includes the DXF files """
+            """ Include the generated OpenSCAD files """
             self.cutout = ''
             """ [string|list(string)] List of components to add a cutout based on the component courtyard.
                 This is useful when you have already pre-populated board and you want to populate more
@@ -48,27 +48,35 @@ class Stencil_3D_Options(VariantOptions):
             """ PCB thickness [mm]. If 0 we will ask KiCad """
             self.pcb_thickness = None
             """ {pcbthickness} """
-            self.thickness = 0.15
-            """ *Stencil thickness [mm]. Defines amount of paste dispensed """
-            self.framewidth = 1
-            """ Register frame width """
-            self.frame_width = None
-            """ {framewidth} """
-            self.frameclearance = 0
-            """ Clearance for the stencil register [mm] """
-            self.frame_clearance = None
-            """ {frameclearance} """
-            self.enlargeholes = 0
-            """ Enlarge pad holes by x mm """
-            self.enlarge_holes = None
-            """ {enlarge_holes} """
+            self.jigthickness = 3
+            """ *Jig thickness [mm] """
+            self.jig_thickness = None
+            """ {jigthickness} """
+            self.registerborderouter = 3
+            """ Outer register border [mm] """
+            self.register_border_outer = None
+            """ {registerborderouter} """
+            self.registerborderinner = 1
+            """ Inner register border [mm] """
+            self.register_border_inner = None
+            """ {registerborderinner} """
+            self.tolerance = 0.05
+            """ Enlarges the register by the tolerance value [mm] """
+            self.jigwidth = 100
+            """ *Jig frame width [mm] """
+            self.jig_width = None
+            """ {jigwidth} """
+            self.jigheight = 100
+            """ *Jig frame height [mm] """
+            self.jig_height = None
+            """ {jigheight} """
         super().__init__()
 
     def config(self, parent):
         super().config(parent)
         self.cutout = ','.join(self.force_list(self.cutout))
 
-    def move_output(self, src_dir, src_file, id, ext, replacement=None, patch=False):
+    def move_output(self, src_dir, src_file, id, ext, replacement=None, patch=False, relative=False):
         self._expand_id = id
         self._expand_ext = ext
         dst_name = self._parent.expand_filename(self._parent.output_dir, self.output)
@@ -86,6 +94,8 @@ class Stencil_3D_Options(VariantOptions):
         else:
             shutil.move(src_name, dst_name)
             if replacement is not None:
+                if relative:
+                    src_name = os.path.basename(src_name)
                 replacement[src_name] = os.path.basename(dst_name)
 
     def get_targets(self, out_dir):
@@ -93,34 +103,33 @@ class Stencil_3D_Options(VariantOptions):
         return [self._parent.expand_filename(out_dir, self.output)]
 
     def create_cmd(self, cmd_kikit):
-        cmd = [cmd_kikit, 'stencil', 'createprinted',
-               '--thickness', str(self.thickness),
-               '--framewidth', str(self.framewidth),
-               '--pcbthickness', str(self.pcbthickness)]
+        cmd = [cmd_kikit, 'stencil', 'create',
+               '--jigsize', str(self.jigwidth), str(self.jigheight),
+               '--jigthickness', str(self.jigthickness),
+               '--pcbthickness', str(self.pcbthickness),
+               '--registerborder', str(self.registerborderouter), str(self.registerborderinner),
+               '--tolerance', str(self.tolerance)]
         if self.cutout:
             cmd.extend(['--coutout', self.cutout])
-        if self.frameclearance:
-            cmd.extend(['--frameclearance', str(self.frameclearance)])
-        if self.enlargeholes:
-            cmd.extend(['--enlargeholes', str(self.enlargeholes)])
+        return cmd
 
     def move_outputs(self, tmp, prj_name, do_top, do_bottom):
         replacements = {}
-        # The edge is needed by any of the OpenSCAD files
-        if (do_top or do_bottom) and self.include_scad:
-            self.move_output(tmp, prj_name+'-EdgeCuts.dxf', 'Stencil_For_Jig_edge', 'dxf', replacements)
         # Top side
         if do_top:
-            self.move_output(tmp, 'topStencil.stl', 'Stencil_For_Jig_top', 'stl')
+            self.move_output(tmp, 'gerber/stencil-PasteTop.gtp', 'stencil_for_jig_top', 'gtp', replacements, relative=True)
+            self.move_output(tmp, 'topRegister.stl', 'stencil_for_jig_top', 'stl')
             if self.include_scad:
-                self.move_output(tmp, prj_name+'-PasteTop.dxf', 'Stencil_For_Jig_top', 'dxf', replacements)
-                self.move_output(tmp, 'topStencil.scad', 'Stencil_For_Jig_top', 'scad', replacements, patch=True)
+                self.move_output(tmp, 'topRegister.scad', 'stencil_for_jig_top', 'scad')
         # Bottom side
         if do_bottom:
-            self.move_output(tmp, 'bottomStencil.stl', 'Stencil_For_Jig_bottom', 'stl')
+            self.move_output(tmp, 'gerber/stencil-PasteBottom.gbp', 'stencil_for_jig_bottom', 'gbp', replacements,
+                             relative=True)
+            self.move_output(tmp, 'bottomRegister.stl', 'stencil_for_jig_bottom', 'stl')
             if self.include_scad:
-                self.move_output(tmp, prj_name+'-PasteBottom.dxf', 'Stencil_For_Jig_bottom', 'dxf', replacements)
-                self.move_output(tmp, 'bottomStencil.scad', 'Stencil_For_Jig_bottom', 'scad', replacements, patch=True)
+                self.move_output(tmp, 'bottomRegister.scad', 'stencil_for_jig_bottom', 'scad')
+        if do_top and do_bottom:
+            self.move_output(tmp, 'gerber/stencil.gbrjob', 'stencil_for_jig', 'gbrjob', replacements, patch=True)
 
     def run(self, output):
         cmd_kikit = self.ensure_tool('KiKit')
@@ -171,17 +180,15 @@ class Stencil_3D_Options(VariantOptions):
 
 
 @output_class
-class Stencil_3D(BaseOutput):  # noqa: F821
-    """ 3D Printed Stencils
-        Creates a 3D self-registering model of a stencil you can easily print on
-        SLA printer, you can use it to apply solder paste to your PCB.
-        These stencils are quick solution when you urgently need a stencil but probably
-        they don't last long and might come with imperfections.
-        It currently uses KiKit, so please read
+class Stencil_For_Jig(BaseOutput):  # noqa: F821
+    """ Steel Stencils for Alignment Jig
+        Creates the gerber files needed to create steel stencils.
+        These stencils are designed to be used with an acrilic alignment jig and a 3D
+        printable support, that is also generated.
         [KiKit docs](https://github.com/yaqwsx/KiKit/blob/master/doc/stencil.md).
         Note that we don't implement `--ignore` option, you should use a variant for this """
     def __init__(self):
         super().__init__()
         with document:
-            self.options = Stencil_3D_Options
-            """ *[dict] Options for the `stencil_3d` output """
+            self.options = Stencil_For_Jig_Options
+            """ *[dict] Options for the `stencil_for_jig` output """

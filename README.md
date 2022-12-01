@@ -145,10 +145,13 @@ Notes:
   - Print the page frame in GUI mode for `pcb_print` (v1.6.7)
 
 [**KiKit**](https://github.com/yaqwsx/KiKit) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/yaqwsx/KiKit) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Mandatory for: `panelize`, `stencil_3d`
+- Mandatory for: `panelize`, `stencil_3d`, `stencil_for_jig`
 
 [**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `pcb_print`, `pcbdraw`
+
+[**OpenSCAD**](https://openscad.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://openscad.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/openscad)
+- Mandatory for: `stencil_3d`, `stencil_for_jig`
 
 [**KiCost**](https://github.com/hildogjr/KiCost) v1.1.8 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/hildogjr/KiCost) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `kicost`
@@ -165,9 +168,6 @@ Notes:
 
 [**mistune**](https://pypi.org/project/mistune/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/mistune/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-mistune)
 - Mandatory for `populate`
-
-[**OpenSCAD**](https://openscad.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://openscad.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/openscad)
-- Mandatory for `stencil_3d`
 
 [**QRCodeGen**](https://pypi.org/project/QRCodeGen/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/QRCodeGen/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/QRCodeGen/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-qrcodegen) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `qr_lib`
@@ -3574,7 +3574,7 @@ Notes:
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
-    - **`options`**: [dict] Options for the `Stencil_3D` output.
+    - **`options`**: [dict] Options for the `stencil_3d` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
                         %x='stl'|'scad'|'dxf'). Affected by global options.
@@ -3597,6 +3597,57 @@ Notes:
                            A short-cut to use for simple cases where a variant is an overkill.
         - `side`: [string='auto'] [top,bottom,auto,both] Which side of the PCB we want. Using `auto` will detect which
                   side contains solder paste.
+        - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
+* Steel Stencils for Alignment Jig
+  * Type: `stencil_for_jig`
+  * Description: Creates the gerber files needed to create steel stencils.
+                 These stencils are designed to be used with an acrilic alignment jig and a 3D
+                 printable support, that is also generated.
+                 [KiKit docs](https://github.com/yaqwsx/KiKit/blob/master/doc/stencil.md).
+                 Note that we don't implement `--ignore` option, you should use a variant for this
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `stencil_for_jig` output.
+      * Valid keys:
+        - *jig_height*: Alias for jigheight.
+        - *jig_thickness*: Alias for jigthickness.
+        - *jig_width*: Alias for jigwidth.
+        - **`jigheight`**: [number=100] Jig frame height [mm].
+        - **`jigthickness`**: [number=3] Jig thickness [mm].
+        - **`jigwidth`**: [number=100] Jig frame width [mm].
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_for_jig_top'|'stencil_for_jig_bottom',
+                        %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob'). Affected by global options.
+        - `cutout`: [string|list(string)] List of components to add a cutout based on the component courtyard.
+                    This is useful when you have already pre-populated board and you want to populate more
+                    components.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `include_scad`: [boolean=true] Include the generated OpenSCAD files.
+        - *pcb_thickness*: Alias for pcbthickness.
+        - `pcbthickness`: [number=0] PCB thickness [mm]. If 0 we will ask KiCad.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - *register_border_inner*: Alias for registerborderinner.
+        - *register_border_outer*: Alias for registerborderouter.
+        - `registerborderinner`: [number=1] Inner register border [mm].
+        - `registerborderouter`: [number=3] Outer register border [mm].
+        - `side`: [string='auto'] [top,bottom,auto,both] Which side of the PCB we want. Using `auto` will detect which
+                  side contains solder paste.
+        - `tolerance`: [number=0.05] Enlarges the register by the tolerance value [mm].
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.

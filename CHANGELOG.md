@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     With support for `pcbdraw` and `render_3d`.
   - `panelize` to create a PCB panel containing N copies of the PCB.
   - `stencil_3d` to create 3D self-registering printable stencils.
+  - `stencil_for_jig` to create steel stencils and 3D register.
 - generic filters: options to filter by PCB side
 - BoM:
   - Option to link to Mouser site.
