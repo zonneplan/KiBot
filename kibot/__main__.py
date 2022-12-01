@@ -74,6 +74,7 @@ from glob import glob
 import gzip
 import locale
 import os
+import platform
 import re
 import sys
 from sys import path as sys_path
@@ -98,7 +99,7 @@ if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
         os.environ['PYTHONPATH'] = pcbnew_path
     nightly = True
 from .gs import GS
-from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK
+from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK, W_ONWIN
 from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError, config_error
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
@@ -285,6 +286,14 @@ def debug_arguments(args):
         logger.debug('Command line parsed:\n'+str(args))
 
 
+def detect_windows():
+    if platform.system() != 'Windows':
+        return
+    # Note: We assume this is the Python from KiCad, but we should check it ...
+    GS.on_windows = True
+    logger.warning(W_ONWIN+'Running on Windows, this is experimental, please report any problem')
+
+
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -298,6 +307,7 @@ def main():
     apply_warning_filter(args)
     # Now we have the debug level set we can check (and optionally inform) KiCad info
     detect_kicad()
+    detect_windows()
     debug_arguments(args)
 
     # Force iBoM to avoid the use of graphical stuff

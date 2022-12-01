@@ -241,6 +241,7 @@ W_MISSFPINFO = '(W102) '
 W_PCBDRAW = '(W103) '
 W_NOCRTYD = '(W104) '
 W_PANELEMPTY = '(W105) '
+W_ONWIN = '(W106) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",

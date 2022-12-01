@@ -54,6 +54,7 @@ class GS(object):
     debug_level = 0
     kibot_version = None
     n = datetime.now()
+    on_windows = False
     kicad_version = ''
     kicad_conf_path = None
     kicad_share_path = None

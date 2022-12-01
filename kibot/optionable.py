@@ -15,6 +15,7 @@ from . import log
 
 logger = log.get_logger()
 HEX_DIGIT = '[A-Fa-f0-9]{2}'
+INVALID_CHARS = r'[?%*:|"<>]'
 
 
 def do_filter(v):
@@ -345,8 +346,16 @@ class Optionable(object):
         name = GS.expand_text_variables(name)
         if make_safe:
             # sanitize the name to avoid characters illegal in file systems
-            name = name.replace('\\', '/')
-            name = re.sub(r'[?%*:|"<>]', '_', name)
+            if GS.on_windows:
+                # Here \ *is* valid
+                if len(name) >= 2 and name[0].isalpha() and name[1] == ':':
+                    # This name starts with a drive letter, : is valid in the first 2
+                    name = name[:2]+re.sub(INVALID_CHARS, '_', name[2:])
+                else:
+                    name = re.sub(INVALID_CHARS, '_', name)
+            else:
+                name = name.replace('\\', '/')
+                name = re.sub(INVALID_CHARS, '_', name)
         if GS.debug_level > 3:
             logger.debug('Expanded `{}`'.format(name))
         return name
