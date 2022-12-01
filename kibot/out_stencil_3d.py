@@ -47,8 +47,24 @@ class Stencil_3D_Options(Stencil_Options):
         self.add_to_doc('include_scad', 'Note that this also includes the DXF files')
 
     def get_targets(self, out_dir):
-        # TODO: auto side is tricky, needs variants applied
-        return [self._parent.expand_filename(out_dir, self.output)]
+        do_top, do_bottom = self.solve_sides()
+        files = []
+        # The edge is needed by any of the OpenSCAD files
+        if (do_top or do_bottom) and self.include_scad:
+            files.append(self.expand_name('stencil_3d_edge', 'dxf', out_dir))
+        # Top side
+        if do_top:
+            files.append(self.expand_name('stencil_3d_top', 'stl', out_dir))
+            if self.include_scad:
+                files.append(self.expand_name('stencil_3d_top', 'dxf', out_dir))
+                files.append(self.expand_name('stencil_3d_top', 'scad', out_dir))
+        # Bottom side
+        if do_bottom:
+            files.append(self.expand_name('stencil_3d_bottom', 'stl', out_dir))
+            if self.include_scad:
+                files.append(self.expand_name('stencil_3d_bottom', 'dxf', out_dir))
+                files.append(self.expand_name('stencil_3d_bottom', 'scad', out_dir))
+        return files
 
     def create_cmd(self, cmd_kikit):
         cmd = [cmd_kikit, 'stencil', 'createprinted',
@@ -67,19 +83,19 @@ class Stencil_3D_Options(Stencil_Options):
         replacements = {}
         # The edge is needed by any of the OpenSCAD files
         if (do_top or do_bottom) and self.include_scad:
-            self.move_output(tmp, prj_name+'-EdgeCuts.dxf', 'Stencil_For_Jig_edge', 'dxf', replacements)
+            self.move_output(tmp, prj_name+'-EdgeCuts.dxf', 'stencil_3d_edge', 'dxf', replacements)
         # Top side
         if do_top:
-            self.move_output(tmp, 'topStencil.stl', 'Stencil_For_Jig_top', 'stl')
+            self.move_output(tmp, 'topStencil.stl', 'stencil_3d_top', 'stl')
             if self.include_scad:
-                self.move_output(tmp, prj_name+'-PasteTop.dxf', 'Stencil_For_Jig_top', 'dxf', replacements)
-                self.move_output(tmp, 'topStencil.scad', 'Stencil_For_Jig_top', 'scad', replacements, patch=True)
+                self.move_output(tmp, prj_name+'-PasteTop.dxf', 'stencil_3d_top', 'dxf', replacements)
+                self.move_output(tmp, 'topStencil.scad', 'stencil_3d_top', 'scad', replacements, patch=True)
         # Bottom side
         if do_bottom:
-            self.move_output(tmp, 'bottomStencil.stl', 'Stencil_For_Jig_bottom', 'stl')
+            self.move_output(tmp, 'bottomStencil.stl', 'stencil_3d_bottom', 'stl')
             if self.include_scad:
-                self.move_output(tmp, prj_name+'-PasteBottom.dxf', 'Stencil_For_Jig_bottom', 'dxf', replacements)
-                self.move_output(tmp, 'bottomStencil.scad', 'Stencil_For_Jig_bottom', 'scad', replacements, patch=True)
+                self.move_output(tmp, prj_name+'-PasteBottom.dxf', 'stencil_3d_bottom', 'dxf', replacements)
+                self.move_output(tmp, 'bottomStencil.scad', 'stencil_3d_bottom', 'scad', replacements, patch=True)
 
 
 @output_class

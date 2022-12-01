@@ -54,8 +54,23 @@ class Stencil_For_Jig_Options(Stencil_Options):
         super().__init__()
 
     def get_targets(self, out_dir):
-        # TODO: auto side is tricky, needs variants applied
-        return [self._parent.expand_filename(out_dir, self.output)]
+        do_top, do_bottom = self.solve_sides()
+        files = []
+        # Top side
+        if do_top:
+            files.append(self.expand_name('stencil_for_jig_top', 'gtp', out_dir))
+            files.append(self.expand_name('stencil_for_jig_top', 'stl', out_dir))
+            if self.include_scad:
+                files.append(self.expand_name('stencil_for_jig_top', 'scad', out_dir))
+        # Bottom side
+        if do_bottom:
+            files.append(self.expand_name('stencil_for_jig_bottom', 'gtp', out_dir))
+            files.append(self.expand_name('stencil_for_jig_bottom', 'stl', out_dir))
+            if self.include_scad:
+                files.append(self.expand_name('stencil_for_jig_bottom', 'scad', out_dir))
+        if do_top and do_bottom:
+            files.append(self.expand_name('stencil_for_jig', 'gbrjob', out_dir))
+        return files
 
     def create_cmd(self, cmd_kikit):
         cmd = [cmd_kikit, 'stencil', 'create',

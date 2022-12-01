@@ -10,7 +10,7 @@ from .error import PlotError
 from .gs import GS
 from .kiplot import run_command
 from .out_base import VariantOptions
-from .misc import W_AUTONONE
+from .misc import W_AUTONONE, W_AUTOPROB
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -39,10 +39,13 @@ class Stencil_Options(VariantOptions):
         super().config(parent)
         self.cutout = ','.join(self.force_list(self.cutout))
 
-    def move_output(self, src_dir, src_file, id, ext, replacement=None, patch=False, relative=False):
+    def expand_name(self, id, ext, out_dir):
         self._expand_id = id
         self._expand_ext = ext
-        dst_name = self._parent.expand_filename(self._parent.output_dir, self.output)
+        return self._parent.expand_filename(out_dir, self.output)
+
+    def move_output(self, src_dir, src_file, id, ext, replacement=None, patch=False, relative=False):
+        dst_name = self.expand_name(id, ext, self._parent.output_dir)
         src_name = os.path.join(src_dir, src_file)
         if not os.path.isfile(src_name):
             raise PlotError('Missing output file {}'.format(src_name))
@@ -61,6 +64,29 @@ class Stencil_Options(VariantOptions):
                     src_name = os.path.basename(src_name)
                 replacement[src_name] = os.path.basename(dst_name)
 
+    def find_sides(self, detected_top, detected_bottom, warn=False):
+        do_top = do_bottom = False
+        if self.side == 'top':
+            do_top = True
+        elif self.side == 'bottom':
+            do_bottom = True
+        elif self.side == 'both':
+            do_top = True
+            do_bottom = True
+        else:  # auto
+            do_top = detected_top
+            do_bottom = detected_bottom
+            if warn:
+                logger.warning(W_AUTOPROB+'Using the `stencil.side` option could create a wrong list of files.')
+        return do_top, do_bottom
+
+    def solve_sides(self):
+        if self.side == 'auto':
+            detected_top, detected_bottom = self.detect_solder_paste(GS.board)
+        else:
+            detected_top = detected_bottom = False
+        return self.find_sides(detected_top, detected_bottom, warn=True)
+
     def run(self, output):
         cmd_kikit = self.ensure_tool('KiKit')
         self.ensure_tool('OpenSCAD')
@@ -69,6 +95,8 @@ class Stencil_Options(VariantOptions):
         filtered = self.filter_pcb_components(GS.board)
         if self.side == 'auto':
             detected_top, detected_bottom = self.detect_solder_paste(GS.board)
+        else:
+            detected_top = detected_bottom = False
         fname = self.save_tmp_board() if filtered else GS.pcb_file
         if filtered:
             self.unfilter_pcb_components(GS.board)
@@ -93,17 +121,6 @@ class Stencil_Options(VariantOptions):
                 if filtered:
                     GS.remove_pcb_and_pro(fname)
             # Now copy the files we want
-            # - Which side?
-            do_top = do_bottom = False
-            if self.side == 'top':
-                do_top = True
-            elif self.side == 'bottom':
-                do_bottom = True
-            elif self.side == 'both':
-                do_top = True
-                do_bottom = True
-            else:  # auto
-                do_top = detected_top
-                do_bottom = detected_bottom
+            do_top, do_bottom = self.find_sides(detected_top, detected_bottom)
             prj_name = os.path.splitext(os.path.basename(fname))[0]
             self.move_outputs(tmp, prj_name, do_top, do_bottom)
