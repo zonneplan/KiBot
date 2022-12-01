@@ -3590,7 +3590,8 @@ Notes:
         - *frame_width*: Alias for framewidth.
         - `frameclearance`: [number=0] Clearance for the stencil register [mm].
         - `framewidth`: [number=1] Register frame width.
-        - `include_scad`: [boolean=true] Include the generated OpenSCAD files. Note that this also includes the DXF files.
+        - `include_scad`: [boolean=true] Include the generated OpenSCAD files.
+                          Note that this also includes the DXF files.
         - *pcb_thickness*: Alias for pcbthickness.
         - `pcbthickness`: [number=0] PCB thickness [mm]. If 0 we will ask KiCad.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.

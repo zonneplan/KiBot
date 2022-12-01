@@ -2488,7 +2488,8 @@ outputs:
       frameclearance: 0
       # [number=1] Register frame width
       framewidth: 1
-      # [boolean=true] Include the generated OpenSCAD files. Note that this also includes the DXF files
+      # [boolean=true] Include the generated OpenSCAD files.
+      # Note that this also includes the DXF files
       include_scad: true
       # [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
       # %x='stl'|'scad'|'dxf'). Affected by global options
