@@ -80,7 +80,7 @@ def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
     cmd[0] = cmd_full
     last_cmd = None
     try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
+        res_run = subprocess.run(cmd, check=True, capture_output=True)
         last_cmd = cmd[0]
     except FileNotFoundError as e:
         last_ok = False
@@ -92,7 +92,9 @@ def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
                 print('Output from command: '+e.output.decode())
         last_ok = False
         return UNKNOWN
-    res = cmd_output.decode().strip()
+    res = res_run.stdout.decode().strip()
+    if len(res) == 0:
+        res = res_run.stderr.decode().strip()
     if only_first_line:
         res = res.split('\n')[0]
     pre_vers = (cmd[0]+' version ', cmd[0]+' ', pre_ver_text)

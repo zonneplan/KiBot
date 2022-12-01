@@ -558,7 +558,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 10000,\
+        "importance": 20000,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -574,6 +574,13 @@ deps = '{\
                 "mandatory": true,\
                 "max_version": null,\
                 "output": "panelize",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "stencil_3d",\
                 "version": null\
             }\
         ],\
@@ -621,6 +628,39 @@ deps = '{\
         "tests": [],\
         "url": null,\
         "url_down": null\
+    },\
+    "OpenSCAD": {\
+        "arch": "openscad",\
+        "command": "openscad",\
+        "comments": [],\
+        "deb_package": "openscad",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 10000,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": false,\
+        "name": "OpenSCAD",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "stencil_3d",\
+        "plugin_dirs": null,\
+        "pypi_name": "OpenSCAD",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "stencil_3d",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": "https://openscad.org/",\
+        "url_down": "https://openscad.org/downloads.html"\
     },\
     "Pandoc": {\
         "arch": "pandoc",\
@@ -1027,7 +1067,7 @@ def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
     cmd[0] = cmd_full
     last_cmd = None
     try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
+        res_run = subprocess.run(cmd, check=True, capture_output=True)
         last_cmd = cmd[0]
     except FileNotFoundError as e:
         last_ok = False
@@ -1039,7 +1079,9 @@ def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
                 print('Output from command: '+e.output.decode())
         last_ok = False
         return UNKNOWN
-    res = cmd_output.decode().strip()
+    res = res_run.stdout.decode().strip()
+    if len(res) == 0:
+        res = res_run.stderr.decode().strip()
     if only_first_line:
         res = res.split('\n')[0]
     pre_vers = (cmd[0]+' version ', cmd[0]+' ', pre_ver_text)

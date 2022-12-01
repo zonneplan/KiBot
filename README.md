@@ -97,6 +97,8 @@ For example, it's common that you might want for each board rev:
 * PCB 3D model in STEP format
 * PCB 3D render in PNG format
 * Compare PCB/SCHs
+* Panelization
+* Stencil creation
 
 You want to do this in a one-touch way, and make sure everything you need to
 do so is securely saved in version control, not on the back of an old
@@ -142,6 +144,9 @@ Notes:
   - Show KiAuto installation information for `info` (v2.0.0)
   - Print the page frame in GUI mode for `pcb_print` (v1.6.7)
 
+[**KiKit**](https://github.com/yaqwsx/KiKit) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/yaqwsx/KiKit) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Mandatory for: `panelize`, `stencil_3d`
+
 [**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `pcb_print`, `pcbdraw`
 
@@ -158,11 +163,11 @@ Notes:
 [**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.3 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `diff`
 
-[**KiKit**](https://github.com/yaqwsx/KiKit) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/yaqwsx/KiKit) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Mandatory for `panelize`
-
 [**mistune**](https://pypi.org/project/mistune/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/mistune/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-mistune)
 - Mandatory for `populate`
+
+[**OpenSCAD**](https://openscad.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://openscad.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/openscad)
+- Mandatory for `stencil_3d`
 
 [**QRCodeGen**](https://pypi.org/project/QRCodeGen/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/QRCodeGen/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/QRCodeGen/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-qrcodegen) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `qr_lib`
@@ -3543,6 +3548,55 @@ Notes:
                            A short-cut to use for simple cases where a variant is an overkill.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
+        - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
+* 3D Printed Stencils
+  * Type: `stencil_3d`
+  * Description: Creates a 3D self-registering model of a stencil you can easily print on
+                 SLA printer, you can use it to apply solder paste to your PCB.
+                 These stencils are quick solution when you urgently need a stencil but probably
+                 they don't last long and might come with imperfections.
+                 It currently uses KiKit, so please read
+                 [KiKit docs](https://github.com/yaqwsx/KiKit/blob/master/doc/stencil.md).
+                 Note that we don't implement `--ignore` option, you should use a variant for this
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `Stencil_3D` output.
+      * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
+                        %x='stl'|'scad'|'dxf'). Affected by global options.
+        - **`thickness`**: [number=0.15] Stencil thickness [mm]. Defines amount of paste dispensed.
+        - `cutout`: [string|list(string)] List of components to add a cutout based on the component courtyard.
+                    This is useful when you have already pre-populated board and you want to populate more
+                    components.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - *enlarge_holes*: Alias for enlarge_holes.
+        - `enlargeholes`: [number=0] Enlarge pad holes by x mm.
+        - *frame_clearance*: Alias for frameclearance.
+        - *frame_width*: Alias for framewidth.
+        - `frameclearance`: [number=0] Clearance for the stencil register [mm].
+        - `framewidth`: [number=1] Register frame width.
+        - `include_scad`: [boolean=true] Include the generated OpenSCAD files. Note that this also includes the DXF files.
+        - *pcb_thickness*: Alias for pcbthickness.
+        - `pcbthickness`: [number=0] PCB thickness [mm]. If 0 we will ask KiCad.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `side`: [string='auto'] [top,bottom,auto,both] Which side of the PCB we want. Using `auto` will detect which
+                  side contains solder paste.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.

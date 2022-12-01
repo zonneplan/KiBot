@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `populate` to create step-by-step assembly instructions
     With support for `pcbdraw` and `render_3d`.
   - `panelize` to create a PCB panel containing N copies of the PCB.
+  - `stencil_3d` to create 3D self-registering printable stencils.
 - generic filters: options to filter by PCB side
 - BoM:
   - Option to link to Mouser site.

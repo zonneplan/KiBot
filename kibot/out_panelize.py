@@ -5,10 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
-  - name: KiKit
-    github: yaqwsx/KiKit
-    pypi: KiKit
-    downloader: pytool
+  - from: KiKit
     role: mandatory
 """
 import collections
@@ -708,10 +705,7 @@ class PanelizeOptions(VariantOptions):
             fname = self.save_tmp_board()
             self.unfilter_pcb_components(GS.board, do_3D=True)
             self.restore_title()
-            to_remove.append(fname)
-            to_remove.append(fname.replace('kicad_pcb', 'kicad_pro'))
-            to_remove.append(fname.replace('kicad_pcb', 'kicad_prl'))
-            to_remove.append(fname.replace('kicad_pcb', 'pro'))
+            to_remove.extend(GS.get_pcb_and_pro_names(fname))
             logger.debug('- Modified PCB: '+fname)
         else:
             fname = GS.pcb_file

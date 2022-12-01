@@ -378,6 +378,19 @@ class GS(object):
         return pro_copy
 
     @staticmethod
+    def get_pcb_and_pro_names(name):
+        if GS.ki5:
+            return [name, name.replace('kicad_pcb', 'pro')]
+        return [name, name.replace('kicad_pcb', 'kicad_pro'), name.replace('kicad_pcb', 'kicad_prl')]
+
+    @staticmethod
+    def remove_pcb_and_pro(name):
+        """ Used to remove temporal PCB and project files """
+        for fn in GS.get_pcb_and_pro_names(name):
+            if os.path.isfile(fn):
+                os.remove(fn)
+
+    @staticmethod
     def load_board():
         """ Will be repplaced by kiplot.py """
         raise AssertionError()

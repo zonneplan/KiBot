@@ -1,0 +1,9 @@
+# Example KiBot config file for a basic 3D stencil
+kibot:
+  version: 1
+
+outputs:
+  - name: 'stencil'
+    comment: "Creates a 3D printable stencil"
+    type: stencil_3d
+    dir: stencil/3D

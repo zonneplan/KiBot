@@ -252,6 +252,11 @@ class VariantOptions(BaseOptions):
             return []
         return [c.ref for c in self._comps if not c.fitted or not c.included]
 
+    # Here just to avoid pulling pcbnew for this
+    @staticmethod
+    def to_mm(val):
+        return ToMM(val)
+
     @staticmethod
     def create_module_element(m):
         if GS.ki6:
@@ -333,6 +338,22 @@ class VariantOptions(BaseOptions):
                 if restore:
                     for line in restore:
                         m.Remove(line)
+
+    def detect_solder_paste(self, board):
+        """ Detects if the top and/or bottom layer has solder paste """
+        fpaste = board.GetLayerID('F.Paste')
+        bpaste = board.GetLayerID('B.Paste')
+        top = bottom = False
+        for m in GS.get_modules_board(board):
+            for p in m.Pads():
+                pad_layers = p.GetLayerSet()
+                if not top and fpaste in pad_layers.Seq():
+                    top = True
+                if not bottom and bpaste in pad_layers.Seq():
+                    bottom = True
+                if top and bottom:
+                    return top, bottom
+        return top, bottom
 
     def remove_paste_and_glue(self, board, comps_hash):
         """ Remove from solder paste layers the filtered components. """

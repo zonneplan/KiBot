@@ -69,6 +69,10 @@ Dependencies:
     debian: python3-lxml
     arch: python-lxml
     downloader: python
+  - name: KiKit
+    github: yaqwsx/KiKit
+    pypi: KiKit
+    downloader: pytool
 """
 import importlib
 import os
@@ -559,6 +563,9 @@ def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
         return None
     last_stderr = res_run.stderr.decode()
     res = res_run.stdout.decode().strip()
+    if len(res) == 0 and len(last_stderr) != 0:
+        # Ok, yes, OpenSCAD prints its version to stderr!!!
+        res = last_stderr
     if only_first_line:
         res = res.split('\n')[0]
     pre_vers = (cmd[0]+' version ', cmd[0]+' ', pre_ver_text)
