@@ -121,7 +121,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 command = r.command
                 if re_git.search(command):
                     git_command = self.ensure_tool('git')
-                    command = re_git.sub(r'\1'+git_command+' ', command)
+                    command = re_git.sub(r'\1'+git_command.replace('\\', r'\\')+' ', command)
                 cmd = ['/bin/bash', '-c', command]
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
