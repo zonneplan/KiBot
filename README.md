@@ -2451,6 +2451,7 @@ Notes:
   * Description: Creates a panel to fabricate various copies of the PCB at once.
                  It currently uses the KiKit tool, which must be available.
                  Consult KiKit docs for detailed information.
+                 [KiKit panelization docs](https://github.com/yaqwsx/KiKit/blob/master/doc/examples.md).
                  Current versions of KiKit only support KiCad 6 and my tests using
                  KiKit 1.0.5 (the last to support KiCad 5) shown some
                  incompatibilities.
