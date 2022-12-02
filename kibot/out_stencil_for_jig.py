@@ -21,6 +21,9 @@ from .out_any_stencil import Stencil_Options
 from . import log
 
 logger = log.get_logger()
+id_top = 'stencil_for_jig_top'
+id_bottom = 'stencil_for_jig_bottom'
+id_job = 'stencil_for_jig'
 
 
 class Stencil_For_Jig_Options(Stencil_Options):
@@ -58,18 +61,22 @@ class Stencil_For_Jig_Options(Stencil_Options):
         files = []
         # Top side
         if do_top:
-            files.append(self.expand_name('stencil_for_jig_top', 'gtp', out_dir))
-            files.append(self.expand_name('stencil_for_jig_top', 'stl', out_dir))
+            files.append(self.expand_name(id_top, 'gtp', out_dir))
+            files.append(self.expand_name(id_top, 'stl', out_dir))
+            if self.create_preview:
+                files.append(self.expand_name(id_top, 'png', out_dir))
             if self.include_scad:
-                files.append(self.expand_name('stencil_for_jig_top', 'scad', out_dir))
+                files.append(self.expand_name(id_top, 'scad', out_dir))
         # Bottom side
         if do_bottom:
-            files.append(self.expand_name('stencil_for_jig_bottom', 'gtp', out_dir))
-            files.append(self.expand_name('stencil_for_jig_bottom', 'stl', out_dir))
+            files.append(self.expand_name(id_bottom, 'gtp', out_dir))
+            files.append(self.expand_name(id_bottom, 'stl', out_dir))
+            if self.create_preview:
+                files.append(self.expand_name(id_bottom, 'png', out_dir))
             if self.include_scad:
-                files.append(self.expand_name('stencil_for_jig_bottom', 'scad', out_dir))
+                files.append(self.expand_name(id_bottom, 'scad', out_dir))
         if do_top and do_bottom:
-            files.append(self.expand_name('stencil_for_jig', 'gbrjob', out_dir))
+            files.append(self.expand_name(id_job, 'gbrjob', out_dir))
         return files
 
     def create_cmd(self, cmd_kikit):
@@ -87,23 +94,22 @@ class Stencil_For_Jig_Options(Stencil_Options):
         replacements = {}
         # Top side
         if do_top:
-            self.move_output(tmp, 'gerber/stencil-PasteTop.gtp', 'stencil_for_jig_top', 'gtp', replacements, relative=True)
-            self.move_output(tmp, 'topRegister.stl', 'stencil_for_jig_top', 'stl')
+            self.move_output(tmp, 'gerber/stencil-PasteTop.gtp', id_top, 'gtp', replacements, relative=True)
+            self.move_output(tmp, 'topRegister.stl', id_top, 'stl')
             if self.create_preview:
-                self.create_preview_png(tmp, 'topRegister.scad', 'stencil_for_jig_top')
+                self.create_preview_png(tmp, 'topRegister.scad', id_top)
             if self.include_scad:
-                self.move_output(tmp, 'topRegister.scad', 'stencil_for_jig_top', 'scad')
+                self.move_output(tmp, 'topRegister.scad', id_top, 'scad')
         # Bottom side
         if do_bottom:
-            self.move_output(tmp, 'gerber/stencil-PasteBottom.gbp', 'stencil_for_jig_bottom', 'gbp', replacements,
-                             relative=True)
-            self.move_output(tmp, 'bottomRegister.stl', 'stencil_for_jig_bottom', 'stl')
+            self.move_output(tmp, 'gerber/stencil-PasteBottom.gbp', id_bottom, 'gbp', replacements, relative=True)
+            self.move_output(tmp, 'bottomRegister.stl', id_bottom, 'stl')
             if self.create_preview:
-                self.create_preview_png(tmp, 'bottomRegister.scad', 'stencil_for_jig_top')
+                self.create_preview_png(tmp, 'bottomRegister.scad', id_bottom)
             if self.include_scad:
-                self.move_output(tmp, 'bottomRegister.scad', 'stencil_for_jig_bottom', 'scad')
+                self.move_output(tmp, 'bottomRegister.scad', id_bottom, 'scad')
         if do_top and do_bottom:
-            self.move_output(tmp, 'gerber/stencil.gbrjob', 'stencil_for_jig', 'gbrjob', replacements, patch=True)
+            self.move_output(tmp, 'gerber/stencil.gbrjob', id_job, 'gbrjob', replacements, patch=True)
 
 
 @output_class

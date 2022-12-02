@@ -21,6 +21,9 @@ from .out_any_stencil import Stencil_Options
 from . import log
 
 logger = log.get_logger()
+id_top = 'stencil_3d_top'
+id_bottom = 'stencil_3d_bottom'
+id_edge = 'stencil_3d_edge'
 
 
 class Stencil_3D_Options(Stencil_Options):
@@ -49,21 +52,26 @@ class Stencil_3D_Options(Stencil_Options):
     def get_targets(self, out_dir):
         do_top, do_bottom = self.solve_sides()
         files = []
+        if self.create_preview:
+            if do_top:
+                files.append(self.expand_name(id_top, 'png', out_dir))
+            if do_bottom:
+                files.append(self.expand_name(id_bottom, 'png', out_dir))
         # The edge is needed by any of the OpenSCAD files
         if (do_top or do_bottom) and self.include_scad:
-            files.append(self.expand_name('stencil_3d_edge', 'dxf', out_dir))
+            files.append(self.expand_name(id_edge, 'dxf', out_dir))
         # Top side
         if do_top:
-            files.append(self.expand_name('stencil_3d_top', 'stl', out_dir))
+            files.append(self.expand_name(id_top, 'stl', out_dir))
             if self.include_scad:
-                files.append(self.expand_name('stencil_3d_top', 'dxf', out_dir))
-                files.append(self.expand_name('stencil_3d_top', 'scad', out_dir))
+                files.append(self.expand_name(id_top, 'dxf', out_dir))
+                files.append(self.expand_name(id_top, 'scad', out_dir))
         # Bottom side
         if do_bottom:
-            files.append(self.expand_name('stencil_3d_bottom', 'stl', out_dir))
+            files.append(self.expand_name(id_bottom, 'stl', out_dir))
             if self.include_scad:
-                files.append(self.expand_name('stencil_3d_bottom', 'dxf', out_dir))
-                files.append(self.expand_name('stencil_3d_bottom', 'scad', out_dir))
+                files.append(self.expand_name(id_bottom, 'dxf', out_dir))
+                files.append(self.expand_name(id_bottom, 'scad', out_dir))
         return files
 
     def create_cmd(self, cmd_kikit):
@@ -84,24 +92,24 @@ class Stencil_3D_Options(Stencil_Options):
         # Create the preview before we touch anything
         if self.create_preview:
             if do_top:
-                self.create_preview_png(tmp, 'topStencil.scad', 'stencil_3d_top')
+                self.create_preview_png(tmp, 'topStencil.scad', id_top)
             if do_bottom:
-                self.create_preview_png(tmp, 'bottomStencil.scad', 'stencil_3d_bottom')
+                self.create_preview_png(tmp, 'bottomStencil.scad', id_bottom)
         # The edge is needed by any of the OpenSCAD files
         if (do_top or do_bottom) and self.include_scad:
-            self.move_output(tmp, prj_name+'-EdgeCuts.dxf', 'stencil_3d_edge', 'dxf', replacements)
+            self.move_output(tmp, prj_name+'-EdgeCuts.dxf', id_edge, 'dxf', replacements)
         # Top side
         if do_top:
-            self.move_output(tmp, 'topStencil.stl', 'stencil_3d_top', 'stl')
+            self.move_output(tmp, 'topStencil.stl', id_top, 'stl')
             if self.include_scad:
-                self.move_output(tmp, prj_name+'-PasteTop.dxf', 'stencil_3d_top', 'dxf', replacements)
-                self.move_output(tmp, 'topStencil.scad', 'stencil_3d_top', 'scad', replacements, patch=True)
+                self.move_output(tmp, prj_name+'-PasteTop.dxf', id_top, 'dxf', replacements)
+                self.move_output(tmp, 'topStencil.scad', id_top, 'scad', replacements, patch=True)
         # Bottom side
         if do_bottom:
-            self.move_output(tmp, 'bottomStencil.stl', 'stencil_3d_bottom', 'stl')
+            self.move_output(tmp, 'bottomStencil.stl', id_bottom, 'stl')
             if self.include_scad:
-                self.move_output(tmp, prj_name+'-PasteBottom.dxf', 'stencil_3d_bottom', 'dxf', replacements)
-                self.move_output(tmp, 'bottomStencil.scad', 'stencil_3d_bottom', 'scad', replacements, patch=True)
+                self.move_output(tmp, prj_name+'-PasteBottom.dxf', id_bottom, 'dxf', replacements)
+                self.move_output(tmp, 'bottomStencil.scad', id_bottom, 'scad', replacements, patch=True)
 
 
 @output_class
