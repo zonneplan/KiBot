@@ -14,6 +14,10 @@ Dependencies:
     debian: openscad
     arch: openscad
     role: mandatory
+  - from: Xvfbwrapper
+    role: mandatory
+  - from: Xvfb
+    role: mandatory
 """
 import math
 from .gs import GS

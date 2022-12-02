@@ -73,6 +73,17 @@ Dependencies:
     github: yaqwsx/KiKit
     pypi: KiKit
     downloader: pytool
+  - name: Xvfbwrapper
+    python_module: true
+    debian: python3-xvfbwrapper
+    arch: python-xvfbwrapper
+    downloader: python
+  - name: Xvfb
+    url: https://www.x.org
+    command: xvfb-run
+    debian: xvfb
+    arch: xorg-server-xvfb
+    no_cmd_line_version: true
 """
 import importlib
 import os
@@ -944,6 +955,7 @@ def register_dep(context, dep):
     command = dep.get('command', None)
     help_option = dep.get('help_option', None)
     pypi_name = dep.get('pypi', None)
+    no_cmd_line_version = dep.get('no_cmd_line_version', False)
     no_cmd_line_version_old = dep.get('no_cmd_line_version_old', False)
     downloader_str = downloader = dep.get('downloader', None)
     if downloader:
@@ -956,7 +968,7 @@ def register_dep(context, dep):
                         extra_deb=extra_deb, is_python=is_python, module_name=module_name, plugin_dirs=plugin_dirs,
                         command=command, help_option=help_option, pypi_name=pypi_name,
                         no_cmd_line_version_old=no_cmd_line_version_old, downloader=downloader, arch=arch,
-                        extra_arch=extra_arch, tests=tests)
+                        extra_arch=extra_arch, tests=tests, no_cmd_line_version=no_cmd_line_version)
     # Extra comments
     comments = dep.get('comments', [])
     if isinstance(comments, str):

@@ -52,7 +52,7 @@ class Stencil_Options(VariantOptions):
         src_name = os.path.join(src_dir, src_file)
         if not os.path.isfile(src_name):
             raise PlotError('Missing output file {}'.format(src_name))
-        run_command([self.cmd_openscad, '-o', dst_name, '--imgsize=1280,720', src_name])
+        run_command([self.cmd_openscad, '-o', dst_name, '--imgsize=1280,720', src_name], use_x11=True)
 
     def move_output(self, src_dir, src_file, id, ext, replacement=None, patch=False, relative=False):
         dst_name = self.expand_name(id, ext, self._parent.output_dir)
@@ -100,6 +100,9 @@ class Stencil_Options(VariantOptions):
     def run(self, output):
         cmd_kikit = self.ensure_tool('KiKit')
         self.cmd_openscad = self.ensure_tool('OpenSCAD')
+        if not GS.on_windows:
+            self.ensure_tool('Xvfbwrapper')
+            self.ensure_tool('Xvfb')
         super().run(output)
         # Apply variants and filters
         filtered = self.filter_pcb_components(GS.board)
@@ -125,7 +128,7 @@ class Stencil_Options(VariantOptions):
             cmd.append(fname)
             cmd.append(tmp)
             try:
-                run_command(cmd)
+                run_command(cmd, use_x11=True)
             finally:
                 # Remove temporal variant
                 if filtered:

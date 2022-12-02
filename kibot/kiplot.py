@@ -145,12 +145,22 @@ def debug_output(res):
         logger.debug('- Output from command: '+res.stdout.decode())
 
 
-def run_command(command, change_to=None, just_raise=False):
+def _run_command(command, change_to):
+    return run(command, check=True, stdout=PIPE, stderr=STDOUT, cwd=change_to)
+
+
+def run_command(command, change_to=None, just_raise=False, use_x11=False):
     logger.debug('Executing: '+shlex.join(command))
     if change_to is not None:
         logger.debug('- CWD: '+change_to)
     try:
-        res = run(command, check=True, stdout=PIPE, stderr=STDOUT, cwd=change_to)
+        if use_x11 and not GS.on_windows:
+            logger.debug('Using Xvfb to run the command')
+            from xvfbwrapper import Xvfb
+            with Xvfb(width=640, height=480, colordepth=24):
+                res = _run_command(command, change_to)
+        else:
+            res = _run_command(command, change_to)
     except CalledProcessError as e:
         if just_raise:
             raise

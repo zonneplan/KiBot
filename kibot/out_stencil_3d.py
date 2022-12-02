@@ -14,6 +14,10 @@ Dependencies:
     debian: openscad
     arch: openscad
     role: mandatory
+  - from: Xvfbwrapper
+    role: mandatory
+  - from: Xvfb
+    role: mandatory
 """
 from .gs import GS
 from .macros import macros, document, output_class  # noqa: F401
