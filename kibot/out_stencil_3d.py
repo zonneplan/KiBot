@@ -127,3 +127,4 @@ class Stencil_3D(BaseOutput):  # noqa: F821
         with document:
             self.options = Stencil_3D_Options
             """ *[dict] Options for the `stencil_3d` output """
+        self._category = 'PCB/fabrication'
