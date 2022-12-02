@@ -127,4 +127,10 @@ class Stencil_3D(BaseOutput):  # noqa: F821
         with document:
             self.options = Stencil_3D_Options
             """ *[dict] Options for the `stencil_3d` output """
-        self._category = 'PCB/fabrication'
+        self._category = 'PCB/fabrication/assembly'
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        if not GS.check_tool(name, 'KiKit') or not GS.check_tool(name, 'OpenSCAD'):
+            return None
+        return BaseOutput.simple_conf_examples(name, '3D self-registering stencil', 'Assembly')  # noqa: F821

@@ -15,7 +15,9 @@ Dependencies:
     arch: openscad
     role: mandatory
 """
+import math
 from .gs import GS
+from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from .out_any_stencil import Stencil_Options
 from . import log
@@ -125,4 +127,24 @@ class Stencil_For_Jig(BaseOutput):  # noqa: F821
         with document:
             self.options = Stencil_For_Jig_Options
             """ *[dict] Options for the `stencil_for_jig` output """
-        self._category = 'PCB/fabrication'
+        self._category = 'PCB/fabrication/assembly'
+
+    @staticmethod
+    def get_conf_examples(name, layers, templates):
+        if not GS.check_tool(name, 'KiKit') or not GS.check_tool(name, 'OpenSCAD'):
+            return None
+        res = BaseOutput.simple_conf_examples(name, 'Steel stencil for alignment jig', 'Assembly')  # noqa: F821
+        # Adjust the jig size so the board fits, just a demo
+        bb = GS.board.ComputeBoundingBox(True)
+        w = VariantOptions.to_mm(bb.GetWidth())
+        if w < 100:
+            w = 100
+        else:
+            w = math.ceil(w/50)*50
+        h = VariantOptions.to_mm(bb.GetHeight())
+        if h < 100:
+            h = 100
+        else:
+            h = math.ceil(h/50)*50
+        res[0]['options'] = {'jigwidth': w, 'jigheight': h}
+        return res
