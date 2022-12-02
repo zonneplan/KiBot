@@ -542,7 +542,7 @@ def get_pre_targets(targets, dependencies, is_pre):
     return pcb_targets, sch_targets
 
 
-def get_out_targets(outputs, ori_names, targets, dependencies, comments):
+def get_out_targets(outputs, ori_names, targets, dependencies, comments, no_default):
     pcb_targets = sch_targets = ''
     try:
         for out in outputs:
@@ -555,6 +555,8 @@ def get_out_targets(outputs, ori_names, targets, dependencies, comments):
             dependencies[name] = [adapt_file_name(fn) for fn in out.get_dependencies()]
             if out.comment:
                 comments[name] = out.comment
+            if not out.run_by_default:
+                no_default.add(name)
             if out.is_sch():
                 sch_targets += ' '+name
             if out.is_pcb():
@@ -596,13 +598,14 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
         comments = {}
         ori_names = {}
         is_pre = set()
+        no_default = set()
         # Preflights
         pre_pcb_targets, pre_sch_targets = get_pre_targets(targets, dependencies, is_pre)
         # Outputs
-        out_pcb_targets, out_sch_targets = get_out_targets(outputs, ori_names, targets, dependencies, comments)
+        out_pcb_targets, out_sch_targets = get_out_targets(outputs, ori_names, targets, dependencies, comments, no_default)
         # all target
         f.write('#\n# Default target\n#\n')
-        f.write('all: '+' '.join(targets.keys())+'\n\n')
+        f.write('all: '+' '.join(filter(lambda x: x not in no_default, targets.keys()))+'\n\n')
         extra_targets = ['all']
         # PCB/SCH specific targets
         f.write('#\n# SCH/PCB targets\n#\n')
