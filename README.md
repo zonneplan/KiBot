@@ -2477,9 +2477,11 @@ Notes:
           * Valid keys:
             - **`cuts`**: [dict] Specify how to perform the cuts on the tabs separating the board.
               * Valid keys:
-                - **`type`**: [string='none'] [none,mousebites,vcuts,layer] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
+                - **`type`**: [string='none'] [none,mousebites,vcuts,layer,plugin] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
                               into a layer with this option to understand what's going on. Shouldn't be used for the final design.
+                - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
                 - `clearance`: [number|string] Specify clearance for copper around V-cuts.
+                - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
                 - *cut_curves*: Alias for cutcurves.
                 - `cutcurves`: [boolean=false] Specify if curves should be approximated by straight cuts (e.g., for cutting tabs on circular boards).
                                Used for *vcuts*.
@@ -2492,7 +2494,7 @@ Notes:
                 - `spacing`: [number|string] The spacing of the holes used for the *mousebites*.
             - **`fiducials`**: [dict] Used to add fiducial marks to the (rail/frame of) the panel.
               * Valid keys:
-                - **`type`**: [string='none'] [none,3fid,4fid] Add none, 3 or 4 fiducials to the (rail/frame of) the panel.
+                - **`type`**: [string='none'] [none,3fid,4fid,plugin] Add none, 3 or 4 fiducials to the (rail/frame of) the panel.
                 - *copper_size*: Alias for coppersize.
                 - `coppersize`: [number|string] Diameter of the copper spot.
                 - `hoffset`: [number|string] Horizontal offset from panel edges.
@@ -2500,12 +2502,15 @@ Notes:
                 - `voffset`: [number|string] Vertical offset from panel edges.
             - **`framing`**: [dict] Specify the frame around the boards.
               * Valid keys:
-                - **`type`**: [string='none'] [none,railstb,railslr,frame,tightframe] Railstb: Add rails on top and bottom.
+                - **`type`**: [string='none'] [none,railstb,railslr,frame,tightframe,plugin] Railstb: Add rails on top and bottom.
                               Railslr: Add rails on left and right.
                               Frame: Add a frame around the board.
                               Tighframe: Add a frame around the board which fills the whole area of the panel -
                               the boards have just a milled slot around their perimeter.
+                              Plugin: Uses an external python function, only `code` and `arg` are relevant.
+                - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
                 - `chamfer`: [number|string] Specify the size of chamfer frame corners.
+                - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
                 - `cuts`: [string='both'] [none,both,v,h] Specify whether to add cuts to the corners of the frame for easy removal.
                           Used for *frame*.
                 - `fillet`: [number|string] Specify radius of fillet frame corners.
@@ -2530,8 +2535,10 @@ Notes:
                                  rows: Rotate boards by 180° on every next row.
                                  cols: Rotate boards by 180° on every next column.
                                  rowsCols: Rotate boards by 180° based on a chessboard pattern.
+                - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
                 - *bake_text*: Alias for baketext.
                 - `baketext`: [boolean=true] A flag that indicates if text variables should be substituted or not.
+                - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
                 - `hbackbone`: [number|string] The width of horizontal backbone (0 means no backbone). The backbone does not increase the
                                spacing of the boards.
                 - `hbonecut`: [boolean=true] If there are both backbones specified, specifies if there should be a horizontal cut where the backbones
@@ -2545,7 +2552,7 @@ Notes:
                                name.
                 - `rotation`: [number|string] Rotate the boards before placing them in the panel.
                 - `space`: [number|string] Specify the gap between the boards, overwrites `hspace` and `vspace`.
-                - `type`: [string='grid'] [grid] Currently fixed.
+                - `type`: [string='grid'] [grid,plugin] In the plugin type only `code` and `arg` are relevant.
                 - `vbackbone`: [number|string] The width of vertical backbone (0 means no backbone). The backbone does not increase the
                                spacing of the boards.
                 - `vbonecut`: [boolean=true] If there are both backbones specified, specifies if there should be a vertical cut where the backbones
@@ -2570,11 +2577,14 @@ Notes:
                 - `width`: [number|string] Width for the `custom` paper size.
             - **`tabs`**: [dict] Style of the tabs used to join the PCB copies.
               * Valid keys:
-                - **`type`**: [string='spacing'] [fixed,spacing,full,annotation] Fixed: Place given number of tabs on the PCB edge.
+                - **`type`**: [string='spacing'] [fixed,spacing,full,annotation,plugin] Fixed: Place given number of tabs on the PCB edge.
                               Spacing: Place tabs on the PCB edges based on spacing.
                               Full: Create tabs that are full width of the PCB.
                               Corner: Create tabs in the corners of the PCB.
                               Annotation: Add tabs based on PCB annotations.
+                              Plugin: Uses an external python function, only `code` and `arg` are relevant.
+                - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
+                - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
                 - `cutout`: [number|string] When your design features open pockets on the side, this parameter specifies extra cutout depth in order to
                             ensure that a sharp corner of the pocket can be milled. Used for *full*.
                 - `hcount`: [number=1] Number of tabs in the horizontal direction. Used for *fixed*.
@@ -2591,7 +2601,9 @@ Notes:
                            Used for *fixed*, *spacing*, *corner* and *annotation*.
             - **`tooling`**: [dict] Used to add tooling holes to the (rail/frame of) the panel.
               * Valid keys:
-                - **`type`**: [string='none'] [none,3hole,4hole] Add none, 3 or 4 holes to the (rail/frame of) the panel.
+                - **`type`**: [string='none'] [none,3hole,4hole,plugin] Add none, 3 or 4 holes to the (rail/frame of) the panel.
+                - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
+                - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
                 - `hoffset`: [number|string] Horizontal offset from panel edges.
                 - `paste`: [boolean=false] If True, the holes are included in the paste layer (therefore they appear on the stencil).
                 - `size`: [number|string] Diameter of the holes.
@@ -2671,6 +2683,7 @@ Notes:
                 - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                 - `layer`: [string='F.SilkS'] Specify text layer.
                 - `orientation`: [number|string] Specify the orientation (angle).
+                - `plugin`: [string=''] Specify the plugin that provides extra variables for the text.
                 - `thickness`: [number|string] Stroke thickness.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
@@ -2693,6 +2706,7 @@ Notes:
                 - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                 - `layer`: [string='F.SilkS'] Specify text layer.
                 - `orientation`: [number|string] Specify the orientation (angle).
+                - `plugin`: [string=''] Specify the plugin that provides extra variables for the text.
                 - `thickness`: [number|string] Stroke thickness.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
@@ -2715,6 +2729,7 @@ Notes:
                 - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                 - `layer`: [string='F.SilkS'] Specify text layer.
                 - `orientation`: [number|string] Specify the orientation (angle).
+                - `plugin`: [string=''] Specify the plugin that provides extra variables for the text.
                 - `thickness`: [number|string] Stroke thickness.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
@@ -2737,6 +2752,7 @@ Notes:
                 - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                 - `layer`: [string='F.SilkS'] Specify text layer.
                 - `orientation`: [number|string] Specify the orientation (angle).
+                - `plugin`: [string=''] Specify the plugin that provides extra variables for the text.
                 - `thickness`: [number|string] Stroke thickness.
                 - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.

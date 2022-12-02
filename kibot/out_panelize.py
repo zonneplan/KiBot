@@ -80,6 +80,16 @@ class PanelOptions(BaseOptions):
                     raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))
 
 
+class PanelOptionsWithPlugin(PanelOptions):
+    def __init__(self):
+        with document:
+            self.code = ''
+            """ Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin* """
+            self.arg = ''
+            """ Argument to pass to the plugin. Used for *plugin* """
+        super().__init__()
+
+
 class PanelizePage(PanelOptions):
     def __init__(self):
         with document:
@@ -114,11 +124,11 @@ class PanelizePage(PanelOptions):
         self.add_units(('posx', 'posy', 'width', 'height'))
 
 
-class PanelizeLayout(PanelOptions):
+class PanelizeLayout(PanelOptionsWithPlugin):
     def __init__(self):
         with document:
             self.type = 'grid'
-            """ [grid] Currently fixed """
+            """ [grid,plugin] In the plugin type only `code` and `arg` are relevant """
             self.hspace = 0
             """ [number|string] Specify the horizontal gap between the boards """
             self.vspace = 0
@@ -176,15 +186,16 @@ class PanelizeLayout(PanelOptions):
         self.add_angle(('rotation', ))
 
 
-class PanelizeTabs(PanelOptions):
+class PanelizeTabs(PanelOptionsWithPlugin):
     def __init__(self):
         with document:
             self.type = 'spacing'
-            """ *[fixed,spacing,full,annotation] Fixed: Place given number of tabs on the PCB edge.
+            """ *[fixed,spacing,full,annotation,plugin] Fixed: Place given number of tabs on the PCB edge.
                 Spacing: Place tabs on the PCB edges based on spacing.
                 Full: Create tabs that are full width of the PCB.
                 Corner: Create tabs in the corners of the PCB.
-                Annotation: Add tabs based on PCB annotations """
+                Annotation: Add tabs based on PCB annotations.
+                Plugin: Uses an external python function, only `code` and `arg` are relevant """
             self.vwidth = 3
             """ [number|string] The width of tabs in the vertical direction. Used for *fixed* and *spacing* """
             self.hwidth = 3
@@ -219,11 +230,11 @@ class PanelizeTabs(PanelOptions):
         self.add_units(('vwidth', 'hwidth', 'width', 'mindistance', 'spacing', 'cutout'))
 
 
-class PanelizeCuts(PanelOptions):
+class PanelizeCuts(PanelOptionsWithPlugin):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ *[none,mousebites,vcuts,layer] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
+            """ *[none,mousebites,vcuts,layer,plugin] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
                 into a layer with this option to understand what's going on. Shouldn't be used for the final design """
             self.drill = 0.5
             """ [number|string] Drill size used for the *mousebites* """
@@ -254,15 +265,16 @@ class PanelizeCuts(PanelOptions):
             raise KiPlotConfigurationError('Must select only one layer for the V-cuts ({})'.format(self.layer))
 
 
-class PanelizeFraming(PanelOptions):
+class PanelizeFraming(PanelOptionsWithPlugin):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ *[none,railstb,railslr,frame,tightframe] Railstb: Add rails on top and bottom.
+            """ *[none,railstb,railslr,frame,tightframe,plugin] Railstb: Add rails on top and bottom.
             Railslr: Add rails on left and right.
             Frame: Add a frame around the board.
             Tighframe: Add a frame around the board which fills the whole area of the panel -
-            the boards have just a milled slot around their perimeter """
+            the boards have just a milled slot around their perimeter.
+            Plugin: Uses an external python function, only `code` and `arg` are relevant """
             self.hspace = 2
             """ [number|string] Specify the horizontal space between PCB and the frame/rail """
             self.vspace = 2
@@ -302,11 +314,11 @@ class PanelizeFraming(PanelOptions):
                         'slotwidth'))
 
 
-class PanelizeTooling(PanelOptions):
+class PanelizeTooling(PanelOptionsWithPlugin):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ *[none,3hole,4hole] Add none, 3 or 4 holes to the (rail/frame of) the panel """
+            """ *[none,3hole,4hole,plugin] Add none, 3 or 4 holes to the (rail/frame of) the panel """
             self.hoffset = 0
             """ [number|string] Horizontal offset from panel edges """
             self.voffset = 0
@@ -326,7 +338,7 @@ class PanelizeFiducials(PanelOptions):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ *[none,3fid,4fid] Add none, 3 or 4 fiducials to the (rail/frame of) the panel """
+            """ *[none,3fid,4fid,plugin] Add none, 3 or 4 fiducials to the (rail/frame of) the panel """
             self.hoffset = 0
             """ [number|string] Horizontal offset from panel edges """
             self.voffset = 0
@@ -379,6 +391,8 @@ class PanelizeText(PanelOptions):
             """ [number|string] Stroke thickness """
             self.layer = 'F.SilkS'
             """ Specify text layer """
+            self.plugin = ''
+            """ Specify the plugin that provides extra variables for the text """
         super().__init__()
 
     def config(self, parent):
