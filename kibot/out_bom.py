@@ -683,6 +683,11 @@ class BoMOptions(BaseOptions):
             # If no options get the defaults
             self.csv = BoMCSV()
             self.csv.config(self)
+        # HRTXT options
+        if self.format == 'hrtxt' and isinstance(self.hrtxt, type):
+            # If no options get the defaults
+            self.hrtxt = BoMTXT()
+            self.hrtxt.config(self)
         # XLSX options
         if self.format == 'xlsx' and isinstance(self.xlsx, type):
             # If no options get the defaults
@@ -966,6 +971,8 @@ class BoM(BaseOutput):  # noqa: F821
         gb['type'] = 'bom'
         gb['dir'] = os.path.join('BoM', subd)
         ops = {'format': fmt}
+        if fmt == 'HRTXT':
+            ops['hrtxt'] = {'separator': '|'}
         if group_fields:
             ops['group_fields'] = group_fields
         if join_fields:
