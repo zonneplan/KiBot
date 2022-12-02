@@ -29,7 +29,7 @@ from tempfile import NamedTemporaryFile
 from .gs import GS
 from .optionable import BaseOptions
 from .kiplot import config_output, get_output_dir
-from .misc import W_NOTYET, W_MISSTOOL
+from .misc import W_NOTYET, W_MISSTOOL, W_NOOUTPUTS
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log, __version__
@@ -447,6 +447,9 @@ class Navigate_ResultsOptions(BaseOptions):
             for c in cat:
                 self.add_to_tree(c, o, o_tree)
         logger.debug('Collected outputs:\n'+pprint.pformat(o_tree))
+        if not o_tree:
+            logger.warning(W_NOOUTPUTS+'No outputs for navigate results')
+            return
         with open(os.path.join(self.out_dir, 'styles.css'), 'wt') as f:
             f.write(STYLE)
         self.rsvg_command = self.check_tool('rsvg1')

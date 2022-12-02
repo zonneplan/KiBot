@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Imports:
   - Problems with recursive imports when the intermediate import didn't
     contain any of the requested elements (i.e. no outputs). (#335)
+- Navigate results: fail when no output to generate. Now you get a warning.
 
 ## [1.4.0] - 2022-10-12
 ### Added
