@@ -2472,6 +2472,8 @@ outputs:
     type: 'stencil_3d'
     dir: 'Example/stencil_3d_dir'
     options:
+      # [boolean=true] Creates a PNG showing the generated 3D model
+      create_preview: true
       # [string|list(string)] List of components to add a cutout based on the component courtyard.
       # This is useful when you have already pre-populated board and you want to populate more
       # components
@@ -2492,7 +2494,7 @@ outputs:
       # Note that this also includes the DXF files
       include_scad: true
       # [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
-      # %x='stl'|'scad'|'dxf'). Affected by global options
+      # %x='stl'|'scad'|'dxf'|'png'). Affected by global options
       output: '%f-%i%I%v.%x'
       # `pcb_thickness` is an alias for `pcbthickness`
       # [number=0] PCB thickness [mm]. If 0 we will ask KiCad
@@ -2517,6 +2519,8 @@ outputs:
     type: 'stencil_for_jig'
     dir: 'Example/stencil_for_jig_dir'
     options:
+      # [boolean=true] Creates a PNG showing the generated 3D model
+      create_preview: true
       # [string|list(string)] List of components to add a cutout based on the component courtyard.
       # This is useful when you have already pre-populated board and you want to populate more
       # components
@@ -2536,7 +2540,7 @@ outputs:
       # [number=100] Jig frame width [mm]
       jigwidth: 100
       # [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_for_jig_top'|'stencil_for_jig_bottom',
-      # %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob'). Affected by global options
+      # %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob'|'png'). Affected by global options
       output: '%f-%i%I%v.%x'
       # `pcb_thickness` is an alias for `pcbthickness`
       # [number=0] PCB thickness [mm]. If 0 we will ask KiCad

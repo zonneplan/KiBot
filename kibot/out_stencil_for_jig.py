@@ -28,7 +28,7 @@ class Stencil_For_Jig_Options(Stencil_Options):
         with document:
             self.output = GS.def_global_output
             """ *Filename for the output (%i='stencil_for_jig_top'|'stencil_for_jig_bottom',
-                 %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob') """
+                 %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob'|'png') """
             self.jigthickness = 3
             """ *Jig thickness [mm] """
             self.jig_thickness = None
@@ -89,6 +89,8 @@ class Stencil_For_Jig_Options(Stencil_Options):
         if do_top:
             self.move_output(tmp, 'gerber/stencil-PasteTop.gtp', 'stencil_for_jig_top', 'gtp', replacements, relative=True)
             self.move_output(tmp, 'topRegister.stl', 'stencil_for_jig_top', 'stl')
+            if self.create_preview:
+                self.create_preview_png(tmp, 'topRegister.scad', 'stencil_for_jig_top')
             if self.include_scad:
                 self.move_output(tmp, 'topRegister.scad', 'stencil_for_jig_top', 'scad')
         # Bottom side
@@ -96,6 +98,8 @@ class Stencil_For_Jig_Options(Stencil_Options):
             self.move_output(tmp, 'gerber/stencil-PasteBottom.gbp', 'stencil_for_jig_bottom', 'gbp', replacements,
                              relative=True)
             self.move_output(tmp, 'bottomRegister.stl', 'stencil_for_jig_bottom', 'stl')
+            if self.create_preview:
+                self.create_preview_png(tmp, 'bottomRegister.scad', 'stencil_for_jig_top')
             if self.include_scad:
                 self.move_output(tmp, 'bottomRegister.scad', 'stencil_for_jig_bottom', 'scad')
         if do_top and do_bottom:

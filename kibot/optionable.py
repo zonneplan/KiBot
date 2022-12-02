@@ -46,6 +46,8 @@ class Optionable(object):
         # File/directory pattern expansion
         self._expand_id = ''
         self._expand_ext = ''
+        # Used to indicate we have an output pattern and it must be suitable to generate multiple files
+        self._output_multiple_files = False
         super().__init__()
         for var in ['output', 'variant', 'units', 'hide_excluded']:
             glb = getattr(GS, 'global_'+var)
@@ -217,6 +219,8 @@ class Optionable(object):
         if self._tree and not self._configured:
             self._perform_config_mapping()
             self._configured = True
+        if self._output_multiple_files and ('%i' not in self.output or '%x' not in self.output):
+            raise KiPlotConfigurationError('The output pattern must contain %i and %x, otherwise file names will collide')
 
     def get_attrs_for(self):
         """ Returns all attributes """

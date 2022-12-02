@@ -33,7 +33,10 @@ class Stencil_Options(VariantOptions):
             """ PCB thickness [mm]. If 0 we will ask KiCad """
             self.pcb_thickness = None
             """ {pcbthickness} """
+            self.create_preview = True
+            """ Creates a PNG showing the generated 3D model """
         super().__init__()
+        self._output_multiple_files = True
 
     def config(self, parent):
         super().config(parent)
@@ -43,6 +46,13 @@ class Stencil_Options(VariantOptions):
         self._expand_id = id
         self._expand_ext = ext
         return self._parent.expand_filename(out_dir, self.output)
+
+    def create_preview_png(self, src_dir, src_file, id):
+        dst_name = self.expand_name(id, 'png', self._parent.output_dir)
+        src_name = os.path.join(src_dir, src_file)
+        if not os.path.isfile(src_name):
+            raise PlotError('Missing output file {}'.format(src_name))
+        run_command([self.cmd_openscad, '-o', dst_name, '--imgsize=1280,720', src_name])
 
     def move_output(self, src_dir, src_file, id, ext, replacement=None, patch=False, relative=False):
         dst_name = self.expand_name(id, ext, self._parent.output_dir)
@@ -89,7 +99,7 @@ class Stencil_Options(VariantOptions):
 
     def run(self, output):
         cmd_kikit = self.ensure_tool('KiKit')
-        self.ensure_tool('OpenSCAD')
+        self.cmd_openscad = self.ensure_tool('OpenSCAD')
         super().run(output)
         # Apply variants and filters
         filtered = self.filter_pcb_components(GS.board)

@@ -3577,8 +3577,9 @@ Notes:
     - **`options`**: [dict] Options for the `stencil_3d` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
-                        %x='stl'|'scad'|'dxf'). Affected by global options.
+                        %x='stl'|'scad'|'dxf'|'png'). Affected by global options.
         - **`thickness`**: [number=0.15] Stencil thickness [mm]. Defines amount of paste dispensed.
+        - `create_preview`: [boolean=true] Creates a PNG showing the generated 3D model.
         - `cutout`: [string|list(string)] List of components to add a cutout based on the component courtyard.
                     This is useful when you have already pre-populated board and you want to populate more
                     components.
@@ -3631,7 +3632,8 @@ Notes:
         - **`jigthickness`**: [number=3] Jig thickness [mm].
         - **`jigwidth`**: [number=100] Jig frame width [mm].
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_for_jig_top'|'stencil_for_jig_bottom',
-                        %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob'). Affected by global options.
+                        %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob'|'png'). Affected by global options.
+        - `create_preview`: [boolean=true] Creates a PNG showing the generated 3D model.
         - `cutout`: [string|list(string)] List of components to add a cutout based on the component courtyard.
                     This is useful when you have already pre-populated board and you want to populate more
                     components.

@@ -28,7 +28,7 @@ class Stencil_3D_Options(Stencil_Options):
         with document:
             self.output = GS.def_global_output
             """ *Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
-                 %x='stl'|'scad'|'dxf') """
+                 %x='stl'|'scad'|'dxf'|'png') """
             self.thickness = 0.15
             """ *Stencil thickness [mm]. Defines amount of paste dispensed """
             self.framewidth = 1
@@ -81,6 +81,12 @@ class Stencil_3D_Options(Stencil_Options):
 
     def move_outputs(self, tmp, prj_name, do_top, do_bottom):
         replacements = {}
+        # Create the preview before we touch anything
+        if self.create_preview:
+            if do_top:
+                self.create_preview_png(tmp, 'topStencil.scad', 'stencil_3d_top')
+            if do_bottom:
+                self.create_preview_png(tmp, 'bottomStencil.scad', 'stencil_3d_bottom')
         # The edge is needed by any of the OpenSCAD files
         if (do_top or do_bottom) and self.include_scad:
             self.move_output(tmp, prj_name+'-EdgeCuts.dxf', 'stencil_3d_edge', 'dxf', replacements)
