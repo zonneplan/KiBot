@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Option to compare only the first schematic page. (See #319)
 - iBoM:
   - Support for the `offset_back_rotation` option
+- Navigate Results:
+  - Support for compress
 - PcbDraw:
   - BMP output format
   - Image margin

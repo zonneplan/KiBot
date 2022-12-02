@@ -428,14 +428,35 @@ class Navigate_ResultsOptions(BaseOptions):
         else:
             self.generate_end_page_for(name, node, prev, category)
 
-    def run(self, name):
-        self.out_dir = os.path.dirname(name)
-        self.img_src_dir = GS.get_resource_path('images')
-        self.img_dst_dir = os.path.join(self.out_dir, 'images')
-        os.makedirs(self.img_dst_dir, exist_ok=True)
-        self.copied_images = {}
-        name = os.path.basename(name)
-        # Create a tree with all the outputs
+    def get_targets(self, out_dir):
+        # Listing all targets is too complex, we list the most relevant
+        # This is good enough to compress the result
+        name = self._parent.expand_filename(out_dir, self.output)
+        files = [os.path.join(out_dir, 'images'),
+                 os.path.join(out_dir, 'styles.css'),
+                 os.path.join(out_dir, 'favicon.ico')]
+        if self.link_from_root:
+            files.append(os.path.join(GS.out_dir, self.link_from_root))
+        self.out_dir = out_dir
+        self.get_html_names(self.create_tree(), name, files)
+        return files
+
+    def get_html_names_cat(self, name, node, prev, category, files):
+        files.append(os.path.join(self.out_dir, name))
+        name, ext = os.path.splitext(name)
+        for cat, content in node.items():
+            if not isinstance(content, dict):
+                continue
+            pname = name+'_'+cat+ext
+            self.get_html_names(content, pname, files, name, category+'/'+cat)
+
+    def get_html_names(self, node, name, files, prev=None, category=''):
+        if isinstance(list(node.values())[0], dict):
+            self.get_html_names_cat(name, node, prev, category, files)
+        else:
+            files.append(os.path.join(self.out_dir, name))
+
+    def create_tree(self):
         o_tree = {}
         for o in RegOutput.get_outputs():
             config_output(o)
@@ -446,6 +467,17 @@ class Navigate_ResultsOptions(BaseOptions):
                 cat = [cat]
             for c in cat:
                 self.add_to_tree(c, o, o_tree)
+        return o_tree
+
+    def run(self, name):
+        self.out_dir = os.path.dirname(name)
+        self.img_src_dir = GS.get_resource_path('images')
+        self.img_dst_dir = os.path.join(self.out_dir, 'images')
+        os.makedirs(self.img_dst_dir, exist_ok=True)
+        self.copied_images = {}
+        name = os.path.basename(name)
+        # Create a tree with all the outputs
+        o_tree = self.create_tree()
         logger.debug('Collected outputs:\n'+pprint.pformat(o_tree))
         if not o_tree:
             logger.warning(W_NOOUTPUTS+'No outputs for navigate results')
