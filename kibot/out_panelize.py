@@ -725,6 +725,9 @@ class PanelizeOptions(VariantOptions):
         board = GS.load_board_low_level(name)
         logger.debug('Creating preview image ...')
         out.options.create_image(img_name, board)
+        # KiCad loads the project automagically, so now we have the wrong project loaded
+        # We need to unload the current project to load the new one
+        # But we also need to reload the PCB, this is ridiculous ...
         GS.reload_project(GS.pro_file)
 
     def run(self, output):

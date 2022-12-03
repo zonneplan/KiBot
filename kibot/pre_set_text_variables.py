@@ -148,8 +148,5 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         with open(pro_name, 'wt') as f:
             f.write(json.dumps(data, sort_keys=True, indent=2))
         if GS.board:
-            # Force a project reload
+            # Force a project and PCB reload
             GS.reload_project(pro_name)
-            # TODO: Do we really need to reload the PCB?
-            # Force the PCB reload (will reload the project file)
-            GS.board = None

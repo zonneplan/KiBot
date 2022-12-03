@@ -432,6 +432,8 @@ class GS(object):
         sm = pcbnew.GetSettingsManager()
         sm.UnloadProject(GS.board.GetProject(), False)
         assert sm.LoadProject(pro_name)
+        # If we use the old project KiCad SIGSEGV
+        GS.board = None
 
     @staticmethod
     def get_resource_path(name):
