@@ -60,12 +60,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   yet. (#323)
 - Report: Problems when using NPTH holes with sizes that doesn't correspond to
   real drill tools. It generated bogus reports about wrong OARs. (#326)
-- BoM: Digi-key link in the HTML output.
 - Problems when using more than one dielectric in the stack-up. (#328)
 - Gerber: Extension used for JLCPCB inner layers. (#329)
 - BoM:
   - The length of the CSV separator is now validated.
   - Using \t, \n, \r and \\ is now supported. (See #334)
+  - Digi-key link in the HTML output.
+- KiBoM: User defined fields wasn't available as column names. (#344)
 - Imports:
   - Problems with recursive imports when the intermediate import didn't
     contain any of the requested elements (i.e. no outputs). (#335)

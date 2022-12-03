@@ -215,7 +215,7 @@ class KiBoMConfig(Optionable):
             if csv:
                 os.remove(csv)
         logger.debug('Output from command:\n'+cmd_output.decode())
-        return columns
+        return GS.sch.get_field_names(columns)
 
     def config(self, parent):
         super().config(parent)
