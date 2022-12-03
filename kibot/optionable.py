@@ -4,9 +4,10 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """ Base class for output options """
+import difflib
+import inspect
 import os
 import re
-import inspect
 from re import compile
 from .error import KiPlotConfigurationError
 from .gs import GS
@@ -132,8 +133,12 @@ class Optionable(object):
             if (k[0] == '_') or (k not in attrs):
                 if self._unkown_is_error:
                     valid = list(filter(lambda x: x[0] != '_', attrs.keys()))
-                    raise KiPlotConfigurationError("Unknown {}option `{}`. Valid options: {}".
-                                                   format(self._error_context, k, valid))
+                    msg = "Unknown {}option `{}`.".format(self._error_context, k)
+                    possible = difflib.get_close_matches(k, valid, n=1)
+                    if possible:
+                        msg += " Did you meen {}?".format(possible[0])
+                    msg += " Valid options: {}".format(valid)
+                    raise KiPlotConfigurationError(msg)
                 logger.warning(W_UNKOPS + "Unknown {}option `{}`".format(self._error_context, k))
                 continue
             # Check the data type
