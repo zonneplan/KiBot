@@ -772,7 +772,11 @@ class PanelizeOptions(VariantOptions):
                     os.remove(f)
 
     def get_targets(self, out_dir):
-        return [self._parent.expand_filename(out_dir, self.output)]
+        pcb_name = self._parent.expand_filename(out_dir, self.output)
+        files = [pcb_name]
+        if self.create_preview:
+            files.append(os.path.splitext(pcb_name)[0]+'.png')
+        return files
 
 
 @output_class
