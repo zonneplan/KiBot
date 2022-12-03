@@ -396,6 +396,10 @@ class GS(object):
         raise AssertionError()
 
     @staticmethod
+    def load_board_low_level(file):
+        return pcbnew.LoadBoard(file)
+
+    @staticmethod
     def load_sch():
         """ Will be repplaced by kiplot.py """
         raise AssertionError()
@@ -422,6 +426,12 @@ class GS(object):
     def check_tool(context, name):
         """ Looks for a dependency """
         return GS.check_tool_dep(context, name, fatal=False)
+
+    @staticmethod
+    def reload_project(pro_name):
+        sm = pcbnew.GetSettingsManager()
+        sm.UnloadProject(GS.board.GetProject(), False)
+        assert sm.LoadProject(pro_name)
 
     @staticmethod
     def get_resource_path(name):

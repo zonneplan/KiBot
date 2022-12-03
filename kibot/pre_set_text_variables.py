@@ -10,7 +10,6 @@ Dependencies:
 """
 import json
 import os
-import pcbnew
 import re
 from subprocess import run, PIPE
 import sys
@@ -150,8 +149,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
             f.write(json.dumps(data, sort_keys=True, indent=2))
         if GS.board:
             # Force a project reload
-            sm = pcbnew.GetSettingsManager()
-            sm.UnloadProject(GS.board.GetProject(), False)
-            assert sm.LoadProject(pro_name)
+            GS.reload_project(pro_name)
+            # TODO: Do we really need to reload the PCB?
             # Force the PCB reload (will reload the project file)
             GS.board = None

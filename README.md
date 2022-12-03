@@ -787,7 +787,8 @@ global:
     - `time_format`: [string='%H-%M-%S'] Format used for the time we started the script. Uses the `strftime` format.
     - `time_reformat`: [boolean=true] Tries to reformat the PCB/SCH date using the `date_format`.
                        This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD).
-    - `units`: [string=''] [millimeters,inches,mils] Default units. Affects `position` and `bom` outputs. Also KiCad 6 dimensions.
+    - `units`: [string=''] [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs.
+               Also KiCad 6 dimensions.
     - `use_dir_for_preflights`: [boolean=true] Use the global `dir` as subdir for the preflights.
     - `variant`: [string=''] Default variant to apply to all outputs.
 
@@ -2467,7 +2468,7 @@ Notes:
                  KiKit 1.0.5 (the last to support KiCad 5) shown some
                  incompatibilities.
                  Note that you don't need to specify the units for all distances.
-                 If they are omitted they are assumed to be `default_units`.
+                 If they are omitted they are assumed to be `units`.
                  The same is valid for angles, using `default_angles`
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes.
@@ -2764,14 +2765,15 @@ Notes:
                 - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                 - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=panel, %x=kicad_pcb). Affected by global options.
+        - `create_preview`: [boolean=false] Use PcbDraw to create a preview of the panel.
         - `default_angles`: [string='deg'] [deg,°,rad] Angles used when omitted.
-        - `default_units`: [string='mm'] [mm,cm,dm,m,mil,inch,in] Units used when omitted.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
+        - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.

@@ -431,8 +431,7 @@ class PcbDrawOptions(VariantOptions):
             plot_components.highlight = lambda ref: ref in highlight_set
         return plot_components
 
-    def run(self, name):
-        super().run(name)
+    def create_image(self, name, board):
         self.ensure_tool('LXML')
         from .PcbDraw.plot import PcbPlotter, PlotPaste, PlotPlaceholders, PlotSubstrate, PlotVCuts
         # Select a name and format that PcbDraw can handle
@@ -449,11 +448,8 @@ class PcbDrawOptions(VariantOptions):
                 self.convert_command = self.ensure_tool('ImageMagick')
                 save_output_name = _get_tmp_name('.png')
 
-        # Apply any variant
-        self.filter_pcb_components(GS.board, do_3D=True)
-
         try:
-            plotter = PcbPlotter(GS.board)
+            plotter = PcbPlotter(board)
             # Read libs from KiBot resources
             plotter.setup_arbitrary_data_path(GS.get_resource_path('pcbdraw'))
             # Libs indicated by PCBDRAW_LIB_PATH
@@ -522,6 +518,12 @@ class PcbDrawOptions(VariantOptions):
             _run_command(cmd)
             os.remove(save_output_name)
 
+    def run(self, name):
+        super().run(name)
+        # Apply any variant
+        self.filter_pcb_components(GS.board, do_3D=True)
+        # Create the image
+        self.create_image(name, GS.board)
         # Undo the variant
         self.unfilter_pcb_components(GS.board, do_3D=True)
 

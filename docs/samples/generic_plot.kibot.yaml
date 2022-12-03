@@ -1214,7 +1214,7 @@ outputs:
   # KiKit 1.0.5 (the last to support KiCad 5) shown some
   # incompatibilities.
   # Note that you don't need to specify the units for all distances.
-  # If they are omitted they are assumed to be `default_units`.
+  # If they are omitted they are assumed to be `units`.
   # The same is valid for angles, using `default_angles`
   - name: 'panelize_example'
     comment: 'Creates a panel to fabricate various copies of the PCB at once.'
@@ -1662,10 +1662,10 @@ outputs:
             type: 'none'
             # [number|string] Vertical offset from panel edges
             voffset: 0
+      # [boolean=false] Use PcbDraw to create a preview of the panel
+      create_preview: false
       # [string='deg'] [deg,°,rad] Angles used when omitted
       default_angles: 'deg'
-      # [string='mm'] [mm,cm,dm,m,mil,inch,in] Units used when omitted
-      default_units: 'mm'
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
@@ -1677,6 +1677,8 @@ outputs:
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''
+      # [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted
+      units: 'mm'
       # [string=''] Board variant to apply
       variant: ''
   # PCB Print:

@@ -16,7 +16,8 @@ import json
 from tempfile import NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .kiplot import run_command
+from .kiplot import run_command, config_output
+
 from .layer import Layer
 from .misc import W_PANELEMPTY
 from .optionable import BaseOptions
@@ -49,7 +50,7 @@ class PanelOptions(BaseOptions):
             if val is None:
                 continue
             if isinstance(val, (int, float)):
-                setattr(self, op, str(val)+self._parent._parent.default_units)
+                setattr(self, op, str(val)+self._parent._parent.units)
             else:
                 m = PanelOptions._num_regex.match(val)
                 if m is None:
@@ -583,6 +584,7 @@ class PanelizeConfig(PanelOptions):
 
 class PanelizeOptions(VariantOptions):
     _extends_regex = re.compile(r'(.+)\[(.+)\]')
+    _unit_alias = {'millimeters': 'mm', 'inches': 'inch', 'mils': 'mil'}
 
     def __init__(self):
         with document:
@@ -596,10 +598,12 @@ class PanelizeOptions(VariantOptions):
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
-            self.default_units = 'mm'
-            """ [mm,cm,dm,m,mil,inch,in] Units used when omitted """
+            self.units = 'mm'
+            """ [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted """
             self.default_angles = 'deg'
             """ [deg,°,rad] Angles used when omitted """
+            self.create_preview = False
+            """ Use PcbDraw to create a preview of the panel """
         super().__init__()
         self._expand_id = 'panel'
         self._expand_ext = 'kicad_pcb'
@@ -684,6 +688,7 @@ class PanelizeOptions(VariantOptions):
         if configs:
             list(map(self.solve_extends, filter(lambda x: 'extends' in x, configs)))
         super().config(parent)
+        self.units = PanelizeOptions._unit_alias.get(self.units, self.units)
         if isinstance(self.configs, type):
             logger.warning(W_PANELEMPTY+'Generating a panel with default options, not very useful')
             self.configs = []
@@ -704,6 +709,23 @@ class PanelizeOptions(VariantOptions):
             logger.debugl(1, js)
             f.write(js)
             return f.name
+
+    def create_preview_file(self, name):
+        if not self.create_preview or not os.path.isfile(name):
+            return
+        img_name = os.path.splitext(name)[0]+'.png'
+        tree = {'name': '_temporal_pcbdraw_preview',
+                'type': 'pcbdraw',
+                'comment': 'Internally created for panel preview',
+                'options': {'output': img_name, 'variant': '', 'format': 'png'}}
+        out = RegOutput.get_class_for('pcbdraw')()
+        out.set_tree(tree)
+        config_output(out)
+        logger.debug('Loading PCB panel ...')
+        board = GS.load_board_low_level(name)
+        logger.debug('Creating preview image ...')
+        out.options.create_image(img_name, board)
+        GS.reload_project(GS.pro_file)
 
     def run(self, output):
         cmd_kikit, version = self.ensure_tool_get_ver('KiKit')
@@ -742,6 +764,7 @@ class PanelizeOptions(VariantOptions):
         cmd.append(output)
         try:
             run_command(cmd)
+            self.create_preview_file(output)
         finally:
             # Remove temporals
             for f in to_remove:
@@ -763,7 +786,7 @@ class Panelize(BaseOutput):  # noqa: F821
         KiKit 1.0.5 (the last to support KiCad 5) shown some
         incompatibilities.
         Note that you don't need to specify the units for all distances.
-        If they are omitted they are assumed to be `default_units`.
+        If they are omitted they are assumed to be `units`.
         The same is valid for angles, using `default_angles` """
     def __init__(self):
         super().__init__()
