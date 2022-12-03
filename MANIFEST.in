@@ -6,6 +6,8 @@ include kibot/resources/kicad_colors/*.json
 include kibot/resources/kicad_layouts/*.kicad_wks
 include kibot/resources/config_templates/gerber/*.yaml
 include kibot/resources/config_templates/bom/*.yaml
+include kibot/resources/config_templates/bom/*.yaml
+include kibot/resources/config_templates/panelize/*.yaml
 include kibot/resources/images/*.svg
 include kibot/resources/images/*.ico
 include kibot/resources/pcbdraw/styles/*.json
