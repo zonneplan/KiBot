@@ -193,3 +193,8 @@ No current changes
 - Made `mdrenderer` import relative. So we get the mdrenderer from the same dir, not the system
 - Replicated find_data_file (from plot.py) to avoid cross dependencies
 
+### present.py
+
+This file comes from KiKit, but it has too much in common with `populate.py`.
+
+- Removed click import (unused)
