@@ -87,7 +87,7 @@ class Stencil_Options(VariantOptions):
             do_top = detected_top
             do_bottom = detected_bottom
             if warn:
-                logger.warning(W_AUTOPROB+'Using the `stencil.side` option could create a wrong list of files.')
+                logger.warning(W_AUTOPROB+'Using the `stencil.side: auto` option could create a wrong list of files.')
         return do_top, do_bottom
 
     def solve_sides(self):
