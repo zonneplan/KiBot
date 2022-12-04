@@ -11,7 +11,6 @@ import tempfile
 import markdown2
 import pybars
 from datetime import datetime
-from kikit import export
 
 def resolveTemplatePath(path):
     """
