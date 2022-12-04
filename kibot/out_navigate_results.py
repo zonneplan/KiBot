@@ -86,7 +86,10 @@ EXT_IMAGE = {'gbr': 'file_gbr',
              'xz': 'file_xz',
              'gz': 'file_gz',
              'tar': 'file_tar',
-             'zip': 'file_zip'}
+             'zip': 'file_zip',
+             'kicad_pcb': 'pcbnew',
+             'sch': 'eeschema',
+             'kicad_sch': 'eeschema'}
 for i in range(31):
     n = str(i)
     EXT_IMAGE['gl'+n] = 'file_gbr'
