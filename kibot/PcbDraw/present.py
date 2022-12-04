@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tempfile
 import markdown2
-import pybars
+from . import pybars
 from datetime import datetime
 
 def resolveTemplatePath(path):

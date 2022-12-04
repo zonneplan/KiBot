@@ -200,3 +200,4 @@ This file comes from KiKit, but it has too much in common with `populate.py`.
 - Removed `click` import, unused
 - Removed the try in boardpage, too broad, doesn't help
 - Removed `kikit` import, _renderBoards must be implemented in a different way
+- Imported local pybars
