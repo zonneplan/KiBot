@@ -436,6 +436,38 @@ class Optionable(object):
     def color_str_to_rgb(self, color):
         return self.color_to_rgb(self.parse_one_color(color))
 
+    def save_renderer_options(self):
+        """ Save the current renderer settings """
+        options = self._renderer.options
+        self.old_filters_to_expand = options._filters_to_expand
+        self.old_show_components = options.show_components
+        self.old_highlight = options.highlight
+        self.old_output = options.output
+        self.old_dir = self._renderer.dir
+        self.old_done = self._renderer._done
+        if self._renderer_is_pcbdraw:
+            self.old_bottom = options.bottom
+            self.old_add_to_variant = options.add_to_variant
+        else:  # render_3D
+            self.old_view = options.view
+            self.old_show_all_components = options._show_all_components
+
+    def restore_renderer_options(self):
+        """ Restore the renderer settings """
+        options = self._renderer.options
+        options._filters_to_expand = self.old_filters_to_expand
+        options.show_components = self.old_show_components
+        options.highlight = self.old_highlight
+        options.output = self.old_output
+        self._renderer.dir = self.old_dir
+        self._renderer._done = self.old_done
+        if self._renderer_is_pcbdraw:
+            options.bottom = self.old_bottom
+            options.add_to_variant = self.old_add_to_variant
+        else:  # render_3D
+            options.view = self.old_view
+            options._show_all_components = self.old_show_all_components
+
 
 class BaseOptions(Optionable):
     """ A class to validate and hold output options.

@@ -201,3 +201,7 @@ This file comes from KiKit, but it has too much in common with `populate.py`.
 - Removed the try in boardpage, too broad, doesn't help
 - Removed `kikit` import, _renderBoards must be implemented in a different way
 - Imported local pybars
+- Added source_front, source_back and source_gerbers to the boards.
+  So now the images and gerbers come from outside.
+- Adapted Template._renderBoards to just copy the files (keeping the extensions)
+

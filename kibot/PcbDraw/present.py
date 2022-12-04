@@ -26,7 +26,7 @@ def resolveTemplatePath(path):
     TEMPLATES = os.path.join(PKG_BASE, "resources/present/templates")
     if os.path.exists(os.path.join(TEMPLATES, path, "template.json")):
         return os.path.join(TEMPLATES, path)
-    raise RuntimeError("'{}' is not a name or a path for existing template. Perhaps you miss template.json in the template?")
+    raise RuntimeError("'{}' is not a name or a path for existing template. Perhaps you miss template.json in the template?".format(path))
 
 def readTemplate(path):
     """
@@ -85,14 +85,17 @@ class Template:
         """
         self.extraResources.append(resource)
 
-    def addBoard(self, name, comment, boardfile):
+    def addBoard(self, name, comment, boardfile, front, back, gerbers):
         """
         Add board
         """
         self.boards.append({
             "name": name,
             "comment": comment,
-            "source": boardfile
+            "source": boardfile,
+            "source_front": front,
+            "source_back": back,
+            "source_gerbers": gerbers
         })
 
     def _renderBoards(self, outputDirectory):
@@ -100,31 +103,19 @@ class Template:
         Convert all boards to images and gerber exports. Enrich self.boards
         with paths of generated files
         """
-        pcbdraw = shutil.which("pcbdraw")
-        if not pcbdraw:
-            raise RuntimeError("PcbDraw needs to be installed in order to render boards")
-
         dirPrefix = "boards"
         boardDir = os.path.join(outputDirectory, dirPrefix)
         Path(boardDir).mkdir(parents=True, exist_ok=True)
         for boardDesc in self.boards:
             boardName = os.path.basename(boardDesc["source"]).replace(".kicad_pcb", "")
-            boardDesc["front"] = os.path.join(dirPrefix, boardName + "-front.png")
-            boardDesc["back"] = os.path.join(dirPrefix, boardName + "-back.png")
-            boardDesc["gerbers"] = os.path.join(dirPrefix, boardName + "-gerbers.zip")
+            boardDesc["front"] = os.path.join(dirPrefix, boardName + "-front"+os.path.splitext(boardDesc["source_front"])[1])
+            boardDesc["back"] = os.path.join(dirPrefix, boardName + "-back"+os.path.splitext(boardDesc["source_back"])[1])
+            boardDesc["gerbers"] = os.path.join(dirPrefix, boardName + "-gerbers"+os.path.splitext(boardDesc["source_gerbers"])[1])
             boardDesc["file"] = os.path.join(dirPrefix, boardName + ".kicad_pcb")
-
-            subprocess.check_call([pcbdraw, "plot", "--vcuts=Cmts.User", "--silent", "--side=front", boardDesc["source"],
-                os.path.join(outputDirectory, boardDesc["front"])])
-            subprocess.check_call([pcbdraw, "plot", "--vcuts=Cmts.User", "--silent", "--side=back", boardDesc["source"],
-                os.path.join(outputDirectory, boardDesc["back"])])
-
-            tmp = tempfile.mkdtemp()
-            export.gerberImpl(boardDesc["source"], tmp)
-            shutil.make_archive(os.path.join(outputDirectory, boardDesc["gerbers"])[:-4], "zip", tmp)
-            shutil.rmtree(tmp)
-
             shutil.copy(boardDesc["source"], os.path.join(outputDirectory, boardDesc["file"]))
+            shutil.copy(boardDesc["source_front"], os.path.join(outputDirectory, boardDesc["front"]))
+            shutil.copy(boardDesc["source_back"], os.path.join(outputDirectory, boardDesc["back"]))
+            shutil.copy(boardDesc["source_gerbers"], os.path.join(outputDirectory, boardDesc["gerbers"]))
 
     def render(self, outputDirectory):
         self._copyResources(outputDirectory)
@@ -183,6 +174,6 @@ def boardpage(outdir, description, board, resource, template, repository, name):
     template.setName(name)
     for r in resource:
         template.addResource(r)
-    for name, comment, file in board:
-        template.addBoard(name, comment, file)
+    for name, comment, file, front, back, gerbers in board:
+        template.addBoard(name, comment, file, front, back, gerbers)
     template.render(outdir)

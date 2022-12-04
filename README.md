@@ -172,6 +172,9 @@ Notes:
 [**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.3 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `diff`
 
+[**markdown2**](https://pypi.org/project/markdown2/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/markdown2/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-markdown2)
+- Mandatory for `kikit_present`
+
 [**mistune**](https://pypi.org/project/mistune/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/mistune/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-mistune)
 - Mandatory for `populate`
 
@@ -2397,6 +2400,80 @@ Notes:
             - `name`: [string=''] New name.
         - `variant`: [string=''] Board variant to apply.
                      Don't use the `kicost_variant` when using internal variants/filters.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
+* KiKit's Present - Project Presentation
+  * Type: `kikit_present`
+  * Description: Creates an HTML file showing your project.
+                 It can contain one or more PCBs, showing their top and bottom sides.
+                 Also includes a download link and the gerbers.
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `kikit_present` output.
+      * Valid keys:
+        - **`description`**: [string=''] Name for a markdown file containing the main part of the page to be generated.
+                             This is mandatory and is the description of your project.
+        - `boards`: [dict|list(dict)] One or more boards that compose your project.
+                    When empty we will use only the main PCB for the current project.
+          * Valid keys:
+            - **`back_image`**: [string=''] local*: the name of an output that renders the back.
+                                If empty we use the first renderer for the back.
+                                *file*: the name of the rendered image.
+                                *external*: ignored, we `extrenal_config`.
+            - **`front_image`**: [string=''] local*: the name of an output that renders the front.
+                                 If empty we use the first renderer for the front.
+                                 *file*: the name of the rendered image.
+                                 *external*: ignored, we `extrenal_config`.
+            - **`gerbers`**: [string=''] local*: the name of a compress output.
+                             If empty we use the first compress output.
+                             *file*: the name of a compressed archive.
+                             *external*: ignored, we `extrenal_config`.
+            - **`name`**: [string=''] Name for this board. If empty we use the name of the PCB.
+                          Applies to all modes.
+            - `comment`: [string=''] A comment or description for this board.
+                         Applies to all modes.
+            - `external_config`: [string=''] Name of an external KiBot configuration.
+                                 Only used in the *external* mode.
+            - `mode`: [string='auto'] [local,file,external] How images and gerbers are obtained.
+                      *local*: Only applies to the currently selected PCB.
+                      You must provide the names of the outputs used to render
+                      the images and compress the gerbers.
+                      When empty KiBot will use the first render/compress output
+                      it finds.
+                      To apply variants use `pcb_from_output` and a `pcb_variant`
+                      output.
+                      *file*: You must specify the file names used for the images and
+                      the gerbers.
+                      *external*: You must specify an external KiBot configuration.
+                      It will be applied to the selected PCB to create the images and
+                      the gerbers. The front image must be generated in a dir called
+                      *front*, the back image in a dir called *back* and the gerbers
+                      in a dir called *gerbers*.
+            - `pcb_file`: [string=''] Name of the KiCad PCB file. When empty we use the current PCB.
+                          Is ignored for the *local* mode.
+            - `pcb_from_output`: [string=''] Use the PCB generated by another output.
+                                 Is ignored for the *file* mode.
+        - `name`: [string=''] Name of the project. Will be passed to the template.
+                  If empty we use the name of the KiCad project.
+                  The default template uses it for things like the page title.
+        - `repository`: [string=''] URL of the repository. Will be passed to the template.
+        - `resources`: [string|list(string)='']  A list of file name patterns for additional resources to be included.
+                       I.e. images referenced in description.
+                       They will be copied relative to the output dir.
+        - `template`: [string='default'] Path to a template directory or a name of built-in one.
+                      See KiKit's doc/present.md for template specification.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.

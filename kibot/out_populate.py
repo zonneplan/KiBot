@@ -15,7 +15,7 @@ import os
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 from .error import KiPlotConfigurationError
-from .misc import W_PCBDRAW
+from .misc import W_PCBDRAW, RENDERERS
 from .gs import GS
 from .kiplot import config_output, run_output
 from .optionable import Optionable
@@ -106,41 +106,9 @@ class PopulateOptions(VariantOptions):
         run_output(self._renderer)
         return options.expand_filename_both(name, is_sch=False)
 
-    def save_options(self):
-        """ Save the current renderer settings """
-        options = self._renderer.options
-        self.old_filters_to_expand = options._filters_to_expand
-        self.old_show_components = options.show_components
-        self.old_highlight = options.highlight
-        self.old_output = options.output
-        self.old_dir = self._renderer.dir
-        self.old_done = self._renderer._done
-        if self._renderer_is_pcbdraw:
-            self.old_bottom = options.bottom
-            self.old_add_to_variant = options.add_to_variant
-        else:  # render_3D
-            self.old_view = options.view
-            self.old_show_all_components = options._show_all_components
-
-    def restore_options(self):
-        """ Restore the renderer settings """
-        options = self._renderer.options
-        options._filters_to_expand = self.old_filters_to_expand
-        options.show_components = self.old_show_components
-        options.highlight = self.old_highlight
-        options.output = self.old_output
-        self._renderer.dir = self.old_dir
-        self._renderer._done = self.old_done
-        if self._renderer_is_pcbdraw:
-            options.bottom = self.old_bottom
-            options.add_to_variant = self.old_add_to_variant
-        else:  # render_3D
-            options.view = self.old_view
-            options._show_all_components = self.old_show_all_components
-
     def generate_images(self, dir_name, content):
         # Memorize the current options
-        self.save_options()
+        self.save_renderer_options()
         dir = os.path.dirname(os.path.join(dir_name, self.imgname))
         if not os.path.exists(dir):
             os.makedirs(dir)
@@ -153,7 +121,7 @@ class PopulateOptions(VariantOptions):
                 filename = self.imgname.replace('%d', str(counter))
                 x["img"] = self.generate_image(x["side"], x["components"], x["active_components"], filename)
         # Restore the options
-        self.restore_options()
+        self.restore_renderer_options()
         return content
 
     def run(self, dir_name):
@@ -169,8 +137,8 @@ class PopulateOptions(VariantOptions):
         if out is None:
             raise KiPlotConfigurationError('Unknown output `{}` selected in {}'.format(self.renderer, self._parent))
         config_output(out)
-        if out.type not in ['pcbdraw', 'render_3d']:
-            raise KiPlotConfigurationError('The `renderer` must be `pcbdraw` or `render_3d` type, not {}'.format(out.type))
+        if out.type not in RENDERERS:
+            raise KiPlotConfigurationError('The `renderer` must be {} type, not {}'.format(RENDERERS, out.type))
         self._renderer = out
         self._renderer_is_pcbdraw = out.type == 'pcbdraw'
         # Load the input content

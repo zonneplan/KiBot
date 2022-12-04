@@ -118,6 +118,9 @@ class BaseOutput(RegOutput):
             return [GS.sch_file]
         return [GS.pcb_file]
 
+    def get_extension(self):
+        return self.options._expand_ext
+
     def config(self, parent):
         if self._tree and not self._configured and isinstance(self.extends, str) and self.extends:
             logger.debug("Extending `{}` from `{}`".format(self.name, self.extends))
