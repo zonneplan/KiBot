@@ -9,7 +9,7 @@ outputs:
     dir: Panel
     options:
       title: '+ (Panel)'
-      default_units: mm
+      units: mm
       create_preview: true
       configs:
         - layout:
