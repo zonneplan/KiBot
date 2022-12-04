@@ -198,3 +198,4 @@ No current changes
 This file comes from KiKit, but it has too much in common with `populate.py`.
 
 - Removed `click` import, unused
+- Removed the try in boardpage, too broad, doesn't help
