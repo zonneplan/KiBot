@@ -197,4 +197,4 @@ No current changes
 
 This file comes from KiKit, but it has too much in common with `populate.py`.
 
-- Removed click import (unused)
+- Removed `click` import, unused

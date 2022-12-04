@@ -1,4 +1,5 @@
-import click
+# Author: Jan Mrázek
+# License: MIT
 from pathlib import Path
 import sys
 import os
