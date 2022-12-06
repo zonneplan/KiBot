@@ -48,13 +48,16 @@ def readTemplate(path):
     except KeyError:
         raise RuntimeError("Unknown template type '{}'".format(tType))
 
-def copyRelativeTo(sourceTree, sourceFile, outputDir):
+def copyRelativeTo(sourceTree, sourceFile, outputDir, dry=False):
     sourceTree = os.path.abspath(sourceTree)
     sourceFile = os.path.abspath(sourceFile)
     relPath = os.path.relpath(sourceFile, sourceTree)
     outputDir = os.path.join(outputDir, os.path.dirname(relPath))
-    Path(outputDir).mkdir(parents=True, exist_ok=True)
-    shutil.copy(sourceFile, outputDir)
+    dest = os.path.join(outputDir, os.path.basename(sourceFile))
+    if not dry:
+        Path(outputDir).mkdir(parents=True, exist_ok=True)
+        shutil.copy(sourceFile, outputDir)
+    return dest
 
 class Template:
     def __init__(self, directory):
@@ -66,17 +69,25 @@ class Template:
         self.name = None
         self.repository = None
 
-    def _copyResources(self, outputDirectory):
+    def _copyResources(self, outputDirectory, dry=False):
         """
         Copy all resource files specified by template.json and further specified
         by addResource to the output directory.
         """
+        files = []
         for pattern in self.parameters["resources"]:
             for path in glob.glob(os.path.join(self.directory, pattern), recursive=True):
-                copyRelativeTo(self.directory, path, outputDirectory)
+                files.append(copyRelativeTo(self.directory, path, outputDirectory, dry))
         for pattern in self.extraResources:
             for path in glob.glob(pattern, recursive=True):
-                copyRelativeTo(".", path, outputDirectory)
+                files.append(copyRelativeTo(".", path, outputDirectory, dry))
+        return files
+
+    def listResources(self, outputDirectory):
+        """
+        Returns a list of resources that we will copy.
+        """
+        return self._copyResources(outputDirectory, dry=True)
 
     def addResource(self, resource):
         """

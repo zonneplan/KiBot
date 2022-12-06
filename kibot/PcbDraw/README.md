@@ -204,4 +204,5 @@ This file comes from KiKit, but it has too much in common with `populate.py`.
 - Added source_front, source_back and source_gerbers to the boards.
   So now the images and gerbers come from outside.
 - Adapted Template._renderBoards to just copy the files (keeping the extensions)
+- Added listResources, with some changes to copyRelativeTo and _copyResources
 
