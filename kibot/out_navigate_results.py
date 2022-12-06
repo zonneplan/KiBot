@@ -79,6 +79,7 @@ EXT_IMAGE = {'gbr': 'file_gbr',
              'step': 'file_stp',
              'stp': 'file_stp',
              'html': 'file_html',
+             'css': 'file_css',
              'xml': 'file_xml',
              'tsv': 'file_tsv',
              'xlsx': 'file_xlsx',
@@ -291,7 +292,8 @@ class Navigate_ResultsOptions(BaseOptions):
         ext = os.path.splitext(file)[1][1:].lower()
         wide = False
         # Copy the icon for this file extension
-        img = self.copy(EXT_IMAGE.get(ext, 'unknown'), MID_ICON)
+        icon_name = 'folder' if os.path.isdir(file) else EXT_IMAGE.get(ext, 'unknown')
+        img = self.copy(icon_name, MID_ICON)
         # Full name for the file
         file_full = file
         # Just the file, to display it
