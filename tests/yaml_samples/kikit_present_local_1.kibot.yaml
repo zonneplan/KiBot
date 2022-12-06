@@ -1,3 +1,4 @@
+# Here we use internal outputs, 2 automagically selected and one specified
 kiplot:
   version: 1
 

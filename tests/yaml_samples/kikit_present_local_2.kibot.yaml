@@ -1,3 +1,4 @@
+# Here we use internal outputs, but the PCB comes from an output (panelize in this case)
 kiplot:
   version: 1
 
