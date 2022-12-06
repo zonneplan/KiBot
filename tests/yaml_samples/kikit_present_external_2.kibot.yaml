@@ -1,0 +1,60 @@
+# Here we use an external config.
+# So KiBot calls another instance to create the files.
+# The external config must create the results at specific places.
+# We use it for the PCB and its panel.
+kiplot:
+  version: 1
+
+outputs:
+  - name: KiKit_present_files
+    comment: "Present test using files"
+    type: kikit_present
+    dir: Present/Files
+    options:
+      description: 'tests/data/silly_project.md'
+      boards:
+        - name: Light control board
+          mode: external
+          comment: This is a comment
+          external_config: 'tests/yaml_samples/kikit_present_external_cfg.kibot.yaml'
+        - name: Light control panel
+          mode: external
+          comment: This is another comment
+          external_config: 'tests/yaml_samples/kikit_present_external_cfg.kibot.yaml'
+          pcb_from_output: panel
+      repository: 'https://github.com/INTI-CMNB/KiBot/'
+
+  - name: panel
+    comment: "Simple panel"
+    type: panelize
+    run_by_default: false
+    options:
+      create_preview: true
+      configs:
+        - name: basic
+          layout:
+            rows: 2
+            cols: 2
+            space: 2
+          tabs:
+            type: fixed
+            width: 5
+          cuts:
+            type: mousebites
+            drill: 0.5mm
+            spacing: 1mm
+            offset: 0.2mm
+        - name: mill_radius_1
+          post:
+            mill_radius: 1
+
+  - name: 'navigate'
+    comment: "Browse the results"
+    type: navigate_results
+
+  - name: 'compress_page'
+    comment: "Compressed presentation page"
+    type: compress
+    options:
+      files:
+        - from_output: KiKit_present_files

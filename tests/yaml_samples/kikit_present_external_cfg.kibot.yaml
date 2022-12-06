@@ -1,0 +1,34 @@
+# Here we use internal outputs, all automagically selected
+kiplot:
+  version: 1
+
+outputs:
+  - name: PcbDraw_front
+    comment: "PcbDraw top render"
+    type: pcbdraw
+    dir: front
+    options:
+      format: svg
+      vcuts: true
+
+  - name: PcbDraw_back
+    comment: "PcbDraw bottom render"
+    type: pcbdraw
+    dir: back
+    extends: PcbDraw_front
+    options:
+      bottom: true
+
+  - name: 'gerbers'
+    comment: "Gerbers for the Gerber god"
+    type: gerber
+    dir: gerberdir
+    layers: copper
+
+  - name: result
+    comment: Compress the gerbers
+    type: compress
+    dir: gerbers
+    options:
+      files:
+        - from_output: gerbers
