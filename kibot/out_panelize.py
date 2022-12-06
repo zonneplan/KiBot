@@ -804,6 +804,8 @@ class Panelize(BaseOutput):  # noqa: F821
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
+        if not GS.check_tool(name, 'KiKit'):
+            return None
         outs = []
         for tpl in templates:
             for out in tpl:
