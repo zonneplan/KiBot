@@ -1,0 +1,40 @@
+kiplot:
+  version: 1
+
+outputs:
+  - name: KiKit_present_files
+    comment: "Present test using full auto mode"
+    type: kikit_present
+    dir: Present/Auto
+    options:
+      description: |
+        # My project
+
+        This is my project
+      boards:
+        mode: local
+        comment: This is a comment
+      repository: 'https://github.com/INTI-CMNB/KiBot/'
+
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDraw
+    options:
+      format: svg
+      vcuts: true
+      warnings: visible
+      dpi: 600
+
+  - name: 'gerbers'
+    comment: "Gerbers for the Gerber god"
+    type: gerber
+    dir: gerberdir
+    layers: copper
+
+  - name: result
+    comment: Compress the gerbers
+    type: compress
+    options:
+      files:
+        - from_output: gerbers

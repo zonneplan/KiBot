@@ -2425,32 +2425,37 @@ Notes:
       * Valid keys:
         - **`description`**: [string=''] Name for a markdown file containing the main part of the page to be generated.
                              This is mandatory and is the description of your project.
+                             You can embed the markdown code. If the text doesn't map to a file and contains
+                             more than one line KiBot will assume this is the markdown.
         - `boards`: [dict|list(dict)] One or more boards that compose your project.
                     When empty we will use only the main PCB for the current project.
           * Valid keys:
-            - **`back_image`**: [string=''] local*: the name of an output that renders the back.
-                                If empty we use the first renderer for the back.
-                                *file*: the name of the rendered image.
-                                *external*: ignored, we `extrenal_config`.
-            - **`front_image`**: [string=''] local*: the name of an output that renders the front.
-                                 If empty we use the first renderer for the front.
-                                 *file*: the name of the rendered image.
-                                 *external*: ignored, we `extrenal_config`.
-            - **`gerbers`**: [string=''] local*: the name of a compress output.
-                             If empty we use the first compress output.
-                             *file*: the name of a compressed archive.
-                             *external*: ignored, we `extrenal_config`.
             - **`name`**: [string=''] Name for this board. If empty we use the name of the PCB.
                           Applies to all modes.
+            - `back_image`: [string=''] How to obtain the back view of the PCB.
+                            *local*: the name of an output to render it.
+                            If empty we use the first renderer.
+                            *file*: the name of the rendered image.
+                            *external*: ignored, we use `extrenal_config`.
             - `comment`: [string=''] A comment or description for this board.
                          Applies to all modes.
             - `external_config`: [string=''] Name of an external KiBot configuration.
                                  Only used in the *external* mode.
-            - `mode`: [string='auto'] [local,file,external] How images and gerbers are obtained.
+            - `front_image`: [string=''] How to obtain the front view of the PCB.
+                             *local*: the name of an output to render it.
+                             If empty we use the first renderer.
+                             *file*: the name of the rendered image.
+                             *external*: ignored, we use `extrenal_config`.
+            - `gerbers`: [string=''] How to obtain an archive with the gerbers.
+                         *local*: the name of a `gerber` output.
+                         If empty we use the first `gerber` output.
+                         *file*: the name of a compressed archive.
+                         *external*: ignored, we use `extrenal_config`.
+            - `mode`: [string='local'] [local,file,external] How images and gerbers are obtained.
                       *local*: Only applies to the currently selected PCB.
                       You must provide the names of the outputs used to render
                       the images and compress the gerbers.
-                      When empty KiBot will use the first render/compress output
+                      When empty KiBot will use the first render/gerber output
                       it finds.
                       To apply variants use `pcb_from_output` and a `pcb_variant`
                       output.
