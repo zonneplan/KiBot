@@ -11,15 +11,18 @@ Dependencies:
     arch: python-markdown2
     role: mandatory
 """
+import glob
 import os
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+import shutil
+import sys
+from tempfile import NamedTemporaryFile, TemporaryDirectory, mkdtemp
 from .error import KiPlotConfigurationError
-from .misc import W_PCBDRAW, RENDERERS, PCB_GENERATORS
+from .misc import W_PCBDRAW, RENDERERS, PCB_GENERATORS, W_MORERES
 from .gs import GS
-from .kiplot import config_output, run_output, get_output_dir, load_board
+from .kiplot import config_output, run_output, get_output_dir, load_board, run_command
 from .optionable import BaseOptions, Optionable
 from .registrable import RegOutput
-from .PcbDraw.present import boardpage
+from .PcbDraw.present import boardpage, readTemplate
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -41,12 +44,12 @@ class PresentBoards(Optionable):
     def __init__(self):
         super().__init__()
         with document:
-            self.mode = 'auto'
+            self.mode = 'local'
             """ [local,file,external] How images and gerbers are obtained.
                 *local*: Only applies to the currently selected PCB.
                 You must provide the names of the outputs used to render
                 the images and compress the gerbers.
-                When empty KiBot will use the first render/compress output
+                When empty KiBot will use the first render/gerber output
                 it finds.
                 To apply variants use `pcb_from_output` and a `pcb_variant`
                 output.
@@ -73,17 +76,17 @@ class PresentBoards(Optionable):
             """ *local*: the name of an output that renders the front.
                 If empty we use the first renderer for the front.
                 *file*: the name of the rendered image.
-                *external*: ignored, we `extrenal_config` """
+                *external*: ignored, we use `extrenal_config` """
             self.back_image = ''
             """ *local*: the name of an output that renders the back.
                 If empty we use the first renderer for the back.
                 *file*: the name of the rendered image.
-                *external*: ignored, we `extrenal_config` """
+                *external*: ignored, we use `extrenal_config` """
             self.gerbers = ''
-            """ *local*: the name of a compress output.
-                If empty we use the first compress output.
+            """ *local*: the name of a `gerber` output.
+                If empty we use the first `gerber` output.
                 *file*: the name of a compressed archive.
-                *external*: ignored, we `extrenal_config` """
+                *external*: ignored, we use `extrenal_config` """
             self.external_config = ''
             """ Name of an external KiBot configuration.
                 Only used in the *external* mode """
@@ -164,7 +167,7 @@ class PresentBoards(Optionable):
         out._done = old_done
         out.options.variant = old_variant
 
-    def solve_pcb(self):
+    def solve_pcb(self, load_it=True):
         if not self.pcb_from_output:
             return False
         out_name = self.pcb_from_output
@@ -177,10 +180,11 @@ class PresentBoards(Optionable):
         config_output(out)
         run_output(out)
         new_pcb = out.get_targets(get_output_dir(out.dir, out))[0]
-        GS.board = None
-        self.old_pcb = GS.pcb_file
-        GS.set_pcb(new_pcb)
-        load_board()
+        if load_it:
+            GS.board = None
+            self.old_pcb = GS.pcb_file
+            GS.set_pcb(new_pcb)
+            load_board()
         self.new_pcb = new_pcb
         return True
 
@@ -234,12 +238,40 @@ class PresentBoards(Optionable):
             GS.reload_project(GS.pro_file)
         return self.name, self.comment, fname, front_image, back_image, gerbers
 
+    def get_ext_file(self, main_dir, sub_dir):
+        d_name = os.path.join(main_dir, sub_dir)
+        logger.debugl(1, 'Looking for results at '+d_name)
+        if not os.path.isdir(d_name):
+            raise KiPlotConfigurationError('`{}` should create a directory called `{}`'.
+                                           format(self.external_config, sub_dir))
+        res = glob.glob(os.path.join(d_name, '*'))
+        if not res:
+            raise KiPlotConfigurationError('`{}` created an empty `{}`'.
+                                           format(self.external_config, sub_dir))
+        if len(res) > 1:
+            logger.warning(W_MORERES+'`{}` generated more than one file at `{}`'.
+                           format(self.external_config, sub_dir))
+        return res[0]
+
+    def solve_external(self):
+        tmp_dir = mkdtemp()
+        self.temporals.append(tmp_dir)
+        fname = self.new_pcb if self.solve_pcb(load_it=False) else GS.pcb_file
+        cmd = [sys.argv[0], '-c', self.external_config, '-b', fname, '-d', tmp_dir]
+        run_command(cmd)
+        front_image = self.get_ext_file(tmp_dir, 'front')
+        back_image = self.get_ext_file(tmp_dir, 'back')
+        gerbers = self.get_ext_file(tmp_dir, 'gerbers')
+        return self.name, self.comment, fname, front_image, back_image, gerbers
+
     def solve(self, temporals):
         self.temporals = temporals
         if self.mode == 'file':
             return self.solve_file()
         elif self.mode == 'local':
             return self.solve_local()
+        # external
+        return self.solve_external()
 
 
 class KiKit_PresentOptions(BaseOptions):
@@ -291,9 +323,18 @@ class KiKit_PresentOptions(BaseOptions):
             except SystemExit:
                 raise KiPlotConfigurationError('Missing template `{}`'.format(self.template))
 
-#     def get_targets(self, out_dir):
-#         img_dir = os.path.dirname(self._parent.expand_filename(out_dir, self.imgname))
-#         return [self._parent.expand_filename(out_dir, self.get_out_file_name()), img_dir]
+    def get_targets(self, out_dir):
+        # The web page
+        out_dir = self._parent.expand_dirname(out_dir)
+        res = [os.path.join(out_dir, 'index.html')]
+        # The resources
+        template = readTemplate(self.template)
+        for r in self.resources:
+            template.addResource(r)
+        res.extend(template.listResources(out_dir))
+        # The boards
+        res.append(os.path.join(out_dir, 'boards'))
+        return res
 
     def generate_images(self, dir_name, content):
         # Memorize the current options
@@ -328,6 +369,8 @@ class KiKit_PresentOptions(BaseOptions):
             for f in temporals:
                 if os.path.isfile(f):
                     os.remove(f)
+                elif os.path.isdir(f):
+                    shutil.rmtree(f)
 
 
 @output_class
