@@ -1251,7 +1251,9 @@ outputs:
       # If empty we use the name of the KiCad project.
       # The default template uses it for things like the page title
       name: ''
-      # [string=''] URL of the repository. Will be passed to the template
+      # [string=''] URL of the repository. Will be passed to the template.
+      # If empty we will try to find it using `git remote get-url origin`.
+      # The default template uses it to create an URL for the current commit
       repository: ''
       # [string|list(string)='']  A list of file name patterns for additional resources to be included.
       # I.e. images referenced in description.

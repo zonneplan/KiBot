@@ -137,7 +137,9 @@ class Template:
         """
         Return a git revision string if in git repo, None otherwise
         """
-        proc = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True)
+        if self.git_command is None:
+            return None
+        proc = subprocess.run([self.git_command, "rev-parse", "HEAD"], capture_output=True)
         if proc.returncode:
             return None
         return proc.stdout.decode("utf-8")
@@ -177,9 +179,10 @@ class HtmlTemplate(Template):
         with open(os.path.join(outputDirectory, "index.html"),"w") as outFile:
             outFile.write(content)
 
-def boardpage(outdir, description, board, resource, template, repository, name):
+def boardpage(outdir, description, board, resource, template, repository, name, git_command):
     Path(outdir).mkdir(parents=True, exist_ok=True)
     template = readTemplate(template)
+    template.git_command = git_command
     template.addDescriptionFile(description)
     template.setRepository(repository)
     template.setName(name)

@@ -103,7 +103,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 4,\
+        "importance": 5,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -119,6 +119,13 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "diff",\
+                "version": null\
+            },\
+            {\
+                "desc": "Find commit hash and/or date",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "kikit_present",\
                 "version": null\
             },\
             {\

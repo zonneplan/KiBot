@@ -10,10 +10,13 @@ Dependencies:
     debian: python3-markdown2
     arch: python-markdown2
     role: mandatory
+  - from: Git
+    role: Find commit hash and/or date
 """
 import glob
 import os
 import shutil
+import subprocess
 import sys
 from tempfile import NamedTemporaryFile, TemporaryDirectory, mkdtemp
 from .error import KiPlotConfigurationError
@@ -293,12 +296,21 @@ class KiKit_PresentOptions(BaseOptions):
             """ Path to a template directory or a name of built-in one.
                 See KiKit's doc/present.md for template specification """
             self.repository = ''
-            """ URL of the repository. Will be passed to the template """
+            """ URL of the repository. Will be passed to the template.
+                If empty we will try to find it using `git remote get-url origin`.
+                The default template uses it to create an URL for the current commit """
             self.name = ''
             """ Name of the project. Will be passed to the template.
                 If empty we use the name of the KiCad project.
                 The default template uses it for things like the page title """
         super().__init__()
+        self._git_solved = False
+
+    def get_git_command(self):
+        if not self._git_solved:
+            self._git_command = self.check_tool('Git')
+            self._git_solved = True
+        return self._git_command
 
     def config(self, parent):
         super().config(parent)
@@ -326,6 +338,12 @@ class KiKit_PresentOptions(BaseOptions):
                 self.template = GS.get_resource_path(os.path.join('pcbdraw', 'present', 'templates', self.template))
             except SystemExit:
                 raise KiPlotConfigurationError('Missing template `{}`'.format(self.template))
+        # Repo URL
+        if not self.repository and self.get_git_command():
+            try:
+                self.repository = run_command([self.get_git_command(), 'remote', 'get-url', 'origin'], just_raise=True)
+            except subprocess.CalledProcessError:
+                pass
 
     def get_targets(self, out_dir):
         # The web page
@@ -374,7 +392,8 @@ class KiKit_PresentOptions(BaseOptions):
             else:
                 self._description = self.description
             try:
-                boardpage(dir_name, self._description, board, self.resources, self.template, self.repository, self.name)
+                boardpage(dir_name, self._description, board, self.resources, self.template, self.repository, self.name,
+                          self.get_git_command())
             except RuntimeError as e:
                 raise KiPlotConfigurationError('KiKit present error: '+str(e))
         finally:
@@ -408,12 +427,14 @@ class KiKit_Present(BaseOutput):
                                          'back_image': 'renderer_for_present',
                                          'gerbers': 'gerbers_for_present'}}
         # Renderer
-        renderer = BaseOutput.simple_conf_examples('pcbdraw', 'Renderer for the presentation', 'Presentation/Render')
+        renderer = BaseOutput.simple_conf_examples('pcbdraw', 'Renderer for the presentation', 'Render_for_presentation')
         renderer[0]['name'] = 'renderer_for_present'
+        renderer[0]['run_by_default'] = False
         outs.append(renderer[0])
         # Gerbers
-        gerber = BaseOutput.simple_conf_examples('gerber', 'Gerbers for the presentation', 'Presentation/Gerber')
+        gerber = BaseOutput.simple_conf_examples('gerber', 'Gerbers for the presentation', 'Gerber_for_presentation')
         gerber[0]['name'] = 'gerbers_for_present'
         gerber[0]['layers'] = 'copper'
+        gerber[0]['run_by_default'] = False
         outs.append(gerber[0])
         return outs

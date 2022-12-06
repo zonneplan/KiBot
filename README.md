@@ -187,6 +187,7 @@ Notes:
 [**Git**](https://git-scm.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://git-scm.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/git) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Compare with files in the repo for `diff`
+  - Find commit hash and/or date for `kikit_present`
   - Find commit hash and/or date for `pcb_replace`
   - Find commit hash and/or date for `sch_replace`
   - Find commit hash and/or date for `set_text_variables`
@@ -2474,6 +2475,8 @@ Notes:
                   If empty we use the name of the KiCad project.
                   The default template uses it for things like the page title.
         - `repository`: [string=''] URL of the repository. Will be passed to the template.
+                        If empty we will try to find it using `git remote get-url origin`.
+                        The default template uses it to create an URL for the current commit.
         - `resources`: [string|list(string)='']  A list of file name patterns for additional resources to be included.
                        I.e. images referenced in description.
                        They will be copied relative to the output dir.
