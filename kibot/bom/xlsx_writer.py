@@ -46,6 +46,7 @@ try:
     from kicost import (PartGroup, KiCostError, query_part_info, solve_parts_qtys, configure_kicost_apis, ProgressConsole,
                         init_all_loggers, create_worksheet, Spreadsheet, get_distributors_list, get_dist_name_from_label,
                         set_distributors_progress, is_valid_api)
+    from kicost import __version__ as kicost_version
     KICOST_SUPPORT = True
 except ImportError:
     KICOST_SUPPORT = False
@@ -564,6 +565,7 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
     if not KICOST_SUPPORT:
         logger.warning(W_NOKICOST+'KiCost sheet requested but failed to load KiCost support')
         return
+    logger.debug("Using KiCost v"+kicost_version)
     if cfg.debug_level > 2:
         logger.debug("Groups exported to KiCost:")
         for g in groups:
