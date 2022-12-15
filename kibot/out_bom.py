@@ -315,7 +315,10 @@ class BoMXLSX(BoMLinkable):
             """ Used to add a column with the distributor's description. So you can check this is the right component """
             self.kicost_config = ''
             """ KiCost configuration file. It contains the keys for the different distributors APIs.
-                The regular KiCost config is used when empty """
+                The regular KiCost config is used when empty.
+                Important for CI/CD environments: avoid exposing your API secrets!
+                To understand how to achieve this, and also how to make use of the cache please visit the
+                [kicost_ci_test](https://github.com/set-soft/kicost_ci_test) repo """
             self.specs = False
             """ *Enable Specs worksheet creation. Contains specifications for the components.
                 Works with only some KiCost APIs """

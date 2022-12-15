@@ -1522,6 +1522,9 @@ Notes:
             - `kicost_api_enable`: [string|list(string)=''] List of KiCost APIs to enable.
             - `kicost_config`: [string=''] KiCost configuration file. It contains the keys for the different distributors APIs.
                                The regular KiCost config is used when empty.
+                               Important for CI/CD environments: avoid exposing your API secrets!
+                               To understand how to achieve this, and also how to make use of the cache please visit the
+                               [kicost_ci_test](https://github.com/set-soft/kicost_ci_test) repo.
             - `kicost_dist_desc`: [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component.
             - `logo_scale`: [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
             - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
