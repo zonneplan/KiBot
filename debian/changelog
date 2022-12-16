@@ -1,3 +1,9 @@
+kibot (1.5.1-1) stable; urgency=medium
+
+  * Fixed system level resources look-up
+
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Fri, 16 Dec 2022 12:45:05 -0300
+
 kibot (1.5.0-1) stable; urgency=medium
 
   * New outputs: populate, panelize, stencil_3d, stencil_for_jig and
