@@ -669,7 +669,7 @@ class PCB_PrintOptions(VariantOptions):
                     img.data = f.read()
                 os.remove(fname)
                 os.remove(dest)
-        self.last_worksheet.add_images_to_svg(svg)
+        self.last_worksheet.add_images_to_svg(svg, self.svg_precision)
 
     def fill_polygons(self, svg, color):
         """ I don't know how to generate filled polygons on KiCad 5.
