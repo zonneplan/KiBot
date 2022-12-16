@@ -1,3 +1,9 @@
+kibot (1.5.2-1) UNRELEASED; urgency=medium
+
+  * Reserved for next release
+
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Fri, 16 Dec 2022 13:42:01 -0300
+
 kibot (1.5.1-1) stable; urgency=medium
 
   * Fixed system level resources look-up
