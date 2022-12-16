@@ -442,7 +442,7 @@ class GS(object):
         if os.path.isdir(dir_name):
             return dir_name
         # Try using the system level path
-        dir_name = os.path.join('/', 'usr', 'share', 'kibot', name)
+        dir_name = os.path.join(os.path.sep, 'usr', 'share', 'kibot', name)
         if os.path.isdir(dir_name):
             return dir_name
         logger.error('Missing resource directory `{}`'.format(name))
