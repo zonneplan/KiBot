@@ -47,6 +47,7 @@ test: lint
 	rm -f example.kibot.yaml
 	rm -f tests/.local
 	$(PY_COV) erase
+	# python3-pytest-xdist
 	$(PYTEST) -m "not slow" -n 2 --test_dir=output
 	$(PYTEST) -m "slow" --test_dir=output
 	$(PY_COV) combine
@@ -193,19 +194,23 @@ py_clean:
 update_gha:
 	cp Dockerfile_k5 Dockerfile
 	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 5 latest" Dockerfile
+	git push
 	git tag -f -a v2 -m "GitHub Action v2 for KiCad 5"
 	git push origin -f --tags
 	cp Dockerfile_dk5 Dockerfile
 	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 5 development" Dockerfile
+	git push
 	git tag -f -a v2_d -m "GitHub Action v2 for KiCad 5 (development)"
 	git tag -f -a v2_dk5 -m "GitHub Action v2 for KiCad 5 (development)"
 	git push origin -f --tags
 	cp Dockerfile_dk6 Dockerfile
 	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 6 development" Dockerfile
+	git push
 	git tag -f -a v2_dk6 -m "GitHub Action v2 for KiCad 6 (development)"
 	git push origin -f --tags
 	cp Dockerfile_k6 Dockerfile
 	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 6 latest" Dockerfile
+	git push
 	git tag -f -a v2_k6 -m "GitHub Action v2 for KiCad 6"
 	git push origin -f --tags
 

@@ -1,0 +1,24 @@
+# Example KiBot config file for a basic 3D stencil
+kibot:
+  version: 1
+
+outputs:
+  - name: 'stencil'
+    comment: "Creates a steel stencil and 3D register"
+    type: stencil_for_jig
+    dir: stencil/Jig
+
+  - name: 'navigate'
+    comment: "Browse the results"
+    type: navigate_results
+    run_by_default: false
+
+  - name: result
+    comment: Test tarball compress
+    type: compress
+    run_by_default: false
+    options:
+      format: TAR
+      compression: bzip2
+      files:
+        - from_output: navigate

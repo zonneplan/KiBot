@@ -47,6 +47,10 @@ inputs:
     description: 'Verbosity level [default: 0]'
     required: false
     default: '0'
+  additional_args:
+    description: 'Additional arguments to pass to KiBot'
+    required: false
+    default: ''
 runs:
   using: 'docker'
   image: Dockerfile
@@ -55,12 +59,13 @@ runs:
     -  -d ${{ inputs.dir }}
     -  -b ${{ inputs.board }}
     -  -e ${{ inputs.schema }}
+    -  -i ${{ inputs.install3D }}
     -  -q ${{ inputs.quickstart }}
     -  -s ${{ inputs.skip }}
     -  -t ${{ inputs.targets }}
     -  -v ${{ inputs.verbose }}
     -  -V ${{ inputs.variant }}
-    -  -i ${{ inputs.install3D }}
+    -  -x ${{ inputs.additional_args }}
 branding:
   icon: 'cpu'
   color: 'green'

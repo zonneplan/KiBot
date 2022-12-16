@@ -4,9 +4,10 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """ Base class for output options """
+import difflib
+import inspect
 import os
 import re
-import inspect
 from re import compile
 from .error import KiPlotConfigurationError
 from .gs import GS
@@ -14,6 +15,8 @@ from .misc import W_UNKOPS
 from . import log
 
 logger = log.get_logger()
+HEX_DIGIT = '[A-Fa-f0-9]{2}'
+INVALID_CHARS = r'[?%*:|"<>]'
 
 
 def do_filter(v):
@@ -31,8 +34,10 @@ class Optionable(object):
     _str_values_re = compile(r"string=.*\] \[([^\]]+)\]")
     _num_range_re = compile(r"number=.*\] \[(-?\d+),(-?\d+)\]")
     _default = None
-    _color_re = re.compile(r"#[A-Fa-f0-9]{6}$")
-    _color_re_a = re.compile(r"#[A-Fa-f0-9]{8}$")
+
+    _color_re = re.compile(r"#("+HEX_DIGIT+"){3}$")
+    _color_re_a = re.compile(r"#("+HEX_DIGIT+"){4}$")
+    _color_re_component = re.compile(HEX_DIGIT)
 
     def __init__(self):
         self._unkown_is_error = False
@@ -42,6 +47,8 @@ class Optionable(object):
         # File/directory pattern expansion
         self._expand_id = ''
         self._expand_ext = ''
+        # Used to indicate we have an output pattern and it must be suitable to generate multiple files
+        self._output_multiple_files = False
         super().__init__()
         for var in ['output', 'variant', 'units', 'hide_excluded']:
             glb = getattr(GS, 'global_'+var)
@@ -126,8 +133,12 @@ class Optionable(object):
             if (k[0] == '_') or (k not in attrs):
                 if self._unkown_is_error:
                     valid = list(filter(lambda x: x[0] != '_', attrs.keys()))
-                    raise KiPlotConfigurationError("Unknown {}option `{}`. Valid options: {}".
-                                                   format(self._error_context, k, valid))
+                    msg = "Unknown {}option `{}`.".format(self._error_context, k)
+                    possible = difflib.get_close_matches(k, valid, n=1)
+                    if possible:
+                        msg += " Did you meen {}?".format(possible[0])
+                    msg += " Valid options: {}".format(valid)
+                    raise KiPlotConfigurationError(msg)
                 logger.warning(W_UNKOPS + "Unknown {}option `{}`".format(self._error_context, k))
                 continue
             # Check the data type
@@ -192,7 +203,18 @@ class Optionable(object):
                                 new_val.append(element)
                         v = new_val
             # Seems to be ok, map it
-            setattr(self, alias if is_alias else k, v)
+            dest_name = alias if is_alias else k
+            setattr(self, dest_name, v)
+            self.set_user_defined(dest_name)
+
+    def set_user_defined(self, name):
+        setattr(self, '_{}_user_defined'.format(name), True)
+
+    def get_user_defined(self, name):
+        name = '_{}_user_defined'.format(name)
+        if hasattr(self, name):
+            return getattr(self, name)
+        return False
 
     def set_tree(self, tree):
         self._tree = tree
@@ -202,6 +224,8 @@ class Optionable(object):
         if self._tree and not self._configured:
             self._perform_config_mapping()
             self._configured = True
+        if self._output_multiple_files and ('%i' not in self.output or '%x' not in self.output):
+            raise KiPlotConfigurationError('The output pattern must contain %i and %x, otherwise file names will collide')
 
     def get_attrs_for(self):
         """ Returns all attributes """
@@ -331,8 +355,16 @@ class Optionable(object):
         name = GS.expand_text_variables(name)
         if make_safe:
             # sanitize the name to avoid characters illegal in file systems
-            name = name.replace('\\', '/')
-            name = re.sub(r'[?%*:|"<>]', '_', name)
+            if GS.on_windows:
+                # Here \ *is* valid
+                if len(name) >= 2 and name[0].isalpha() and name[1] == ':':
+                    # This name starts with a drive letter, : is valid in the first 2
+                    name = name[:2]+re.sub(INVALID_CHARS, '_', name[2:])
+                else:
+                    name = re.sub(INVALID_CHARS, '_', name)
+            else:
+                name = name.replace('\\', '/')
+                name = re.sub(INVALID_CHARS, '_', name)
         if GS.debug_level > 3:
             logger.debug('Expanded `{}`'.format(name))
         return name
@@ -350,7 +382,7 @@ class Optionable(object):
         return Optionable.expand_filename_both(self, name)
 
     @staticmethod
-    def force_list(val, comma_sep=True):
+    def force_list(val, comma_sep=True, lower_case=False):
         """ Used for values that accept a string or a list of strings.
             The string can be a comma separated list """
         if isinstance(val, type):
@@ -366,20 +398,75 @@ class Optionable(object):
             else:
                 # Empty string
                 val = []
+        if lower_case:
+            return [c.lower() for c in val]
         return val
 
     @classmethod
     def get_default(cls):
         return cls._default
 
+    def validate_color_str(self, color):
+        return self._color_re.match(color) or self._color_re_a.match(color)
+
     def validate_color(self, name):
-        color = getattr(self, name)
-        if not self._color_re.match(color) and not self._color_re_a.match(color):
+        if not self.validate_color_str(getattr(self, name)):
             raise KiPlotConfigurationError('Invalid color for `{}` use `#rrggbb` or `#rrggbbaa` with hex digits'.format(name))
 
     def validate_colors(self, names):
         for color in names:
             self.validate_color(color)
+
+    def parse_one_color(self, color):
+        res = self._color_re_component.findall(color)
+        alpha = 1.0
+        if len(res) > 3:
+            alpha = int(res[3], 16)/255.0
+        return (int(res[0], 16)/255.0, int(res[1], 16)/255.0, int(res[2], 16)/255.0, alpha)
+
+    def color_to_rgb(self, color):
+        index = 4 if len(color) > 4 else 0
+        alpha = color[index+3]
+        if alpha == 1.0:
+            return "rgb({}, {}, {})".format(round(color[index]*255.0), round(color[index+1]*255.0),
+                                            round(color[index+2]*255.0))
+        return "rgba({}, {}, {}, {})".format(round(color[index]*255.0), round(color[index+1]*255.0),
+                                             round(color[index+2]*255.0), alpha)
+
+    def color_str_to_rgb(self, color):
+        return self.color_to_rgb(self.parse_one_color(color))
+
+    def save_renderer_options(self):
+        """ Save the current renderer settings """
+        options = self._renderer.options
+        self.old_filters_to_expand = options._filters_to_expand
+        self.old_show_components = options.show_components
+        self.old_highlight = options.highlight
+        self.old_output = options.output
+        self.old_dir = self._renderer.dir
+        self.old_done = self._renderer._done
+        if self._renderer_is_pcbdraw:
+            self.old_bottom = options.bottom
+            self.old_add_to_variant = options.add_to_variant
+        else:  # render_3D
+            self.old_view = options.view
+            self.old_show_all_components = options._show_all_components
+
+    def restore_renderer_options(self):
+        """ Restore the renderer settings """
+        options = self._renderer.options
+        options._filters_to_expand = self.old_filters_to_expand
+        options.show_components = self.old_show_components
+        options.highlight = self.old_highlight
+        options.output = self.old_output
+        self._renderer.dir = self.old_dir
+        self._renderer._done = self.old_done
+        if self._renderer_is_pcbdraw:
+            options.bottom = self.old_bottom
+            options.add_to_variant = self.old_add_to_variant
+        else:  # render_3D
+            options.view = self.old_view
+            options._show_all_components = self.old_show_all_components
 
 
 class BaseOptions(Optionable):
@@ -395,6 +482,10 @@ class BaseOptions(Optionable):
     def ensure_tool(self, name):
         """ Looks for a mandatory dependency """
         return GS.check_tool_dep(self._parent.type, name, fatal=True)
+
+    def ensure_tool_get_ver(self, name):
+        """ Looks for a mandatory dependency, also returns its version """
+        return GS.check_tool_dep_get_ver(self._parent.type, name, fatal=True)
 
     def check_tool(self, name):
         """ Looks for a dependency """

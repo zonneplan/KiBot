@@ -226,7 +226,8 @@ class Globals(FiltersOptions):
             """ Tries to reformat the PCB/SCH date using the `date_format`.
                 This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD) """
             self.units = ''
-            """ [millimeters,inches,mils] Default units. Affects `position` and `bom` outputs. Also KiCad 6 dimensions """
+            """ [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs.
+                Also KiCad 6 dimensions """
             self.use_dir_for_preflights = True
             """ Use the global `dir` as subdir for the preflights """
             self.variant = ''
@@ -332,9 +333,10 @@ class Globals(FiltersOptions):
                     self.impedance_controlled = value == 'yes'
                     logger.debug("- Impedance controlled: "+value)
                 elif name == 'layer':
-                    ly = PCBLayer.parse(e)
-                    stackup.append(ly)
-                    self.get_data_from_layer(ly, materials, thicknesses)
+                    lys = PCBLayer.parse(e)
+                    for ly in lys:
+                        stackup.append(ly)
+                        self.get_data_from_layer(ly, materials, thicknesses)
         if stackup:
             GS.stackup = stackup
         if len(materials):

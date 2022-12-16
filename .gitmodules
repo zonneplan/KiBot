@@ -1,3 +1,6 @@
 [submodule "submodules/KiCost"]
 	path = submodules/KiCost
 	url = https://github.com/hildogjr/KiCost.git
+[submodule "kibot/PcbDraw/resources/footprints"]
+	path = kibot/resources/pcbdraw/footprints
+	url = https://github.com/yaqwsx/PcbDraw-Lib.git

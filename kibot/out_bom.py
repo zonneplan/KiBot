@@ -184,6 +184,8 @@ class BoMLinkable(Optionable):
             """ *Column with links to the datasheet """
             self.digikey_link = Optionable
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page """
+            self.mouser_link = Optionable
+            """ [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page """
             self.generate_dnf = True
             """ *Generate a separated section for DNF (Do Not Fit) components """
             self.hide_pcb_info = False
@@ -201,11 +203,9 @@ class BoMLinkable(Optionable):
 
     def config(self, parent):
         super().config(parent)
-        # digikey_link
-        if isinstance(self.digikey_link, type):
-            self.digikey_link = []
-        elif isinstance(self.digikey_link, list):
-            self.digikey_link = [c.lower() for c in self.digikey_link]
+        # *_link
+        self.digikey_link = self.force_list(self.digikey_link, comma_sep=False, lower_case=True)
+        self.mouser_link = self.force_list(self.mouser_link, comma_sep=False, lower_case=True)
         # Logo
         if isinstance(self.logo, type):
             self.logo = ''
@@ -247,7 +247,8 @@ class BoMCSV(Optionable):
         super().__init__()
         with document:
             self.separator = ','
-            """ *CSV Separator. TXT and TSV always use tab as delimiter """
+            """ *CSV Separator. TXT and TSV always use tab as delimiter.
+                Only one character can be specified """
             self.hide_header = False
             """ Hide the header line (names of the columns) """
             self.hide_pcb_info = False
@@ -256,6 +257,43 @@ class BoMCSV(Optionable):
             """ Hide statistics information """
             self.quote_all = False
             """ *Enclose all values using double quotes """
+
+    def config(self, parent):
+        super().config(parent)
+        if self.separator:
+            self.separator = self.separator.replace(r'\t', '\t')
+            self.separator = self.separator.replace(r'\n', '\n')
+            self.separator = self.separator.replace(r'\r', '\r')
+            self.separator = self.separator.replace(r'\\', '\\')
+        if len(self.separator) != 1:
+            raise KiPlotConfigurationError('The CSV separator must be one character (`{}`)'.format(self.separator))
+
+
+class BoMTXT(Optionable):
+    """ HRTXT options """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.separator = 'I'
+            """ *Column Separator """
+            self.header_sep = '-'
+            """ Separator between the header and the data """
+            self.justify = 'left'
+            """ [left,right,center] Text justification """
+            self.hide_header = False
+            """ Hide the header line (names of the columns) """
+            self.hide_pcb_info = False
+            """ Hide project information """
+            self.hide_stats_info = False
+            """ Hide statistics information """
+
+    def config(self, parent):
+        super().config(parent)
+        if self.separator:
+            self.separator = self.separator.replace(r'\t', '\t')
+            self.separator = self.separator.replace(r'\n', '\n')
+            self.separator = self.separator.replace(r'\r', '\r')
+            self.separator = self.separator.replace(r'\\', '\\')
 
 
 class BoMXLSX(BoMLinkable):
@@ -277,7 +315,10 @@ class BoMXLSX(BoMLinkable):
             """ Used to add a column with the distributor's description. So you can check this is the right component """
             self.kicost_config = ''
             """ KiCost configuration file. It contains the keys for the different distributors APIs.
-                The regular KiCost config is used when empty """
+                The regular KiCost config is used when empty.
+                Important for CI/CD environments: avoid exposing your API secrets!
+                To understand how to achieve this, and also how to make use of the cache please visit the
+                [kicost_ci_test](https://github.com/set-soft/kicost_ci_test) repo """
             self.specs = False
             """ *Enable Specs worksheet creation. Contains specifications for the components.
                 Works with only some KiCost APIs """
@@ -400,8 +441,9 @@ class BoMOptions(BaseOptions):
             self.output = GS.def_global_output
             """ *filename for the output (%i=bom)"""
             self.format = ''
-            """ *[HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
-                Defaults to CSV or a guess according to the options. """
+            """ *[HTML,CSV,TXT,TSV,XML,XLSX,HRTXT] format for the BoM.
+                Defaults to CSV or a guess according to the options.
+                HRTXT stands for Human Readable TeXT """
             # Equivalent to KiBoM INI:
             self.ignore_dnf = True
             """ *Exclude DNF (Do Not Fit) components """
@@ -427,6 +469,8 @@ class BoMOptions(BaseOptions):
             """ *[dict] Options for the XLSX format """
             self.csv = BoMCSV
             """ *[dict] Options for the CSV, TXT and TSV formats """
+            self.hrtxt = BoMTXT
+            """ *[dict] Options for the HRTXT formats """
             # * Filters
             self.pre_transform = Optionable
             """ [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
@@ -542,6 +586,9 @@ class BoMOptions(BaseOptions):
             # Same for XLSX
             if not isinstance(self.xlsx, type):
                 return 'xlsx'
+            # Same for HRTXT
+            if not isinstance(self.hrtxt, type):
+                return 'hrtxt'
             # Default to a simple and common format: CSV
             return 'csv'
         # Explicit selection
@@ -628,7 +675,7 @@ class BoMOptions(BaseOptions):
         super().config(parent)
         self.format = self._guess_format()
         self._expand_id = 'bom'
-        self._expand_ext = self.format.lower()
+        self._expand_ext = 'txt' if self.format.lower() == 'hrtxt' else self.format.lower()
         # HTML options
         if self.format == 'html' and isinstance(self.html, type):
             # If no options get the defaults
@@ -639,6 +686,11 @@ class BoMOptions(BaseOptions):
             # If no options get the defaults
             self.csv = BoMCSV()
             self.csv.config(self)
+        # HRTXT options
+        if self.format == 'hrtxt' and isinstance(self.hrtxt, type):
+            # If no options get the defaults
+            self.hrtxt = BoMTXT()
+            self.hrtxt.config(self)
         # XLSX options
         if self.format == 'xlsx' and isinstance(self.xlsx, type):
             # If no options get the defaults
@@ -922,6 +974,8 @@ class BoM(BaseOutput):  # noqa: F821
         gb['type'] = 'bom'
         gb['dir'] = os.path.join('BoM', subd)
         ops = {'format': fmt}
+        if fmt == 'HRTXT':
+            ops['hrtxt'] = {'separator': '|'}
         if group_fields:
             ops['group_fields'] = group_fields
         if join_fields:
@@ -1007,7 +1061,7 @@ class BoM(BaseOutput):  # noqa: F821
         if join_fields:
             logger.debug(' - Fields to join with Value: {}'.format(join_fields))
         # Create a generic version
-        SIMP_FMT = ['HTML', 'CSV', 'TXT', 'TSV', 'XML']
+        SIMP_FMT = ['HTML', 'CSV', 'HRTXT', 'TSV', 'XML']
         XYRS_FMT = ['HTML']
         if GS.check_tool(name, 'XLSXWriter') is not None:
             SIMP_FMT.append('XLSX')

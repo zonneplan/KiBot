@@ -8,11 +8,8 @@ import coverage
 import logging
 from shutil import which
 from os import access
-from importlib import reload
 from . import context
 from kibot.mcpyrate import activate  # noqa: F401
-from kibot.out_pcbdraw import PcbDrawOptions
-import kibot.log
 
 OUT_DIR = 'PcbDraw'
 cov = coverage.Coverage()
@@ -86,63 +83,63 @@ DEPS = {'Dependencies': [{'name': 'pcbdraw', 'command': 'pcbdraw', 'role': 'mand
                          {'name': 'ImageMagick', 'command': 'convert', 'role': 'XXXX', 'debian': 'imagemagick'}]}
 
 
-def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
-    """ Check missing rsvg-convert """
-    with monkeypatch.context() as m:
-        # Make which('rsvg-convert') fail
-        m.setattr("shutil.which", no_rsvg_convert)
-        # Make the call to determine the version fail
-        m.setattr("subprocess.check_output", no_run)
-        # Make os.access(...rsvg-convert', EXEC) fail
-        m.setattr("os.access", no_rsvg_convert_access)
-        # Make platform.system() return a bogus OS
-        m.setattr("platform.system", platform_system_bogus)
-        # Reload the module so we get the above patches
-        mod = reload(kibot.dep_downloader)
-        mod.register_deps('pcbdraw', DEPS)
-        logging.error(mod.used_deps)
-        old_lev = kibot.log.debug_level
-        kibot.log.debug_level = 2
-        o = PcbDrawOptions()
-        o.style = ''
-        o.remap = None
-        o.format = 'jpg'
-        o.config(None)
-        o._parent = DummyPcbDraw()
-        cov.load()
-        cov.start()
-        o.run('')
-        cov.stop()
-        cov.save()
-        kibot.log.debug_level = old_lev
-        assert 'using unreliable PNG/JPG' in caplog.text, caplog.text
-        assert 'librsvg2-bin' in caplog.text, caplog.text
-
-
-def test_pcbdraw_miss_convert(caplog, monkeypatch):
-    """ Check missing convert """
-    with monkeypatch.context() as m:
-        m.setattr("shutil.which", no_convert)
-        m.setattr("subprocess.check_output", no_run)
-        m.setattr("os.access", no_convert_access)
-        # Make platform.system() return a bogus OS
-        m.setattr("platform.system", platform_system_bogus)
-        # Reload the module so we get the above patches
-        mod = reload(kibot.dep_downloader)
-        mod.register_deps('pcbdraw', DEPS)
-        o = PcbDrawOptions()
-        o.style = ''
-        o.remap = None
-        o.format = 'jpg'
-        o.config(None)
-        o._parent = DummyPcbDraw()
-        cov.load()
-        cov.start()
-        o.run('')
-        cov.stop()
-        cov.save()
-        assert 'using unreliable PNG/JPG' in caplog.text, caplog.text
-        assert 'imagemagick' in caplog.text, caplog.text
+# def test_pcbdraw_miss_rsvg(caplog, monkeypatch):
+#     """ Check missing rsvg-convert """
+#     with monkeypatch.context() as m:
+#         # Make which('rsvg-convert') fail
+#         m.setattr("shutil.which", no_rsvg_convert)
+#         # Make the call to determine the version fail
+#         m.setattr("subprocess.check_output", no_run)
+#         # Make os.access(...rsvg-convert', EXEC) fail
+#         m.setattr("os.access", no_rsvg_convert_access)
+#         # Make platform.system() return a bogus OS
+#         m.setattr("platform.system", platform_system_bogus)
+#         # Reload the module so we get the above patches
+#         mod = reload(kibot.dep_downloader)
+#         mod.register_deps('pcbdraw', DEPS)
+#         logging.error(mod.used_deps)
+#         old_lev = kibot.log.debug_level
+#         kibot.log.debug_level = 2
+#         o = PcbDrawOptions()
+#         o.style = ''
+#         o.remap = None
+#         o.format = 'jpg'
+#         o.config(None)
+#         o._parent = DummyPcbDraw()
+#         cov.load()
+#         cov.start()
+#         o.run('')
+#         cov.stop()
+#         cov.save()
+#         kibot.log.debug_level = old_lev
+#         assert 'using unreliable PNG/JPG' in caplog.text, caplog.text
+#         assert 'librsvg2-bin' in caplog.text, caplog.text
+#
+#
+# def test_pcbdraw_miss_convert(caplog, monkeypatch):
+#     """ Check missing convert """
+#     with monkeypatch.context() as m:
+#         m.setattr("shutil.which", no_convert)
+#         m.setattr("subprocess.check_output", no_run)
+#         m.setattr("os.access", no_convert_access)
+#         # Make platform.system() return a bogus OS
+#         m.setattr("platform.system", platform_system_bogus)
+#         # Reload the module so we get the above patches
+#         mod = reload(kibot.dep_downloader)
+#         mod.register_deps('pcbdraw', DEPS)
+#         o = PcbDrawOptions()
+#         o.style = ''
+#         o.remap = None
+#         o.format = 'jpg'
+#         o.config(None)
+#         o._parent = DummyPcbDraw()
+#         cov.load()
+#         cov.start()
+#         o.run('')
+#         cov.stop()
+#         cov.save()
+#         assert 'using unreliable PNG/JPG' in caplog.text, caplog.text
+#         assert 'imagemagick' in caplog.text, caplog.text
 
 
 def test_pcbdraw_variant_1(test_dir):
@@ -180,5 +177,4 @@ def test_pcbdraw_variant_3(test_dir):
     fname = prj+'-top.png'
     ctx.expect_out_file(fname)
     ctx.compare_image(fname, fuzz='40%', height='100%')
-    assert ctx.search_err("Ambiguous list of components to show .?none.? vs variant/filter")
     ctx.clean_up(keep_project=True)

@@ -1,0 +1,66 @@
+(kicad_sch (version 20211123) (generator eeschema)
+
+  (uuid 3d5f188c-1175-4020-9c48-ba0db0283184)
+
+  (paper "A4")
+
+  (title_block
+    (title "Round PCB (PCB 1)")
+  )
+
+  (lib_symbols
+  )
+
+
+  (text "This is the schematic for the round PCB\n(PCB_1)" (at 101.6 71.12 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 19ba369e-2210-4c1a-aae0-0ae5c1ab8437)
+  )
+
+  (sheet (at 101.6 76.2) (size 38.1 25.4) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 77d5b6d2-5833-4084-b955-4eb239724e2d)
+    (property "Sheet name" "Filter circuit" (id 0) (at 101.6 75.4884 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "../Circuit/1_SCH_2_diff_PCBs.kicad_sch" (id 1) (at 101.6 102.1846 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+    (path "/77d5b6d2-5833-4084-b955-4eb239724e2d" (page "2"))
+  )
+
+  (symbol_instances
+    (path "/77d5b6d2-5833-4084-b955-4eb239724e2d/d729b803-55e4-4d07-9398-bb2943f6ed7b"
+      (reference "#PWR01") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/77d5b6d2-5833-4084-b955-4eb239724e2d/38b32190-5359-4ce2-9950-8af56ad6c6ea"
+      (reference "#PWR02") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/77d5b6d2-5833-4084-b955-4eb239724e2d/8cfa7254-10d0-4510-984f-28b81c11a5ed"
+      (reference "#PWR03") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/77d5b6d2-5833-4084-b955-4eb239724e2d/66445919-08d5-40d2-8693-b124d7b00e4d"
+      (reference "#PWR04") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/77d5b6d2-5833-4084-b955-4eb239724e2d/e5e3dd91-4c50-4c56-a840-8fe41b627763"
+      (reference "C1") (unit 1) (value "100nF") (footprint "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm")
+    )
+    (path "/77d5b6d2-5833-4084-b955-4eb239724e2d/121f51f7-01c0-4925-9aad-c45a8d3be012"
+      (reference "C2") (unit 1) (value "100nF") (footprint "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm")
+    )
+    (path "/77d5b6d2-5833-4084-b955-4eb239724e2d/c00eaf45-c1bf-4fcf-9758-e056d0bcad77"
+      (reference "J1") (unit 1) (value "In") (footprint "Connector_Molex:Molex_KK-254_AE-6410-02A_1x02_P2.54mm_Vertical")
+    )
+    (path "/77d5b6d2-5833-4084-b955-4eb239724e2d/1a0b04d9-cdf4-4256-b39a-932f9cef60f9"
+      (reference "J2") (unit 1) (value "Out") (footprint "Connector_Molex:Molex_KK-254_AE-6410-02A_1x02_P2.54mm_Vertical")
+    )
+    (path "/77d5b6d2-5833-4084-b955-4eb239724e2d/5ff51348-3b0c-4051-ac3f-8bbe52a23b46"
+      (reference "R1") (unit 1) (value "1k") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal")
+    )
+  )
+)

@@ -67,11 +67,15 @@ class Generic(BaseFilter):  # noqa: F821
             self.exclude_all_hash_ref = False
             """ Exclude all components with a reference starting with # """
             self.exclude_virtual = False
-            """ KiCad 5: exclude components marked as virtual in the PCB """
+            """ Exclude components marked as virtual in the PCB """
             self.exclude_smd = False
-            """ KiCad 5: exclude components marked as smd in the PCB """
+            """ Exclude components marked as smd in the PCB """
             self.exclude_tht = False
-            """ KiCad 5: exclude components marked as through-hole in the PCB """
+            """ Exclude components marked as through-hole in the PCB """
+            self.exclude_top = False
+            """ Exclude components on the top side of the PCB """
+            self.exclude_bottom = False
+            """ Exclude components on the bottom side of the PCB  """
         self.add_to_doc('keys', 'Use `dnf_list` for '+str(sorted(DNF)))
         self.add_to_doc('keys', 'Use `dnc_list` for '+str(sorted(DNC)))
 
@@ -179,6 +183,10 @@ class Generic(BaseFilter):  # noqa: F821
         if self.exclude_smd and comp.smd:
             return exclude
         if self.exclude_tht and comp.tht:
+            return exclude
+        if self.exclude_top and not comp.bottom:
+            return exclude
+        if self.exclude_bottom and comp.bottom:
             return exclude
         # List of references to be excluded
         if self.exclude_refs and (comp.ref in self.exclude_refs or comp.ref_prefix+'*' in self.exclude_refs):

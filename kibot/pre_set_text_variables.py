@@ -10,7 +10,6 @@ Dependencies:
 """
 import json
 import os
-import pcbnew
 import re
 from subprocess import run, PIPE
 import sys
@@ -121,7 +120,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 command = r.command
                 if re_git.search(command):
                     git_command = self.ensure_tool('git')
-                    command = re_git.sub(r'\1'+git_command+' ', command)
+                    command = re_git.sub(r'\1'+git_command.replace('\\', r'\\')+' ', command)
                 cmd = ['/bin/bash', '-c', command]
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
@@ -149,9 +148,5 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         with open(pro_name, 'wt') as f:
             f.write(json.dumps(data, sort_keys=True, indent=2))
         if GS.board:
-            # Force a project reload
-            sm = pcbnew.GetSettingsManager()
-            sm.UnloadProject(GS.board.GetProject(), False)
-            assert sm.LoadProject(pro_name)
-            # Force the PCB reload (will reload the project file)
-            GS.board = None
+            # Force a project and PCB reload
+            GS.reload_project(pro_name)

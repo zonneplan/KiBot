@@ -1,0 +1,77 @@
+# Here we use internal outputs, but the PCB comes from an output (panelize in this case)
+kiplot:
+  version: 1
+
+outputs:
+  - name: KiKit_present_files
+    comment: "Present test using local mode"
+    type: kikit_present
+    dir: Present/Local_2
+    options:
+      description: 'tests/data/silly_project.md'
+      boards:
+        mode: local
+        comment: This is a comment
+        name: Light control
+        back_image: Raytraced
+        pcb_from_output: panel
+      repository: 'https://github.com/INTI-CMNB/KiBot/'
+
+  - name: panel
+    comment: "Simple panel"
+    type: panelize
+    run_by_default: false
+    options:
+      configs:
+        - name: basic
+          layout:
+            rows: 2
+            cols: 2
+            space: 2
+          tabs:
+            type: fixed
+            width: 5
+          cuts:
+            type: mousebites
+            drill: 0.5mm
+            spacing: 1mm
+            offset: 0.2mm
+        - name: mill_radius_1
+          post:
+            mill_radius: 1
+
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDraw
+    run_by_default: false
+    options:
+      format: svg
+      vcuts: true
+      warnings: visible
+      dpi: 600
+
+  - name: Raytraced
+    type: render_3d
+    run_by_default: false
+    options:
+      width: 640
+      height: 480
+      rotate_x: 3
+      rotate_z: -2
+      ray_tracing: true
+
+  - name: 'gerbers'
+    comment: "Gerbers for the Gerber god"
+    type: gerber
+    dir: gerberdir
+    run_by_default: false
+    layers: copper
+
+  - name: result
+    comment: Compress the gerbers
+    type: compress
+    run_by_default: false
+    options:
+      files:
+        - from_output: gerbers

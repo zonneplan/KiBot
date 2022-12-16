@@ -26,8 +26,6 @@ outputs:
         L_G1: "LEDs:LED-5MM_green"
         L_B1: "LEDs:LED-5MM_blue"
         L_Y1: "LEDs:LED-5MM_yellow"
-        PHOTO1: "yaqwsx:R_PHOTO_7mm"
-        J8: "yaqwsx:Pin_Header_Straight_1x02_circle"
         'REF**': "dummy:dummy"
         G***: "dummy:dummy"
         svg2mod: "dummy:dummy"
@@ -35,17 +33,40 @@ outputs:
         JP2: "dummy:dummy"
         JP3: "dummy:dummy"
         JP4: "dummy:dummy"
-      no_drillholes: False
-      mirror: False
+      remap_components:
+        - ref: PHOTO1
+          lib: yaqwsx
+          comp: R_PHOTO_7mm
+        - reference: J8
+          library: yaqwsx
+          component: Pin_Header_Straight_1x02_circle
+      no_drillholes: false
+      mirror: false
       highlight:
         - L_G1
         - L_B1
         - R10
         - RV1
       show_components: all
-      vcuts: True
+      vcuts: true
       warnings: visible
       dpi: 600
+      # margin:
+      #   left: 5
+      #   right: 1
+      #   top: 0
+      #   bottom: 6
+      # outline_width: 3
+      # show_solderpaste: false
+      resistor_remap:
+        - ref: R1
+          val: 10K
+        - ref: R2
+          val: 4k7
+      resistor_flip: "R2"
+      size_detection: svg_paths
+      # size_detection: kicad_all
+      # size_detection: kicad_edge
 
   - name: PcbDraw2
     comment: "PcbDraw test bottom"
@@ -54,7 +75,7 @@ outputs:
     options:
       <<: *pcb_draw_ops
       style: set-red-enig
-      bottom: True
+      bottom: true
       show_components:
         - L_G1
         - L_B1

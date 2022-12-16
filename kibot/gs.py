@@ -15,7 +15,7 @@ except ImportError:
 from datetime import datetime, date
 from sys import exit
 from shutil import copy2
-from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR
+from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -54,6 +54,7 @@ class GS(object):
     debug_level = 0
     kibot_version = None
     n = datetime.now()
+    on_windows = False
     kicad_version = ''
     kicad_conf_path = None
     kicad_share_path = None
@@ -377,9 +378,26 @@ class GS(object):
         return pro_copy
 
     @staticmethod
+    def get_pcb_and_pro_names(name):
+        if GS.ki5:
+            return [name, name.replace('kicad_pcb', 'pro')]
+        return [name, name.replace('kicad_pcb', 'kicad_pro'), name.replace('kicad_pcb', 'kicad_prl')]
+
+    @staticmethod
+    def remove_pcb_and_pro(name):
+        """ Used to remove temporal PCB and project files """
+        for fn in GS.get_pcb_and_pro_names(name):
+            if os.path.isfile(fn):
+                os.remove(fn)
+
+    @staticmethod
     def load_board():
         """ Will be repplaced by kiplot.py """
         raise AssertionError()
+
+    @staticmethod
+    def load_board_low_level(file):
+        return pcbnew.LoadBoard(file)
 
     @staticmethod
     def load_sch():
@@ -408,3 +426,24 @@ class GS(object):
     def check_tool(context, name):
         """ Looks for a dependency """
         return GS.check_tool_dep(context, name, fatal=False)
+
+    @staticmethod
+    def reload_project(pro_name):
+        sm = pcbnew.GetSettingsManager()
+        sm.UnloadProject(GS.board.GetProject(), False)
+        assert sm.LoadProject(pro_name)
+        # If we use the old project KiCad SIGSEGV
+        GS.board = None
+
+    @staticmethod
+    def get_resource_path(name):
+        # Try relative to the script
+        dir_name = os.path.join(os.path.dirname(__file__), 'resources', name)
+        if os.path.isdir(dir_name):
+            return dir_name
+        # Try using the system level path
+        dir_name = os.path.join('usr', 'share', 'kibot', name)
+        if os.path.isdir(dir_name):
+            return dir_name
+        logger.error('Missing resource directory `{}`'.format(name))
+        exit(WRONG_INSTALL)

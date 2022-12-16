@@ -1,0 +1,64 @@
+PCB Specifications:
+Size:
+
+- ${bb_w_mm}x${bb_h_mm} mm
+
+Class: ${pattern_class}${drill_class}
+
+Track width: ≥ ${track_mm} mm
+
+Insulation distance: ≥ ${clearance_mm} mm
+
+Minimum drill size: ≥ ${drill_real_mm} mm (finished metalized hole: ${drill_mm} mm)
+
+Minimum slot width: ≥ ${slot_mm} mm
+
+Ring collar: ≥ ${oar_mm} mm
+
+#?edge_connector or castellated_pads or edge_plating
+Special features:
+#?edge_connector or castellated_pads or edge_plating
+
+#?edge_connector
+- Edge connector: ${edge_connector}
+#?castellated_pads
+- Castellated pads
+#?edge_plating
+- Edge plating
+
+#?stackup
+Stackup:
+#?stackup and impedance_controlled
+
+#?stackup and impedance_controlled
+Impedance controlled: YES
+#?stackup
+
+#?stackup
+| Name                 | Type                 | Color    | Thickness | Material        | Epsilon_r | Loss tangent |
+#?stackup
+|----------------------|----------------------|----------|-----------|-----------------|-----------|--------------|
+#?stackup
+#stackup:| ${%-20s,name} | ${%-20s,type} | ${%-8s,color} | ${%9d,thickness} | ${%-15s,material} | ${%9.1f,epsilon_r} | ${%12.3f,loss_tangent} |
+#?stackup
+
+Materials:
+
+- ${pcb_material}, ${thickness_mm} mm
+- ${pcb_finish}
+- ${layers} layers
+- ${copper_thickness} µm copper thickness
+
+Solder mask:
+
+- ${solder_mask}
+- ${solder_mask_color_text}
+
+Marking:
+
+- ${silk_screen} screen printing
+- Silk: ${silk_screen_color_text}
+
+Other markings:
+
+- ROHS / UL / Date - Yes if available

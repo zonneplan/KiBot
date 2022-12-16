@@ -1,0 +1,6 @@
+kibot/resources/config_templates/ /usr/share/kibot/
+kibot/resources/images/ /usr/share/kibot/
+kibot/resources/kicad_colors/ /usr/share/kibot/
+kibot/resources/kicad_layouts/ /usr/share/kibot/
+kibot/resources/pcbdraw/ /usr/share/kibot/
+kibot/resources/report_templates/ /usr/share/kibot/

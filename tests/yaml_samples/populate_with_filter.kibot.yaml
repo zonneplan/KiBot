@@ -1,0 +1,71 @@
+kiplot:
+  version: 1
+
+global:
+  solder_mask_color: blue
+  pcb_finish: ENIG
+
+filters:
+  - name: all_smd
+    type: generic
+    exclude_smd: true
+    invert: true
+
+  - name: all_front
+    type: generic
+    exclude_bottom: true
+
+  - name: all_back
+    type: generic
+    exclude_top: true
+
+  - name: all_tht
+    type: generic
+    exclude_tht: true
+    invert: true
+
+  - name: all_conn
+    type: generic
+    exclude_any:
+      - field: Value
+        regex: '.*CONN.*'
+      - field: Value
+        regex: 'SERVO.*'
+      - field: Reference
+        regex: 'JP.*'
+      - field: Reference
+        regex: 'U.*'
+    invert: true
+
+outputs:
+  - name: PcbDraw
+    comment: "How to draw a step"
+    type: pcbdraw
+    run_by_default: false
+    options:
+      format: png
+
+  - name: KiCad_3D
+    comment: "How to draw a step"
+    type: render_3d
+    run_by_default: false
+    options:
+      width: 1280
+      height: 960
+      orthographic: true
+      zoom: 4
+      ray_tracing: true
+      background1: "#DAF1FF"
+      auto_crop: true
+      # transparent_background: true
+      # transparent_background_color: "#00FF00"
+      # transparent_background_fuzz: 15
+
+
+  - name: Populate
+    comment: "Populate example"
+    type: populate
+    dir: PopulateWithFilter
+    options:
+      renderer: KiCad_3D
+      input: tests/data/with_filter_html.md

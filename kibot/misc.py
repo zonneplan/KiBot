@@ -238,6 +238,13 @@ W_MISSREF = '(W099) '
 W_COPYOVER = '(W100) '
 W_PARITY = '(W101) '
 W_MISSFPINFO = '(W102) '
+W_PCBDRAW = '(W103) '
+W_NOCRTYD = '(W104) '
+W_PANELEMPTY = '(W105) '
+W_ONWIN = '(W106) '
+W_AUTONONE = '(W106) '
+W_AUTOPROB = '(W107) '
+W_MORERES = '(W108) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
@@ -259,6 +266,8 @@ KICAD5_SVG_SCALE = 116930/297002200
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'
 # Text used to disable 3D models
 DISABLE_3D_MODEL_TEXT = '_Disabled_by_KiBot'
+RENDERERS = ['pcbdraw', 'render_3d']
+PCB_GENERATORS = ['pcb_variant', 'panelize']
 
 
 class Rect(object):
@@ -294,8 +303,10 @@ def hide_stderr():
     devnull = os.open('/dev/null', os.O_WRONLY)
     os.dup2(devnull, 2)
     os.close(devnull)
-    yield
-    os.dup2(newstderr, 2)
+    try:
+        yield
+    finally:
+        os.dup2(newstderr, 2)
 
 
 def version_str2tuple(ver):

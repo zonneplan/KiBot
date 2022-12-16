@@ -1,0 +1,387 @@
+# Example KiBot config file for a basic panel
+kibot:
+  version: 1
+
+outputs:
+  - name: 'panel_examples'
+    comment: "The KiKit examples"
+    type: panelize
+    run_by_default: false
+    options:
+      configs:
+        - name: basic
+          layout:
+            rows: 2
+            cols: 2
+          tabs:
+            type: full
+          cuts:
+            type: vcuts
+        - name: mill_radius_1
+          post:
+            mill_radius: 1
+        - name: basic_with_tabs
+          extends: panel_examples[basic]
+          layout:
+            space: 2
+          tabs:
+            type: fixed
+            hwidth: 10
+            vwidth: 15
+        - name: vcuts_railstb
+          extends: panel_examples[basic_with_tabs]
+          framing:
+            type: railstb
+            width: 5
+            space: 3
+        - name: basic_with_mouse_bites
+          extends: panel_examples[basic_with_tabs]
+          tabs:
+            width: 5
+          cuts:
+            type: mousebites
+            drill: 0.5
+            spacing: 1
+            offset: 0.2
+        - name: basic_with_mouse_bites_prolong
+          extends: panel_examples[basic_with_mouse_bites]
+          tabs:
+            width: 3
+          cuts:
+            prolong: 0.5
+        - name: basic_with_mouse_bites_2v
+          extends: panel_examples[basic_with_mouse_bites_prolong]
+          tabs:
+            vcount: 2
+        - name: basic_with_mouse_bites_fm1
+          extends: panel_examples[basic_with_mouse_bites_2v]
+          framing:
+            type: railstb
+            width: 5
+            space: 3
+        - name: basic_with_mouse_bites_fm2
+          extends: panel_examples[basic_with_mouse_bites_fm1]
+          framing:
+            type: frame
+            cuts: both
+        - name: basic_with_mouse_bites_fm3
+          extends: panel_examples[basic_with_mouse_bites_fm2]
+          framing:
+            type: frame
+            cuts: h
+        - name: tight
+          extends: panel_examples[basic]
+          layout:
+            space: 6
+          tabs:
+            type: fixed
+            width: 3
+            vcount: 2
+          framing:
+            type: tightframe
+            width: 5
+            space: 3
+        - name: holes_fid_text
+          extends: panel_examples[basic_with_mouse_bites_fm1]
+          tooling:
+            type: 3hole
+            hoffset: 2.5
+            voffset: 2.5
+            size: 1.5
+          fiducials:
+            type: 3fid
+            hoffset: 5
+            voffset: 2.5
+            coppersize: 2
+            opening: 1
+          text:
+            type: simple
+            text: Example panel
+            anchor: mt
+            voffset: 2.5
+            hjustify: center
+            vjustify: center
+        - name: holes_fid_text2
+          extends: panel_examples[holes_fid_text]
+          text2:
+            type: simple
+            text: "Created on {date}"
+            anchor: mb
+            voffset: -2.5
+            hjustify: center
+            vjustify: center
+        - name: holes_fid_text_rounded
+          extends: panel_examples[holes_fid_text]
+          framing:
+            fillet: 1
+        - name: holes_fid_text_chamfer
+          extends: panel_examples[holes_fid_text]
+          framing:
+            chamfer: 1
+        - name: holes_fid_text_minimal
+          extends: panel_examples[holes_fid_text]
+          framing:
+            type: frame
+            mintotalheight: 100
+            mintotalwidth: 100
+          text:
+            text: Example panel with minimal dimensions
+  - name: 'panel_basic'
+    comment: "Basic example"
+    type: panelize
+    output_id: _basic
+    options:
+      configs:
+        - extends: panel_examples[basic]
+
+  - name: 'panel_basic_with_mill_radius'
+    comment: "Basic example + mill radius simulation"
+    type: panelize
+    output_id: _basic_with_mill_radius
+    options:
+      configs:
+        - extends: panel_examples[basic]
+          post:
+            mill_radius: 1
+
+  - name: 'panel_basic_with_tabs'
+    comment: "Basic example + simple tabs"
+    type: panelize
+    output_id: _basic_with_tabs
+    options:
+      configs:
+        - extends: panel_examples[basic_with_tabs]
+          post:
+            mill_radius: 1
+
+  - name: 'basic_with_mouse_bites'
+    comment: "Basic example + mouse bites"
+    type: panelize
+    output_id: _basic_with_nouse_bites
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites]
+
+  - name: 'basic_with_mouse_bites_mr'
+    comment: "Basic example + mouse bites + mill radius simulation"
+    type: panelize
+    output_id: _basic_with_nouse_bites_mr
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'basic_with_mouse_bites_mrp'
+    comment: "Basic example + mouse bites + prolong + mill radius simulation"
+    type: panelize
+    output_id: _basic_with_nouse_bites_mrp
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_prolong]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'basic_with_mouse_bites_2v'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + mill radius simulation"
+    type: panelize
+    output_id: _basic_with_nouse_bites_2v
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_2v]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'basic_with_mouse_bites_fm1'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame h + mill radius simulation"
+    type: panelize
+    output_id: _basic_with_nouse_bites_fm1
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_fm1]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'basic_with_mouse_bites_fm2'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame full + mill radius simulation"
+    type: panelize
+    output_id: _basic_with_nouse_bites_fm2
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_fm2]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'basic_with_mouse_bites_fm3'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame full h cuts + mill radius simulation"
+    type: panelize
+    output_id: _basic_with_nouse_bites_fm3
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_fm3]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'tight'
+    comment: "Tight frame example"
+    type: panelize
+    output_id: _tight
+    options:
+      configs:
+        - extends: panel_examples[tight]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'holes_fid_text'
+    comment: "With marks and text"
+    type: panelize
+    output_id: _holes_fid_text
+    options:
+      configs:
+        - extends: panel_examples[holes_fid_text]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'holes_fid_text2'
+    comment: "With marks and two texts"
+    type: panelize
+    output_id: _holes_fid_text2
+    options:
+      configs:
+        - extends: panel_examples[holes_fid_text2]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'holes_fid_text_rounded'
+    comment: "With marks and text, rounded"
+    type: panelize
+    output_id: _holes_fid_text_rounded
+    options:
+      configs:
+        - extends: panel_examples[holes_fid_text_rounded]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'holes_fid_text_chamfer'
+    comment: "With marks and text, chamfer"
+    type: panelize
+    output_id: _holes_fid_text_chamfer
+    options:
+      configs:
+        - extends: panel_examples[holes_fid_text_chamfer]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'holes_fid_text_minimal'
+    comment: "With marks and text, minimal"
+    type: panelize
+    output_id: _holes_fid_text_minimal
+    options:
+      configs:
+        - extends: panel_examples[holes_fid_text_minimal]
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'rotated_45'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame full + rotated + mill radius simulation"
+    type: panelize
+    output_id: _rotated_45
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_fm2]
+          layout:
+            rotation: 45
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'alternated'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame full + alternated + mill radius simulation"
+    type: panelize
+    output_id: _alternated
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_fm2]
+          layout:
+            alternation: cols
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'hbone'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame h + h bone + mill radius simulation"
+    type: panelize
+    output_id: _hbone
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_fm1]
+          layout:
+            hbonecut: true
+            hbackbone: 5
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'both_bones'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame h + both bones + mill radius simulation"
+    type: panelize
+    output_id: _both_bones
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_fm1]
+          layout:
+            rows: 4
+            cols: 4
+            hbackbone: 5
+            vbackbone: 5
+            hboneskip: 1
+            vboneskip: 1
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'spec_tabs'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame h + indicated tabs + mill radius simulation"
+    type: panelize
+    output_id: _spec_tabs
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_fm1]
+          layout:
+            space: 5
+          tabs:
+            type: annotation
+          source:
+            tolerance: 15
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'spec_tabs_bones'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame h + indicated tabs + bones + mill radius simulation"
+    type: panelize
+    output_id: _spec_tabs_bones
+    options:
+      configs:
+        - extends: spec_tabs[1]
+          layout:
+            space: 2
+            hbackbone: 3
+            vbackbone: 3
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'copperfill_solid_1'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame h + copperfill solid + mill radius simulation"
+    type: panelize
+    output_id: _copperfill_solid_1
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_fm1]
+          copperfill:
+            type: solid
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'copperfill_solid_2'
+    comment: "Copperfill and V-Cuts"
+    type: panelize
+    output_id: _copperfill_solid_2
+    options:
+      configs:
+        - extends: panel_examples[vcuts_railstb]
+          copperfill:
+            type: solid
+          cuts:
+            clearance: 1.5
+        - extends: panel_examples[mill_radius_1]
+
+  - name: 'copperfill_hatched'
+    comment: "Basic example + mouse bites + prolong + 2 vert tabs + frame h + copperfill hatched + mill radius simulation"
+    type: panelize
+    output_id: _copperfill_hatched
+    options:
+      configs:
+        - extends: panel_examples[basic_with_mouse_bites_fm1]
+          copperfill:
+            type: hatched
+            clearance: 2
+            spacing: 0.5
+            width: 0.5
+        - extends: panel_examples[mill_radius_1]

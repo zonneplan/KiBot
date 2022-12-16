@@ -29,7 +29,7 @@ from tempfile import NamedTemporaryFile
 from .gs import GS
 from .optionable import BaseOptions
 from .kiplot import config_output, get_output_dir
-from .misc import W_NOTYET, W_MISSTOOL
+from .misc import W_NOTYET, W_MISSTOOL, W_NOOUTPUTS
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log, __version__
@@ -74,9 +74,12 @@ EXT_IMAGE = {'gbr': 'file_gbr',
              'plt': 'file_plt',
              'ps': 'file_ps',
              'rar': 'file_rar',
+             'scad': 'file_scad',
+             'stl': 'file_stl',
              'step': 'file_stp',
              'stp': 'file_stp',
              'html': 'file_html',
+             'css': 'file_css',
              'xml': 'file_xml',
              'tsv': 'file_tsv',
              'xlsx': 'file_xlsx',
@@ -84,7 +87,10 @@ EXT_IMAGE = {'gbr': 'file_gbr',
              'xz': 'file_xz',
              'gz': 'file_gz',
              'tar': 'file_tar',
-             'zip': 'file_zip'}
+             'zip': 'file_zip',
+             'kicad_pcb': 'pcbnew',
+             'sch': 'eeschema',
+             'kicad_sch': 'eeschema'}
 for i in range(31):
     n = str(i)
     EXT_IMAGE['gl'+n] = 'file_gbr'
@@ -189,7 +195,7 @@ class Navigate_ResultsOptions(BaseOptions):
         if img_w in self.copied_images:
             # Already copied, just return its name
             return self.copied_images[img_w]
-        src = os.path.join(self.img_src_dir, 'images', img+'.svg')
+        src = os.path.join(self.img_src_dir, img+'.svg')
         dst = os.path.join(self.out_dir, 'images', img_w)
         id = img_w
         if self.rsvg_command is not None and self.svg_to_png(src, dst+'.png', width):
@@ -286,7 +292,8 @@ class Navigate_ResultsOptions(BaseOptions):
         ext = os.path.splitext(file)[1][1:].lower()
         wide = False
         # Copy the icon for this file extension
-        img = self.copy(EXT_IMAGE.get(ext, 'unknown'), MID_ICON)
+        icon_name = 'folder' if os.path.isdir(file) else EXT_IMAGE.get(ext, 'unknown')
+        img = self.copy(icon_name, MID_ICON)
         # Full name for the file
         file_full = file
         # Just the file, to display it
@@ -426,14 +433,35 @@ class Navigate_ResultsOptions(BaseOptions):
         else:
             self.generate_end_page_for(name, node, prev, category)
 
-    def run(self, name):
-        self.out_dir = os.path.dirname(name)
-        self.img_src_dir = os.path.dirname(__file__)
-        self.img_dst_dir = os.path.join(self.out_dir, 'images')
-        os.makedirs(self.img_dst_dir, exist_ok=True)
-        self.copied_images = {}
-        name = os.path.basename(name)
-        # Create a tree with all the outputs
+    def get_targets(self, out_dir):
+        # Listing all targets is too complex, we list the most relevant
+        # This is good enough to compress the result
+        name = self._parent.expand_filename(out_dir, self.output)
+        files = [os.path.join(out_dir, 'images'),
+                 os.path.join(out_dir, 'styles.css'),
+                 os.path.join(out_dir, 'favicon.ico')]
+        if self.link_from_root:
+            files.append(os.path.join(GS.out_dir, self.link_from_root))
+        self.out_dir = out_dir
+        self.get_html_names(self.create_tree(), name, files)
+        return files
+
+    def get_html_names_cat(self, name, node, prev, category, files):
+        files.append(os.path.join(self.out_dir, name))
+        name, ext = os.path.splitext(name)
+        for cat, content in node.items():
+            if not isinstance(content, dict):
+                continue
+            pname = name+'_'+cat+ext
+            self.get_html_names(content, pname, files, name, category+'/'+cat)
+
+    def get_html_names(self, node, name, files, prev=None, category=''):
+        if isinstance(list(node.values())[0], dict):
+            self.get_html_names_cat(name, node, prev, category, files)
+        else:
+            files.append(os.path.join(self.out_dir, name))
+
+    def create_tree(self):
         o_tree = {}
         for o in RegOutput.get_outputs():
             config_output(o)
@@ -444,7 +472,21 @@ class Navigate_ResultsOptions(BaseOptions):
                 cat = [cat]
             for c in cat:
                 self.add_to_tree(c, o, o_tree)
+        return o_tree
+
+    def run(self, name):
+        self.out_dir = os.path.dirname(name)
+        self.img_src_dir = GS.get_resource_path('images')
+        self.img_dst_dir = os.path.join(self.out_dir, 'images')
+        os.makedirs(self.img_dst_dir, exist_ok=True)
+        self.copied_images = {}
+        name = os.path.basename(name)
+        # Create a tree with all the outputs
+        o_tree = self.create_tree()
         logger.debug('Collected outputs:\n'+pprint.pformat(o_tree))
+        if not o_tree:
+            logger.warning(W_NOOUTPUTS+'No outputs for navigate results')
+            return
         with open(os.path.join(self.out_dir, 'styles.css'), 'wt') as f:
             f.write(STYLE)
         self.rsvg_command = self.check_tool('rsvg1')
@@ -454,7 +496,7 @@ class Navigate_ResultsOptions(BaseOptions):
         self.home = name
         self.back_img = self.copy('back', MID_ICON)
         self.home_img = self.copy('home', MID_ICON)
-        copy2(os.path.join(self.img_src_dir, 'images', 'favicon.ico'), os.path.join(self.out_dir, 'favicon.ico'))
+        copy2(os.path.join(self.img_src_dir, 'favicon.ico'), os.path.join(self.out_dir, 'favicon.ico'))
         self.generate_page_for(o_tree, name)
         # Link it?
         if self.link_from_root:

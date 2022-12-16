@@ -46,6 +46,7 @@ try:
     from kicost import (PartGroup, KiCostError, query_part_info, solve_parts_qtys, configure_kicost_apis, ProgressConsole,
                         init_all_loggers, create_worksheet, Spreadsheet, get_distributors_list, get_dist_name_from_label,
                         set_distributors_progress, is_valid_api)
+    from kicost import __version__ as kicost_version
     KICOST_SUPPORT = True
 except ImportError:
     KICOST_SUPPORT = False
@@ -564,6 +565,7 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
     if not KICOST_SUPPORT:
         logger.warning(W_NOKICOST+'KiCost sheet requested but failed to load KiCost support')
         return
+    logger.debug("Using KiCost v"+kicost_version)
     if cfg.debug_level > 2:
         logger.debug("Groups exported to KiCost:")
         for g in groups:
@@ -714,6 +716,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     if cfg.xlsx.datasheet_as_link and cfg.xlsx.datasheet_as_link in col_fields:
         link_datasheet = col_fields.index(cfg.xlsx.datasheet_as_link)
     link_digikey = cfg.xlsx.digikey_link
+    link_mouser = cfg.xlsx.mouser_link
     hl_empty = cfg.xlsx.highlight_empty
 
     workbook = Workbook(filename)
@@ -792,6 +795,10 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
                 # A link to Digi-Key?
                 elif link_digikey and col_fields[i] in link_digikey:
                     url = 'https://www.digikey.com/products/en?keywords=' + cell
+                    worksheet.write_url(row_count, i, url, fmt, cell)
+                # A link to Mouser?
+                elif link_mouser and col_fields[i] in link_mouser:
+                    url = 'https://www.mouser.com/ProductDetail/' + cell
                     worksheet.write_url(row_count, i, url, fmt, cell)
                 else:
                     worksheet.write_string(row_count, i, cell, fmt)

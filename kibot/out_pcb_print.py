@@ -13,20 +13,13 @@ Dependencies:
     role: Create PNG, PS and EPS formats
   - from: ImageMagick
     role: Create monochrome prints and scaled PNG files
-  - from: PcbDraw
-    role: Create realistic solder masks
   # The plot_frame_gui() needs KiAuto to print the frame
   - from: KiAuto
     command: pcbnew_do
     role: Print the page frame in GUI mode
     version: 1.6.7
-  # SVGUtils dependency. But this is also a PcbDraw dependency
-  - name: LXML
-    python_module: true
-    debian: python3-lxml
-    arch: python-lxml
+  - from: LXML
     role: mandatory
-    downloader: python
 """
 # Direct SVG to EPS conversion is problematic.
 # If we use 72 dpi the page size is ok, but some objects (currently the solder mask) have low resolution.
@@ -52,7 +45,7 @@ from .kicad.patch_svg import patch_svg_file
 from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
-from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL
+from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW
 from .kiplot import exec_with_retry, add_extra_options
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
@@ -69,10 +62,16 @@ POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stro
                    "stroke-linejoin:round;fill-rule:evenodd;")
 DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
 EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
+# Opacity to make something invisible, but not removable
+ALMOST_TRANSPARENT = '0.01'
 # The following modules will be downloaded after we solve the dependencies
 # They are just helpers and we solve their dependencies
 svgutils = None  # Will be loaded during dependency check
 kicad_worksheet = None  # Also needs svgutils
+
+
+def pcbdraw_warnings(tag, msg):
+    logger.warning('{}({}) {}'.format(W_PCBDRAW, tag, msg))
 
 
 def _run_command(cmd):
@@ -167,6 +166,10 @@ class PagesOptions(Optionable):
             """ Print in gray scale """
             self.scaling = None
             """ *[number=1.0] Scale factor (0 means autoscaling)"""
+            self.autoscale_margin_x = None
+            """ [number=0] Horizontal margin used for the autoscaling mode [mm] """
+            self.autoscale_margin_y = None
+            """ [number=0] Vertical margin used for the autoscaling mode [mm] """
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
@@ -195,6 +198,8 @@ class PagesOptions(Optionable):
             self.page_id = '%02d'
             """ Text to differentiate the pages. Use %d (like in C) to get the page number """
         self._scaling_example = 1.0
+        self._autoscale_margin_x_example = 0
+        self._autoscale_margin_y_example = 0
 
     def config(self, parent):
         super().config(parent)
@@ -210,6 +215,10 @@ class PagesOptions(Optionable):
             self.validate_color('holes_color')
         if self.scaling is None:
             self.scaling = parent.scaling
+        if self.autoscale_margin_x is None:
+            self.autoscale_margin_x = parent.autoscale_margin_x
+        if self.autoscale_margin_y is None:
+            self.autoscale_margin_y = parent.autoscale_margin_y
 
 
 class PCB_PrintOptions(VariantOptions):
@@ -283,6 +292,10 @@ class PCB_PrintOptions(VariantOptions):
             """ Color used for the `force_edge_cuts` option """
             self.scaling = 1.0
             """ *Default scale factor (0 means autoscaling)"""
+            self.autoscale_margin_x = 0
+            """ Default horizontal margin used for the autoscaling mode [mm] """
+            self.autoscale_margin_y = 0
+            """ Default vertical margin used for the autoscaling mode [mm] """
             self.realistic_solder_mask = True
             """ Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
                 In order to get a good looking select a color with transparency, i.e. '#14332440'.
@@ -293,6 +306,10 @@ class PCB_PrintOptions(VariantOptions):
             """ Color for the background when `add_background` is enabled """
             self.background_image = ''
             """ Background image, must be an SVG, only when `add_background` is enabled """
+            self.svg_precision = 4
+            """ [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+                The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+                Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
         add_drill_marks(self)
         super().__init__()
         self._expand_id = 'assembly'
@@ -719,8 +736,38 @@ class PCB_PrintOptions(VariantOptions):
             svg_out.insert([root])
         svg_out.insert(svgutils.RectElement(0, 0, width, height, color=self.background_color))
 
+    def fix_opacity_for_g(self, e):
+        contains_text = False
+        for c in e:
+            # Adjust the text opacity
+            if c.tag.endswith('}text'):
+                opacity = c.get('opacity')
+                if opacity is not None and opacity == '0' and c.text is not None:
+                    c.set('opacity', ALMOST_TRANSPARENT)
+                    c.set('style', 'font-family:monospace')
+                    contains_text = True
+            elif c.tag.endswith('}g'):
+                # Process all text inside
+                self.fix_opacity_for_g(c)
+        # Adjust the graphic opacity
+        if contains_text:
+            style = e.get('style')
+            if style is not None:
+                e.set('style', style.replace('fill-opacity:0.0', 'fill-opacity:'+ALMOST_TRANSPARENT))
+
+    def fix_opacity(self, svg):
+        """ Transparent text is discarded by rsvg-convert.
+            So we make it almost invisible. """
+        logger.debug(' - Making text searchable')
+        # Scan the SVG
+        for e in svg.root:
+            # Look for graphics
+            if e.tag.endswith('}g'):
+                # Process all text inside
+                self.fix_opacity_for_g(e)
+
     def merge_svg(self, input_folder, input_files, output_folder, output_file, p):
-        """ Merge all pages into one """
+        """ Merge all layers into one page """
         first = True
         for (file, color) in input_files:
             logger.debug(' - Loading layer file '+file)
@@ -732,6 +779,8 @@ class PCB_PrintOptions(VariantOptions):
                 if p.monochrome:
                     color = to_gray_hex(color)
                 self.fill_polygons(new_layer, color)
+            # Make text searchable
+            self.fix_opacity(new_layer)
             if first:
                 svg_out = new_layer
                 # This is the width declared at the beginning of the file
@@ -767,23 +816,36 @@ class PCB_PrintOptions(VariantOptions):
                 self.plot_vias(la, pc, p, filelist, VIATYPE_BLIND_BURIED, self.blind_via_color)
                 self.plot_vias(la, pc, p, filelist, VIATYPE_MICROVIA, self.micro_via_color)
 
+    def pcbdraw_by_module(self, pcbdraw_file, back):
+        self.ensure_tool('LXML')
+        from .PcbDraw.plot import PcbPlotter, PlotSubstrate
+        # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
+        try:
+            plotter = PcbPlotter(GS.board)
+            plotter.yield_warning = pcbdraw_warnings
+            plotter.render_back = back
+            plotter.plot_plan = [PlotSubstrate(only_mask=True)]
+            plotter.svg_precision = self.svg_precision
+            image = plotter.plot()
+        except (RuntimeError, SyntaxError, IOError) as e:
+            logger.error('PcbDraw error: '+str(e))
+            exit(PCBDRAW_ERR)
+
+        if GS.debug_level > 1:
+            # Save the SVG only for debug purposes
+            image.write(pcbdraw_file)
+        # Return the SVG as a string
+        from lxml.etree import tostring
+        return tostring(image).decode()
+
     def plot_realistic_solder_mask(self, id, temp_dir, out_file, color, mirror, scale):
         """ Plot the solder mask closer to reality, not the apertures """
         if not self.realistic_solder_mask or (id != F_Mask and id != B_Mask):
             return
         logger.debug('- Plotting realistic solder mask using PcbDraw')
-        # Check PcbDraw is available
-        pcbdraw_command = self.ensure_tool('PcbDraw')
-        # Run PcbDraw to make the heavy work (find the Edge.Cuts path and create masks)
         pcbdraw_file = os.path.join(temp_dir, out_file.replace('.svg', '-pcbdraw.svg'))
-        cmd = [pcbdraw_command, '--no-warn-back', '-f', '']
-        if id == B_Mask:
-            cmd.append('-b')
-        cmd.extend([GS.pcb_file, pcbdraw_file])
-        _run_command(cmd)
-        # Load the SVG created by PcbDraw
-        with open(pcbdraw_file, 'rt') as f:
-            svg = svgutils.fromstring(f.read())
+        # Create an SVG using PcbDraw engine to generate the solder mask
+        svg = svgutils.fromstring(self.pcbdraw_by_module(pcbdraw_file, id == B_Mask))
         # Load the plot file from KiCad to get the real coordinates system
         out_file = os.path.join(temp_dir, out_file)
         with open(out_file, 'rt') as f:
@@ -803,6 +865,13 @@ class PCB_PrintOptions(VariantOptions):
                 # KiCad 5 uses a different precision, we must adjust
                 board_center.x = round(board_center.x*KICAD5_SVG_SCALE)
                 board_center.y = round(board_center.y*KICAD5_SVG_SCALE)
+            elif self.svg_precision != 6:
+                # KiCad 6 can adjust the precision
+                # The default is 6 and makes 1 KiCad unit == 1 SVG unit
+                # But this isn't supported by browsers (Chrome and Firefox)
+                divider = 10.0 ** (6 - self.svg_precision)
+                board_center.x = round(board_center.x/divider)
+                board_center.y = round(board_center.y/divider)
             offset_x = round((board_center.x*scale-(paper_size_x/2.0))/scale)
             offset_y = round((board_center.y*scale-(paper_size_y/2.0))/scale)
             if mirror:
@@ -856,8 +925,8 @@ class PCB_PrintOptions(VariantOptions):
             po.SetScale(scaling)
             return scaling
         sz = GS.board.GetBoundingBox().GetSize()
-        scale_x = FromMM(self.paper_w)/sz.x
-        scale_y = FromMM(self.paper_h)/sz.y
+        scale_x = FromMM(self.paper_w-self.autoscale_margin_x*2)/sz.x
+        scale_y = FromMM(self.paper_h-self.autoscale_margin_y*2)/sz.y
         scale = min(scale_x, scale_y)
         po.SetScale(scale)
         logger.debug('- Autoscale: {}'.format(scale))
@@ -954,7 +1023,7 @@ class PCB_PrintOptions(VariantOptions):
             # Find the layout file
             layout = KiConf.fix_page_layout(GS.pro_file, dry=True)[1]
         if not layout or not os.path.isfile(layout):
-            layout = os.path.abspath(os.path.join(os.path.dirname(__file__), 'kicad_layouts', 'default.kicad_wks'))
+            layout = os.path.abspath(os.path.join(GS.get_resource_path('kicad_layouts'), 'default.kicad_wks'))
         logger.debug('- Using layout: '+layout)
         self.layout = layout
         # Plot options
@@ -964,6 +1033,8 @@ class PCB_PrintOptions(VariantOptions):
         po.SetExcludeEdgeLayer(True)   # We plot it separately
         po.SetUseAuxOrigin(False)
         po.SetAutoScale(False)
+        if GS.ki6:
+            po.SetSvgPrecision(self.svg_precision, False)
         # Helpers for force_edge_cuts
         if self.force_edge_cuts:
             edge_layer = LayerOptions.create_layer('Edge.Cuts')
@@ -1097,10 +1168,6 @@ class PCB_Print(BaseOutput):  # noqa: F821
             DRAWING_LAYERS.extend(['User.'+str(c+1) for c in range(9)])
         extra = {la._id for la in Layer.solve(EXTRA_LAYERS)}
         disabled = set()
-        # Check we can use PcbDraw
-        realistic_solder_mask = GS.check_tool(name, 'PcbDraw') is not None
-        if not realistic_solder_mask:
-            logger.warning(W_MISSTOOL+'Missing PcbDraw tool, disabling `realistic_solder_mask`')
         # Check we can convert SVGs
         if GS.check_tool(name, 'rsvg1') is None:
             logger.warning(W_MISSTOOL+'Disabling most printed formats')
@@ -1146,17 +1213,14 @@ class PCB_Print(BaseOutput):  # noqa: F821
                         page['mirror'] = True
                     if la.description:
                         page['sheet'] = la.description
-                    if realistic_solder_mask:
-                        # Change the color of the masks
-                        for ly in page['layers']:
-                            if ly['layer'].endswith('.Mask'):
-                                ly['color'] = '#14332440'
+                    # Change the color of the masks
+                    for ly in page['layers']:
+                        if ly['layer'].endswith('.Mask'):
+                            ly['color'] = '#14332440'
                     pages.append(page)
             ops = {'format': fmt, 'pages': pages, 'keep_temporal_files': True}
             if fmt in ['PNG', 'SVG']:
                 ops['add_background'] = True
-            if not realistic_solder_mask:
-                ops['realistic_solder_mask'] = False
             gb['options'] = ops
             outs.append(gb)
         return outs

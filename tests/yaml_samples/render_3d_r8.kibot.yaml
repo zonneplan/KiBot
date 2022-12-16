@@ -1,0 +1,32 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  solder_mask_color: blue
+  pcb_finish: ENIG
+
+outputs:
+  - name: render_list
+    comment: "Render with only some components"
+    type: render_3d
+    options:
+      width: 1280
+      height: 960
+      orthographic: true
+      zoom: 4
+      show_components: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"]
+      highlight: ["R8"]
+      # Looks ugly when rendered by software
+      # highlight_on_top: true
+      ray_tracing: false
+      auto_crop: true
+
+  - name: pcbdraw_list
+    comment: "Render with only some components"
+    type: pcbdraw
+    options:
+      show_components: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"]
+      highlight: ["R8"]
+      format: png
+      dpi: 600

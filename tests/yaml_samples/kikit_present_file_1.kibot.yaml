@@ -1,0 +1,21 @@
+# Here the images and gerbers are already generated, we just indicate the file names
+kiplot:
+  version: 1
+
+outputs:
+  - name: KiKit_present_files
+    comment: "Present test using files"
+    type: kikit_present
+    dir: Present/Files
+    options:
+      description: 'tests/data/silly_project.md'
+      boards:
+        mode: file
+        comment: This is a comment
+        front_image: pp/front.png
+        back_image: pp/back.png
+        gerbers: pp/gerbers.zip
+      resources: 'tests/data/silly_project.md'
+      # template: 'default'
+      repository: 'https://github.com/INTI-CMNB/KiBot/'
+      # name: ''

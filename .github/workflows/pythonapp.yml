@@ -7,6 +7,7 @@ on:
   push:
     paths:
     - '**.py'
+    - 'g*.sh'
     - 'src/kibot'
     - 'tests/**'
     - '.github/workflows/pythonapp.yml'
@@ -15,6 +16,7 @@ on:
   pull_request:
     paths:
     - '**.py'
+    - 'g*.sh'
     - 'src/kibot'
     - 'tests/**'
     - '.github/workflows/pythonapp.yml'

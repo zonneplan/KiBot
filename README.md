@@ -2,12 +2,12 @@
 
 ![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png)
 
-[![Python application](https://img.shields.io/github/workflow/status/INTI-CMNB/KiBot/Python%20application?style=plastic)](https://github.com/INTI-CMNB/KiBot/actions)
+[![Python application](https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=master&style=plastic)](https://github.com/INTI-CMNB/KiBot/actions)
 [![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
 
-# **This is the documentation for KiBot v1.4.0 for the current development read [here](https://github.com/INTI-CMNB/KiBot/tree/dev).**
+# **This is the documentation for KiBot v1.5.0 for the current development read [here](https://github.com/INTI-CMNB/KiBot/tree/dev).**
 
 
 **Important for CI/CD**:
@@ -16,13 +16,14 @@
 - The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
   Consult: [Github Actions tags](#github-actions-tags)
 
-**Important note about PcbDraw 1.0.0**
-- This release is incompatible with 0.9.0, I'm trying to fix some issues in the upstream package.
+**Important note about PcbDraw**
+- This release incorporates PcbDraw, so you don't need to install it as a separated tool.
+- Please report PcbDraw issues to the KiBot project.
 
-**New on v1.4.0**
-- PCB_Variant and Copy_Files outputs
-- urlify and field_modify filters
-- Basic pre-processing
+**New on v1.5.0**
+- `populate`, `panelize`, `stencil_3d`, `stencil_for_jig` and `kikit_present` outputs.
+- New options for: BoM, Diff, iBoM, Navigate Results, PcbDraw, PCB_Print, Render_3D and SVG.
+- More than 12 fixes.
 
 ## Index
 
@@ -75,6 +76,9 @@
 * [Notes about the position file](#notes-about-the-position-file)
   * [XYRS files](#xyrs-files)
 * [Notes about 3D models](#notes-about-3d-models)
+* [Proposed advanced KiCad usage](#proposed-advanced-kicad-usage)
+  * [One circuit and more than one PCB implementation](#one-circuit-and-more-than-one-pcb-implementation)
+  * [System with more than one PCB](#system-with-more-than-one-pcb)
 * [Credits](#credits)
 
 ## Introduction
@@ -93,6 +97,8 @@ For example, it's common that you might want for each board rev:
 * PCB 3D model in STEP format
 * PCB 3D render in PNG format
 * Compare PCB/SCHs
+* Panelization
+* Stencil creation
 
 You want to do this in a one-touch way, and make sure everything you need to
 do so is securely saved in version control, not on the back of an old
@@ -138,14 +144,24 @@ Notes:
   - Show KiAuto installation information for `info` (v2.0.0)
   - Print the page frame in GUI mode for `pcb_print` (v1.6.7)
 
+[**KiKit**](https://github.com/yaqwsx/KiKit) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/yaqwsx/KiKit) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Mandatory for: `panelize`, `stencil_3d`, `stencil_for_jig`
+
+[**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Mandatory for: `pcb_print`, `pcbdraw`
+
+[**OpenSCAD**](https://openscad.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://openscad.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/openscad)
+- Mandatory for: `stencil_3d`, `stencil_for_jig`
+
+[**Xvfb**](https://www.x.org) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.x.org) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/xvfb)
+- Mandatory for: `stencil_3d`, `stencil_for_jig`
+
+[**Xvfbwrapper**](https://pypi.org/project/Xvfbwrapper/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/Xvfbwrapper/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-xvfbwrapper) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Mandatory for: `stencil_3d`, `stencil_for_jig`
+
 [**KiCost**](https://github.com/hildogjr/KiCost) v1.1.8 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/hildogjr/KiCost) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `kicost`
 - Optional to find components costs and specs for `bom`
-
-[**PcbDraw**](https://github.com/INTI-CMNB/pcbdraw) v0.9.0.3 (<1.0) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/pcbdraw) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Mandatory for `pcbdraw`
-- Optional to create realistic solder masks for `pcb_print`
-- Note: Currently the upstream version is broken, please use the mentioned fork
 
 [**Interactive HTML BoM**](https://github.com/INTI-CMNB/InteractiveHtmlBom) v2.4.1.4 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/InteractiveHtmlBom) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `ibom`
@@ -153,11 +169,14 @@ Notes:
 [**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiBoM) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `kibom`
 
-[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.2 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.3 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `diff`
 
-[**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Mandatory for `pcb_print`
+[**markdown2**](https://pypi.org/project/markdown2/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/markdown2/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/markdown2/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-markdown2)
+- Mandatory for `kikit_present`
+
+[**mistune**](https://pypi.org/project/mistune/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/mistune/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-mistune)
+- Mandatory for `populate`
 
 [**QRCodeGen**](https://pypi.org/project/QRCodeGen/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/QRCodeGen/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/QRCodeGen/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-qrcodegen) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `qr_lib`
@@ -168,27 +187,32 @@ Notes:
 [**Git**](https://git-scm.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://git-scm.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/git) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Compare with files in the repo for `diff`
+  - Find commit hash and/or date for `kikit_present`
   - Find commit hash and/or date for `pcb_replace`
   - Find commit hash and/or date for `sch_replace`
   - Find commit hash and/or date for `set_text_variables`
+
+[**ImageMagick**](https://imagemagick.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://imagemagick.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Optional to:
+  - Create outputs preview for `navigate_results`
+  - Create monochrome prints and scaled PNG files for `pcb_print`
+  - Create JPG and BMP images for `pcbdraw`
+  - Automatically crop images for `render_3d`
 
 [**RSVG tools**](https://gitlab.gnome.org/GNOME/librsvg) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://gitlab.gnome.org/GNOME/librsvg) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/librsvg2-bin) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PNG icons for `navigate_results`
   - Create PDF, PNG, PS and EPS formats for `pcb_print`
-  - Create PNG and JPG images for `pcbdraw`
-
-[**ImageMagick**](https://imagemagick.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://imagemagick.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Optional to:
-  - Create outputs preview for `navigate_results`
-  - Create monochrome prints and scaled PNG files for `pcb_print`
-  - Create JPG images for `pcbdraw`
+  - Create PNG, JPG and BMP images for `pcbdraw`
 
 [**Ghostscript**](https://www.ghostscript.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.ghostscript.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/ghostscript) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Create outputs preview for `navigate_results`
   - Create PNG, PS and EPS formats for `pcb_print`
+
+[**numpy**](https://pypi.org/project/numpy/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/numpy/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-numpy) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Optional to automatically adjust SVG margin for `pcbdraw`
 
 [**Pandoc**](https://pandoc.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://pandoc.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/pandoc)
 - Optional to create PDF/ODF/DOCX files for `report`
@@ -264,6 +288,10 @@ In this way you can change the code and you won't need to install again.
 If you try to use a Python virtual environment you'll need to find a way to make the KiCad module (`pcbnew`) available on it.
 I don't know how to make it.
 
+In addition: note that the virtual env will change the system share data paths. They will no longer point to things like `/usr/share/`
+but to a virtual env place. So you'll need to either define environment variables to tell KiBot where are the libs or just add
+symlinks from the virtual env to the system level libs.
+
 ### Installation on other targets
 
 - Install KiCad 5.1.6 or newer
@@ -283,7 +311,7 @@ i.e. *my_project.kibot.yaml*. The format used is [YAML](https://yaml.org/).
 This is basically a text file with some structure.
 This file can be compressed using *gzip* file format.
 
-If you never used YAML read the following [explanation](https://github.com/INTI-CMNB/KiBot/blob/master/docs/KiPlotYAML.md).
+If you never used YAML read the following [explanation](docs/KiPlotYAML.md).
 Note that the explanation could be useful even if you know YAML.
 
 ### Quick start
@@ -763,7 +791,8 @@ global:
     - `time_format`: [string='%H-%M-%S'] Format used for the time we started the script. Uses the `strftime` format.
     - `time_reformat`: [boolean=true] Tries to reformat the PCB/SCH date using the `date_format`.
                        This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD).
-    - `units`: [string=''] [millimeters,inches,mils] Default units. Affects `position` and `bom` outputs. Also KiCad 6 dimensions.
+    - `units`: [string=''] [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs.
+               Also KiCad 6 dimensions.
     - `use_dir_for_preflights`: [boolean=true] Use the global `dir` as subdir for the preflights.
     - `variant`: [string=''] Default variant to apply to all outputs.
 
@@ -849,16 +878,18 @@ filters:
         - `regex`: [string=''] Regular expression to match.
         - *regexp*: Alias for regex.
         - `skip_if_no_field`: [boolean=false] Skip this test if the field doesn't exist.
+    - `exclude_bottom`: [boolean=false] Exclude components on the bottom side of the PCB.
     - `exclude_config`: [boolean=false] Exclude components containing a key value in the config field.
                         Separators are applied.
     - `exclude_empty_val`: [boolean=false] Exclude components with empty 'Value'.
     - `exclude_field`: [boolean=false] Exclude components if a field is named as any of the keys.
     - `exclude_refs`: [list(string)] List of references to be excluded.
                       Use R* for all references with R prefix.
-    - `exclude_smd`: [boolean=false] KiCad 5: exclude components marked as smd in the PCB.
-    - `exclude_tht`: [boolean=false] KiCad 5: exclude components marked as through-hole in the PCB.
+    - `exclude_smd`: [boolean=false] Exclude components marked as smd in the PCB.
+    - `exclude_tht`: [boolean=false] Exclude components marked as through-hole in the PCB.
+    - `exclude_top`: [boolean=false] Exclude components on the top side of the PCB.
     - `exclude_value`: [boolean=false] Exclude components if their 'Value' is any of the keys.
-    - `exclude_virtual`: [boolean=false] KiCad 5: exclude components marked as virtual in the PCB.
+    - `exclude_virtual`: [boolean=false] Exclude components marked as virtual in the PCB.
     - `include_only`: [list(dict)] A series of regular expressions used to include parts.
                       If there are any regex defined here, only components that match against ANY of them will be included.
                       Column/field names are case-insensitive.
@@ -1221,6 +1252,7 @@ The available values for *type* are:
     - `svg_pcb_print` SVG file containing one or more layer and the page frame
     - `pcb_print` PDF/SVG/PNG/EPS/PS, similar to `pdf_pcb_print` and `svg_pcb_print`, with more flexibility
     - `report` generates a report about the PDF. Can include images from the above outputs.
+    - `diff` creates PDF files showing schematic or PCB changes.
 - Bill of Materials
     - `bom` The internal BoM generator.
     - `kibom` BoM in HTML or CSV format generated by [KiBoM](https://github.com/INTI-CMNB/KiBoM)
@@ -1229,6 +1261,14 @@ The available values for *type* are:
 - 3D model:
     - `step` *Standard for the Exchange of Product Data* for the PCB
     - `render_3d` PCB render, from the KiCad's 3D Viewer (broken in KiCad 6.0.0)
+- Web pages:
+    - `populate` To create step-by-step assembly instructions.
+    - `kikit_present` To create a project presentation web page.
+    - `navigate_results` generates web pages to navigate the generated outputs.
+- Fabrication helpers:
+    - `panelize` creates a PCB panel containing N copies of the PCB.
+    - `stencil_3d` creates a 3D self-registering printable stencil.
+    - `stencil_for_jig` creates steel stencils and 3D register.
 - Others:
     - `boardview` creates a file useful to repair the board, but without disclosing the full layout.
     - `gencad` exports the PCB in GENCAD format.
@@ -1238,6 +1278,10 @@ The available values for *type* are:
     - `pdfunite` joins various PDF files into one.
     - `qr_lib` generates symbol and footprints for QR codes.
     - `sch_variant` the schematic after applying all filters and variants, including crossed components.
+    - `pcb_variant` the PCB after applying all filters and variants, including modified 3D models.
+    - `copy_files` used to copy generated files and source material.
+    - `info` creates a report about the tools used during the KiBot run.
+    - `netlist` generates the list of connections for the project (classic and IPC-D-356 formats).
 
 Here is an example of a configuration file to generate the gerbers for the top and bottom layers:
 
@@ -1430,16 +1474,26 @@ Notes:
           * Valid keys:
             - **`quote_all`**: [boolean=false] Enclose all values using double quotes.
             - **`separator`**: [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
+                               Only one character can be specified.
             - `hide_header`: [boolean=false] Hide the header line (names of the columns).
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
-        - **`format`**: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX] format for the BoM.
-                        Defaults to CSV or a guess according to the options..
+        - **`format`**: [string=''] [HTML,CSV,TXT,TSV,XML,XLSX,HRTXT] format for the BoM.
+                        Defaults to CSV or a guess according to the options.
+                        HRTXT stands for Human Readable TeXT.
         - **`group_fields`**: [list(string)] List of fields used for sorting individual components into groups.
                               Components which match (comparing *all* fields) will be grouped together.
                               Field names are case-insensitive.
                               If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
                                          'Voltage', 'Tolerance', 'Current', 'Power'] is used.
+        - **`hrtxt`**: [dict] Options for the HRTXT formats.
+          * Valid keys:
+            - **`separator`**: [string='I'] Column Separator.
+            - `header_sep`: [string='-'] Separator between the header and the data.
+            - `hide_header`: [boolean=false] Hide the header line (names of the columns).
+            - `hide_pcb_info`: [boolean=false] Hide project information.
+            - `hide_stats_info`: [boolean=false] Hide statistics information.
+            - `justify`: [string='left'] [left,right,center] Text justification.
         - **`html`**: [dict] Options for the HTML format.
           * Valid keys:
             - **`datasheet_as_link`**: [string=''] Column with links to the datasheet.
@@ -1452,6 +1506,7 @@ Notes:
             - `hide_pcb_info`: [boolean=false] Hide project information.
             - `hide_stats_info`: [boolean=false] Hide statistics information.
             - `highlight_empty`: [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
+            - `mouser_link`: [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
             - `style`: [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
                        Or you can provide a CSS file name. Please use .css as file extension..
         - **`ignore_dnf`**: [boolean=true] Exclude DNF (Do Not Fit) components.
@@ -1480,9 +1535,13 @@ Notes:
             - `kicost_api_enable`: [string|list(string)=''] List of KiCost APIs to enable.
             - `kicost_config`: [string=''] KiCost configuration file. It contains the keys for the different distributors APIs.
                                The regular KiCost config is used when empty.
+                               Important for CI/CD environments: avoid exposing your API secrets!
+                               To understand how to achieve this, and also how to make use of the cache please visit the
+                               [kicost_ci_test](https://github.com/set-soft/kicost_ci_test) repo.
             - `kicost_dist_desc`: [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component.
             - `logo_scale`: [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
             - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
+            - `mouser_link`: [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
             - `specs_columns`: [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
                                'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                                Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
@@ -1713,6 +1772,9 @@ Notes:
         - `add_link_id`: [boolean=false] When enabled we create a symlink to the output file with a name that contains the
                          git hashes involved in the comparison. If you plan to compress the output don't
                          forget to disable the `follow_links` option.
+        - `always_fail_if_missing`: [boolean=false] Always fail if the old/new file doesn't exist. Currently we don't fail if they are from a repo.
+                                    So if you refer to a repo point where the file wasn't created KiBot will use an empty file.
+                                    Enabling this option KiBot will report an error.
         - `cache_dir`: [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache.
         - `copy_instead_of_link`: [boolean=false] Modifies the behavior of `add_link_id` to create a copy of the file instead of a
                                   symlink. Useful for some Windows setups.
@@ -1746,6 +1808,7 @@ Notes:
                       Use `multivar` to specify a reference file when `new_type` is also `multivar`.
         - `only_different`: [boolean=false] Only include the pages with differences in the output PDF.
                             Note that when no differeces are found we get a page saying *No diff*.
+        - `only_first_sch_page`: [boolean=false] Compare only the main schematic page (root page).
         - `pcb`: [boolean=true] Compare the PCB, otherwise compare the schematic.
         - `threshold`: [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
                        difference bigger than the indicated value will make the diff fail.
@@ -2154,6 +2217,7 @@ Notes:
                                   IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `no_compression`: [boolean=false] Disable compression of pcb data.
         - `no_redraw_on_drag`: [boolean=false] Do not redraw pcb on drag by default.
+        - `offset_back_rotation`: [boolean=false] Offset the back of the pcb by 180 degrees.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
         - `show_fabrication`: [boolean=false] Show fabrication layer by default.
@@ -2288,6 +2352,7 @@ Notes:
                 - `regex`: [string=''] Regular expression to match.
                 - *regexp*: Alias for regex.
             - `merge_blank_fields`: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
+            - `mouser_link`: [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page (HTML only).
             - `ref_separator`: [string=' '] Separator used for the list of references.
             - `test_regex`: [boolean=true] Each component group will be tested against a number of regular-expressions (see ``)..
             - `use_alt`: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
@@ -2363,6 +2428,87 @@ Notes:
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* KiKit's Present - Project Presentation
+  * Type: `kikit_present`
+  * Description: Creates an HTML file showing your project.
+                 It can contain one or more PCBs, showing their top and bottom sides.
+                 Also includes a download link and the gerbers.
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `kikit_present` output.
+      * Valid keys:
+        - **`description`**: [string=''] Name for a markdown file containing the main part of the page to be generated.
+                             This is mandatory and is the description of your project.
+                             You can embed the markdown code. If the text doesn't map to a file and contains
+                             more than one line KiBot will assume this is the markdown.
+        - `boards`: [dict|list(dict)] One or more boards that compose your project.
+                    When empty we will use only the main PCB for the current project.
+          * Valid keys:
+            - **`name`**: [string=''] Name for this board. If empty we use the name of the PCB.
+                          Applies to all modes.
+            - `back_image`: [string=''] How to obtain the back view of the PCB.
+                            *local*: the name of an output to render it.
+                            If empty we use the first renderer.
+                            *file*: the name of the rendered image.
+                            *external*: ignored, we use `extrenal_config`.
+            - `comment`: [string=''] A comment or description for this board.
+                         Applies to all modes.
+            - `external_config`: [string=''] Name of an external KiBot configuration.
+                                 Only used in the *external* mode.
+            - `front_image`: [string=''] How to obtain the front view of the PCB.
+                             *local*: the name of an output to render it.
+                             If empty we use the first renderer.
+                             *file*: the name of the rendered image.
+                             *external*: ignored, we use `extrenal_config`.
+            - `gerbers`: [string=''] How to obtain an archive with the gerbers.
+                         *local*: the name of a `gerber` output.
+                         If empty we use the first `gerber` output.
+                         *file*: the name of a compressed archive.
+                         *external*: ignored, we use `extrenal_config`.
+            - `mode`: [string='local'] [local,file,external] How images and gerbers are obtained.
+                      *local*: Only applies to the currently selected PCB.
+                      You must provide the names of the outputs used to render
+                      the images and compress the gerbers.
+                      When empty KiBot will use the first render/gerber output
+                      it finds.
+                      To apply variants use `pcb_from_output` and a `pcb_variant`
+                      output.
+                      *file*: You must specify the file names used for the images and
+                      the gerbers.
+                      *external*: You must specify an external KiBot configuration.
+                      It will be applied to the selected PCB to create the images and
+                      the gerbers. The front image must be generated in a dir called
+                      *front*, the back image in a dir called *back* and the gerbers
+                      in a dir called *gerbers*.
+            - `pcb_file`: [string=''] Name of the KiCad PCB file. When empty we use the current PCB.
+                          Is ignored for the *local* mode.
+            - `pcb_from_output`: [string=''] Use the PCB generated by another output.
+                                 Is ignored for the *file* mode.
+        - `name`: [string=''] Name of the project. Will be passed to the template.
+                  If empty we use the name of the KiCad project.
+                  The default template uses it for things like the page title.
+        - `repository`: [string=''] URL of the repository. Will be passed to the template.
+                        If empty we will try to find it using `git remote get-url origin`.
+                        The default template uses it to create an URL for the current commit.
+        - `resources`: [string|list(string)='']  A list of file name patterns for additional resources to be included.
+                       I.e. images referenced in description.
+                       They will be copied relative to the output dir.
+        - `template`: [string='default'] Path to a template directory or a name of built-in one.
+                      See KiKit's doc/present.md for template specification.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * Navigate Results
   * Type: `navigate_results`
   * Description: Generates a web page to navigate the generated outputs
@@ -2413,6 +2559,334 @@ Notes:
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* Panelize
+  * Type: `panelize`
+  * Description: Creates a panel to fabricate various copies of the PCB at once.
+                 It currently uses the KiKit tool, which must be available.
+                 Consult KiKit docs for detailed information.
+                 [KiKit panelization docs](https://github.com/yaqwsx/KiKit/blob/master/doc/examples.md).
+                 Current versions of KiKit only support KiCad 6 and my tests using
+                 KiKit 1.0.5 (the last to support KiCad 5) shown some
+                 incompatibilities.
+                 Note that you don't need to specify the units for all distances.
+                 If they are omitted they are assumed to be `units`.
+                 The same is valid for angles, using `default_angles`
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `Panelize` output.
+      * Valid keys:
+        - **`configs`**: [list(dict)|list(string)|string] One or more configurations used to create the panel.
+                         Use a string to include an external configuration, i.e. `myDefault.json`.
+                         You can also include a preset using `:name`, i.e. `:vcuts`.
+                         Use a dict to specify the options using the KiBot YAML file.
+          * Valid keys:
+            - **`cuts`**: [dict] Specify how to perform the cuts on the tabs separating the board.
+              * Valid keys:
+                - **`type`**: [string='none'] [none,mousebites,vcuts,layer,plugin] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
+                              into a layer with this option to understand what's going on. Shouldn't be used for the final design.
+                - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
+                - `clearance`: [number|string] Specify clearance for copper around V-cuts.
+                - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                - *cut_curves*: Alias for cutcurves.
+                - `cutcurves`: [boolean=false] Specify if curves should be approximated by straight cuts (e.g., for cutting tabs on circular boards).
+                               Used for *vcuts*.
+                - `drill`: [number|string] Drill size used for the *mousebites*.
+                - `layer`: [string='Cmts.User'] Specify the layer to render V-cuts on. Also used for the *layer* type.
+                - `offset`: [number|string] Specify the *mousebites* and *vcuts* offset, positive offset puts the cuts into the board,
+                            negative puts the cuts into the tabs.
+                - `prolong`: [number|string] Distance for tangential prolongation of the cuts (to cut through the internal corner fillets
+                             caused by milling). Used for *mousebites* and *layer*.
+                - `spacing`: [number|string] The spacing of the holes used for the *mousebites*.
+            - **`fiducials`**: [dict] Used to add fiducial marks to the (rail/frame of) the panel.
+              * Valid keys:
+                - **`type`**: [string='none'] [none,3fid,4fid,plugin] Add none, 3 or 4 fiducials to the (rail/frame of) the panel.
+                - *copper_size*: Alias for coppersize.
+                - `coppersize`: [number|string] Diameter of the copper spot.
+                - `hoffset`: [number|string] Horizontal offset from panel edges.
+                - `opening`: [number|string] Diameter of the solder mask opening.
+                - `voffset`: [number|string] Vertical offset from panel edges.
+            - **`framing`**: [dict] Specify the frame around the boards.
+              * Valid keys:
+                - **`type`**: [string='none'] [none,railstb,railslr,frame,tightframe,plugin] Railstb: Add rails on top and bottom.
+                              Railslr: Add rails on left and right.
+                              Frame: Add a frame around the board.
+                              Tighframe: Add a frame around the board which fills the whole area of the panel -
+                              the boards have just a milled slot around their perimeter.
+                              Plugin: Uses an external python function, only `code` and `arg` are relevant.
+                - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
+                - `chamfer`: [number|string] Specify the size of chamfer frame corners.
+                - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                - `cuts`: [string='both'] [none,both,v,h] Specify whether to add cuts to the corners of the frame for easy removal.
+                          Used for *frame*.
+                - `fillet`: [number|string] Specify radius of fillet frame corners.
+                - `hspace`: [number|string] Specify the horizontal space between PCB and the frame/rail.
+                - *min_total_height*: Alias for mintotalheight.
+                - *min_total_width*: Alias for mintotalwidth.
+                - `mintotalheight`: [number|string] If needed, add extra material to the rail or frame to meet the minimal requested size.
+                                    Useful for services that require minimal panel size.
+                - `mintotalwidth`: [number|string] If needed, add extra material to the rail or frame to meet the minimal requested size.
+                                   Useful for services that require minimal panel size.
+                - *slot_width*: Alias for slotwidth.
+                - `slotwidth`: [number|string] Width of the milled slot for *tightframe*.
+                - `space`: [number|string] Specify the space between PCB and the frame/rail. Overrides `hspace` and `vspace`.
+                - `vspace`: [number|string] Specify the vertical space between PCB and the frame/rail.
+                - `width`: [number|string] Specify with of the rails or frame.
+            - **`layout`**: [dict] Layout used for the panel.
+              * Valid keys:
+                - **`cols`**: [number=1] Specify the number of columns of boards in the grid pattern.
+                - **`rows`**: [number=1] Specify the number of rows of boards in the grid pattern.
+                - `alternation`: [string='none'] [none,rows,cols,rowsCols] Specify alternations of board rotation.
+                                 none: Do not alternate.
+                                 rows: Rotate boards by 180° on every next row.
+                                 cols: Rotate boards by 180° on every next column.
+                                 rowsCols: Rotate boards by 180° based on a chessboard pattern.
+                - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
+                - *bake_text*: Alias for baketext.
+                - `baketext`: [boolean=true] A flag that indicates if text variables should be substituted or not.
+                - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                - `hbackbone`: [number|string] The width of horizontal backbone (0 means no backbone). The backbone does not increase the
+                               spacing of the boards.
+                - `hbonecut`: [boolean=true] If there are both backbones specified, specifies if there should be a horizontal cut where the backbones
+                              cross.
+                - `hboneskip`: [number=0] Skip every n horizontal backbones. I.e., 1 means place only every other backbone.
+                - `hspace`: [number|string] Specify the horizontal gap between the boards.
+                - *rename_net*: Alias for renamenet.
+                - *rename_ref*: Alias for renameref.
+                - `renamenet`: [string='Board_{n}-{orig}'] A pattern by which to rename the nets. You can use {n} and {orig} to get the board number and original name.
+                - `renameref`: [string='{orig}'] A pattern by which to rename the references. You can use {n} and {orig} to get the board number and original
+                               name.
+                - `rotation`: [number|string] Rotate the boards before placing them in the panel.
+                - `space`: [number|string] Specify the gap between the boards, overwrites `hspace` and `vspace`.
+                - `type`: [string='grid'] [grid,plugin] In the plugin type only `code` and `arg` are relevant.
+                - `vbackbone`: [number|string] The width of vertical backbone (0 means no backbone). The backbone does not increase the
+                               spacing of the boards.
+                - `vbonecut`: [boolean=true] If there are both backbones specified, specifies if there should be a vertical cut where the backbones
+                              cross.
+                - `vboneskip`: [number=0] Skip every n vertical backbones. I.e., 1 means place only every other backbone.
+                - `vspace`: [number|string] Specify the vertical gap between the boards.
+            - **`page`**: [dict] Sets page size on the resulting panel and position the panel in the page.
+              * Valid keys:
+                - *page_size*: Alias for type.
+                - *size*: Alias for type.
+                - **`type`**: [string='inherit'] [inherit,custom,A0,A1,A2,A3,A4,A5,A,B,C,D,E,USLetter,USLegal,USLedger,A0-portrait,A1-portrait,A2-portrait,
+                              A3-portrait,A4-portrait,A5-portrait,A-portrait,B-portrait,C-portrait,D-portrait,E-portrait,
+                              USLetter-portrait,USLegal-portrait,USLedger-portrait] Paper size. The default `inherit` option inherits
+                              paper size from the source board. This feature is not supported on KiCAD 5.
+                - `anchor`: [string='tl'] [tl,tr,bl,br,mt,mb,ml,mr,c] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
+                            (corners), mt, mb, ml, mr (middle of sides), c (center). The anchors refer to the panel outline.
+                - `height`: [number|string] Height for the `custom` paper size.
+                - *pos_x*: Alias for posx.
+                - *pos_y*: Alias for posy.
+                - `posx`: [number|string] The X position of the panel on the page.
+                - `posy`: [number|string] The Y position of the panel on the page.
+                - `width`: [number|string] Width for the `custom` paper size.
+            - **`tabs`**: [dict] Style of the tabs used to join the PCB copies.
+              * Valid keys:
+                - **`type`**: [string='spacing'] [fixed,spacing,full,annotation,plugin] Fixed: Place given number of tabs on the PCB edge.
+                              Spacing: Place tabs on the PCB edges based on spacing.
+                              Full: Create tabs that are full width of the PCB.
+                              Corner: Create tabs in the corners of the PCB.
+                              Annotation: Add tabs based on PCB annotations.
+                              Plugin: Uses an external python function, only `code` and `arg` are relevant.
+                - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
+                - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                - `cutout`: [number|string] When your design features open pockets on the side, this parameter specifies extra cutout depth in order to
+                            ensure that a sharp corner of the pocket can be milled. Used for *full*.
+                - `hcount`: [number=1] Number of tabs in the horizontal direction. Used for *fixed*.
+                - `hwidth`: [number|string] The width of tabs in the horizontal direction. Used for *fixed* and *spacing*.
+                - *min_distance*: Alias for mindistance.
+                - `mindistance`: [number|string] Minimal spacing between the tabs. If there are too many tabs, their count is reduced.
+                                 Used for *fixed*.
+                - `spacing`: [number|string] The maximum spacing of the tabs. Used for *spacing*.
+                - *tab_footprints*: Alias for tabfootprints.
+                - `tabfootprints`: [string='kikit:Tab'] The footprint/s used for the *annotation* type. You can specify a list of footprints separated by comma.
+                - `vcount`: [number=1] Number of tabs in the vertical direction. Used for *fixed*.
+                - `vwidth`: [number|string] The width of tabs in the vertical direction. Used for *fixed* and *spacing*.
+                - `width`: [number|string] The width of tabs in both directions. Overrides both `vwidth` and `hwidth`.
+                           Used for *fixed*, *spacing*, *corner* and *annotation*.
+            - **`tooling`**: [dict] Used to add tooling holes to the (rail/frame of) the panel.
+              * Valid keys:
+                - **`type`**: [string='none'] [none,3hole,4hole,plugin] Add none, 3 or 4 holes to the (rail/frame of) the panel.
+                - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
+                - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                - `hoffset`: [number|string] Horizontal offset from panel edges.
+                - `paste`: [boolean=false] If True, the holes are included in the paste layer (therefore they appear on the stencil).
+                - `size`: [number|string] Diameter of the holes.
+                - `voffset`: [number|string] Vertical offset from panel edges.
+            - `copperfill`: [dict] Fill non-board areas of the panel with copper.
+              * Valid keys:
+                - **`type`**: [string='none'] [none,solid,hatched] How to fill non-board areas of the panel with copper.
+                - `clearance`: [number|string] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
+                               copper.
+                - `layers`: [string|list(string)] List of layers to fill. Can be a comma-separated string.
+                            Using *all* means all external copper layers.
+                - `orientation`: [number|string] The orientation of the hatched strokes.
+                - `spacing`: [number|string] The space between the hatched strokes.
+                - `width`: [number|string] The width of the hatched strokes.
+            - `debug`: [dict] Debug options.
+              * Valid keys:
+                - `deterministic`: [boolean=false] Deterministic.
+                - `drawBackboneLines`: [boolean=false] Draw backbone lines.
+                - `drawPartitionLines`: [boolean=false] Draw partition lines.
+                - `drawboxes`: [boolean=false] Draw boxes.
+                - `drawtabfail`: [boolean=false] Draw tab fail.
+                - `trace`: [boolean=false] Trace.
+            - `extends`: [string=''] A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]`.
+            - `name`: [string=''] A name to identify this configuration. If empty will be the order in the list, starting with 1.
+                      Don't use just a number or it will be confused as an index.
+            - `post`: [dict] Finishing touches to the panel.
+              * Valid keys:
+                - `copperfill`: [boolean=false] Fill tabs and frame with copper (e.g., to save etchant or to increase rigidity of flex-PCB panels).
+                - *mill_radius*: Alias for millradius.
+                - `millradius`: [number|string] Simulate the milling operation (add fillets to the internal corners).
+                                Specify mill radius (usually 1 mm). 0 radius disables the functionality.
+                - `origin`: [string='tl'] [tl,tr,bl,br,mt,mb,ml,mr,c] Specify if the auxiliary origin an grid origin should be placed.
+                            Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr (middle of sides), c (center).
+                            Empty string does not changes the origin.
+                - *reconstruct_arcs*: Alias for reconstructarcs.
+                - `reconstructarcs`: [boolean=false] The panelization process works on top of a polygonal representation of the board.
+                                     This options allows to reconstruct the arcs in the design before saving the panel.
+                - *refill_zones*: Alias for refillzones.
+                - `refillzones`: [boolean=false] Refill the user zones after the panel is build.
+                                 This is only necessary when you want your zones to avoid cuts in panel.
+                - `script`: [string=''] A path to custom Python file. The file should contain a function kikitPostprocess(panel, args) that
+                            receives the prepared panel as the kikit.panelize.Panel object and the user-supplied arguments as a
+                            string - see `scriptarg`. The function can make arbitrary changes to the panel - you can append text,
+                            footprints, alter labels, etc. The function is invoked after the whole panel is constructed
+                            (including all other postprocessing). If you try to add a functionality for a common fabrication
+                            houses via scripting, consider submitting PR for KiKit.
+                - *script_arg*: Alias for scriptarg.
+                - `scriptarg`: [string=''] An arbitrary string passed to the user post-processing script specified in script.
+                - `type`: [string='auto'] [auto] Currently fixed.
+            - `source`: [dict] Used to adjust details of which part of the PCB is panelized.
+              * Valid keys:
+                - **`type`**: [string='auto'] [auto,rectangle,annotation] How we select the area of the PCB tu used for the panelization.
+                              *auto* uses all the area reported by KiCad, *rectangle* a specified rectangle and
+                              *annotation* selects a contour marked by a kikit:Board footprint.
+                - `brx`: [number|string] Bottom right X coordinate of the rectangle used. Used for *rectangle*.
+                - `bry`: [number|string] Bottom right Y coordinate of the rectangle used. Used for *rectangle*.
+                - `ref`: [string=''] Reference for the kikit:Board footprint used to select the contour. Used for *annotation*.
+                - `stack`: [string='inherit'] [inherit,2layer,4layer,6layer] Used to reduce the number of layers used for the panel.
+                - `tlx`: [number|string] Top left X coordinate of the rectangle used. Used for *rectangle*.
+                - `tly`: [number|string] Top left Y coordinate of the rectangle used. Used for *rectangle*.
+                - `tolerance`: [number|string] Extra space around the PCB reported size to be included. Used for *auto* and *annotation*.
+            - `text`: [dict] Used to add text to the panel.
+              * Valid keys:
+                - **`text`**: [string=''] The text to be displayed. Note that you can escape ; via \.
+                              Available variables in text: *date* formats current date as <year>-<month>-<day>,
+                              *time24* formats current time in 24-hour format,
+                              *boardTitle* the title from the source board,
+                              *boardDate* the date from the source board,
+                              *boardRevision* the revision from the source board,
+                              *boardCompany* the company from the source board,
+                              *boardComment1*-*boardComment9* comments from the source board.
+                - **`type`**: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
+                - `anchor`: [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                            (middle of sides), c (center). The anchors refer to the panel outline.
+                - `height`: [number|string] Height of the characters (the same parameters as KiCAD uses).
+                - `hjustify`: [string='center'] [left,right,center] Horizontal justification of the text.
+                - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
+                - `layer`: [string='F.SilkS'] Specify text layer.
+                - `orientation`: [number|string] Specify the orientation (angle).
+                - `plugin`: [string=''] Specify the plugin that provides extra variables for the text.
+                - `thickness`: [number|string] Stroke thickness.
+                - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
+                - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
+                - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
+            - `text2`: [dict] Used to add text to the panel.
+              * Valid keys:
+                - **`text`**: [string=''] The text to be displayed. Note that you can escape ; via \.
+                              Available variables in text: *date* formats current date as <year>-<month>-<day>,
+                              *time24* formats current time in 24-hour format,
+                              *boardTitle* the title from the source board,
+                              *boardDate* the date from the source board,
+                              *boardRevision* the revision from the source board,
+                              *boardCompany* the company from the source board,
+                              *boardComment1*-*boardComment9* comments from the source board.
+                - **`type`**: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
+                - `anchor`: [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                            (middle of sides), c (center). The anchors refer to the panel outline.
+                - `height`: [number|string] Height of the characters (the same parameters as KiCAD uses).
+                - `hjustify`: [string='center'] [left,right,center] Horizontal justification of the text.
+                - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
+                - `layer`: [string='F.SilkS'] Specify text layer.
+                - `orientation`: [number|string] Specify the orientation (angle).
+                - `plugin`: [string=''] Specify the plugin that provides extra variables for the text.
+                - `thickness`: [number|string] Stroke thickness.
+                - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
+                - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
+                - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
+            - `text3`: [dict] Used to add text to the panel.
+              * Valid keys:
+                - **`text`**: [string=''] The text to be displayed. Note that you can escape ; via \.
+                              Available variables in text: *date* formats current date as <year>-<month>-<day>,
+                              *time24* formats current time in 24-hour format,
+                              *boardTitle* the title from the source board,
+                              *boardDate* the date from the source board,
+                              *boardRevision* the revision from the source board,
+                              *boardCompany* the company from the source board,
+                              *boardComment1*-*boardComment9* comments from the source board.
+                - **`type`**: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
+                - `anchor`: [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                            (middle of sides), c (center). The anchors refer to the panel outline.
+                - `height`: [number|string] Height of the characters (the same parameters as KiCAD uses).
+                - `hjustify`: [string='center'] [left,right,center] Horizontal justification of the text.
+                - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
+                - `layer`: [string='F.SilkS'] Specify text layer.
+                - `orientation`: [number|string] Specify the orientation (angle).
+                - `plugin`: [string=''] Specify the plugin that provides extra variables for the text.
+                - `thickness`: [number|string] Stroke thickness.
+                - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
+                - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
+                - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
+            - `text4`: [dict] Used to add text to the panel.
+              * Valid keys:
+                - **`text`**: [string=''] The text to be displayed. Note that you can escape ; via \.
+                              Available variables in text: *date* formats current date as <year>-<month>-<day>,
+                              *time24* formats current time in 24-hour format,
+                              *boardTitle* the title from the source board,
+                              *boardDate* the date from the source board,
+                              *boardRevision* the revision from the source board,
+                              *boardCompany* the company from the source board,
+                              *boardComment1*-*boardComment9* comments from the source board.
+                - **`type`**: [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
+                - `anchor`: [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                            (middle of sides), c (center). The anchors refer to the panel outline.
+                - `height`: [number|string] Height of the characters (the same parameters as KiCAD uses).
+                - `hjustify`: [string='center'] [left,right,center] Horizontal justification of the text.
+                - `hoffset`: [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
+                - `layer`: [string='F.SilkS'] Specify text layer.
+                - `orientation`: [number|string] Specify the orientation (angle).
+                - `plugin`: [string=''] Specify the plugin that provides extra variables for the text.
+                - `thickness`: [number|string] Stroke thickness.
+                - `vjustify`: [string='center'] [left,right,center] Vertical justification of the text.
+                - `voffset`: [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
+                - `width`: [number|string] Width of the characters (the same parameters as KiCAD uses).
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=panel, %x=kicad_pcb). Affected by global options.
+        - `create_preview`: [boolean=false] Use PcbDraw to create a preview of the panel.
+        - `default_angles`: [string='deg'] [deg,°,rad] Angles used when omitted.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
+        - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
+        - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * PCB Print
   * Type: `pcb_print`
   * Description: Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
@@ -2451,6 +2925,8 @@ Notes:
                 - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
             - **`scaling`**: [number=1.0] Scale factor (0 means autoscaling).
             - **`sort_layers`**: [boolean=false] Try to sort the layers in the same order that uses KiCad for printing.
+            - `autoscale_margin_x`: [number=0] Horizontal margin used for the autoscaling mode [mm].
+            - `autoscale_margin_y`: [number=0] Vertical margin used for the autoscaling mode [mm].
             - `colored_holes`: [boolean=true] Change the drill holes to be colored instead of white.
             - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
             - `holes_color`: [string='#000000'] Color used for the holes when `colored_holes` is enabled.
@@ -2467,6 +2943,8 @@ Notes:
         - **`plot_sheet_reference`**: [boolean=true] Include the title-block (worksheet, frame, etc.).
         - **`scaling`**: [number=1.0] Default scale factor (0 means autoscaling).
         - `add_background`: [boolean=false] Add a background to the pages, see `background_color`.
+        - `autoscale_margin_x`: [number=0] Default horizontal margin used for the autoscaling mode [mm].
+        - `autoscale_margin_y`: [number=0] Default vertical margin used for the autoscaling mode [mm].
         - `background_color`: [string='#FFFFFF'] Color for the background when `add_background` is enabled.
         - `background_image`: [string=''] Background image, must be an SVG, only when `add_background` is enabled.
         - `blind_via_color`: [string=''] Color used for blind/buried `colored_vias`.
@@ -2500,6 +2978,9 @@ Notes:
                                    In order to get a good looking select a color with transparency, i.e. '#14332440'.
                                    PcbDraw must be installed in order to use this option.
         - `sheet_reference_layout`: [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+        - `svg_precision`: [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+                           The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+                           Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
@@ -2562,11 +3043,14 @@ Notes:
     - **`options`**: [dict] Options for the `pcbdraw` output.
       * Valid keys:
         - **`bottom`**: [boolean=false] Render the bottom side of the board (default is top side).
-        - **`format`**: [string='svg'] [svg,png,jpg] Output format. Only used if no `output` is specified.
+        - **`format`**: [string='svg'] [svg,png,jpg,bmp] Output format. Only used if no `output` is specified.
         - **`mirror`**: [boolean=false] Mirror the board.
         - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated file. Affected by global options.
         - **`show_components`**: [list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
                                  The default is none.
+                                 There two ways of using this option, please consult the `add_to_variant` option.
+                                 You can use `_kf(FILTER)` as an element in the list to get all the components that pass the filter.
+                                 You can even use `_kf(FILTER1;FILTER2)` to concatenate filters.
         - **`style`**: [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options.
           * Valid keys:
             - **`board`**: [string='#208b47'] Color for the board without copper (covered by solder mask).
@@ -2576,21 +3060,66 @@ Notes:
             - **`pads`**: [string='#8b898c'] Color for the exposed pads (metal finish).
             - **`silk`**: [string='#d5dce4'] Color for the silk screen.
             - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
-            - `highlight_padding`: [number=1.5] [0,1000] how much the highlight extends around the component [mm].
+            - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
             - `highlight_style`: [string='stroke:none;fill:#ff0000;opacity:0.5;'] SVG code for the highlight style.
             - `vcut`: [string='#bf2600'] Color for the V-CUTS.
+        - `add_to_variant`: [boolean=true] The `show_components` list is added to the list of components indicated by the variant (fitted and not
+                            excluded).
+                            This is the old behavior, but isn't intuitive because the `show_components` meaning changes when a variant
+                            is used. In this mode you should avoid using `show_components` and variants.
+                            To get a more coherent behavior disable this option, and `none` will always be `none`.
+                            Also `all` will be what the variant says.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `dpi`: [number=300] [10,1200] Dots per inch (resolution) of the generated image.
-        - `highlight`: [list(string)=[]] List of components to highlight.
+        - `highlight`: [list(string)=[]] List of components to highlight. Filter expansion is also allowed here,
+                       see `show_components`.
         - `libs`: [list(string)=[]] List of libraries.
+        - `margin`: [number|dict] Margin around the generated image [mm].
+          * Valid keys:
+            - `bottom`: [number=0] Bottom margin [mm].
+            - `left`: [number=0] Left margin [mm].
+            - `right`: [number=0] Right margin [mm].
+            - `top`: [number=0] Top margin [mm].
         - `no_drillholes`: [boolean=false] Do not make holes transparent.
+        - `outline_width`: [number=0.15] [0,10] Width of the trace to draw the PCB border [mm].
+                           Note this also affects the drill holes.
         - `placeholder`: [boolean=false] Show placeholder for missing components.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
-        - `remap`: [dict|None] Replacements for PCB references using components (lib:component).
+        - `remap`: [dict|None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+                   Use `remap_components` instead.
+        - `remap_components`: [list(dict)] Replacements for PCB references using specified components.
+                              Replaces `remap` with type check.
+          * Valid keys:
+            - **`comp`**: [string=''] Component to use (from `lib`).
+            - *component*: Alias for comp.
+            - **`lib`**: [string=''] Library to use.
+            - *library*: Alias for lib.
+            - **`ref`**: [string=''] Reference for the component to change.
+            - *reference*: Alias for ref.
+        - `resistor_flip`: [string|list(string)=''] List of resistors to flip its bands.
+        - `resistor_remap`: [list(dict)] List of resitors to be remapped. You can change the value of the resistors here.
+          * Valid keys:
+            - **`ref`**: [string=''] Reference for the resistor to change.
+            - *reference*: Alias for ref.
+            - **`val`**: [string=''] Value to use for `ref`.
+            - *value*: Alias for val.
+        - `show_solderpaste`: [boolean=true] Show the solder paste layers.
+        - `size_detection`: [string='kicad_edge'] [kicad_edge,kicad_all,svg_paths] Method used to detect the size of the resulting image.
+                            The `kicad_edge` method uses the size of the board as reported by KiCad,
+                            components that extend beyond the PCB limit will be cropped. You can manually
+                            adjust the margins to make them visible.
+                            The `kicad_all` method uses the whole size reported by KiCad. Usually includes extra space.
+                            The `svg_paths` uses all visible drawings in the image. To use this method you
+                            must install the `numpy` Python module (may not be available in docker images).
+        - `svg_precision`: [number=4] [3,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+                           The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+                           Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.
         - `variant`: [string=''] Board variant to apply.
-        - `vcuts`: [boolean=false] Render V-CUTS on the Cmts.User layer.
+        - `vcuts`: [boolean=false] Render V-CUTS on the `vcuts_layer` layer.
+        - `vcuts_layer`: [string='Cmts.User'] Layer to render the V-CUTS, only used when `vcuts` is enabled.
+                         Note that any other content from this layer will be included.
         - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
@@ -2813,6 +3342,49 @@ Notes:
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* Populate - Assembly instructions builder
+  * Type: `populate`
+  * Description: Creates a markdown and/or HTML file explaining how to assembly a PCB.
+                 Each step shows the already soldered components and the ones to add highlighted.
+                 This is equivalent to the PcbDraw's Populate command, but integrated to KiBot.
+                 For more information about the input markdown file please consult the
+                 [documentation](docs/populate.md)
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `populate` output.
+      * Valid keys:
+        - **`format`**: [string='html'] [html,md] Format for the generated output.
+        - **`input`**: [string=''] Name of the input file describing the assembly. Must be a markdown file.
+                       Note that the YAML section of the file will be skipped, all the needed information
+                       comes from this output and the `renderer` output.
+        - **`renderer`**: [string=''] Name of the output used to render the PCB steps.
+                          Currently this must be a `pcbdraw` or `render_3d` output.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `imgname`: [string='img/populating_%d.%x'] Pattern used for the image names. The `%d` is replaced by the image number.
+                     The `%x` is replaced by the extension. Note that the format is selected by the
+                     `renderer`.
+        - `initial_components`: [string|list(string)=''] List of components soldered before the first step.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `template`: [string] The name of the handlebars template used for the HTML output.
+                      The extension must be `.handlebars`, it will be added when missing.
+                      The `simple.handlebars` template is a built-in template.
+        - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * Pick & place
   * Type: `position`
   * Description: Generates the file with position information for the PCB components, used by the pick and place machine.
@@ -2987,9 +3559,13 @@ Notes:
                           Each step is currently 10 degrees. Only for KiCad 6.
         - **`rotate_z`**: [number=0] Steps to rotate around the Z axis, positive is clockwise.
                           Each step is currently 10 degrees. Only for KiCad 6.
+        - **`show_components`**: [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+                                 Unlike the `pcbdraw` output, the default is `all`.
         - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
         - **`zoom`**: [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
                       Same result as using the mouse wheel in the 3D viewer.
+        - `auto_crop`: [boolean=false] When enabled the image will be post-processed to remove the empty space around the image.
+                       In this mode the `background2` is changed to be the same as `background1`.
         - `background1`: [string='#66667F'] First color for the background gradient.
         - `background2`: [string='#CCCCE5'] Second color for the background gradient.
         - `board`: [string='#332B16'] Color for the board without copper or solder mask.
@@ -2998,6 +3574,9 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `height`: [number=720] Image height (aprox.).
+        - `highlight`: [list(string)=[]] List of components to highlight.
+        - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
+        - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
         - `no_smd`: [boolean=false] Used to exclude 3D models for surface mount components.
         - `no_tht`: [boolean=false] Used to exclude 3D models for through hole components.
@@ -3012,6 +3591,10 @@ Notes:
         - `solder_mask`: [string='#208b47'] Color for the solder mask.
         - `solder_paste`: [string='#808080'] Color for the solder paste.
         - `subtract_mask_from_silk`: [boolean=true] Clip silkscreen at solder mask edges (KiCad 6).
+        - `transparent_background`: [boolean=false] When enabled the image will be post-processed to make the background transparent.
+                                    In this mode the `background1` and `background2` colors are ignored.
+        - `transparent_background_color`: [string='#00ff00'] Color used for the chroma key. Adjust it if some regions of the board becomes transparent.
+        - `transparent_background_fuzz`: [number=15] [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels.
         - `variant`: [string=''] Board variant to apply.
         - *wait_ray_tracing*: Alias for wait_render.
         - `wait_render`: [number=-600] How many seconds we must wait before capturing the render (ray tracing or normal).
@@ -3047,7 +3630,7 @@ Notes:
                             The output file will be in `convert_to` format.
                             The available formats depends on the `Pandoc` installation.
                             In CI/CD environments: the `kicad_auto_test` docker image contains it.
-                            In Debian/Ubuntu environments: install `pandoc`, `texlive-latex-base` and `texlive-latex-recommended`.
+                            In Debian/Ubuntu environments: install `pandoc`, `texlive`, `texlive-latex-base` and `texlive-latex-recommended`.
         - **`output`**: [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options.
         - **`template`**: [string='full'] Name for one of the internal templates (full, full_svg, simple) or a custom template file.
                           Environment variables and ~ are allowed.
@@ -3090,6 +3673,109 @@ Notes:
                            A short-cut to use for simple cases where a variant is an overkill.
         - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                    If it starts with `+` the text is concatenated.
+        - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
+* 3D Printed Stencils
+  * Type: `stencil_3d`
+  * Description: Creates a 3D self-registering model of a stencil you can easily print on
+                 SLA printer, you can use it to apply solder paste to your PCB.
+                 These stencils are quick solution when you urgently need a stencil but probably
+                 they don't last long and might come with imperfections.
+                 It currently uses KiKit, so please read
+                 [KiKit docs](https://github.com/yaqwsx/KiKit/blob/master/doc/stencil.md).
+                 Note that we don't implement `--ignore` option, you should use a variant for this
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `stencil_3d` output.
+      * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
+                        %x='stl'|'scad'|'dxf'|'png'). Affected by global options.
+        - **`thickness`**: [number=0.15] Stencil thickness [mm]. Defines amount of paste dispensed.
+        - `create_preview`: [boolean=true] Creates a PNG showing the generated 3D model.
+        - `cutout`: [string|list(string)] List of components to add a cutout based on the component courtyard.
+                    This is useful when you have already pre-populated board and you want to populate more
+                    components.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - *enlarge_holes*: Alias for enlarge_holes.
+        - `enlargeholes`: [number=0] Enlarge pad holes by x mm.
+        - *frame_clearance*: Alias for frameclearance.
+        - *frame_width*: Alias for framewidth.
+        - `frameclearance`: [number=0] Clearance for the stencil register [mm].
+        - `framewidth`: [number=1] Register frame width.
+        - `include_scad`: [boolean=true] Include the generated OpenSCAD files.
+                          Note that this also includes the DXF files.
+        - *pcb_thickness*: Alias for pcbthickness.
+        - `pcbthickness`: [number=0] PCB thickness [mm]. If 0 we will ask KiCad.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `side`: [string='auto'] [top,bottom,auto,both] Which side of the PCB we want. Using `auto` will detect which
+                  side contains solder paste.
+        - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
+* Steel Stencils for Alignment Jig
+  * Type: `stencil_for_jig`
+  * Description: Creates the gerber files needed to create steel stencils.
+                 These stencils are designed to be used with an acrilic alignment jig and a 3D
+                 printable support, that is also generated.
+                 [KiKit docs](https://github.com/yaqwsx/KiKit/blob/master/doc/stencil.md).
+                 Note that we don't implement `--ignore` option, you should use a variant for this
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+    - **`options`**: [dict] Options for the `stencil_for_jig` output.
+      * Valid keys:
+        - *jig_height*: Alias for jigheight.
+        - *jig_thickness*: Alias for jigthickness.
+        - *jig_width*: Alias for jigwidth.
+        - **`jigheight`**: [number=100] Jig frame height [mm].
+        - **`jigthickness`**: [number=3] Jig thickness [mm].
+        - **`jigwidth`**: [number=100] Jig frame width [mm].
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_for_jig_top'|'stencil_for_jig_bottom',
+                        %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob'|'png'). Affected by global options.
+        - `create_preview`: [boolean=true] Creates a PNG showing the generated 3D model.
+        - `cutout`: [string|list(string)] List of components to add a cutout based on the component courtyard.
+                    This is useful when you have already pre-populated board and you want to populate more
+                    components.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `include_scad`: [boolean=true] Include the generated OpenSCAD files.
+        - *pcb_thickness*: Alias for pcbthickness.
+        - `pcbthickness`: [number=0] PCB thickness [mm]. If 0 we will ask KiCad.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - *register_border_inner*: Alias for registerborderinner.
+        - *register_border_outer*: Alias for registerborderouter.
+        - `registerborderinner`: [number=1] Inner register border [mm].
+        - `registerborderouter`: [number=3] Outer register border [mm].
+        - `side`: [string='auto'] [top,bottom,auto,both] Which side of the PCB we want. Using `auto` will detect which
+                  side contains solder paste.
+        - `tolerance`: [number=0.05] Enlarges the register by the tolerance value [mm].
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
@@ -3188,6 +3874,9 @@ Notes:
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `svg_precision`: [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+                           The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
+                           Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
@@ -4372,6 +5061,18 @@ outputs:
 Will create a new PCB inside a directory called `expoted_pcb`, this PCB will use the 3D models copied to `expoted_pcb/3d_models` using
 relative paths. So you can move the new PCB file to any place, as long as the `3d_models` directory is in the same place as the PCB.
 
+## Proposed advanced KiCad usage
+
+This section contains some proposed solutions for special, or advanced, KiCad usage.
+
+### One circuit and more than one PCB implementation
+
+Use hierarchical pages to share the circuit between two projects: [example](docs/1_SCH_2_diff_PCBs)
+
+### System with more than one PCB
+
+This case is [discussed here](docs/1_SCH_2_part_PCBs)
+
 ## Credits
 
 - **KiBot project**: Salvador E. Tropea (@set-soft)
@@ -4379,7 +5080,7 @@ relative paths. So you can move the new PCB file to any place, as long as the `3
 - **Original KiCad Automation Scripts**: Scott Bezek, Productize SPRL
 - **KiBoM**: Oliver Henry Walters (@SchrodingersGat)
 - **Interactive HTML BoM**: @qu1ck
-- **PcbDraw**: Jan Mrázek (@yaqwsx)
+- **PcbDraw/Populate/KiKit**: Jan Mrázek (@yaqwsx)
 - **KiCost**: Dave Vandenbout (@devbisme) and Hildo Guillardi Júnior (@hildogjr)
 - **KiCAD to Boardview exporter**: @whitequark
 - **S-expression parser**: Takafumi Arakaki
@@ -4387,6 +5088,9 @@ relative paths. So you can move the new PCB file to any place, as long as the `3
 - **Board2Pdf**: Albin Dennevi
 - **PyPDF2**: Mathieu Fenniak
 - **svgutils**: Bartosz Telenczuk (@btel)
+- **svgpathtools**: Andy A. Port
+- **pybars**: Will Bond and Mjumbe Wawatu Ukweli (Canonical Ltd.)
+- **pymeta**: Allen Short and Waldemar Kornewald
 - **Contributors**:
   - **Error filters ideas**: Leandro Heck (@leoheck)
   - **GitHub Actions Integration/SVG output**: @nerdyscout
@@ -4411,3 +5115,5 @@ relative paths. So you can move the new PCB file to any place, as long as the `3
   - **Chip in assembly_simple.svg**: [oNline Web Fonts](https://www.onlinewebfonts.com/)
   - **Wrench**: [Freepik - Flaticon](https://www.flaticon.es/iconos-gratis/llave-inglesa)
   - **Most icons for the navigate_results output**: The KiCad project
+  - **PTV09A 3D Model**: Dmitry Levin ([GrabCad](https://grabcad.com/dmitry.levin-6))
+  - **PcbDraw PCB example**: [Arduino Learning Kit Starter](https://github.com/RoboticsBrno/ArduinoLearningKitStarter)

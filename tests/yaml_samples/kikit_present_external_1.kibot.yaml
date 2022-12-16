@@ -1,0 +1,21 @@
+# Here we use an external config.
+# So KiBot calls another instance to create the files.
+# The external config must create the results at specific places.
+kiplot:
+  version: 1
+
+outputs:
+  - name: KiKit_present_files
+    comment: "Present test using files"
+    type: kikit_present
+    dir: Present/Files
+    options:
+      description: 'tests/data/silly_project.md'
+      boards:
+        mode: external
+        comment: This is a comment
+        external_config: 'tests/yaml_samples/kikit_present_external_cfg.kibot.yaml'
+      # resources: ''
+      # template: 'default'
+      repository: 'https://github.com/INTI-CMNB/KiBot/'
+      # name: ''

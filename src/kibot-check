@@ -103,7 +103,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 4,\
+        "importance": 5,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -119,6 +119,13 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "diff",\
+                "version": null\
+            },\
+            {\
+                "desc": "Find commit hash and/or date",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "kikit_present",\
                 "version": null\
             },\
             {\
@@ -159,7 +166,7 @@ deps = '{\
         ],\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 3,\
+        "importance": 4,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -185,10 +192,17 @@ deps = '{\
                 "version": null\
             },\
             {\
-                "desc": "Create JPG images",\
+                "desc": "Create JPG and BMP images",\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "pcbdraw",\
+                "version": null\
+            },\
+            {\
+                "desc": "Automatically crop images",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "render_3d",\
                 "version": null\
             }\
         ],\
@@ -485,7 +499,7 @@ deps = '{\
                 "version": [\
                     2,\
                     4,\
-                    2\
+                    3\
                 ]\
             }\
         ],\
@@ -541,6 +555,53 @@ deps = '{\
         "url": "https://github.com/hildogjr/KiCost",\
         "url_down": "https://github.com/hildogjr/KiCost/releases"\
     },\
+    "KiKit": {\
+        "arch": null,\
+        "command": "kikit",\
+        "comments": [],\
+        "deb_package": "kikit",\
+        "downloader": {},\
+        "downloader_str": "pytool",\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 30000,\
+        "in_debian": false,\
+        "is_kicad_plugin": false,\
+        "is_python": false,\
+        "name": "KiKit",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "panelize",\
+        "plugin_dirs": null,\
+        "pypi_name": "KiKit",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "panelize",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "stencil_3d",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "stencil_for_jig",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": "https://github.com/yaqwsx/KiKit",\
+        "url_down": "https://github.com/yaqwsx/KiKit/releases"\
+    },\
     "LXML": {\
         "arch": "python-lxml",\
         "command": "lxml",\
@@ -551,7 +612,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 10000,\
+        "importance": 20000,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": true,\
@@ -569,11 +630,58 @@ deps = '{\
                 "max_version": null,\
                 "output": "pcb_print",\
                 "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "pcbdraw",\
+                "version": null\
             }\
         ],\
         "tests": [],\
         "url": null,\
         "url_down": null\
+    },\
+    "OpenSCAD": {\
+        "arch": "openscad",\
+        "command": "openscad",\
+        "comments": [],\
+        "deb_package": "openscad",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 20000,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": false,\
+        "name": "OpenSCAD",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "stencil_3d",\
+        "plugin_dirs": null,\
+        "pypi_name": "OpenSCAD",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "stencil_3d",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "stencil_for_jig",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": "https://openscad.org/",\
+        "url_down": "https://openscad.org/downloads.html"\
     },\
     "Pandoc": {\
         "arch": "pandoc",\
@@ -588,6 +696,7 @@ deps = '{\
             "texlive-core"\
         ],\
         "extra_deb": [\
+            "texlive",\
             "texlive-latex-base",\
             "texlive-latex-recommended"\
         ],\
@@ -614,64 +723,6 @@ deps = '{\
         "tests": [],\
         "url": "https://pandoc.org/",\
         "url_down": "https://github.com/jgm/pandoc/releases"\
-    },\
-    "PcbDraw": {\
-        "arch": null,\
-        "command": "pcbdraw",\
-        "comments": [\
-            "Currently the upstream version is broken, please use the mentioned fork"\
-        ],\
-        "deb_package": "pcbdraw",\
-        "downloader": {},\
-        "downloader_str": "pytool",\
-        "extra_arch": null,\
-        "extra_deb": null,\
-        "help_option": "--version",\
-        "importance": 10001,\
-        "in_debian": false,\
-        "is_kicad_plugin": false,\
-        "is_python": false,\
-        "name": "PcbDraw",\
-        "no_cmd_line_version": false,\
-        "no_cmd_line_version_old": false,\
-        "output": "pcb_print",\
-        "plugin_dirs": null,\
-        "pypi_name": "PcbDraw",\
-        "roles": [\
-            {\
-                "desc": "Create realistic solder masks",\
-                "mandatory": false,\
-                "max_version": [\
-                    1,\
-                    0\
-                ],\
-                "output": "pcb_print",\
-                "version": [\
-                    0,\
-                    9,\
-                    0,\
-                    3\
-                ]\
-            },\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "max_version": [\
-                    1,\
-                    0\
-                ],\
-                "output": "pcbdraw",\
-                "version": [\
-                    0,\
-                    9,\
-                    0,\
-                    3\
-                ]\
-            }\
-        ],\
-        "tests": [],\
-        "url": "https://github.com/INTI-CMNB/pcbdraw",\
-        "url_down": "https://github.com/INTI-CMNB/pcbdraw/releases"\
     },\
     "PyYAML": {\
         "arch": "python-yaml",\
@@ -817,7 +868,7 @@ deps = '{\
                 "version": null\
             },\
             {\
-                "desc": "Create PNG and JPG images",\
+                "desc": "Create PNG, JPG and BMP images",\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "pcbdraw",\
@@ -905,6 +956,189 @@ deps = '{\
         "tests": [],\
         "url": null,\
         "url_down": null\
+    },\
+    "Xvfb": {\
+        "arch": "xorg-server-xvfb",\
+        "command": "xvfb-run",\
+        "comments": [],\
+        "deb_package": "xvfb",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 20000,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": false,\
+        "name": "Xvfb",\
+        "no_cmd_line_version": true,\
+        "no_cmd_line_version_old": false,\
+        "output": "stencil_3d",\
+        "plugin_dirs": null,\
+        "pypi_name": "Xvfb",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "stencil_3d",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "stencil_for_jig",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": "https://www.x.org",\
+        "url_down": null\
+    },\
+    "Xvfbwrapper": {\
+        "arch": "python-xvfbwrapper",\
+        "command": "xvfbwrapper",\
+        "comments": [],\
+        "deb_package": "python3-xvfbwrapper",\
+        "downloader": {},\
+        "downloader_str": "python",\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 20000,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": true,\
+        "module_name": "xvfbwrapper",\
+        "name": "Xvfbwrapper",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "stencil_3d",\
+        "plugin_dirs": null,\
+        "pypi_name": "Xvfbwrapper",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "stencil_3d",\
+                "version": null\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "stencil_for_jig",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": null,\
+        "url_down": null\
+    },\
+    "markdown2": {\
+        "arch": "python-markdown2",\
+        "command": "markdown2",\
+        "comments": [],\
+        "deb_package": "python3-markdown2",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 10000,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": true,\
+        "module_name": "markdown2",\
+        "name": "markdown2",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "kikit_present",\
+        "plugin_dirs": null,\
+        "pypi_name": "markdown2",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "kikit_present",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": null,\
+        "url_down": null\
+    },\
+    "mistune": {\
+        "arch": "python-mistune",\
+        "command": "mistune",\
+        "comments": [],\
+        "deb_package": "python3-mistune",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 10000,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": true,\
+        "module_name": "mistune",\
+        "name": "mistune",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "populate",\
+        "plugin_dirs": null,\
+        "pypi_name": "mistune",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "populate",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": null,\
+        "url_down": null\
+    },\
+    "numpy": {\
+        "arch": "python-numpy",\
+        "command": "numpy",\
+        "comments": [],\
+        "deb_package": "python3-numpy",\
+        "downloader": {},\
+        "downloader_str": "python",\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 1,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": true,\
+        "module_name": "numpy",\
+        "name": "numpy",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "pcbdraw",\
+        "plugin_dirs": null,\
+        "pypi_name": "numpy",\
+        "roles": [\
+            {\
+                "desc": "Automatically adjust SVG margin",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "pcbdraw",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": null,\
+        "url_down": null\
     }\
 }\
 '
@@ -969,7 +1203,7 @@ def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
     cmd[0] = cmd_full
     last_cmd = None
     try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
+        res_run = subprocess.run(cmd, check=True, capture_output=True)
         last_cmd = cmd[0]
     except FileNotFoundError as e:
         last_ok = False
@@ -981,7 +1215,9 @@ def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
                 print('Output from command: '+e.output.decode())
         last_ok = False
         return UNKNOWN
-    res = cmd_output.decode().strip()
+    res = res_run.stdout.decode().strip()
+    if len(res) == 0:
+        res = res_run.stderr.decode().strip()
     if only_first_line:
         res = res.split('\n')[0]
     pre_vers = (cmd[0]+' version ', cmd[0]+' ', pre_ver_text)

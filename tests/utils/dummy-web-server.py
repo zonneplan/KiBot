@@ -42,8 +42,10 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 """
 import argparse
+import errno
 import os.path as op
 import sys
+import time
 from urllib.parse import unquote
 from http.server import HTTPServer, BaseHTTPRequestHandler
 queries = {}
@@ -110,7 +112,18 @@ def load_queries(file):
 
 def run(server_class=HTTPServer, handler_class=S, addr="localhost", port=8000):
     server_address = (addr, port)
-    httpd = server_class(server_address, handler_class)
+    retry_count = 20
+    while retry_count:
+        try:
+            httpd = server_class(server_address, handler_class)
+            retry_count = 0
+        except OSError as e:
+            if e.errno == errno.EADDRINUSE:
+                print('Address already used waiting {} ...'.format(retry_count))
+                retry_count -= 1
+                time.sleep(1)
+            else:
+                raise
     load_queries(op.join(op.dirname(__file__), '../data/kitspace_queries.txt'))
 
     print("Starting httpd server on {}:{}".format(addr, port))

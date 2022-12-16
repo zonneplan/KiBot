@@ -10,6 +10,7 @@ outputs:
     options:
       xlsx:
         digikey_link: 'digikey#'
+        mouser_link: 'mouser#'
       output: '%f.%x'
       columns:
         - References
@@ -18,4 +19,6 @@ outputs:
         - Quantity Per PCB
         - digikey#
         - digikey_alt#
+        - mouser#
+        - mouser_alt#
         - manf#

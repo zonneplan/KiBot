@@ -5,21 +5,23 @@
 # Project: KiBot (formerly KiPlot)
 from copy import deepcopy
 from glob import glob
+import math
 import os
 import re
 from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
-from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT
+from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD
 if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
     detect_kicad()
 if GS.ki6:
     # New name, no alias ...
-    from pcbnew import FP_SHAPE, wxPoint, LSET
+    from pcbnew import FP_SHAPE, wxPoint, LSET, FP_3DMODEL, ToMM
 else:
-    from pcbnew import EDGE_MODULE, wxPoint, LSET
+    from pcbnew import EDGE_MODULE, wxPoint, LSET, MODULE_3D_SETTINGS, ToMM
+    FP_3DMODEL = MODULE_3D_SETTINGS
 from .registrable import RegOutput
 from .optionable import Optionable, BaseOptions
 from .fil_base import BaseFilter, apply_fitted_filter, reset_filters, apply_pre_transform
@@ -29,6 +31,26 @@ from .error import KiPlotConfigurationError
 from . import log
 
 logger = log.get_logger()
+HIGHLIGHT_3D_WRL = """#VRML V2.0 utf8
+#KiBot generated highlight
+Shape {
+  appearance Appearance {
+    material DEF RED-01 Material {
+      ambientIntensity 0.494
+      diffuseColor 1.0 0.0 0.0
+      specularColor 0.5 0.0 0.0
+      emissiveColor 0.0 0.0 0.0
+      transparency 0.5
+      shininess 0.25
+    }
+  }
+}
+Shape {
+  geometry Box { size 1 1 1 }
+  appearance Appearance {material USE RED-01 }
+}
+
+"""
 
 
 class BaseOutput(RegOutput):
@@ -96,6 +118,9 @@ class BaseOutput(RegOutput):
             return [GS.sch_file]
         return [GS.pcb_file]
 
+    def get_extension(self):
+        return self.options._expand_ext
+
     def config(self, parent):
         if self._tree and not self._configured and isinstance(self.extends, str) and self.extends:
             logger.debug("Extending `{}` from `{}`".format(self.name, self.extends))
@@ -160,7 +185,8 @@ class BaseOutput(RegOutput):
 
     def run(self, output_dir):
         self.output_dir = output_dir
-        self.options.run(self.expand_filename(output_dir, self.options.output))
+        output = self.options.output if hasattr(self.options, 'output') else ''
+        self.options.run(self.expand_filename(output_dir, output))
 
 
 class BoMRegex(Optionable):
@@ -203,6 +229,8 @@ class VariantOptions(BaseOptions):
         self._comps = None
         self.undo_3d_models = {}
         self.undo_3d_models_rep = {}
+        self._highlight_3D_file = None
+        self._highlighted_3D_components = None
 
     def config(self, parent):
         super().config(parent)
@@ -226,6 +254,11 @@ class VariantOptions(BaseOptions):
         if not self._comps:
             return []
         return [c.ref for c in self._comps if not c.fitted or not c.included]
+
+    # Here just to avoid pulling pcbnew for this
+    @staticmethod
+    def to_mm(val):
+        return ToMM(val)
 
     @staticmethod
     def create_module_element(m):
@@ -308,6 +341,22 @@ class VariantOptions(BaseOptions):
                 if restore:
                     for line in restore:
                         m.Remove(line)
+
+    def detect_solder_paste(self, board):
+        """ Detects if the top and/or bottom layer has solder paste """
+        fpaste = board.GetLayerID('F.Paste')
+        bpaste = board.GetLayerID('B.Paste')
+        top = bottom = False
+        for m in GS.get_modules_board(board):
+            for p in m.Pads():
+                pad_layers = p.GetLayerSet()
+                if not top and fpaste in pad_layers.Seq():
+                    top = True
+                if not bottom and bpaste in pad_layers.Seq():
+                    bottom = True
+                if top and bottom:
+                    return top, bottom
+        return top, bottom
 
     def remove_paste_and_glue(self, board, comps_hash):
         """ Remove from solder paste layers the filtered components. """
@@ -543,7 +592,7 @@ class VariantOptions(BaseOptions):
         if extra_debug:
             logger.debug("{} 3D models that aren't for this variant".format('Enable' if enable else 'Disable'))
         self.len_disable = len(DISABLE_3D_MODEL_TEXT)
-        variant_name = self.variant.name
+        variant_name = self.variant.name if self.variant else 'None'
         for m in GS.get_modules_board(board):
             if extra_debug:
                 logger.debug("Processing module " + m.GetReference())
@@ -583,7 +632,85 @@ class VariantOptions(BaseOptions):
             if not matched and default is not None:
                 self.apply_list_of_3D_models(enable, slots, m, '_default_')
 
-    def filter_pcb_components(self, board, do_3D=False, do_2D=True):
+    def create_3D_highlight_file(self):
+        if self._highlight_3D_file:
+            return
+        with NamedTemporaryFile(mode='w', suffix='.wrl', delete=False) as f:
+            self._highlight_3D_file = f.name
+            logger.debug('Creating temporal highlight file '+f.name)
+            f.write(HIGHLIGHT_3D_WRL)
+
+    def get_crtyd_bbox(self, board, m):
+        fcrtyd = board.GetLayerID('F.CrtYd')
+        bcrtyd = board.GetLayerID('B.CrtYd')
+        bbox = Rect()
+        for gi in m.GraphicalItems():
+            if gi.GetClass() == 'MGRAPHIC':
+                l_gi = gi.GetLayer()
+                if l_gi == fcrtyd or l_gi == bcrtyd:
+                    bbox.Union(gi.GetBoundingBox().getWxRect())
+        return bbox
+
+    def highlight_3D_models(self, board, highlight):
+        if not highlight:
+            return
+        self.create_3D_highlight_file()
+        # TODO: Adjust? Configure?
+        z = (100.0 if self.highlight_on_top else 0.1)/2.54
+        for m in GS.get_modules_board(board):
+            ref = m.GetReference()
+            if ref not in highlight:
+                continue
+            models = m.Models()
+            m_pos = m.GetPosition()
+            rot = m.GetOrientationDegrees()
+            # Measure the courtyard
+            bbox = self.get_crtyd_bbox(board, m)
+            if bbox.x1 is not None:
+                # Use the courtyard as bbox
+                w = bbox.x2-bbox.x1
+                h = bbox.y2-bbox.y1
+                m_cen = wxPoint((bbox.x2+bbox.x1)/2, (bbox.y2+bbox.y1)/2)
+            else:
+                # No courtyard, ask KiCad
+                # This will include things like text
+                bbox = m.GetBoundingBox()
+                w = bbox.GetWidth()
+                h = bbox.GetHeight()
+                m_cen = m.GetCenter()
+                logger.warning(W_NOCRTYD+"Missing courtyard for `{}`".format(ref))
+            # Compute the offset
+            off_x = m_cen.x - m_pos.x
+            off_y = m_cen.y - m_pos.y
+            rrot = math.radians(rot)
+            # KiCad coordinates are inverted in the Y axis
+            off_y = -off_y
+            # Apply the component rotation
+            off_xp = off_x*math.cos(rrot)+off_y*math.sin(rrot)
+            off_yp = -off_x*math.sin(rrot)+off_y*math.cos(rrot)
+            # Create a new 3D model for the highlight
+            hl = FP_3DMODEL()
+            hl.m_Scale.x = (ToMM(w)+self.highlight_padding)/2.54
+            hl.m_Scale.y = (ToMM(h)+self.highlight_padding)/2.54
+            hl.m_Scale.z = z
+            hl.m_Rotation.z = rot
+            hl.m_Offset.x = ToMM(off_xp)
+            hl.m_Offset.y = ToMM(off_yp)
+            hl.m_Filename = self._highlight_3D_file
+            # Add the model
+            models.push_back(hl)
+        self._highlighted_3D_components = highlight
+
+    def unhighlight_3D_models(self, board):
+        if not self._highlighted_3D_components:
+            return
+        for m in GS.get_modules_board(board):
+            if m.GetReference() not in self._highlighted_3D_components:
+                continue
+            m.Models().pop()
+        self._highlighted_3D_components = None
+
+    def filter_pcb_components(self, board, do_3D=False, do_2D=True, highlight=None):
         if not self._comps:
             return False
         self.comps_hash = self.get_refs_hash()
@@ -597,6 +724,8 @@ class VariantOptions(BaseOptions):
             self.apply_3D_variant_aspect(board)
             # Remove the 3D models for not fitted components (also rename)
             self.remove_3D_models(board, self.comps_hash)
+            # Highlight selected components
+            self.highlight_3D_models(board, highlight)
         return True
 
     def unfilter_pcb_components(self, board, do_3D=False, do_2D=True):
@@ -612,6 +741,14 @@ class VariantOptions(BaseOptions):
             self.restore_3D_models(board, self.comps_hash)
             # Re-enable the modules that aren't for this variant
             self.apply_3D_variant_aspect(board, enable=True)
+            # Remove the highlight 3D object
+            self.unhighlight_3D_models(board)
+
+    def remove_highlight_3D_file(self):
+        # Remove the highlight 3D file if it was created
+        if self._highlight_3D_file:
+            os.remove(self._highlight_3D_file)
+            self._highlight_3D_file = None
 
     def set_title(self, title, sch=False):
         self.old_title = None
@@ -716,6 +853,54 @@ class VariantOptions(BaseOptions):
             # KiCad likes to create project files ...
             for f in glob(board_name.replace('.kicad_pcb', '.*')):
                 os.remove(f)
+
+    def solve_kf_filters(self, components):
+        """ Solves references to KiBot filters in the list of components to show.
+            They are not yet expanded, just solved to filter objects """
+        new_list = []
+        for c in components:
+            c_s = c.strip()
+            if c_s.startswith('_kf('):
+                # A reference to a KiBot filter
+                if c_s[-1] != ')':
+                    raise KiPlotConfigurationError('Missing `)` in KiBot filter reference: `{}`'.format(c))
+                filter_name = c_s[4:-1].strip().split(';')
+                logger.debug('Expanding KiBot filter in list of components: `{}`'.format(filter_name))
+                filter = BaseFilter.solve_filter(filter_name, 'show_components')
+                if not filter:
+                    raise KiPlotConfigurationError('Unknown filter in: `{}`'.format(c))
+                new_list.append(filter)
+                self._filters_to_expand = True
+            else:
+                new_list.append(c)
+        return new_list
+
+    def expand_kf_components(self, components):
+        """ Expands references to filters in show_components """
+        if not components:
+            return []
+        if not self._filters_to_expand:
+            return components
+        new_list = []
+        if self._comps:
+            all_comps = self._comps
+        else:
+            load_sch()
+            all_comps = GS.sch.get_components()
+            get_board_comps_data(all_comps)
+        # Scan the list to show
+        for c in components:
+            if isinstance(c, str):
+                # A reference, just add it
+                new_list.append(c)
+                continue
+            # A filter, add its results
+            ext_list = []
+            for ac in all_comps:
+                if c.filter(ac):
+                    ext_list.append(ac.ref)
+            new_list += ext_list
+        return new_list
 
     def run(self, output_dir):
         """ Makes the list of components available """

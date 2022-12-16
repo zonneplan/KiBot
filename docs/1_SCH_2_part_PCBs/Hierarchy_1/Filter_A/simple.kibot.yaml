@@ -1,0 +1,11 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  run_erc: true
+  run_drc: true
+
+import:
+  - file: ../../../print_sch_svg.kibot.yaml
+  - file: ../../../print_top_bot.kibot.yaml

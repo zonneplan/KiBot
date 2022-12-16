@@ -6,7 +6,7 @@
 """
 Dependencies:
   - name: KiCad PCB/SCH Diff
-    version: 2.4.2
+    version: 2.4.3
     role: mandatory
     github: INTI-CMNB/KiDiff
     command: kicad-diff.py
@@ -102,6 +102,12 @@ class DiffOptions(BaseOptions):
             self.only_different = False
             """ Only include the pages with differences in the output PDF.
                 Note that when no differeces are found we get a page saying *No diff* """
+            self.only_first_sch_page = False
+            """ Compare only the main schematic page (root page) """
+            self.always_fail_if_missing = False
+            """ Always fail if the old/new file doesn't exist. Currently we don't fail if they are from a repo.
+                So if you refer to a repo point where the file wasn't created KiBot will use an empty file.
+                Enabling this option KiBot will report an error """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -139,9 +145,12 @@ class DiffOptions(BaseOptions):
         cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash, '--cache_dir', self.cache_dir]
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])
+        if not self.only_first_sch_page:
+            cmd.append('--all_pages')
         if GS.debug_enabled:
             cmd.insert(1, '-'+'v'*GS.debug_level)
         cmd.extend([name, name])
+        self.name_used_for_cache = name
         run_command(cmd)
 
     def cache_pcb(self, name):
@@ -151,6 +160,13 @@ class DiffOptions(BaseOptions):
         else:
             GS.check_pcb()
             name = GS.pcb_file
+            if not os.path.isfile(name):
+                if self.always_fail_if_missing:
+                    raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
+                with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
+                    f.write("(kicad_pcb (version 20171130) (host pcbnew 5.1.5))\n")
+                    name = f.name
+                    self._to_remove.append(name)
         hash = self.get_digest(name)
         self.add_to_cache(name, hash)
         return hash
@@ -162,6 +178,26 @@ class DiffOptions(BaseOptions):
         else:
             GS.check_sch()
             name = GS.sch_file
+            ext = os.path.splitext(name)[1]
+            if not os.path.isfile(name):
+                if self.always_fail_if_missing:
+                    raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
+                with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
+                    logger.debug('Creating empty schematic: '+f.name)
+                    if ext == '.kicad_sch':
+                        f.write("(kicad_sch (version 20211123) (generator eeschema))\n")
+                    else:
+                        f.write("EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n$Descr A4 11693 8268\n"
+                                "$EndDescr\n$EndSCHEMATC\n")
+                    name = f.name
+                    self._to_remove.append(name)
+                if ext != '.kicad_sch':
+                    lib_name = os.path.splitext(name)[0]+'-cache.lib'
+                    if not os.path.isfile(lib_name):
+                        logger.debug('Creating dummy cache lib: '+lib_name)
+                        with open(lib_name, 'w') as f:
+                            f.write("EESchema-LIBRARY Version 2.4\n#\n#End Library\n")
+                        self._to_remove.append(lib_name)
         # Schematics can have sub-sheets
         sch = load_any_sch(name, os.path.splitext(os.path.basename(name))[0])
         files = sch.get_files()
@@ -362,11 +398,10 @@ class DiffOptions(BaseOptions):
             fname, dir_name = VariantOptions.save_tmp_dir_board('diff')
         else:
             dir_name = mkdtemp()
+            self.dirs_to_remove.append(dir_name)
             fname = GS.sch.save_variant(dir_name)
-        try:
-            res = self.cache_file(os.path.join(dir_name, fname))
-        finally:
-            rmtree(dir_name)
+        res = self.cache_file(os.path.join(dir_name, fname))
+        self.git_hash = 'Current'
         return res
 
     def cache_obj(self, name, type):
@@ -396,19 +431,23 @@ class DiffOptions(BaseOptions):
         # Populate the cache
         old_hash = self.cache_obj(old, old_type)
         gh1 = self.git_hash
+        name_used_for_old = self.name_used_for_cache
         new_hash = self.cache_obj(new, new_type)
         gh2 = self.git_hash
+        name_used_for_new = self.name_used_for_cache
         # Compute the diff using the cache
         cmd = [self.command, '--no_reader', '--new_file_hash', new_hash, '--old_file_hash', old_hash,
                '--cache_dir', self.cache_dir, '--output_dir', dir_name, '--output_name', file_name,
-               '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz)]
+               '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz), '--no_exist_check']
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])
         if self.threshold:
             cmd.extend(['--threshold', str(self.threshold)])
         if self.only_different:
             cmd.append('--only_different')
-        cmd.extend([self.file_exist, self.file_exist])
+        if not self.only_first_sch_page:
+            cmd.append('--all_pages')
+        cmd.extend([name_used_for_old, name_used_for_new])
         if GS.debug_enabled:
             cmd.insert(1, '-'+'v'*GS.debug_level)
         try:
@@ -433,23 +472,17 @@ class DiffOptions(BaseOptions):
 
     def run(self, name):
         self.command = self.ensure_tool('KiDiff')
+        self._to_remove = []
         if self.old_type == 'git' or self.new_type == 'git':
             self.git_command = self.ensure_tool('Git')
         if not self.pcb:
             # We need eeschema_do for this
             self.ensure_tool('KiAuto')
         # Solve the cache dir
-        remove_cache = False
+        self.dirs_to_remove = []
         if not self.cache_dir:
             self.cache_dir = mkdtemp()
-            remove_cache = True
-        # A valid name, not really used
-        if self.pcb:
-            GS.check_pcb()
-            self.file_exist = GS.pcb_file
-        else:
-            GS.check_sch()
-            self.file_exist = GS.sch_file
+            self.dirs_to_remove.append(self.cache_dir)
         self.incl_file = None
         name_ori = name
         try:
@@ -479,10 +512,12 @@ class DiffOptions(BaseOptions):
                 self.do_compare(self.old, self.old_type, self.new, self.new_type, name, name_ori)
         finally:
             # Clean-up
-            if remove_cache:
-                rmtree(self.cache_dir)
+            for d in self.dirs_to_remove:
+                rmtree(d)
             if self.incl_file:
                 os.remove(self.incl_file)
+            for f in self._to_remove:
+                os.remove(f)
 
 
 @output_class

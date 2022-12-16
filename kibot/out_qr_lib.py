@@ -337,6 +337,8 @@ class QR_LibOptions(BaseOptions):
         qrc, size, full_size, center, size_rect = compute_size(qr, is_sch=False)
         # In which layer are the drawings? (default to the original)
         layer = self.find_layer(sexp, qr.layer)
+        if isinstance(layer, Symbol):
+            layer = layer.value()
         # Remove old drawing
         sexp[:] = list(filter(lambda s: not is_symbol('fp_poly', s), sexp))
         # Add the new drawings

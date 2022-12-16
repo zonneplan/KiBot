@@ -1,0 +1,34 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'print_top_bot'
+    comment: "Print Top and Bottom layers"
+    type: pcb_print
+    dir: Generated
+    options:
+      format: 'PNG'
+      scaling: 3.0
+      pages:
+        - sheet: Front
+          layers:
+            - layer: Edge.Cuts
+            - layer: F.Cu
+            - layer: F.Mask
+              color: '#14332440'
+            - layer: F.Paste
+            - layer: F.SilkS
+            - layer: F.Fab
+              plot_footprint_refs: false
+              plot_footprint_values: false
+            - layer: Dwgs.User
+        - layers:
+            - layer: B.Fab
+            - layer: Edge.Cuts
+            - layer: B.SilkS
+            - layer: B.Paste
+            - layer: B.Cu
+            - layer: B.Mask
+              color: '#14332480'
+            - layer: Dwgs.User

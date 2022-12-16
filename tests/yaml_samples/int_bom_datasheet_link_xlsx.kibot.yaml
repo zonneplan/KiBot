@@ -22,4 +22,6 @@ outputs:
         - field: digikey_alt#
           level: 1
           comment: "Alternative code in case digikey# isn't available"
+        - mouser#
+        - mouser_alt#
         - manf#

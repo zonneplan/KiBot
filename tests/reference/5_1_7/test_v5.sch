@@ -1,1 +1,1 @@
-../5_1_6/test_v5.sch
+../../board_samples/kicad_5/test_v5.sch

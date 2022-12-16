@@ -1,0 +1,85 @@
+kiplot:
+  version: 1
+
+outputs:
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDraw
+    run_by_default: false
+    options: &pcb_draw_ops
+      format: png
+      style:
+        board: "#1b1f44"
+        copper: "#00406a"
+        silk: "#d5dce4"
+        pads: "#cfb96e"
+        clad: "#72786c"
+        outline: "#000000"
+        vcut: "#bf2600"
+        highlight_on_top: false
+        highlight_style: "stroke:none;fill:#ff0000;opacity:0.5;"
+        highlight_padding: 1.5
+      #libs:
+      #  - default
+      #  - eagle-default
+      remap:
+        L_G1: "LEDs:LED-5MM_green"
+        L_B1: "LEDs:LED-5MM_blue"
+        L_Y1: "LEDs:LED-5MM_yellow"
+        'REF**': "dummy:dummy"
+        G***: "dummy:dummy"
+        svg2mod: "dummy:dummy"
+        JP1: "dummy:dummy"
+        JP2: "dummy:dummy"
+        JP3: "dummy:dummy"
+        JP4: "dummy:dummy"
+      remap_components:
+        - ref: PHOTO1
+          lib: yaqwsx
+          comp: R_PHOTO_7mm
+        - reference: J8
+          library: yaqwsx
+          component: Pin_Header_Straight_1x02_circle
+      no_drillholes: False
+      mirror: False
+      highlight:
+        - L_G1
+        - L_B1
+        - R10
+        - RV1
+      show_components: all
+      vcuts: True
+      warnings: visible
+      dpi: 600
+      # margin:
+      #   left: 5
+      #   right: 1
+      #   top: 0
+      #   bottom: 6
+      # outline_width: 3
+      # show_solderpaste: false
+      resistor_remap:
+        - ref: R1
+          val: 10K
+        - ref: R2
+          val: 4k7
+      resistor_flip: "R2"
+      size_detection: svg_paths
+      # size_detection: kicad_all
+      # size_detection: kicad_edge
+
+  - name: Populate
+    comment: "Populate example"
+    type: populate
+    dir: Populate
+    options:
+      renderer: PcbDraw
+      input: tests/data/source_html.md
+
+  - name: Compressed
+    comment: "Compress the result"
+    type: compress
+    options:
+      files:
+        - from_output: Populate

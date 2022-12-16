@@ -26,7 +26,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE,
-                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY)
+                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr)
 from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -145,12 +145,22 @@ def debug_output(res):
         logger.debug('- Output from command: '+res.stdout.decode())
 
 
-def run_command(command, change_to=None, just_raise=False):
+def _run_command(command, change_to):
+    return run(command, check=True, stdout=PIPE, stderr=STDOUT, cwd=change_to)
+
+
+def run_command(command, change_to=None, just_raise=False, use_x11=False):
     logger.debug('Executing: '+shlex.join(command))
     if change_to is not None:
         logger.debug('- CWD: '+change_to)
     try:
-        res = run(command, check=True, stdout=PIPE, stderr=STDOUT, cwd=change_to)
+        if use_x11 and not GS.on_windows:
+            logger.debug('Using Xvfb to run the command')
+            from xvfbwrapper import Xvfb
+            with Xvfb(width=640, height=480, colordepth=24):
+                res = _run_command(command, change_to)
+        else:
+            res = _run_command(command, change_to)
     except CalledProcessError as e:
         if just_raise:
             raise
@@ -210,7 +220,8 @@ def load_board(pcb_file=None):
         GS.check_pcb()
         pcb_file = GS.pcb_file
     try:
-        board = pcbnew.LoadBoard(pcb_file)
+        with hide_stderr():
+            board = pcbnew.LoadBoard(pcb_file)
         if BasePreFlight.get_option('check_zone_fills'):
             pcbnew.ZONE_FILLER(board).Fill(board.Zones())
         if GS.global_units and GS.ki6:
@@ -541,7 +552,7 @@ def get_pre_targets(targets, dependencies, is_pre):
     return pcb_targets, sch_targets
 
 
-def get_out_targets(outputs, ori_names, targets, dependencies, comments):
+def get_out_targets(outputs, ori_names, targets, dependencies, comments, no_default):
     pcb_targets = sch_targets = ''
     try:
         for out in outputs:
@@ -554,6 +565,8 @@ def get_out_targets(outputs, ori_names, targets, dependencies, comments):
             dependencies[name] = [adapt_file_name(fn) for fn in out.get_dependencies()]
             if out.comment:
                 comments[name] = out.comment
+            if not out.run_by_default:
+                no_default.add(name)
             if out.is_sch():
                 sch_targets += ' '+name
             if out.is_pcb():
@@ -595,13 +608,14 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
         comments = {}
         ori_names = {}
         is_pre = set()
+        no_default = set()
         # Preflights
         pre_pcb_targets, pre_sch_targets = get_pre_targets(targets, dependencies, is_pre)
         # Outputs
-        out_pcb_targets, out_sch_targets = get_out_targets(outputs, ori_names, targets, dependencies, comments)
+        out_pcb_targets, out_sch_targets = get_out_targets(outputs, ori_names, targets, dependencies, comments, no_default)
         # all target
         f.write('#\n# Default target\n#\n')
-        f.write('all: '+' '.join(targets.keys())+'\n\n')
+        f.write('all: '+' '.join(filter(lambda x: x not in no_default, targets.keys()))+'\n\n')
         extra_targets = ['all']
         # PCB/SCH specific targets
         f.write('#\n# SCH/PCB targets\n#\n')
@@ -872,7 +886,7 @@ def generate_one_example(dest_dir, types):
                 logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
             # Look for templates
-            tpls = glob(os.path.join(os.path.dirname(__file__), 'config_templates', n, '*.kibot.yaml'))
+            tpls = glob(os.path.join(GS.get_resource_path('config_templates'), n, '*.kibot.yaml'))
             if tpls:
                 # Load the templates
                 tpl_names = tpls

@@ -81,6 +81,7 @@ def test_ibom_all_ops(test_dir):
                                     r'"highlight_pin1": true',
                                     r'"redraw_on_drag": false',
                                     r'"board_rotation": 18.0',  # 90/5
+                                    r'"offset_back_rotation": true',
                                     r'"checkboxes": "Sourced,Placed,Bogus"',
                                     r'"bom_view": "top-bottom"',
                                     r'"layer_view": "B"',

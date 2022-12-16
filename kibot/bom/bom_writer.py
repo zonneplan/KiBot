@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2022 Salvador E. Tropea
+# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -35,13 +35,13 @@ def write_bom(filename, ext, groups, headings, cfg):
     headings = [h.lower() for h in headings]
     result = False
     # CSV file writing
-    if ext in ["csv", "tsv", "txt"]:
+    if ext in ["csv", "tsv", "txt", "hrtxt"]:
         result = write_csv(filename, ext, groups, headings, head_names, cfg)
     elif ext in ["htm", "html"]:
         result = write_html(filename, groups, headings, head_names, cfg)
-    elif ext in ["xml"]:
+    elif ext == "xml":
         result = write_xml(filename, groups, headings, head_names, cfg)
-    elif ext in ["xlsx"]:
+    elif ext == "xlsx":
         # We delay the module load to give out_bom the chance to install XLSXWriter dependencies
         from .xlsx_writer import write_xlsx
         result = write_xlsx(filename, groups, headings, head_names, cfg)

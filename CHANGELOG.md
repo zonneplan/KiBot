@@ -4,7 +4,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.5.0] - 2022-12-16
+### Added
+- New output:
+  - `populate` to create step-by-step assembly instructions
+    With support for `pcbdraw` and `render_3d`.
+  - `panelize` to create a PCB panel containing N copies of the PCB.
+  - `stencil_3d` to create 3D self-registering printable stencils.
+  - `stencil_for_jig` to create steel stencils and 3D register.
+  - `kikit_present` to create a project presentation web page.
+- generic filters: options to filter by PCB side
+- BoM:
+  - Option to link to Mouser site.
+  - Human readable text output format.
+- Diff:
+  - Option to compare only the first schematic page. (See #319)
+- iBoM:
+  - Support for the `offset_back_rotation` option
+- Navigate Results:
+  - Support for compress
+- PcbDraw:
+  - BMP output format
+  - Image margin
+  - Outline width
+  - Solder paste removal
+  - V-CUTS layer
+  - Resistor remap and flip
+  - A `remap_components` option with better type checks
+  - Better support for variants
+  - Option to control the *SVG precision* (units scale)
+  - Filter expansion in `show_components` and `highlight`
+- PCB_Print:
+  - Option to control the *SVG precision* (units scale)
+  - Now the text in the PDF is searchable. (#331)
+  - Margins for the autoscale mode. (#337)
+- Render_3D:
+  - Option to render only some components (like in PcbDraw)
+  - Option to auto-crop the resulting PNG
+  - Option to make transparent the background
+  - Option to highlight components
+- SVG:
+  - Option to control the *SVG precision* (units scale)
+
+### Changed
+- Diff:
+  - Now the default is to compare all the schematic pages. (#319)
+- Report:
+  - loss tangent decimals, added one more.
+
+### Fixed
+- QR lib update: Problems when moving the footprint to the bottom for
+  KiCad 5.
+- SVG, PCB_Print, PcbDraw: Problems to display the outputs using Chrome and
+  Firefox.
+- Diff: Problems when comparing to a repo point where the PCB/SCH didn't exist
+  yet. (#323)
+- Report: Problems when using NPTH holes with sizes that doesn't correspond to
+  real drill tools. It generated bogus reports about wrong OARs. (#326)
+- Problems when using more than one dielectric in the stack-up. (#328)
+- Gerber: Extension used for JLCPCB inner layers. (#329)
+- BoM:
+  - The length of the CSV separator is now validated.
+  - Using \t, \n, \r and \\ is now supported. (See #334)
+  - Digi-key link in the HTML output.
+- KiBoM: User defined fields wasn't available as column names. (#344)
+- Imports:
+  - Problems with recursive imports when the intermediate import didn't
+    contain any of the requested elements (i.e. no outputs). (#335)
+- Navigate results: fail when no output to generate. Now you get a warning.
+- Makefile: outputs marked as not run by default were listed in the `all`
+  target.
 
 ## [1.4.0] - 2022-10-12
 ### Added
