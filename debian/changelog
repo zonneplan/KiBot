@@ -1,8 +1,47 @@
-kibot (1.4.1-1) stable; urgency=medium
+kibot (1.5.0-1) stable; urgency=medium
 
-  * Reserved for a new release
+  * New outputs: populate, panelize, stencil_3d, stencil_for_jig and
+    kikit_present.
+  * Generic filters: options to filter by PCB side
+  * BoM: Option to link to Mouser site and Human readable text output format.
+  * Diff: Option to compare only the first schematic page.
+  * iBoM: Support for the `offset_back_rotation` option.
+  * Navigate Results: Support for compress
+  * PcbDraw: BMP output format, image margin, outline width, solder paste
+    removal, V-CUTS layer, resistor remap and flip, a `remap_components`
+    option with better type checks, better support for variants, option to
+    control the *SVG precision* (units scale) and filter expansion in
+    `show_components` and `highlight`.
+  * PCB_Print: Option to control the *SVG precision* (units scale), now the
+    text in the PDF is searchable and margins for the autoscale mode.
+  * Render_3D: Options to render only some components (like in PcbDraw),
+    auto-crop the resulting PNG, make transparent the background and to
+    highlight components.
+  * SVG: option to control the *SVG precision* (units scale)
+  * Changed the default behavior when comparing multiple sheets schematics,
+    now we compare all pages.
+  * Changed the loss tangent decimals in the report, added one more.
+  * Fixed QR lib update: Problems when moving the footprint to the bottom for
+    KiCad 5.
+  * Fixed SVG, PCB_Print, PcbDraw: Problems to display the outputs using Chrome
+    and Firefox.
+  * Fixed Diff: Problems when comparing to a repo point where the PCB/SCH
+    didn't exist yet.
+  * Fixed Report: Problems when using NPTH holes with sizes that doesn't
+    correspond to real drill tools. It generated bogus reports about wrong OARs
+  * Fixed problems when using more than one dielectric in the stack-up.
+  * Fixed gerber: Extension used for JLCPCB inner layers.
+  * Fixed BoM: The length of the CSV separator is now validated, using \t, \n,
+    \r and \\ is now supported and the digi-key link in the HTML output.
+  * Fixed KiBoM: User defined fields wasn't available as column names.
+  * Fixed imports: Problems with recursive imports when the intermediate import
+    didn't contain any of the requested elements (i.e. no outputs).
+  * Fixed navigate results: fail when no output to generate. Now you get a
+    warning.
+  * Fixed Makefile: outputs marked as not run by default were listed in the
+    `all` target.
 
- -- Salvador E. Tropea <salvador@inti.gob.ar>  Wed, 19 Oct 2022 10:43:08 -0300
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Fri, 16 Dec 2022 09:36:03 -0300
 
 kibot (1.4.0-1) stable; urgency=medium
 
