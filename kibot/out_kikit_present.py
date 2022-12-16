@@ -392,6 +392,7 @@ class KiKit_PresentOptions(BaseOptions):
                 with open(tmp_md, 'w') as f:
                     f.writelines([ln+'\n' for ln in self.description])
                 self._description = tmp_md
+                temporals.append(tmp_md)
             else:
                 self._description = self.description
             try:
