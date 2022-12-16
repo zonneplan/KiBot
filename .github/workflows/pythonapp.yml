@@ -93,6 +93,8 @@ jobs:
         # Important! empty directories are skipped!!!!
         path: output
     - name: Upload Coverage
+      # Don't mix stable coverage with development coverage
+      if: github.ref == 'refs/heads/dev'
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         COVERALLS_FLAG_NAME: ${{ matrix.ki_release }}_${{ matrix.w_tests }}
@@ -111,6 +113,8 @@ jobs:
     runs-on: ubuntu-latest
     container: setsoft/kicad_auto_test:ki6
     needs: test
+    # Don't mix stable coverage with development coverage
+    if: github.ref == 'refs/heads/dev'
 
     steps:
     - uses: actions/checkout@v2
@@ -169,6 +173,8 @@ jobs:
     permissions:
       packages: write
       contents: read
+    # Don't create `dev` images using the `master`
+    if: github.ref == 'refs/heads/dev'
 
     steps:
     - name: Check out the repo
@@ -213,6 +219,8 @@ jobs:
     permissions:
       packages: write
       contents: read
+    # Don't create `dev` images using the `master`
+    if: github.ref == 'refs/heads/dev'
 
     steps:
     - name: Check out the repo
@@ -257,6 +265,8 @@ jobs:
     name: Finish Coveralls
     needs: test
     runs-on: ubuntu-latest
+    # Don't mix stable coverage with development coverage
+    if: github.ref == 'refs/heads/dev'
     steps:
     - name: Finished
       env:
