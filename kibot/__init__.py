@@ -6,4 +6,4 @@ __email__ = 'stropea@inti.gob.ar'
 __url__ = 'https://github.com/INTI-CMNB/KiBot/'
 __status__ = 'stable'
 __version__ = '1.4.1'
-__pypi_deps__ = ['kiauto', 'pyyaml', 'xlsxwriter', 'colorama', 'requests', 'qrcodegen']
+__pypi_deps__ = ['kiauto', 'pyyaml', 'xlsxwriter', 'colorama', 'requests', 'qrcodegen', 'markdown2']

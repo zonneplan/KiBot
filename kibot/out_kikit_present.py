@@ -26,7 +26,6 @@ from .kiplot import config_output, run_output, get_output_dir, load_board, run_c
 from .optionable import BaseOptions, Optionable
 from .out_base import BaseOutput
 from .registrable import RegOutput
-from .PcbDraw.present import boardpage, readTemplate
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -346,6 +345,8 @@ class KiKit_PresentOptions(BaseOptions):
                 pass
 
     def get_targets(self, out_dir):
+        self.ensure_tool('markdown2')
+        from .PcbDraw.present import readTemplate
         # The web page
         out_dir = self._parent.expand_dirname(out_dir)
         res = [os.path.join(out_dir, 'index.html')]
@@ -377,6 +378,8 @@ class KiKit_PresentOptions(BaseOptions):
         return content
 
     def run(self, dir_name):
+        self.ensure_tool('markdown2')
+        from .PcbDraw.present import boardpage
         # Generate missing images
         board = []
         temporals = []
@@ -419,6 +422,8 @@ class KiKit_Present(BaseOutput):
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
+        if not GS.check_tool(name, 'markdown2'):
+            return None
         outs = BaseOutput.simple_conf_examples(name, 'Simple project presentation', 'Presentation')
         outs[0]['options'] = {'description': '# Presentation for '+GS.pcb_basename+'\n'
                               'This is an automatically generated presentation page',
