@@ -13,7 +13,7 @@ $branch=`git rev-parse --abbrev-ref HEAD`;
 chomp($branch);
 if ($branch ne "master")
   {
-   $doc_id="# **This is the documentation for the current development KiBot, not yet released. To know what changed see the [changelog][CHANGELOG.md]**\n";
+   $doc_id="# **This is the documentation for the current development KiBot, not yet released. To know what changed see the [changelog](CHANGELOG.md)**\n";
   }
 else
   {
