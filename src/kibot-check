@@ -300,7 +300,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 110003,\
+        "importance": 120003,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -429,6 +429,17 @@ deps = '{\
                 "version": [\
                     2,\
                     0,\
+                    0\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "vrml",\
+                "version": [\
+                    2,\
+                    1,\
                     0\
                 ]\
             },\

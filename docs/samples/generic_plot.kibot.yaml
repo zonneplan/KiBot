@@ -2850,3 +2850,42 @@ outputs:
       # [string=''] Board variant to apply.
       # Not fitted components are crossed
       variant: ''
+  # VRML (Virtual Reality Modeling Language):
+  # This is intended for rendering, unlike STEP which is intended to be
+  # an exact mechanic model
+  - name: 'vrml_example'
+    comment: 'Exports the PCB as a 3D model (WRL file).'
+    type: 'vrml'
+    dir: 'Example/vrml_dir'
+    options:
+      # [string='shapes3D'] Subdirectory used to store the 3D models for the components.
+      # If you want to create a monolithic file just use '' here.
+      # Note that the WRL file will contain relative paths to the models
+      dir_models: 'shapes3D'
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD
+      download: true
+      # [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models
+      kicad_3d_url: 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
+      # [string='millimeters'] [millimeters,meters,deciinches,inches] Units used for the VRML (1 deciinch = 0.1 inches)
+      model_units: 'millimeters'
+      # [boolean=false] Used to exclude 3D models for components with 'virtual' attribute
+      no_virtual: false
+      # [string='%f-%i%I%v.%x'] Filename for the output (%i=vrml, %x=wrl). Affected by global options
+      output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [string='millimeters'] [millimeters,inches'] Units for `ref_x` and `ref_y`
+      ref_units: 'millimeters'
+      # [number=0] X coordinate to use as reference when `use_pcb_center_as_ref` is disabled
+      ref_x: 0
+      # [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` is disabled
+      ref_y: 0
+      # [boolean=true] The center of the PCB will be used as reference point.
+      # When disabled the `ref_x`, `ref_y` and `ref_units` will be used
+      use_pcb_center_as_ref: true
+      # [string=''] Board variant to apply
+      variant: ''

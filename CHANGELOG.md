@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.5.2] - Unreleased
 ### Fixed
+- New output:
+  - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
 - PCB_Print:
   - Images not showing in custom frames. (#352)
 

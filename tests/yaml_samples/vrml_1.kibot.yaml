@@ -1,0 +1,8 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'VRML export Test'
+    comment: "Example of VRML export"
+    type: vrml
