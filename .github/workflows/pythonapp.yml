@@ -36,7 +36,7 @@ jobs:
     container: setsoft/kicad_auto_test:${{ matrix.ki_release }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     - name: Lint with flake8
