@@ -227,6 +227,7 @@ class VariantOptions(BaseOptions):
                 A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
         self._comps = None
+        self._sub_pcb = None
         self.undo_3d_models = {}
         self.undo_3d_models_rep = {}
         self._highlight_3D_file = None
@@ -933,6 +934,4 @@ class VariantOptions(BaseOptions):
             # Apply the variant
             comps = self.variant.filter(comps)
             self._sub_pcb = self.variant._sub_pcb
-        else:
-            self._sub_pcb = None
         self._comps = comps
