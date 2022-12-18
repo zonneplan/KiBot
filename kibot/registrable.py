@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from collections import OrderedDict
+from copy import copy
 from .optionable import Optionable
 from .error import KiPlotConfigurationError
 
@@ -59,7 +60,21 @@ class RegOutput(Optionable, Registrable):
 
     @staticmethod
     def add_variants(variants):
-        RegOutput._def_variants.update(variants)
+        for k, v in variants.items():
+            # Do we have sub-PCBs
+            if v.sub_pcbs:
+                # Add a variant for each sub-PCB
+                for sp in v.sub_pcbs:
+                    name = k+'['+sp.name+']'
+                    vn = copy(v)
+                    vn._sub_pcb = sp
+                    if sp.file_id:
+                        vn.file_id = sp.file_id
+                    else:
+                        vn.file_id += '_'+sp.name
+                    RegOutput._def_variants[name] = vn
+            else:
+                RegOutput._def_variants[k] = v
 
     @staticmethod
     def is_variant(name):

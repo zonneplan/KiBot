@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - New output:
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
+- Variants:
+  - Added some limited support for `kikit separate`
 - PCB_Print:
   - Images not showing in custom frames. (#352)
 

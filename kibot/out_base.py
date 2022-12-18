@@ -8,9 +8,9 @@ from glob import glob
 import math
 import os
 import re
-from tempfile import NamedTemporaryFile, mkdtemp
+from tempfile import NamedTemporaryFile, mkdtemp, TemporaryDirectory
 from .gs import GS
-from .kiplot import load_sch, get_board_comps_data
+from .kiplot import load_sch, get_board_comps_data, load_board
 from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD
 if not GS.kicad_version_n:
     # When running the regression tests we need it
@@ -710,26 +710,40 @@ class VariantOptions(BaseOptions):
             m.Models().pop()
         self._highlighted_3D_components = None
 
+    def apply_sub_pcb(self):
+        with TemporaryDirectory(prefix='kibot-separate') as d:
+            dest = os.path.join(d, os.path.basename(GS.pcb_file))
+            self._sub_pcb.load_board(dest)
+
     def filter_pcb_components(self, board, do_3D=False, do_2D=True, highlight=None):
-        if not self._comps:
+        if not self._comps and not self._sub_pcb:
             return False
-        self.comps_hash = self.get_refs_hash()
-        if do_2D:
-            self.cross_modules(board, self.comps_hash)
-            self.remove_paste_and_glue(board, self.comps_hash)
-            if hasattr(self, 'hide_excluded') and self.hide_excluded:
-                self.remove_fab(board, self.comps_hash)
-        if do_3D:
-            # Disable the models that aren't for this variant
-            self.apply_3D_variant_aspect(board)
-            # Remove the 3D models for not fitted components (also rename)
-            self.remove_3D_models(board, self.comps_hash)
-            # Highlight selected components
-            self.highlight_3D_models(board, highlight)
+        if self._comps:
+            self.comps_hash = self.get_refs_hash()
+            if do_2D:
+                self.cross_modules(board, self.comps_hash)
+                self.remove_paste_and_glue(board, self.comps_hash)
+                if hasattr(self, 'hide_excluded') and self.hide_excluded:
+                    self.remove_fab(board, self.comps_hash)
+            if do_3D:
+                # Disable the models that aren't for this variant
+                self.apply_3D_variant_aspect(board)
+                # Remove the 3D models for not fitted components (also rename)
+                self.remove_3D_models(board, self.comps_hash)
+                # Highlight selected components
+                self.highlight_3D_models(board, highlight)
+        if self._sub_pcb:
+            # Current implementation isn't efficient
+            self.apply_sub_pcb()
         return True
 
     def unfilter_pcb_components(self, board, do_3D=False, do_2D=True):
         if not self._comps:
+            return
+        if self._sub_pcb:
+            # Undo the sub-PCB: just reload the PCB
+            GS.board = None
+            load_board()
             return
         if do_2D:
             self.uncross_modules(board, self.comps_hash)
@@ -918,4 +932,7 @@ class VariantOptions(BaseOptions):
         if self.variant:
             # Apply the variant
             comps = self.variant.filter(comps)
+            self._sub_pcb = self.variant._sub_pcb
+        else:
+            self._sub_pcb = None
         self._comps = comps

@@ -1,0 +1,60 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  hide_excluded: true
+  pcb_finish: ENIG
+  solder_mask_color: blue
+
+variants:
+  - name: 'default'
+    comment: 'Default variant'
+    type: ibom
+    sub_pcbs:
+      - name: A
+        tlx: 89
+        tly: 89
+        brx: 111
+        bry: 111
+      - name: B
+        ref: B2
+      - name: C
+        ref: B3
+
+outputs:
+  - name: 'pcb_A'
+    comment: "PCB A"
+    type: pcb_variant
+    options:
+      variant: default[A]
+      title: 'Hello %V'
+
+  - name: 'pcb_B'
+    comment: "PCB B"
+    type: pcb_variant
+    options:
+      variant: default[B]
+      title: 'Hello %V'
+
+  - name: 'pcb_C'
+    comment: "PCB C"
+    type: pcb_variant
+    options:
+      variant: default[C]
+      title: 'Hello %V'
+
+  - name: draw_A
+    type: pcbdraw
+    options:
+      variant: default[A]
+
+  - name: draw_B
+    type: pcbdraw
+    options:
+      variant: default[B]
+
+  - name: draw_C
+    type: pcbdraw
+    options:
+      variant: default[C]

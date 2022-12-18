@@ -501,3 +501,49 @@ class BaseOptions(Optionable):
         self._expand_id = cur_id
         self._expand_ext = cur_ext
         return res
+
+
+class PanelOptions(BaseOptions):
+    """ A class for options that uses KiKit's units """
+    _num_regex = re.compile(r'([\d\.]+)(mm|cm|dm|m|mil|inch|in)')
+    _ang_regex = re.compile(r'([\d\.]+)(deg|°|rad)')
+
+    def add_units(self, ops, def_units=None):
+        if def_units is None:
+            def_units = self._parent._parent.units
+        for op in ops:
+            val = getattr(self, op)
+            if val is None:
+                continue
+            if isinstance(val, (int, float)):
+                setattr(self, op, str(val)+def_units)
+            else:
+                m = PanelOptions._num_regex.match(val)
+                if m is None:
+                    raise KiPlotConfigurationError('Malformed value `{}: {}` must be a number and units'.format(op, val))
+                num = m.group(1)
+                try:
+                    num_d = float(num)
+                except ValueError:
+                    num_d = None
+                if num_d is None:
+                    raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))
+
+    def add_angle(self, ops, def_units=None):
+        if def_units is None:
+            def_units = self._parent._parent.units
+        for op in ops:
+            val = getattr(self, op)
+            if isinstance(val, (int, float)):
+                setattr(self, op, str(val)+def_units)
+            else:
+                m = PanelOptions._ang_regex.match(val)
+                if m is None:
+                    raise KiPlotConfigurationError('Malformed angle `{}: {}` must be a number and its type'.format(op, val))
+                num = m.group(1)
+                try:
+                    num_d = float(num)
+                except ValueError:
+                    num_d = None
+                if num_d is None:
+                    raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))

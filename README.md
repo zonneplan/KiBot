@@ -146,6 +146,7 @@ Notes:
 
 [**KiKit**](https://github.com/yaqwsx/KiKit) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/yaqwsx/KiKit) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `panelize`, `stencil_3d`, `stencil_for_jig`
+- Optional to separate multiboard projects for general use
 
 [**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `pcb_print`, `pcbdraw`
@@ -1038,6 +1039,28 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
                        Use '_var_rename' to transform VARIANT:FIELD fields.
                        Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
                        Use '_kicost_rename' to apply KiCost field rename rules.
+    - `sub_pcbs`: [list(dict)] Used for multi-board workflows as defined by KiKit.
+                  I don't recommend using it, for detail read
+                  [this](https://github.com/INTI-CMNB/KiBot/tree/master/docs/1_SCH_2_part_PCBs).
+                  But if you really need it you can define the sub-PCBs here.
+                  Then you just use *VARIANT[SUB_PCB_NAME]* instead of just *VARIANT*.
+      * Valid keys:
+        - **`name`**: [string=''] Name for this sub-pcb.
+        - *ref*: Alias for reference.
+        - **`reference`**: [string=''] Use it for the annotations method.
+                           This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
+                           When empty the sub-PCB is specified using a rectangle.
+        - *bottom_right_x*: Alias for brx.
+        - *bottom_right_y*: Alias for bry.
+        - `brx`: [number|string] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `file_id`: [string=''] Text to use as the replacement for %v expansion.
+                     When empty we use the parent `file_id` plus the `name` of the sub-PCB.
+        - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - *top_left_x*: Alias for tlx.
+        - *top_left_y*: Alias for tly.
+        - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
     - `variant_field`: [string='Config'] Name of the field that stores board variant for component.
     - `variants_blacklist`: [string|list(string)=''] List of board variants to exclude from the BOM.
     - `variants_whitelist`: [string|list(string)=''] List of board variants to include in the BOM.
@@ -1061,6 +1084,28 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
                        Use '_var_rename' to transform VARIANT:FIELD fields.
                        Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
                        Use '_kicost_rename' to apply KiCost field rename rules.
+    - `sub_pcbs`: [list(dict)] Used for multi-board workflows as defined by KiKit.
+                  I don't recommend using it, for detail read
+                  [this](https://github.com/INTI-CMNB/KiBot/tree/master/docs/1_SCH_2_part_PCBs).
+                  But if you really need it you can define the sub-PCBs here.
+                  Then you just use *VARIANT[SUB_PCB_NAME]* instead of just *VARIANT*.
+      * Valid keys:
+        - **`name`**: [string=''] Name for this sub-pcb.
+        - *ref*: Alias for reference.
+        - **`reference`**: [string=''] Use it for the annotations method.
+                           This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
+                           When empty the sub-PCB is specified using a rectangle.
+        - *bottom_right_x*: Alias for brx.
+        - *bottom_right_y*: Alias for bry.
+        - `brx`: [number|string] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `file_id`: [string=''] Text to use as the replacement for %v expansion.
+                     When empty we use the parent `file_id` plus the `name` of the sub-PCB.
+        - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - *top_left_x*: Alias for tlx.
+        - *top_left_y*: Alias for tly.
+        - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
     - `variant`: [string|list(string)=''] Board variant(s).
 - `kicost`: KiCost variant style
         The `variant` field (configurable) contains one or more values.
@@ -1086,6 +1131,28 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
     - `separators`: [string=',;/ '] Valid separators for variants in the variant field.
                     Each character is a valid separator.
                     Only supported internally, don't use it if you plan to use KiCost.
+    - `sub_pcbs`: [list(dict)] Used for multi-board workflows as defined by KiKit.
+                  I don't recommend using it, for detail read
+                  [this](https://github.com/INTI-CMNB/KiBot/tree/master/docs/1_SCH_2_part_PCBs).
+                  But if you really need it you can define the sub-PCBs here.
+                  Then you just use *VARIANT[SUB_PCB_NAME]* instead of just *VARIANT*.
+      * Valid keys:
+        - **`name`**: [string=''] Name for this sub-pcb.
+        - *ref*: Alias for reference.
+        - **`reference`**: [string=''] Use it for the annotations method.
+                           This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
+                           When empty the sub-PCB is specified using a rectangle.
+        - *bottom_right_x*: Alias for brx.
+        - *bottom_right_y*: Alias for bry.
+        - `brx`: [number|string] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `file_id`: [string=''] Text to use as the replacement for %v expansion.
+                     When empty we use the parent `file_id` plus the `name` of the sub-PCB.
+        - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - *top_left_x*: Alias for tlx.
+        - *top_left_y*: Alias for tly.
+        - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
     - `variant`: [string=''] Variants to match (regex).
     - `variant_field`: [string='variant'] Name of the field that stores board variant/s for component.
                        Only supported internally, don't use it if you plan to use KiCost.
