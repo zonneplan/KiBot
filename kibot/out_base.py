@@ -409,8 +409,8 @@ class VariantOptions(BaseOptions):
         self.old_layers = old_layers
         self.old_fadhes = old_fadhes
         self.old_badhes = old_badhes
-        self.fadhes = fadhes
-        self.badhes = badhes
+        self._fadhes = fadhes
+        self._badhes = badhes
         return exclude
 
     def restore_paste_and_glue(self, board, comps_hash):
@@ -429,9 +429,9 @@ class VariantOptions(BaseOptions):
                         p.SetLayerSet(pad_layers)
         if GS.global_remove_adhesive_for_dnp:
             for gi in self.old_fadhes:
-                gi.SetLayer(self.fadhes)
+                gi.SetLayer(self._fadhes)
             for gi in self.old_badhes:
-                gi.SetLayer(self.badhes)
+                gi.SetLayer(self._badhes)
 
     def remove_fab(self, board, comps_hash):
         """ Remove from Fab the excluded components. """
@@ -458,16 +458,16 @@ class VariantOptions(BaseOptions):
         # Store the data to undo the above actions
         self.old_ffab = old_ffab
         self.old_bfab = old_bfab
-        self.ffab = ffab
-        self.bfab = bfab
+        self._ffab = ffab
+        self._bfab = bfab
 
     def restore_fab(self, board, comps_hash):
         if comps_hash is None:
             return
         for gi in self.old_ffab:
-            gi.SetLayer(self.ffab)
+            gi.SetLayer(self._ffab)
         for gi in self.old_bfab:
-            gi.SetLayer(self.bfab)
+            gi.SetLayer(self._bfab)
 
     def replace_3D_models(self, models, new_model, c):
         """ Changes the 3D model using a provided model.
@@ -726,6 +726,10 @@ class VariantOptions(BaseOptions):
                 self.remove_paste_and_glue(board, self.comps_hash)
                 if hasattr(self, 'hide_excluded') and self.hide_excluded:
                     self.remove_fab(board, self.comps_hash)
+                # Copy any change in the schematic fields to the PCB properties
+                # I.e. the value of a component so it gets updated in the *.Fab layer
+                # Also useful for iBoM that can read the sch fields from the PCB
+                self.sch_fields_to_pcb(board, self.comps_hash)
             if do_3D:
                 # Disable the models that aren't for this variant
                 self.apply_3D_variant_aspect(board)
@@ -751,6 +755,8 @@ class VariantOptions(BaseOptions):
             self.restore_paste_and_glue(board, self.comps_hash)
             if hasattr(self, 'hide_excluded') and self.hide_excluded:
                 self.restore_fab(board, self.comps_hash)
+            # Restore the PCB properties and values
+            self.restore_sch_fields_to_pcb(board)
         if do_3D:
             # Undo the removing (also rename)
             self.restore_3D_models(board, self.comps_hash)
@@ -789,10 +795,9 @@ class VariantOptions(BaseOptions):
                 GS.board.GetTitleBlock().SetTitle(self.old_title)
             self.old_title = None
 
-    def sch_fields_to_pcb(self, comps, board):
+    def sch_fields_to_pcb(self, board, comps_hash):
         """ Change the module/footprint data according to the filtered fields.
             iBoM can parse it. """
-        comps_hash = self.get_refs_hash()
         self.sch_fields_to_pcb_bkp = {}
         first = True
         for m in GS.get_modules_board(board):
