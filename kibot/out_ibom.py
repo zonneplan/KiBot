@@ -184,8 +184,9 @@ class IBoMOptions(VariantOptions):
             with open(netlist, 'wb') as f:
                 GS.sch.save_netlist(f, self._comps)
             # Write a board with the filtered values applied
-            self.sch_fields_to_pcb(self._comps, GS.board)
+            self.filter_pcb_components(GS.board)
             pcb_name, _ = self.save_tmp_dir_board('ibom', force_dir=net_dir)
+            self.unfilter_pcb_components(GS.board)
         else:
             # Check if the user wants extra_fields but there is no data about them (#68)
             if self.need_extra_fields() and not os.path.isfile(self.extra_data_file):
@@ -233,8 +234,6 @@ class IBoMOptions(VariantOptions):
             if net_dir:
                 logger.debug('Removing temporal variant dir `{}`'.format(net_dir))
                 rmtree(net_dir)
-                # Restore the PCB properties and values
-                self.restore_sch_fields_to_pcb(GS.board)
             # Restore the real name selected
             self.extra_data_file = ori_extra_data_file
         logger.debug('Output from command:\n'+cmd_output_dec+'\n')
