@@ -933,6 +933,9 @@ outputs:
       # [string=''] Comma separated list of fields that components will be grouped by.
       # Value and Footprint are used when nothing is specified
       group_fields: ''
+      # [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+      # Affected by global options
+      hide_excluded: false
       # [boolean=false] Hide footprint pads by default
       hide_pads: false
       # [boolean=false] Hide silkscreen by default

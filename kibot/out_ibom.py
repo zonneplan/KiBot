@@ -117,6 +117,9 @@ class IBoMOptions(VariantOptions):
             """ Name of the extra field that indicates do not populate status.
                 Components with this field not empty will be blacklisted.
                 IBoM option, avoid using in conjunction with KiBot variants/filters """
+            self.hide_excluded = False
+            """ Hide components in the Fab layer that are marked as excluded by a variant.
+                Affected by global options """
         super().__init__()
         self.add_to_doc('variant', WARNING_MIX)
         self.add_to_doc('dnf_filter', WARNING_MIX)
@@ -204,7 +207,7 @@ class IBoMOptions(VariantOptions):
         self.blacklist += to_remove
         # Convert attributes into options
         for k, v in self.get_attrs_gen():
-            if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform']:
+            if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform', 'hide_excluded']:
                 continue
             if k == 'offset_back_rotation' and version < (2, 5, 0, 2):
                 continue
