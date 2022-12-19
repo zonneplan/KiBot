@@ -5,9 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.5.2] - Unreleased
-### Fixed
+### Added
 - New output:
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
+- iBoM:
+  - `hide_excluded` to hide excluded *.Fab drawings.
+### Fixed
 - PCB_Print:
   - Images not showing in custom frames. (#352)
 

@@ -2199,6 +2199,8 @@ Notes:
                              Leave it blank for most uses, data will be extracted from the PCB.
         - `group_fields`: [string=''] Comma separated list of fields that components will be grouped by.
                           Value and Footprint are used when nothing is specified.
+        - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+                           Affected by global options.
         - `hide_pads`: [boolean=false] Hide footprint pads by default.
         - `hide_silkscreen`: [boolean=false] Hide silkscreen by default.
         - `highlight_pin1`: [boolean=false] Highlight pin1 by default.
