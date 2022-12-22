@@ -33,14 +33,14 @@ class PCB_Variant_Options(VariantOptions):
 
     def run(self, output):
         super().run(output)
-        self.set_title(self.title)
         self.filter_pcb_components(GS.board, do_3D=True)
+        self.set_title(self.title)
         logger.debug('Saving PCB to '+output)
         GS.board.Save(output)
         if self.copy_project:
             GS.copy_project(output)
-        self.unfilter_pcb_components(GS.board, do_3D=True)
         self.restore_title()
+        self.unfilter_pcb_components(GS.board, do_3D=True)
 
 
 @output_class
