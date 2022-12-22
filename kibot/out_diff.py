@@ -69,7 +69,8 @@ class DiffOptions(BaseOptions):
             """ [git,file,output,multivar,current] How to interpret the `new` name. Use `git` for a git hash, branch, etc.
                 Use `current` for the currently loaded PCB/Schematic.
                 Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
-                Use `multivar` to compare a set of variants, in this mode `new` is the list of variants.
+                Use `multivar` to compare a set of variants, in this mode `new` is the list of outputs for the variants.
+                This is an extension of the `output` mode.
                 If `old` is also `multivar` then it becomes the reference, otherwise we compare using pairs of variants """
             self.cache_dir = ''
             """ Directory to cache the intermediate files. Leave it blank to disable the cache """
