@@ -264,6 +264,20 @@ class Optionable(object):
             return self.variant.name
         return Optionable._find_global_variant_name()
 
+    @staticmethod
+    def _find_global_subpcb():
+        if GS.solved_global_variant and GS.solved_global_variant._sub_pcb:
+            return GS.solved_global_variant._sub_pcb.name
+        return ''
+
+    def _find_subpcb(self):
+        """ Returns the name of the sub-PCB.
+            Also try with the globally defined variant.
+            If no variant is defined an empty string is returned. """
+        if hasattr(self, 'variant') and self.variant and self.variant._sub_pcb:
+            return self.variant._sub_pcb.name
+        return Optionable._find_global_variant()
+
     def expand_filename_common(self, name, parent):
         """ Expansions common to the PCB and Schematic """
         # PCB expansions, explicit
@@ -295,6 +309,7 @@ class Optionable(object):
             name = name.replace('%i', self._expand_id)
             name = name.replace('%v', _cl(self._find_variant()))
             name = name.replace('%V', _cl(self._find_variant_name()))
+            name = name.replace('%S', _cl(self._find_subpcb()))
             name = name.replace('%x', self._expand_ext)
             replace_id = ''
             if parent and hasattr(parent, 'output_id'):

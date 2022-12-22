@@ -2,7 +2,7 @@
 
 ![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png)
 
-[![Python application](https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=dev&style=plastic)](https://github.com/INTI-CMNB/KiBot/actions)
+[![Python application](https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=subpcb&style=plastic)](https://github.com/INTI-CMNB/KiBot/actions)
 [![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
@@ -586,13 +586,14 @@ The pattern uses the following expansions:
 - **%I** an ID defined by the user for this output.
 - **%p** pcb/sch title from pcb metadata.
 - **%r** revision from pcb/sch metadata.
+- **%S** sub-PCB name (related to multiboards).
 - **%T** time the script was started.
 - **%x** a suitable extension for the output type.
 - **%v** the `file_id` of the current variant, or the global variant if outside a variant scope.
 - **%V** the `name` of the current variant, or the global variant if outside a variant scope.
 
 They are compatible with the ones used by IBoM.
-The default value for `global.output` is `%f-%i.%x`.
+The default value for `global.output` is `%f-%i%I%v.%x`.
 If you want to include the revision you could add the following definition:
 
 ```yaml
@@ -5228,3 +5229,4 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
   - **Most icons for the navigate_results output**: The KiCad project
   - **PTV09A 3D Model**: Dmitry Levin ([GrabCad](https://grabcad.com/dmitry.levin-6))
   - **PcbDraw PCB example**: [Arduino Learning Kit Starter](https://github.com/RoboticsBrno/ArduinoLearningKitStarter)
+  - **Battery charger example**: [RB0002-BatteryPack](https://cadlab.io/project/22740/master/files)
