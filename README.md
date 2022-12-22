@@ -123,7 +123,7 @@ Notes:
 - When installing from the [Debian repo](https://set-soft.github.io/debian/) you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
 - When installing using `pip` the dependencies marked with ![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) will be automatically installed.
 - The dependencies marked with ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png) can be downloaded on-demand by KiBot.
-  Note this is experimental and is mostly oriented to 64 bits Linux systems.
+  Note this is poorly tested and is mostly oriented to 64 bits Linux systems. Please report problems.
 - The `kibot-check` tool can help you to know which dependencies are missing.
 - Note that on some systems (i.e. Debian) ImageMagick disables PDF manipulation in its `policy.xml` file.
   Comment or remove lines like this: `<policy domain="coder" rights="none" pattern="PDF" />` (On Debian: `/etc/ImageMagick-6/policy.xml`)
@@ -4661,7 +4661,7 @@ Another example, but using variants can be found [here](https://github.com/INTI-
 
 The available options are:
 
-- **additional_args**: Additional text to add to the KiBot invocation. This is experimental and only intended for advanced use.
+- **additional_args**: Additional text to add to the KiBot invocation. This is intended for advanced use, report problems.
 - **config**: The KiBot config file to use. The first file that matches `*.kibot.yaml` is used when omitted.
 - **dir**: Output directory for the generated files. The current directory is used when omitted.
 - **board**: Name of the PCB file. The first file that matches `*.kicad_pcb` is used when omitted.
