@@ -596,11 +596,8 @@ class BoMOptions(BaseOptions):
 
     def _normalize_variant(self):
         """ Replaces the name of the variant by an object handling it. """
-        if self.variant:
-            if not RegOutput.is_variant(self.variant):
-                raise KiPlotConfigurationError("Unknown variant name `{}`".format(self.variant))
-            self.variant = RegOutput.get_variant(self.variant)
-        else:
+        self.variant = RegOutput.check_variant(self.variant)
+        if self.variant is None:
             # If no variant is specified use the KiBoM variant class with basic functionality
             self.variant = KiBoM()
             self.variant.config_field = self.fit_field

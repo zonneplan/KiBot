@@ -5,8 +5,12 @@
 # Project: KiBot (formerly KiPlot)
 from collections import OrderedDict
 from copy import copy
+from .gs import GS
 from .optionable import Optionable
 from .error import KiPlotConfigurationError
+from . import log
+
+logger = log.get_logger()
 
 
 class Registrable(object):
@@ -125,6 +129,8 @@ class RegOutput(Optionable, Registrable):
     @staticmethod
     def check_variant(variant):
         if variant:
+            if isinstance(variant, RegVariant):
+                return variant
             if not RegOutput.is_variant(variant):
                 raise KiPlotConfigurationError("Unknown variant name `{}`".format(variant))
             return RegOutput.get_variant(variant)
@@ -167,3 +173,12 @@ class RegDependency(Registrable):
             old_reg.roles.extend(aclass.roles)
         else:
             cl._registered[name] = aclass
+
+
+def solve_variant(variant):
+    if isinstance(variant, str):
+        return RegOutput.check_variant(variant)
+    return variant
+
+
+GS.solve_variant = solve_variant

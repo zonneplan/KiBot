@@ -246,7 +246,8 @@ class Optionable(object):
         """ Returns the text to add for the current variant.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
-        if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'file_id'):
+        if hasattr(self, 'variant') and self.variant:
+            self.variant = GS.solve_variant(self.variant)
             return self.variant.file_id
         return Optionable._find_global_variant()
 
@@ -260,7 +261,8 @@ class Optionable(object):
         """ Returns the name for the current variant.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
-        if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'name'):
+        if hasattr(self, 'variant') and self.variant:
+            self.variant = GS.solve_variant(self.variant)
             return self.variant.name
         return Optionable._find_global_variant_name()
 
@@ -274,8 +276,10 @@ class Optionable(object):
         """ Returns the name of the sub-PCB.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
-        if hasattr(self, 'variant') and self.variant and self.variant._sub_pcb:
-            return self.variant._sub_pcb.name
+        if hasattr(self, 'variant') and self.variant:
+            self.variant = GS.solve_variant(self.variant)
+            if self.variant._sub_pcb:
+                return self.variant._sub_pcb.name
         return Optionable._find_global_variant()
 
     def expand_filename_common(self, name, parent):
