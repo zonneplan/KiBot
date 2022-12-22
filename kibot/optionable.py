@@ -280,7 +280,7 @@ class Optionable(object):
             self.variant = GS.solve_variant(self.variant)
             if self.variant._sub_pcb:
                 return self.variant._sub_pcb.name
-        return Optionable._find_global_variant()
+        return Optionable._find_global_subpcb()
 
     def expand_filename_common(self, name, parent):
         """ Expansions common to the PCB and Schematic """
