@@ -743,7 +743,7 @@ class VariantOptions(BaseOptions):
         return True
 
     def unfilter_pcb_components(self, board, do_3D=False, do_2D=True):
-        if not self._comps:
+        if not self._comps and not self._sub_pcb:
             return
         if self._sub_pcb:
             # Undo the sub-PCB: just reload the PCB
