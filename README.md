@@ -206,6 +206,12 @@ Notes:
   - Create PDF, PNG, PS and EPS formats for `pcb_print`
   - Create PNG, JPG and BMP images for `pcbdraw`
 
+[**Bash**](https://www.gnu.org/software/bash/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.gnu.org/software/bash/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/bash)
+- Optional to:
+  - Run external commands to create replacement text for `pcb_replace`
+  - Run external commands to create replacement text for `sch_replace`
+  - Run external commands to create replacement text for `set_text_variables`
+
 [**Ghostscript**](https://www.ghostscript.com/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.ghostscript.com/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/ghostscript) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
   - Create outputs preview for `navigate_results`

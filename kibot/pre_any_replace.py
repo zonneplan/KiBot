@@ -93,6 +93,7 @@ class Base_Replace(BasePreFlight):  # noqa: F821
             content = f.read()
         os.environ['KIBOT_' + type(self)._context + '_NAME'] = file
         o = self._value
+        bash_command = None
         for r in o.replace_tags:
             text = r.text
             if not text:
@@ -100,7 +101,9 @@ class Base_Replace(BasePreFlight):  # noqa: F821
                 if re_git.search(command):
                     git_command = self.ensure_tool('git')
                     command = re_git.sub(r'\1'+git_command+' ', command)
-                cmd = ['/bin/bash', '-c', command]
+                if not bash_command:
+                    bash_command = self.ensure_tool('Bash')
+                cmd = [bash_command, '-c', command]
                 logger.debugl(2, 'Running: {}'.format(cmd))
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:

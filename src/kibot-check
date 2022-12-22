@@ -19,6 +19,53 @@ import subprocess
 import sys
 
 deps = '{\
+    "Bash": {\
+        "arch": "bash",\
+        "command": "bash",\
+        "comments": [],\
+        "deb_package": "bash",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 3,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": false,\
+        "name": "Bash",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "pcb_replace",\
+        "plugin_dirs": null,\
+        "pypi_name": "Bash",\
+        "roles": [\
+            {\
+                "desc": "Run external commands to create replacement text",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "pcb_replace",\
+                "version": null\
+            },\
+            {\
+                "desc": "Run external commands to create replacement text",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "sch_replace",\
+                "version": null\
+            },\
+            {\
+                "desc": "Run external commands to create replacement text",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "set_text_variables",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": "https://www.gnu.org/software/bash/",\
+        "url_down": null\
+    },\
     "Colorama": {\
         "arch": "python-colorama",\
         "command": "colorama",\

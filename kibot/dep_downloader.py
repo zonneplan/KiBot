@@ -84,6 +84,10 @@ Dependencies:
     debian: xvfb
     arch: xorg-server-xvfb
     no_cmd_line_version: true
+  - name: Bash
+    url: https://www.gnu.org/software/bash/
+    debian: bash
+    arch: bash
 """
 import importlib
 import os

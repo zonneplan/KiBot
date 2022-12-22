@@ -7,6 +7,8 @@
 Dependencies:
   - from: Git
     role: Find commit hash and/or date
+  - from: Bash
+    role: Run external commands to create replacement text
 """
 import json
 import os
@@ -114,6 +116,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
             os.environ['KIBOT_PCB_NAME'] = GS.pcb_file
         if GS.sch_file:
             os.environ['KIBOT_SCH_NAME'] = GS.sch_file
+        bash_command = None
         for r in o:
             text = r.text
             if not text and r.command:
@@ -121,7 +124,9 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 if re_git.search(command):
                     git_command = self.ensure_tool('git')
                     command = re_git.sub(r'\1'+git_command.replace('\\', r'\\')+' ', command)
-                cmd = ['/bin/bash', '-c', command]
+                if not bash_command:
+                    bash_command = self.ensure_tool('Bash')
+                cmd = [bash_command, '-c', command]
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
                     logger.error('Failed to execute:\n{}\nreturn code {}'.format(r.command, result.returncode))
