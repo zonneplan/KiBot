@@ -49,6 +49,8 @@ class Optionable(object):
         self._expand_ext = ''
         # Used to indicate we have an output pattern and it must be suitable to generate multiple files
         self._output_multiple_files = False
+        # The KiBoM output uses "variant" for the KiBoM variant, not for KiBot variants
+        self._variant_is_real = True
         super().__init__()
         for var in ['output', 'variant', 'units', 'hide_excluded']:
             glb = getattr(GS, 'global_'+var)
@@ -246,6 +248,8 @@ class Optionable(object):
         """ Returns the text to add for the current variant.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
+        if not self._variant_is_real:
+            return self.variant
         if hasattr(self, 'variant') and self.variant:
             self.variant = GS.solve_variant(self.variant)
             return self.variant.file_id
@@ -261,6 +265,8 @@ class Optionable(object):
         """ Returns the name for the current variant.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
+        if not self._variant_is_real:
+            return self.variant
         if hasattr(self, 'variant') and self.variant:
             self.variant = GS.solve_variant(self.variant)
             return self.variant.name
@@ -276,6 +282,8 @@ class Optionable(object):
         """ Returns the name of the sub-PCB.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
+        if not self._variant_is_real:
+            return ''
         if hasattr(self, 'variant') and self.variant:
             self.variant = GS.solve_variant(self.variant)
             if self.variant._sub_pcb:

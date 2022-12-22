@@ -360,6 +360,8 @@ class KiBoMOptions(BaseOptions):
             """ *[HTML,CSV,XML,XLSX] Format for the BoM """
         super().__init__()
         self._expand_id = 'bom'
+        # Variant isn't related to Kibot
+        self._variant_is_real = False
 
     def config(self, parent):
         super().config(parent)
