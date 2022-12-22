@@ -312,7 +312,8 @@ class TestContext(object):
             self.err = self.err.decode()
             self.out = self.err
         exp_ret = 0 if ret_val is None else ret_val
-        assert ret_code == exp_ret, 'ret_code: {} ({}) expected {}'.format(ret_code, error_level_to_name[ret_code], exp_ret)
+        assert ret_code == exp_ret, 'ret_code: {} ({}) expected {} ({})'.format(ret_code, error_level_to_name[ret_code],
+                                                                                exp_ret, error_level_to_name[exp_ret])
         if use_a_tty:
             os.close(master)
             os.close(slave)
