@@ -2006,6 +2006,8 @@ Notes:
         - **`mirror_y_axis`**: [boolean=false] Invert the Y axis.
         - **`output`**: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
         - **`pth_and_npth_single_file`**: [boolean=true] Generate one file for both, plated holes and non-plated holes, instead of two separated files.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `left_digits`: [number=0] number of digits for integer part of coordinates (0 is auto).
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                  Not generated unless a format is specified.
@@ -2014,6 +2016,8 @@ Notes:
             - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
         - `minimal_header`: [boolean=false] Use a minimal header in the file.
         - `npth_id`: [string] Force this replacement for %i when generating NPTH files.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `pth_id`: [string] Force this replacement for %i when generating PTH and unified files.
         - `report`: [dict|string] Name of the drill report. Not generated unless a name is specified.
           * Valid keys:
@@ -2022,6 +2026,8 @@ Notes:
         - `right_digits`: [number=0] number of digits for mantissa part of coordinates (0 is auto).
         - `route_mode_for_oval_holes`: [boolean=true] Use route command for oval holes (G00), otherwise use G85.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
+        - `variant`: [string=''] Board variant to apply.
+                     Used for sub-PCBs.
         - `zeros_format`: [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
@@ -2076,18 +2082,24 @@ Notes:
     - **`options`**: [dict] Options for the `gerb_drill` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
             - **`output`**: [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
             - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
         - `npth_id`: [string] Force this replacement for %i when generating NPTH files.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `pth_id`: [string] Force this replacement for %i when generating PTH and unified files.
         - `report`: [dict|string] Name of the drill report. Not generated unless a name is specified.
           * Valid keys:
             - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
+        - `variant`: [string=''] Board variant to apply.
+                     Used for sub-PCBs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
