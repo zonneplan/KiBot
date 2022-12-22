@@ -116,6 +116,8 @@ class AnyLayerOptions(VariantOptions):
 
     def run(self, output_dir, layers):
         super().run(output_dir)
+        # Apply the variants and filters
+        exclude = self.filter_pcb_components(GS.board)
         # fresh plot controller
         plot_ctrl = PLOT_CONTROLLER(GS.board)
         # set up plot options for the whole output
@@ -127,8 +129,6 @@ class AnyLayerOptions(VariantOptions):
         if create_job:
             jobfile_writer = GERBER_JOBFILE_WRITER(GS.board)
         plot_ctrl.SetColorMode(True)
-        # Apply the variants and filters
-        exclude = self.filter_pcb_components(GS.board)
         # Plot every layer in the output
         generated = {}
         layers = Layer.solve(layers)

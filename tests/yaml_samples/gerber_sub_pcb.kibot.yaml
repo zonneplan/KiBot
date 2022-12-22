@@ -1,0 +1,15 @@
+# Drills and Gerber drills
+kibot:
+  version: 1
+
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
+
+outputs:
+  - name: 'gerbers'
+    comment: "Gerbers for the Gerber god"
+    type: gerber
+    dir: gerberdir
+    options:
+      variant: default[connector]
+    layers: copper
