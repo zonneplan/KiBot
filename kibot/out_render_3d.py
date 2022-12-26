@@ -252,6 +252,7 @@ class Render3DOptions(Base3DOptions):
         if self._show_all_components:
             # Don't change anything
             return
+        logger.debug('Applying components list ...')
         # The user specified a list of components, we must remove the rest
         if not self._comps:
             # No variant or filter applied
@@ -266,6 +267,7 @@ class Render3DOptions(Base3DOptions):
             if c.ref not in show_components and c.fitted:
                 c.fitted = False
                 self.undo_show.add(c.ref)
+                logger.debugl(2, '- Removing '+c.ref)
 
     def undo_show_components(self):
         if self._show_all_components:

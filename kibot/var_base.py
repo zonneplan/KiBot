@@ -66,11 +66,11 @@ class SubPCBOptions(PanelOptions):
             return "annotation; ref: {}".format(self.reference)
         return "rectangle; tlx: {}; tly: {}; brx: {}; bry: {}".format(self.tlx, self.tly, self.brx, self.bry)
 
-    def load_board(self, dest):
+    def load_board(self, pcb_file, dest):
         # Make sure kikit is available
         command = GS.ensure_tool('global', 'KiKit')
         # Execute the separate
-        cmd = [command, 'separate', '-s', self.get_separate_source(), GS.pcb_file, dest]
+        cmd = [command, 'separate', '-s', self.get_separate_source(), pcb_file, dest]
         run_command(cmd)
         # Load this board
         GS.board = None

@@ -717,7 +717,14 @@ class VariantOptions(BaseOptions):
     def apply_sub_pcb(self):
         with TemporaryDirectory(prefix='kibot-separate') as d:
             dest = os.path.join(d, os.path.basename(GS.pcb_file))
-            self._sub_pcb.load_board(dest)
+            # Save the current PCB, with any changes applied
+            with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
+                pcb_file = f.name
+            GS.board.Save(pcb_file)
+            # Now do the separation
+            self._sub_pcb.load_board(pcb_file, dest)
+            # Remove the temporal PCB
+            os.remove(pcb_file)
 
     def will_filter_pcb_components(self):
         """ True if we will apply filters/variants """
