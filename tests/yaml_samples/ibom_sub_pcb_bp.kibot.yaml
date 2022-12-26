@@ -1,0 +1,12 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
+
+outputs:
+  - name: 'interactive_bom'
+    comment: "Interactive Bill of Materials (HTML)"
+    type: ibom
+    dir: BoM

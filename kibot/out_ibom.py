@@ -175,7 +175,7 @@ class IBoMOptions(VariantOptions):
         ori_extra_data_file = self.extra_data_file
         net_dir = None
         pcb_name = GS.pcb_file
-        if self._comps:
+        if self.will_filter_pcb_components():
             # Write a custom netlist to a temporal dir
             net_dir = mkdtemp(prefix='tmp-kibot-ibom-')
             netlist = os.path.join(net_dir, GS.pcb_basename+'.xml')
