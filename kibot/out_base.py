@@ -716,8 +716,12 @@ class VariantOptions(BaseOptions):
             dest = os.path.join(d, os.path.basename(GS.pcb_file))
             self._sub_pcb.load_board(dest)
 
+    def will_filter_pcb_components(self):
+        """ True if we will apply filters/variants """
+        return self._comps or self._sub_pcb
+
     def filter_pcb_components(self, board, do_3D=False, do_2D=True, highlight=None):
-        if not self._comps and not self._sub_pcb:
+        if not self.will_filter_pcb_components():
             return False
         if self._comps:
             self.comps_hash = self.get_refs_hash()

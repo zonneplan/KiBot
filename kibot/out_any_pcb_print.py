@@ -54,12 +54,14 @@ class Any_PCB_PrintOptions(VariantOptions):
         super().config(parent)
         self.drill_marks = DRILL_MARKS_MAP[self.drill_marks]
 
-    def filter_components(self, force_copy):
-        if not self._comps and not force_copy:
+    def filter_components(self):
+        if not self.will_filter_pcb_components() and self.title == '':
             return GS.pcb_file, None
         self.filter_pcb_components(GS.board)
+        self.set_title(self.title)
         # Save the PCB to a temporal dir
         fname, pcb_dir = self.save_tmp_dir_board('pdf_pcb_print')
+        self.restore_title()
         self.unfilter_pcb_components(GS.board)
         return fname, pcb_dir
 
@@ -86,8 +88,7 @@ class Any_PCB_PrintOptions(VariantOptions):
             cmd.extend(['--color_theme', self.color_theme])
         if svg:
             cmd.append('--svg')
-        self.set_title(self.title)
-        board_name, board_dir = self.filter_components(self.title != '')
+        board_name, board_dir = self.filter_components()
         cmd.extend([board_name, os.path.dirname(output)])
         cmd, video_remove = add_extra_options(cmd)
         # Add the layers
@@ -96,7 +97,6 @@ class Any_PCB_PrintOptions(VariantOptions):
             cmd.append('Edge.Cuts')
         # Execute it
         ret = exec_with_retry(cmd)
-        self.restore_title()
         # Remove the temporal PCB
         if board_dir:
             logger.debug('Removing temporal variant dir `{}`'.format(board_dir))
