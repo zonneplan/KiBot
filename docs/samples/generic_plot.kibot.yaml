@@ -1050,6 +1050,7 @@ outputs:
   # Note that this output is provided as a compatibility tool.
   # We recommend using the `bom` output instead.
   # This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
+  # Also note that here the KiBot concept of variants doesn't apply.
   - name: 'kibom_example'
     comment: 'Used to generate the BoM in HTML or CSV format using the KiBoM plug-in.'
     type: 'kibom'

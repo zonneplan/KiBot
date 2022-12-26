@@ -436,7 +436,8 @@ class KiBoM(BaseOutput):  # noqa: F821
         For more information: https://github.com/INTI-CMNB/KiBoM
         Note that this output is provided as a compatibility tool.
         We recommend using the `bom` output instead.
-        This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema. """
+        This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
+        Also note that here the KiBot concept of variants doesn't apply. """
     def __init__(self):
         super().__init__()
         with document:

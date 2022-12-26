@@ -2370,6 +2370,7 @@ Notes:
                  Note that this output is provided as a compatibility tool.
                  We recommend using the `bom` output instead.
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
+                 Also note that here the KiBot concept of variants doesn't apply.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes.
     - **`dir`**: [string='./'] Output directory for the generated files.
