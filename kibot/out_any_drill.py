@@ -67,7 +67,7 @@ class AnyDrill(VariantOptions):
                         }
         self._map_ext = {'hpgl': 'plt', 'ps': 'ps', 'gerber': 'gbr', 'dxf': 'dxf', 'svg': 'svg', 'pdf': 'pdf'}
         self._unified_output = False
-        self.add_to_doc('variant', 'Used for sub-PCBs')
+        self.help_only_sub_pcbs()
 
     def config(self, parent):
         super().config(parent)

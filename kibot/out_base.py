@@ -256,6 +256,9 @@ class VariantOptions(BaseOptions):
             return []
         return [c.ref for c in self._comps if not c.fitted or not c.included]
 
+    def help_only_sub_pcbs(self):
+        self.add_to_doc('variant', 'Used for sub-PCBs')
+
     # Here just to avoid pulling pcbnew for this
     @staticmethod
     def to_mm(val):
@@ -747,7 +750,7 @@ class VariantOptions(BaseOptions):
         return True
 
     def unfilter_pcb_components(self, board, do_3D=False, do_2D=True):
-        if not self._comps and not self._sub_pcb:
+        if not self.will_filter_pcb_components():
             return
         if self._sub_pcb:
             # Undo the sub-PCB: just reload the PCB

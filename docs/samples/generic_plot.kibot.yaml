@@ -97,8 +97,17 @@ outputs:
     type: 'boardview'
     dir: 'Example/boardview_dir'
     options:
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [string=''] Board variant to apply.
+      # Used for sub-PCBs
+      variant: ''
   # BoM (Bill of Materials):
   # This output can generate XYRS files (pick and place files).
   # Is compatible with KiBoM, but doesn't need to update the XML netlist because the components
