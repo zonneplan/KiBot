@@ -693,18 +693,7 @@ class PanelizeOptions(VariantOptions):
             raise KiPlotConfigurationError("Installed KiKit doesn't support KiCad 5")
         super().run(output)
         to_remove = []
-        # Create the input PCB
-        if self._comps or self.title:
-            logger.debug('Creating modified PCB')
-            self.set_title(self.title)
-            self.filter_pcb_components(GS.board, do_3D=True)
-            fname = self.save_tmp_board()
-            self.unfilter_pcb_components(GS.board, do_3D=True)
-            self.restore_title()
-            to_remove.extend(GS.get_pcb_and_pro_names(fname))
-            logger.debug('- Modified PCB: '+fname)
-        else:
-            fname = GS.pcb_file
+        fname = self.save_tmp_board_if_variant(to_remove, new_title=self.title, do_3D=True)
 
         # Create the command
         cmd = [cmd_kikit, 'panelize']  # , '--dump', 'test.json'
