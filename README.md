@@ -2060,10 +2060,16 @@ Notes:
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=gencad, %x=cad). Affected by global options.
         - `aux_origin`: [boolean=false] Use auxiliary axis as origin.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `flip_bottom_padstacks`: [boolean=false] Flip bottom footprint padstacks.
         - `no_reuse_shapes`: [boolean=false] Generate a new shape for each footprint instance (Do not reuse shapes).
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `save_origin`: [boolean=false] Save the origin coordinates in the file.
         - `unique_pin_names`: [boolean=false] Generate unique pin names.
+        - `variant`: [string=''] Board variant to apply.
+                     Used for sub-PCBs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.

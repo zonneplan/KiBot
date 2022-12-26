@@ -735,16 +735,25 @@ outputs:
     options:
       # [boolean=false] Use auxiliary axis as origin
       aux_origin: false
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
       # [boolean=false] Flip bottom footprint padstacks
       flip_bottom_padstacks: false
       # [boolean=false] Generate a new shape for each footprint instance (Do not reuse shapes)
       no_reuse_shapes: false
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=gencad, %x=cad). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [boolean=false] Save the origin coordinates in the file
       save_origin: false
       # [boolean=false] Generate unique pin names
       unique_pin_names: false
+      # [string=''] Board variant to apply.
+      # Used for sub-PCBs
+      variant: ''
   # Gerber drill format:
   # You can create a map file for documentation purposes.
   # This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.

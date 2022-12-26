@@ -861,6 +861,20 @@ class VariantOptions(BaseOptions):
         GS.copy_project(fname)
         return fname
 
+    def save_tmp_board_if_variant(self, to_remove, new_title='', dir=None, do_3D=False):
+        """ If we have a variant apply it and save the PCB to a file """
+        if not self.will_filter_pcb_components() and not new_title:
+            return GS.pcb_file
+        logger.debug('Creating modified PCB')
+        self.filter_pcb_components(GS.board, do_3D=do_3D)
+        self.set_title(new_title)
+        fname = self.save_tmp_board()
+        self.restore_title()
+        self.unfilter_pcb_components(GS.board, do_3D=do_3D)
+        to_remove.extend(GS.get_pcb_and_pro_names(fname))
+        logger.debug('- Modified PCB: '+fname)
+        return fname
+
     @staticmethod
     def save_tmp_dir_board(id, force_dir=None):
         """ Save the PCB to a temporal dir.
