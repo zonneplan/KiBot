@@ -1003,7 +1003,7 @@ class PCB_PrintOptions(VariantOptions):
             id, ext = self.get_id_and_ext(n, p.page_id)
             user_name = self.expand_filename(output_dir, self.output, id, ext)
             if cur_name != user_name and os.path.isfile(cur_name):
-                os.rename(cur_name, user_name)
+                os.replace(cur_name, user_name)
 
     def generate_output(self, output):
         self.check_tools()
