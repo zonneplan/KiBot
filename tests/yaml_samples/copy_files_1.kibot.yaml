@@ -12,6 +12,9 @@ global:
     - name: ALIAS2
       value: '3d/2'
 
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
+
 outputs:
   - name: 'position'
     comment: "Pick and place file"

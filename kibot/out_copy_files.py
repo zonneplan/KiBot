@@ -214,6 +214,7 @@ class Copy_FilesOptions(Base3DOptions):
         return files.keys()
 
     def run(self, output):
+        super().run(output)
         # Output file name
         logger.debug('Collecting files')
         # Collect the files
