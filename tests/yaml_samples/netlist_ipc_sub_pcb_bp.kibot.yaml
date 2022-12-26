@@ -1,0 +1,15 @@
+# This is a working example.
+# For a more complete reference use `--example`
+kibot:
+  version: 1
+
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
+
+outputs:
+  - name: ipc_netlist
+    comment: IPC-D-356 netlist for testing
+    type: netlist
+    dir: Export
+    options:
+      format: ipc
