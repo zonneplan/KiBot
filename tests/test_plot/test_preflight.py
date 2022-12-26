@@ -161,7 +161,7 @@ def test_update_xml_1(test_dir):
     ctx = context.TestContext(test_dir, prj, 'update_xml', '')
     # The XML should be created where the schematic is located
     xml = os.path.abspath(os.path.join(ctx.get_board_dir(), prj+'.xml'))
-    os.rename(xml, xml+'-bak')
+    os.replace(xml, xml+'-bak')
     try:
         ctx.run()
         # Check all outputs are there
@@ -171,7 +171,7 @@ def test_update_xml_1(test_dir):
         logging.debug(os.path.basename(xml)+' OK')
     finally:
         os.remove(xml)
-        os.rename(xml+'-bak', xml)
+        os.replace(xml+'-bak', xml)
     ctx.clean_up()
 
 
@@ -246,7 +246,7 @@ def test_sch_replace_1(test_dir):
                 assert m.group(1) == text
     finally:
         for k, v in files.items():
-            os.rename(v, k)
+            os.replace(v, k)
     ctx.clean_up()
 
 
@@ -276,7 +276,7 @@ def test_pcb_replace_1(test_dir):
         assert m is not None
         assert m.group(1) == text
     finally:
-        os.rename(file_back, file)
+        os.replace(file_back, file)
     ctx.clean_up(keep_project=True)
 
 
@@ -304,7 +304,7 @@ def test_set_text_variables_1(test_dir):
             assert 'Comment4' in data['text_variables']
             assert data['text_variables']['Comment4'] == text
         finally:
-            os.rename(file_back, file)
+            os.replace(file_back, file)
         ctx.expect_out_file(prj+'-bom_'+hash+'.csv')
     ctx.clean_up(keep_project=True)
 
@@ -329,6 +329,6 @@ def test_set_text_variables_2(test_dir):
         assert 'text_variables' in data
         assert 'Comment4' not in data['text_variables']
     finally:
-        os.rename(file_back, file)
+        os.replace(file_back, file)
     ctx.expect_out_file(prj+'-bom_'+hash+'.csv')
     ctx.clean_up(keep_project=True)

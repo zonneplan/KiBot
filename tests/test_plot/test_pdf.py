@@ -43,7 +43,7 @@ def test_pdf_refill_2(test_dir):
         assert os.path.isfile(bkp)
     finally:
         if os.path.isfile(bkp):
-            os.rename(bkp, ori)
+            os.replace(bkp, ori)
     ctx.clean_up()
 
 

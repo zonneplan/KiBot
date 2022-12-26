@@ -157,7 +157,7 @@ class AnyLayerOptions(VariantOptions):
             plot_ctrl.PlotLayer()
             plot_ctrl.ClosePlot()
             if self.output and k_filename != filename:
-                os.rename(k_filename, filename)
+                os.replace(k_filename, filename)
             if create_job:
                 jobfile_writer.AddGbrFile(id, os.path.basename(filename))
             generated[la.layer] = os.path.basename(filename)

@@ -1797,9 +1797,7 @@ class Schematic(object):
             # Keep a back-up of existing files
             if os.path.isfile(fname):
                 bkp = fname+'-bak'
-                if os.path.isfile(bkp):
-                    os.remove(bkp)
-                os.rename(fname, bkp)
+                os.replace(fname, bkp)
             with open(fname, 'wt') as f:
                 f.write('EESchema Schematic File Version {}\n'.format(self.version))
                 f.write('EELAYER {} {}\n'.format(self.eelayer_n, self.eelayer_m))

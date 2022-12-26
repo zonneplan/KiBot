@@ -177,7 +177,7 @@ class AnyDrill(BaseOptions):
         for k_f, f in files.items():
             if f:
                 logger.debug("Renaming {} -> {}".format(k_f, f))
-                os.rename(k_f, f)
+                os.replace(k_f, f)
         # Generate the report
         if self.report:
             drill_report_file = self.expand_filename(output_dir, self.report, 'drill_report', 'txt')

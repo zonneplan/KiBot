@@ -291,9 +291,7 @@ class GS(object):
     @staticmethod
     def make_bkp(fname):
         bkp = fname+'-bak'
-        if os.path.isfile(bkp):
-            os.remove(bkp)
-        os.rename(fname, bkp)
+        os.replace(fname, bkp)
 
     @staticmethod
     def zones():

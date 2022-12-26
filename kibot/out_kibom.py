@@ -423,7 +423,7 @@ class KiBoMOptions(BaseOptions):
             if m and m.group(1) != output:
                 cur = m.group(1)
                 logger.debug('Renaming output file: {} -> {}'.format(cur, output))
-                os.rename(cur, output)
+                os.replace(cur, output)
         logger.debug('Output from command:\n'+cmd_output.decode())
 
 

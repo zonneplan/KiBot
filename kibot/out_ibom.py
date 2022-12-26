@@ -239,7 +239,7 @@ class IBoMOptions(VariantOptions):
         logger.debug('Output from command:\n'+cmd_output_dec+'\n')
         if output:
             logger.debug('Renaming output file: {} -> {}'.format(cur, output))
-            os.rename(cur, output)
+            os.replace(cur, output)
 
 
 @output_class
