@@ -721,10 +721,29 @@ class VariantOptions(BaseOptions):
             with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
                 pcb_file = f.name
             GS.board.Save(pcb_file)
+            if self._comps:
+                # Memorize the used modules
+                old_modules = {m.GetReference() for m in GS.get_modules()}
             # Now do the separation
             self._sub_pcb.load_board(pcb_file, dest)
             # Remove the temporal PCB
             os.remove(pcb_file)
+            # Compute the modules we removed
+            self._excl_by_sub_pcb = set()
+            # Now reflect it in the list of components
+            if self._comps:
+                logger.debug('Removing components outside the sub-PCB')
+                # Memorize the used modules
+                new_modules = {m.GetReference() for m in GS.get_modules()}
+                diff = old_modules - new_modules
+                logger.debugl(3, diff)
+                # Exclude them from _comps
+                for c in diff:
+                    cmp = self.comps_hash[c]
+                    if cmp.included:
+                        cmp.included = False
+                        self._excl_by_sub_pcb.add(c)
+                        logger.debugl(2, '- Removing '+c)
 
     def will_filter_pcb_components(self):
         """ True if we will apply filters/variants """
@@ -763,6 +782,8 @@ class VariantOptions(BaseOptions):
             # Undo the sub-PCB: just reload the PCB
             GS.board = None
             load_board()
+            for c in self._excl_by_sub_pcb:
+                self.comps_hash[c].included = True
             return
         if do_2D:
             self.uncross_modules(board, self.comps_hash)
