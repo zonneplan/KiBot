@@ -11,7 +11,8 @@ try:
 except ImportError:
     # This is caught by __main__, ignore the error here
     class pcbnew(object):
-        pass
+        IU_PER_MM = 1
+        IU_PER_MILS = 1
 from datetime import datetime, date
 from sys import exit
 from shutil import copy2
