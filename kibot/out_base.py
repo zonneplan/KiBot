@@ -806,6 +806,7 @@ class VariantOptions(BaseOptions):
         """ Change the module/footprint data according to the filtered fields.
             iBoM can parse it. """
         self.sch_fields_to_pcb_bkp = {}
+        has_GetFPIDAsString = False
         first = True
         for m in GS.get_modules_board(board):
             if first:

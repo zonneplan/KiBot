@@ -118,7 +118,7 @@ class SubPCBOptions(PanelOptions):
             if with_width:
                 m.SetWidth(width)
 
-    def _remove_modules(self, iter):
+    def _remove_modules(self, iter, comps_hash):
         """ Remove modules outside the rectangle.
             Footprints are added to the list of references to exclude.
             We also check their position, not their BBox. """
@@ -126,11 +126,12 @@ class SubPCBOptions(PanelOptions):
             if not self.board_rect.Contains(m.GetPosition()):
                 GS.board.Remove(m)
                 self._removed.append(m)
-                self._excl_by_sub_pcb.add(m.GetReference())
+                if comps_hash:
+                    self._excl_by_sub_pcb.add(m.GetReference())
 
-    def remove_outside(self):
+    def remove_outside(self, comps_hash):
         self._removed = []
-        self._remove_modules(GS.get_modules())
+        self._remove_modules(GS.get_modules(), comps_hash)
         self._remove_items(GS.board.GetDrawings())
         self._remove_items(GS.board.GetTracks())
         self._remove_items(list(GS.board.Zones()))
@@ -138,10 +139,11 @@ class SubPCBOptions(PanelOptions):
     def apply(self, comps_hash):
         self._excl_by_sub_pcb = set()
         if self.reference:
+            logger.error(self.reference)
             self.separate_board(comps_hash)
         else:
             # Using a rectangle
-            self.remove_outside()
+            self.remove_outside(comps_hash)
 
     def unload_board(self, comps_hash):
         # Undo the sub-PCB: just reload the PCB
