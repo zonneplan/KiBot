@@ -159,7 +159,7 @@ class AnyDrill(VariantOptions):
 
     def run(self, output_dir):
         super().run(output_dir)
-        self.filter_pcb_components(GS.board)
+        self.filter_pcb_components()
         if self.output:
             output_dir = os.path.dirname(output_dir)
         # dialog_gendrill.cpp:357
@@ -187,7 +187,7 @@ class AnyDrill(VariantOptions):
             drill_report_file = self.expand_filename(output_dir, self.report, 'drill_report', 'txt')
             logger.debug("Generating drill report: "+drill_report_file)
             drill_writer.GenDrillReportFile(drill_report_file)
-        self.unfilter_pcb_components(GS.board)
+        self.unfilter_pcb_components()
 
     def get_targets(self, out_dir):
         targets = []

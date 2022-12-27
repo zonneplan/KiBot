@@ -8,9 +8,9 @@ from glob import glob
 import math
 import os
 import re
-from tempfile import NamedTemporaryFile, mkdtemp, TemporaryDirectory
+from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
-from .kiplot import load_sch, get_board_comps_data, load_board
+from .kiplot import load_sch, get_board_comps_data
 from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD
 if not GS.kicad_version_n:
     # When running the regression tests we need it
@@ -366,6 +366,7 @@ class VariantOptions(BaseOptions):
         """ Remove from solder paste layers the filtered components. """
         if comps_hash is None or not (GS.global_remove_solder_paste_for_dnp or GS.global_remove_adhesive_for_dnp):
             return
+        logger.debug('Removing paste and glue')
         exclude = LSET()
         fpaste = board.GetLayerID('F.Paste')
         bpaste = board.GetLayerID('B.Paste')
@@ -398,16 +399,22 @@ class VariantOptions(BaseOptions):
                             logger.warning(W_WRONGPASTE+'Pad with solder paste, but no copper or solder mask aperture in '+ref)
                         p.SetLayerSet(pad_layers)
                     old_layers.append(old_c_layers)
+                    logger.debugl(3, '- Removed paste from '+ref)
                 # Remove any graphical item in the *.Adhes layers
                 if GS.global_remove_adhesive_for_dnp:
+                    found = False
                     for gi in m.GraphicalItems():
                         l_gi = gi.GetLayer()
                         if l_gi == fadhes:
                             gi.SetLayer(rescue)
                             old_fadhes.append(gi)
+                            found = True
                         if l_gi == badhes:
                             gi.SetLayer(rescue)
                             old_badhes.append(gi)
+                            found = True
+                    if found:
+                        logger.debugl(3, '- Removed adhesive from '+ref)
         # Store the data to undo the above actions
         self.old_layers = old_layers
         self.old_fadhes = old_fadhes
@@ -419,11 +426,13 @@ class VariantOptions(BaseOptions):
     def restore_paste_and_glue(self, board, comps_hash):
         if comps_hash is None:
             return
+        logger.debug('Restoring paste and glue')
         if GS.global_remove_solder_paste_for_dnp:
             for m in GS.get_modules_board(board):
                 ref = m.GetReference()
                 c = comps_hash.get(ref, None)
                 if c and c.included and not c.fitted:
+                    logger.debugl(3, '- Restoring paste for '+ref)
                     restore = self.old_layers.pop(0)
                     for p in m.Pads():
                         pad_layers = p.GetLayerSet()
@@ -714,91 +723,54 @@ class VariantOptions(BaseOptions):
             m.Models().pop()
         self._highlighted_3D_components = None
 
-    def apply_sub_pcb(self):
-        with TemporaryDirectory(prefix='kibot-separate') as d:
-            dest = os.path.join(d, os.path.basename(GS.pcb_file))
-            # Save the current PCB, with any changes applied
-            with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
-                pcb_file = f.name
-            GS.board.Save(pcb_file)
-            if self._comps:
-                # Memorize the used modules
-                old_modules = {m.GetReference() for m in GS.get_modules()}
-            # Now do the separation
-            self._sub_pcb.load_board(pcb_file, dest)
-            # Remove the temporal PCB
-            os.remove(pcb_file)
-            # Compute the modules we removed
-            self._excl_by_sub_pcb = set()
-            # Now reflect it in the list of components
-            if self._comps:
-                logger.debug('Removing components outside the sub-PCB')
-                # Memorize the used modules
-                new_modules = {m.GetReference() for m in GS.get_modules()}
-                diff = old_modules - new_modules
-                logger.debugl(3, diff)
-                # Exclude them from _comps
-                for c in diff:
-                    cmp = self.comps_hash[c]
-                    if cmp.included:
-                        cmp.included = False
-                        self._excl_by_sub_pcb.add(c)
-                        logger.debugl(2, '- Removing '+c)
-
     def will_filter_pcb_components(self):
         """ True if we will apply filters/variants """
         return self._comps or self._sub_pcb
 
-    def filter_pcb_components(self, board, do_3D=False, do_2D=True, highlight=None):
+    def filter_pcb_components(self, do_3D=False, do_2D=True, highlight=None):
         if not self.will_filter_pcb_components():
             return False
+        self.comps_hash = self.get_refs_hash()
+        if self._sub_pcb:
+            self._sub_pcb.apply(self.comps_hash)
         if self._comps:
-            self.comps_hash = self.get_refs_hash()
             if do_2D:
-                self.cross_modules(board, self.comps_hash)
-                self.remove_paste_and_glue(board, self.comps_hash)
+                self.cross_modules(GS.board, self.comps_hash)
+                self.remove_paste_and_glue(GS.board, self.comps_hash)
                 if hasattr(self, 'hide_excluded') and self.hide_excluded:
-                    self.remove_fab(board, self.comps_hash)
+                    self.remove_fab(GS.board, self.comps_hash)
                 # Copy any change in the schematic fields to the PCB properties
                 # I.e. the value of a component so it gets updated in the *.Fab layer
                 # Also useful for iBoM that can read the sch fields from the PCB
-                self.sch_fields_to_pcb(board, self.comps_hash)
+                self.sch_fields_to_pcb(GS.board, self.comps_hash)
             if do_3D:
                 # Disable the models that aren't for this variant
-                self.apply_3D_variant_aspect(board)
+                self.apply_3D_variant_aspect(GS.board)
                 # Remove the 3D models for not fitted components (also rename)
-                self.remove_3D_models(board, self.comps_hash)
+                self.remove_3D_models(GS.board, self.comps_hash)
                 # Highlight selected components
-                self.highlight_3D_models(board, highlight)
-        if self._sub_pcb:
-            # Current implementation isn't efficient
-            self.apply_sub_pcb()
+                self.highlight_3D_models(GS.board, highlight)
         return True
 
-    def unfilter_pcb_components(self, board, do_3D=False, do_2D=True):
+    def unfilter_pcb_components(self, do_3D=False, do_2D=True):
         if not self.will_filter_pcb_components():
             return
-        if self._sub_pcb:
-            # Undo the sub-PCB: just reload the PCB
-            GS.board = None
-            load_board()
-            for c in self._excl_by_sub_pcb:
-                self.comps_hash[c].included = True
-            return
-        if do_2D:
-            self.uncross_modules(board, self.comps_hash)
-            self.restore_paste_and_glue(board, self.comps_hash)
+        if do_2D and self.comps_hash:
+            self.uncross_modules(GS.board, self.comps_hash)
+            self.restore_paste_and_glue(GS.board, self.comps_hash)
             if hasattr(self, 'hide_excluded') and self.hide_excluded:
-                self.restore_fab(board, self.comps_hash)
+                self.restore_fab(GS.board, self.comps_hash)
             # Restore the PCB properties and values
-            self.restore_sch_fields_to_pcb(board)
-        if do_3D:
+            self.restore_sch_fields_to_pcb(GS.board)
+        if do_3D and self.comps_hash:
             # Undo the removing (also rename)
-            self.restore_3D_models(board, self.comps_hash)
+            self.restore_3D_models(GS.board, self.comps_hash)
             # Re-enable the modules that aren't for this variant
-            self.apply_3D_variant_aspect(board, enable=True)
+            self.apply_3D_variant_aspect(GS.board, enable=True)
             # Remove the highlight 3D object
-            self.unhighlight_3D_models(board)
+            self.unhighlight_3D_models(GS.board)
+        if self._sub_pcb:
+            self._sub_pcb.revert(self.comps_hash)
 
     def remove_highlight_3D_file(self):
         # Remove the highlight 3D file if it was created
@@ -894,11 +866,11 @@ class VariantOptions(BaseOptions):
         if not self.will_filter_pcb_components() and not new_title:
             return GS.pcb_file
         logger.debug('Creating modified PCB')
-        self.filter_pcb_components(GS.board, do_3D=do_3D)
+        self.filter_pcb_components(do_3D=do_3D)
         self.set_title(new_title)
         fname = self.save_tmp_board()
         self.restore_title()
-        self.unfilter_pcb_components(GS.board, do_3D=do_3D)
+        self.unfilter_pcb_components(do_3D=do_3D)
         to_remove.extend(GS.get_pcb_and_pro_names(fname))
         logger.debug('- Modified PCB: '+fname)
         return fname

@@ -1142,9 +1142,9 @@ class PCB_PrintOptions(VariantOptions):
         svgutils = importlib.import_module('.svgutils.transform', package=__package__)
         global kicad_worksheet
         kicad_worksheet = importlib.import_module('.kicad.worksheet', package=__package__)
-        self.filter_pcb_components(GS.board)
+        self.filter_pcb_components()
         self.generate_output(output)
-        self.unfilter_pcb_components(GS.board)
+        self.unfilter_pcb_components()
 
 
 @output_class

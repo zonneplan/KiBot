@@ -57,12 +57,12 @@ class Any_PCB_PrintOptions(VariantOptions):
     def filter_components(self):
         if not self.will_filter_pcb_components() and self.title == '':
             return GS.pcb_file, None
-        self.filter_pcb_components(GS.board)
+        self.filter_pcb_components()
         self.set_title(self.title)
         # Save the PCB to a temporal dir
         fname, pcb_dir = self.save_tmp_dir_board('pdf_pcb_print')
         self.restore_title()
-        self.unfilter_pcb_components(GS.board)
+        self.unfilter_pcb_components()
         return fname, pcb_dir
 
     def get_targets(self, out_dir):

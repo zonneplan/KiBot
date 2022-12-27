@@ -162,10 +162,10 @@ class BoardViewOptions(VariantOptions):
 
     def run(self, output):
         super().run(output)
-        self.filter_pcb_components(GS.board)
+        self.filter_pcb_components()
         with open(output, 'wt') as f:
             convert(GS.board, f)
-        self.unfilter_pcb_components(GS.board)
+        self.unfilter_pcb_components()
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]

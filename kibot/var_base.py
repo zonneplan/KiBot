@@ -3,6 +3,8 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+import os
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .registrable import RegVariant
 from .optionable import Optionable, PanelOptions
 from .fil_base import apply_exclude_filter, apply_fitted_filter, apply_fixed_filter, apply_pre_transform
@@ -11,6 +13,9 @@ from .misc import KIKIT_UNIT_ALIASES
 from .gs import GS
 from .kiplot import load_board, run_command
 from .macros import macros, document  # noqa: F401
+from . import log
+
+logger = log.get_logger()
 
 
 class SubPCBOptions(PanelOptions):
@@ -66,15 +71,59 @@ class SubPCBOptions(PanelOptions):
             return "annotation; ref: {}".format(self.reference)
         return "rectangle; tlx: {}; tly: {}; brx: {}; bry: {}".format(self.tlx, self.tly, self.brx, self.bry)
 
-    def load_board(self, pcb_file, dest):
+    def load_board(self, comps_hash):
+        """ Apply the sub-PCB using an external tool and load it into memory """
         # Make sure kikit is available
         command = GS.ensure_tool('global', 'KiKit')
-        # Execute the separate
-        cmd = [command, 'separate', '-s', self.get_separate_source(), pcb_file, dest]
-        run_command(cmd)
-        # Load this board
+        with TemporaryDirectory(prefix='kibot-separate') as d:
+            dest = os.path.join(d, os.path.basename(GS.pcb_file))
+            # Save the current PCB, with any changes applied
+            with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
+                pcb_file = f.name
+            GS.board.Save(pcb_file)
+            if comps_hash:
+                # Memorize the used modules
+                old_modules = {m.GetReference() for m in GS.get_modules()}
+            # Now do the separation
+            cmd = [command, 'separate', '-s', self.get_separate_source(), pcb_file, dest]
+            # Execute the separate
+            run_command(cmd)
+            # Load this board
+            GS.board = None
+            load_board(dest)
+            # Remove the temporal PCB
+            os.remove(pcb_file)
+            self._excl_by_sub_pcb = set()
+            # Now reflect the changes in the list of components
+            if comps_hash:
+                logger.debug('Removing components outside the sub-PCB')
+                # Memorize the used modules
+                new_modules = {m.GetReference() for m in GS.get_modules()}
+                # Compute the modules we removed
+                diff = old_modules - new_modules
+                logger.debugl(3, diff)
+                # Exclude them from _comps
+                for c in diff:
+                    cmp = comps_hash[c]
+                    if cmp.included:
+                        cmp.included = False
+                        self._excl_by_sub_pcb.add(c)
+                        logger.debugl(2, '- Removing '+c)
+
+    def apply(self, comps_hash):
+        if True:
+            self.load_board(comps_hash)
+
+    def unload_board(self, comps_hash):
+        # Undo the sub-PCB: just reload the PCB
         GS.board = None
-        load_board(dest)
+        load_board()
+        for c in self._excl_by_sub_pcb:
+            comps_hash[c].included = True
+
+    def revert(self, comps_hash):
+        if True:
+            self.unload_board(comps_hash)
 
 
 class BaseVariant(RegVariant):

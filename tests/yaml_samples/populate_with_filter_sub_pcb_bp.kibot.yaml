@@ -71,4 +71,5 @@ outputs:
     dir: PopulateWithFilter
     options:
       renderer: KiCad_3D
+      # renderer: PcbDraw
       input: tests/data/with_filter_html.md

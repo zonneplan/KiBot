@@ -117,7 +117,7 @@ class AnyLayerOptions(VariantOptions):
     def run(self, output_dir, layers):
         super().run(output_dir)
         # Apply the variants and filters
-        exclude = self.filter_pcb_components(GS.board)
+        exclude = self.filter_pcb_components()
         # fresh plot controller
         plot_ctrl = PLOT_CONTROLLER(GS.board)
         # set up plot options for the whole output
@@ -185,7 +185,7 @@ class AnyLayerOptions(VariantOptions):
                 f.write(content)
         # Restore the eliminated layers
         if exclude:
-            self.unfilter_pcb_components(GS.board)
+            self.unfilter_pcb_components()
 
     def solve_extension(self, layer):
         if self._plot_format == PLOT_FORMAT_GERBER and self.use_protel_extensions:
