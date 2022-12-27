@@ -211,8 +211,8 @@ def add_extra_options(cmd):
     return cmd, video_remove
 
 
-def load_board(pcb_file=None):
-    if GS.board is not None:
+def load_board(pcb_file=None, forced=False):
+    if GS.board is not None and not forced:
         # Already loaded
         return GS.board
     import pcbnew

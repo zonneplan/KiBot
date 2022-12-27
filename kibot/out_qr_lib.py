@@ -389,9 +389,8 @@ class QR_LibOptions(BaseOptions):
                 f.write('\n')
                 tmp_pcb = f.name
             # Reload it
-            GS.board = None
             logger.debug('- Loading the temporal PCB')
-            load_board(tmp_pcb)
+            load_board(tmp_pcb, forced=True)
             # Create a back-up and save it in the original place
             logger.debug('- Replacing the old PCB')
             os.remove(tmp_pcb)
