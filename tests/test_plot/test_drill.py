@@ -110,6 +110,7 @@ def test_drill_sub_pcb_bp(test_dir):
     ctx.run()
     # Check all outputs are there
     fname = prj+'-drill_connector.drl'
-    ctx.search_in_file_d(fname, ['X29.75Y-28.09', 'T3C3.200'])
+    # ctx.search_in_file_d(fname, ['X29.75Y-28.09', 'T3C3.200']) KiKit
+    ctx.search_in_file_d(fname, ['X120.0Y-73.0', 'T3C3.200'])  # Currently us
     ctx.search_not_in_file_d(fname, ['X189.0Y-59.0', 'T1C0.400'])
     ctx.clean_up(keep_project=True)
