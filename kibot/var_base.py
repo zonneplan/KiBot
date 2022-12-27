@@ -64,7 +64,8 @@ class SubPCBOptions(PanelOptions):
         if (not self.reference and self.is_zero(self.tlx) and self.is_zero(self.tly) and self.is_zero(self.brx) and
            self.is_zero(self.bry)):
             raise KiPlotConfigurationError('No reference or rectangle specified for {} sub-PCB'.format(self.name))
-        self.add_units(('tlx', 'tly', 'brx', 'bry'), self.units)
+        self.add_units(('tlx', 'tly', 'brx', 'bry'), self.units, convert=True)
+        self.board_rect = GS.create_eda_rect(self._tlx, self._tly, self._brx, self._bry)
 
     def get_separate_source(self):
         if self.reference:
@@ -86,7 +87,6 @@ class SubPCBOptions(PanelOptions):
             run_command(cmd)
             # Load this board
             GS.load_board(dest, forced=True)
-            self._excl_by_sub_pcb = set()
             # Now reflect the changes in the list of components
             if comps_hash:
                 logger.debug('Removing components outside the sub-PCB')
@@ -103,21 +103,64 @@ class SubPCBOptions(PanelOptions):
                         self._excl_by_sub_pcb.add(c)
                         logger.debugl(2, '- Removing '+c)
 
+    def _remove_items(self, iter):
+        """ Remove items outside the rectangle.
+            If the item has width (shapes and tracks) we discard it.
+            This produces something closer to KiKit. """
+        for m in iter:
+            with_width = hasattr(m, 'GetWidth')
+            if with_width:
+                width = m.GetWidth()
+                m.SetWidth(0)
+            if not self.board_rect.Contains(m.GetBoundingBox()):
+                GS.board.Remove(m)
+                self._removed.append(m)
+            if with_width:
+                m.SetWidth(width)
+
+    def _remove_modules(self, iter):
+        """ Remove modules outside the rectangle.
+            Footprints are added to the list of references to exclude.
+            We also check their position, not their BBox. """
+        for m in iter:
+            if not self.board_rect.Contains(m.GetPosition()):
+                GS.board.Remove(m)
+                self._removed.append(m)
+                self._excl_by_sub_pcb.add(m.GetReference())
+
+    def remove_outside(self):
+        self._removed = []
+        self._remove_modules(GS.get_modules())
+        self._remove_items(GS.board.GetDrawings())
+        self._remove_items(GS.board.GetTracks())
+        self._remove_items(list(GS.board.Zones()))
+
     def apply(self, comps_hash):
-        if True:
+        self._excl_by_sub_pcb = set()
+        if self.reference:
             self.separate_board(comps_hash)
+        else:
+            # Using a rectangle
+            self.remove_outside()
 
     def unload_board(self, comps_hash):
         # Undo the sub-PCB: just reload the PCB
         GS.load_board(forced=True)
+
+    def restore_removed(self):
+        """ Restore the stuff we removed from the board """
+        for o in self._removed:
+            GS.board.Add(o)
+
+    def revert(self, comps_hash):
+        if self.reference:
+            self.unload_board(comps_hash)
+        else:
+            self.restore_removed()
         # Restore excluded components
         logger.debug('Restoring components outside the sub-PCB')
         for c in self._excl_by_sub_pcb:
             comps_hash[c].included = True
-
-    def revert(self, comps_hash):
-        if True:
-            self.unload_board(comps_hash)
 
 
 class BaseVariant(RegVariant):

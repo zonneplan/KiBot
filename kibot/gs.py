@@ -89,6 +89,9 @@ class GS(object):
     stackup = None
     # Preprocessor definitions
     cli_defines = {}
+    kikit_units_to_kicad = {'mm': pcbnew.IU_PER_MM, 'cm': 10*pcbnew.IU_PER_MM, 'dm': 100*pcbnew.IU_PER_MM,
+                            'm': 1000*pcbnew.IU_PER_MM, 'mil': pcbnew.IU_PER_MILS, 'inch': 1000*pcbnew.IU_PER_MILS,
+                            'in': 1000*pcbnew.IU_PER_MILS}
     #
     # Global defaults
     #
@@ -447,3 +450,7 @@ class GS(object):
             return dir_name
         logger.error('Missing resource directory `{}`'.format(name))
         exit(WRONG_INSTALL)
+
+    @staticmethod
+    def create_eda_rect(tlx, tly, brx, bry):
+        return pcbnew.EDA_RECT(pcbnew.wxPoint(tlx, tly), pcbnew.wxSize(brx-tlx, bry-tly))

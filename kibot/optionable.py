@@ -535,15 +535,20 @@ class PanelOptions(BaseOptions):
     _num_regex = re.compile(r'([\d\.]+)(mm|cm|dm|m|mil|inch|in)')
     _ang_regex = re.compile(r'([\d\.]+)(deg|°|rad)')
 
-    def add_units(self, ops, def_units=None):
+    def add_units(self, ops, def_units=None, convert=False):
         if def_units is None:
             def_units = self._parent._parent.units
         for op in ops:
             val = getattr(self, op)
+            _op = '_'+op
             if val is None:
+                if convert:
+                    setattr(self, _op, 0)
                 continue
             if isinstance(val, (int, float)):
                 setattr(self, op, str(val)+def_units)
+                if convert:
+                    setattr(self, _op, val*GS.kikit_units_to_kicad[def_units])
             else:
                 m = PanelOptions._num_regex.match(val)
                 if m is None:
@@ -555,6 +560,8 @@ class PanelOptions(BaseOptions):
                     num_d = None
                 if num_d is None:
                     raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))
+                if convert:
+                    setattr(self, _op, num_d*GS.kikit_units_to_kicad[m.group(2)])
 
     def add_angle(self, ops, def_units=None):
         if def_units is None:
