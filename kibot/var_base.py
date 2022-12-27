@@ -111,6 +111,7 @@ class SubPCBOptions(PanelOptions):
         # Undo the sub-PCB: just reload the PCB
         GS.load_board(forced=True)
         # Restore excluded components
+        logger.debug('Restoring components outside the sub-PCB')
         for c in self._excl_by_sub_pcb:
             comps_hash[c].included = True
 
