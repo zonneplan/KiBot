@@ -1058,6 +1058,9 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
         - `file_id`: [string=''] Text to use as the replacement for %v expansion.
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
+        - `strip_annotation`: [boolean=false] Remove the annotation footprint. Note that KiKit will remove all annotations,
+                              but the internal implementation just the one indicated by `ref`.
+                              If you need to remove other annotations use an exclude filter.
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
         - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
@@ -1106,6 +1109,9 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
         - `file_id`: [string=''] Text to use as the replacement for %v expansion.
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
+        - `strip_annotation`: [boolean=false] Remove the annotation footprint. Note that KiKit will remove all annotations,
+                              but the internal implementation just the one indicated by `ref`.
+                              If you need to remove other annotations use an exclude filter.
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
         - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
@@ -1156,6 +1162,9 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
         - `file_id`: [string=''] Text to use as the replacement for %v expansion.
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
+        - `strip_annotation`: [boolean=false] Remove the annotation footprint. Note that KiKit will remove all annotations,
+                              but the internal implementation just the one indicated by `ref`.
+                              If you need to remove other annotations use an exclude filter.
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
         - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.

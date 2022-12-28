@@ -103,6 +103,10 @@ class SubPCBOptions(PanelOptions):
             """ [internal,kikit] Tool used to extract the sub-PCB. """
             self.tolerance = 0
             """ [number|string] Used to enlarge the selected rectangle to include elements outside the board """
+            self.strip_annotation = False
+            """ Remove the annotation footprint. Note that KiKit will remove all annotations,
+                but the internal implementation just the one indicated by `ref`.
+                If you need to remove other annotations use an exclude filter """
 
     def is_zero(self, val):
         return isinstance(val, (int, float)) and val == 0
@@ -138,7 +142,10 @@ class SubPCBOptions(PanelOptions):
                 # Memorize the used modules
                 old_modules = {m.GetReference() for m in GS.get_modules()}
             # Now do the separation
-            cmd = [command, 'separate', '-s', self.get_separate_source(), GS.pcb_file, dest]
+            cmd = [command, 'separate', '-s', self.get_separate_source()]
+            if self.strip_annotation:
+                cmd.append('--stripAnnotations')
+            cmd.extend([GS.pcb_file, dest])
             # Execute the separate
             run_command(cmd)
             # Load this board
@@ -179,11 +186,12 @@ class SubPCBOptions(PanelOptions):
             Footprints are added to the list of references to exclude.
             We also check their position, not their BBox. """
         for m in iter:
-            if not self.board_rect.Contains(m.GetPosition()):
+            ref = m.GetReference()
+            if not self.board_rect.Contains(m.GetPosition()) or (self.strip_annotation and ref == self.reference):
                 GS.board.Remove(m)
                 self._removed.append(m)
                 if comps_hash:
-                    self._excl_by_sub_pcb.add(m.GetReference())
+                    self._excl_by_sub_pcb.add(ref)
 
     def remove_outside(self, comps_hash):
         """ Remove footprints, drawings, text and zones outside `board_rect` rectangle.

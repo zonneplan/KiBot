@@ -14,6 +14,8 @@ variants:
     sub_pcbs:
       - name: A
         ref: B1
+        # tool: kikit
+        # strip_annotation: true
       - name: B
         ref: B2
       - name: C
