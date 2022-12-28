@@ -653,7 +653,8 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
-      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      # [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+      # Note that this value is currently ignored by KiCad (6.0.9)
       sketch_pad_line_width: 0.1
       # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
       sketch_pads_on_fab_layers: false
@@ -816,7 +817,8 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
-      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      # [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+      # Note that this value is currently ignored by KiCad (6.0.9)
       sketch_pad_line_width: 0.1
       # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
       sketch_pads_on_fab_layers: false
@@ -894,7 +896,8 @@ outputs:
       pre_transform: '_none'
       # [number=0] Scale factor (0 means autoscaling)
       scaling: 0
-      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      # [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+      # Note that this value is currently ignored by KiCad (6.0.9)
       sketch_pad_line_width: 0.1
       # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
       sketch_pads_on_fab_layers: false
@@ -1896,6 +1899,11 @@ outputs:
           sheet: 'Assembly'
           # [string=''] Color to use for the frame and title block
           sheet_reference_color: ''
+          # [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+          # Note that this value is currently ignored by KiCad (6.0.9)
+          sketch_pad_line_width: 0.1
+          # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
+          sketch_pads_on_fab_layers: false
           # [boolean=false] Try to sort the layers in the same order that uses KiCad for printing
           sort_layers: false
           # [boolean=true] Cover the vias
@@ -2139,7 +2147,8 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
-      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      # [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+      # Note that this value is currently ignored by KiCad (6.0.9)
       sketch_pad_line_width: 0.1
       # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
       sketch_pads_on_fab_layers: false
@@ -2385,7 +2394,8 @@ outputs:
       scale_adjust_y: 1.0
       # [number=1] Scale factor (0 means autoscaling)
       scaling: 1
-      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      # [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+      # Note that this value is currently ignored by KiCad (6.0.9)
       sketch_pad_line_width: 0.1
       # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
       sketch_pads_on_fab_layers: false
@@ -2789,7 +2799,8 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
-      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      # [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+      # Note that this value is currently ignored by KiCad (6.0.9)
       sketch_pad_line_width: 0.1
       # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
       sketch_pads_on_fab_layers: false

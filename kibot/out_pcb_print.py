@@ -197,6 +197,11 @@ class PagesOptions(Optionable):
                 You can reuse other layers lists, some options aren't used here, but they are valid """
             self.page_id = '%02d'
             """ Text to differentiate the pages. Use %d (like in C) to get the page number """
+            self.sketch_pads_on_fab_layers = False
+            """ Draw only the outline of the pads on the *.Fab layers (KiCad 6+) """
+            self.sketch_pad_line_width = 0.1
+            """ Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                Note that this value is currently ignored by KiCad (6.0.9) """
         self._scaling_example = 1.0
         self._autoscale_margin_x_example = 0
         self._autoscale_margin_y_example = 0
@@ -219,6 +224,7 @@ class PagesOptions(Optionable):
             self.autoscale_margin_x = parent.autoscale_margin_x
         if self.autoscale_margin_y is None:
             self.autoscale_margin_y = parent.autoscale_margin_y
+        self.sketch_pad_line_width = GS.from_mm(self.sketch_pad_line_width)
 
 
 class PCB_PrintOptions(VariantOptions):
@@ -1066,6 +1072,9 @@ class PCB_PrintOptions(VariantOptions):
             if GS.ki5:
                 po.SetLineWidth(FromMM(p.line_width))
                 po.SetPlotPadsOnSilkLayer(not p.exclude_pads_from_silkscreen)
+            else:
+                po.SetSketchPadsOnFabLayers(p.sketch_pads_on_fab_layers)
+                po.SetSketchPadLineWidth(p.sketch_pad_line_width)
             filelist = []
             if self.force_edge_cuts and next(filter(lambda x: x._id == edge_id, p.layers), None) is None:
                 p.layers.append(edge_layer)

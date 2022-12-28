@@ -31,6 +31,8 @@ outputs:
           sheet_reference_color: "#A02020"
           # black_holes: false
           # holes_color: "#8080FF"
+          sketch_pads_on_fab_layers: true
+          sketch_pad_line_width: 1
           layers:
             - layer: Edge.Cuts
             - layer: F.Cu

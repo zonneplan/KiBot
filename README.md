@@ -1913,7 +1913,8 @@ Notes:
                           You must disable it to get the dimensions (See https://gitlab.com/kicad/code/kicad/-/issues/11901).
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
-        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm] (KiCad 6+).
+        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                                   Note that this value is currently ignored by KiCad (6.0.9).
         - `sketch_pads_on_fab_layers`: [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
@@ -2092,7 +2093,8 @@ Notes:
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
-        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm] (KiCad 6+).
+        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                                   Note that this value is currently ignored by KiCad (6.0.9).
         - `sketch_pads_on_fab_layers`: [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+).
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
@@ -2157,7 +2159,8 @@ Notes:
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
         - `scaling`: [number=0] Scale factor (0 means autoscaling).
-        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm] (KiCad 6+).
+        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                                   Note that this value is currently ignored by KiCad (6.0.9).
         - `sketch_pads_on_fab_layers`: [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
@@ -2953,6 +2956,9 @@ Notes:
             - `page_id`: [string='%02d'] Text to differentiate the pages. Use %d (like in C) to get the page number.
             - `sheet`: [string='Assembly'] Text to use for the `sheet` in the title block.
             - `sheet_reference_color`: [string=''] Color to use for the frame and title block.
+            - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                                       Note that this value is currently ignored by KiCad (6.0.9).
+            - `sketch_pads_on_fab_layers`: [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+).
             - `tent_vias`: [boolean=true] Cover the vias.
             - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
                        If it starts with `+` the text is concatenated.
@@ -3196,7 +3202,8 @@ Notes:
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
-        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm] (KiCad 6+).
+        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                                   Note that this value is currently ignored by KiCad (6.0.9).
         - `sketch_pads_on_fab_layers`: [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+).
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
@@ -3237,7 +3244,8 @@ Notes:
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
-    - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm] (KiCad 6+).
+    - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                               Note that this value is currently ignored by KiCad (6.0.9).
     - `sketch_pads_on_fab_layers`: [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+).
     - `tent_vias`: [boolean=true] Cover the vias.
     - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
@@ -3497,7 +3505,8 @@ Notes:
                            A short-cut to use for simple cases where a variant is an overkill.
         - `scale_adjust_x`: [number=1.0] Fine grain adjust for the X scale (floating point multiplier).
         - `scale_adjust_y`: [number=1.0] Fine grain adjust for the Y scale (floating point multiplier).
-        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm] (KiCad 6+).
+        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                                   Note that this value is currently ignored by KiCad (6.0.9).
         - `sketch_pads_on_fab_layers`: [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+).
         - `sketch_plot`: [boolean=false] Don't fill objects, just draw the outline.
         - `tent_vias`: [boolean=true] Cover the vias.
@@ -3896,7 +3905,8 @@ Notes:
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
-        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm] (KiCad 6+).
+        - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                                   Note that this value is currently ignored by KiCad (6.0.9).
         - `sketch_pads_on_fab_layers`: [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+).
         - `svg_precision`: [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
                            The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
