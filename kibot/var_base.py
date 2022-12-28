@@ -175,6 +175,8 @@ class SubPCBOptions(PanelOptions):
                     self._excl_by_sub_pcb.add(m.GetReference())
 
     def remove_outside(self, comps_hash):
+        """ Remove footprints, drawings, text and zones outside `board_rect` rectangle.
+            Keep them in a list to restore later. """
         self._removed = []
         self._remove_modules(GS.get_modules(), comps_hash)
         self._remove_items(GS.board.GetDrawings())
@@ -182,6 +184,8 @@ class SubPCBOptions(PanelOptions):
         self._remove_items(list(GS.board.Zones()))
 
     def get_pcb_edges(self):
+        """ Get a list of PCB shapes from the Edge.Cuts layer.
+            Only useful elements are returned. """
         edges = []
         layer_cuts = GS.board.GetLayerID('Edge.Cuts')
         for edge in chain(GS.board.GetDrawings(), *[m.GraphicalItems() for m in GS.get_modules()]):
@@ -198,6 +202,7 @@ class SubPCBOptions(PanelOptions):
                                        format(edges[0], edges[1], edges[2], point_str(point)))
 
     def find_contour(self, initial_edge, edges):
+        """ Find a list of edges that creates a closed contour and contains initial_edge """
         # Classify the points according to its rounded coordinates
         points = {}
         for e in edges:
@@ -229,6 +234,7 @@ class SubPCBOptions(PanelOptions):
         return contour, bbox
 
     def search_reference_rect(self, ref):
+        """ Search the rectangle that contains the outline pointed by `ref` footprint """
         logger.debug('Looking for the rectangle pointed by `{}`'.format(ref))
         extra_debug = GS.debug_level > 2
         # Find the annotation component
@@ -257,6 +263,7 @@ class SubPCBOptions(PanelOptions):
         return bbox
 
     def apply(self, comps_hash):
+        """ Apply the sub-PCB selection. """
         self._excl_by_sub_pcb = set()
         if self.tool == 'internal':
             if self.reference:
@@ -278,6 +285,7 @@ class SubPCBOptions(PanelOptions):
             GS.board.Add(o)
 
     def revert(self, comps_hash):
+        """ Restore the sub-PCB selection. """
         if self.tool == 'internal':
             self.restore_removed()
         else:
