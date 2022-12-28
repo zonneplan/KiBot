@@ -142,7 +142,7 @@ class SubPCBOptions(PanelOptions):
                 # Memorize the used modules
                 old_modules = {m.GetReference() for m in GS.get_modules()}
             # Now do the separation
-            cmd = [command, 'separate', '-s', self.get_separate_source()]
+            cmd = [command, 'separate', '--preserveArcs', '-s', self.get_separate_source()]
             if self.strip_annotation:
                 cmd.append('--stripAnnotations')
             cmd.extend([GS.pcb_file, dest])
