@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New output:
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
 - Variants:
-  - Some limited support for `kikit separate`
+  - Support for multi-boards as defined by KiKit
 - iBoM:
   - `hide_excluded` to hide excluded *.Fab drawings.
 ### Fixed
