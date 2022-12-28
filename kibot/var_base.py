@@ -70,6 +70,7 @@ class SubPCBOptions(PanelOptions):
             self.reference = ''
             """ *Use it for the annotations method.
                 This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
+                Note that you can use any footprint as long as its position is inside the PCB outline.
                 When empty the sub-PCB is specified using a rectangle """
             self.ref = None
             """ {reference} """
@@ -94,6 +95,8 @@ class SubPCBOptions(PanelOptions):
             self.file_id = ''
             """ Text to use as the replacement for %v expansion.
                 When empty we use the parent `file_id` plus the `name` of the sub-PCB """
+            self.tool = 'internal'
+            """ [internal,kikit] Tool used to extract the sub-PCB. """
 
     def is_zero(self, val):
         return isinstance(val, (int, float)) and val == 0
@@ -255,13 +258,15 @@ class SubPCBOptions(PanelOptions):
 
     def apply(self, comps_hash):
         self._excl_by_sub_pcb = set()
-        if self.reference:
-            # Get the rectangle containing the board edge pointed by the reference
-            self.board_rect = self.search_reference_rect(self.reference)
-        # Using a rectangle
-        self.remove_outside(comps_hash)
-        # Using KiKit:
-        # self.separate_board(comps_hash)
+        if self.tool == 'internal':
+            if self.reference:
+                # Get the rectangle containing the board edge pointed by the reference
+                self.board_rect = self.search_reference_rect(self.reference)
+            # Using a rectangle
+            self.remove_outside(comps_hash)
+        else:
+            # Using KiKit:
+            self.separate_board(comps_hash)
 
     def unload_board(self, comps_hash):
         # Undo the sub-PCB: just reload the PCB
@@ -273,9 +278,11 @@ class SubPCBOptions(PanelOptions):
             GS.board.Add(o)
 
     def revert(self, comps_hash):
-        self.restore_removed()
-        # Using KiKit:
-        # self.unload_board(comps_hash)
+        if self.tool == 'internal':
+            self.restore_removed()
+        else:
+            # Using KiKit:
+            self.unload_board(comps_hash)
         # Restore excluded components
         logger.debug('Restoring components outside the sub-PCB')
         for c in self._excl_by_sub_pcb:

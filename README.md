@@ -1050,6 +1050,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - *ref*: Alias for reference.
         - **`reference`**: [string=''] Use it for the annotations method.
                            This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
+                           Note that you can use any footprint as long as its position is inside the PCB outline.
                            When empty the sub-PCB is specified using a rectangle.
         - *bottom_right_x*: Alias for brx.
         - *bottom_right_y*: Alias for bry.
@@ -1059,6 +1060,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
         - *top_left_x*: Alias for tlx.
         - *top_left_y*: Alias for tly.
         - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
@@ -1095,6 +1097,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - *ref*: Alias for reference.
         - **`reference`**: [string=''] Use it for the annotations method.
                            This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
+                           Note that you can use any footprint as long as its position is inside the PCB outline.
                            When empty the sub-PCB is specified using a rectangle.
         - *bottom_right_x*: Alias for brx.
         - *bottom_right_y*: Alias for bry.
@@ -1104,6 +1107,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
         - *top_left_x*: Alias for tlx.
         - *top_left_y*: Alias for tly.
         - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
@@ -1142,6 +1146,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - *ref*: Alias for reference.
         - **`reference`**: [string=''] Use it for the annotations method.
                            This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
+                           Note that you can use any footprint as long as its position is inside the PCB outline.
                            When empty the sub-PCB is specified using a rectangle.
         - *bottom_right_x*: Alias for brx.
         - *bottom_right_y*: Alias for bry.
@@ -1151,6 +1156,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
         - *top_left_x*: Alias for tlx.
         - *top_left_y*: Alias for tly.
         - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.

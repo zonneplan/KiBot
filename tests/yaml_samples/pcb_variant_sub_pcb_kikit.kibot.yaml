@@ -14,10 +14,13 @@ variants:
     sub_pcbs:
       - name: A
         ref: B1
+        tool: kikit
       - name: B
         ref: B2
+        tool: kikit
       - name: C
         ref: B3
+        tool: kikit
 
 outputs:
   - name: 'pcb_A'
