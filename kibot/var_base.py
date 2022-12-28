@@ -3,6 +3,8 @@
 # Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+# Note: the algorithm used to detect the PCB outline is adapted from KiKit project.
+from itertools import chain
 import os
 from tempfile import TemporaryDirectory
 from .registrable import RegVariant
@@ -16,6 +18,46 @@ from .macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+
+
+def round_point(point, precision=-4):
+    return (round(point[0], precision), round(point[1], precision))
+
+
+def point_str(point):
+    if isinstance(point, tuple):
+        return '({} mm, {} mm)'.format(GS.to_mm(point[0]), GS.to_mm(point[1]))
+    return '({} mm, {} mm)'.format(GS.to_mm(point.x), GS.to_mm(point.y))
+
+
+class Edge(object):
+    def __init__(self, shape):
+        super().__init__()
+        self.start = GS.get_start_point(shape)
+        self.r_start = round_point(self.start)
+        self.end = GS.get_end_point(shape)
+        self.r_end = round_point(self.end)
+        self.shape = shape
+        self.cls = shape.ShowShape()
+        self.used = False
+
+    def get_other_end(self, point):
+        if self.r_start != point:
+            return self.start, self.r_start
+        return self.end, self.r_end
+
+    def get_bbox(self):
+        """ Get the Bounding Box for the shape, without its line width.
+            KiKit uses the value in this way. """
+        s = self.shape
+        width = s.GetWidth()
+        s.SetWidth(0)
+        bbox = s.GetBoundingBox()
+        s.SetWidth(width)
+        return bbox
+
+    def __str__(self):
+        return '{} {}-{}'.format(self.cls, point_str(self.start), point_str(self.end))
 
 
 class SubPCBOptions(PanelOptions):
@@ -136,14 +178,90 @@ class SubPCBOptions(PanelOptions):
         self._remove_items(GS.board.GetTracks())
         self._remove_items(list(GS.board.Zones()))
 
+    def get_pcb_edges(self):
+        edges = []
+        layer_cuts = GS.board.GetLayerID('Edge.Cuts')
+        for edge in chain(GS.board.GetDrawings(), *[m.GraphicalItems() for m in GS.get_modules()]):
+            if edge.GetLayer() != layer_cuts or edge.GetClass().startswith('PCB_DIM_') or not GS.is_valid_pcb_shape(edge):
+                continue
+            edges.append(Edge(edge))
+        return edges
+
+    def inform_unconnected(self, edge, point):
+        raise KiPlotConfigurationError('Discontinuous PCB outline: {} not connected at {}'.format(edge, point_str(point)))
+
+    def inform_multiple_connect(self, edges, point):
+        raise KiPlotConfigurationError('PCB outline error: {}, {} and {} are connected at {}'.
+                                       format(edges[0], edges[1], edges[2], point_str(point)))
+
+    def find_contour(self, initial_edge, edges):
+        # Classify the points according to its rounded coordinates
+        points = {}
+        for e in edges:
+            points.setdefault(e.r_start, []).append(e)
+            points.setdefault(e.r_end, []).append(e)
+        # Look for a closed loop that contains initial_edge
+        r_start = initial_edge.r_start
+        start = initial_edge.start
+        r_end = initial_edge.r_end
+        contour = [initial_edge]
+        cur_edge = initial_edge
+        cur_edge.used = True
+        bbox = cur_edge.get_bbox()
+        while r_start != r_end:
+            e = points.get(r_start, None)
+            # We should get 2 points, the one we are using and its connected point
+            if e is None or len(e) == 1:
+                self.inform_unconnected(cur_edge, start)
+            if len(e) > 2:
+                self.inform_multiple_connect(e, start)
+            cur_edge = e[0] if e[0] != cur_edge else e[1]
+            # Sanity check
+            assert not cur_edge.used
+            # Change to the new segment
+            contour.append(cur_edge)
+            start, r_start = cur_edge.get_other_end(r_start)
+            cur_edge.used = True
+            bbox.Merge(cur_edge.get_bbox())
+        return contour, bbox
+
+    def search_reference_rect(self, ref):
+        logger.debug('Looking for the rectangle pointed by `{}`'.format(ref))
+        extra_debug = GS.debug_level > 2
+        # Find the annotation component
+        r = next(filter(lambda x: x.GetReference() == ref, GS.get_modules()), None)
+        if r is None:
+            raise KiPlotConfigurationError('Missing `{}` component in PCB, used for sub-PCB `{}`'.format(ref, self.name))
+        # Find the point it indicates
+        point = r.GetPosition()
+        if extra_debug:
+            logger.debug('- Points to '+point_str(point))
+        # Look for the PCB edges
+        edges = self.get_pcb_edges()
+        # Detect which edge is selected
+        sel_edge = next(filter(lambda x: x.shape.HitTest(point), edges), None)
+        if sel_edge is None:
+            raise KiPlotConfigurationError("The `{}` component doesn't select an object in the PCB edge".format(ref))
+        if extra_debug:
+            logger.debug('- Segment '+str(sel_edge))
+        # Detect a contour containing this edge
+        contour, bbox = self.find_contour(sel_edge, edges)
+        if extra_debug:
+            logger.debug('- BBox '+point_str(bbox.GetPosition())+'-'+point_str(bbox.GetEnd()))
+            logger.debug('- Elements:')
+            for e in contour:
+                logger.debug(' - '+str(e))
+        return bbox
+
     def apply(self, comps_hash):
         self._excl_by_sub_pcb = set()
         if self.reference:
-            logger.error(self.reference)
-            self.separate_board(comps_hash)
-        else:
-            # Using a rectangle
-            self.remove_outside(comps_hash)
+            # Get the rectangle containing the board edge pointed by the reference
+            self.board_rect = self.search_reference_rect(self.reference)
+        # Using a rectangle
+        self.remove_outside(comps_hash)
+        # Using KiKit:
+        # self.separate_board(comps_hash)
 
     def unload_board(self, comps_hash):
         # Undo the sub-PCB: just reload the PCB
@@ -155,10 +273,9 @@ class SubPCBOptions(PanelOptions):
             GS.board.Add(o)
 
     def revert(self, comps_hash):
-        if self.reference:
-            self.unload_board(comps_hash)
-        else:
-            self.restore_removed()
+        self.restore_removed()
+        # Using KiKit:
+        # self.unload_board(comps_hash)
         # Restore excluded components
         logger.debug('Restoring components outside the sub-PCB')
         for c in self._excl_by_sub_pcb:

@@ -293,6 +293,10 @@ class GS(object):
         return 0.001/pcbnew.IU_PER_MILS
 
     @staticmethod
+    def to_mm(val):
+        return val/pcbnew.IU_PER_MM
+
+    @staticmethod
     def make_bkp(fname):
         bkp = fname+'-bak'
         if os.path.isfile(bkp):
@@ -455,3 +459,36 @@ class GS(object):
     @staticmethod
     def create_eda_rect(tlx, tly, brx, bry):
         return pcbnew.EDA_RECT(pcbnew.wxPoint(tlx, tly), pcbnew.wxSize(brx-tlx, bry-tly))
+
+    @staticmethod
+    def is_valid_pcb_shape(g):
+        return g.GetShape() != pcbnew.S_SEGMENT or g.GetLength() > 0
+
+    @staticmethod
+    def get_start_point(g):
+        shape = g.GetShape()
+        if GS.ki6:
+            if shape == pcbnew.S_CIRCLE:
+                # Circle start is circle center
+                return g.GetStart()+pcbnew.wxPoint(g.GetRadius(), 0)
+            return g.GetStart()
+        if shape in [pcbnew.S_ARC, pcbnew.S_CIRCLE]:
+            return g.GetArcStart()
+        return g.GetStart()
+
+    @staticmethod
+    def get_end_point(g):
+        shape = g.GetShape()
+        if GS.ki6:
+            if shape == pcbnew.S_CIRCLE:
+                # This is closed start == end
+                return g.GetStart()+pcbnew.wxPoint(g.GetRadius(), 0)
+            if shape == pcbnew.S_RECT:
+                # Also closed start == end
+                return g.GetStart()
+            return g.GetEnd()
+        if shape == pcbnew.S_ARC:
+            return g.GetArcEnd()
+        if shape == pcbnew.S_CIRCLE:
+            return g.GetArcStart()
+        return g.GetEnd()
