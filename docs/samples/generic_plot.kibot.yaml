@@ -653,6 +653,10 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      sketch_pad_line_width: 0.1
+      # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
+      sketch_pads_on_fab_layers: false
       # [boolean=false] Don't fill objects, just draw the outline
       sketch_plot: false
       # [boolean=true] Cover the vias
@@ -812,6 +816,10 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      sketch_pad_line_width: 0.1
+      # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
+      sketch_pads_on_fab_layers: false
       # [boolean=false] Subtract the solder mask from the silk screen
       subtract_mask_from_silk: false
       # [boolean=true] Cover the vias
@@ -886,6 +894,10 @@ outputs:
       pre_transform: '_none'
       # [number=0] Scale factor (0 means autoscaling)
       scaling: 0
+      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      sketch_pad_line_width: 0.1
+      # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
+      sketch_pads_on_fab_layers: false
       # [boolean=false] Don't fill objects, just draw the outline
       sketch_plot: false
       # [boolean=true] Cover the vias
@@ -2127,6 +2139,10 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      sketch_pad_line_width: 0.1
+      # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
+      sketch_pads_on_fab_layers: false
       # [boolean=true] Cover the vias
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
@@ -2369,6 +2385,10 @@ outputs:
       scale_adjust_y: 1.0
       # [number=1] Scale factor (0 means autoscaling)
       scaling: 1
+      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      sketch_pad_line_width: 0.1
+      # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
+      sketch_pads_on_fab_layers: false
       # [boolean=false] Don't fill objects, just draw the outline
       sketch_plot: false
       # [boolean=true] Cover the vias
@@ -2769,6 +2789,10 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [number=0.1] Line width for the sketched pads [mm] (KiCad 6+)
+      sketch_pad_line_width: 0.1
+      # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
+      sketch_pads_on_fab_layers: false
       # [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
       # The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
       # Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5

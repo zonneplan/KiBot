@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
 - iBoM:
   - `hide_excluded` to hide excluded *.Fab drawings.
+- Plot related outputs:
+  - Added support for the KiCad 6 "sketch_pads_on_fab_layers" option. (#356)
 ### Fixed
 - PCB_Print:
   - Images not showing in custom frames. (#352)
