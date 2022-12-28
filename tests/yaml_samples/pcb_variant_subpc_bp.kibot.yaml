@@ -17,6 +17,8 @@ variants:
         tly: 50
         brx: 245
         bry: 90
+        # tolerance: 100
+        # tool: kikit
       - name: battery
         tlx: 20
         tly: 20

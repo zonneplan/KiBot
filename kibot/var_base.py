@@ -30,6 +30,10 @@ def point_str(point):
     return '({} mm, {} mm)'.format(GS.to_mm(point.x), GS.to_mm(point.y))
 
 
+def bbox_str(bbox):
+    return point_str(bbox.GetPosition())+'-'+point_str(bbox.GetEnd())
+
+
 class Edge(object):
     def __init__(self, shape):
         super().__init__()
@@ -97,6 +101,8 @@ class SubPCBOptions(PanelOptions):
                 When empty we use the parent `file_id` plus the `name` of the sub-PCB """
             self.tool = 'internal'
             """ [internal,kikit] Tool used to extract the sub-PCB. """
+            self.tolerance = 0
+            """ [number|string] Used to enlarge the selected rectangle to include elements outside the board """
 
     def is_zero(self, val):
         return isinstance(val, (int, float)) and val == 0
@@ -109,13 +115,18 @@ class SubPCBOptions(PanelOptions):
         if (not self.reference and self.is_zero(self.tlx) and self.is_zero(self.tly) and self.is_zero(self.brx) and
            self.is_zero(self.bry)):
             raise KiPlotConfigurationError('No reference or rectangle specified for {} sub-PCB'.format(self.name))
-        self.add_units(('tlx', 'tly', 'brx', 'bry'), self.units, convert=True)
+        self.add_units(('tlx', 'tly', 'brx', 'bry', 'tolerance'), self.units, convert=True)
         self.board_rect = GS.create_eda_rect(self._tlx, self._tly, self._brx, self._bry)
+        self.board_rect.Inflate(int(self._tolerance))
 
     def get_separate_source(self):
         if self.reference:
-            return "annotation; ref: {}".format(self.reference)
-        return "rectangle; tlx: {}; tly: {}; brx: {}; bry: {}".format(self.tlx, self.tly, self.brx, self.bry)
+            src = "annotation; ref: {}".format(self.reference)
+        else:
+            src = "rectangle; tlx: {}; tly: {}; brx: {}; bry: {}".format(self.tlx, self.tly, self.brx, self.bry)
+        if self._tolerance:
+            src += "; tolerance: {}".format(self.tolerance)
+        return src
 
     def separate_board(self, comps_hash):
         """ Apply the sub-PCB using an external tool and load it into memory """
@@ -256,7 +267,7 @@ class SubPCBOptions(PanelOptions):
         # Detect a contour containing this edge
         contour, bbox = self.find_contour(sel_edge, edges)
         if extra_debug:
-            logger.debug('- BBox '+point_str(bbox.GetPosition())+'-'+point_str(bbox.GetEnd()))
+            logger.debug('- BBox '+bbox_str(bbox))
             logger.debug('- Elements:')
             for e in contour:
                 logger.debug(' - '+str(e))
@@ -269,6 +280,7 @@ class SubPCBOptions(PanelOptions):
             if self.reference:
                 # Get the rectangle containing the board edge pointed by the reference
                 self.board_rect = self.search_reference_rect(self.reference)
+                self.board_rect.Inflate(int(self._tolerance))
             # Using a rectangle
             self.remove_outside(comps_hash)
         else:

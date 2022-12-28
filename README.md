@@ -1060,6 +1060,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
         - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
         - *top_left_x*: Alias for tlx.
         - *top_left_y*: Alias for tly.
@@ -1107,6 +1108,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
         - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
         - *top_left_x*: Alias for tlx.
         - *top_left_y*: Alias for tly.
@@ -1156,6 +1158,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
         - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
         - *top_left_x*: Alias for tlx.
         - *top_left_y*: Alias for tly.
