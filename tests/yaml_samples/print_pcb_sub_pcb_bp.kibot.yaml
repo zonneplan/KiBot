@@ -1,0 +1,17 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
+
+outputs:
+  - name: 'print_front'
+    comment: "Print F.Cu+F.SilkS"
+    type: pdf_pcb_print
+    dir: Layers
+    options:
+      title: 'Fake title for front copper and silk (%S)'
+    layers:
+      - layer: F.Cu
+      - layer: F.SilkS

@@ -521,11 +521,11 @@ class PcbDrawOptions(VariantOptions):
     def run(self, name):
         super().run(name)
         # Apply any variant
-        self.filter_pcb_components(GS.board, do_3D=True)
+        self.filter_pcb_components(do_3D=True)
         # Create the image
         self.create_image(name, GS.board)
         # Undo the variant
-        self.unfilter_pcb_components(GS.board, do_3D=True)
+        self.unfilter_pcb_components(do_3D=True)
 
 
 @output_class

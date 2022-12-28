@@ -1009,7 +1009,7 @@ class PCB_PrintOptions(VariantOptions):
             id, ext = self.get_id_and_ext(n, p.page_id)
             user_name = self.expand_filename(output_dir, self.output, id, ext)
             if cur_name != user_name and os.path.isfile(cur_name):
-                os.rename(cur_name, user_name)
+                os.replace(cur_name, user_name)
 
     def generate_output(self, output):
         self.check_tools()
@@ -1151,9 +1151,9 @@ class PCB_PrintOptions(VariantOptions):
         svgutils = importlib.import_module('.svgutils.transform', package=__package__)
         global kicad_worksheet
         kicad_worksheet = importlib.import_module('.kicad.worksheet', package=__package__)
-        self.filter_pcb_components(GS.board)
+        self.filter_pcb_components()
         self.generate_output(output)
-        self.unfilter_pcb_components(GS.board)
+        self.unfilter_pcb_components()
 
 
 @output_class

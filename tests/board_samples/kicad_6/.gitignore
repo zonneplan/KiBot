@@ -5,3 +5,4 @@ zone-refill.pro
 fp-info-cache
 *-bak
 pcb_parity.xml
+batteryPack.kicad_prl

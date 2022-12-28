@@ -1519,3 +1519,16 @@ def test_copy_files_2(test_dir):
     ctx.search_err(r'WARNING:\(W098\)  2 3D models downloaded')   # 2 models are missing and they are downloaded
     ctx.search_err(r'WARNING:\(W100\)', invert=True)   # 2 models has the same name, but goes to different target
     ctx.clean_up()
+
+
+def test_sub_pcb_bp(test_dir):
+    """ Test a multiboard example """
+    prj = 'batteryPack'
+    ctx = context.TestContext(test_dir, prj, 'pcb_variant_sub_pcb_bp', '')
+    ctx.run()
+    # Check all outputs are there
+    fname_b = prj+'-variant_'
+    ctx.expect_out_file(fname_b+'battery.kicad_pcb')
+    ctx.expect_out_file(fname_b+'charger.kicad_pcb')
+    ctx.expect_out_file(fname_b+'connector.kicad_pcb')
+    ctx.clean_up(keep_project=True)

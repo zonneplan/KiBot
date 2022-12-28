@@ -12,7 +12,7 @@ Dependencies:
 """
 import os
 from .gs import GS
-from .optionable import BaseOptions
+from .out_base import VariantOptions
 from .misc import FAILED_EXECUTE
 from .kiplot import exec_with_retry, add_extra_options
 from .macros import macros, document, output_class  # noqa: F401
@@ -21,7 +21,7 @@ from . import log
 logger = log.get_logger()
 
 
-class NetlistOptions(BaseOptions):
+class NetlistOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
@@ -31,6 +31,7 @@ class NetlistOptions(BaseOptions):
                 from the schematic. The `ipc` format is the IPC-D-356 format, useful for PCB
                 testing, is generated from the PCB """
         super().__init__()
+        self.help_only_sub_pcbs()
 
     def config(self, parent):
         super().config(parent)
@@ -48,10 +49,12 @@ class NetlistOptions(BaseOptions):
 
     def run(self, name):
         command = self.ensure_tool('KiAuto')
+        super().run(name)
+        to_remove = []
         if self.format == 'ipc':
             command = command.replace('eeschema_do', 'pcbnew_do')
             subcommand = 'ipc_netlist'
-            file = GS.pcb_file
+            file = self.save_tmp_board_if_variant(to_remove)
         else:
             subcommand = 'netlist'
             file = GS.sch_file
@@ -59,16 +62,16 @@ class NetlistOptions(BaseOptions):
         # Output file name
         cmd = [command, subcommand, '--output_name', name, file, output_dir]
         cmd, video_remove = add_extra_options(cmd)
+        if video_remove:
+            to_remove.append(os.path.join(self.expand_filename_pcb(GS.out_dir), command[:-3]+'_'+subcommand+'_screencast.ogv'))
         # Execute it
         ret = exec_with_retry(cmd)
         if ret:
             logger.error(command+' returned %d', ret)
             exit(FAILED_EXECUTE)
-        # Remove the video if needed
-        if video_remove:
-            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), command[:-3]+'_'+subcommand+'_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
+        for f in to_remove:
+            if os.path.isfile(f):
+                os.remove(f)
 
 
 @output_class

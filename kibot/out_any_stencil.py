@@ -105,14 +105,14 @@ class Stencil_Options(VariantOptions):
             self.ensure_tool('Xvfb')
         super().run(output)
         # Apply variants and filters
-        filtered = self.filter_pcb_components(GS.board)
+        filtered = self.filter_pcb_components()
         if self.side == 'auto':
             detected_top, detected_bottom = self.detect_solder_paste(GS.board)
         else:
             detected_top = detected_bottom = False
         fname = self.save_tmp_board() if filtered else GS.pcb_file
         if filtered:
-            self.unfilter_pcb_components(GS.board)
+            self.unfilter_pcb_components()
         # Avoid running the tool if we will generate useless models
         if self.side == 'auto' and not detected_top and not detected_bottom:
             logger.warning(W_AUTONONE+'No solder paste detected, skipping stencil generation')

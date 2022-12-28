@@ -1,0 +1,17 @@
+# Example KiBot config file for a basic 3D stencil
+kibot:
+  version: 1
+
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
+
+outputs:
+  - name: 'stencil'
+    comment: "Creates a 3D printable stencil"
+    type: stencil_3d
+    dir: stencil/3D
+
+  - name: 'navigate'
+    comment: "Browse the results"
+    type: navigate_results
+    run_by_default: false

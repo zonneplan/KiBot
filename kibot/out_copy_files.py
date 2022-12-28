@@ -126,7 +126,7 @@ class Copy_FilesOptions(Base3DOptions):
             dest_dir = dest_dir[:-1]
         f.output_dir = dest_dir
         # Apply any variant
-        self.filter_pcb_components(GS.board, do_3D=True, do_2D=True)
+        self.filter_pcb_components(do_3D=True, do_2D=True)
         # Download missing models and rename all collect 3D models (renamed)
         f.rel_dirs = self.rel_dirs
         files_list = self.download_models(rename_filter=f.source, rename_function=FilesList.apply_rename, rename_data=f)
@@ -139,7 +139,7 @@ class Copy_FilesOptions(Base3DOptions):
             # We must undo the download/rename
             self.undo_3d_models_rename(GS.board)
         else:
-            self.unfilter_pcb_components(GS.board, do_3D=True, do_2D=True)
+            self.unfilter_pcb_components(do_3D=True, do_2D=True)
         # Also include the step/wrl counterpart
         new_list = []
         for fn in files_list:
@@ -214,6 +214,7 @@ class Copy_FilesOptions(Base3DOptions):
         return files.keys()
 
     def run(self, output):
+        super().run(output)
         # Output file name
         logger.debug('Collecting files')
         # Collect the files

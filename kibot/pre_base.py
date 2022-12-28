@@ -149,6 +149,12 @@ class BasePreFlight(Registrable):
             return self._variant.name
         return Optionable._find_global_variant_name()
 
+    def _find_subpcb(self):
+        # Preflights doesn't have a variant, but we could have one global default
+        if hasattr(self, '_variant') and self._variant and self.variant._sub_pcb:
+            return self.variant._sub_pcb.name
+        return Optionable._find_global_subpcb()
+
     def ensure_tool(self, name):
         """ Looks for a mandatory dependency """
         return GS.check_tool_dep(self._name, name, fatal=True)

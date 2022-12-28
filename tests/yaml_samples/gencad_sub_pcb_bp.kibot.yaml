@@ -1,0 +1,15 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
+
+outputs:
+  - name: 'GENCAD export Test'
+    comment: "Example of GENCAD export"
+    type: gencad
+    options:
+      flip_bottom_padstacks: true
+      no_reuse_shapes: true
+      save_origin: true

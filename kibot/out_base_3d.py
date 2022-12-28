@@ -201,10 +201,10 @@ class Base3DOptions(VariantOptions):
                 self.undo_3d_models_rename(GS.board)
                 return ret
             return GS.pcb_file
-        self.filter_pcb_components(GS.board, do_3D=True, do_2D=True, highlight=highlight)
+        self.filter_pcb_components(do_3D=True, do_2D=True, highlight=highlight)
         self.download_models()
         fname = self.save_tmp_board()
-        self.unfilter_pcb_components(GS.board, do_3D=True, do_2D=True)
+        self.unfilter_pcb_components(do_3D=True, do_2D=True)
         return fname
 
     def get_targets(self, out_dir):

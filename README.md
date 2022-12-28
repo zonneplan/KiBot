@@ -2,7 +2,7 @@
 
 ![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png)
 
-[![Python application](https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=dev&style=plastic)](https://github.com/INTI-CMNB/KiBot/actions)
+[![Python application](https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=subpcb&style=plastic)](https://github.com/INTI-CMNB/KiBot/actions)
 [![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
@@ -146,6 +146,7 @@ Notes:
 
 [**KiKit**](https://github.com/yaqwsx/KiKit) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/yaqwsx/KiKit) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `panelize`, `stencil_3d`, `stencil_for_jig`
+- Optional to separate multiboard projects for general use
 
 [**LXML**](https://pypi.org/project/LXML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/LXML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lxml) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `pcb_print`, `pcbdraw`
@@ -591,13 +592,14 @@ The pattern uses the following expansions:
 - **%I** an ID defined by the user for this output.
 - **%p** pcb/sch title from pcb metadata.
 - **%r** revision from pcb/sch metadata.
+- **%S** sub-PCB name (related to multiboards).
 - **%T** time the script was started.
 - **%x** a suitable extension for the output type.
 - **%v** the `file_id` of the current variant, or the global variant if outside a variant scope.
 - **%V** the `name` of the current variant, or the global variant if outside a variant scope.
 
 They are compatible with the ones used by IBoM.
-The default value for `global.output` is `%f-%i.%x`.
+The default value for `global.output` is `%f-%i%I%v.%x`.
 If you want to include the revision you could add the following definition:
 
 ```yaml
@@ -1044,6 +1046,36 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
                        Use '_var_rename' to transform VARIANT:FIELD fields.
                        Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
                        Use '_kicost_rename' to apply KiCost field rename rules.
+    - `sub_pcbs`: [list(dict)] Used for multi-board workflows as defined by KiKit.
+                  I don't recommend using it, for detail read
+                  [this](https://github.com/INTI-CMNB/KiBot/tree/master/docs/1_SCH_2_part_PCBs).
+                  But if you really need it you can define the sub-PCBs here.
+                  Then you just use *VARIANT[SUB_PCB_NAME]* instead of just *VARIANT*.
+      * Valid keys:
+        - **`name`**: [string=''] Name for this sub-pcb.
+        - *ref*: Alias for reference.
+        - **`reference`**: [string=''] Use it for the annotations method.
+                           This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
+                           Note that you can use any footprint as long as its position is inside the PCB outline.
+                           When empty the sub-PCB is specified using a rectangle.
+        - *bottom_right_x*: Alias for brx.
+        - *bottom_right_y*: Alias for bry.
+        - `brx`: [number|string] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `center_result`: [boolean=true] Move the resulting PCB to the center of the page.
+                           You can disable it only for the internal tool, KiKit should always do it.
+        - `file_id`: [string=''] Text to use as the replacement for %v expansion.
+                     When empty we use the parent `file_id` plus the `name` of the sub-PCB.
+        - `strip_annotation`: [boolean=false] Remove the annotation footprint. Note that KiKit will remove all annotations,
+                              but the internal implementation just the one indicated by `ref`.
+                              If you need to remove other annotations use an exclude filter.
+        - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
+        - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
+        - *top_left_x*: Alias for tlx.
+        - *top_left_y*: Alias for tly.
+        - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
     - `variant_field`: [string='Config'] Name of the field that stores board variant for component.
     - `variants_blacklist`: [string|list(string)=''] List of board variants to exclude from the BOM.
     - `variants_whitelist`: [string|list(string)=''] List of board variants to include in the BOM.
@@ -1067,6 +1099,36 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
                        Use '_var_rename' to transform VARIANT:FIELD fields.
                        Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
                        Use '_kicost_rename' to apply KiCost field rename rules.
+    - `sub_pcbs`: [list(dict)] Used for multi-board workflows as defined by KiKit.
+                  I don't recommend using it, for detail read
+                  [this](https://github.com/INTI-CMNB/KiBot/tree/master/docs/1_SCH_2_part_PCBs).
+                  But if you really need it you can define the sub-PCBs here.
+                  Then you just use *VARIANT[SUB_PCB_NAME]* instead of just *VARIANT*.
+      * Valid keys:
+        - **`name`**: [string=''] Name for this sub-pcb.
+        - *ref*: Alias for reference.
+        - **`reference`**: [string=''] Use it for the annotations method.
+                           This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
+                           Note that you can use any footprint as long as its position is inside the PCB outline.
+                           When empty the sub-PCB is specified using a rectangle.
+        - *bottom_right_x*: Alias for brx.
+        - *bottom_right_y*: Alias for bry.
+        - `brx`: [number|string] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `center_result`: [boolean=true] Move the resulting PCB to the center of the page.
+                           You can disable it only for the internal tool, KiKit should always do it.
+        - `file_id`: [string=''] Text to use as the replacement for %v expansion.
+                     When empty we use the parent `file_id` plus the `name` of the sub-PCB.
+        - `strip_annotation`: [boolean=false] Remove the annotation footprint. Note that KiKit will remove all annotations,
+                              but the internal implementation just the one indicated by `ref`.
+                              If you need to remove other annotations use an exclude filter.
+        - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
+        - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
+        - *top_left_x*: Alias for tlx.
+        - *top_left_y*: Alias for tly.
+        - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
     - `variant`: [string|list(string)=''] Board variant(s).
 - `kicost`: KiCost variant style
         The `variant` field (configurable) contains one or more values.
@@ -1092,6 +1154,36 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
     - `separators`: [string=',;/ '] Valid separators for variants in the variant field.
                     Each character is a valid separator.
                     Only supported internally, don't use it if you plan to use KiCost.
+    - `sub_pcbs`: [list(dict)] Used for multi-board workflows as defined by KiKit.
+                  I don't recommend using it, for detail read
+                  [this](https://github.com/INTI-CMNB/KiBot/tree/master/docs/1_SCH_2_part_PCBs).
+                  But if you really need it you can define the sub-PCBs here.
+                  Then you just use *VARIANT[SUB_PCB_NAME]* instead of just *VARIANT*.
+      * Valid keys:
+        - **`name`**: [string=''] Name for this sub-pcb.
+        - *ref*: Alias for reference.
+        - **`reference`**: [string=''] Use it for the annotations method.
+                           This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
+                           Note that you can use any footprint as long as its position is inside the PCB outline.
+                           When empty the sub-PCB is specified using a rectangle.
+        - *bottom_right_x*: Alias for brx.
+        - *bottom_right_y*: Alias for bry.
+        - `brx`: [number|string] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `center_result`: [boolean=true] Move the resulting PCB to the center of the page.
+                           You can disable it only for the internal tool, KiKit should always do it.
+        - `file_id`: [string=''] Text to use as the replacement for %v expansion.
+                     When empty we use the parent `file_id` plus the `name` of the sub-PCB.
+        - `strip_annotation`: [boolean=false] Remove the annotation footprint. Note that KiKit will remove all annotations,
+                              but the internal implementation just the one indicated by `ref`.
+                              If you need to remove other annotations use an exclude filter.
+        - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
+        - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
+        - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
+        - *top_left_x*: Alias for tlx.
+        - *top_left_y*: Alias for tly.
+        - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
     - `variant`: [string=''] Variants to match (regex).
     - `variant_field`: [string='variant'] Name of the field that stores board variant/s for component.
                        Only supported internally, don't use it if you plan to use KiCost.
@@ -1430,6 +1522,12 @@ Notes:
     - **`options`**: [dict] Options for the `boardview` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `variant`: [string=''] Board variant to apply.
+                     Used for sub-PCBs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -1948,6 +2046,8 @@ Notes:
         - **`mirror_y_axis`**: [boolean=false] Invert the Y axis.
         - **`output`**: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
         - **`pth_and_npth_single_file`**: [boolean=true] Generate one file for both, plated holes and non-plated holes, instead of two separated files.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `left_digits`: [number=0] number of digits for integer part of coordinates (0 is auto).
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                  Not generated unless a format is specified.
@@ -1956,6 +2056,8 @@ Notes:
             - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
         - `minimal_header`: [boolean=false] Use a minimal header in the file.
         - `npth_id`: [string] Force this replacement for %i when generating NPTH files.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `pth_id`: [string] Force this replacement for %i when generating PTH and unified files.
         - `report`: [dict|string] Name of the drill report. Not generated unless a name is specified.
           * Valid keys:
@@ -1964,6 +2066,8 @@ Notes:
         - `right_digits`: [number=0] number of digits for mantissa part of coordinates (0 is auto).
         - `route_mode_for_oval_holes`: [boolean=true] Use route command for oval holes (G00), otherwise use G85.
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
+        - `variant`: [string=''] Board variant to apply.
+                     Used for sub-PCBs.
         - `zeros_format`: [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
@@ -1990,10 +2094,16 @@ Notes:
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=gencad, %x=cad). Affected by global options.
         - `aux_origin`: [boolean=false] Use auxiliary axis as origin.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `flip_bottom_padstacks`: [boolean=false] Flip bottom footprint padstacks.
         - `no_reuse_shapes`: [boolean=false] Generate a new shape for each footprint instance (Do not reuse shapes).
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `save_origin`: [boolean=false] Save the origin coordinates in the file.
         - `unique_pin_names`: [boolean=false] Generate unique pin names.
+        - `variant`: [string=''] Board variant to apply.
+                     Used for sub-PCBs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2018,18 +2128,24 @@ Notes:
     - **`options`**: [dict] Options for the `gerb_drill` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
         - `map`: [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
                  Not generated unless a format is specified.
           * Valid keys:
             - **`output`**: [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
             - `type`: [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
         - `npth_id`: [string] Force this replacement for %i when generating NPTH files.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
         - `pth_id`: [string] Force this replacement for %i when generating PTH and unified files.
         - `report`: [dict|string] Name of the drill report. Not generated unless a name is specified.
           * Valid keys:
             - `filename`: [string=''] Name of the drill report. Not generated unless a name is specified.
                           (%i='drill_report' %x='txt').
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
+        - `variant`: [string=''] Board variant to apply.
+                     Used for sub-PCBs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -2294,6 +2410,7 @@ Notes:
                  Note that this output is provided as a compatibility tool.
                  We recommend using the `bom` output instead.
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
+                 Also note that here the KiBot concept of variants doesn't apply.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -2567,6 +2684,12 @@ Notes:
                         from the schematic. The `ipc` format is the IPC-D-356 format, useful for PCB
                         testing, is generated from the PCB.
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=netlist/IPC-D-356, %x=net/d356). Affected by global options.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `variant`: [string=''] Board variant to apply.
+                     Used for sub-PCBs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. PCB/fabrication/gerber.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
@@ -5192,3 +5315,4 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
   - **Most icons for the navigate_results output**: The KiCad project
   - **PTV09A 3D Model**: Dmitry Levin ([GrabCad](https://grabcad.com/dmitry.levin-6))
   - **PcbDraw PCB example**: [Arduino Learning Kit Starter](https://github.com/RoboticsBrno/ArduinoLearningKitStarter)
+  - **Battery charger example**: [RB0002-BatteryPack](https://cadlab.io/project/22740/master/files)

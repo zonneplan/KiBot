@@ -7,7 +7,8 @@ import os
 import re
 from pcbnew import (PLOT_FORMAT_HPGL, PLOT_FORMAT_POST, PLOT_FORMAT_GERBER, PLOT_FORMAT_DXF, PLOT_FORMAT_SVG,
                     PLOT_FORMAT_PDF, wxPoint)
-from .optionable import (Optionable, BaseOptions)
+from .optionable import Optionable
+from .out_base import VariantOptions
 from .gs import GS
 from .layer import Layer
 from .macros import macros, document  # noqa: F401
@@ -37,7 +38,7 @@ class DrillReport(Optionable):
         self._unkown_is_error = True
 
 
-class AnyDrill(BaseOptions):
+class AnyDrill(VariantOptions):
     def __init__(self):
         # Options
         with document:
@@ -66,6 +67,7 @@ class AnyDrill(BaseOptions):
                         }
         self._map_ext = {'hpgl': 'plt', 'ps': 'ps', 'gerber': 'gbr', 'dxf': 'dxf', 'svg': 'svg', 'pdf': 'pdf'}
         self._unified_output = False
+        self.help_only_sub_pcbs()
 
     def config(self, parent):
         super().config(parent)
@@ -156,6 +158,8 @@ class AnyDrill(BaseOptions):
         return filenames
 
     def run(self, output_dir):
+        super().run(output_dir)
+        self.filter_pcb_components()
         if self.output:
             output_dir = os.path.dirname(output_dir)
         # dialog_gendrill.cpp:357
@@ -183,6 +187,7 @@ class AnyDrill(BaseOptions):
             drill_report_file = self.expand_filename(output_dir, self.report, 'drill_report', 'txt')
             logger.debug("Generating drill report: "+drill_report_file)
             drill_writer.GenDrillReportFile(drill_report_file)
+        self.unfilter_pcb_components()
 
     def get_targets(self, out_dir):
         targets = []

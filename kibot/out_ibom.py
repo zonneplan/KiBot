@@ -175,7 +175,7 @@ class IBoMOptions(VariantOptions):
         ori_extra_data_file = self.extra_data_file
         net_dir = None
         pcb_name = GS.pcb_file
-        if self._comps:
+        if self.will_filter_pcb_components():
             # Write a custom netlist to a temporal dir
             net_dir = mkdtemp(prefix='tmp-kibot-ibom-')
             netlist = os.path.join(net_dir, GS.pcb_basename+'.xml')
@@ -184,9 +184,9 @@ class IBoMOptions(VariantOptions):
             with open(netlist, 'wb') as f:
                 GS.sch.save_netlist(f, self._comps)
             # Write a board with the filtered values applied
-            self.filter_pcb_components(GS.board)
+            self.filter_pcb_components()
             pcb_name, _ = self.save_tmp_dir_board('ibom', force_dir=net_dir)
-            self.unfilter_pcb_components(GS.board)
+            self.unfilter_pcb_components()
         else:
             # Check if the user wants extra_fields but there is no data about them (#68)
             if self.need_extra_fields() and not os.path.isfile(self.extra_data_file):

@@ -73,6 +73,8 @@ Dependencies:
     github: yaqwsx/KiKit
     pypi: KiKit
     downloader: pytool
+  - from: KiKit
+    role: Separate multiboard projects
   - name: Xvfbwrapper
     python_module: true
     debian: python3-xvfbwrapper

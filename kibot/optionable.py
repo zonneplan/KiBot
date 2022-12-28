@@ -49,6 +49,8 @@ class Optionable(object):
         self._expand_ext = ''
         # Used to indicate we have an output pattern and it must be suitable to generate multiple files
         self._output_multiple_files = False
+        # The KiBoM output uses "variant" for the KiBoM variant, not for KiBot variants
+        self._variant_is_real = True
         super().__init__()
         for var in ['output', 'variant', 'units', 'hide_excluded']:
             glb = getattr(GS, 'global_'+var)
@@ -246,7 +248,10 @@ class Optionable(object):
         """ Returns the text to add for the current variant.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
-        if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'file_id'):
+        if not self._variant_is_real:
+            return self.variant
+        if hasattr(self, 'variant') and self.variant:
+            self.variant = GS.solve_variant(self.variant)
             return self.variant.file_id
         return Optionable._find_global_variant()
 
@@ -260,9 +265,30 @@ class Optionable(object):
         """ Returns the name for the current variant.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
-        if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'name'):
+        if not self._variant_is_real:
+            return self.variant
+        if hasattr(self, 'variant') and self.variant:
+            self.variant = GS.solve_variant(self.variant)
             return self.variant.name
         return Optionable._find_global_variant_name()
+
+    @staticmethod
+    def _find_global_subpcb():
+        if GS.solved_global_variant and GS.solved_global_variant._sub_pcb:
+            return GS.solved_global_variant._sub_pcb.name
+        return ''
+
+    def _find_subpcb(self):
+        """ Returns the name of the sub-PCB.
+            Also try with the globally defined variant.
+            If no variant is defined an empty string is returned. """
+        if not self._variant_is_real:
+            return ''
+        if hasattr(self, 'variant') and self.variant:
+            self.variant = GS.solve_variant(self.variant)
+            if self.variant._sub_pcb:
+                return self.variant._sub_pcb.name
+        return Optionable._find_global_subpcb()
 
     def expand_filename_common(self, name, parent):
         """ Expansions common to the PCB and Schematic """
@@ -295,6 +321,7 @@ class Optionable(object):
             name = name.replace('%i', self._expand_id)
             name = name.replace('%v', _cl(self._find_variant()))
             name = name.replace('%V', _cl(self._find_variant_name()))
+            name = name.replace('%S', _cl(self._find_subpcb()))
             name = name.replace('%x', self._expand_ext)
             replace_id = ''
             if parent and hasattr(parent, 'output_id'):
@@ -501,3 +528,56 @@ class BaseOptions(Optionable):
         self._expand_id = cur_id
         self._expand_ext = cur_ext
         return res
+
+
+class PanelOptions(BaseOptions):
+    """ A class for options that uses KiKit's units """
+    _num_regex = re.compile(r'([\d\.]+)(mm|cm|dm|m|mil|inch|in)')
+    _ang_regex = re.compile(r'([\d\.]+)(deg|°|rad)')
+
+    def add_units(self, ops, def_units=None, convert=False):
+        if def_units is None:
+            def_units = self._parent._parent.units
+        for op in ops:
+            val = getattr(self, op)
+            _op = '_'+op
+            if val is None:
+                if convert:
+                    setattr(self, _op, 0)
+                continue
+            if isinstance(val, (int, float)):
+                setattr(self, op, str(val)+def_units)
+                if convert:
+                    setattr(self, _op, val*GS.kikit_units_to_kicad[def_units])
+            else:
+                m = PanelOptions._num_regex.match(val)
+                if m is None:
+                    raise KiPlotConfigurationError('Malformed value `{}: {}` must be a number and units'.format(op, val))
+                num = m.group(1)
+                try:
+                    num_d = float(num)
+                except ValueError:
+                    num_d = None
+                if num_d is None:
+                    raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))
+                if convert:
+                    setattr(self, _op, num_d*GS.kikit_units_to_kicad[m.group(2)])
+
+    def add_angle(self, ops, def_units=None):
+        if def_units is None:
+            def_units = self._parent._parent.units
+        for op in ops:
+            val = getattr(self, op)
+            if isinstance(val, (int, float)):
+                setattr(self, op, str(val)+def_units)
+            else:
+                m = PanelOptions._ang_regex.match(val)
+                if m is None:
+                    raise KiPlotConfigurationError('Malformed angle `{}: {}` must be a number and its type'.format(op, val))
+                num = m.group(1)
+                try:
+                    num_d = float(num)
+                except ValueError:
+                    num_d = None
+                if num_d is None:
+                    raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))
