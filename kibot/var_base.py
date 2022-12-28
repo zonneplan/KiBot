@@ -14,6 +14,7 @@ from .error import KiPlotConfigurationError
 from .misc import KIKIT_UNIT_ALIASES
 from .gs import GS
 from .kiplot import run_command
+from .kicad.pcb import PCB
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -107,6 +108,9 @@ class SubPCBOptions(PanelOptions):
             """ Remove the annotation footprint. Note that KiKit will remove all annotations,
                 but the internal implementation just the one indicated by `ref`.
                 If you need to remove other annotations use an exclude filter """
+            self.center_result = True
+            """ Move the resulting PCB to the center of the page.
+                You can disable it only for the internal tool, KiKit should always do it """
 
     def is_zero(self, val):
         return isinstance(val, (int, float)) and val == 0
@@ -281,6 +285,26 @@ class SubPCBOptions(PanelOptions):
                 logger.debug(' - '+str(e))
         return bbox
 
+    def move_objects(self):
+        """ Move all objects by self._moved """
+        logger.debug('Moving all PCB elements by '+point_str(self._moved))
+        any(map(lambda x: x.Move(self._moved), GS.get_modules()))
+        any(map(lambda x: x.Move(self._moved), GS.board.GetDrawings()))
+        any(map(lambda x: x.Move(self._moved), GS.board.GetTracks()))
+        any(map(lambda x: x.Move(self._moved), GS.board.Zones()))
+
+    def center_objects(self):
+        """ Move all objects in the PCB so it gets centered """
+        # Look for the PCB size
+        pcb = PCB.load(GS.pcb_file)
+        paper_center_x = GS.from_mm(pcb.paper_w/2)
+        paper_center_y = GS.from_mm(pcb.paper_h/2)
+        # Compute the offset to make it centered
+        self._moved = self.board_rect.GetCenter()
+        self._moved.x = paper_center_x-self._moved.x
+        self._moved.y = paper_center_y-self._moved.y
+        self.move_objects()
+
     def apply(self, comps_hash):
         """ Apply the sub-PCB selection. """
         self._excl_by_sub_pcb = set()
@@ -291,6 +315,8 @@ class SubPCBOptions(PanelOptions):
                 self.board_rect.Inflate(int(self._tolerance))
             # Using a rectangle
             self.remove_outside(comps_hash)
+            # Center the PCB
+            self.center_objects()
         else:
             # Using KiKit:
             self.separate_board(comps_hash)
@@ -304,9 +330,16 @@ class SubPCBOptions(PanelOptions):
         for o in self._removed:
             GS.board.Add(o)
 
+    def restore_moved(self):
+        """ Move objects back to their original place """
+        self._moved.x = -self._moved.x
+        self._moved.y = -self._moved.y
+        self.move_objects()
+
     def revert(self, comps_hash):
         """ Restore the sub-PCB selection. """
         if self.tool == 'internal':
+            self.restore_moved()
             self.restore_removed()
         else:
             # Using KiKit:

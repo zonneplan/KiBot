@@ -297,6 +297,10 @@ class GS(object):
         return val/pcbnew.IU_PER_MM
 
     @staticmethod
+    def from_mm(val):
+        return int(val*pcbnew.IU_PER_MM)
+
+    @staticmethod
     def make_bkp(fname):
         bkp = fname+'-bak'
         if os.path.isfile(bkp):
@@ -459,6 +463,10 @@ class GS(object):
     @staticmethod
     def create_eda_rect(tlx, tly, brx, bry):
         return pcbnew.EDA_RECT(pcbnew.wxPoint(tlx, tly), pcbnew.wxSize(brx-tlx, bry-tly))
+
+    # @staticmethod
+    # def create_wxpoint(x, y):
+    #     return pcbnew.wxPoint(x, y)
 
     @staticmethod
     def is_valid_pcb_shape(g):

@@ -1056,6 +1056,8 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - *bottom_right_y*: Alias for bry.
         - `brx`: [number|string] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
         - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `center_result`: [boolean=true] Move the resulting PCB to the center of the page.
+                           You can disable it only for the internal tool, KiKit should always do it.
         - `file_id`: [string=''] Text to use as the replacement for %v expansion.
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
         - `strip_annotation`: [boolean=false] Remove the annotation footprint. Note that KiKit will remove all annotations,
@@ -1107,6 +1109,8 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - *bottom_right_y*: Alias for bry.
         - `brx`: [number|string] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
         - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `center_result`: [boolean=true] Move the resulting PCB to the center of the page.
+                           You can disable it only for the internal tool, KiKit should always do it.
         - `file_id`: [string=''] Text to use as the replacement for %v expansion.
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
         - `strip_annotation`: [boolean=false] Remove the annotation footprint. Note that KiKit will remove all annotations,
@@ -1160,6 +1164,8 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - *bottom_right_y*: Alias for bry.
         - `brx`: [number|string] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
         - `bry`: [number|string] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
+        - `center_result`: [boolean=true] Move the resulting PCB to the center of the page.
+                           You can disable it only for the internal tool, KiKit should always do it.
         - `file_id`: [string=''] Text to use as the replacement for %v expansion.
                      When empty we use the parent `file_id` plus the `name` of the sub-PCB.
         - `strip_annotation`: [boolean=false] Remove the annotation footprint. Note that KiKit will remove all annotations,
