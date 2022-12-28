@@ -6,7 +6,6 @@ pytest-3 --log-cli-level debug
 """
 import coverage
 import logging
-import pytest
 from shutil import which
 from os import access
 from . import context
@@ -181,11 +180,10 @@ def test_pcbdraw_variant_3(test_dir):
     ctx.clean_up(keep_project=True)
 
 
-@pytest.mark.skipif(context.ki5(), reason="KiKit currently supports KiCad 6 only")
 def test_pcbdraw_sub_pcb_bp(test_dir):
     """ Test a multiboard example """
     prj = 'batteryPack'
-    ctx = context.TestContext(test_dir, prj, 'pcbdraw_subpc_bp', '')
+    ctx = context.TestContext(test_dir, prj, 'pcbdraw_sub_pcb_bp', '')
     ctx.run()
     # Check all outputs are there
     fname_b = prj+'-top_'

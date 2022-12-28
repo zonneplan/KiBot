@@ -1521,11 +1521,10 @@ def test_copy_files_2(test_dir):
     ctx.clean_up()
 
 
-@pytest.mark.skipif(context.ki5(), reason="KiKit currently supports KiCad 6 only")
 def test_sub_pcb_bp(test_dir):
     """ Test a multiboard example """
     prj = 'batteryPack'
-    ctx = context.TestContext(test_dir, prj, 'pcb_variant_subpc_bp', '')
+    ctx = context.TestContext(test_dir, prj, 'pcb_variant_sub_pcb_bp', '')
     ctx.run()
     # Check all outputs are there
     fname_b = prj+'-variant_'

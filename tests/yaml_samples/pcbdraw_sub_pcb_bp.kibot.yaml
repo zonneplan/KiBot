@@ -17,8 +17,6 @@ variants:
         tly: 50
         brx: 245
         bry: 90
-        # tolerance: 100
-        # tool: kikit
       - name: battery
         tlx: 20
         tly: 20
@@ -29,25 +27,23 @@ variants:
         tly: 52
         brx: 146
         bry: 88
+        tolerance: 1
 
 outputs:
-  - name: 'pcb_charger'
-    comment: "PCB charger"
-    type: pcb_variant
+  - name: draw_charger
+    comment: "Draw PCB charger"
+    type: pcbdraw
     options:
       variant: default[charger]
-      title: 'Battery pack (%S)'
 
-  - name: 'pcb_battery'
-    comment: "PCB battery"
-    type: pcb_variant
+  - name: draw_battery
+    comment: "Draw PCB battery"
+    type: pcbdraw
     options:
       variant: default[battery]
-      title: 'Battery pack (%S)'
 
-  - name: 'pcb_connector'
-    comment: "PCB connector"
-    type: pcb_variant
+  - name: draw_connector
+    comment: "Draw PCB connector"
+    type: pcbdraw
     options:
       variant: default[connector]
-      title: 'Battery pack (%S)'
