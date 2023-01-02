@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iBoM:
   - Variant changes to the *.Fab weren't exported.
     Now all 2D variant stuff is applied before calling iBoM (#350)
+- Copy_Files:
+  - Problems on KiCad 5 (no 3rd party dir) (#357)
 
 ## [1.5.1] - 2022-12-16
 ### Fixed

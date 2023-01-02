@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import fnmatch
@@ -157,9 +157,12 @@ class Copy_FilesOptions(Base3DOptions):
         files = []
         src_dir_cwd = os.getcwd()
         src_dir_outdir = self.expand_filename_sch(GS.out_dir)
-        self.rel_dirs = [os.path.normpath(os.path.join(GS.pcb_dir, KiConf.models_3d_dir)),
-                         os.path.normpath(os.path.join(GS.pcb_dir, KiConf.party_3rd_dir)),
-                         GS.pcb_dir]
+        self.rel_dirs = []
+        if KiConf.models_3d_dir:
+            self.rel_dirs.append(os.path.normpath(os.path.join(GS.pcb_dir, KiConf.models_3d_dir)))
+        if KiConf.party_3rd_dir:
+            self.rel_dirs.append(os.path.normpath(os.path.join(GS.pcb_dir, KiConf.party_3rd_dir)))
+        self.rel_dirs.append(GS.pcb_dir)
         for f in self.files:
             from_outdir = False
             if f.source_type == 'out_files' or f.source_type == 'output':
