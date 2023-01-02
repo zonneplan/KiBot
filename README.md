@@ -2,7 +2,7 @@
 
 ![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png)
 
-[![Python application](https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=subpcb&style=plastic)](https://github.com/INTI-CMNB/KiBot/actions)
+[![Python application](https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=dev&style=plastic)](https://github.com/INTI-CMNB/KiBot/actions)
 [![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
@@ -1072,6 +1072,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
         - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
+                       KiCad 5: To avoid rounding issues this value is set to 0.000002 mm when 0 is specified.
         - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
         - *top_left_x*: Alias for tlx.
         - *top_left_y*: Alias for tly.
@@ -1125,6 +1126,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
         - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
+                       KiCad 5: To avoid rounding issues this value is set to 0.000002 mm when 0 is specified.
         - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
         - *top_left_x*: Alias for tlx.
         - *top_left_y*: Alias for tly.
@@ -1180,6 +1182,7 @@ Note that the **_kibom_...** filters uses a field named `Config`, but you can cu
         - `tlx`: [number|string] The X position of the top left corner for the rectangle that contains the sub-PCB.
         - `tly`: [number|string] The Y position of the top left corner for the rectangle that contains the sub-PCB.
         - `tolerance`: [number|string] Used to enlarge the selected rectangle to include elements outside the board.
+                       KiCad 5: To avoid rounding issues this value is set to 0.000002 mm when 0 is specified.
         - `tool`: [string='internal'] [internal,kikit] Tool used to extract the sub-PCB..
         - *top_left_x*: Alias for tlx.
         - *top_left_y*: Alias for tly.

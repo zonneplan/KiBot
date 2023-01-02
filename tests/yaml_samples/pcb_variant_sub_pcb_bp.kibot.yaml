@@ -29,7 +29,7 @@ variants:
         tly: 52
         brx: 146
         bry: 88
-        tolerance: 1
+        # tolerance: 1
 
 outputs:
   - name: 'pcb_charger'

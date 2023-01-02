@@ -103,7 +103,8 @@ class SubPCBOptions(PanelOptions):
             self.tool = 'internal'
             """ [internal,kikit] Tool used to extract the sub-PCB. """
             self.tolerance = 0
-            """ [number|string] Used to enlarge the selected rectangle to include elements outside the board """
+            """ [number|string] Used to enlarge the selected rectangle to include elements outside the board.
+                KiCad 5: To avoid rounding issues this value is set to 0.000002 mm when 0 is specified """
             self.strip_annotation = False
             """ Remove the annotation footprint. Note that KiKit will remove all annotations,
                 but the internal implementation just the one indicated by `ref`.
@@ -125,6 +126,9 @@ class SubPCBOptions(PanelOptions):
             raise KiPlotConfigurationError('No reference or rectangle specified for {} sub-PCB'.format(self.name))
         self.add_units(('tlx', 'tly', 'brx', 'bry', 'tolerance'), self.units, convert=True)
         self.board_rect = GS.create_eda_rect(self._tlx, self._tly, self._brx, self._bry)
+        if not self._tolerance and GS.ki5:
+            # KiCad 5 workaround: rounding issues generate 1 fm of error. So we change to 2 fm tolerance.
+            self._tolerance = 2
         self.board_rect.Inflate(int(self._tolerance))
 
     def get_separate_source(self):
