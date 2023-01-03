@@ -58,6 +58,7 @@ def mocked_call(cmd, exit_with=None):
 def patch_functions(m):
     m.setattr("subprocess.check_output", mocked_check_output)
     m.setattr('kibot.kiplot.exec_with_retry', mocked_call)
+    GS.exec_with_retry = mocked_call
 
 
 def init_globals():
