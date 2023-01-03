@@ -5,6 +5,7 @@ import pytest
 import coverage
 import logging
 import subprocess
+import sys
 from . import context
 from kibot.layer import Layer
 from kibot.pre_base import BasePreFlight
@@ -44,9 +45,12 @@ def mocked_check_output(cmd, stderr=None, text=False):
         raise e
 
 
-def mocked_call(cmd):
+def mocked_call(cmd, exit_with=None):
     if mocked_call_enabled:
         logging.debug('Forcing fail on '+str(cmd))
+        if exit_with is not None:
+            logging.error(cmd[0]+' returned %d', 5)
+            sys.exit(exit_with)
         return 5
     return subprocess.call(cmd)
 
@@ -255,6 +259,8 @@ def test_unimplemented_layer(caplog):
 def test_step_fail(test_dir, caplog, monkeypatch):
     global mocked_check_output_FNF
     mocked_check_output_FNF = False
+    global mocked_call_enabled
+    mocked_call_enabled = True
     # Create a silly context to get the output path
     ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
     # We will patch subprocess.check_output to make rar fail
@@ -278,7 +284,8 @@ def test_step_fail(test_dir, caplog, monkeypatch):
     # Check we exited because rar isn't installed
     assert e.type == SystemExit
     assert e.value.code == KICAD2STEP_ERR
-    assert "Failed to create Step file, error 10" in caplog.text
+    assert "kicad2step_do returned 5" in caplog.text
+    mocked_call_enabled = False
 
 
 def test_unknown_prefix(caplog):
