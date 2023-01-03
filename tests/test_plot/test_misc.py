@@ -914,6 +914,7 @@ def test_date_format_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_download_datasheets_1(test_dir):
     prj = 'kibom-variant_2ds'
     ctx = context.TestContextSCH(test_dir, prj, 'download_datasheets_1')
@@ -1464,6 +1465,7 @@ def test_diff_file_sch_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
 @pytest.mark.skipif(context.ki5(), reason="KiCad 6 aliases used")
 def test_copy_files_1(test_dir):
     """ Copy files and 3D models """
@@ -1494,6 +1496,7 @@ def test_copy_files_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 @pytest.mark.skipif(context.ki5(), reason="KiCad 6 aliases used")
 def test_copy_files_2(test_dir):
     """ Copy files and 3D models """
