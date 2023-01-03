@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -692,9 +692,7 @@ class PanelizeOptions(VariantOptions):
         if GS.ki5 and version >= (1, 1, 0):
             raise KiPlotConfigurationError("Installed KiKit doesn't support KiCad 5")
         super().run(output)
-        to_remove = []
-        fname = self.save_tmp_board_if_variant(to_remove, new_title=self.title, do_3D=True)
-
+        fname = self.save_tmp_board_if_variant(new_title=self.title, do_3D=True)
         # Create the command
         cmd = [cmd_kikit, 'panelize']  # , '--dump', 'test.json'
         # Add all the configurations
@@ -706,7 +704,7 @@ class PanelizeOptions(VariantOptions):
                 cmd.append(cfg)
             else:
                 cfg_f = self.create_config(cfg)
-                to_remove.append(cfg_f)
+                self._files_to_remove.append(cfg_f)
                 cmd.append(cfg_f)
         # Add the PCB and output
         cmd.append(fname)
@@ -715,10 +713,7 @@ class PanelizeOptions(VariantOptions):
             run_command(cmd)
             self.create_preview_file(output)
         finally:
-            # Remove temporals
-            for f in to_remove:
-                if os.path.isfile(f):
-                    os.remove(f)
+            self.remove_temporals()
 
     def get_targets(self, out_dir):
         pcb_name = self._parent.expand_filename(out_dir, self.output)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -171,7 +171,7 @@ def run_command(command, change_to=None, just_raise=False, use_x11=False):
     return res.stdout.decode().rstrip()
 
 
-def exec_with_retry(cmd):
+def exec_with_retry(cmd, exit_with=None):
     cmd_str = shlex.join(cmd)
     logger.debug('Executing: '+cmd_str)
     if GS.debug_level > 2:
@@ -191,24 +191,10 @@ def exec_with_retry(cmd):
             if 'Timed out' in err:
                 logger.warning(W_TIMEOUT+'Time out detected, on slow machines or complex projects try:')
                 logger.warning(W_TIMEOUT+'`kiauto_time_out_scale` and/or `kiauto_wait_start` global options')
+            if exit_with is not None and ret:
+                logger.error(cmd[0]+' returned %d', ret)
+                exit(exit_with)
             return ret
-
-
-def add_extra_options(cmd):
-    is_gitlab_ci = 'GITLAB_CI' in os.environ
-    video_remove = (not GS.debug_enabled) and is_gitlab_ci
-    if GS.debug_enabled:
-        cmd.insert(1, '-'+'v'*GS.debug_level)
-    if GS.debug_enabled or is_gitlab_ci:
-        # Forcing record on GitLab CI/CD (black magic)
-        cmd.insert(1, '-r')
-    if GS.global_kiauto_time_out_scale:
-        cmd.insert(1, str(GS.global_kiauto_time_out_scale))
-        cmd.insert(1, '--time_out_scale')
-    if GS.global_kiauto_wait_start:
-        cmd.insert(1, str(GS.global_kiauto_wait_start))
-        cmd.insert(1, '--wait_start')
-    return cmd, video_remove
 
 
 def load_board(pcb_file=None, forced=False):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2022 Salvador E. Tropea
-# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2023 Salvador E. Tropea
+# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad 6/6.0.1 bug: https://gitlab.com/kicad/code/kicad/-/issues/9890
@@ -14,12 +14,11 @@ Dependencies:
 """
 import os
 import shlex
-from shutil import rmtree
 import subprocess
 from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL)
 from .gs import GS
-from .kiplot import exec_with_retry, add_extra_options, load_sch, get_board_comps_data
+from .kiplot import exec_with_retry, load_sch, get_board_comps_data
 from .optionable import Optionable
 from .out_base_3d import Base3DOptions, Base3D
 from .macros import macros, document, output_class  # noqa: F401
@@ -301,22 +300,9 @@ class Render3DOptions(Base3DOptions):
         board_name = self.filter_components(highlight=set(self.expand_kf_components(self.highlight)))
         self.undo_show_components()
         cmd.extend([board_name, os.path.dirname(output)])
-        cmd, video_remove = add_extra_options(cmd)
         # Execute it
-        ret = exec_with_retry(cmd)
-        # Remove the temporal PCB
-        self.remove_tmp_board(board_name)
-        self.remove_highlight_3D_file()
-        # Remove the downloaded 3D models
-        if self._tmp_dir:
-            rmtree(self._tmp_dir)
-        if ret:
-            logger.error(command+' returned %d', ret)
-            exit(RENDER_3D_ERR)
-        if video_remove:
-            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_3d_view_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
+        exec_with_retry(self.add_extra_options(cmd), RENDER_3D_ERR)
+        self.remove_temporals()
         if self.auto_crop:
             _run_command([convert_command, output, '-trim', '+repage', '-trim', '+repage', output])
         if self.transparent_background:

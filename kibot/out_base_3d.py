@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from fnmatch import fnmatch
@@ -82,6 +82,7 @@ class Base3DOptions(VariantOptions):
             return None
         if self._tmp_dir is None:
             self._tmp_dir = tempfile.mkdtemp()
+            self._files_to_remove.append(self._tmp_dir)
             rel_dirs.append(self._tmp_dir)
             logger.debug('Using `{}` as temporal dir for downloaded files'.format(self._tmp_dir))
         dest = os.path.join(self._tmp_dir, fname)
@@ -209,6 +210,10 @@ class Base3DOptions(VariantOptions):
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
+
+    def remove_temporals(self):
+        super().remove_temporals()
+        self._tmp_dir = None
 
 
 class Base3D(BaseOutput):

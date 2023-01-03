@@ -46,7 +46,7 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW
-from .kiplot import exec_with_retry, add_extra_options
+from .kiplot import exec_with_retry
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -473,28 +473,23 @@ class PCB_PrintOptions(VariantOptions):
         # Move all the drawings away
         # KiCad 5 always prints Edge.Cuts, so we make it empty
         self.clear_layer(layer)
+        # Start with a fresh list of files to remove
+        cur_files_to_remove = self._files_to_remove
+        self._files_to_remove = []
         # Save the PCB
         pcb_name, pcb_dir = self.save_tmp_dir_board('pcb_print')
+        self._files_to_remove.append(pcb_dir)
         # Restore the layer
         self.restore_layer()
         # Output file name
         cmd = [command, 'export', '--output_name', output, '--monochrome', '--svg', '--pads', '0',
                pcb_name, dir_name, layer]
-        cmd, video_remove = add_extra_options(cmd)
         # Execute it
-        ret = exec_with_retry(cmd)
-        # Remove the temporal PCB
-        logger.debug('Removing temporal PCB used for frame `{}`'.format(pcb_dir))
-        rmtree(pcb_dir)
-        if ret:
-            logger.error(command+' returned %d', ret)
-            exit(PDF_PCB_PRINT)
-        if video_remove:
-            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
+        exec_with_retry(self.add_extra_options(cmd, dir_name), PDF_PCB_PRINT)
         # Rotate the paper size if needed and remove the background (or it will be over the drawings)
         patch_svg_file(output, remove_bkg=True, is_portrait=self.paper_portrait)
+        self.remove_temporals()
+        self._files_to_remove = cur_files_to_remove
 
     def plot_pads(self, la, pc, p, filelist):
         id = la._id

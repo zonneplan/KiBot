@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-from shutil import rmtree
 from .pre_base import BasePreFlight
 from .gs import GS
-from .kiplot import exec_with_retry, add_extra_options
+from .kiplot import exec_with_retry
 from .misc import PDF_PCB_PRINT
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
@@ -56,14 +55,15 @@ class Any_PCB_PrintOptions(VariantOptions):
 
     def filter_components(self):
         if not self.will_filter_pcb_components() and self.title == '':
-            return GS.pcb_file, None
+            return GS.pcb_file
         self.filter_pcb_components()
         self.set_title(self.title)
         # Save the PCB to a temporal dir
         fname, pcb_dir = self.save_tmp_dir_board('pdf_pcb_print')
         self.restore_title()
         self.unfilter_pcb_components()
-        return fname, pcb_dir
+        self._files_to_remove.append(pcb_dir)
+        return fname
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
@@ -88,26 +88,17 @@ class Any_PCB_PrintOptions(VariantOptions):
             cmd.extend(['--color_theme', self.color_theme])
         if svg:
             cmd.append('--svg')
-        board_name, board_dir = self.filter_components()
+        board_name = self.filter_components()
         cmd.extend([board_name, os.path.dirname(output)])
-        cmd, video_remove = add_extra_options(cmd)
+        # Add the extra options before the layers (so the output dir is the last option)
+        cmd = self.add_extra_options(cmd)
         # Add the layers
         cmd.extend([la.layer for la in self._layers])
         if GS.ki6 and self.force_edge_cuts and not self.separated:
             cmd.append('Edge.Cuts')
         # Execute it
-        ret = exec_with_retry(cmd)
-        # Remove the temporal PCB
-        if board_dir:
-            logger.debug('Removing temporal variant dir `{}`'.format(board_dir))
-            rmtree(board_dir)
-        if ret:
-            logger.error(command+' returned %d', ret)
-            exit(PDF_PCB_PRINT)
-        if video_remove:
-            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
+        exec_with_retry(cmd, PDF_PCB_PRINT)
+        self.remove_temporals()
 
     def set_layers(self, layers):
         layers = Layer.solve(layers)

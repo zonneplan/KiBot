@@ -7,7 +7,7 @@ import fnmatch
 import glob
 import os
 import re
-from shutil import copy2, rmtree
+from shutil import copy2
 from sys import exit
 from .error import KiPlotConfigurationError
 from .gs import GS
@@ -197,15 +197,12 @@ class Copy_FilesOptions(Base3DOptions):
                             dest = os.path.relpath(dest, d)
                             break
                     else:
-                        logger.error(fname)
-                        logger.error(self.rel_dirs)
                         dest = os.path.basename(fname)
                     if mode_3d_append:
                         dest = os.path.join(f.dest[:-1], dest)
                 else:
                     dest = os.path.relpath(dest, src_dir)
                 files.append((fname_real, dest))
-
         return files
 
     def get_targets(self, out_dir):
@@ -242,9 +239,7 @@ class Copy_FilesOptions(Base3DOptions):
                 copy2(src, dest)
             copied[dest] = src
         # Remove the downloaded 3D models
-        if self._tmp_dir:
-            rmtree(self._tmp_dir)
-            self._tmp_dir = None
+        self.remove_temporals()
 
 
 @output_class

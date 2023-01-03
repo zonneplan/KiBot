@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -13,7 +13,7 @@ import os
 from .gs import GS
 from .out_base_3d import Base3DOptions, Base3D
 from .misc import FAILED_EXECUTE
-from .kiplot import exec_with_retry, add_extra_options
+from .kiplot import exec_with_retry
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -75,19 +75,9 @@ class VRMLOptions(Base3DOptions):
                 units = self.ref_units
             cmd.extend(['-x', str(x), '-y', str(x), '-u', units])
         cmd.extend([board_name, os.path.dirname(name)])
-        cmd, video_remove = add_extra_options(cmd)
         # Execute it
-        try:
-            ret = exec_with_retry(cmd)
-        finally:
-            self.remove_tmp_board(board_name)
-        if ret:
-            logger.error(command+' returned %d', ret)
-            exit(FAILED_EXECUTE)
-        if video_remove:
-            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_vrml_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
+        exec_with_retry(self.add_extra_options(cmd), FAILED_EXECUTE)
+        self.remove_temporals()
 
 
 @output_class

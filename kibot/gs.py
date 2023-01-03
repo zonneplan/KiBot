@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -498,3 +498,31 @@ class GS(object):
         if shape == pcbnew.S_CIRCLE:
             return g.GetArcStart()
         return g.GetEnd()
+
+    @staticmethod
+    def get_kiauto_video_name(cmd):
+        """ Compute the name for the video captured by KiAuto """
+        command = os.path.basename(cmd[0])[:-3]
+        subcommand = next(filter(lambda x: x[0] != '-' and (not x[0].isdigit() or x[1] == 'd'), cmd[1:]))
+        if command == 'pcbnew':
+            return command+'_'+subcommand+'_screencast.ogv'
+        if command == 'eeschema':
+            return subcommand+'_'+command+'_screencast.ogv'
+        return command+'_screencast.ogv'
+
+    @staticmethod
+    def add_extra_options(cmd):
+        is_gitlab_ci = 'GITLAB_CI' in os.environ
+        video_remove = (not GS.debug_enabled) and is_gitlab_ci
+        if GS.debug_enabled:
+            cmd.insert(1, '-'+'v'*GS.debug_level)
+        if GS.debug_enabled or is_gitlab_ci:
+            # Forcing record on GitLab CI/CD (black magic)
+            cmd.insert(1, '-r')
+        if GS.global_kiauto_time_out_scale:
+            cmd.insert(1, str(GS.global_kiauto_time_out_scale))
+            cmd.insert(1, '--time_out_scale')
+        if GS.global_kiauto_wait_start:
+            cmd.insert(1, str(GS.global_kiauto_wait_start))
+            cmd.insert(1, '--wait_start')
+        return cmd, video_remove

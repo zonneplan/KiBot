@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -13,7 +13,7 @@ import os
 from .gs import GS
 from .out_base import VariantOptions
 from .misc import FAILED_EXECUTE
-from .kiplot import exec_with_retry, add_extra_options
+from .kiplot import exec_with_retry
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -46,9 +46,8 @@ class GenCADOptions(VariantOptions):
     def run(self, name):
         command = self.ensure_tool('KiAuto')
         super().run(name)
-        to_remove = []
-        board_name = self.save_tmp_board_if_variant(to_remove)
-        # Output file name
+        board_name = self.save_tmp_board_if_variant()
+        # Create the command line
         cmd = [command, 'export_gencad', '--output_name', os.path.basename(name)]
         if self.flip_bottom_padstacks:
             cmd.append('--flip_bottom_padstacks')
@@ -61,17 +60,10 @@ class GenCADOptions(VariantOptions):
         if self.save_origin:
             cmd.append('--save_origin')
         cmd.extend([board_name, os.path.dirname(name)])
-        cmd, video_remove = add_extra_options(cmd)
-        if video_remove:
-            to_remove.append(os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_gencad_screencast.ogv'))
+        cmd = self.add_extra_options(cmd)
         # Execute it
-        ret = exec_with_retry(cmd)
-        if ret:
-            logger.error(command+' returned %d', ret)
-            exit(FAILED_EXECUTE)
-        for f in to_remove:
-            if os.path.isfile(f):
-                os.remove(f)
+        exec_with_retry(cmd, FAILED_EXECUTE)
+        self.remove_temporals()
 
 
 @output_class

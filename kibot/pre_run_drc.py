@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -15,7 +15,7 @@ from .macros import macros, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
-from .kiplot import exec_with_retry, load_board, add_extra_options
+from .kiplot import exec_with_retry, load_board
 from .misc import DRC_ERROR
 from .log import get_logger
 
@@ -61,13 +61,10 @@ class Run_DRC(BasePreFlight):  # noqa: F821
             cmd.append('-i')
         cmd.extend([GS.pcb_file, self.expand_dirname(GS.out_dir)])
         # If we are in verbose mode enable debug in the child
-        cmd, video_remove = add_extra_options(cmd)
+        cmd = self.add_extra_options(cmd)
         logger.info('- Running the DRC')
         ret = exec_with_retry(cmd)
-        if video_remove:
-            video_name = os.path.join(self.expand_dirname(GS.out_dir), 'pcbnew_run_drc_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
+        self.remove_temporals()
         if ret:
             if ret > 127:
                 ret = -(256-ret)

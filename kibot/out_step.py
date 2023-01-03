@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad 6 bug: https://gitlab.com/kicad/code/kicad/-/issues/10075
@@ -13,14 +13,11 @@ Dependencies:
 """
 import os
 import re
-import shlex
-from subprocess import check_output, STDOUT, CalledProcessError
-from shutil import rmtree
 from .error import KiPlotConfigurationError
 from .misc import KICAD2STEP_ERR
 from .gs import GS
 from .out_base_3d import Base3DOptions, Base3D
-from .kiplot import add_extra_options
+from .kiplot import exec_with_retry
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -87,30 +84,9 @@ class STEPOptions(Base3DOptions):
         # The board
         board_name = self.filter_components()
         cmd.append(board_name)
-        cmd, video_remove = add_extra_options(cmd)
-        # Execute and inform is successful
-        logger.debug('Executing: '+shlex.join(cmd))
-        # Ensure KIPRJMOD is correct:
-        # KiCad sets KIPRJMOD each time we call BOARD.Save() but then Python `os.environ` becomes unsynchronized
-        # We don't even know the actual value and any call to Save could destroy it
-        os.environ['KIPRJMOD'] = os.path.dirname(board_name)
-        try:
-            cmd_output = check_output(cmd, stderr=STDOUT)
-        except CalledProcessError as e:
-            logger.error('Failed to create Step file, error %d', e.returncode)
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-            exit(KICAD2STEP_ERR)
-        finally:
-            self.remove_tmp_board(board_name)
-            # Remove the downloaded 3D models
-            if self._tmp_dir:
-                rmtree(self._tmp_dir)
-        if video_remove:
-            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'kicad2step_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
-        logger.debug('Output from command:\n'+cmd_output.decode())
+        # Execute it
+        exec_with_retry(self.add_extra_options(cmd, os.path.dirname(output)), KICAD2STEP_ERR)
+        self.remove_temporals()
 
 
 @output_class

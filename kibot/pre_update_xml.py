@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -16,7 +16,7 @@ import xml.etree.ElementTree as ET
 from .macros import macros, document, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .kiplot import exec_with_retry, add_extra_options, load_board
+from .kiplot import exec_with_retry, load_board
 from .misc import BOM_ERROR, NETLIST_DIFF, W_PARITY, MISSING_TOOL
 from .log import get_logger
 from .optionable import Optionable
@@ -170,21 +170,14 @@ class Update_XML(BasePreFlight):  # noqa: F821
         out_dir = self.expand_dirname(GS.out_dir)
         cmd = [command, 'bom_xml', GS.sch_file, out_dir]
         # If we are in verbose mode enable debug in the child
-        cmd, video_remove = add_extra_options(cmd)
+        cmd = self.add_extra_options(cmd)
         # While creating the XML we run a BoM plug-in that creates a useless BoM
         # We remove it, unless this is already there
         side_effect_file = os.path.join(out_dir, GS.sch_basename+'.csv')
-        remove_side_effect_file = not os.path.isfile(side_effect_file)
+        if not os.path.isfile(side_effect_file):
+            self._files_to_remove.append(side_effect_file)
         logger.info('- Updating BoM in XML format')
-        ret = exec_with_retry(cmd)
-        if remove_side_effect_file and os.path.isfile(side_effect_file):
-            os.remove(side_effect_file)
-        if ret:
-            logger.error('Failed to update the BoM, error %d', ret)
-            exit(BOM_ERROR)
-        if video_remove:
-            video_name = os.path.join(self.expand_dirname(GS.out_dir), 'bom_xml_eeschema_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
+        exec_with_retry(cmd, BOM_ERROR)
+        self.remove_temporals()
         if self._check_pcb_parity:
             self.check_pcb_parity()

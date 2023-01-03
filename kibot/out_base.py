@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from copy import deepcopy
-from glob import glob
 import math
 import os
 import re
+from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
@@ -650,6 +650,7 @@ class VariantOptions(BaseOptions):
             return
         with NamedTemporaryFile(mode='w', suffix='.wrl', delete=False) as f:
             self._highlight_3D_file = f.name
+            self._files_to_remove.append(f.name)
             logger.debug('Creating temporal highlight file '+f.name)
             f.write(HIGHLIGHT_3D_WRL)
 
@@ -772,12 +773,6 @@ class VariantOptions(BaseOptions):
         if self._sub_pcb:
             self._sub_pcb.revert(self.comps_hash)
 
-    def remove_highlight_3D_file(self):
-        # Remove the highlight 3D file if it was created
-        if self._highlight_3D_file:
-            os.remove(self._highlight_3D_file)
-            self._highlight_3D_file = None
-
     def set_title(self, title, sch=False):
         self.old_title = None
         if title:
@@ -848,8 +843,7 @@ class VariantOptions(BaseOptions):
                 else:
                     m.SetValue(data)
 
-    @staticmethod
-    def save_tmp_board(dir=None):
+    def save_tmp_board(self, dir=None):
         """ Save the PCB to a temporal file.
             Advantage: all relative paths inside the file remains valid
             Disadvantage: the name of the file gets altered """
@@ -860,9 +854,10 @@ class VariantOptions(BaseOptions):
         logger.debug('Storing modified PCB to `{}`'.format(fname))
         GS.board.Save(fname)
         GS.copy_project(fname)
+        self._files_to_remove.extend(GS.get_pcb_and_pro_names(fname))
         return fname
 
-    def save_tmp_board_if_variant(self, to_remove, new_title='', dir=None, do_3D=False):
+    def save_tmp_board_if_variant(self, new_title='', dir=None, do_3D=False):
         """ If we have a variant apply it and save the PCB to a file """
         if not self.will_filter_pcb_components() and not new_title:
             return GS.pcb_file
@@ -872,7 +867,6 @@ class VariantOptions(BaseOptions):
         fname = self.save_tmp_board()
         self.restore_title()
         self.unfilter_pcb_components(do_3D=do_3D)
-        to_remove.extend(GS.get_pcb_and_pro_names(fname))
         logger.debug('- Modified PCB: '+fname)
         return fname
 
@@ -888,13 +882,6 @@ class VariantOptions(BaseOptions):
         pro_name = GS.copy_project(fname)
         KiConf.fix_page_layout(pro_name)
         return fname, pcb_dir
-
-    def remove_tmp_board(self, board_name):
-        # Remove the temporal PCB
-        if board_name != GS.pcb_file:
-            # KiCad likes to create project files ...
-            for f in glob(board_name.replace('.kicad_pcb', '.*')):
-                os.remove(f)
 
     def solve_kf_filters(self, components):
         """ Solves references to KiBot filters in the list of components to show.
@@ -944,8 +931,27 @@ class VariantOptions(BaseOptions):
             new_list += ext_list
         return new_list
 
+    def remove_temporals(self):
+        logger.debug('Removing temporal files')
+        for f in self._files_to_remove:
+            if os.path.isfile(f):
+                logger.debug('- File `{}`'.format(f))
+                os.remove(f)
+            elif os.path.isdir(f):
+                logger.debug('- Dir `{}`'.format(f))
+                rmtree(f)
+        self._files_to_remove = []
+        self._highlight_3D_file = None
+
+    def add_extra_options(self, cmd, dir=None):
+        cmd, video_remove = GS.add_extra_options(cmd)
+        if video_remove:
+            self._files_to_remove.append(os.path.join(dir or cmd[-1], GS.get_kiauto_video_name(cmd)))
+        return cmd
+
     def run(self, output_dir):
         """ Makes the list of components available """
+        self._files_to_remove = []
         if not self.dnf_filter and not self.variant and not self.pre_transform:
             return
         load_sch()
