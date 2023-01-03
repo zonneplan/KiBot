@@ -18,7 +18,7 @@ import subprocess
 from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL)
 from .gs import GS
-from .kiplot import exec_with_retry, load_sch, get_board_comps_data
+from .kiplot import load_sch, get_board_comps_data
 from .optionable import Optionable
 from .out_base_3d import Base3DOptions, Base3D
 from .macros import macros, document, output_class  # noqa: F401
@@ -301,8 +301,7 @@ class Render3DOptions(Base3DOptions):
         self.undo_show_components()
         cmd.extend([board_name, os.path.dirname(output)])
         # Execute it
-        exec_with_retry(self.add_extra_options(cmd), RENDER_3D_ERR)
-        self.remove_temporals()
+        self.exec_with_retry(self.add_extra_options(cmd), RENDER_3D_ERR)
         if self.auto_crop:
             _run_command([convert_command, output, '-trim', '+repage', '-trim', '+repage', output])
         if self.transparent_background:

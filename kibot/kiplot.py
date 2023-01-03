@@ -175,7 +175,7 @@ def exec_with_retry(cmd, exit_with=None):
     cmd_str = shlex.join(cmd)
     logger.debug('Executing: '+cmd_str)
     if GS.debug_level > 2:
-        logger.debug('Command line: '+cmd_str)
+        logger.debug('Command line: '+str(cmd))
     retry = 2
     while retry:
         result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
@@ -982,3 +982,4 @@ def generate_examples(start_dir, dry, types):
 # To avoid circular dependencies: Optionable needs it, but almost everything needs Optionable
 GS.load_board = load_board
 GS.load_sch = load_sch
+GS.exec_with_retry = exec_with_retry

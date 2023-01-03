@@ -7,7 +7,6 @@ import os
 from tempfile import mkdtemp
 from shutil import copy2
 from .gs import GS
-from .kiplot import exec_with_retry
 from .out_base import VariantOptions
 from .kicad.config import KiConf
 from .macros import macros, document, output_class  # noqa: F401
@@ -68,5 +67,4 @@ class Any_SCH_PrintOptions(VariantOptions):
         if self.all_pages:
             cmd.append('--all_pages')
         cmd.extend([sch_file, os.path.dirname(name)])
-        exec_with_retry(self.add_extra_options(cmd), self._exit_error)
-        self.remove_temporals()
+        self.exec_with_retry(self.add_extra_options(cmd), self._exit_error)

@@ -14,7 +14,6 @@ import os
 from .gs import GS
 from .out_base import VariantOptions
 from .misc import FAILED_EXECUTE
-from .kiplot import exec_with_retry
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -60,8 +59,7 @@ class NetlistOptions(VariantOptions):
         # Create the command line
         cmd = self.add_extra_options([command, subcommand, '--output_name', name, file, os.path.dirname(name)])
         # Execute it
-        exec_with_retry(cmd, FAILED_EXECUTE)
-        self.remove_temporals()
+        self.exec_with_retry(cmd, FAILED_EXECUTE)
 
 
 @output_class

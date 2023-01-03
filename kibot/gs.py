@@ -406,6 +406,11 @@ class GS(object):
         raise AssertionError()
 
     @staticmethod
+    def exec_with_retry():
+        """ Will be repplaced by kiplot.py """
+        raise AssertionError()
+
+    @staticmethod
     def load_board_low_level(file):
         return pcbnew.LoadBoard(file)
 

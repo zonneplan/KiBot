@@ -15,7 +15,7 @@ from .macros import macros, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
-from .kiplot import exec_with_retry, load_board
+from .kiplot import load_board
 from .misc import DRC_ERROR
 from .log import get_logger
 
@@ -63,8 +63,7 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         # If we are in verbose mode enable debug in the child
         cmd = self.add_extra_options(cmd)
         logger.info('- Running the DRC')
-        ret = exec_with_retry(cmd)
-        self.remove_temporals()
+        ret = self.exec_with_retry(cmd)
         if ret:
             if ret > 127:
                 ret = -(256-ret)

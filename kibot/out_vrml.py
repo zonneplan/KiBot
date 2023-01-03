@@ -13,7 +13,6 @@ import os
 from .gs import GS
 from .out_base_3d import Base3DOptions, Base3D
 from .misc import FAILED_EXECUTE
-from .kiplot import exec_with_retry
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -76,8 +75,7 @@ class VRMLOptions(Base3DOptions):
             cmd.extend(['-x', str(x), '-y', str(x), '-u', units])
         cmd.extend([board_name, os.path.dirname(name)])
         # Execute it
-        exec_with_retry(self.add_extra_options(cmd), FAILED_EXECUTE)
-        self.remove_temporals()
+        self.exec_with_retry(self.add_extra_options(cmd), FAILED_EXECUTE)
 
 
 @output_class

@@ -6,7 +6,6 @@
 import os
 from .pre_base import BasePreFlight
 from .gs import GS
-from .kiplot import exec_with_retry
 from .misc import PDF_PCB_PRINT
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
@@ -97,8 +96,7 @@ class Any_PCB_PrintOptions(VariantOptions):
         if GS.ki6 and self.force_edge_cuts and not self.separated:
             cmd.append('Edge.Cuts')
         # Execute it
-        exec_with_retry(cmd, PDF_PCB_PRINT)
-        self.remove_temporals()
+        self.exec_with_retry(cmd, PDF_PCB_PRINT)
 
     def set_layers(self, layers):
         layers = Layer.solve(layers)

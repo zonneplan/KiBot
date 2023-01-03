@@ -16,7 +16,7 @@ import xml.etree.ElementTree as ET
 from .macros import macros, document, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .kiplot import exec_with_retry, load_board
+from .kiplot import load_board
 from .misc import BOM_ERROR, NETLIST_DIFF, W_PARITY, MISSING_TOOL
 from .log import get_logger
 from .optionable import Optionable
@@ -177,7 +177,6 @@ class Update_XML(BasePreFlight):  # noqa: F821
         if not os.path.isfile(side_effect_file):
             self._files_to_remove.append(side_effect_file)
         logger.info('- Updating BoM in XML format')
-        exec_with_retry(cmd, BOM_ERROR)
-        self.remove_temporals()
+        self.exec_with_retry(cmd, BOM_ERROR)
         if self._check_pcb_parity:
             self.check_pcb_parity()

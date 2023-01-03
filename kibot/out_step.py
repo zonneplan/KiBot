@@ -17,7 +17,6 @@ from .error import KiPlotConfigurationError
 from .misc import KICAD2STEP_ERR
 from .gs import GS
 from .out_base_3d import Base3DOptions, Base3D
-from .kiplot import exec_with_retry
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -85,8 +84,7 @@ class STEPOptions(Base3DOptions):
         board_name = self.filter_components()
         cmd.append(board_name)
         # Execute it
-        exec_with_retry(self.add_extra_options(cmd, os.path.dirname(output)), KICAD2STEP_ERR)
-        self.remove_temporals()
+        self.exec_with_retry(self.add_extra_options(cmd, os.path.dirname(output)), KICAD2STEP_ERR)
 
 
 @output_class

@@ -46,7 +46,6 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW
-from .kiplot import exec_with_retry
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -485,10 +484,9 @@ class PCB_PrintOptions(VariantOptions):
         cmd = [command, 'export', '--output_name', output, '--monochrome', '--svg', '--pads', '0',
                pcb_name, dir_name, layer]
         # Execute it
-        exec_with_retry(self.add_extra_options(cmd, dir_name), PDF_PCB_PRINT)
+        self.exec_with_retry(self.add_extra_options(cmd, dir_name), PDF_PCB_PRINT)
         # Rotate the paper size if needed and remove the background (or it will be over the drawings)
         patch_svg_file(output, remove_bkg=True, is_portrait=self.paper_portrait)
-        self.remove_temporals()
         self._files_to_remove = cur_files_to_remove
 
     def plot_pads(self, la, pc, p, filelist):

@@ -949,6 +949,18 @@ class VariantOptions(BaseOptions):
             self._files_to_remove.append(os.path.join(dir or cmd[-1], GS.get_kiauto_video_name(cmd)))
         return cmd
 
+    def exec_with_retry(self, cmd, exit_with):
+        try:
+            GS.exec_with_retry(cmd, exit_with)
+        finally:
+            if GS.debug_enabled:
+                if self._files_to_remove:
+                    logger.error('Keeping temporal files: '+str(self._files_to_remove))
+            else:
+                self.remove_temporals()
+        if self._files_to_remove:
+            self.remove_temporals()
+
     def run(self, output_dir):
         """ Makes the list of components available """
         self._files_to_remove = []

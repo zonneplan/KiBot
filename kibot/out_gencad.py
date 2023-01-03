@@ -13,7 +13,6 @@ import os
 from .gs import GS
 from .out_base import VariantOptions
 from .misc import FAILED_EXECUTE
-from .kiplot import exec_with_retry
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -62,8 +61,7 @@ class GenCADOptions(VariantOptions):
         cmd.extend([board_name, os.path.dirname(name)])
         cmd = self.add_extra_options(cmd)
         # Execute it
-        exec_with_retry(cmd, FAILED_EXECUTE)
-        self.remove_temporals()
+        self.exec_with_retry(cmd, FAILED_EXECUTE)
 
 
 @output_class
