@@ -666,7 +666,7 @@ def test_error_import_not_str(test_dir):
 def test_error_import_miss_file(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_import_miss_file')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err(r"missing import file")
+    assert ctx.search_err(r"issing import file")
     ctx.clean_up(keep_project=True)
 
 
