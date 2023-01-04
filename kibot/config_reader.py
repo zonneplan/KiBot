@@ -192,7 +192,7 @@ class CfgYamlReader(object):
             raise KiPlotConfigurationError("`groups` must be a list")
         return groups
 
-    def _parse_variant_or_filter(self, o_tree, kind, reg_class):
+    def _parse_variant_or_filter(self, o_tree, kind, reg_class, is_internal=False):
         kind_f = kind[0].upper()+kind[1:]
         try:
             name = str(o_tree['name'])
@@ -213,27 +213,28 @@ class CfgYamlReader(object):
         name_type = "`"+name+"` ("+otype+")"
         logger.debug("Parsing "+kind+" "+name_type)
         o_var = reg_class.get_class_for(otype)()
+        o_var._internal = is_internal
         o_var.set_tree(o_tree)
         o_var.name = name
         o_var._name_type = name_type
         # Don't configure it yet, wait until we finish loading (could be an import)
         return o_var
 
-    def _parse_variants(self, v):
+    def _parse_variants(self, v, is_internal=False):
         variants = {}
         if isinstance(v, list):
             for o in v:
-                o_var = self._parse_variant_or_filter(o, 'variant', RegVariant)
+                o_var = self._parse_variant_or_filter(o, 'variant', RegVariant, is_internal)
                 variants[o_var.name] = o_var
         else:
             raise KiPlotConfigurationError("`variants` must be a list")
         return variants
 
-    def _parse_filters(self, v):
+    def _parse_filters(self, v, is_internal=False):
         filters = {}
         if isinstance(v, list):
             for o in v:
-                o_fil = self._parse_variant_or_filter(o, 'filter', RegFilter)
+                o_fil = self._parse_variant_or_filter(o, 'filter', RegFilter, is_internal)
                 self.configure_variant_or_filter(o_fil)
                 filters[o_fil.name] = o_fil
         else:
@@ -349,11 +350,11 @@ class CfgYamlReader(object):
             logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
         return sel_pres
 
-    def _parse_import_filters(self, filters, explicit_fils, fn_rel, data, imported):
+    def _parse_import_filters(self, filters, explicit_fils, fn_rel, data, imported, is_internal):
         sel_fils = {}
         if filters is None or len(filters) > 0:
             if 'filters' in data:
-                imported.filters.update(self._parse_filters(data['filters']))
+                imported.filters.update(self._parse_filters(data['filters'], is_internal))
             i_fils = imported.filters
             if filters is not None:
                 for f in filters:
@@ -395,11 +396,11 @@ class CfgYamlReader(object):
             logger.warning(W_NOGROUPS+"No groups found in `{}`".format(fn_rel))
         return sel_grps
 
-    def _parse_import_variants(self, vars, explicit_vars, fn_rel, data, imported):
+    def _parse_import_variants(self, vars, explicit_vars, fn_rel, data, imported, is_internal):
         sel_vars = {}
         if vars is None or len(vars) > 0:
             if 'variants' in data:
-                imported.variants.update(self._parse_variants(data['variants']))
+                imported.variants.update(self._parse_variants(data['variants'], is_internal))
             i_vars = imported.variants
             if vars is not None:
                 for f in vars:
@@ -536,9 +537,11 @@ class CfgYamlReader(object):
             # Preflights
             all_collected.preflights.extend(self._parse_import_preflights(pre, explicit_pres, fn_rel, data, imported))
             # Filters
-            all_collected.filters.update(self._parse_import_filters(filters, explicit_fils, fn_rel, data, imported))
+            all_collected.filters.update(self._parse_import_filters(filters, explicit_fils, fn_rel, data, imported,
+                                         is_internal))
             # Variants
-            all_collected.variants.update(self._parse_import_variants(vars, explicit_vars, fn_rel, data, imported))
+            all_collected.variants.update(self._parse_import_variants(vars, explicit_vars, fn_rel, data, imported,
+                                          is_internal))
             # Globals
             update_dict(all_collected.globals, self._parse_import_globals(globals, explicit_globals, fn_rel, data, imported))
             # Groups
