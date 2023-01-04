@@ -866,6 +866,15 @@ def test_import_8(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+def test_import_internal_1(test_dir):
+    """ Import an internal file """
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'import_test_internal_1')
+    ctx.run(extra=['_Elecrow_drill'])
+    ctx.expect_out_file('Elecrow/light_control.TXT')
+    ctx.clean_up(keep_project=True)
+
+
 def test_disable_default_1(test_dir):
     """ Disable in the same file and out-of-order """
     prj = 'test_v5'

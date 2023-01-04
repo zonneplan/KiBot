@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.5.2] - Unreleased
 ### Added
-- Support for `groups` of `outputs`
+- General:
+  - Support for `groups` of `outputs`
+  - Internal templates import
 - New output:
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
 - Plot related outputs and PCB_Print:

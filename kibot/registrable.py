@@ -169,6 +169,7 @@ class RegOutput(Optionable, Registrable):
             Returns a new list.
             Assumes the outputs and groups are valid. """
         new_targets = []
+        # Avoid infinite loops
         level += 1
         if level > 20:
             raise KiPlotConfigurationError("More than 20 levels of nested groups, possible loop")

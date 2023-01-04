@@ -464,6 +464,8 @@ class CfgYamlReader(object):
         dir = os.path.dirname(os.path.abspath(name))
         all_collected = CollectedImports()
         for entry in imp:
+            is_internal = False
+            explicit_fils = explicit_vars = explicit_globals = explicit_pres = explicit_groups = False
             if isinstance(entry, str):
                 fn = entry
                 outs = None
@@ -473,19 +475,18 @@ class CfgYamlReader(object):
                 pre = []
                 groups = []
                 explicit_outs = True
-                explicit_fils = False
-                explicit_vars = False
-                explicit_globals = False
-                explicit_pres = False
-                explicit_groups = False
             elif isinstance(entry, dict):
-                fn = outs = filters = vars = globals = pre = None
-                explicit_outs = explicit_fils = explicit_vars = explicit_globals = explicit_pres = False
+                fn = outs = filters = vars = globals = pre = groups = is_internal = None
+                explicit_outs = False
                 for k, v in entry.items():
                     if k == 'file':
                         if not isinstance(v, str):
                             raise KiPlotConfigurationError("`import.file` must be a string ({})".format(str(v)))
                         fn = v
+                    elif k == 'is_internal':
+                        if not isinstance(v, bool):
+                            raise KiPlotConfigurationError("`import.is_internal` must be a true/false ({})".format(str(v)))
+                        is_internal = v
                     elif k == 'outputs':
                         outs = self._parse_import_items(k, fn, v)
                         explicit_outs = True
@@ -502,19 +503,25 @@ class CfgYamlReader(object):
                         globals = self._parse_import_items(k, fn, v)
                         explicit_globals = True
                     elif k == 'groups':
-                        vars = self._parse_import_items(k, fn, v)
+                        groups = self._parse_import_items(k, fn, v)
                         explicit_groups = True
                     else:
-                        self._config_error_import(fn, "unknown import entry `{}`".format(str(v)))
+                        self._config_error_import(fn, "Unknown import entry `{}`".format(str(v)))
                 if fn is None:
                     raise KiPlotConfigurationError("`import` entry without `file` ({})".format(str(entry)))
             else:
                 raise KiPlotConfigurationError("`import` items must be strings or dicts ({})".format(str(entry)))
-            fn = os.path.expandvars(os.path.expanduser(fn))
-            if not os.path.isabs(fn):
-                fn = os.path.join(dir, fn)
-            if not os.path.isfile(fn):
-                raise KiPlotConfigurationError("missing import file `{}`".format(fn))
+            if is_internal:
+                name = fn
+                fn = os.path.join(GS.get_resource_path('config_templates'), fn+'.kibot.yaml')
+                if not os.path.isfile(fn):
+                    raise KiPlotConfigurationError("Unknown internal import file `{}` ({})".format(name, fn))
+            else:
+                fn = os.path.expandvars(os.path.expanduser(fn))
+                if not os.path.isabs(fn):
+                    fn = os.path.join(dir, fn)
+                if not os.path.isfile(fn):
+                    raise KiPlotConfigurationError("Missing import file `{}`".format(fn))
             fn_rel = os.path.relpath(fn)
             data = self.load_yaml(open(fn))
             if 'import' in data:

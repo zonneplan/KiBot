@@ -35,6 +35,7 @@
   * [Installation on other targets](#installation-on-other-targets)
 * [Configuration](#configuration)
   * [Quick start](#quick-start)
+  * [Section order](#section-order)
   * [The header](#the-header)
   * [The *preflight* section](#the-preflight-section)
     * [Supported *preflight* options](#supported-preflight-options)
@@ -63,9 +64,9 @@
     * [Supported outputs](#supported-outputs)
     * [Consolidating BoMs](#consolidating-boms)
     * [Importing outputs from another file](#importing-outputs-from-another-file)
+    * [Importing other stuff from another file](#importing-other-stuff-from-another-file)
     * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
     * [Grouping outputs](#grouping-outputs)
-    * [Importing filters and variants from another file](#importing-filters-and-variants-from-another-file)
   * [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing)
 * [Usage](#usage)
 * [Usage for CI/CD](#usage-for-cicd)
@@ -267,7 +268,7 @@ The order in which they are declared is not relevant, they are interpreted in th
 
 - `kiplot`/`kibot` see [The header](#the-header)
 - `import` see [Importing outputs from another file](#importing-outputs-from-another-file) and
-  [Importing filters and variants from another file](#importing-filters-and-variants-from-another-file)
+  [Importing filters and variants from another file](#importing-other-stuff-from-another-file)
 - `global` see [Default global options](#default-global-options)
 - `filters` see [Filters and variants](#filters-and-variants)
 - `variants` see [Filters and variants](#filters-and-variants)
@@ -1177,6 +1178,70 @@ import:
 This will import all the outputs from the listed files.
 
 
+#### Importing other stuff from another file
+
+This is a more complex case of the previous [Importing outputs from another file](#importing-outputs-from-another-file).
+In this case you must use the more general syntax:
+
+```yaml
+import:
+  - file: FILE_CONTAINING_THE_YAML_DEFINITIONS
+    outputs: LIST_OF_OUTPUTS
+    preflights: LIST_OF_PREFLIGHTS
+    filters: LIST_OF_FILTERS
+    variants: LIST_OF_VARIANTS
+    global: LIST_OF_GLOBALS
+    groups: LIST_OF_GROUPS
+```
+
+This syntax is flexible. If you don't define which `outputs`, `preflights`, `filters`, `variants`, `global` and/or `groups` all will be imported.
+So you can just omit them, like this:
+
+```yaml
+import:
+  - file: FILE_CONTAINING_THE_YAML_DEFINITIONS
+```
+
+The `LIST_OF_items` can be a YAML list or just one string. Here is an example:
+
+```yaml
+import:
+  - file: FILE_CONTAINING_THE_YAML_DEFINITIONS
+    outputs: one_name
+    filters: ['name1', 'name2']
+```
+
+This will import the `one_name` output and the `name1` and `name2` filters. As `variants` is omitted, all variants will be imported.
+The same applies to other things like globals and groups.
+You can also use the `all` and `none` special names, like this:
+
+```yaml
+import:
+  - file: FILE_CONTAINING_THE_YAML_DEFINITIONS
+    outputs: all
+    filters: all
+    variants: none
+    global: none
+```
+
+This will import all outputs and filters, but not variants or globals.
+Also note that imported globals has more precedence than the ones defined in the same file.
+If you want to give more priority to the local values use:
+
+```yaml
+kibot:
+  version: 1
+  imported_global_has_less_priority: true
+
+import:
+...
+```
+
+Another important detail is that global options that are lists gets the values merged.
+The last set of values found is inserted at the beginning of the list.
+You can collect filters for all the imported global sections.
+
+
 #### Using other output as base for a new one
 
 If you need to define an output that is similar to another, and you want to avoid copying the options from the former, you can *extend* an output.
@@ -1273,69 +1338,6 @@ Here the `fab_svg` group will contain `gerbers`, `excellon_drill`, `position` an
 Groups can be imported from another YAML file.
 
 Avoid naming groups using `_` as first character. These names are reserved for KiBot.
-
-#### Importing filters and variants from another file
-
-This is a more complex case of the previous [Importing outputs from another file](#importing-outputs-from-another-file).
-In this case you must use the more general syntax:
-
-```yaml
-import:
-  - file: FILE_CONTAINING_THE_YAML_DEFINITIONS
-    outputs: LIST_OF_OUTPUTS
-    preflights: LIST_OF_PREFLIGHTS
-    filters: LIST_OF_FILTERS
-    variants: LIST_OF_VARIANTS
-    global: LIST_OF_GLOBALS
-    groups: LIST_OF_GROUPS
-```
-
-This syntax is flexible. If you don't define which `outputs`, `preflights`, `filters`, `variants`, `global` and/or `groups` all will be imported.
-So you can just omit them, like this:
-
-```yaml
-import:
-  - file: FILE_CONTAINING_THE_YAML_DEFINITIONS
-```
-
-The `LIST_OF_items` can be a YAML list or just one string. Here is an example:
-
-```yaml
-import:
-  - file: FILE_CONTAINING_THE_YAML_DEFINITIONS
-    outputs: one_name
-    filters: ['name1', 'name2']
-```
-
-This will import the `one_name` output and the `name1` and `name2` filters. As `variants` is omitted, all variants will be imported.
-The same applies to other things like globals and groups.
-You can also use the `all` and `none` special names, like this:
-
-```yaml
-import:
-  - file: FILE_CONTAINING_THE_YAML_DEFINITIONS
-    outputs: all
-    filters: all
-    variants: none
-    global: none
-```
-
-This will import all outputs and filters, but not variants or globals.
-Also note that imported globals has more precedence than the ones defined in the same file.
-If you want to give more priority to the local values use:
-
-```
-kibot:
-  version: 1
-  imported_global_has_less_priority: true
-
-import:
-...
-```
-
-Another important detail is that global options that are lists gets the values merged.
-The last set of values found is inserted at the beginning of the list.
-You can collect filters for all the imported global sections.
 
 ### Doing YAML substitution or preprocessing
 
