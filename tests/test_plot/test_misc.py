@@ -110,7 +110,7 @@ def test_unknown_out_name_1(test_dir):
     prj = 'simple_2layer'
     ctx = context.TestContext(test_dir, prj, 'pre_and_position')
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'all', '-C', 'pp'])
-    assert ctx.search_err("Unknown output .?pp")
+    assert ctx.search_err("Unknown output/group .?pp")
     ctx.clean_up()
 
 
@@ -118,7 +118,7 @@ def test_unknown_out_name_2(test_dir):
     prj = 'simple_2layer'
     ctx = context.TestContext(test_dir, prj, 'pre_and_position')
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'all', 'pp'])
-    assert ctx.search_err("Unknown output .?pp")
+    assert ctx.search_err("Unknown output/group .?pp")
     ctx.clean_up()
 
 
