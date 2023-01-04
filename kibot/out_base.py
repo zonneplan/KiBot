@@ -58,16 +58,18 @@ class BaseOutput(RegOutput):
         super().__init__()
         with document:
             self.name = ''
-            """ *Used to identify this particular output definition """
+            """ *Used to identify this particular output definition.
+                Avoid using `_` as first character. These names are reserved for KiBot """
             self.type = ''
             """ *Type of output """
             self.dir = './'
             """ *Output directory for the generated files.
                 If it starts with `+` the rest is concatenated to the default dir """
             self.comment = ''
-            """ *A comment for documentation purposes """
+            """ *A comment for documentation purposes. It helps to identify the output """
             self.extends = ''
-            """ Copy the `options` section from the indicated output """
+            """ Copy the `options` section from the indicated output.
+                Used to inherit options from another output of the same type """
             self.run_by_default = True
             """ When enabled this output will be created when no specific outputs are requested """
             self.disable_run_by_default = ''
@@ -78,7 +80,8 @@ class BaseOutput(RegOutput):
             """ Text to use for the %I expansion content. To differentiate variations of this output """
             self.category = Optionable
             """ [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                Categories looks like file system paths, i.e. PCB/fabrication/gerber """
+                Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                The categories are currently used for `navigate_results` """
             self.priority = 50
             """ [0,100] Priority for this output. High priority outputs are created first.
                 Internally we use 10 for low priority, 90 for high priority and 50 for most outputs """

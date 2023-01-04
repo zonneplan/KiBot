@@ -428,15 +428,18 @@ def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority
             targets = [out for out in RegOutput.get_outputs() if out.run_by_default]
     else:
         # Check we got a valid list of outputs
-        for name in targets:
-            out = RegOutput.get_output(name)
-            if out is None:
-                logger.error('Unknown output `{}`'.format(name))
-                exit(EXIT_BAD_ARGS)
+        unknown = next(filter(lambda x: not RegOutput.is_output_or_group(x), targets), None)
+        if unknown:
+            logger.error('Unknown output/group `{}`'.format(unknown))
+            exit(EXIT_BAD_ARGS)
         # Check for CLI+invert inconsistency
         if cli_order and invert:
             logger.error("CLI order and invert options can't be used simultaneously")
             exit(EXIT_BAD_ARGS)
+        # Expand groups
+        logger.debug('Outputs before groups expansion: {}'.format(targets))
+        targets = RegOutput.solve_groups(targets)
+        logger.debug('Outputs after groups expansion: {}'.format(targets))
         # Now convert the list of names into a list of output objects
         if cli_order:
             # Add them in the same order found at the command line
@@ -459,14 +462,14 @@ def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority
                     else:
                         logger.debug('Skipping `{}` output'.format(out.name))
             targets = new_targets
-    logger.debug('Outputs before preflights: {}'.format(targets))
+    logger.debug('Outputs before preflights: {}'.format([t.name for t in targets]))
     # Run the preflights
     preflight_checks(skip_pre, targets)
-    logger.debug('Outputs after preflights: {}'.format(targets))
+    logger.debug('Outputs after preflights: {}'.format([t.name for t in targets]))
     if not cli_order and not no_priority:
         # Sort by priority
         targets = sorted(targets, key=lambda o: o.priority, reverse=True)
-        logger.debug('Outputs after sorting: {}'.format(targets))
+        logger.debug('Outputs after sorting: {}'.format([t.name for t in targets]))
     # Configure and run the outputs
     for out in targets:
         if config_output(out, dont_stop=dont_stop):

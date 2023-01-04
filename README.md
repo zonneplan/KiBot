@@ -65,6 +65,7 @@
     * [Consolidating BoMs](#consolidating-boms)
     * [Importing outputs from another file](#importing-outputs-from-another-file)
     * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
+    * [Grouping outputs](#grouping-outputs)
     * [Importing filters and variants from another file](#importing-filters-and-variants-from-another-file)
   * [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing)
 * [Usage](#usage)
@@ -366,12 +367,14 @@ The file is divided in various sections. Some of them are optional.
 The order in which they are declared is not relevant, they are interpreted in the following order:
 
 - `kiplot`/`kibot` see [The header](#the-header)
-- `import` see [Importing outputs from another file](#importing-outputs-from-another-file)
+- `import` see [Importing outputs from another file](#importing-outputs-from-another-file) and
+  [Importing filters and variants from another file](#importing-filters-and-variants-from-another-file)
 - `global` see [Default global options](#default-global-options)
 - `filters` see [Filters and variants](#filters-and-variants)
 - `variants` see [Filters and variants](#filters-and-variants)
 - `preflight` see [The *preflight* section](#the-preflight-section)
 - `outputs` see [The *outputs* section](#the-outputs-section)
+- `groups` see [Grouping outputs](#grouping-outputs)
 
 ### The header
 
@@ -1518,10 +1521,11 @@ Notes:
                  This format allows simple pads and connections navigation, mainly for circuit debug.
                  The output can be loaded using Open Board View (https://openboardview.org/)
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `boardview` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options.
@@ -1532,11 +1536,13 @@ Notes:
         - `variant`: [string=''] Board variant to apply.
                      Used for sub-PCBs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1553,10 +1559,11 @@ Notes:
                  - The `Component` column is named `Row` and works just like any other column.
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `bom` output.
       * Valid keys:
         - **`columns`**: [list(dict)|list(string)] List of columns to display.
@@ -1759,11 +1766,13 @@ Notes:
         - `variant`: [string=''] Board variant, used to determine which components
                      are output to the BoM..
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1774,10 +1783,11 @@ Notes:
   * Description: Generates a compressed file containing output files.
                  This is used to generate groups of files in compressed file format.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `compress` output.
       * Valid keys:
         - **`files`**: [list(dict)] Which files will be included.
@@ -1797,11 +1807,13 @@ Notes:
         - `move_files`: [boolean=false] Move the files to the archive. In other words: remove the files after adding them to the archive.
         - *remove_files*: Alias for move_files.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1813,10 +1825,11 @@ Notes:
                  Useful when an external tool is used to compress the output directory.
                  Note that you can use the `compress` output to create archives
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `copy_files` output.
       * Valid keys:
         - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
@@ -1848,11 +1861,13 @@ Notes:
                            A short-cut to use for simple cases where a variant is an overkill.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=11] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1863,7 +1878,7 @@ Notes:
   * Description: Generates a PDF with the differences between two PCBs or schematics.
                  Recursive git submodules aren't supported (submodules inside submodules)
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
@@ -1874,6 +1889,7 @@ Notes:
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `diff` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options.
@@ -1925,11 +1941,13 @@ Notes:
         - `use_file_id`: [boolean=false] When creating the link name of an output file related to a variant use the variant
                          `file_id` instead of its name.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1939,10 +1957,11 @@ Notes:
   * Type: `download_datasheets`
   * Description: Downloads the datasheets for the project
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `download_datasheets` output.
       * Valid keys:
         - **`field`**: [string='Datasheet'] Name of the field containing the URL.
@@ -1958,11 +1977,13 @@ Notes:
                       It only makes sense if the `output` field makes their output different.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1973,7 +1994,7 @@ Notes:
   * Description: Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
@@ -1983,6 +2004,7 @@ Notes:
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `dxf` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
@@ -2023,11 +2045,13 @@ Notes:
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2039,10 +2063,11 @@ Notes:
                  You can create a map file for documentation purposes.
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `excellon` output.
       * Valid keys:
         - **`metric_units`**: [boolean=true] Use metric units instead of inches.
@@ -2073,11 +2098,13 @@ Notes:
                      Used for sub-PCBs.
         - `zeros_format`: [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2089,10 +2116,11 @@ Notes:
                  This format is interpreted by some CADCAM software and helps certain
                  manufacturers
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `gencad` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=gencad, %x=cad). Affected by global options.
@@ -2108,11 +2136,13 @@ Notes:
         - `variant`: [string=''] Board variant to apply.
                      Used for sub-PCBs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2124,10 +2154,11 @@ Notes:
                  You can create a map file for documentation purposes.
                  This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `gerb_drill` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
@@ -2150,11 +2181,13 @@ Notes:
         - `variant`: [string=''] Board variant to apply.
                      Used for sub-PCBs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2165,7 +2198,7 @@ Notes:
   * Description: This is the main fabrication format for the PCB.
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
@@ -2175,6 +2208,7 @@ Notes:
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `gerber` output.
       * Valid keys:
         - **`create_gerber_job_file`**: [boolean=true] Creates a file with information about all the generated gerbers.
@@ -2220,11 +2254,13 @@ Notes:
         - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2235,7 +2271,7 @@ Notes:
   * Description: Exports the PCB for plotters and laser printers.
                  This output is what you get from the File/Plot menu in pcbnew.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
@@ -2245,6 +2281,7 @@ Notes:
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `hpgl` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
@@ -2286,11 +2323,13 @@ Notes:
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2302,10 +2341,11 @@ Notes:
                  For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
                  This output is what you get from the InteractiveHtmlBom plug-in (pcbnew).
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `ibom` output.
       * Valid keys:
         - **`board_rotation`**: [number=0] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
@@ -2369,11 +2409,13 @@ Notes:
         - `variants_whitelist`: [string=''] List of board variants to include in the BOM.
                                 IBoM option, avoid using in conjunction with KiBot variants/filters.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2386,21 +2428,24 @@ Notes:
                  Please don't rely on the way things are reported, its content could change,
                  adding or removing information
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `info` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=info, %x=txt). Affected by global options.
         - `environment`: [string='names'] [names,none,full] List environment variables.
                          IMPORTANT: Don't use `full` unless you know you are not leaking sensitive information.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2415,10 +2460,11 @@ Notes:
                  This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
                  Also note that here the KiBot concept of variants doesn't apply.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `kibom` output.
       * Valid keys:
         - **`format`**: [string='HTML'] [HTML,CSV,XML,XLSX] Format for the BoM.
@@ -2502,11 +2548,13 @@ Notes:
                      variants with the ';' (semicolon) character.
                      This isn't related to the KiBot concept of variants.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2518,10 +2566,11 @@ Notes:
                  For more information: https://github.com/INTI-CMNB/KiCost
                  This output is what you get from the KiCost plug-in (eeschema).
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `kicost` output.
       * Valid keys:
         - *board_qty*: Alias for number.
@@ -2557,11 +2606,13 @@ Notes:
         - `variant`: [string=''] Board variant to apply.
                      Don't use the `kicost_variant` when using internal variants/filters.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2573,10 +2624,11 @@ Notes:
                  It can contain one or more PCBs, showing their top and bottom sides.
                  Also includes a download link and the gerbers.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `kikit_present` output.
       * Valid keys:
         - **`description`**: [string=''] Name for a markdown file containing the main part of the page to be generated.
@@ -2638,11 +2690,13 @@ Notes:
         - `template`: [string='default'] Path to a template directory or a name of built-in one.
                       See KiKit's doc/present.md for template specification.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2652,20 +2706,23 @@ Notes:
   * Type: `navigate_results`
   * Description: Generates a web page to navigate the generated outputs
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `navigate_results` output.
       * Valid keys:
         - **`link_from_root`**: [string=''] The name of a file to create at the main output directory linking to the home page.
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2677,10 +2734,11 @@ Notes:
                  The netlist can be generated in the classic format and in IPC-D-356 format,
                  useful for board testing
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `netlist` output.
       * Valid keys:
         - **`format`**: [string='classic'] [classic,ipc] The `classic` format is the KiCad internal format, and is generated
@@ -2694,11 +2752,13 @@ Notes:
         - `variant`: [string=''] Board variant to apply.
                      Used for sub-PCBs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2717,10 +2777,11 @@ Notes:
                  If they are omitted they are assumed to be `units`.
                  The same is valid for angles, using `default_angles`
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `Panelize` output.
       * Valid keys:
         - **`configs`**: [list(dict)|list(string)|string] One or more configurations used to create the panel.
@@ -3022,11 +3083,13 @@ Notes:
         - `units`: [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3039,10 +3102,11 @@ Notes:
                  KiCad 5: including the frame is slow.
                  KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `pcb_print` output.
       * Valid keys:
         - **`color_theme`**: [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
@@ -3134,11 +3198,13 @@ Notes:
         - `variant`: [string=''] Board variant to apply.
         - `via_color`: [string=''] Color used for through-hole `colored_vias`.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3150,10 +3216,11 @@ Notes:
                  This copy isn't intended for development.
                  Is just a tweaked version of the original where you can look at the results.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `pcb_variant` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=variant, %x=kicad_pcb). Affected by global options.
@@ -3168,11 +3235,13 @@ Notes:
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3184,10 +3253,11 @@ Notes:
                  Uses configurable colors.
                  Can also render the components if the 2D models are available
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `pcbdraw` output.
       * Valid keys:
         - **`bottom`**: [boolean=false] Render the bottom side of the board (default is top side).
@@ -3270,11 +3340,13 @@ Notes:
                          Note that any other content from this layer will be included.
         - `warnings`: [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3287,7 +3359,7 @@ Notes:
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
@@ -3297,6 +3369,7 @@ Notes:
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `pdf` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
@@ -3342,7 +3415,8 @@ Notes:
                                   (i.e. always the default worksheet style, also problems expanding text variables).
                                   The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
       * Valid keys:
         - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -3358,6 +3432,7 @@ Notes:
     - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
     - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
     - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                  The replacement pattern can contain %n for the inner layer number and %N for the layer number.
@@ -3384,7 +3459,7 @@ Notes:
                  This output is what you get from the 'File/Print' menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
@@ -3394,6 +3469,7 @@ Notes:
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `pdf_pcb_print` output.
       * Valid keys:
         - **`plot_sheet_reference`**: [boolean=true] Include the title-block.
@@ -3420,11 +3496,13 @@ Notes:
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3436,10 +3514,11 @@ Notes:
                  This is the main format to document your schematic.
                  This output is what you get from the 'File/Print' menu in eeschema.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `pdf_sch_print` output.
       * Valid keys:
         - **`frame`**: [boolean=true] Include the frame and title block.
@@ -3453,11 +3532,13 @@ Notes:
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3468,10 +3549,11 @@ Notes:
   * Description: Generates a new PDF from other outputs.
                  This is just a PDF joiner, using `pdfunite` from Poppler Utils.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `pdfunite` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated PDF (%i=name of the output %x=pdf). Affected by global options.
@@ -3486,11 +3568,13 @@ Notes:
             - `from_cwd`: [boolean=false] Use the current working directory instead of the dir specified by `-d`.
         - `use_external_command`: [boolean=false] Use the `pdfunite` tool instead of PyPDF2 Python module.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3504,10 +3588,11 @@ Notes:
                  For more information about the input markdown file please consult the
                  [documentation](docs/populate.md)
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `populate` output.
       * Valid keys:
         - **`format`**: [string='html'] [html,md] Format for the generated output.
@@ -3529,11 +3614,13 @@ Notes:
                       The `simple.handlebars` template is a built-in template.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3544,10 +3631,11 @@ Notes:
   * Description: Generates the file with position information for the PCB components, used by the pick and place machine.
                  This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `position` output.
       * Valid keys:
         - **`format`**: [string='ASCII'] [ASCII,CSV] Format for the position file.
@@ -3570,11 +3658,13 @@ Notes:
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3586,7 +3676,7 @@ Notes:
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
@@ -3596,6 +3686,7 @@ Notes:
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `ps` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
@@ -3641,11 +3732,13 @@ Notes:
         - `width_adjust`: [number=0] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3661,10 +3754,11 @@ Notes:
                  - Use them in your schematic and PCB.
                  - To keep them updated add the `update_qr` preflight
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `boardview` output.
       * Valid keys:
         - **`lib`**: [string='QR'] Short name for the library.
@@ -3682,11 +3776,13 @@ Notes:
         - `reference`: [string='QR'] The reference prefix.
         - `use_sch_dir`: [boolean=true] Generate the libs relative to the schematic/PCB dir.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=90] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3696,10 +3792,11 @@ Notes:
   * Type: `render_3d`
   * Description: Exports the image generated by KiCad's 3D viewer.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `render_3d` output.
       * Valid keys:
         - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
@@ -3760,11 +3857,13 @@ Notes:
                          In this case the value is interpreted as a time-out..
         - `width`: [number=1280] Image width (aprox.).
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3775,10 +3874,11 @@ Notes:
   * Description: Generates a report about the design.
                  Mainly oriented to be sent to the manufacturer or check PCB details.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `report` output.
       * Valid keys:
         - **`convert_to`**: [string='pdf'] Target format for the report conversion. See `do_convert`.
@@ -3800,11 +3900,13 @@ Notes:
                                        diameter can be reduced to accommodate the correct annular ring values.
                                        Use 0 to disable it.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3816,10 +3918,11 @@ Notes:
                  This copy isn't intended for development.
                  Is just a tweaked version of the original where you can look at the results.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `sch_variant` output.
       * Valid keys:
         - `copy_project`: [boolean=false] Copy the KiCad project to the destination directory.
@@ -3832,11 +3935,13 @@ Notes:
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3852,10 +3957,11 @@ Notes:
                  [KiKit docs](https://github.com/yaqwsx/KiKit/blob/master/doc/stencil.md).
                  Note that we don't implement `--ignore` option, you should use a variant for this
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `stencil_3d` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
@@ -3883,11 +3989,13 @@ Notes:
                   side contains solder paste.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3901,10 +4009,11 @@ Notes:
                  [KiKit docs](https://github.com/yaqwsx/KiKit/blob/master/doc/stencil.md).
                  Note that we don't implement `--ignore` option, you should use a variant for this
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `stencil_for_jig` output.
       * Valid keys:
         - *jig_height*: Alias for jigheight.
@@ -3935,11 +4044,13 @@ Notes:
         - `tolerance`: [number=0.05] Enlarges the register by the tolerance value [mm].
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3951,10 +4062,11 @@ Notes:
                  This is the most common 3D format for exchange purposes.
                  This output is what you get from the 'File/Export/STEP' menu in pcbnew.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `step` output.
       * Valid keys:
         - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
@@ -3973,11 +4085,13 @@ Notes:
         - `subst_models`: [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3990,7 +4104,7 @@ Notes:
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
@@ -4000,6 +4114,7 @@ Notes:
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `svg` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
@@ -4041,11 +4156,13 @@ Notes:
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4057,7 +4174,7 @@ Notes:
                  This output is what you get from the 'File/Print' menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`layers`**: [list(dict)|list(string)|string] [all,selected,copper,technical,user]
@@ -4067,6 +4184,7 @@ Notes:
         - `layer`: [string=''] Name of the layer. As you see it in KiCad.
         - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `pdf_pcb_print` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=layers, %x=svg). Affected by global options.
@@ -4095,11 +4213,13 @@ Notes:
                    If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4110,10 +4230,11 @@ Notes:
   * Description: Exports the PCB. Suitable for printing.
                  This is a format to document your schematic.
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `svg_sch_print` output.
       * Valid keys:
         - **`frame`**: [boolean=true] Include the frame and title block.
@@ -4127,11 +4248,13 @@ Notes:
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4143,10 +4266,11 @@ Notes:
                  This is intended for rendering, unlike STEP which is intended to be
                  an exact mechanic model
   * Valid keys:
-    - **`comment`**: [string=''] A comment for documentation purposes.
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
                  If it starts with `+` the rest is concatenated to the default dir.
     - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `vrml` output.
       * Valid keys:
         - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
@@ -4168,11 +4292,13 @@ Notes:
                                    When disabled the `ref_x`, `ref_y` and `ref_units` will be used.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                  Categories looks like file system paths, i.e. PCB/fabrication/gerber.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
     - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
                                 Useful when this output extends another and you don't want to generate the original.
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4474,11 +4600,96 @@ If you need to define an output that is similar to another, and you want to avoi
 To achieve it just specify the name of the base output in the `extends` value.
 Note that this will use the `options` of the other output as base, not other data as the comment.
 
-Also note that you can use YAML anchors, but this won't work if you are importing the base output from other file.
+Also note that you can use [YAML anchors](https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet#anchors), but this won't work if you are
+importing the base output from other file.
 
 Additionally you must be aware that extending an output doesn't disable the base output.
 If you need to disable the original output use `disable_run_by_default` option.
 
+
+#### Grouping outputs
+
+Sometimes you want to generate various outputs together. An example could be the fabrication files, or the documentation for the project.
+
+To explain it we will use an example where you have six outputs.
+Three are used for fabrication: `gerbers`, `excellon_drill` and `position`.
+Another three are used for documentation: `SVG`, `PcbDraw` and `PcbDraw2`.
+The YAML config containing this example can be found [here](tests/yaml_samples/groups_1.kibot.yaml).
+If you need to generate the fabrication outputs you must run:
+
+```
+kibot gerbers excellon_drill position
+```
+
+One mechanism to group the outputs is to create a `compress` output that just includes the outputs you want to group.
+Here is one example:
+
+```yaml
+  - name: compress_fab
+    comment: "Generates a ZIP file with all the fab outputs"
+    type: compress
+    run_by_default: false
+    options:
+      files:
+        - from_output: gerbers
+        - from_output: excellon_drill
+        - from_output: position
+```
+
+The `compress_fab` output will generate the `gerbers`, `excellon_drill` and `position` outputs.
+Then it will create a ZIP file containing the files generated by these outputs.
+The command line invocation for this is:
+
+```
+kibot compress_fab
+```
+
+Using this mechanism you are forced to create a compressed output.
+To avoid it you can use `groups`.
+The `groups` section is used to create groups of outputs.
+Here is the example for fabrication files:
+
+```yaml
+groups:
+  - name: fab
+    outputs:
+      - gerbers
+      - excellon_drill
+      - position
+```
+
+So now you can just run:
+
+```
+kibot fab
+```
+
+The `gerbers`, `excellon_drill` and `position` outputs will be generated without the need to generate an extra file.
+Groups can be nested, here is an example:
+
+```yaml
+groups:
+  - name: fab
+    outputs:
+      - gerbers
+      - excellon_drill
+      - position
+  - name: plot
+    outputs:
+      - SVG
+      - PcbDraw
+      - PcbDraw2
+  - name: fab_svg
+    outputs:
+      - fab
+      - SVG
+```
+
+Here the `fab_svg` group will contain `gerbers`, `excellon_drill`, `position` and `SVG`.
+
+Groups can be imported from another YAML file.
+
+Avoid naming groups using `_` as first character. These names are reserved for KiBot.
 
 #### Importing filters and variants from another file
 
@@ -4493,9 +4704,11 @@ import:
     filters: LIST_OF_FILTERS
     variants: LIST_OF_VARIANTS
     global: LIST_OF_GLOBALS
+    groups: LIST_OF_GROUPS
 ```
 
-This syntax is flexible. If you don't define which `outputs`, `filters`, `variants` and/or `global` all will be imported. So you can just omit them, like this:
+This syntax is flexible. If you don't define which `outputs`, `preflights`, `filters`, `variants`, `global` and/or `groups` all will be imported.
+So you can just omit them, like this:
 
 ```yaml
 import:
@@ -4512,6 +4725,7 @@ import:
 ```
 
 This will import the `one_name` output and the `name1` and `name2` filters. As `variants` is omitted, all variants will be imported.
+The same applies to other things like globals and groups.
 You can also use the `all` and `none` special names, like this:
 
 ```yaml
@@ -4525,7 +4739,7 @@ import:
 
 This will import all outputs and filters, but not variants or globals.
 Also note that imported globals has more precedence than the ones defined in the same file.
-If you want give more priority to the local values use:
+If you want to give more priority to the local values use:
 
 ```
 kibot:

@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.5.2] - Unreleased
 ### Added
+- Support for `groups` of `outputs`
 - New output:
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
 - Plot related outputs and PCB_Print:
@@ -22,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Now all 2D variant stuff is applied before calling iBoM (#350)
 - Copy_Files:
   - Problems on KiCad 5 (no 3rd party dir) (#357)
-
+ç
 ## [1.5.1] - 2022-12-16
 ### Fixed
 - System level resources look-up
