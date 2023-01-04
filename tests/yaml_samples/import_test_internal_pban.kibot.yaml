@@ -1,0 +1,6 @@
+kibot:
+  version: 1
+
+import:
+  - file: P-Ban
+    is_internal: true

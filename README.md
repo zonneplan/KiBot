@@ -66,6 +66,7 @@
     * [Consolidating BoMs](#consolidating-boms)
     * [Importing outputs from another file](#importing-outputs-from-another-file)
     * [Importing other stuff from another file](#importing-other-stuff-from-another-file)
+    * [Importing internal templates](#importing-internal-templates)
     * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
     * [Grouping outputs](#grouping-outputs)
   * [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing)
@@ -368,8 +369,9 @@ The file is divided in various sections. Some of them are optional.
 The order in which they are declared is not relevant, they are interpreted in the following order:
 
 - `kiplot`/`kibot` see [The header](#the-header)
-- `import` see [Importing outputs from another file](#importing-outputs-from-another-file) and
-  [Importing filters and variants from another file](#importing-other-stuff-from-another-file)
+- `import` see [Importing outputs from another file](#importing-outputs-from-another-file),
+  [Importing filters and variants from another file](#importing-other-stuff-from-another-file) and
+  [Importing internal templates](#importing-internal-templates)
 - `global` see [Default global options](#default-global-options)
 - `filters` see [Filters and variants](#filters-and-variants)
 - `variants` see [Filters and variants](#filters-and-variants)
@@ -4658,6 +4660,55 @@ Another important detail is that global options that are lists gets the values m
 The last set of values found is inserted at the beginning of the list.
 You can collect filters for all the imported global sections.
 
+#### Importing internal templates
+
+KiBot has some internally defined outputs, groups and filters.
+You can easily use them with the `import` mechanism.
+Use the `file` mechanism and add the `is_internal` option.
+When importing an internal template you don't need to specify its location and/or file extension.
+Here is an example:
+
+```yaml
+import:
+  - file: Elecrow
+    is_internal: true
+```
+
+This will import the definitions for the internal Elecrow configuration.
+Here is a list of currently defined templates:
+
+They include support for:
+
+- [Elecrow](https://www.elecrow.com/): contain fabrication outputs compatible with Elecrow
+  - _Elecrow_gerbers: Gerbers
+  - _Elecrow_drill: Drill files
+  - _Elecrow_compress: Gerbers and drill files compressed in a ZIP
+  - _Elecrow: _Elecrow_gerbers+_Elecrow_drill
+- [FusionPCB](https://www.seeedstudio.io/fusion.html): contain fabrication outputs compatible with FusionPCB
+  - _FusionPCB_gerbers: Gerbers
+  - _FusionPCB_drill: Drill files
+  - _FusionPCB_compress: Gerbers and drill files compressed in a ZIP
+  - _FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill
+- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB
+  - _JLCPCB_gerbers: Gerbers. You need to define the layers for more than 8.
+  - _JLCPCB_gerbers_stencil: Gerbers for the solder paste stencils. Disabled by default.
+  - _JLCPCB_drill: Drill files
+  - _JLCPCB_position: Pick and place, applies the `_rot_footprint` filter. You can change this filter.
+  - _JLCPCB_bom: List of LCSC parts, assumes a field named `LCSC#` contains the LCSC codes. You can change this filter.
+  - _JLCPCB_compress: Gerbers, drill, position and BoM files compressed in a ZIP
+  - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_drill
+  - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
+  - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
+- [P-Ban](https://www.p-ban.com/): contain fabrication outputs compatible with P-Ban
+  - _P-Ban_gerbers: Gerbers. You need to define the layers for more than 8.
+  - _P-Ban_drill: Drill files
+  - _P-Ban: _P-Ban_gerbers+_P-Ban_drill
+- [PCBWay](https://www.pcbway.com): contain fabrication outputs compatible with PCBWay
+  - _PCBWay_gerbers: Gerbers
+  - _PCBWay_drill: Drill files
+  - _PCBWay_compress: Gerbers and drill files compressed in a ZIP
+  - _PCBWay: _PCBWay_gerbers+_PCBWay_drill
+
 
 #### Using other output as base for a new one
 
@@ -5151,14 +5202,7 @@ If your manufacturer has problems with your files check the following:
 * Disable **aperture macros** (KiCad 6 only: `disable_aperture_macros` set to `true`)
 
 The [kicad-gerberzipper](https://github.com/g200kg/kicad-gerberzipper) is an action plugin for KiCad oriented to help to generate gerber and drill files for some manufacturers.
-I adapted the configurations from kicad-gerberzipper to KiBot configurations, you can find them in the `docs/samples/` directory.
-They include support for:
-
-- [Elecrow](https://www.elecrow.com/)
-- [FusionPCB](https://www.seeedstudio.io/fusion.html)
-- [JLCPCB](https://jlcpcb.com/)
-- [P-Ban](https://www.p-ban.com/)
-- [PCBWay](https://www.pcbway.com)
+I adapted the configurations from kicad-gerberzipper to KiBot configurations, they are available as [internal templates](#importing-internal-templates).
 
 
 ## Notes about the position file

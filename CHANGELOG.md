@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Internal templates import
 - New output:
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
+- Internal templates:
+  - FusionPCB: gerber, drill and compress
+  - Elecrow: gerber, drill and compress
+  - JLCPCB: gerber, drill, position, BoM and compress
+  - P-Ban: gerber, drill and compress
+  - PCBWay: gerber, drill and compress
 - Plot related outputs and PCB_Print:
   - Added support for the KiCad 6 "sketch_pads_on_fab_layers" option. (#356)
 - Variants:
