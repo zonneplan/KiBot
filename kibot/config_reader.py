@@ -453,14 +453,14 @@ class CfgYamlReader(object):
         for o_var in variants.values():
             self.configure_variant_or_filter(o_var)
 
-    def check_import_file_name(self, fn, is_external):
+    def check_import_file_name(self, dir_name, fn, is_external):
         fn = os.path.expandvars(os.path.expanduser(fn))
         is_internal = False
         if not is_external and not os.path.splitext(fn)[1] and not os.path.isabs(fn):
             name = fn
             fn = os.path.join(GS.get_resource_path('config_templates'), fn+'.kibot.yaml')
             if not os.path.isfile(fn):
-                fn_abs = os.path.join(dir, name)
+                fn_abs = os.path.join(dir_name, name)
                 if not os.path.isfile(fn_abs):
                     raise KiPlotConfigurationError("Unknown internal import file `{}` ({})".format(name, fn))
                 # Bizarre case: looks like an internal
@@ -469,7 +469,7 @@ class CfgYamlReader(object):
                 is_internal = True
         else:
             if not os.path.isabs(fn):
-                fn = os.path.join(dir, fn)
+                fn = os.path.join(dir_name, fn)
             if not os.path.isfile(fn):
                 raise KiPlotConfigurationError("Missing import file `{}`".format(fn))
         return fn, is_internal
@@ -483,7 +483,7 @@ class CfgYamlReader(object):
         if not isinstance(imp, list):
             raise KiPlotConfigurationError("Incorrect `import` section (must be a list)")
         # Import the files
-        os.path.dirname(os.path.abspath(name))
+        dir_name = os.path.dirname(os.path.abspath(name))
         all_collected = CollectedImports()
         for entry in imp:
             explicit_fils = explicit_vars = explicit_globals = explicit_pres = explicit_groups = False
@@ -533,7 +533,7 @@ class CfgYamlReader(object):
                     raise KiPlotConfigurationError("`import` entry without `file` ({})".format(str(entry)))
             else:
                 raise KiPlotConfigurationError("`import` items must be strings or dicts ({})".format(str(entry)))
-            fn, is_internal = self.check_import_file_name(fn, is_external)
+            fn, is_internal = self.check_import_file_name(dir_name, fn, is_external)
             fn_rel = os.path.relpath(fn)
             data = self.load_yaml(open(fn))
             if 'import' in data:
