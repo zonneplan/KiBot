@@ -1,9 +1,9 @@
-name: 'KiBot'
-description: 'auto generate exports (schematics, gerbers, plots) for any KiCad project.'
+name: 'KiBot GitHub action'
+description: 'auto generate documentatio, fabrication, etc. files for any KiCad project.'
 author: 'Salvador E. Tropea'
 inputs:
   config:
-    description: 'The plotting config file to use'
+    description: 'The config file to use'
     required: false
     default: '__SCAN__'
   dir:
