@@ -4719,6 +4719,9 @@ They include support for:
   - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_gerbers_stencil+_JLCPCB_drill
   - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
   - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
+- [MacroFab_XYRS](https://help.macrofab.com/knowledge/macrofab-required-design-files): XYRS position file in MacroFab format
+  - _only_smd: Filter to get only the SMD parts
+  - _macrofab_xyrs: Position file in XYRS format compatible with MacroFab.
 - [P-Ban](https://www.p-ban.com/): contain fabrication outputs compatible with P-Ban
   - _P-Ban_gerbers: Gerbers. You need to define the layers for more than 8.
   - _P-Ban_drill: Drill files
