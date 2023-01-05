@@ -1273,13 +1273,22 @@ They include support for:
   - _FusionPCB_compress: Gerbers and drill files compressed in a ZIP
   - _FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill
 - [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB
-  - _JLCPCB_gerbers: Gerbers. You need to define the layers for more than 8.
-  - _JLCPCB_gerbers_stencil: Gerbers for the solder paste stencils. Disabled by default.
+  - _JLCPCB_gerbers: Gerbers.
   - _JLCPCB_drill: Drill files
   - _JLCPCB_position: Pick and place, applies the `_rot_footprint` filter. You can change this filter.
   - _JLCPCB_bom: List of LCSC parts, assumes a field named `LCSC#` contains the LCSC codes. You can change this filter.
   - _JLCPCB_compress: Gerbers, drill, position and BoM files compressed in a ZIP
   - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_drill
+  - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
+  - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
+- [JLCPCB_stencil](https://jlcpcb.com/): Derived from JLCPCB, adds solder paste gerbers for stencils
+  - _JLCPCB_gerbers: Gerbers.
+  - _JLCPCB_gerbers_stencil: Gerbers for the solder paste stencils. Disabled by default.
+  - _JLCPCB_drill: Drill files
+  - _JLCPCB_position: Pick and place, applies the `_rot_footprint` filter. You can change this filter.
+  - _JLCPCB_bom: List of LCSC parts, assumes a field named `LCSC#` contains the LCSC codes. You can change this filter.
+  - _JLCPCB_compress: Gerbers, drill, position and BoM files compressed in a ZIP
+  - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_gerbers_stencil+_JLCPCB_drill
   - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
   - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
 - [P-Ban](https://www.p-ban.com/): contain fabrication outputs compatible with P-Ban
