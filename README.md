@@ -4660,18 +4660,29 @@ Another important detail is that global options that are lists gets the values m
 The last set of values found is inserted at the beginning of the list.
 You can collect filters for all the imported global sections.
 
+It's recommended to always use some file extension in the *FILE_CONTAINING_THE_YAML_DEFINITIONS* name.
+If you don't use any file extension and you use a relative path this name could be confused with an internal template.
+See [Importing internal templates](#importing-internal-templates).
+If you need to use a name without any extension and a relative path, and this name is the same used for a KiBot template use the `is_external` option:
+
+```yaml
+import:
+  - file: Elecrow
+    is_external: true
+```
+
+
 #### Importing internal templates
 
 KiBot has some internally defined outputs, groups and filters.
 You can easily use them with the `import` mechanism.
-Use the `file` mechanism and add the `is_internal` option.
-When importing an internal template you don't need to specify its location and/or file extension.
+Use the `file` mechanism and don't include the extension for the file.
+When importing an internal template you don't need to specify its location.
 Here is an example:
 
 ```yaml
 import:
   - file: Elecrow
-    is_internal: true
 ```
 
 This will import the definitions for the internal Elecrow configuration.

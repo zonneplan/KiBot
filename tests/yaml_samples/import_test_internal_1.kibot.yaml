@@ -3,4 +3,3 @@ kibot:
 
 import:
   - file: Elecrow
-    is_internal: true

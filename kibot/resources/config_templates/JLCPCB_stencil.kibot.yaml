@@ -6,7 +6,6 @@ kibot:
 
 import:
   - file: JLCPCB
-    is_internal: true
     outputs:
       # We exclude the _JLCPCB_compress
       - _JLCPCB_gerbers

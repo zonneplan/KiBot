@@ -3,4 +3,3 @@ kibot:
 
 import:
   - file: JLCPCB_stencil
-    is_internal: true
