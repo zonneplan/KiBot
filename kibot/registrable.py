@@ -164,7 +164,7 @@ class RegOutput(Optionable, Registrable):
         return None
 
     @staticmethod
-    def solve_groups(targets, level=0):
+    def solve_groups(targets, where, level=0):
         """ Replaces any group by its members.
             Returns a new list.
             Assumes the outputs and groups are valid. """
@@ -177,8 +177,11 @@ class RegOutput(Optionable, Registrable):
             if t in RegOutput._def_outputs:
                 new_targets.append(t)
             else:
+                new_grp = RegOutput._def_groups.get(t, None)
+                if new_grp is None:
+                    raise KiPlotConfigurationError('Unknown output/group `{}` (in `{}`)'.format(t, where))
                 # Recursive expand
-                new_targets.extend(RegOutput.solve_groups(RegOutput._def_groups[t], level))
+                new_targets.extend(RegOutput.solve_groups(new_grp, t, level))
         return new_targets
 
 

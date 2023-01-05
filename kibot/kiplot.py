@@ -438,7 +438,10 @@ def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority
             exit(EXIT_BAD_ARGS)
         # Expand groups
         logger.debug('Outputs before groups expansion: {}'.format(targets))
-        targets = RegOutput.solve_groups(targets)
+        try:
+            targets = RegOutput.solve_groups(targets, 'command line')
+        except KiPlotConfigurationError as e:
+            config_error(str(e))
         logger.debug('Outputs after groups expansion: {}'.format(targets))
         # Now convert the list of names into a list of output objects
         if cli_order:
