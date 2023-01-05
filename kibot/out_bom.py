@@ -720,7 +720,7 @@ class BoMOptions(BaseOptions):
         if isinstance(self.component_aliases, type):
             self.component_aliases = DEFAULT_ALIASES
         # Filters
-        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform')
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
