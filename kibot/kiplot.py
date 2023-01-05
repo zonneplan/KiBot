@@ -853,16 +853,15 @@ def generate_one_example(dest_dir, types):
         yaml_dump(f, {'global': glb})
         f.write('\n')
         # A helper for the internal templates
-        imports = [{'file': man} for man in ['Elecrow', 'FusionPCB', 'JLCPCB', 'PCBWay']]
-        yaml_dump(f, {'import': imports})
-        f.write('\n')
-        # A helper for KiCost demo
-        var = {'name': 'place_holder'}
-        var['comment'] = 'Just a place holder for pre_transform filters'
-        var['type'] = 'kicost'
-        var['pre_transform'] = ['_kicost_rename', '_rot_footprint']
-        yaml_dump(f, {'variants': [var]})
-        f.write('\n')
+        needed_imports = []
+        if GS.pcb_file:
+            needed_imports.extend(['Elecrow', 'FusionPCB', 'JLCPCB', 'PCBWay'])
+        if GS.sch_file and GS.pcb_file:
+            needed_imports.append('MacroFab_XYRS')
+        if needed_imports:
+            imports = [{'file': man} for man in needed_imports]
+            yaml_dump(f, {'import': imports})
+            f.write('\n')
         # All the outputs
         outputs = []
         for n, cls in OrderedDict(sorted(outs.items())).items():

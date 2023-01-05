@@ -995,8 +995,6 @@ class BoM(BaseOutput):  # noqa: F821
         for tpl in templates:
             for out in tpl:
                 if out['type'] == 'bom':
-                    # Use the KiCost + rotate variant
-                    out['options']['variant'] = 'place_holder'
                     columns = out['options'].get('columns', None)
                     if columns:
                         # Rename MPN for something we have, or just remove it
@@ -1085,7 +1083,9 @@ class BoM(BaseOutput):  # noqa: F821
                     grp.append(d+'#')
             gb = BoM.create_bom('XLSX', 'Costs', grp, join_fields, fld_names)
             gb['options']['xlsx'] = {'style': 'modern-green', 'kicost': True, 'specs': True}
-            gb['options']['variant'] = 'place_holder'
+            # KitSpace seems to be failing all the time
+            gb['options']['xlsx']['kicost_api_disable'] = 'KitSpace'
+            gb['options']['pre_transform'] = '_kicost_rename'
             # gb['options']['distributors'] = list(dists)
             outs.append(gb)
         # Add the list of layers to the templates
