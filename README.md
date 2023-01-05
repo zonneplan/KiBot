@@ -3300,6 +3300,7 @@ Notes:
                        see `show_components`.
         - `libs`: [list(string)=[]] List of libraries.
         - `margin`: [number|dict] Margin around the generated image [mm].
+                    Using a number the margin is the same in the four directions.
           * Valid keys:
             - `bottom`: [number=0] Bottom margin [mm].
             - `left`: [number=0] Left margin [mm].
@@ -4145,13 +4146,28 @@ Notes:
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
+        - `limit_viewbox`: [boolean=false] When enabled the view box is limited to a selected area.
         - `line_width`: [number=0.25] [0.02,2] For objects without width [mm] (KiCad 5).
+        - `margin`: [number|dict] Margin around the view box [mm].
+                    Using a number the margin is the same in the four directions.
+                    See `limit_viewbox` option.
+          * Valid keys:
+            - `bottom`: [number=0] Bottom margin [mm].
+            - `left`: [number=0] Left margin [mm].
+            - `right`: [number=0] Right margin [mm].
+            - `top`: [number=0] Top margin [mm].
         - `mirror_plot`: [boolean=false] Plot mirrored.
         - `negative_plot`: [boolean=false] Invert black and white.
         - `plot_footprint_refs`: [boolean=true] Include the footprint references.
         - `plot_footprint_values`: [boolean=true] Include the footprint values.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `size_detection`: [string='kicad_edge'] [kicad_edge,kicad_all] Method used to detect the size of the view box.
+                            The `kicad_edge` method uses the size of the board as reported by KiCad,
+                            components that extend beyond the PCB limit will be cropped. You can manually
+                            adjust the margin to make them visible.
+                            The `kicad_all` method uses the whole size reported by KiCad. Usually includes extra space.
+                            See `limit_viewbox` option.
         - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
                                    Note that this value is currently ignored by KiCad (6.0.9).
         - `sketch_pads_on_fab_layers`: [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+).

@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Support for multi-boards as defined by KiKit
 - iBoM:
   - `hide_excluded` to hide excluded *.Fab drawings.
+- SVG:
+  - Options to limit the view box to the used area.
 ### Fixed
 - PCB_Print:
   - Images not showing in custom frames. (#352)

@@ -29,7 +29,7 @@ from .misc import (PCBDRAW_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS
 from .gs import GS
 from .layer import Layer
 from .optionable import Optionable
-from .out_base import VariantOptions
+from .out_base import VariantOptions, PcbMargin
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -183,21 +183,6 @@ class PcbDrawRemapComponents(Optionable):
             raise KiPlotConfigurationError("The component remapping must specify a `ref`, a `lib` and a `comp`")
 
 
-class PcbDrawMargin(Optionable):
-    """ To adjust each margin """
-    def __init__(self):
-        super().__init__()
-        with document:
-            self.left = 0
-            """ Left margin [mm] """
-            self.right = 0
-            """ Right margin [mm] """
-            self.top = 0
-            """ Top margin [mm] """
-            self.bottom = 0
-            """ Bottom margin [mm] """
-
-
 class PcbDrawOptions(VariantOptions):
     def __init__(self):
         with document:
@@ -248,8 +233,9 @@ class PcbDrawOptions(VariantOptions):
             """ *[svg,png,jpg,bmp] Output format. Only used if no `output` is specified """
             self.output = GS.def_global_output
             """ *Name for the generated file """
-            self.margin = PcbDrawMargin
-            """ [number|dict] Margin around the generated image [mm] """
+            self.margin = PcbMargin
+            """ [number|dict] Margin around the generated image [mm].
+                Using a number the margin is the same in the four directions """
             self.outline_width = 0.15
             """ [0,10] Width of the trace to draw the PCB border [mm].
                 Note this also affects the drill holes """
@@ -294,14 +280,7 @@ class PcbDrawOptions(VariantOptions):
         else:
             self.highlight = self.solve_kf_filters(self.highlight)
         # Margin
-        if isinstance(self.margin, type):
-            self.margin = (0, 0, 0, 0)
-        elif isinstance(self.margin, PcbDrawMargin):
-            self.margin = (mm2ki(self.margin.left), mm2ki(self.margin.right),
-                           mm2ki(self.margin.top), mm2ki(self.margin.bottom))
-        else:
-            margin = mm2ki(self.margin)
-            self.margin = (margin, margin, margin, margin)
+        self.margin = PcbMargin.solve(self.margin)
         # Filter
         if isinstance(self.show_components, type):
             # Default option is 'none'

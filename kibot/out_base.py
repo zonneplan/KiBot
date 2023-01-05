@@ -983,3 +983,27 @@ class VariantOptions(BaseOptions):
             comps = self.variant.filter(comps)
             self._sub_pcb = self.variant._sub_pcb
         self._comps = comps
+
+
+class PcbMargin(Optionable):
+    """ To adjust each margin """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.left = 0
+            """ Left margin [mm] """
+            self.right = 0
+            """ Right margin [mm] """
+            self.top = 0
+            """ Top margin [mm] """
+            self.bottom = 0
+            """ Bottom margin [mm] """
+
+    @staticmethod
+    def solve(margin):
+        if isinstance(margin, type):
+            return (0, 0, 0, 0)
+        if isinstance(margin, PcbMargin):
+            return (GS.from_mm(margin.left), GS.from_mm(margin.right), GS.from_mm(margin.top), GS.from_mm(margin.bottom))
+        margin = GS.from_mm(margin)
+        return (margin, margin, margin, margin)

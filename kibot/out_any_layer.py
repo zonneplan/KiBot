@@ -195,6 +195,7 @@ class AnyLayerOptions(VariantOptions):
         # Restore the eliminated layers
         if exclude:
             self.unfilter_pcb_components()
+        self._generated_files = generated
 
     def solve_extension(self, layer):
         if self._plot_format == PLOT_FORMAT_GERBER and self.use_protel_extensions:
