@@ -123,30 +123,35 @@ class Gerber(AnyLayer):
         useful = GS.get_useful_layers(USEFUL_LAYERS, layers, include_copper=True)
         tpl_layers = [AnyLayer.layer2dict(la) for la in useful]
         # Add the list of layers to the templates
-        skipped = []
         for tpl in templates:
+            outs_used = []
             for out in tpl:
                 skip = False
                 if out['type'] == 'gerber':
                     out['layers'] = tpl_layers
                 elif out['type'] == 'position':
-                    out['options']['variant'] = 'place_holder'
                     if not GS.sch:
                         # We need the schematic for the variant
                         skip = True
+                        out['run_by_default'] = False
+                    out['options'] = {'pre_transform': ['_kicost_rename', '_rot_footprint']}
                 if out['type'] == 'bom' and not GS.sch_file:
                     skip = True
+                    out['run_by_default'] = False
                 if out['type'] == 'compress':
                     out['dir'] = 'Manufacturers'
+                    # We must disable the template and create a new one
+                    # If we don't do it the parent is configured and, in the JLCPCB case, it needs an schematic
+                    out['disable_run_by_default'] = out['extends']
+                    out['extends'] = ''
                     # Moving files makes the `navigate_results` less powerful
                     # out['options']['move_files'] = True
-                    if skipped:
+                    if outs_used:
                         # Compress only the ones we didn't skip
-                        out['options']['files'] = [f for f in out['options']['files'] if f['from_output'] not in skipped]
+                        out['options'] = {'files': [{'from_output': f, 'dest': '/'} for f in outs_used]}
                 else:
                     out['dir'] = os.path.join('Manufacturers', out['dir'])
-                if skip:
-                    skipped.append(out['name'])
-                else:
-                    outs.append(out)
+                outs.append(out)
+                if not skip:
+                    outs_used.append(out['name'])
         return outs

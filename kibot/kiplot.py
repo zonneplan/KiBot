@@ -852,12 +852,9 @@ def generate_one_example(dest_dir, types):
         glb = {'filters': fil}
         yaml_dump(f, {'global': glb})
         f.write('\n')
-        # A helper for the JLCPCB stuff
-        fil = {'name': 'only_jlc_parts'}
-        fil['comment'] = 'Only parts with JLC (LCSC) code'
-        fil['type'] = 'generic'
-        fil['include_only'] = [{'column': 'LCSC#', 'regex': r'^C\d+'}]
-        yaml_dump(f, {'filters': [fil]})
+        # A helper for the internal templates
+        imports = [{'file': man} for man in ['Elecrow', 'FusionPCB', 'JLCPCB', 'PCBWay']]
+        yaml_dump(f, {'import': imports})
         f.write('\n')
         # A helper for KiCost demo
         var = {'name': 'place_holder'}
