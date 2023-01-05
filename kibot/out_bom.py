@@ -22,7 +22,7 @@ from copy import deepcopy
 import os
 import re
 from .gs import GS
-from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, IFILT_EXPAND_TEXT_VARS, W_NOPART, W_MISSREF
+from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, W_NOPART, W_MISSREF
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
@@ -916,7 +916,7 @@ class BoMOptions(BaseOptions):
         # Now expand the text variables, the user can disable it and insert a customized filter
         # in the variant or even before.
         if self.expand_text_vars:
-            comps = apply_pre_transform(comps, BaseFilter.solve_filter(IFILT_EXPAND_TEXT_VARS, 'KiCad 6 text vars',
+            comps = apply_pre_transform(comps, BaseFilter.solve_filter('_expand_text_vars', 'KiCad 6 text vars',
                                                                        is_transform=True))
         # We add the main project to the aggregate list so do_bom sees a complete list
         base_sch = Aggregate()

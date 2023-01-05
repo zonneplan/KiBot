@@ -1024,6 +1024,9 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
   - References that match: '^TP[0-9]*' or '^FID'
   - Part names that match: 'regex': 'mount.*hole' or 'solder.*bridge' or 'solder.*jump' or 'test.*point'
   - Footprints that match:  'test.*point' or 'mount.*hole' or 'fiducial'
+- **_only_smd** is used to get only SMD parts
+- **_only_tht** is used to get only THT parts
+- **_only_virtual** is used to get only virtual parts
 - **_rot_footprint** is a default `rot_footprint` filter
 - **_var_rename** is a default `var_rename` filter
 - **_var_rename_kicost** is a default `var_rename_kicost` filter
@@ -4720,7 +4723,6 @@ They include support for:
   - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
   - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
 - [MacroFab_XYRS](https://help.macrofab.com/knowledge/macrofab-required-design-files): XYRS position file in MacroFab format
-  - _only_smd: Filter to get only the SMD parts
   - _macrofab_xyrs: Position file in XYRS format compatible with MacroFab.
 - [P-Ban](https://www.p-ban.com/): contain fabrication outputs compatible with P-Ban
   - _P-Ban_gerbers: Gerbers. You need to define the layers for more than 8.

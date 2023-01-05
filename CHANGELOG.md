@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Internal templates import
 - New output:
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
+- New internal filters:
+  - `_only_smd` used to get only SMD parts
+  - `_only_tht` used to get only THT parts
+  - `_only_virtual` used to get only virtual parts
 - Internal templates:
   - FusionPCB: gerber, drill and compress
   - Elecrow: gerber, drill and compress

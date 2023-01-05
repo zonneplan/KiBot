@@ -3,13 +3,6 @@
 kibot:
   version: 1
 
-filters:
-  - name: _only_smd
-    comment: 'Only SMD parts'
-    type: generic
-    exclude_virtual: true
-    exclude_tht: true
-
 outputs:
   - name: _macrofab_xyrs
     comment: "Pick and place file, XYRS style"

@@ -83,13 +83,8 @@ TRY_INSTALL_CHECK = 'Try running the installation checker: kibot-check'
 
 # Internal filter names
 IFILT_MECHANICAL = '_mechanical'
-IFILT_VAR_RENAME = '_var_rename'
-IFILT_VAR_RENAME_KICOST = '_var_rename_kicost'
-IFILT_ROT_FOOTPRINT = '_rot_footprint'
 IFILT_KICOST_RENAME = '_kicost_rename'
 IFILT_KICOST_DNP = '_kicost_dnp'
-IFILT_EXPAND_TEXT_VARS = '_expand_text_vars'
-IFILT_DATASHEET_LINK = '_datasheet_link'
 # KiCad 5 GUI values for the attribute
 UI_THT = 0       # 1 for KiCad 6
 UI_SMD = 1       # 2 for KiCad 6
