@@ -955,12 +955,13 @@ class VariantOptions(BaseOptions):
     def exec_with_retry(self, cmd, exit_with):
         try:
             GS.exec_with_retry(cmd, exit_with)
-        finally:
+        except SystemExit:
             if GS.debug_enabled:
                 if self._files_to_remove:
                     logger.error('Keeping temporal files: '+str(self._files_to_remove))
             else:
                 self.remove_temporals()
+            raise
         if self._files_to_remove:
             self.remove_temporals()
 
