@@ -3134,6 +3134,10 @@ Notes:
         - `stackup_create`: [boolean=false] Create a JSON file containing the board stackup.
         - `stackup_dir`: [string='.'] Directory for the stackup file.
         - `stackup_file`: [string='board.yaml'] Name for the stackup file.
+        - `sub_boards_bounds_file`: [string='bounds'] File name for the sub-PCBs bounds.
+        - `sub_boards_create`: [boolean=true] Extract sub-PCBs and their Z axis position.
+        - `sub_boards_dir`: [string='boards'] Directory for the boards definitions.
+        - `sub_boards_stacked_prefix`: [string='stacked_'] Prefix used for the stack files.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.

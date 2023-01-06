@@ -1869,6 +1869,14 @@ outputs:
       stackup_dir: '.'
       # [string='board.yaml'] Name for the stackup file
       stackup_file: 'board.yaml'
+      # [string='bounds'] File name for the sub-PCBs bounds
+      sub_boards_bounds_file: 'bounds'
+      # [boolean=true] Extract sub-PCBs and their Z axis position
+      sub_boards_create: true
+      # [string='boards'] Directory for the boards definitions
+      sub_boards_dir: 'boards'
+      # [string='stacked_'] Prefix used for the stack files
+      sub_boards_stacked_prefix: 'stacked_'
       # [string=''] Board variant to apply
       variant: ''
   # PCB Print:

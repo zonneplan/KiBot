@@ -4,17 +4,41 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Some code is adapted from: https://github.com/30350n/pcb2blender
+from dataclasses import dataclass, field
 import json
 import os
+import re
 import struct
-from pcbnew import B_Paste, F_Paste
+from typing import List
+from pcbnew import B_Paste, F_Paste, PCB_TEXT_T, ToMM
 from .gs import GS
-from .misc import MOD_THROUGH_HOLE, MOD_SMD, UI_VIRTUAL
+from .misc import (MOD_THROUGH_HOLE, MOD_SMD, UI_VIRTUAL, W_UNKPCB3DTXT, W_NOPCB3DBR, W_NOPCB3DTL, W_BADPCB3DTXT,
+                   W_UNKPCB3DNAME, W_BADPCB3DSTK)
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+
+
+@dataclass
+class StackedBoard:
+    """ Name and position of a stacked board """
+    name: str
+    offset: List[float]
+
+
+@dataclass
+class BoardDef:
+    """ A sub-PCBs, its bounds and stacked boards """
+    name: str
+    bounds: List[float]
+    stacked_boards: List[StackedBoard] = field(default_factory=list)
+
+
+def sanitized(name):
+    """ Replace character that aren't alphabetic by _ """
+    return re.sub(r"[\W]+", "_", name)
 
 
 class PCB2Blender_ToolsOptions(VariantOptions):
@@ -39,6 +63,14 @@ class PCB2Blender_ToolsOptions(VariantOptions):
             """ Name for the stackup file """
             self.stackup_dir = '.'
             """ Directory for the stackup file """
+            self.sub_boards_create = True
+            """ Extract sub-PCBs and their Z axis position """
+            self.sub_boards_dir = 'boards'
+            """ Directory for the boards definitions """
+            self.sub_boards_bounds_file = 'bounds'
+            """ File name for the sub-PCBs bounds """
+            self.sub_boards_stacked_prefix = 'stacked_'
+            """ Prefix used for the stack files """
         super().__init__()
         self._expand_id = 'pcb2blender'
         self._expand_ext = 'pcb3d'
@@ -115,8 +147,98 @@ class PCB2Blender_ToolsOptions(VariantOptions):
                     parsed_layer['thickness'] = la.thickness/1000
                 layers_parsed.append(parsed_layer)
             board_info['stackup'] = layers_parsed
+        data = json.dumps(board_info, indent=3)
+        logger.debug('Stackup: '+str(data))
         with open(fname, 'wt') as f:
-            json.dump(board_info, f, indent=3)
+            f.write(data)
+
+    def get_boarddefs(self):
+        """ Extract the sub-PCBs and their positions using texts.
+            This is the original mechanism and the code is from the plug-in. """
+        boarddefs = {}
+        tls = {}   # Top Left coordinates
+        brs = {}   # Bottom right coordinates
+        stacks = {}  # PCB stack relations
+        # Collect the information from the texts
+        for drawing in GS.board.GetDrawings():
+            if drawing.Type() != PCB_TEXT_T:
+                continue
+            text = drawing.GetText()
+            # Only process text starting with PCB3D_
+            if not text.startswith("PCB3D_"):
+                continue
+            # Store the position of the text according to the declared type
+            pos = tuple(map(ToMM, drawing.GetPosition()))
+            if text.startswith("PCB3D_TL_"):
+                tls.setdefault(text[9:], pos)
+            elif text.startswith("PCB3D_BR_"):
+                brs.setdefault(text[9:], pos)
+            elif text.startswith("PCB3D_STACK_"):
+                stacks.setdefault(text, pos)
+            else:
+                logger.warning(W_UNKPCB3DTXT+'Unknown PCB3D mark: `{}`'.format(text))
+        # Separate the PCBs
+        for name in tls.copy():
+            # Look for the Bottom Right corner
+            if name in brs:
+                # Remove both
+                tl_pos = tls.pop(name)
+                br_pos = brs.pop(name)
+                # Add a definition with the bbox (x, y, w, h)
+                boarddef = BoardDef(sanitized(name), (tl_pos[0], tl_pos[1], br_pos[0]-tl_pos[0], br_pos[1]-tl_pos[1]))
+                boarddefs[boarddef.name] = boarddef
+            else:
+                logger.warning(W_NOPCB3DBR+'PCB3D_TL_{} without corresponding PCB3D_BR_{}'.format(name, name))
+        for name in brs.keys():
+            logger.warning(W_NOPCB3DTL+'PCB3D_BR_{} without corresponding PCB3D_TL_{}'.format(name, name))
+        # Solve the stack (relative positions)
+        for stack_str in stacks.copy():
+            # Extract the parameters
+            try:
+                other, onto, target, z_offset = stack_str[12:].split("_")
+                z_offset = float(z_offset)
+            except ValueError:
+                onto = ''
+            if onto != "ONTO":
+                logger.warning(W_BADPCB3DTXT+'Malformed stack marker `{}` must be PCB3D_STACK_other_ONTO_target_zoffset'.
+                               format(stack_str))
+                continue
+            # Check the names and sanity check
+            other_name = sanitized(other)    # The name of the current board
+            if other_name not in boarddefs and other_name != 'FPNL':
+                logger.warning(W_UNKPCB3DNAME+'Unknown `{}` in `{}` valid names are: {}'.
+                               format(other_name, stack_str, list(boarddefs)))
+                continue
+            target_name = sanitized(target)  # The name of the board below
+            if target_name not in boarddefs:
+                logger.warning(W_UNKPCB3DNAME+'Unknown `{}` in `{}` valid names are: {}'.
+                               format(target_name, stack_str, list(boarddefs)))
+                continue
+            if target_name == other_name:
+                logger.warning(W_BADPCB3DSTK+"Can't stack a board onto itself ({})".format(stack_str))
+                continue
+            # Add this board to the target
+            stack_pos = stacks.pop(stack_str)
+            target_pos = boarddefs[target_name].bounds[:2]
+            stacked = StackedBoard(other_name, (stack_pos[0]-target_pos[0], stack_pos[1]-target_pos[1], z_offset))
+            boarddefs[target_name].stacked_boards.append(stacked)
+        return boarddefs
+
+    def do_sub_boards(self, dir_name):
+        if not self.sub_boards_create:
+            return
+        dir_name = os.path.join(dir_name, self.sub_boards_dir)
+        os.makedirs(dir_name, exist_ok=True)
+        boarddefs = self.get_boarddefs()
+        logger.debug('Collected board definitions: '+str(boarddefs))
+        for boarddef in boarddefs.values():
+            subdir = os.path.join(dir_name, boarddef.name)
+            os.makedirs(subdir, exist_ok=True)
+            with open(os.path.join(subdir, self.sub_boards_bounds_file), 'wb') as f:
+                f.write(struct.pack("!ffff", *boarddef.bounds))
+            for stacked in boarddef.stacked_boards:
+                with open(os.path.join(subdir, self.sub_boards_stacked_prefix+stacked.name), 'wb') as f:
+                    f.write(struct.pack("!fff", *stacked.offset))
 
     def run(self, output):
         super().run(output)
@@ -125,6 +247,7 @@ class PCB2Blender_ToolsOptions(VariantOptions):
         self.do_board_bounds(dir_name)
         self.do_pads_info(dir_name)
         self.do_stackup(dir_name)
+        self.do_sub_boards(dir_name)
         self.unfilter_pcb_components(do_3D=True)
 
     def get_targets(self, out_dir):
@@ -138,6 +261,16 @@ class PCB2Blender_ToolsOptions(VariantOptions):
                 reference = footprint.GetReference()
                 for j in range(len(footprint.Pads())):
                     files.append(os.path.join(dir_name, "{}_{}_{}_{}".format(value, reference, i, j)))
+        if self.stackup_create and (GS.global_pcb_finish or GS.stackup):
+            files.append(os.path.join(out_dir, self.stackup_dir, self.stackup_file))
+        if self.sub_boards_create:
+            dir_name = os.path.join(out_dir, self.sub_boards_dir)
+            boarddefs = self.get_boarddefs()
+            for boarddef in boarddefs.values():
+                subdir = os.path.join(dir_name, boarddef.name)
+                files.append(os.path.join(subdir, self.sub_boards_bounds_file))
+                for stacked in boarddef.stacked_boards:
+                    files.append(os.path.join(subdir, self.sub_boards_stacked_prefix+stacked.name))
         return files
 
 
