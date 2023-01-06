@@ -97,7 +97,7 @@ For example, it's common that you might want for each board rev:
 * Gerbers, drills and drill maps for a fab in their favourite format
 * Fab docs for the assembler, including the BoM (Bill of Materials), costs spreadsheet and board view
 * Pick and place files
-* PCB 3D model in STEP and VRML format
+* PCB 3D model in STEP, VRML and PCB3D formats
 * PCB 3D render in PNG format
 * Compare PCB/SCHs
 * Panelization
@@ -1371,7 +1371,7 @@ The available values for *type* are:
 - 3D model:
     - `step` *Standard for the Exchange of Product Data* for the PCB
     - `vrml` *Virtual Reality Modeling Language* for the PCB
-    - `render_3d` PCB render, from the KiCad's 3D Viewer (broken in KiCad 6.0.0)
+    - `render_3d` PCB render, from the KiCad's 3D Viewer
 - Web pages:
     - `populate` To create step-by-step assembly instructions.
     - `kikit_present` To create a project presentation web page.
@@ -3104,6 +3104,47 @@ Notes:
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* PCB2Blender Tools
+  * Type: `pcb2blender_tools`
+  * Description: A bunch of tools used to generate PCB3D files used to export PCBs to Blender.
+                 Blender is the most important free software 3D render package.
+                 The PCB3D file format is used by the PCB2Blender project (https://github.com/30350n/pcb2blender)
+                 to import KiCad PCBs in Blender.
+                 You need to install a Blender plug-in to load PCB3D files.
+                 The tools in this output are used by internal templates used to generate PCB3D files.
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
+    - **`options`**: [dict] Options for the `pcb2blender_tools` output.
+      * Valid keys:
+        - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=pcb2blender, %x=pcb3d). Affected by global options.
+        - `board_bounds_create`: [boolean=true] Create the file that informs the size of the used PCB area.
+                                 This is the bounding box reported by KiCad for the PCB edge with 1 mm of margin.
+        - `board_bounds_dir`: [string='layers'] Sub-directory where the bounds file is stored.
+        - `board_bounds_file`: [string='bounds'] Name of the bounds file.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `pads_info_create`: [boolean=true] Create the files containing the PCB pads information.
+        - `pads_info_dir`: [string='pads'] Sub-directory where the pads info files are stored.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * PCB Print
   * Type: `pcb_print`
   * Description: Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
@@ -4747,6 +4788,12 @@ They include support for:
   - _P-Ban_gerbers: Gerbers. You need to define the layers for more than 8.
   - _P-Ban_drill: Drill files
   - _P-Ban: _P-Ban_gerbers+_P-Ban_drill
+- [PCB2Blender_2_1](https://github.com/30350n/pcb2blender)
+  - _PCB2Blender_layers_2_1: The layers in SVG format. Disabled by default.
+  - _PCB2Blender_vrml_2_1: The VRML for the board. Disabled by default.
+  - _PCB2Blender_tools_2_1: Pads and bounds information. Disabled by default.
+  - _PCB2Blender_2_1: The PCB3D file. Is enabled and creates the other files.
+  - _PCB2Blender_elements_2_1: _PCB2Blender_tools_2_1+_PCB2Blender_layers_2_1+_PCB2Blender_vrml_2_1
 - [PCBWay](https://www.pcbway.com): contain fabrication outputs compatible with PCBWay
   - _PCBWay_gerbers: Gerbers
   - _PCBWay_drill: Drill files

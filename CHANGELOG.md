@@ -23,7 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - FusionPCB: gerber, drill and compress
   - Elecrow: gerber, drill and compress
   - JLCPCB: gerber, drill, position, BoM and compress
+  - MacroFab_XYRS: XYRS position file compatible with MacroFab
   - P-Ban: gerber, drill and compress
+  - PCB2Blender_2_1: generates a pcb2blender 2.1 file to import on Blender
   - PCBWay: gerber, drill and compress
 - Plot related outputs and PCB_Print:
   - Added support for the KiCad 6 "sketch_pads_on_fab_layers" option. (#356)
