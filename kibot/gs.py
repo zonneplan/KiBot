@@ -391,7 +391,8 @@ class GS(object):
     def get_pcb_and_pro_names(name):
         if GS.ki5:
             return [name, name.replace('kicad_pcb', 'pro')]
-        return [name, name.replace('kicad_pcb', 'kicad_pro'), name.replace('kicad_pcb', 'kicad_prl')]
+        return [name, name.replace('kicad_pcb', 'kicad_pro'), name.replace('kicad_pcb', 'kicad_prl'),
+                name.replace('kicad_pcb', 'kicad_pro-bak')]
 
     @staticmethod
     def remove_pcb_and_pro(name):
