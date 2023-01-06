@@ -3131,6 +3131,9 @@ Notes:
         - `pads_info_dir`: [string='pads'] Sub-directory where the pads info files are stored.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `stackup_create`: [boolean=false] Create a JSON file containing the board stackup.
+        - `stackup_dir`: [string='.'] Directory for the stackup file.
+        - `stackup_file`: [string='board.yaml'] Name for the stackup file.
         - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.

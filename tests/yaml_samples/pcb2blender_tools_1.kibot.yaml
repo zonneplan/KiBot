@@ -7,3 +7,5 @@ outputs:
     comment: "PCB to Blender tools test"
     dir: pcb2blender
     type: pcb2blender_tools
+    options:
+      stackup_create: true

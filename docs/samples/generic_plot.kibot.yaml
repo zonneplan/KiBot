@@ -1863,6 +1863,12 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [boolean=false] Create a JSON file containing the board stackup
+      stackup_create: false
+      # [string='.'] Directory for the stackup file
+      stackup_dir: '.'
+      # [string='board.yaml'] Name for the stackup file
+      stackup_file: 'board.yaml'
       # [string=''] Board variant to apply
       variant: ''
   # PCB Print:

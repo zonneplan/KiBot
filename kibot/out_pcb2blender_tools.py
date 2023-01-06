@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Some code is adapted from: https://github.com/30350n/pcb2blender
+import json
 import os
 import struct
 from pcbnew import B_Paste, F_Paste
@@ -32,6 +33,12 @@ class PCB2Blender_ToolsOptions(VariantOptions):
             """ Create the files containing the PCB pads information """
             self.pads_info_dir = 'pads'
             """ Sub-directory where the pads info files are stored """
+            self.stackup_create = False
+            """ Create a JSON file containing the board stackup """
+            self.stackup_file = 'board.yaml'
+            """ Name for the stackup file """
+            self.stackup_dir = '.'
+            """ Directory for the stackup file """
         super().__init__()
         self._expand_id = 'pcb2blender'
         self._expand_ext = 'pcb3d'
@@ -88,12 +95,36 @@ class PCB2Blender_ToolsOptions(VariantOptions):
                                         pad.GetDrillShape(),
                                         *map(GS.to_mm, pad.GetDrillSize())))
 
+    def do_stackup(self, dir_name):
+        if not self.stackup_create or (not GS.global_pcb_finish and not GS.stackup):
+            return
+        dir_name = os.path.join(dir_name, self.stackup_dir)
+        os.makedirs(dir_name, exist_ok=True)
+        fname = os.path.join(dir_name, self.stackup_file)
+        # Create the board_info
+        board_info = {}
+        if GS.global_pcb_finish:
+            board_info['copper_finish'] = GS.global_pcb_finish
+        if GS.stackup:
+            layers_parsed = []
+            for la in GS.stackup:
+                parsed_layer = {'name': la.name, 'type': la.type}
+                if la.color is not None:
+                    parsed_layer['color'] = la.color
+                if la.thickness is not None:
+                    parsed_layer['thickness'] = la.thickness/1000
+                layers_parsed.append(parsed_layer)
+            board_info['stackup'] = layers_parsed
+        with open(fname, 'wt') as f:
+            json.dump(board_info, f, indent=3)
+
     def run(self, output):
         super().run(output)
         dir_name = os.path.dirname(output)
         self.filter_pcb_components(do_3D=True)
         self.do_board_bounds(dir_name)
         self.do_pads_info(dir_name)
+        self.do_stackup(dir_name)
         self.unfilter_pcb_components(do_3D=True)
 
     def get_targets(self, out_dir):
