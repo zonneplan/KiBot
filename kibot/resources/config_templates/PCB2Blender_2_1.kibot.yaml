@@ -27,6 +27,7 @@ outputs:
       margin: 1
       limit_viewbox: true
       svg_precision: 6
+      drill_marks: none
     layers: ["F.Cu", "B.Cu", "F.Paste", "B.Paste", "F.SilkS", "B.SilkS", "F.Mask", "B.Mask"]
 
   - name: _PCB2Blender_vrml_2_1
