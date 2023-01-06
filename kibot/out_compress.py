@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2022 Salvador E. Tropea
-# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2023 Salvador E. Tropea
+# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -41,9 +41,13 @@ class FilesList(Optionable):
             self.source = '*'
             """ *File names to add, wildcards allowed. Use ** for recursive match.
                 By default this pattern is applied to the output dir specified with `-d` command line option.
-                See the `from_cwd` option """
+                See the `from_cwd` and `from_output_dir` options """
             self.from_cwd = False
             """ Use the current working directory instead of the dir specified by `-d` """
+            self.from_output_dir = False
+            """ Use the current the directory specified by the output instead of the dir specified by `-d`.
+                Note that it only applies when using `from_output` and no `dest` is specified.
+                It has more prescedence than `from_cwd` """
             self.from_output = ''
             """ *Collect files from the selected output.
                 When used the `source` option is ignored """
@@ -146,19 +150,19 @@ class CompressOptions(BaseOptions):
         for f in self.files:
             # Get the list of candidates
             files_list = None
+            output_out_dir = None
             if f.from_output:
                 logger.debugl(2, '- From output `{}`'.format(f.from_output))
                 out = RegOutput.get_output(f.from_output)
-                if out is not None:
-                    config_output(out)
-                    out_dir = get_output_dir(out.dir, out, dry=True)
-                    files_list = out.get_targets(out_dir)
-                    logger.debugl(2, '- List of files: {}'.format(files_list))
-                    if out_dir not in dirs_list:
-                        dirs_list.append(out_dir)
-                else:
+                if out is None:
                     logger.error('Unknown output `{}` selected in {}'.format(f.from_output, self._parent))
                     exit(WRONG_ARGUMENTS)
+                config_output(out)
+                output_out_dir = out_dir = get_output_dir(out.dir, out, dry=True)
+                files_list = out.get_targets(out_dir)
+                logger.debugl(2, '- List of files: {}'.format(files_list))
+                if out_dir not in dirs_list:
+                    dirs_list.append(out_dir)
                 if not no_out_run:
                     extra_files = []
                     for file in files_list:
@@ -187,6 +191,10 @@ class CompressOptions(BaseOptions):
                 if GS.debug_level > 1:
                     files_list = list(files_list)
                     logger.debug('- Pattern {} list of files: {}'.format(source, files_list))
+            # Compute the reference dir when no f.dest
+            out_dir = out_dir_cwd if f.from_cwd else out_dir_default
+            if f.from_output_dir:
+                out_dir = output_out_dir
             # Filter and adapt them
             for fname in filter(re.compile(f.filter).match, files_list):
                 fname_real = os.path.realpath(fname) if self.follow_links else os.path.abspath(fname)
@@ -198,7 +206,6 @@ class CompressOptions(BaseOptions):
                 if f.dest:
                     dest = os.path.join(f.dest, os.path.basename(fname))
                 else:
-                    out_dir = out_dir_cwd if f.from_cwd else out_dir_default
                     dest = os.path.relpath(dest, out_dir)
                 files[fname_real] = dest
         return files, dirs_list

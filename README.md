@@ -1802,10 +1802,13 @@ Notes:
                                  When used the `source` option is ignored.
             - **`source`**: [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
                             By default this pattern is applied to the output dir specified with `-d` command line option.
-                            See the `from_cwd` option.
+                            See the `from_cwd` and `from_output_dir` options.
             - `dest`: [string=''] Destination directory inside the archive, empty means the same of the file.
             - `filter`: [string='.*'] A regular expression that source files must match.
             - `from_cwd`: [boolean=false] Use the current working directory instead of the dir specified by `-d`.
+            - `from_output_dir`: [boolean=false] Use the current the directory specified by the output instead of the dir specified by `-d`.
+                                 Note that it only applies when using `from_output` and no `dest` is specified.
+                                 It has more prescedence than `from_cwd`.
         - **`format`**: [string='ZIP'] [ZIP,TAR,RAR] Output file format.
         - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
         - `compression`: [string='auto'] [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one.

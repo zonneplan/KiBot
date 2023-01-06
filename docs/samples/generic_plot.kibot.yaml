@@ -449,9 +449,13 @@ outputs:
           # [string=''] Collect files from the selected output.
           # When used the `source` option is ignored
           from_output: ''
+          # [boolean=false] Use the current the directory specified by the output instead of the dir specified by `-d`.
+          # Note that it only applies when using `from_output` and no `dest` is specified.
+          # It has more prescedence than `from_cwd`
+          from_output_dir: false
           # [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
           # By default this pattern is applied to the output dir specified with `-d` command line option.
-          # See the `from_cwd` option
+          # See the `from_cwd` and `from_output_dir` options
           source: '*'
       # [boolean=true] Store the file pointed by symlinks, not the symlink
       follow_links: true

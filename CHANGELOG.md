@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `_only_smd` used to get only SMD parts
   - `_only_tht` used to get only THT parts
   - `_only_virtual` used to get only virtual parts
+- Compress:
+  - Option to use the output's `dir` as reference (`from_output_dir`)
+- iBoM:
+  - `hide_excluded` to hide excluded *.Fab drawings.
 - Internal templates:
   - FusionPCB: gerber, drill and compress
   - Elecrow: gerber, drill and compress
@@ -25,8 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added support for the KiCad 6 "sketch_pads_on_fab_layers" option. (#356)
 - Variants:
   - Support for multi-boards as defined by KiKit
-- iBoM:
-  - `hide_excluded` to hide excluded *.Fab drawings.
 - SVG:
   - Options to limit the view box to the used area.
 ### Fixed
