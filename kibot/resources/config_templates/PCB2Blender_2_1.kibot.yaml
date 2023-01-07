@@ -28,7 +28,17 @@ outputs:
       limit_viewbox: true
       svg_precision: 6
       drill_marks: none
-    layers: ["F.Cu", "B.Cu", "F.Paste", "B.Paste", "F.SilkS", "B.SilkS", "F.Mask", "B.Mask"]
+    layers:
+      - F.Cu
+      - B.Cu
+      - F.Paste
+      - B.Paste
+      - layer: F.SilkS
+        suffix: F_SilkS
+      - layer: B.SilkS
+        suffix: B_SilkS
+      - F.Mask
+      - B.Mask
 
   - name: _PCB2Blender_vrml_2_1
     comment: VRML model for PCB3D 2.1
