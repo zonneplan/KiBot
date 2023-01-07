@@ -271,6 +271,8 @@ class PCB2Blender_ToolsOptions(VariantOptions):
                 files.append(os.path.join(subdir, self.sub_boards_bounds_file))
                 for stacked in boarddef.stacked_boards:
                     files.append(os.path.join(subdir, self.sub_boards_stacked_prefix+stacked.name))
+            else:
+                files.append(dir_name)
         return files
 
 
