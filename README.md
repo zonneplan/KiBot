@@ -4801,6 +4801,11 @@ They include support for:
   - _PCB2Blender_tools_2_1: Pads and bounds information. Disabled by default.
   - _PCB2Blender_2_1: The PCB3D file. Is enabled and creates the other files.
   - _PCB2Blender_elements_2_1: _PCB2Blender_tools_2_1+_PCB2Blender_layers_2_1+_PCB2Blender_vrml_2_1
+- [PCB2Blender_2_1_haschtl](https://github.com/haschtl/pcb2blender)
+  - Imports `PCB2Blender_2_1` and disables `_PCB2Blender_2_1`
+  - _PCB2Blender_tools_2_1_haschtl: Pads, bounds and stack-up information. Disabled by default.
+  - _PCB2Blender_2_1_haschtl: The PCB3D file. Is enabled and creates the other files.
+  - _PCB2Blender_elements_2_1_haschtl: _PCB2Blender_tools_2_1_haschtl+_PCB2Blender_layers_2_1+_PCB2Blender_vrml_2_1
 - [PCBWay](https://www.pcbway.com): contain fabrication outputs compatible with PCBWay
   - _PCBWay_gerbers: Gerbers
   - _PCBWay_drill: Drill files

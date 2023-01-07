@@ -1,0 +1,7 @@
+# Test for the PCB3D file generation
+# Haschtl fork flavor
+kibot:
+  version: 1
+
+import:
+  - file: PCB2Blender_2_1_haschtl
