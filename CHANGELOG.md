@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - MacroFab_XYRS: XYRS position file compatible with MacroFab
   - P-Ban: gerber, drill and compress
   - PCB2Blender_2_1: generates a pcb2blender 2.1 file to import on Blender
+    (See #349)
+  - PCB2Blender_2_1_haschtl: PCB2Blender_2_1 variant for @Haschtl fork.
   - PCBWay: gerber, drill and compress
 - Plot related outputs and PCB_Print:
   - Added support for the KiCad 6 "sketch_pads_on_fab_layers" option. (#356)
