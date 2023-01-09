@@ -386,3 +386,31 @@ deprecated in 1.20 and changed to `numpy.bool_`.
 
 So I ended forcing 1.23.1
 
+
+## Using Blender from the docker image
+
+To pretend this is the system level Blender I have:
+
+```shell
+#!/bin/bash
+export USER_ID=$(id -u)
+export GROUP_ID=$(id -g)
+docker run -it --rm \
+  --user $USER_ID:$GROUP_ID \
+  --env DISPLAY=$DISPLAY \
+  --env NO_AT_BRIDGE=1 \
+  --workdir=$(pwd) \
+  --volume="/tmp/.X11-unix:/tmp/.X11-unix" \
+  --volume="/etc/group:/etc/group:ro" \
+  --volume="/etc/timezone:/etc/timezone:ro" \
+  --volume="/home/$USER:/home/$USER:rw" \
+  --volume="/etc/passwd:/etc/passwd:ro" \
+  --volume="/etc/shadow:/etc/shadow:ro" \
+  --volume="/home/$USER:/home/$USER:rw" \
+  --device /dev/dri:/dev/dri \
+  setsoft/kicad_auto_test_blender:latest blender "$@"
+```
+
+Named *blender* in my path (~/bin/blender).
+In this way running `blender` gives me Blender 3.4.1, and not 2.83.5 (from the
+system).
