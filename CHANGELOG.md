@@ -46,6 +46,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems on KiCad 5 (no 3rd party dir) (#357)
 - BoM:
   - pre_transform filers can't be logic filters
+- DOCs
+  - annotate_pcb pre-flight missing options (#360)
+  - annotate_pcb pre-flight wrong example (#360)
 
 ## [1.5.1] - 2022-12-16
 ### Fixed

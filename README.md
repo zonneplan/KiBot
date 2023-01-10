@@ -400,6 +400,22 @@ This section is used to specify tasks that will be executed before generating an
         This preflight modifies the PCB and schematic, use it only in revision control environments.
         Used to assign references according to footprint coordinates.
         The project must be fully annotated first.
+  * Valid keys:
+    - `bottom_main_ascending`: [boolean=true] Sort the main axis in ascending order for the bottom layer.
+                               For X this is left to right and for Y top to bottom.
+    - `bottom_main_axis`: [string='y'] [x,y] Use this axis as main sorting criteria for the bottom layer.
+    - `bottom_secondary_ascending`: [boolean=true] Sort the secondary axis in ascending order for the bottom layer.
+                                    For X this is left to right and for Y top to bottom.
+    - `bottom_start`: [number=101] First number for references at the bottom layer.
+                      Use -1 to continue from the last top reference.
+    - `grid`: [number=1.0] Grid size in millimeters.
+    - `top_main_ascending`: [boolean=true] Sort the main axis in ascending order for the top layer.
+                            For X this is left to right and for Y top to bottom.
+    - `top_main_axis`: [string='y'] [x,y] Use this axis as main sorting criteria for the top layer.
+    - `top_secondary_ascending`: [boolean=true] Sort the secondary axis in ascending order for the top layer.
+                                 For X this is left to right and for Y top to bottom.
+    - `top_start`: [number=1] First number for references at the top layer.
+    - `use_position_of`: [string='footprint'] [footprint,reference] Which coordinate is used.
 - `annotate_power`: [boolean=false] Annotates all power components.
         This preflight modifies the schematic, use it only in revision control environments.
         Used to solve ERC problems when using filters that remove power reference numbers.
