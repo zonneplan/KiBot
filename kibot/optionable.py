@@ -130,6 +130,8 @@ class Optionable(object):
     def _perform_config_mapping(self):
         """ Map the options to class attributes """
         attrs = self.get_attrs_for()
+        if not isinstance(self._tree, dict):
+            raise KiPlotConfigurationError('Found {} instead of dict'.format(type(self._tree)))
         for k, v in self._tree.items():
             # Map known attributes and avoid mapping private ones
             if (k[0] == '_') or (k not in attrs):
