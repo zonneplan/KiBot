@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - General:
   - Support for `groups` of `outputs`
   - Internal templates import
+  - Better support for wrong pre-flight options (#360)
 - New output:
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
 - New internal filters:
