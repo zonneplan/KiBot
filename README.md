@@ -3597,9 +3597,11 @@ Notes:
       * Valid keys:
         - **`frame`**: [boolean=true] Include the frame and title block.
         - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
+        - `background_color`: [boolean=false] Use the background color from the `color_theme` (KiCad 6).
+        - `color_theme`: [string='_builtin_default'] Color theme used, this must exist in the KiCad config (KiCad 6).
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `monochrome`: [boolean=false] Generate a monochromatic PDF.
+        - `monochrome`: [boolean=false] Generate a monochromatic output.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
@@ -4328,9 +4330,11 @@ Notes:
       * Valid keys:
         - **`frame`**: [boolean=true] Include the frame and title block.
         - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
+        - `background_color`: [boolean=false] Use the background color from the `color_theme` (KiCad 6).
+        - `color_theme`: [string='_builtin_default'] Color theme used, this must exist in the KiCad config (KiCad 6).
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
-        - `monochrome`: [boolean=false] Generate a monochromatic PDF.
+        - `monochrome`: [boolean=false] Generate a monochromatic output.
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.

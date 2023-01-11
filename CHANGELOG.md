@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `_only_smd` used to get only SMD parts
   - `_only_tht` used to get only THT parts
   - `_only_virtual` used to get only virtual parts
+- Variants:
+  - Support for multi-boards as defined by KiKit
 - Compress:
   - Option to use the output's `dir` as reference (`from_output_dir`)
 - iBoM:
@@ -32,8 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - PCBWay: gerber, drill and compress
 - Plot related outputs and PCB_Print:
   - Added support for the KiCad 6 "sketch_pads_on_fab_layers" option. (#356)
-- Variants:
-  - Support for multi-boards as defined by KiKit
+- *SCH_Print:
+  - Added options to select the color theme and enable background color. (#362)
 - SVG:
   - Options to limit the view box to the used area.
 ### Fixed

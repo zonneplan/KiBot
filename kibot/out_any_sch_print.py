@@ -33,11 +33,15 @@ class Any_SCH_PrintOptions(VariantOptions):
     def __init__(self):
         with document:
             self.monochrome = False
-            """ Generate a monochromatic PDF """
+            """ Generate a monochromatic output """
             self.frame = True
             """ *Include the frame and title block """
             self.all_pages = True
             """ Generate with all hierarchical sheets """
+            self.color_theme = ''
+            """ Color theme used, this must exist in the KiCad config (KiCad 6) """
+            self.background_color = False
+            """ Use the background color from the `color_theme` (KiCad 6) """
         super().__init__()
         self.add_to_doc('variant', "Not fitted components are crossed")
         self._expand_id = 'schematic'
@@ -66,5 +70,9 @@ class Any_SCH_PrintOptions(VariantOptions):
             cmd.append('--no_frame')
         if self.all_pages:
             cmd.append('--all_pages')
+        if self.color_theme:
+            cmd.extend(['--color_theme', self.color_theme])
+        if self.background_color:
+            cmd.append('--background_color')
         cmd.extend([sch_file, os.path.dirname(name)])
         self.exec_with_retry(self.add_extra_options(cmd), self._exit_error)
