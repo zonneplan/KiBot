@@ -140,8 +140,8 @@ Notes:
 [**Requests**](https://pypi.org/project/Requests/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/Requests/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/Requests/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-requests)
 - Mandatory
 
-[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v2.1.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
-- Mandatory for: `gencad`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`, `vrml`
+[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v2.1.1 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+- Mandatory for: `dxf_sch_print`, `gencad`, `hpgl_sch_print`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `ps_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`, `vrml`
 - Optional to:
   - Compare schematics for `diff` (v2.0.0)
   - Show KiAuto installation information for `info` (v2.0.0)
@@ -1374,6 +1374,9 @@ The available values for *type* are:
 - Documentation
     - `pdf_sch_print` schematic in PDF format
     - `svg_sch_print` schematic in SVG format
+    - `ps_sch_print` schematic in PS format
+    - `dxf_sch_print` schematic in DXF format
+    - `hpgl_sch_print` schematic in HPGL format
     - `pdf_pcb_print` PDF file containing one or more layer and the page frame
     - `svg_pcb_print` SVG file containing one or more layer and the page frame
     - `pcb_print` PDF/SVG/PNG/EPS/PS, similar to `pdf_pcb_print` and `svg_pcb_print`, with more flexibility
@@ -2082,6 +2085,43 @@ Notes:
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
+* DXF Schematic Print (Drawing Exchange Format)
+  * Type: `dxf_sch_print`
+  * Description: Exports the schematic to a format commonly used for CAD software.
+                 This output is what you get from the 'File/Plot' menu in eeschema.
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
+    - **`options`**: [dict] Options for the `dxf_sch_print` output.
+      * Valid keys:
+        - **`frame`**: [boolean=true] Include the frame and title block.
+        - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
+        - `background_color`: [boolean=false] Use the background color from the `color_theme` (KiCad 6).
+        - `color_theme`: [string=''] Color theme used, this must exist in the KiCad config (KiCad 6).
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `monochrome`: [boolean=false] Generate a monochromatic output.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output DXF (%i=schematic, %x=dxf). Affected by global options.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `variant`: [string=''] Board variant to apply.
+                     Not fitted components are crossed.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
 * Excellon drill format
   * Type: `excellon`
   * Description: This is the main format for the drilling machine.
@@ -2347,6 +2387,45 @@ Notes:
         - `tent_vias`: [boolean=true] Cover the vias.
         - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
         - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
+* HPGL Schematic Print (Hewlett & Packard Graphics Language)
+  * Type: `hpgl_sch_print`
+  * Description: Exports the schematic to the most common plotter format.
+                 This output is what you get from the 'File/Plot' menu in eeschema.
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
+    - **`options`**: [dict] Options for the `hpgl_sch_print` output.
+      * Valid keys:
+        - **`frame`**: [boolean=true] Include the frame and title block.
+        - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
+        - `background_color`: [boolean=false] Use the background color from the `color_theme` (KiCad 6).
+        - `color_theme`: [string=''] Color theme used, this must exist in the KiCad config (KiCad 6).
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `monochrome`: [boolean=false] Generate a monochromatic output.
+        - `origin`: [string='bottom_left'] [bottom_left,centered,page_fit,content_fit] Origin and scale.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output HPGL (%i=schematic, %x=plt). Affected by global options.
+        - `pen_size`: [number=0.4826] Pen size (diameter) [mm].
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `variant`: [string=''] Board variant to apply.
+                     Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                   The categories are currently used for `navigate_results`.
@@ -3584,9 +3663,9 @@ Notes:
 
 * PDF Schematic Print (Portable Document Format)
   * Type: `pdf_sch_print`
-  * Description: Exports the PCB to the most common exchange format. Suitable for printing.
+  * Description: Exports the schematic to the most common exchange format. Suitable for printing.
                  This is the main format to document your schematic.
-                 This output is what you get from the 'File/Print' menu in eeschema.
+                 This output is what you get from the 'File/Plot' menu in eeschema.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -3598,7 +3677,7 @@ Notes:
         - **`frame`**: [boolean=true] Include the frame and title block.
         - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
         - `background_color`: [boolean=false] Use the background color from the `color_theme` (KiCad 6).
-        - `color_theme`: [string='_builtin_default'] Color theme used, this must exist in the KiCad config (KiCad 6).
+        - `color_theme`: [string=''] Color theme used, this must exist in the KiCad config (KiCad 6).
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `monochrome`: [boolean=false] Generate a monochromatic output.
@@ -3807,6 +3886,43 @@ Notes:
         - `variant`: [string=''] Board variant to apply.
         - `width_adjust`: [number=0] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
                           Only used to plot pads and tracks.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
+
+* PS Schematic Print (Postscript)
+  * Type: `ps_sch_print`
+  * Description: Exports the schematic in postscript. Suitable for printing.
+                 This output is what you get from the 'File/Plot' menu in eeschema.
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
+    - **`options`**: [dict] Options for the `ps_sch_print` output.
+      * Valid keys:
+        - **`frame`**: [boolean=true] Include the frame and title block.
+        - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
+        - `background_color`: [boolean=false] Use the background color from the `color_theme` (KiCad 6).
+        - `color_theme`: [string=''] Color theme used, this must exist in the KiCad config (KiCad 6).
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `monochrome`: [boolean=false] Generate a monochromatic output.
+        - `output`: [string='%f-%i%I%v.%x'] Filename for the output postscript (%i=schematic, %x=ps). Affected by global options.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `variant`: [string=''] Board variant to apply.
+                     Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                   The categories are currently used for `navigate_results`.
@@ -4318,7 +4434,7 @@ Notes:
 
 * SVG Schematic Print
   * Type: `svg_sch_print`
-  * Description: Exports the PCB. Suitable for printing.
+  * Description: Exports the schematic in a vectorized graphics format.
                  This is a format to document your schematic.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
@@ -4331,7 +4447,7 @@ Notes:
         - **`frame`**: [boolean=true] Include the frame and title block.
         - `all_pages`: [boolean=true] Generate with all hierarchical sheets.
         - `background_color`: [boolean=false] Use the background color from the `color_theme` (KiCad 6).
-        - `color_theme`: [string='_builtin_default'] Color theme used, this must exist in the KiCad config (KiCad 6).
+        - `color_theme`: [string=''] Color theme used, this must exist in the KiCad config (KiCad 6).
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `monochrome`: [boolean=false] Generate a monochromatic output.

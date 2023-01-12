@@ -41,6 +41,9 @@ MISSING_WKS = 27
 MISSING_FILES = 28
 DIFF_TOO_BIG = 29
 NETLIST_DIFF = 30
+PS_SCH_PRINT = 31
+DXF_SCH_PRINT = 32
+HPGL_SCH_PRINT = 33
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',

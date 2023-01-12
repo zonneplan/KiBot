@@ -682,6 +682,34 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
+  # DXF Schematic Print (Drawing Exchange Format):
+  # This output is what you get from the 'File/Plot' menu in eeschema.
+  - name: 'dxf_sch_print_example'
+    comment: 'Exports the schematic to a format commonly used for CAD software.'
+    type: 'dxf_sch_print'
+    dir: 'Example/dxf_sch_print_dir'
+    options:
+      # [boolean=true] Generate with all hierarchical sheets
+      all_pages: true
+      # [boolean=false] Use the background color from the `color_theme` (KiCad 6)
+      background_color: false
+      # [string=''] Color theme used, this must exist in the KiCad config (KiCad 6)
+      color_theme: ''
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=true] Include the frame and title block
+      frame: true
+      # [boolean=false] Generate a monochromatic output
+      monochrome: false
+      # [string='%f-%i%I%v.%x'] Filename for the output DXF (%i=schematic, %x=dxf). Affected by global options
+      output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [string=''] Board variant to apply.
+      # Not fitted components are crossed
+      variant: ''
   # Excellon drill format:
   # You can create a map file for documentation purposes.
   # This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
@@ -950,6 +978,38 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
+  # HPGL Schematic Print (Hewlett & Packard Graphics Language):
+  # This output is what you get from the 'File/Plot' menu in eeschema.
+  - name: 'hpgl_sch_print_example'
+    comment: 'Exports the schematic to the most common plotter format.'
+    type: 'hpgl_sch_print'
+    dir: 'Example/hpgl_sch_print_dir'
+    options:
+      # [boolean=true] Generate with all hierarchical sheets
+      all_pages: true
+      # [boolean=false] Use the background color from the `color_theme` (KiCad 6)
+      background_color: false
+      # [string=''] Color theme used, this must exist in the KiCad config (KiCad 6)
+      color_theme: ''
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=true] Include the frame and title block
+      frame: true
+      # [boolean=false] Generate a monochromatic output
+      monochrome: false
+      # [string='bottom_left'] [bottom_left,centered,page_fit,content_fit] Origin and scale
+      origin: 'bottom_left'
+      # [string='%f-%i%I%v.%x'] Filename for the output HPGL (%i=schematic, %x=plt). Affected by global options
+      output: '%f-%i%I%v.%x'
+      # [number=0.4826] Pen size (diameter) [mm]
+      pen_size: 0.4826
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [string=''] Board variant to apply.
+      # Not fitted components are crossed
+      variant: ''
   # IBoM (Interactive HTML BoM):
   # For more information: https://github.com/INTI-CMNB/InteractiveHtmlBom
   # This output is what you get from the InteractiveHtmlBom plug-in (pcbnew).
@@ -2305,9 +2365,9 @@ outputs:
     layers: all
   # PDF Schematic Print (Portable Document Format):
   # This is the main format to document your schematic.
-  # This output is what you get from the 'File/Print' menu in eeschema.
+  # This output is what you get from the 'File/Plot' menu in eeschema.
   - name: 'pdf_sch_print_example'
-    comment: 'Exports the PCB to the most common exchange format. Suitable for printing.'
+    comment: 'Exports the schematic to the most common exchange format. Suitable for printing.'
     type: 'pdf_sch_print'
     dir: 'Example/pdf_sch_print_dir'
     options:
@@ -2315,8 +2375,8 @@ outputs:
       all_pages: true
       # [boolean=false] Use the background color from the `color_theme` (KiCad 6)
       background_color: false
-      # [string='_builtin_default'] Color theme used, this must exist in the KiCad config (KiCad 6)
-      color_theme: '_builtin_default'
+      # [string=''] Color theme used, this must exist in the KiCad config (KiCad 6)
+      color_theme: ''
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
@@ -2512,6 +2572,34 @@ outputs:
       # Only used to plot pads and tracks
       width_adjust: 0
     layers: all
+  # PS Schematic Print (Postscript):
+  # This output is what you get from the 'File/Plot' menu in eeschema.
+  - name: 'ps_sch_print_example'
+    comment: 'Exports the schematic in postscript. Suitable for printing.'
+    type: 'ps_sch_print'
+    dir: 'Example/ps_sch_print_dir'
+    options:
+      # [boolean=true] Generate with all hierarchical sheets
+      all_pages: true
+      # [boolean=false] Use the background color from the `color_theme` (KiCad 6)
+      background_color: false
+      # [string=''] Color theme used, this must exist in the KiCad config (KiCad 6)
+      color_theme: ''
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=true] Include the frame and title block
+      frame: true
+      # [boolean=false] Generate a monochromatic output
+      monochrome: false
+      # [string='%f-%i%I%v.%x'] Filename for the output postscript (%i=schematic, %x=ps). Affected by global options
+      output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [string=''] Board variant to apply.
+      # Not fitted components are crossed
+      variant: ''
   # QR_Lib:
   # This output creates a library containing a symbol and footprint for a QR code.
   # To refresh the generated symbols and footprints use the `update_qr` preflight.
@@ -2990,7 +3078,7 @@ outputs:
   # SVG Schematic Print:
   # This is a format to document your schematic.
   - name: 'svg_sch_print_example'
-    comment: 'Exports the PCB. Suitable for printing.'
+    comment: 'Exports the schematic in a vectorized graphics format.'
     type: 'svg_sch_print'
     dir: 'Example/svg_sch_print_dir'
     options:
@@ -2998,8 +3086,8 @@ outputs:
       all_pages: true
       # [boolean=false] Use the background color from the `color_theme` (KiCad 6)
       background_color: false
-      # [string='_builtin_default'] Color theme used, this must exist in the KiCad config (KiCad 6)
-      color_theme: '_builtin_default'
+      # [string=''] Color theme used, this must exist in the KiCad config (KiCad 6)
+      color_theme: ''
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'

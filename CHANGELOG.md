@@ -10,8 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Support for `groups` of `outputs`
   - Internal templates import
   - Better support for wrong pre-flight options (#360)
-- New output:
+- New outputs:
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
+  - `ps_sch_print`, `dxf_sch_print` and `hpgl_sch_print` variants of
+    `pdf_sch_print`
 - New internal filters:
   - `_only_smd` used to get only SMD parts
   - `_only_tht` used to get only THT parts

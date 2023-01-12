@@ -63,7 +63,8 @@ class Any_SCH_PrintOptions(VariantOptions):
             self._files_to_remove.append(sch_dir)
         else:
             sch_file = GS.sch_file
-        cmd = [command, 'export', '--file_format', self._expand_ext, '-o', name]
+        fmt = 'hpgl' if self._expand_ext == 'plt' else self._expand_ext
+        cmd = [command, 'export', '--file_format', fmt, '-o', name]
         if self.monochrome:
             cmd.append('--monochrome')
         if not self.frame:
@@ -74,5 +75,9 @@ class Any_SCH_PrintOptions(VariantOptions):
             cmd.extend(['--color_theme', self.color_theme])
         if self.background_color:
             cmd.append('--background_color')
+        if hasattr(self, '_origin'):
+            cmd.extend(['--hpgl_origin', str(self._origin)])
+        if hasattr(self, 'pen_size'):
+            cmd.extend(['--hpgl_pen_size', str(self.pen_size)])
         cmd.extend([sch_file, os.path.dirname(name)])
         self.exec_with_retry(self.add_extra_options(cmd), self._exit_error)
