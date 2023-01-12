@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - PCB_Print:
   - Images not showing in custom frames. (#352)
+  - Problems when trying to use groups of layers (i.e. copper)
 - iBoM:
   - Variant changes to the *.Fab weren't exported.
     Now all 2D variant stuff is applied before calling iBoM (#350)
