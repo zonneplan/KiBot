@@ -735,6 +735,9 @@ The available values for *type* are:
 - Documentation
     - `pdf_sch_print` schematic in PDF format
     - `svg_sch_print` schematic in SVG format
+    - `ps_sch_print` schematic in PS format
+    - `dxf_sch_print` schematic in DXF format
+    - `hpgl_sch_print` schematic in HPGL format
     - `pdf_pcb_print` PDF file containing one or more layer and the page frame
     - `svg_pcb_print` SVG file containing one or more layer and the page frame
     - `pcb_print` PDF/SVG/PNG/EPS/PS, similar to `pdf_pcb_print` and `svg_pcb_print`, with more flexibility
