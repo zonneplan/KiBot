@@ -20,10 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `_only_virtual` used to get only virtual parts
 - Variants:
   - Support for multi-boards as defined by KiKit
-- Compress:
-  - Option to use the output's `dir` as reference (`from_output_dir`)
-- iBoM:
-  - `hide_excluded` to hide excluded *.Fab drawings.
 - Internal templates:
   - FusionPCB: gerber, drill and compress
   - Elecrow: gerber, drill and compress
@@ -34,6 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (See #349)
   - PCB2Blender_2_1_haschtl: PCB2Blender_2_1 variant for @Haschtl fork.
   - PCBWay: gerber, drill and compress
+- Compress:
+  - Option to use the output's `dir` as reference (`from_output_dir`)
+- iBoM:
+  - `hide_excluded` to hide excluded *.Fab drawings.
+- PCB_Print:
+  - Added a mechanism to create a page for each copper layer. (#365)
 - Plot related outputs and PCB_Print:
   - Added support for the KiCad 6 "sketch_pads_on_fab_layers" option. (#356)
 - *SCH_Print:

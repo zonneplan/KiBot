@@ -3296,7 +3296,26 @@ Notes:
             - `monochrome`: [boolean=false] Print in gray scale.
             - `negative_plot`: [boolean=false] Invert black and white. Only useful for a single layer.
             - `page_id`: [string='%02d'] Text to differentiate the pages. Use %d (like in C) to get the page number.
+            - `repeat_for_layer`: [string=''] Use this page as a pattern to create more pages.
+                                  The other pages will change the layer mentioned here.
+                                  This can be used to generate a page for each copper layer, here you put `F.Cu`.
+                                  See `repeat_layers`.
+            - `repeat_inherit`: [boolean=true] If we will inherit the options of the layer we are replacing.
+                                Disable it if you specify the options in `repeat_layers`, which is unlikely.
+            - `repeat_layers`: [list(dict)|list(string)|string] List of layers to replace `repeat_for_layer`.
+                               This can be used to generate a page for each copper layer, here you put `copper`.
+              * Valid keys:
+                - `color`: [string=''] Color used for this layer.
+                - `description`: [string=''] A description for the layer, for documentation purposes.
+                - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+                - `layer`: [string=''] Name of the layer. As you see it in KiCad.
+                - `plot_footprint_refs`: [boolean=true] Include the footprint references.
+                - `plot_footprint_values`: [boolean=true] Include the footprint values.
+                - `suffix`: [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
             - `sheet`: [string='Assembly'] Text to use for the `sheet` in the title block.
+                       Pattern (%*) and text variables are expanded.
+                       In addition when you use `repeat_for_layer` the following patterns are available:
+                       %ln layer name, %ls layer suffix and %ld layer description.
             - `sheet_reference_color`: [string=''] Color to use for the frame and title block.
             - `sketch_pad_line_width`: [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
                                        Note that this value is currently ignored by KiCad (6.0.9).

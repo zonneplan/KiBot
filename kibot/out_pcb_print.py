@@ -28,6 +28,7 @@ Dependencies:
 #     role: Create EPS format
 #     version: '2.40'
 #     id: rsvg2
+from copy import deepcopy
 import re
 import os
 import subprocess
@@ -152,6 +153,13 @@ class LayerOptions(Layer):
         if self.color:
             self.validate_color('color')
 
+    def copy_extra_from(self, ref):
+        """ Copy members specific to LayerOptions """
+        self.color = ref.color
+        self.plot_footprint_refs = ref.plot_footprint_refs
+        self.plot_footprint_values = ref.plot_footprint_values
+        self.force_plot_invisible_refs_vals = ref.force_plot_invisible_refs_vals
+
 
 class PagesOptions(Optionable):
     """ One page of the output document """
@@ -173,7 +181,10 @@ class PagesOptions(Optionable):
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
             self.sheet = 'Assembly'
-            """ Text to use for the `sheet` in the title block """
+            """ Text to use for the `sheet` in the title block.
+                Pattern (%*) and text variables are expanded.
+                In addition when you use `repeat_for_layer` the following patterns are available:
+                %ln layer name, %ls layer suffix and %ld layer description """
             self.sheet_reference_color = ''
             """ Color to use for the frame and title block """
             self.line_width = 0.1
@@ -201,9 +212,26 @@ class PagesOptions(Optionable):
             self.sketch_pad_line_width = 0.1
             """ Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
                 Note that this value is currently ignored by KiCad (6.0.9) """
+            self.repeat_for_layer = ''
+            """ Use this page as a pattern to create more pages.
+                The other pages will change the layer mentioned here.
+                This can be used to generate a page for each copper layer, here you put `F.Cu`.
+                See `repeat_layers` """
+            self.repeat_layers = LayerOptions
+            """ [list(dict)|list(string)|string] List of layers to replace `repeat_for_layer`.
+                This can be used to generate a page for each copper layer, here you put `copper` """
+            self.repeat_inherit = True
+            """ If we will inherit the options of the layer we are replacing.
+                Disable it if you specify the options in `repeat_layers`, which is unlikely """
         self._scaling_example = 1.0
         self._autoscale_margin_x_example = 0
         self._autoscale_margin_y_example = 0
+
+    def expand_sheet_patterns(self, parent, layer):
+        self.sheet = self.sheet.replace('%ln', layer.layer)
+        self.sheet = self.sheet.replace('%ls', layer.suffix)
+        self.sheet = self.sheet.replace('%ld', layer.description)
+        self.sheet = self.expand_filename_pcb(self.sheet)
 
     def config(self, parent):
         super().config(parent)
@@ -224,6 +252,19 @@ class PagesOptions(Optionable):
         if self.autoscale_margin_y is None:
             self.autoscale_margin_y = parent.autoscale_margin_y
         self.sketch_pad_line_width = GS.from_mm(self.sketch_pad_line_width)
+        # Validate the repeat_* stuff
+        if self.repeat_for_layer:
+            layer = Layer.solve(self.repeat_for_layer)
+            if len(layer) > 1:
+                raise KiPlotConfigurationError('Please specify a single layer for `repeat_for_layer`')
+            layer = layer[0]
+            self._repeat_for_layer = next(filter(lambda x: x._id == layer._id, self.layers), None)
+            if self._repeat_for_layer is None:
+                raise KiPlotConfigurationError("Layer `{}` specified in `repeat_for_layer` isn't valid".format(layer))
+            self._repeat_for_layer_index = self.layers.index(self._repeat_for_layer)
+            if isinstance(self.repeat_layers, type):
+                raise KiPlotConfigurationError('`repeat_for_layer` specified, but nothing to repeat')
+            self._repeat_layers = LayerOptions.solve(self.repeat_layers)
 
 
 class PCB_PrintOptions(VariantOptions):
@@ -323,6 +364,22 @@ class PCB_PrintOptions(VariantOptions):
         super().config(parent)
         if isinstance(self.pages, type):
             raise KiPlotConfigurationError("Missing `pages` list")
+        # Expand any repeat_for_layer
+        pages = []
+        for page in self.pages:
+            if page.repeat_for_layer:
+                for la in page._repeat_layers:
+                    new_page = deepcopy(page)
+                    if page.repeat_inherit:
+                        la.copy_extra_from(page._repeat_for_layer)
+                    new_page.layers[page._repeat_for_layer_index] = la
+                    new_page.expand_sheet_patterns(parent, la)
+                    pages.append(new_page)
+            else:
+                page.expand_sheet_patterns(parent)
+                pages.append(page)
+        self.pages = pages
+        # Color theme
         self._color_theme = load_color_theme(self.color_theme)
         if self._color_theme is None:
             raise KiPlotConfigurationError("Unable to load `{}` color theme".format(self.color_theme))

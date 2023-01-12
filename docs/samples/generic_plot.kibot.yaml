@@ -2049,9 +2049,37 @@ outputs:
           negative_plot: false
           # [string='%02d'] Text to differentiate the pages. Use %d (like in C) to get the page number
           page_id: '%02d'
+          # [string=''] Use this page as a pattern to create more pages.
+          # The other pages will change the layer mentioned here.
+          # This can be used to generate a page for each copper layer, here you put `F.Cu`.
+          # See `repeat_layers`
+          repeat_for_layer: ''
+          # [boolean=true] If we will inherit the options of the layer we are replacing.
+          # Disable it if you specify the options in `repeat_layers`, which is unlikely
+          repeat_inherit: true
+          # [list(dict)|list(string)|string] List of layers to replace `repeat_for_layer`.
+          # This can be used to generate a page for each copper layer, here you put `copper`
+          repeat_layers:
+            # [string=''] Color used for this layer
+            - color: ''
+              # [string=''] A description for the layer, for documentation purposes
+              description: ''
+              # [boolean=false] Include references and values even when they are marked as invisible
+              force_plot_invisible_refs_vals: false
+              # [string=''] Name of the layer. As you see it in KiCad
+              layer: ''
+              # [boolean=true] Include the footprint references
+              plot_footprint_refs: true
+              # [boolean=true] Include the footprint values
+              plot_footprint_values: true
+              # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified
+              suffix: ''
           # [number=1.0] Scale factor (0 means autoscaling)
           scaling: 1.0
-          # [string='Assembly'] Text to use for the `sheet` in the title block
+          # [string='Assembly'] Text to use for the `sheet` in the title block.
+          # Pattern (%*) and text variables are expanded.
+          # In addition when you use `repeat_for_layer` the following patterns are available:
+          # %ln layer name, %ls layer suffix and %ld layer description
           sheet: 'Assembly'
           # [string=''] Color to use for the frame and title block
           sheet_reference_color: ''
