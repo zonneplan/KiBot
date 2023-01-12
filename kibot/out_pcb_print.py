@@ -227,10 +227,11 @@ class PagesOptions(Optionable):
         self._autoscale_margin_x_example = 0
         self._autoscale_margin_y_example = 0
 
-    def expand_sheet_patterns(self, parent, layer):
-        self.sheet = self.sheet.replace('%ln', layer.layer)
-        self.sheet = self.sheet.replace('%ls', layer.suffix)
-        self.sheet = self.sheet.replace('%ld', layer.description)
+    def expand_sheet_patterns(self, parent, layer=None):
+        if layer:
+            self.sheet = self.sheet.replace('%ln', layer.layer)
+            self.sheet = self.sheet.replace('%ls', layer.suffix)
+            self.sheet = self.sheet.replace('%ld', layer.description)
         self.sheet = self.expand_filename_pcb(self.sheet)
 
     def config(self, parent):
