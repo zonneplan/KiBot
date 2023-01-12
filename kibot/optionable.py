@@ -17,6 +17,9 @@ from . import log
 logger = log.get_logger()
 HEX_DIGIT = '[A-Fa-f0-9]{2}'
 INVALID_CHARS = r'[?%*:|"<>]'
+PATTERNS_DEP = ['%c', '%d', '%F', '%f', '%p', '%r']
+for n in range(1, 10):
+    PATTERNS_DEP.append('%C'+str(n))
 
 
 def do_filter(v):
@@ -346,7 +349,7 @@ class Optionable(object):
         # Replace KiCad 6 variables first
         name = GS.expand_text_variables(name)
         # Determine if we need to expand SCH and/or PCB related data
-        has_dep_exp = any(map(lambda x: x in name, ['%c', '%d', '%F', '%f', '%p', '%r', '%C1', '%C2', '%C3', '%C4']))
+        has_dep_exp = any(map(lambda x: x in name, PATTERNS_DEP))
         do_sch = is_sch and has_dep_exp
         # logger.error(name + '  is_sch ' +str(is_sch)+"   "+ str(do_sch))
         # raise
