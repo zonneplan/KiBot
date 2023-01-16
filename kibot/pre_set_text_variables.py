@@ -13,6 +13,7 @@ Dependencies:
 import json
 import os
 import re
+import shlex
 from subprocess import run, PIPE
 import sys
 from .error import KiPlotConfigurationError
@@ -127,9 +128,11 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 if not bash_command:
                     bash_command = self.ensure_tool('Bash')
                 cmd = [bash_command, '-c', command]
+                logger.debug('Executing: '+shlex.join(command))
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
                     logger.error('Failed to execute:\n{}\nreturn code {}'.format(r.command, result.returncode))
+                    logger.error('stdout:\n{}\nstderr:\n{}'.format(result.stdout, result.stderr))
                     sys.exit(FAILED_EXECUTE)
                 if not result.stdout:
                     logger.warning(W_EMPTREP+"Empty value from `{}`".format(r.command))
