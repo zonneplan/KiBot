@@ -512,7 +512,11 @@ class PcbDraw(BaseOutput):  # noqa: F821
     """ PcbDraw - Beautiful 2D PCB render
         Exports the PCB as a 2D model (SVG, PNG or JPG).
         Uses configurable colors.
-        Can also render the components if the 2D models are available """
+        Can also render the components if the 2D models are available.
+        Note that this output is fast for simple PCBs, but becomes useless for huge ones.
+        You can easily create very complex PCBs using the `panelize` output.
+        In this case you can use other outputs, like `render_3d`, which are slow for small
+        PCBs but can handle big ones """
     def __init__(self):
         super().__init__()
         with document:
