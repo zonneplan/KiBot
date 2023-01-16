@@ -3422,7 +3422,11 @@ Notes:
   * Type: `pcbdraw`
   * Description: Exports the PCB as a 2D model (SVG, PNG or JPG).
                  Uses configurable colors.
-                 Can also render the components if the 2D models are available
+                 Can also render the components if the 2D models are available.
+                 Note that this output is fast for simple PCBs, but becomes useless for huge ones.
+                 You can easily create very complex PCBs using the `panelize` output.
+                 In this case you can use other outputs, like `render_3d`, which are slow for small
+                 PCBs but can handle big ones
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -5837,3 +5841,5 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
   - **PTV09A 3D Model**: Dmitry Levin ([GrabCad](https://grabcad.com/dmitry.levin-6))
   - **PcbDraw PCB example**: [Arduino Learning Kit Starter](https://github.com/RoboticsBrno/ArduinoLearningKitStarter)
   - **Battery charger example**: [RB0002-BatteryPack](https://cadlab.io/project/22740/master/files)
+  - **IT-1187A 3D Model**: Anton Pavlov ([GrabCad](https://grabcad.com/anton.pavlov-2))
+  - **105017-0001 3D Model**: M.B.I. ([GrabCad](https://grabcad.com/m.b.i-1))
