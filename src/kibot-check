@@ -347,7 +347,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 120003,\
+        "importance": 150003,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -373,11 +373,33 @@ deps = '{\
                 "desc": null,\
                 "mandatory": true,\
                 "max_version": null,\
+                "output": "dxf_sch_print",\
+                "version": [\
+                    2,\
+                    1,\
+                    1\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
                 "output": "gencad",\
                 "version": [\
                     1,\
                     6,\
                     5\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "hpgl_sch_print",\
+                "version": [\
+                    2,\
+                    1,\
+                    1\
                 ]\
             },\
             {\
@@ -431,8 +453,19 @@ deps = '{\
                 "output": "pdf_sch_print",\
                 "version": [\
                     2,\
-                    0,\
-                    0\
+                    1,\
+                    1\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "ps_sch_print",\
+                "version": [\
+                    2,\
+                    1,\
+                    1\
                 ]\
             },\
             {\
@@ -475,8 +508,8 @@ deps = '{\
                 "output": "svg_sch_print",\
                 "version": [\
                     2,\
-                    0,\
-                    0\
+                    1,\
+                    1\
                 ]\
             },\
             {\
