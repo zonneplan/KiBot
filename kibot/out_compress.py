@@ -24,8 +24,8 @@ from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED, ZIP_BZIP2, ZIP_LZMA
 from tarfile import open as tar_open
 from collections import OrderedDict
 from .gs import GS
-from .kiplot import config_output, get_output_dir, run_output
-from .misc import WRONG_INSTALL, W_EMPTYZIP, WRONG_ARGUMENTS, INTERNAL_ERROR
+from .kiplot import config_output, run_output, get_output_targets
+from .misc import WRONG_INSTALL, W_EMPTYZIP, INTERNAL_ERROR
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
@@ -153,13 +153,8 @@ class CompressOptions(BaseOptions):
             output_out_dir = None
             if f.from_output:
                 logger.debugl(2, '- From output `{}`'.format(f.from_output))
-                out = RegOutput.get_output(f.from_output)
-                if out is None:
-                    logger.error('Unknown output `{}` selected in {}'.format(f.from_output, self._parent))
-                    exit(WRONG_ARGUMENTS)
-                config_output(out)
-                output_out_dir = out_dir = get_output_dir(out.dir, out, dry=True)
-                files_list = out.get_targets(out_dir)
+                files_list, out_dir, out = get_output_targets(f.from_output, self._parent)
+                output_out_dir = out_dir
                 logger.debugl(2, '- List of files: {}'.format(files_list))
                 if out_dir not in dirs_list:
                     dirs_list.append(out_dir)

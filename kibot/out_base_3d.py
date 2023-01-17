@@ -91,7 +91,20 @@ class Base3DOptions(VariantOptions):
             f.write(r.content)
         return dest
 
-    def download_models(self, rename_filter=None, rename_function=None, rename_data=None):
+    def wrl_name(self, name, force_wrl):
+        """ Try to use the WRL version """
+        if not force_wrl:
+            return name
+        nm, ext = os.path.splitext(name)
+        if ext.lower() == '.wrl':
+            return name
+        nm += '.wrl'
+        if os.path.isfile(nm):
+            logger.debug('- Forcing WRL '+nm)
+            return nm
+        return name
+
+    def download_models(self, rename_filter=None, rename_function=None, rename_data=None, force_wrl=False):
         """ Check we have the 3D models.
             Inform missing models.
             Try to download the missing models
@@ -152,7 +165,8 @@ class Base3DOptions(VariantOptions):
                         if replace:
                             source_models.add(replace)
                             old_name = m3d.m_Filename
-                            new_name = replace if not is_copy_mode else rename_function(rename_data, replace)
+                            new_name = (self.wrl_name(replace, force_wrl) if not is_copy_mode else
+                                        rename_function(rename_data, replace))
                             self.undo_3d_models[new_name] = old_name
                             m3d.m_Filename = new_name
                             models_replaced = True
@@ -164,7 +178,8 @@ class Base3DOptions(VariantOptions):
                         # This is completely valid for KiCad, but kicad2step doesn't support it
                         source_models.add(full_name)
                         old_name = m3d.m_Filename
-                        new_name = full_name if not is_copy_mode else rename_function(rename_data, full_name)
+                        new_name = (self.wrl_name(full_name, force_wrl) if not is_copy_mode else
+                                    rename_function(rename_data, full_name))
                         self.undo_3d_models[new_name] = old_name
                         m3d.m_Filename = new_name
                         if not models_replaced and extra_debug:
@@ -191,10 +206,10 @@ class Base3DOptions(VariantOptions):
                     models.add(full_name)
         return list(models)
 
-    def filter_components(self, highlight=None):
+    def filter_components(self, highlight=None, force_wrl=False):
         if not self._comps:
             # No variant/filter to apply
-            if self.download_models():
+            if self.download_models(force_wrl=force_wrl):
                 # Some missing components found and we downloaded them
                 # Save the fixed board
                 ret = self.save_tmp_board()
@@ -203,7 +218,7 @@ class Base3DOptions(VariantOptions):
                 return ret
             return GS.pcb_file
         self.filter_pcb_components(do_3D=True, do_2D=True, highlight=highlight)
-        self.download_models()
+        self.download_models(force_wrl=force_wrl)
         fname = self.save_tmp_board()
         self.unfilter_pcb_components(do_3D=True, do_2D=True)
         return fname

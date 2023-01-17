@@ -89,6 +89,115 @@ preflight:
   update_xml: true
 
 outputs:
+  # Blender Export **Experimental**:
+  # Also renders the PCB in high-quality.
+  # This output is complex to setup and needs very big dependencies.
+  # Please be patient when using it.
+  # You need Blender with the pcb2blender plug-in installed.
+  # Visit: [pcb2blender](https://github.com/30350n/pcb2blender)
+  - name: 'blender_export_example'
+    comment: 'Exports the PCB in various 3D file formats.'
+    type: 'blender_export'
+    dir: 'Example/blender_export_dir'
+    options:
+      # [boolean=true] Add a default light when none specified.
+      # The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB
+      add_default_light: true
+      # [dict] Options for the camera.
+      # If none specified KiBot will create a suitable camera
+      camera:
+        # [string=''] Name for the light
+        name: ''
+        # [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions
+        pos_x: 0
+        # [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions
+        pos_y: 0
+        # [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
+        pos_z: 0
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD
+      download: true
+      # [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models
+      kicad_3d_url: 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
+      # [dict|list(dict)] Options for the light/s
+      light:
+        # [string=''] Name for the light
+        - name: ''
+          # [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions
+          pos_x: 0
+          # [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions
+          pos_y: 0
+          # [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
+          pos_z: 0
+      # [boolean=false] Used to exclude 3D models for components with 'virtual' attribute
+      no_virtual: false
+      # [dict|list(dict)] Outputs to generate in the same run
+      outputs:
+        # [string='%f-%i%I%v.%x'] Name for the generated file (%i='blender' %x=VARIABLE).
+        # The extension is selected from the type. Affected by global options
+        - output: '%f-%i%I%v.%x'
+          # [string='render'] [fbx,obj,x3d,gltf,stl,ply,blender,render] The format for the output.
+          # The `render` type will generate a PNG image of the render result.
+          # `fbx` is Kaydara's Filmbox, 'obj' is the Wavefront, 'x3d' is the new ISO/IEC standard
+          # that replaced VRML, `gltf` is the standardized GL format, `stl` is the 3D printing
+          # format, 'ply' is Polygon File Format (Stanford).
+          # Note that some formats includes the light and camera and others are just the 3D model
+          # (i.e. STL and PLY)
+          type: 'render'
+      # [string=''] Name of the output that generated the PCB3D file to import in Belnder.
+      # See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates
+      pcb3d: ''
+      # Options to configure how Blender imports the PCB.
+      # The default values are good for most cases
+      pcb_import:
+        # [boolean=true] Center the PCB at the coordinates origin
+        center: true
+        # [boolean=true] Import the components
+        components: true
+        # [boolean=true] Separate the sub-PCBs in separated 3D models
+        cut_boards: true
+        # [boolean=true] Create good looking materials
+        enhance_materials: true
+        # [boolean=true] Reuse materials
+        merge_materials: true
+        # [string='SMART'] [NONE,SMART,ALL] The plug-in can add nice looking solder joints.
+        # This option controls if we add it for none, all or only for THT/SMD pads with solder paste
+        solder_joints: 'SMART'
+        # [boolean=true] Move the sub-PCBs to their relative position
+        stack_boards: true
+        # [number=1016.0] [508-2032] Texture density in dots per inch
+        texture_dpi: 1016.0
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [dict] How the render is done for the `render` output type
+      render_options:
+        # [string='#66667F'] First color for the background gradient
+        background1: '#66667F'
+        # [string='#CCCCE5'] Second color for the background gradient
+        background2: '#CCCCE5'
+        # [number=1280] Width of the image
+        resolution_x: 1280
+        # [number=720] Height of the image
+        resolution_y: 720
+        # [number=10] How many samples we create. Each sample is a raytracing render.
+        # Use 1 for a raw preview, 10 for a draft and 100 or more for the final render
+        samples: 10
+        # [boolean=false] Make the background transparent
+        transparent_background: false
+      # [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees]
+      rotate_x: 0
+      # [number=0] Angle to rotate the board in the Y axis, positive is clockwise [degrees]
+      rotate_y: 0
+      # [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees]
+      rotate_z: 0
+      # [string=''] Board variant to apply
+      variant: ''
+      # [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
+      # Compatible with `render_3d`
+      view: 'top'
   # BoardView:
   # This format allows simple pads and connections navigation, mainly for circuit debug.
   # The output can be loaded using Open Board View (https://openboardview.org/)

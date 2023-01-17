@@ -66,6 +66,43 @@ deps = '{\
         "url": "https://www.gnu.org/software/bash/",\
         "url_down": null\
     },\
+    "Blender": {\
+        "arch": "blender",\
+        "command": "blender",\
+        "comments": [],\
+        "deb_package": "blender",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 10000,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": false,\
+        "name": "Blender",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "blender_export",\
+        "plugin_dirs": null,\
+        "pypi_name": "Blender",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "blender_export",\
+                "version": [\
+                    3,\
+                    4,\
+                    0\
+                ]\
+            }\
+        ],\
+        "tests": [],\
+        "url": "https://www.blender.org/",\
+        "url_down": null\
+    },\
     "Colorama": {\
         "arch": "python-colorama",\
         "command": "colorama",\

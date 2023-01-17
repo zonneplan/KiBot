@@ -41,6 +41,7 @@ logger = log.get_logger()
 # Cache to avoid running external many times to check their versions
 script_versions = {}
 actions_loaded = False
+needed_imports = set()
 
 try:
     import yaml
@@ -385,6 +386,17 @@ def config_output(out, dry=False, dont_stop=False):
             raise
         ok = False
     return ok
+
+
+def get_output_targets(output, parent):
+    out = RegOutput.get_output(output)
+    if out is None:
+        logger.error('Unknown output `{}` selected in {}'.format(output, parent))
+        exit(WRONG_ARGUMENTS)
+    config_output(out)
+    out_dir = get_output_dir(out.dir, out, dry=True)
+    files_list = out.get_targets(out_dir)
+    return files_list, out_dir, out
 
 
 def run_output(out, dont_stop=False):
@@ -820,6 +832,12 @@ def yaml_dump(f, tree):
         f.write(yaml.dump(tree, sort_keys=False))
 
 
+def register_xmp_import(name):
+    """ Register an import we need for an example """
+    global needed_imports
+    needed_imports.add(name)
+
+
 def generate_one_example(dest_dir, types):
     """ Generate a example config for dest_dir """
     fname = discover_files(dest_dir)
@@ -853,15 +871,8 @@ def generate_one_example(dest_dir, types):
         yaml_dump(f, {'global': glb})
         f.write('\n')
         # A helper for the internal templates
-        needed_imports = []
-        if GS.pcb_file:
-            needed_imports.extend(['Elecrow', 'FusionPCB', 'JLCPCB', 'PCBWay'])
-        if GS.sch_file and GS.pcb_file:
-            needed_imports.append('MacroFab_XYRS')
-        if needed_imports:
-            imports = [{'file': man} for man in needed_imports]
-            yaml_dump(f, {'import': imports})
-            f.write('\n')
+        global needed_imports
+        needed_imports = set()
         # All the outputs
         outputs = []
         for n, cls in OrderedDict(sorted(outs.items())).items():
@@ -878,7 +889,13 @@ def generate_one_example(dest_dir, types):
             if tpls:
                 # Load the templates
                 tpl_names = tpls
-                tpls = [yaml.safe_load(open(t))['outputs'] for t in tpls]
+                tpls = []
+                for t in tpl_names:
+                    tree = yaml.safe_load(open(t))
+                    tpls.append(tree['outputs'])
+                    imps = tree.get('import')
+                    if imps:
+                        needed_imports.update([imp['file'] for imp in imps])
             tree = cls.get_conf_examples(n, layers, tpls)
             if tree:
                 logger.debug('- {}, generated'.format(n))
@@ -887,6 +904,10 @@ def generate_one_example(dest_dir, types):
                 outputs.extend(tree)
             else:
                 logger.debug('- {}, nothing to do'.format(n))
+        if needed_imports:
+            imports = [{'file': man} for man in sorted(needed_imports)]
+            yaml_dump(f, {'import': imports})
+            f.write('\n')
         if outputs:
             yaml_dump(f, {'outputs': outputs})
         else:

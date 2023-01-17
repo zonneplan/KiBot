@@ -167,6 +167,9 @@ Notes:
 - Mandatory for `kicost`
 - Optional to find components costs and specs for `bom`
 
+[**Blender**](https://www.blender.org/) v3.4.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://www.blender.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/blender)
+- Mandatory for `blender_export`
+
 [**Interactive HTML BoM**](https://github.com/INTI-CMNB/InteractiveHtmlBom) v2.4.1.4 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/InteractiveHtmlBom) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `ibom`
 
@@ -1391,6 +1394,9 @@ The available values for *type* are:
     - `step` *Standard for the Exchange of Product Data* for the PCB
     - `vrml` *Virtual Reality Modeling Language* for the PCB
     - `render_3d` PCB render, from the KiCad's 3D Viewer
+    - `blender_export` PCB export to Blender and high quality 3D render.
+       Including export to: `fbx` (Kaydara's Filmbox), 'obj' (Wavefront), 'x3d' (ISO/IEC standard),
+       `gltf` (GL format), `stl` (3D printing) and 'ply' (Stanford).
 - Web pages:
     - `populate` To create step-by-step assembly instructions.
     - `kikit_present` To create a project presentation web page.
@@ -1539,6 +1545,97 @@ Next time you need this list just use an alias, like this:
 Notes:
 1. Most relevant options are listed first and in **bold**. Which ones are more relevant is quite arbitrary, comments are welcome.
 2. Aliases are listed in *italics*.
+
+* Blender Export **Experimental**
+  * Type: `blender_export`
+  * Description: Exports the PCB in various 3D file formats.
+                 Also renders the PCB in high-quality.
+                 This output is complex to setup and needs very big dependencies.
+                 Please be patient when using it.
+                 You need Blender with the pcb2blender plug-in installed.
+                 Visit: [pcb2blender](https://github.com/30350n/pcb2blender)
+  * Valid keys:
+    - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
+    - **`dir`**: [string='./'] Output directory for the generated files.
+                 If it starts with `+` the rest is concatenated to the default dir.
+    - **`name`**: [string=''] Used to identify this particular output definition.
+                  Avoid using `_` as first character. These names are reserved for KiBot.
+    - **`options`**: [dict] Options for the `blender_export` output.
+      * Valid keys:
+        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+        - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
+        - **`pcb3d`**: [string=''] Name of the output that generated the PCB3D file to import in Belnder.
+                       See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates.
+        - **`render_options`**: [dict] How the render is done for the `render` output type.
+          * Valid keys:
+            - **`samples`**: [number=10] How many samples we create. Each sample is a raytracing render.
+                             Use 1 for a raw preview, 10 for a draft and 100 or more for the final render.
+            - **`transparent_background`**: [boolean=false] Make the background transparent.
+            - `background1`: [string='#66667F'] First color for the background gradient.
+            - `background2`: [string='#CCCCE5'] Second color for the background gradient.
+            - `resolution_x`: [number=1280] Width of the image.
+            - `resolution_y`: [number=720] Height of the image.
+        - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
+                      Compatible with `render_3d`.
+        - `add_default_light`: [boolean=true] Add a default light when none specified.
+                               The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB.
+        - `camera`: [dict] Options for the camera.
+                    If none specified KiBot will create a suitable camera.
+          * Valid keys:
+            - `name`: [string=''] Name for the light.
+            - `pos_x`: [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            - `pos_y`: [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            - `pos_z`: [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                        A short-cut to use for simple cases where a variant is an overkill.
+        - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `light`: [dict|list(dict)] Options for the light/s.
+          * Valid keys:
+            - `name`: [string=''] Name for the light.
+            - `pos_x`: [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            - `pos_y`: [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            - `pos_z`: [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+        - `outputs`: [dict|list(dict)] Outputs to generate in the same run.
+          * Valid keys:
+            - **`type`**: [string='render'] [fbx,obj,x3d,gltf,stl,ply,blender,render] The format for the output.
+                          The `render` type will generate a PNG image of the render result.
+                          `fbx` is Kaydara's Filmbox, 'obj' is the Wavefront, 'x3d' is the new ISO/IEC standard
+                          that replaced VRML, `gltf` is the standardized GL format, `stl` is the 3D printing
+                          format, 'ply' is Polygon File Format (Stanford).
+                          Note that some formats includes the light and camera and others are just the 3D model
+                          (i.e. STL and PLY).
+            - `output`: [string='%f-%i%I%v.%x'] Name for the generated file (%i='blender' %x=VARIABLE).
+                        The extension is selected from the type. Affected by global options.
+        - `pcb_import`: Options to configure how Blender imports the PCB.
+                        The default values are good for most cases.
+          * Valid keys:
+            - `center`: [boolean=true] Center the PCB at the coordinates origin.
+            - `components`: [boolean=true] Import the components.
+            - `cut_boards`: [boolean=true] Separate the sub-PCBs in separated 3D models.
+            - `enhance_materials`: [boolean=true] Create good looking materials.
+            - `merge_materials`: [boolean=true] Reuse materials.
+            - `solder_joints`: [string='SMART'] [NONE,SMART,ALL] The plug-in can add nice looking solder joints.
+                               This option controls if we add it for none, all or only for THT/SMD pads with solder paste.
+            - `stack_boards`: [boolean=true] Move the sub-PCBs to their relative position.
+            - `texture_dpi`: [number=1016.0] [508-2032] Texture density in dots per inch.
+        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                           A short-cut to use for simple cases where a variant is an overkill.
+        - `rotate_x`: [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees].
+        - `rotate_y`: [number=0] Angle to rotate the board in the Y axis, positive is clockwise [degrees].
+        - `rotate_z`: [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees].
+        - `variant`: [string=''] Board variant to apply.
+    - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+                  Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                  The categories are currently used for `navigate_results`.
+    - `disable_run_by_default`: [string|boolean] Use it to disable the `run_by_default` status of other output.
+                                Useful when this output extends another and you don't want to generate the original.
+                                Use the boolean true value to disable the output you are extending.
+    - `extends`: [string=''] Copy the `options` section from the indicated output.
+                 Used to inherit options from another output of the same type.
+    - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
+    - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+                  Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
+    - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
 * BoardView
   * Type: `boardview`

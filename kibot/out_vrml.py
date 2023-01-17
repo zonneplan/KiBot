@@ -19,6 +19,11 @@ from . import log
 logger = log.get_logger()
 
 
+def replace_ext(file, ext):
+    file, ext = os.path.splitext(file)
+    return file+'.wrl'
+
+
 class VRMLOptions(Base3DOptions):
     def __init__(self):
         with document:
@@ -48,7 +53,7 @@ class VRMLOptions(Base3DOptions):
         if self.dir_models:
             # We will also generate the models
             dir = os.path.join(out_dir, self.dir_models)
-            filtered = {os.path.join(dir, os.path.basename(m)) for m in self.list_models() if m.endswith('.wrl')}
+            filtered = {os.path.join(dir, os.path.basename(replace_ext(m, 'wrl'))) for m in self.list_models()}
             targets.extend(list(filtered))
         return targets
 
@@ -59,7 +64,7 @@ class VRMLOptions(Base3DOptions):
     def run(self, name):
         command = self.ensure_tool('KiAuto')
         super().run(name)
-        board_name = self.filter_components()
+        board_name = self.filter_components(force_wrl=True)
         cmd = [command, 'export_vrml', '--output_name', os.path.basename(name), '-U', self.model_units]
         if self.dir_models:
             cmd.extend(['--dir_models', self.dir_models])

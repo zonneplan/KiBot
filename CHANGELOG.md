@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
   - `ps_sch_print`, `dxf_sch_print` and `hpgl_sch_print` variants of
     `pdf_sch_print`
+  - `blender_export` exports the PCB to Blender and other 3D formats,
+     renders the PCB with impressive quality (experimental)
 - New internal filters:
   - `_only_smd` used to get only SMD parts
   - `_only_tht` used to get only THT parts

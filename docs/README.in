@@ -752,6 +752,9 @@ The available values for *type* are:
     - `step` *Standard for the Exchange of Product Data* for the PCB
     - `vrml` *Virtual Reality Modeling Language* for the PCB
     - `render_3d` PCB render, from the KiCad's 3D Viewer
+    - `blender_export` PCB export to Blender and high quality 3D render.
+       Including export to: `fbx` (Kaydara's Filmbox), 'obj' (Wavefront), 'x3d' (ISO/IEC standard),
+       `gltf` (GL format), `stl` (3D printing) and 'ply' (Stanford).
 - Web pages:
     - `populate` To create step-by-step assembly instructions.
     - `kikit_present` To create a project presentation web page.

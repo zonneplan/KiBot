@@ -90,6 +90,10 @@ Dependencies:
     url: https://www.gnu.org/software/bash/
     debian: bash
     arch: bash
+  - name: Blender
+    url: https://www.blender.org/
+    debian: blender
+    arch: blender
 """
 import importlib
 import os
