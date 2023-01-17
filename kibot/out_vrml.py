@@ -51,10 +51,15 @@ class VRMLOptions(Base3DOptions):
     def get_targets(self, out_dir):
         targets = [self._parent.expand_filename(out_dir, self.output)]
         if self.dir_models:
-            # We will also generate the models
-            dir = os.path.join(out_dir, self.dir_models)
-            filtered = {os.path.join(dir, os.path.basename(replace_ext(m, 'wrl'))) for m in self.list_models()}
-            targets.extend(list(filtered))
+            # Missing models can be downloaded during the 3D variant filtering
+            # Also renamed or disabled.
+            # # We will also generate the models
+            # dir = os.path.join(out_dir, self.dir_models)
+            # filtered = {os.path.join(dir, os.path.basename(replace_ext(m, 'wrl')))
+            #    for m in self.list_models(even_missing=True)}
+            # targets.extend(list(filtered))
+            # So we just add the dir
+            targets.append(os.path.join(out_dir, self.dir_models))
         return targets
 
     def get_pcb_center(self):

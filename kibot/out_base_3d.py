@@ -192,7 +192,7 @@ class Base3DOptions(VariantOptions):
             logger.warning(W_DOWN3D+' {} 3D models downloaded'.format(len(downloaded)))
         return models_replaced if not is_copy_mode else list(source_models)
 
-    def list_models(self):
+    def list_models(self, even_missing=False):
         """ Get the list of 3D models """
         # Load KiCad configuration so we can expand the 3D models path
         KiConf.init(GS.pcb_file)
@@ -202,7 +202,7 @@ class Base3DOptions(VariantOptions):
             # Look for all the 3D models for this footprint
             for m3d in m.Models():
                 full_name = KiConf.expand_env(m3d.m_Filename)
-                if os.path.isfile(full_name):
+                if even_missing or os.path.isfile(full_name):
                     models.add(full_name)
         return list(models)
 
