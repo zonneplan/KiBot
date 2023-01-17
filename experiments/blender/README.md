@@ -400,7 +400,7 @@ docker run -it --rm \
   --env DISPLAY=$DISPLAY \
   --env NO_AT_BRIDGE=1 \
   --workdir=$(pwd) \
-  --volume="/tmp/.X11-unix:/tmp/.X11-unix" \
+  --volume="/tmp:/tmp" \
   --volume="/etc/group:/etc/group:ro" \
   --volume="/etc/timezone:/etc/timezone:ro" \
   --volume="/home/$USER:/home/$USER:rw" \
@@ -408,7 +408,7 @@ docker run -it --rm \
   --volume="/etc/shadow:/etc/shadow:ro" \
   --volume="/home/$USER:/home/$USER:rw" \
   --device /dev/dri:/dev/dri \
-  setsoft/kicad_auto_test_blender:latest blender "$@"
+  setsoft/kicad_auto_test_blender:latest nice blender "$@"
 ```
 
 Named *blender* in my path (~/bin/blender).
