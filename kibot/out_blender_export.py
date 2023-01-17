@@ -224,6 +224,18 @@ class Blender_ExportOptions(Base3DOptions):
         if view is not None:
             self.view = view
 
+    def get_output_filename(self, o, output_dir):
+        if o.type == 'render':
+            self._expand_ext = 'png'
+        elif o.type == 'blender':
+            self._expand_ext = 'blend'
+        else:
+            self._expand_ext = o.type
+        return self._parent.expand_filename(output_dir, o.output)
+
+    def get_targets(self, out_dir):
+        return [self.get_output_filename(o, out_dir) for o in self.outputs]
+
     def run(self, output):
         super().run(output)
         command = self.ensure_tool('Blender')
@@ -287,13 +299,7 @@ class Blender_ExportOptions(Base3DOptions):
             cmd.extend([o.type for o in self.outputs])
             cmd.append('--output')
             for o in self.outputs:
-                if o.type == 'render':
-                    self._expand_ext = 'png'
-                elif o.type == 'blender':
-                    self._expand_ext = 'blend'
-                else:
-                    self._expand_ext = o.type
-                cmd.append(self._parent.expand_filename(self._parent.output_dir, o.output))
+                cmd.append(self.get_output_filename(o, self._parent.output_dir))
             cmd.extend(['--scene', f.name])
             cmd.append(pcb3d_file)
             # Execute the command
