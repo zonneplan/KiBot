@@ -1577,6 +1577,7 @@ If you need to run the current development version of KiBot you can use the foll
 [ghcr.io/inti-cmnb/kicad5_auto:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto) or
 [ghcr.io/inti-cmnb/kicad6_auto:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto)
 ([setsoft/kicad_auto:dev](https://hub.docker.com/repository/docker/setsoft/kicad_auto)).
+These images are based on the *full* (also named *test*) images.
 
 The most important images are:
 
