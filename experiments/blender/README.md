@@ -395,7 +395,7 @@ To pretend this is the system level Blender I have:
 #!/bin/bash
 export USER_ID=$(id -u)
 export GROUP_ID=$(id -g)
-docker run -it --rm \
+docker run --rm \
   --user $USER_ID:$GROUP_ID \
   --env DISPLAY=$DISPLAY \
   --env NO_AT_BRIDGE=1 \

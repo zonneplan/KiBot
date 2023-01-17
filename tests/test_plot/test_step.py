@@ -139,3 +139,20 @@ def test_render_3d_variant_1(test_dir):
     ctx.expect_out_file(name)
     ctx.compare_image(name, fuzz='7%', tol=1000)
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.pcbnew
+@pytest.mark.skipif(context.ki5(), reason="uses pcb2blender")
+def test_blender_export_1(test_dir):
+    prj = 'light_control'
+    yaml = 'blender_export_1'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    ctx.run(extra_debug=True)
+    # Check all outputs are there
+    name = prj+'-3D_blender.blend'
+    ctx.expect_out_file(name, sub=True)
+    name = prj+'.pcb3d'
+    ctx.expect_out_file(name, sub=True)
+    # ctx.compare_image(name, fuzz='7%', tol=1000)
+    ctx.clean_up(keep_project=True)
