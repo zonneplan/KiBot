@@ -41,7 +41,11 @@ class KiCadVariable(Optionable):
             self.text = ''
             """ Text to insert instead of the variable """
             self.command = ''
-            """ Command to execute to get the text, will be used only if `text` is empty """
+            """ Command to execute to get the text, will be used only if `text` is empty.
+                This command will be executed using the Bash shell.
+                Be careful about spaces in file names (i.e. use "$KIBOT_PCB_NAME").
+                The `KIBOT_PCB_NAME` environment variable is the PCB file and the
+                `KIBOT_SCH_NAME` environment variable is the schematic file """
             self.before = ''
             """ Text to add before the output of `command` """
             self.after = ''
@@ -91,7 +95,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
     def get_example(cls):
         """ Returns a YAML value for the example config """
         return ("\n    - name: 'git_hash'"
-                "\n      command: 'git log -1 --format=\"%h\" $KIBOT_PCB_NAME'"
+                "\n      command: 'git log -1 --format=\"%h\" \"$KIBOT_PCB_NAME\"'"
                 "\n      before: 'Git hash: <'"
                 "\n      after: '>'")
 
@@ -132,7 +136,10 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
                     logger.error('Failed to execute:\n{}\nreturn code {}'.format(r.command, result.returncode))
-                    logger.error('stdout:\n{}\nstderr:\n{}'.format(result.stdout, result.stderr))
+                    if result.stdout:
+                        logger.error('stdout:\n{}'.format(result.stdout))
+                    if result.stderr:
+                        logger.error('stderr:\n{}'.format(result.stderr))
                     sys.exit(FAILED_EXECUTE)
                 if not result.stdout:
                     logger.warning(W_EMPTREP+"Empty value from `{}`".format(r.command))

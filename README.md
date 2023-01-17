@@ -445,9 +445,9 @@ This section is used to specify tasks that will be executed before generating an
         This preflight modifies the PCB. Even when a back-up is done use it carefully.
   * Valid keys:
     - `date_command`: [string=''] Command to get the date to use in the PCB.\
-                      ```git log -1 --format='%as' -- $KIBOT_PCB_NAME```\
+                      ```git log -1 --format='%as' -- "$KIBOT_PCB_NAME"```\
                       Will return the date in YYYY-MM-DD format.\
-                      ```date -d @`git log -1 --format='%at' -- $KIBOT_PCB_NAME` +%Y-%m-%d_%H-%M-%S```\
+                      ```date -d @`git log -1 --format='%at' -- "$KIBOT_PCB_NAME"` +%Y-%m-%d_%H-%M-%S```\
                       Will return the date in YYYY-MM-DD_HH-MM-SS format.\
                       Important: on KiCad 6 the title block data is optional.
                       This command will work only if you have a date in the PCB/Schematic.
@@ -472,9 +472,9 @@ This section is used to specify tasks that will be executed before generating an
         This preflight modifies the schematics. Even when a back-up is done use it carefully.
   * Valid keys:
     - `date_command`: [string=''] Command to get the date to use in the SCH.\
-                      ```git log -1 --format='%as' -- $KIBOT_SCH_NAME```\
+                      ```git log -1 --format='%as' -- "$KIBOT_SCH_NAME"```\
                       Will return the date in YYYY-MM-DD format.\
-                      ```date -d @`git log -1 --format='%at' -- $KIBOT_SCH_NAME` +%Y-%m-%d_%H-%M-%S```\
+                      ```date -d @`git log -1 --format='%at' -- "$KIBOT_SCH_NAME"` +%Y-%m-%d_%H-%M-%S```\
                       Will return the date in YYYY-MM-DD_HH-MM-SS format.\
                       Important: on KiCad 6 the title block data is optional.
                       This command will work only if you have a date in the SCH/Schematic.
@@ -497,6 +497,10 @@ This section is used to specify tasks that will be executed before generating an
     - `after`: [string=''] Text to add after the output of `command`.
     - `before`: [string=''] Text to add before the output of `command`.
     - `command`: [string=''] Command to execute to get the text, will be used only if `text` is empty.
+                 This command will be executed using the Bash shell.
+                 Be careful about spaces in file names (i.e. use "$KIBOT_PCB_NAME").
+                 The `KIBOT_PCB_NAME` environment variable is the PCB file and the
+                 `KIBOT_SCH_NAME` environment variable is the schematic file.
     - `expand_kibot_patterns`: [boolean=true] Expand %X patterns. The context is `schematic`.
     - `name`: [string=''] Name of the variable. The `version` variable will be expanded using `${version}`.
     - `text`: [string=''] Text to insert instead of the variable.
