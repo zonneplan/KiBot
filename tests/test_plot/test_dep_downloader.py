@@ -51,6 +51,8 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
         cov.save()
         # We should get the following name:
         logging.debug('Result: {} Version: {}'.format(res, version))
+        with open(ctx.get_out_path('caplog.txt'), 'wt') as f:
+            f.write(caplog.text)
         assert res == os.path.join(home, b_dir, dep.command)
         # We executed the file
 
