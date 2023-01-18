@@ -90,7 +90,7 @@ class Copy_FilesOptions(Base3DOptions):
     def config(self, parent):
         super().config(parent)
         if isinstance(self.files, type):
-            KiPlotConfigurationError('No files provided')
+            raise KiPlotConfigurationError('No files provided')
 
     def get_from_output(self, f, no_out_run):
         from_output = f.source
@@ -231,6 +231,11 @@ class Copy_FilesOptions(Base3DOptions):
             if dest in copied:
                 logger.warning(W_COPYOVER+'`{}` and `{}` both are copied to `{}`'.
                                format(may_be_rel(src), may_be_rel(copied[dest]), may_be_rel(dest)))
+            try:
+                if os.path.samefile(src, dest):
+                    raise KiPlotConfigurationError('Trying to copy {} over itself {}'.format(src, dest))
+            except FileNotFoundError:
+                pass
             if os.path.isfile(dest) or os.path.islink(dest):
                 os.remove(dest)
             if self.link_no_copy:
