@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Now all 2D variant stuff is applied before calling iBoM (#350)
 - Copy_Files:
   - Problems on KiCad 5 (no 3rd party dir) (#357)
+  - Problems with compress output (also Makefile) (#372)
 - BoM:
   - pre_transform filers can't be logic filters
 - DOCs

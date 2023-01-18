@@ -206,12 +206,13 @@ class Copy_FilesOptions(Base3DOptions):
         return files
 
     def get_targets(self, out_dir):
+        self.output_dir = out_dir
         files = self.get_files(no_out_run=True)
-        return sorted([os.path.join(out_dir, v) for v in files.values()])
+        return sorted([os.path.join(out_dir, v) for _, v in files])
 
     def get_dependencies(self):
         files = self.get_files(no_out_run=True)
-        return files.keys()
+        return sorted([v for v, _ in files])
 
     def run(self, output):
         super().run(output)
