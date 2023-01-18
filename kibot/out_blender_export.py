@@ -74,7 +74,7 @@ class BlenderOutputOptions(Optionable):
                 Note that some formats includes the light and camera and others are just the 3D model
                 (i.e. STL and PLY) """
             self.output = GS.def_global_output
-            """ Name for the generated file (%i='blender' %x=VARIABLE).
+            """ Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
                 The extension is selected from the type """
         self._unkown_is_error = True
 
@@ -135,6 +135,7 @@ class BlenderRenderOptions(Optionable):
 
 class Blender_ExportOptions(Base3DOptions):
     _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
+    _rviews = {v: k for k, v in _views.items()}
 
     def __init__(self):
         with document:
@@ -223,6 +224,7 @@ class Blender_ExportOptions(Base3DOptions):
         view = self._views.get(self.view, None)
         if view is not None:
             self.view = view
+        self._expand_id += '_'+self._rviews.get(self.view)
 
     def get_output_filename(self, o, output_dir):
         if o.type == 'render':
