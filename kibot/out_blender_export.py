@@ -339,7 +339,7 @@ class Blender_Export(Base3D):
         if not has_top and not has_bottom:
             return None
         register_xmp_import('PCB2Blender_2_1')
-        out_ops = {'pcb3d': '_PCB2Blender_2_1', 'outputs': [{'type': 'render'}]}
+        out_ops = {'pcb3d': '_PCB2Blender_2_1', 'outputs': [{'type': 'render'}, {'type': 'blender'}]}
         if has_top:
             gb = {}
             gb['name'] = 'basic_{}_top'.format(name)
