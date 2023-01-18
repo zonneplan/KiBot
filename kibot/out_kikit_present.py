@@ -16,6 +16,7 @@ Dependencies:
 import glob
 import os
 import shutil
+import stat
 import subprocess
 import sys
 from tempfile import NamedTemporaryFile, TemporaryDirectory, mkdtemp
@@ -36,6 +37,7 @@ logger = log.get_logger()
 def _get_tmp_name(ext):
     with NamedTemporaryFile(mode='w', suffix='.'+ext, delete=False) as f:
         f.close()
+    os.chmod(f.name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
     return f.name
 
 
