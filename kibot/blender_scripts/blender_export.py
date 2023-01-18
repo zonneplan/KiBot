@@ -225,6 +225,7 @@ def apply_scene(file):
     if auto_camera:
         print('- Changing camera to focus the board')
         bpy.ops.view3d.camera_to_view_selected()
+        cam_ob.location = (cam_ob.location[0], cam_ob.location[1], cam_ob.location[2]*1.1)
 
     # Add lights
     lights = jscene.get('lights')
