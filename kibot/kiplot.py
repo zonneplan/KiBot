@@ -52,6 +52,11 @@ except ImportError:
     exit(NO_YAML_MODULE)
 
 
+def cased_path(path):
+    r = glob(re.sub(r'([^:/\\])(?=[/\\]|$)|\[', r'[\g<0>]', path))
+    return r and r[0] or path
+
+
 def try_register_deps(mod, name):
     if mod.__doc__:
         try:
@@ -725,6 +730,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
     if schematic:
         schematic = os.path.abspath(schematic)
         logger.debug('Using schematic: `{}`'.format(schematic))
+        logger.debug('Real schematic name: `{}`'.format(cased_path(schematic)))
     else:
         logger.debug('No schematic file found')
     return schematic
@@ -756,6 +762,7 @@ def solve_board_file(base_dir, a_board_file=None, sug_b=True):
     check_board_file(board_file)
     if board_file:
         logger.debug('Using PCB: `{}`'.format(board_file))
+        logger.debug('Real PCB name: `{}`'.format(cased_path(board_file)))
     else:
         logger.debug('No PCB file found')
     return board_file
