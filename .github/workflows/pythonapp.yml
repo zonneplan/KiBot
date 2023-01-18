@@ -198,9 +198,9 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: |
-          setsoft/kicad_auto
-          ghcr.io/inti-cmnb/kicad_auto
-          ghcr.io/inti-cmnb/kicad5_auto
+          setsoft/kicad_auto_test
+          ghcr.io/inti-cmnb/kicad_auto_test
+          ghcr.io/inti-cmnb/kicad5_auto_full
         tags: |
           type=raw,dev
 
@@ -244,9 +244,9 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: |
-          setsoft/kicad_auto
-          ghcr.io/inti-cmnb/kicad_auto
-          ghcr.io/inti-cmnb/kicad6_auto
+          setsoft/kicad_auto_test
+          ghcr.io/inti-cmnb/kicad_auto_test
+          ghcr.io/inti-cmnb/kicad6_auto_full
         tags: |
           type=raw,dev_k6
 
@@ -256,9 +256,9 @@ jobs:
         context: tools/dev_image_k6
         push: true
         tags: |
-          setsoft/kicad_auto:dev_k6
-          ghcr.io/inti-cmnb/kicad_auto:dev_k6
-          ghcr.io/inti-cmnb/kicad6_auto:dev
+          setsoft/kicad_auto_test:dev_k6
+          ghcr.io/inti-cmnb/kicad_auto_test:dev_k6
+          ghcr.io/inti-cmnb/kicad6_auto_full:dev
         labels: ${{ steps.meta.outputs.labels }}
 
   coveralls:
