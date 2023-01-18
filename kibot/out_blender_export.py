@@ -353,7 +353,7 @@ class Blender_Export(Base3D):
             gb['comment'] = '3D view from 30 degrees (Blender)'
             gb['type'] = name
             gb['dir'] = '3D'
-            gb['output_id'] = '30deg'
+            gb['output_id'] = '_30deg'
             gb['options'] = copy(out_ops)
             gb['options'].update({'rotate_x': 30, 'rotate_z': -20})
             outs.append(gb)
