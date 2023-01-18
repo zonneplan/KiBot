@@ -6,6 +6,7 @@ global:
   environment:
     # Relative to the PCB file
     models_3d: '../../data/metrico/'
+    define_old: true
   aliases_for_3d_models:
     - name: ALIAS1
       value: '3d/1'
@@ -34,3 +35,10 @@ outputs:
         - source_type: 3d_models
           dest: 3d_models+
           save_pcb: true
+
+  - name: compressed
+    type: compress
+    options:
+      format: ZIP
+      files:
+        - from_output: result
