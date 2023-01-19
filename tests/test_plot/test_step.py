@@ -150,7 +150,7 @@ def test_blender_export_1(test_dir):
     ctx = context.TestContext(test_dir, prj, yaml)
     ctx.run(extra_debug=True)
     # Check all outputs are there
-    name = prj+'-3D_blender.blend'
+    name = prj+'-3D_blender_top.blend'
     ctx.expect_out_file(name, sub=True)
     name = prj+'.pcb3d'
     ctx.expect_out_file(name, sub=True)
