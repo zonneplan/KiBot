@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # The Assembly image is a composition from Pixlok and oNline Web Fonts
@@ -46,7 +46,8 @@ CAT_IMAGE = {'PCB': 'pcbnew',
              'BoM': 'bom',
              '3D': '3d',
              'gerber': 'gerber',
-             'drill': 'load_drill'}
+             'drill': 'load_drill',
+             'Auxiliar': 'repair'}
 EXT_IMAGE = {'gbr': 'file_gbr',
              'gtl': 'file_gbr',
              'gtp': 'file_gbr',
@@ -91,7 +92,9 @@ EXT_IMAGE = {'gbr': 'file_gbr',
              'zip': 'file_zip',
              'kicad_pcb': 'pcbnew',
              'sch': 'eeschema',
-             'kicad_sch': 'eeschema'}
+             'kicad_sch': 'eeschema',
+             'blend': 'file_blend',
+             'pcb3d': 'file_pcb3d'}
 for i in range(31):
     n = str(i)
     EXT_IMAGE['gl'+n] = 'file_gbr'

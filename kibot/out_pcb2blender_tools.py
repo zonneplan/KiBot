@@ -287,7 +287,7 @@ class PCB2Blender_Tools(BaseOutput):  # noqa: F821
         The tools in this output are used by internal templates used to generate PCB3D files. """
     def __init__(self):
         super().__init__()
-        self._category = 'PCB/3D'
+        self._category = 'PCB/3D/Auxiliar'
         with document:
             self.options = PCB2Blender_ToolsOptions
             """ *[dict] Options for the `pcb2blender_tools` output """
