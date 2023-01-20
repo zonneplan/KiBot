@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Salvador E. Tropea
-# Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2023 Salvador E. Tropea
+# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -80,10 +80,10 @@ class Base_Replace(BasePreFlight):  # noqa: F821
     @classmethod
     def get_example(cls):
         """ Returns a YAML value for the example config """
-        return ("\n    date_command: \"git log -1 --format='%as' -- $KIBOT_{}_NAME\""
+        return ("\n    date_command: 'git log -1 --format=\"%as\" -- \"$KIBOT_{}_NAME\"'"
                 "\n    replace_tags:"
                 "\n      - tag: '@git_hash@'"
-                "\n        command: 'git log -1 --format=\"%h\" $KIBOT_{}_NAME'"
+                "\n        command: 'git log -1 --format=\"%h\" \"$KIBOT_{}_NAME\"'"
                 "\n        before: 'Git hash: <'"
                 "\n        after: '>'".format(cls._context, cls._context))
 

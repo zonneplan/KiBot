@@ -1608,7 +1608,7 @@ Notes:
                           format, 'ply' is Polygon File Format (Stanford).
                           Note that some formats includes the light and camera and others are just the 3D model
                           (i.e. STL and PLY).
-            - `output`: [string='%f-%i%I%v.%x'] Name for the generated file (%i='blender' %x=VARIABLE).
+            - `output`: [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
                         The extension is selected from the type. Affected by global options.
         - `pcb_import`: Options to configure how Blender imports the PCB.
                         The default values are good for most cases.
@@ -4189,6 +4189,8 @@ Notes:
   * Type: `report`
   * Description: Generates a report about the design.
                  Mainly oriented to be sent to the manufacturer or check PCB details.
+                 You can expand internal values, KiCad text variables and environment
+                 variables using `${VARIABLE}`
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.

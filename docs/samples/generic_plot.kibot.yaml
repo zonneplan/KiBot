@@ -45,10 +45,10 @@ preflight:
   # This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
   # This preflight modifies the PCB. Even when a back-up is done use it carefully.
   pcb_replace:
-    date_command: "git log -1 --format='%as' -- $KIBOT_PCB_NAME"
+    date_command: 'git log -1 --format="%as" -- "$KIBOT_PCB_NAME"'
     replace_tags:
       - tag: '@git_hash@'
-        command: 'git log -1 --format="%h" $KIBOT_PCB_NAME'
+        command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
         before: 'Git hash: <'
         after: '>'
   # [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
@@ -63,10 +63,10 @@ preflight:
   # This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
   # This preflight modifies the schematics. Even when a back-up is done use it carefully.
   sch_replace:
-    date_command: "git log -1 --format='%as' -- $KIBOT_SCH_NAME"
+    date_command: 'git log -1 --format="%as" -- "$KIBOT_SCH_NAME"'
     replace_tags:
       - tag: '@git_hash@'
-        command: 'git log -1 --format="%h" $KIBOT_SCH_NAME'
+        command: 'git log -1 --format="%h" "$KIBOT_SCH_NAME"'
         before: 'Git hash: <'
         after: '>'
   # [dict|list(dict)] Defines KiCad 6 variables.
@@ -135,7 +135,7 @@ outputs:
       no_virtual: false
       # [dict|list(dict)] Outputs to generate in the same run
       outputs:
-        # [string='%f-%i%I%v.%x'] Name for the generated file (%i='blender' %x=VARIABLE).
+        # [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
         # The extension is selected from the type. Affected by global options
         - output: '%f-%i%I%v.%x'
           # [string='render'] [fbx,obj,x3d,gltf,stl,ply,blender,render] The format for the output.
@@ -2886,6 +2886,8 @@ outputs:
       zoom: 0
   # Design report:
   # Mainly oriented to be sent to the manufacturer or check PCB details.
+  # You can expand internal values, KiCad text variables and environment
+  # variables using `${VARIABLE}`
   - name: 'report_example'
     comment: 'Generates a report about the design.'
     type: 'report'

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -31,6 +31,7 @@ from .kiplot import config_output
 from .dep_downloader import get_dep_data
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
+from . import __version__
 
 logger = log.get_logger()
 INF = float('inf')
@@ -214,6 +215,7 @@ class ReportOptions(BaseOptions):
         dep = get_dep_data('report', 'PanDoc')
         deb_text = 'In Debian/Ubuntu environments: install '+list_nice([dep.deb_package]+dep.extra_deb)
         self._help_do_convert += ".\n"+'\n'.join(dep.comments)+'\n'+deb_text
+        self._shown_defined = False
 
     def config(self, parent):
         super().config(parent)
@@ -284,7 +286,10 @@ class ReportOptions(BaseOptions):
                     rep = str(val)
                 line = line.replace('${'+var_ori+'}', rep)
             else:
-                print('Error: Unable to expand `{}`'.format(var))
+                logger.error('Unable to expand `{}`'.format(var))
+                if not self._shown_defined:
+                    self._shown_defined = True
+                    logger.error('Defined values: {}'.format([v for v in defined.keys() if v[0] != '_']))
         return line
 
     def context_defined_tracks(self, line):
@@ -747,9 +752,28 @@ class ReportOptions(BaseOptions):
         logger.debug('- Result `{}`'.format(res))
         return res
 
+    def get_kicad_vars(self):
+        vars = {}
+        vars['KICAD_VERSION'] = 'KiCad E.D.A. '+GS.kicad_version+' + KiBot v'+__version__
+        GS.load_pcb_title_block()
+        for num in range(9):
+            vars['COMMENT'+str(num+1)] = GS.pcb_com[num]
+        vars['COMPANY'] = GS.pcb_comp
+        vars['ISSUE_DATE'] = GS.pcb_date
+        vars['REVISION'] = GS.pcb_rev
+        vars['TITLE'] = GS.pcb_title
+        vars['FILENAME'] = GS.pcb_basename+'.kicad_pcb'
+        return vars
+
     def do_template(self, template_file, output_file):
         text = ''
         logger.debug("Report template: `{}`".format(template_file))
+        # Collect the thing we could expand
+        defined = {}
+        defined.update(os.environ)
+        defined.update(self.get_kicad_vars())
+        defined.update(GS.load_pro_variables())
+        defined.update(self.__dict__)
         with open(template_file, "rt") as f:
             skip_next = False
             for line in f:
@@ -774,7 +798,7 @@ class ReportOptions(BaseOptions):
                             raise KiPlotConfigurationError("Unknown context: `{}`".format(context))
                 if not done:
                     # Just replace using any data member (_* excluded)
-                    line = self.do_replacements(line, self.__dict__)
+                    line = self.do_replacements(line, defined)
                 text += line
         logger.debug("Report output: `{}`".format(output_file))
         if self.to_ascii:
@@ -880,7 +904,9 @@ class ReportOptions(BaseOptions):
 class Report(BaseOutput):  # noqa: F821
     """ Design report
         Generates a report about the design.
-        Mainly oriented to be sent to the manufacturer or check PCB details. """
+        Mainly oriented to be sent to the manufacturer or check PCB details.
+        You can expand internal values, KiCad text variables and environment
+        variables using `${VARIABLE}` """
     def __init__(self):
         super().__init__()
         with document:

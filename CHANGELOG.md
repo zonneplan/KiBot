@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added a mechanism to create a page for each copper layer. (#365)
 - Plot related outputs and PCB_Print:
   - Added support for the KiCad 6 "sketch_pads_on_fab_layers" option. (#356)
+- Report:
+  - Expansion for KiCad text variables and environment variables (See #368)
 - *SCH_Print:
   - Added options to select the color theme and enable background color. (#362)
 - SVG:
