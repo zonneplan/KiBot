@@ -1571,7 +1571,7 @@ Notes:
       * Valid keys:
         - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
         - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
-        - **`pcb3d`**: [string=''] Name of the output that generated the PCB3D file to import in Belnder.
+        - **`pcb3d`**: [string=''] Name of the output that generated the PCB3D file to import in Blender.
                        See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates.
         - **`render_options`**: [dict] How the render is done for the `render` output type.
           * Valid keys:
@@ -4614,11 +4614,16 @@ Notes:
         - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
         - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=vrml, %x=wrl). Affected by global options.
+        - **`show_components`**: [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+                                 Unlike the `pcbdraw` output, the default is `all`.
         - `dir_models`: [string='shapes3D'] Subdirectory used to store the 3D models for the components.
                         If you want to create a monolithic file just use '' here.
                         Note that the WRL file will contain relative paths to the models.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
+        - `highlight`: [list(string)=[]] List of components to highlight.
+        - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
+        - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
         - `model_units`: [string='millimeters'] [millimeters,meters,deciinches,inches] Units used for the VRML (1 deciinch = 0.1 inches).
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.

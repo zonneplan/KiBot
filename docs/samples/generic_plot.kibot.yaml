@@ -149,7 +149,7 @@ outputs:
           # Note that some formats includes the light and camera and others are just the 3D model
           # (i.e. STL and PLY)
           type: 'render'
-      # [string=''] Name of the output that generated the PCB3D file to import in Belnder.
+      # [string=''] Name of the output that generated the PCB3D file to import in Blender.
       # See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates
       pcb3d: ''
       # Options to configure how Blender imports the PCB.
@@ -3266,6 +3266,12 @@ outputs:
       dnf_filter: '_none'
       # [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD
       download: true
+      # [list(string)=[]] List of components to highlight
+      highlight: []
+      # [boolean=false] Highlight over the component (not under)
+      highlight_on_top: false
+      # [number=1.5] [0,1000] How much the highlight extends around the component [mm]
+      highlight_padding: 1.5
       # [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models
       kicad_3d_url: 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
       # [string='millimeters'] [millimeters,meters,deciinches,inches] Units used for the VRML (1 deciinch = 0.1 inches)
@@ -3283,6 +3289,9 @@ outputs:
       ref_x: 0
       # [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` is disabled
       ref_y: 0
+      # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+      # Unlike the `pcbdraw` output, the default is `all`
+      show_components: all
       # [boolean=true] The center of the PCB will be used as reference point.
       # When disabled the `ref_x`, `ref_y` and `ref_units` will be used
       use_pcb_center_as_ref: true

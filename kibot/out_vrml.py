@@ -11,7 +11,7 @@ Dependencies:
 """
 import os
 from .gs import GS
-from .out_base_3d import Base3DOptions, Base3D
+from .out_base_3d import Base3DOptionsWithHL, Base3D
 from .misc import FAILED_EXECUTE
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -24,7 +24,7 @@ def replace_ext(file, ext):
     return file+'.wrl'
 
 
-class VRMLOptions(Base3DOptions):
+class VRMLOptions(Base3DOptionsWithHL):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
@@ -69,7 +69,9 @@ class VRMLOptions(Base3DOptions):
     def run(self, name):
         command = self.ensure_tool('KiAuto')
         super().run(name)
-        board_name = self.filter_components(force_wrl=True)
+        self.apply_show_components()
+        board_name = self.filter_components(highlight=set(self.expand_kf_components(self.highlight)), force_wrl=True)
+        self.undo_show_components()
         cmd = [command, 'export_vrml', '--output_name', os.path.basename(name), '-U', self.model_units]
         if self.dir_models:
             cmd.extend(['--dir_models', self.dir_models])

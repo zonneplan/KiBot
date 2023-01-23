@@ -9,8 +9,10 @@ import requests
 import tempfile
 from .misc import W_MISS3D, W_FAILDL, W_DOWN3D, DISABLE_3D_MODEL_TEXT
 from .gs import GS
+from .optionable import Optionable
 from .out_base import VariantOptions, BaseOutput
 from .kicad.config import KiConf
+from .kiplot import load_sch, get_board_comps_data
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -229,6 +231,71 @@ class Base3DOptions(VariantOptions):
     def remove_temporals(self):
         super().remove_temporals()
         self._tmp_dir = None
+
+
+class Base3DOptionsWithHL(Base3DOptions):
+    """ 3D options including which components will be displayed and highlighted """
+    def __init__(self):
+        with document:
+            self.show_components = Optionable
+            """ *[list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+                Unlike the `pcbdraw` output, the default is `all` """
+            self.highlight = Optionable
+            """ [list(string)=[]] List of components to highlight """
+            self.highlight_padding = 1.5
+            """ [0,1000] How much the highlight extends around the component [mm] """
+            self.highlight_on_top = False
+            """ Highlight over the component (not under) """
+        super().__init__()
+
+    def config(self, parent):
+        super().config(parent)
+        self._filters_to_expand = False
+        # List of components
+        self._show_all_components = False
+        if isinstance(self.show_components, str):
+            if self.show_components == 'all':
+                self._show_all_components = True
+            self.show_components = []
+        elif isinstance(self.show_components, type):
+            # Default is all
+            self._show_all_components = True
+        else:  # a list
+            self.show_components = self.solve_kf_filters(self.show_components)
+        # Highlight
+        if isinstance(self.highlight, type):
+            self.highlight = None
+        else:
+            self.highlight = self.solve_kf_filters(self.highlight)
+
+    def apply_show_components(self):
+        if self._show_all_components:
+            # Don't change anything
+            return
+        logger.debug('Applying components list ...')
+        # The user specified a list of components, we must remove the rest
+        if not self._comps:
+            # No variant or filter applied
+            # Load the components
+            load_sch()
+            self._comps = GS.sch.get_components()
+            get_board_comps_data(self._comps)
+        # If the component isn't listed by the user make it DNF
+        show_components = set(self.expand_kf_components(self.show_components))
+        self.undo_show = set()
+        for c in self._comps:
+            if c.ref not in show_components and c.fitted:
+                c.fitted = False
+                self.undo_show.add(c.ref)
+                logger.debugl(2, '- Removing '+c.ref)
+
+    def undo_show_components(self):
+        if self._show_all_components:
+            # Don't change anything
+            return
+        for c in self._comps:
+            if c.ref in self.undo_show:
+                c.fitted = True
 
 
 class Base3D(BaseOutput):

@@ -140,7 +140,7 @@ class Blender_ExportOptions(Base3DOptions):
     def __init__(self):
         with document:
             self.pcb3d = ""
-            """ *Name of the output that generated the PCB3D file to import in Belnder.
+            """ *Name of the output that generated the PCB3D file to import in Blender.
                 See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates """
             self.pcb_import = PCB2BlenderOptions
             """ Options to configure how Blender imports the PCB.

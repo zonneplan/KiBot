@@ -18,9 +18,7 @@ import subprocess
 from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL)
 from .gs import GS
-from .kiplot import load_sch, get_board_comps_data
-from .optionable import Optionable
-from .out_base_3d import Base3DOptions, Base3D
+from .out_base_3d import Base3DOptionsWithHL, Base3D
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -40,7 +38,7 @@ def _run_command(cmd):
         logger.debug('- Output from command:\n'+cmd_output.decode())
 
 
-class Render3DOptions(Base3DOptions):
+class Render3DOptions(Base3DOptionsWithHL):
     _colors = {'background1': 'bg_color_1',
                'background2': 'bg_color_2',
                'copper': 'copper_color',
@@ -120,15 +118,6 @@ class Render3DOptions(Base3DOptions):
             """ Clip silkscreen at via annuli (KiCad 6) """
             self.subtract_mask_from_silk = True
             """ Clip silkscreen at solder mask edges (KiCad 6) """
-            self.show_components = Optionable
-            """ *[list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
-                Unlike the `pcbdraw` output, the default is `all` """
-            self.highlight = Optionable
-            """ [list(string)=[]] List of components to highlight """
-            self.highlight_padding = 1.5
-            """ [0,1000] How much the highlight extends around the component [mm] """
-            self.highlight_on_top = False
-            """ Highlight over the component (not under) """
             self.auto_crop = False
             """ When enabled the image will be post-processed to remove the empty space around the image.
                 In this mode the `background2` is changed to be the same as `background1` """
@@ -143,7 +132,6 @@ class Render3DOptions(Base3DOptions):
         self._expand_ext = 'png'
 
     def config(self, parent):
-        self._filters_to_expand = False
         # Apply global defaults
         if GS.global_pcb_material is not None:
             material = GS.global_pcb_material.lower()
@@ -179,28 +167,14 @@ class Render3DOptions(Base3DOptions):
                 if nm in name:
                     self.copper = "#"+color
                     break
+        # Now we can configure (defaults applied)
         super().config(parent)
         self.validate_colors(list(self._colors.keys())+['transparent_background_color'])
+        # View and also add it to the ID
         view = self._views.get(self.view, None)
         if view is not None:
             self.view = view
-        # List of components
-        self._show_all_components = False
-        if isinstance(self.show_components, str):
-            if self.show_components == 'all':
-                self._show_all_components = True
-            self.show_components = []
-        elif isinstance(self.show_components, type):
-            # Default is all
-            self._show_all_components = True
-        else:  # a list
-            self.show_components = self.solve_kf_filters(self.show_components)
         self._expand_id += '_'+self._rviews.get(self.view)
-        # highlight
-        if isinstance(self.highlight, type):
-            self.highlight = None
-        else:
-            self.highlight = self.solve_kf_filters(self.highlight)
 
     def add_step(self, cmd, steps, ops):
         if steps:
@@ -246,35 +220,6 @@ class Render3DOptions(Base3DOptions):
             cmd.append('--dont_clip_silk_on_via_annulus')
         if not self.subtract_mask_from_silk:
             cmd.append('--dont_substrack_mask_from_silk')
-
-    def apply_show_components(self):
-        if self._show_all_components:
-            # Don't change anything
-            return
-        logger.debug('Applying components list ...')
-        # The user specified a list of components, we must remove the rest
-        if not self._comps:
-            # No variant or filter applied
-            # Load the components
-            load_sch()
-            self._comps = GS.sch.get_components()
-            get_board_comps_data(self._comps)
-        # If the component isn't listed by the user make it DNF
-        show_components = set(self.expand_kf_components(self.show_components))
-        self.undo_show = set()
-        for c in self._comps:
-            if c.ref not in show_components and c.fitted:
-                c.fitted = False
-                self.undo_show.add(c.ref)
-                logger.debugl(2, '- Removing '+c.ref)
-
-    def undo_show_components(self):
-        if self._show_all_components:
-            # Don't change anything
-            return
-        for c in self._comps:
-            if c.ref in self.undo_show:
-                c.fitted = True
 
     def run(self, output):
         super().run(output)
