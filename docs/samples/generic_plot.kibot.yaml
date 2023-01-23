@@ -40,6 +40,7 @@ preflight:
       error: '10'
       regex: 'Regular expression to match'
   # [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
+  # It will also ignore KiCad 6 warnings.
   ignore_unconnected: false
   # [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
   # This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
@@ -55,6 +56,8 @@ preflight:
   # The report file name is controlled by the global output pattern (%i=drc %x=txt).
   # Note that the KiCad 6 *Test for parity between PCB and schematic* option is not supported.
   # If you need to check the parity use the `update_xml` preflight.
+  # KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
+  # This will change in the future.
   run_drc: true
   # [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
   # The report file name is controlled by the global output pattern (%i=erc %x=txt).

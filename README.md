@@ -440,6 +440,7 @@ This section is used to specify tasks that will be executed before generating an
     - `regex`: [string=''] Regular expression to match the text for the error we want to exclude.
     - *regexp*: Alias for regex.
 - `ignore_unconnected`: [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
+        It will also ignore KiCad 6 warnings.
 - `pcb_replace`: [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
         This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
         This preflight modifies the PCB. Even when a back-up is done use it carefully.
@@ -465,6 +466,8 @@ This section is used to specify tasks that will be executed before generating an
         The report file name is controlled by the global output pattern (%i=drc %x=txt).
         Note that the KiCad 6 *Test for parity between PCB and schematic* option is not supported.
         If you need to check the parity use the `update_xml` preflight.
+        KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
+        This will change in the future.
 - `run_erc`: [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
         The report file name is controlled by the global output pattern (%i=erc %x=txt).
 - `sch_replace`: [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
