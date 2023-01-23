@@ -70,7 +70,7 @@ class Run_DRC(BasePreFlight):  # noqa: F821
             if ret > 127:
                 ret = -(256-ret)
             if ret < 0:
-                logger.error('DRC errors: %d', -ret)
+                logger.error('DRC violations: %d', -ret)
             else:
                 logger.error('DRC returned %d', ret)
             exit(DRC_ERROR)
