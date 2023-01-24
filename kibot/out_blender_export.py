@@ -12,12 +12,13 @@ Dependencies:
 from copy import copy
 import json
 import os
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .error import KiPlotConfigurationError
-from .kiplot import get_output_targets, run_output, run_command, register_xmp_import
+from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output
 from .gs import GS
 from .optionable import Optionable
-from .out_base_3d import Base3DOptions, Base3D
+from .out_base_3d import Base3D, Base3DOptionsWithHL
+from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -133,14 +134,29 @@ class BlenderRenderOptions(Optionable):
         self._unkown_is_error = True
 
 
-class Blender_ExportOptions(Base3DOptions):
+class PCB3DExportOptions(Base3DOptionsWithHL):
+    """ Options to generate the PCB3D file """
+    def __init__(self, field=None):
+        super().__init__()
+        with document:
+            self.output = GS.def_global_output
+            """ Name for the generated PCB3D file (%i='blender_export' %x='pcb3d') """
+            self.version = '2.1'
+            """ [2.1,2.1_haschtl] Variant of the format used """
+        self._expand_id = 'blender_export'
+        self._expand_ext = 'pcb3d'
+        self._unkown_is_error = True
+
+
+class Blender_ExportOptions(Optionable):
     _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
     _rviews = {v: k for k, v in _views.items()}
 
     def __init__(self):
         with document:
-            self.pcb3d = ""
-            """ *Name of the output that generated the PCB3D file to import in Blender.
+            self.pcb3d = PCB3DExportOptions
+            """ *[string|dict] Options to export the PCB to Blender.
+                You can also specify the name of the output that generates the PCB3D file.
                 See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates """
             self.pcb_import = PCB2BlenderOptions
             """ Options to configure how Blender imports the PCB.
@@ -173,11 +189,12 @@ class Blender_ExportOptions(Base3DOptions):
     def config(self, parent):
         super().config(parent)
         # Check we at least have a name for the source output
-        if not self.pcb3d:
-            raise KiPlotConfigurationError('You must specify the name of the output that generates the PCB3D file')
+        if isinstance(self.pcb3d, type) or (isinstance(self.pcb3d, str) and not self.pcb3d):
+            raise KiPlotConfigurationError('You must specify the name of the output that'
+                                           ' generates the PCB3D file or its options')
         # Do we have outputs?
         if isinstance(self.outputs, type):
-            raise KiPlotConfigurationError('You must specify at least one output')
+            self.outputs = []
         elif isinstance(self.outputs, BlenderOutputOptions):
             # One, make a list
             self.outputs = [self.outputs]
@@ -238,17 +255,135 @@ class Blender_ExportOptions(Base3DOptions):
     def get_targets(self, out_dir):
         return [self.get_output_filename(o, out_dir) for o in self.outputs]
 
-    def run(self, output):
-        super().run(output)
-        command = self.ensure_tool('Blender')
-        pcb3d_targets, pcb3d_out_dir, pcb3d_out = get_output_targets(self.pcb3d, self._parent)
-        pcb3d_file = pcb3d_targets[0]
-        logger.debug('- From file '+pcb3d_file)
-        if not pcb3d_out._done:
-            logger.debug('-  Running '+self.pcb3d)
-            run_output(pcb3d_out)
+    def create_vrml(self, dest_dir):
+        tree = {'name': '_temporal_vrml_for_pcb3d',
+                'type': 'vrml',
+                'comment': 'Internally created for the PCB3D',
+                'dir': dest_dir,
+                'options': {'output': 'pcb.wrl',
+                            'dir_models': 'components',
+                            'use_pcb_center_as_ref': False,
+                            'model_units': 'meters'}}
+        out = RegOutput.get_class_for('vrml')()
+        out.set_tree(tree)
+        config_output(out)
+        out.options.copy_options(self.pcb3d)
+        logger.debug(' - Creating VRML ...')
+        out.options.run(os.path.join(dest_dir, 'pcb.wrl'))
+
+    def create_layers(self, dest_dir):
+        out_dir = os.path.join(dest_dir, 'layers')
+        tree = {'name': '_temporal_svgs_layers',
+                'type': 'svg',
+                'comment': 'Internally created for the PCB3D',
+                'dir': out_dir,
+                'options': {'output': '%i.%x',
+                            'margin': 1,
+                            'limit_viewbox': True,
+                            'svg_precision': 6,
+                            'drill_marks': 'none'},
+                'layers': ['F.Cu', 'B.Cu', 'F.Paste', 'B.Paste', 'F.Mask', 'B.Mask',
+                           {'layer': 'F.SilkS', 'suffix': 'F_SilkS'},
+                           {'layer': 'B.SilkS', 'suffix': 'B_SilkS'}]}
+        out = RegOutput.get_class_for(tree['type'])()
+        out.set_tree(tree)
+        config_output(out)
+        logger.debug(' - Creating SVG for layers ...')
+        out.run(out_dir)
+
+    def create_pads(self, dest_dir):
+        tree = {'name': '_temporal_pcb3d_tools',
+                'type': 'pcb2blender_tools',
+                'comment': 'Internally created for the PCB3D',
+                'dir': dest_dir,
+                'options': {'stackup_create': self.pcb3d.version == '2.1_haschtl'}}
+        out = RegOutput.get_class_for(tree['type'])()
+        out.set_tree(tree)
+        config_output(out)
+        logger.debug(' - Creating Pads and boundary ...')
+        out.run(dest_dir)
+
+    def create_pcb3d(self, data_dir):
+        out_dir = self._parent.output_dir
+        # Compute the name for the PCB3D
+        cur_id = self._expand_id
+        cur_ext = self._expand_ext
+        self._expand_id = self.pcb3d._expand_id
+        self._expand_ext = self.pcb3d._expand_ext
+        out_name = self._parent.expand_filename(out_dir, self.pcb3d.output)
+        self._expand_id = cur_id
+        self._expand_ext = cur_ext
+        tree = {'name': '_temporal_compress_pcb3d',
+                'type': 'compress',
+                'comment': 'Internally created for the PCB3D',
+                'dir': out_dir,
+                'options': {'output': out_name,
+                            'format': 'ZIP',
+                            'files': [{'source': os.path.join(data_dir, 'boards'),
+                                       'dest': '/'},
+                                      {'source': os.path.join(data_dir, 'boards/*'),
+                                       'dest': 'boards'},
+                                      {'source': os.path.join(data_dir, 'components'),
+                                       'dest': '/'},
+                                      {'source': os.path.join(data_dir, 'components/*'),
+                                       'dest': 'components'},
+                                      {'source': os.path.join(data_dir, 'layers'),
+                                       'dest': '/'},
+                                      {'source': os.path.join(data_dir, 'layers/*'),
+                                       'dest': 'layers'},
+                                      {'source': os.path.join(data_dir, 'pads'),
+                                       'dest': '/'},
+                                      {'source': os.path.join(data_dir, 'pads/*'),
+                                       'dest': 'pads'},
+                                      {'source': os.path.join(data_dir, 'pcb.wrl'),
+                                       'dest': '/'},
+                                      ]}}
+        out = RegOutput.get_class_for(tree['type'])()
+        out.set_tree(tree)
+        config_output(out)
+        logger.debug(' - Creating the PCB3D ...')
+        out.run(out_dir)
+        return out_name
+
+    def solve_pcb3d(self):
+        if isinstance(self.pcb3d, str):
+            # An output creates it
+            pcb3d_targets, _, pcb3d_out = get_output_targets(self.pcb3d, self._parent)
+            pcb3d_file = pcb3d_targets[0]
+            logger.debug('- From file '+pcb3d_file)
+            if not pcb3d_out._done:
+                logger.debug('-  Running '+self.pcb3d)
+                run_output(pcb3d_out)
+            self._pcb3d = PCB3DExportOptions()
+            self._pcb3d.output = pcb3d_file
+            # Needed by ensure tool
+            self._pcb3d._parent = self._parent
+        else:
+            # We create it
+            with TemporaryDirectory() as tmp_dir:
+                # VRML
+                self.create_vrml(tmp_dir)
+                # SVG layers
+                self.create_layers(tmp_dir)
+                # Pads and bounds
+                self.create_pads(tmp_dir)
+                # Compress the files
+                pcb3d_file = self.create_pcb3d(tmp_dir)
+            self._pcb3d = self.pcb3d
+            # Needed by ensure tool
+            self.type = self._parent.type
         if not os.path.isfile(pcb3d_file):
             raise KiPlotConfigurationError('Missing '+pcb3d_file)
+        return pcb3d_file
+
+    def run(self, output):
+        pcb3d_file = self.solve_pcb3d()
+        # If no outputs specified just finish
+        # Can be used to export the PCB to Blender
+        if not self.outputs:
+            return
+        # Make sure Blender is available
+        command = self._pcb3d.ensure_tool('Blender')
         # Create a JSON with the scene information
         with NamedTemporaryFile(mode='w', suffix='.json') as f:
             scene = {}
@@ -312,11 +447,13 @@ class Blender_ExportOptions(Base3DOptions):
 class Blender_Export(Base3D):
     """ Blender Export **Experimental**
         Exports the PCB in various 3D file formats.
-        Also renders the PCB in high-quality.
+        Also renders the PCB with high-quality.
         This output is complex to setup and needs very big dependencies.
         Please be patient when using it.
         You need Blender with the pcb2blender plug-in installed.
-        Visit: [pcb2blender](https://github.com/30350n/pcb2blender) """
+        Visit: [pcb2blender](https://github.com/30350n/pcb2blender).
+        You can just generate the exported PCB if no output is specified.
+        You can also export the PCB and render it at the same time """
     def __init__(self):
         super().__init__()
         with document:

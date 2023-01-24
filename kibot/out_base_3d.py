@@ -71,6 +71,12 @@ class Base3DOptions(VariantOptions):
         super().__init__()
         self._expand_id = '3D'
 
+    def copy_options(self, ref):
+        super().copy_options(ref)
+        self.no_virtual = ref.no_virtual
+        self.download = ref.download
+        self.kicad_3d_url = ref.kicad_3d_url
+
     def download_model(self, url, fname, rel_dirs):
         """ Download the 3D model from the provided URL """
         logger.debug('Downloading `{}`'.format(url))
@@ -267,6 +273,16 @@ class Base3DOptionsWithHL(Base3DOptions):
             self.highlight = None
         else:
             self.highlight = self.solve_kf_filters(self.highlight)
+
+    def copy_options(self, ref):
+        """ Copy its options from another similar object """
+        super().copy_options(ref)
+        self.show_components = ref.show_components
+        self.highlight = ref.highlight
+        self.highlight_padding = ref.highlight_padding
+        self.highlight_on_top = ref.highlight_on_top
+        self._filters_to_expand = ref._filters_to_expand
+        self._show_all_components = ref._show_all_components
 
     def apply_show_components(self):
         if self._show_all_components:

@@ -93,11 +93,13 @@ preflight:
 
 outputs:
   # Blender Export **Experimental**:
-  # Also renders the PCB in high-quality.
+  # Also renders the PCB with high-quality.
   # This output is complex to setup and needs very big dependencies.
   # Please be patient when using it.
   # You need Blender with the pcb2blender plug-in installed.
-  # Visit: [pcb2blender](https://github.com/30350n/pcb2blender)
+  # Visit: [pcb2blender](https://github.com/30350n/pcb2blender).
+  # You can just generate the exported PCB if no output is specified.
+  # You can also export the PCB and render it at the same time
   - name: 'blender_export_example'
     comment: 'Exports the PCB in various 3D file formats.'
     type: 'blender_export'
@@ -117,13 +119,6 @@ outputs:
         pos_y: 0
         # [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
         pos_z: 0
-      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
-      # A short-cut to use for simple cases where a variant is an overkill
-      dnf_filter: '_none'
-      # [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD
-      download: true
-      # [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models
-      kicad_3d_url: 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
       # [dict|list(dict)] Options for the light/s
       light:
         # [string=''] Name for the light
@@ -134,8 +129,6 @@ outputs:
           pos_y: 0
           # [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
           pos_z: 0
-      # [boolean=false] Used to exclude 3D models for components with 'virtual' attribute
-      no_virtual: false
       # [dict|list(dict)] Outputs to generate in the same run
       outputs:
         # [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
@@ -149,9 +142,37 @@ outputs:
           # Note that some formats includes the light and camera and others are just the 3D model
           # (i.e. STL and PLY)
           type: 'render'
-      # [string=''] Name of the output that generated the PCB3D file to import in Blender.
+      # [string|dict] Options to export the PCB to Blender.
+      # You can also specify the name of the output that generates the PCB3D file.
       # See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates
-      pcb3d: ''
+      pcb3d:
+        # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+        # A short-cut to use for simple cases where a variant is an overkill
+        dnf_filter: '_none'
+        # [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD
+        download: true
+        # [list(string)=[]] List of components to highlight
+        highlight: []
+        # [boolean=false] Highlight over the component (not under)
+        highlight_on_top: false
+        # [number=1.5] [0,1000] How much the highlight extends around the component [mm]
+        highlight_padding: 1.5
+        # [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models
+        kicad_3d_url: 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
+        # [boolean=false] Used to exclude 3D models for components with 'virtual' attribute
+        no_virtual: false
+        # [string='%f-%i%I%v.%x'] Name for the generated PCB3D file (%i='blender_export' %x='pcb3d'). Affected by global options
+        output: '%f-%i%I%v.%x'
+        # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+        # A short-cut to use for simple cases where a variant is an overkill
+        pre_transform: '_none'
+        # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+        # Unlike the `pcbdraw` output, the default is `all`
+        show_components: all
+        # [string=''] Board variant to apply
+        variant: ''
+        # [string='2.1'] [2.1,2.1_haschtl] Variant of the format used
+        version: '2.1'
       # Options to configure how Blender imports the PCB.
       # The default values are good for most cases
       pcb_import:
@@ -172,9 +193,6 @@ outputs:
         stack_boards: true
         # [number=1016.0] [508-2032] Texture density in dots per inch
         texture_dpi: 1016.0
-      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
-      # A short-cut to use for simple cases where a variant is an overkill
-      pre_transform: '_none'
       # [dict] How the render is done for the `render` output type
       render_options:
         # [string='#66667F'] First color for the background gradient
@@ -196,8 +214,6 @@ outputs:
       rotate_y: 0
       # [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees]
       rotate_z: 0
-      # [string=''] Board variant to apply
-      variant: ''
       # [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
       # Compatible with `render_3d`
       view: 'top'
@@ -561,7 +577,7 @@ outputs:
           # [string=''] Collect files from the selected output.
           # When used the `source` option is ignored
           from_output: ''
-          # [boolean=false] Use the current the directory specified by the output instead of the dir specified by `-d`.
+          # [boolean=false] Use the current directory specified by the output instead of the dir specified by `-d`.
           # Note that it only applies when using `from_output` and no `dest` is specified.
           # It has more prescedence than `from_cwd`
           from_output_dir: false

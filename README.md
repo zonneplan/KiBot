@@ -1556,11 +1556,13 @@ Notes:
 * Blender Export **Experimental**
   * Type: `blender_export`
   * Description: Exports the PCB in various 3D file formats.
-                 Also renders the PCB in high-quality.
+                 Also renders the PCB with high-quality.
                  This output is complex to setup and needs very big dependencies.
                  Please be patient when using it.
                  You need Blender with the pcb2blender plug-in installed.
-                 Visit: [pcb2blender](https://github.com/30350n/pcb2blender)
+                 Visit: [pcb2blender](https://github.com/30350n/pcb2blender).
+                 You can just generate the exported PCB if no output is specified.
+                 You can also export the PCB and render it at the same time
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -1569,10 +1571,25 @@ Notes:
                   Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `blender_export` output.
       * Valid keys:
-        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
-        - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
-        - **`pcb3d`**: [string=''] Name of the output that generated the PCB3D file to import in Blender.
+        - **`pcb3d`**: [string|dict] Options to export the PCB to Blender.
+                       You can also specify the name of the output that generates the PCB3D file.
                        See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates.
+          * Valid keys:
+            - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+            - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
+            - **`show_components`**: [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+                                     Unlike the `pcbdraw` output, the default is `all`.
+            - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+                            A short-cut to use for simple cases where a variant is an overkill.
+            - `highlight`: [list(string)=[]] List of components to highlight.
+            - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
+            - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
+            - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+            - `output`: [string='%f-%i%I%v.%x'] Name for the generated PCB3D file (%i='blender_export' %x='pcb3d'). Affected by global options.
+            - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+                               A short-cut to use for simple cases where a variant is an overkill.
+            - `variant`: [string=''] Board variant to apply.
+            - `version`: [string='2.1'] [2.1,2.1_haschtl] Variant of the format used.
         - **`render_options`**: [dict] How the render is done for the `render` output type.
           * Valid keys:
             - **`samples`**: [number=10] How many samples we create. Each sample is a raytracing render.
@@ -1593,9 +1610,6 @@ Notes:
             - `pos_x`: [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_y`: [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_z`: [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
-        - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
-                        A short-cut to use for simple cases where a variant is an overkill.
-        - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
         - `light`: [dict|list(dict)] Options for the light/s.
           * Valid keys:
             - `name`: [string=''] Name for the light.
@@ -1625,12 +1639,9 @@ Notes:
                                This option controls if we add it for none, all or only for THT/SMD pads with solder paste.
             - `stack_boards`: [boolean=true] Move the sub-PCBs to their relative position.
             - `texture_dpi`: [number=1016.0] [508-2032] Texture density in dots per inch.
-        - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
-                           A short-cut to use for simple cases where a variant is an overkill.
         - `rotate_x`: [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees].
         - `rotate_y`: [number=0] Angle to rotate the board in the Y axis, positive is clockwise [degrees].
         - `rotate_z`: [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees].
-        - `variant`: [string=''] Board variant to apply.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                   The categories are currently used for `navigate_results`.
@@ -1929,7 +1940,7 @@ Notes:
             - `dest`: [string=''] Destination directory inside the archive, empty means the same of the file.
             - `filter`: [string='.*'] A regular expression that source files must match.
             - `from_cwd`: [boolean=false] Use the current working directory instead of the dir specified by `-d`.
-            - `from_output_dir`: [boolean=false] Use the current the directory specified by the output instead of the dir specified by `-d`.
+            - `from_output_dir`: [boolean=false] Use the current directory specified by the output instead of the dir specified by `-d`.
                                  Note that it only applies when using `from_output` and no `dest` is specified.
                                  It has more prescedence than `from_cwd`.
         - **`format`**: [string='ZIP'] [ZIP,TAR,RAR] Output file format.

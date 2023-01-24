@@ -45,7 +45,7 @@ class FilesList(Optionable):
             self.from_cwd = False
             """ Use the current working directory instead of the dir specified by `-d` """
             self.from_output_dir = False
-            """ Use the current the directory specified by the output instead of the dir specified by `-d`.
+            """ Use the current directory specified by the output instead of the dir specified by `-d`.
                 Note that it only applies when using `from_output` and no `dest` is specified.
                 It has more prescedence than `from_cwd` """
             self.from_output = ''

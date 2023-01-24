@@ -242,6 +242,11 @@ class VariantOptions(BaseOptions):
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
 
+    def copy_options(self, ref):
+        self.variant = ref.variant
+        self.dnf_filter = ref.dnf_filter
+        self.pre_transform = ref.pre_transform
+
     def get_refs_hash(self):
         if not self._comps:
             return None
