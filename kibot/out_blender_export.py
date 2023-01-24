@@ -183,7 +183,7 @@ class Blender_ExportOptions(Optionable):
             """ *[top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
                 Compatible with `render_3d` """
         super().__init__()
-        self._expand_id += '_blender'
+        self._expand_id = '3D_blender'
         self._unkown_is_error = True
 
     def config(self, parent):
