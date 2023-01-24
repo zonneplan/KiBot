@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -23,7 +23,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory, mkdtemp
 from .error import KiPlotConfigurationError
 from .misc import PCB_GENERATORS, RENDERERS, W_MORERES
 from .gs import GS
-from .kiplot import config_output, run_output, get_output_dir, load_board, run_command
+from .kiplot import config_output, run_output, get_output_dir, load_board, run_command, configure_and_run
 from .optionable import BaseOptions, Optionable
 from .out_base import BaseOutput
 from .registrable import RegOutput
@@ -145,11 +145,7 @@ class PresentBoards(Optionable):
                 'type': 'compress',
                 'comment': 'Internally created to compress gerbers',
                 'options': {'output': tmp_name, 'files': [{'from_output': out.name, 'dest': '/'}]}}
-        out = RegOutput.get_class_for('compress')()
-        out.set_tree(tree)
-        config_output(out)
-        logger.debug('Creating gerbers archive ...')
-        out.options.run(tmp_name)
+        configure_and_run(tree, os.path.dirname(tmp_name), 'Creating gerbers archive ...')
 
     def generate_archive(self, out, tmp_name):
         out.options

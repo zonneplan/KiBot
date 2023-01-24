@@ -14,7 +14,7 @@ import json
 import os
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .error import KiPlotConfigurationError
-from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output
+from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output, configure_and_run
 from .gs import GS
 from .optionable import Optionable
 from .out_base_3d import Base3D, Base3DOptionsWithHL
@@ -285,11 +285,7 @@ class Blender_ExportOptions(Optionable):
                 'layers': ['F.Cu', 'B.Cu', 'F.Paste', 'B.Paste', 'F.Mask', 'B.Mask',
                            {'layer': 'F.SilkS', 'suffix': 'F_SilkS'},
                            {'layer': 'B.SilkS', 'suffix': 'B_SilkS'}]}
-        out = RegOutput.get_class_for(tree['type'])()
-        out.set_tree(tree)
-        config_output(out)
-        logger.debug(' - Creating SVG for layers ...')
-        out.run(out_dir)
+        configure_and_run(tree, out_dir, ' - Creating SVG for layers ...')
 
     def create_pads(self, dest_dir):
         tree = {'name': '_temporal_pcb3d_tools',
@@ -297,11 +293,7 @@ class Blender_ExportOptions(Optionable):
                 'comment': 'Internally created for the PCB3D',
                 'dir': dest_dir,
                 'options': {'stackup_create': self.pcb3d.version == '2.1_haschtl'}}
-        out = RegOutput.get_class_for(tree['type'])()
-        out.set_tree(tree)
-        config_output(out)
-        logger.debug(' - Creating Pads and boundary ...')
-        out.run(dest_dir)
+        configure_and_run(tree, dest_dir, ' - Creating Pads and boundary ...')
 
     def create_pcb3d(self, data_dir):
         out_dir = self._parent.output_dir
@@ -338,11 +330,7 @@ class Blender_ExportOptions(Optionable):
                                       {'source': os.path.join(data_dir, 'pcb.wrl'),
                                        'dest': '/'},
                                       ]}}
-        out = RegOutput.get_class_for(tree['type'])()
-        out.set_tree(tree)
-        config_output(out)
-        logger.debug(' - Creating the PCB3D ...')
-        out.run(out_dir)
+        configure_and_run(tree, out_dir, ' - Creating the PCB3D ...')
         return out_name
 
     def solve_pcb3d(self):

@@ -432,6 +432,14 @@ def run_output(out, dont_stop=False):
             raise
 
 
+def configure_and_run(tree, out_dir, msg):
+    out = RegOutput.get_class_for(tree['type'])()
+    out.set_tree(tree)
+    config_output(out)
+    logger.debug(' - Creating the PCB3D ...')
+    out.run(out_dir)
+
+
 def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
     # Make a list of target outputs
