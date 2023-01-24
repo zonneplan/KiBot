@@ -16,7 +16,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .error import KiPlotConfigurationError
 from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output, configure_and_run
 from .gs import GS
-from .optionable import Optionable
+from .optionable import Optionable, BaseOptions
 from .out_base_3d import Base3D, Base3DOptionsWithHL
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
@@ -148,7 +148,7 @@ class PCB3DExportOptions(Base3DOptionsWithHL):
         self._unkown_is_error = True
 
 
-class Blender_ExportOptions(Optionable):
+class Blender_ExportOptions(BaseOptions):
     _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
     _rviews = {v: k for k, v in _views.items()}
 
