@@ -9,7 +9,6 @@ Dependencies:
     role: mandatory
     version: 3.4.0
 """
-from copy import copy
 import json
 import os
 from tempfile import NamedTemporaryFile, TemporaryDirectory
@@ -115,9 +114,6 @@ class BlenderLightOptions(Optionable):
 
 class BlenderRenderOptions(Optionable):
     """ Render parameters """
-    _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
-    _rviews = {v: k for k, v in _views.items()}
-
     def __init__(self, field=None):
         super().__init__()
         with document:
@@ -134,6 +130,17 @@ class BlenderRenderOptions(Optionable):
             """ First color for the background gradient """
             self.background2 = "#CCCCE5"
             """ Second color for the background gradient """
+        self._unkown_is_error = True
+
+
+class BlenderPointOfViewOptions(Optionable):
+    """ Point of View parameters """
+    _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
+    _rviews = {v: k for k, v in _views.items()}
+
+    def __init__(self, field=None):
+        super().__init__()
+        with document:
             self.rotate_x = 0
             """ Angle to rotate the board in the X axis, positive is clockwise [degrees] """
             self.rotate_y = 0
@@ -157,7 +164,6 @@ class BlenderRenderOptions(Optionable):
         self._file_id = self.file_id
         if not self._file_id:
             self._file_id = '_'+self._rviews.get(self.view)
-        self._parent._expand_id += self._file_id
 
 
 class PCB3DExportOptions(Base3DOptionsWithHL):
@@ -195,9 +201,9 @@ class Blender_ExportOptions(BaseOptions):
             """ [dict] Options for the camera.
                 If none specified KiBot will create a suitable camera """
             self.render_options = BlenderRenderOptions
-            """ *[dict] Render and point of view options.
-                Controls how the render is done for the `render` output type,
-                and how the object is viewed by the camera """
+            """ *[dict] Controls how the render is done for the `render` output type """
+            self.point_of_view = BlenderPointOfViewOptions
+            """ *[dict|list(dict)] How the object is viewed by the camera """
         super().__init__()
         self._expand_id = '3D_blender'
         self._unkown_is_error = True
@@ -253,15 +259,24 @@ class Blender_ExportOptions(BaseOptions):
         # Ensure we have some render options
         if isinstance(self.render_options, type):
             self.render_options = BlenderRenderOptions()
+        # Point of View, make sure we have a list and at least 1 element
+        if isinstance(self.point_of_view, type):
+            self.point_of_view = [BlenderPointOfViewOptions()]
+        elif isinstance(self.point_of_view, BlenderPointOfViewOptions):
+            self.point_of_view = [self.point_of_view]
 
-    def get_output_filename(self, o, output_dir):
+    def get_output_filename(self, o, output_dir, pov):
         if o.type == 'render':
             self._expand_ext = 'png'
         elif o.type == 'blender':
             self._expand_ext = 'blend'
         else:
             self._expand_ext = o.type
-        return self._parent.expand_filename(output_dir, o.output)
+        cur_id = self._expand_id
+        self._expand_id += pov._file_id
+        name = self._parent.expand_filename(output_dir, o.output)
+        self._expand_id = cur_id
+        return name
 
     def get_targets(self, out_dir):
         return [self.get_output_filename(o, out_dir) for o in self.outputs]
@@ -393,21 +408,19 @@ class Blender_ExportOptions(BaseOptions):
                 scene['camera'] = {'name': self.camera.name,
                                    'position': (self.camera.pos_x, self.camera.pos_y, self.camera.pos_z)}
             ro = self.render_options
-            scr = {'samples': ro.samples,
-                   'resolution_x': ro.resolution_x,
-                   'resolution_y': ro.resolution_y,
-                   'transparent_background': ro.transparent_background,
-                   'background1': ro.background1,
-                   'background2': ro.background2}
-            scene['render'] = scr
-            if ro.rotate_x:
-                scr['rotate_x'] = -ro.rotate_x
-            if ro.rotate_y:
-                scr['rotate_y'] = -ro.rotate_y
-            if ro.rotate_z:
-                scr['rotate_z'] = -ro.rotate_z
-            if ro.view:
-                scr['view'] = ro.view
+            scene['render'] = {'samples': ro.samples,
+                               'resolution_x': ro.resolution_x,
+                               'resolution_y': ro.resolution_y,
+                               'transparent_background': ro.transparent_background,
+                               'background1': ro.background1,
+                               'background2': ro.background2}
+            povs = []
+            for pov in self.point_of_view:
+                povs.append({'rotate_x': -pov.rotate_x,
+                             'rotate_y': -pov.rotate_y,
+                             'rotate_z': -pov.rotate_z,
+                             'view': pov.view})
+            scene['point_of_view'] = povs
             text = json.dumps(scene, sort_keys=True, indent=2)
             logger.debug('Scene:\n'+text)
             f.write(text)
@@ -433,10 +446,18 @@ class Blender_ExportOptions(BaseOptions):
             if not pi.stack_boards:
                 cmd.append('--dont_stack_boards')
             cmd.append('--format')
-            cmd.extend([o.type for o in self.outputs])
+            for _ in self.point_of_view:
+                for o in self.outputs:
+                    cmd.append(o.type)
             cmd.append('--output')
-            for o in self.outputs:
-                cmd.append(self.get_output_filename(o, self._parent.output_dir))
+            names = set()
+            for pov in self.point_of_view:
+                for o in self.outputs:
+                    name = self.get_output_filename(o, self._parent.output_dir, pov)
+                    if name in names:
+                        raise KiPlotConfigurationError('Repeated name (use `file_id`): '+name)
+                    cmd.append(name)
+                    names.add(name)
             cmd.extend(['--scene', f.name])
             cmd.append(pcb3d_file)
             # Execute the command
@@ -465,7 +486,6 @@ class Blender_Export(Base3D):
     def get_conf_examples(name, layers, templates):
         if not GS.check_tool(name, 'Blender'):
             return None
-        outs = []
         has_top = False
         has_bottom = False
         for la in layers:
@@ -476,31 +496,18 @@ class Blender_Export(Base3D):
         if not has_top and not has_bottom:
             return None
         register_xmp_import('PCB2Blender_2_1')
-        out_ops = {'pcb3d': '_PCB2Blender_2_1', 'outputs': [{'type': 'render'}, {'type': 'blender'}]}
+        povs = []
         if has_top:
-            gb = {}
-            gb['name'] = 'basic_{}_top'.format(name)
-            gb['comment'] = '3D view from top (Blender)'
-            gb['type'] = name
-            gb['dir'] = '3D'
-            gb['options'] = copy(out_ops)
-            outs.append(gb)
-            gb = {}
-            gb['name'] = 'basic_{}_30deg'.format(name)
-            gb['comment'] = '3D view from 30 degrees (Blender)'
-            gb['type'] = name
-            gb['dir'] = '3D'
-            gb['output_id'] = '_30deg'
-            gb['options'] = copy(out_ops)
-            gb['options']['render_options'] = {'rotate_x': 30, 'rotate_z': -20}
-            outs.append(gb)
+            povs.append({'view': 'top'})
+            povs.append({'rotate_x': 30, 'rotate_z': -20, 'file_id': '_30deg'})
         if has_bottom:
-            gb = {}
-            gb['name'] = 'basic_{}_bottom'.format(name)
-            gb['comment'] = '3D view from bottom (Blender)'
-            gb['type'] = name
-            gb['dir'] = '3D'
-            gb['options'] = copy(out_ops)
-            gb['options']['render_options'] = {'view': 'bottom'}
-            outs.append(gb)
-        return outs
+            povs.append({'view': 'bottom'})
+        gb = {}
+        gb['name'] = 'basic_{}'.format(name)
+        gb['comment'] = '3D view from top/30 deg/bottom (Blender)'
+        gb['type'] = name
+        gb['dir'] = '3D'
+        gb['options'] = {'pcb3d': '_PCB2Blender_2_1',
+                         'outputs': [{'type': 'render'}, {'type': 'blender'}],
+                         'point_of_view': povs}
+        return [gb]

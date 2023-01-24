@@ -188,63 +188,79 @@ def create_background_gradient(color1, color0):
     nt.links.new(mx.outputs["Shader"], wo_is)
 
 
-def apply_scene(file):
+jscene = None
+auto_camera = False
+cam_ob = None
+
+
+def apply_scene(file, n_view=0):
     # Loads scene
     if not file:
-        return
-    with open(file, 'rt') as f:
-        text = f.read()
-        print(text)
-        jscene = json.loads(text)
+        return 1
+    global jscene
+    if jscene is None:
+        with open(file, 'rt') as f:
+            text = f.read()
+            print(text)
+            jscene = json.loads(text)
     scene = bpy.context.scene
 
     # Select the board
     print('- Select all')
     bpy.ops.object.select_all(action='SELECT')
-    render = jscene.get('render')
-    if render:
+    # Make sure we start rotations from 0
+    bpy.context.active_object.rotation_euler = (0, 0, 0)
+    povs = jscene.get('point_of_view')
+    if povs:
+        pov = povs[n_view]
         # Apply point of view
-        do_point_of_view(render, 'view')
+        do_point_of_view(pov, 'view')
         # Apply extra rotations
-        do_rotate(render, 'rotate_x', 0)
-        do_rotate(render, 'rotate_y', 1)
-        do_rotate(render, 'rotate_z', 2)
+        do_rotate(pov, 'rotate_x', 0)
+        do_rotate(pov, 'rotate_y', 1)
+        do_rotate(pov, 'rotate_z', 2)
 
     # Add a camera
-    auto_camera = False
-    camera = jscene.get('camera')
-    if not camera:
-        auto_camera = True
-        camera = {'name': 'kibot_camera', 'position': (0.0, 0.0, 10.0)}
-    name = camera.get('name', 'unknown')
-    pos = camera.get('position', (0, 0, 0))
-    print(f"- Creating camera {name} at {pos}")
-    cam_data = bpy.data.cameras.new(name)
-    cam_ob = bpy.data.objects.new(name=name, object_data=cam_data)
-    scene.collection.objects.link(cam_ob)  # instance the camera object in the scene
-    scene.camera = cam_ob       # set the active camera
-    cam_ob.location = pos
+    global auto_camera
+    if not n_view:
+        # First time: create the camera
+        camera = jscene.get('camera')
+        if not camera:
+            auto_camera = True
+            camera = {'name': 'kibot_camera', 'position': (0.0, 0.0, 10.0)}
+        name = camera.get('name', 'unknown')
+        pos = camera.get('position', (0, 0, 0))
+        print(f"- Creating camera {name} at {pos}")
+        cam_data = bpy.data.cameras.new(name)
+        global cam_ob
+        cam_ob = bpy.data.objects.new(name=name, object_data=cam_data)
+        scene.collection.objects.link(cam_ob)  # instance the camera object in the scene
+        scene.camera = cam_ob       # set the active camera
+        cam_ob.location = pos
     if auto_camera:
         print('- Changing camera to focus the board')
         bpy.ops.view3d.camera_to_view_selected()
         cam_ob.location = (cam_ob.location[0], cam_ob.location[1], cam_ob.location[2]*1.1)
 
     # Add lights
-    lights = jscene.get('lights')
-    if lights:
-        for light in lights:
-            name = light.get('name', 'unknown')
-            pos = light.get('position', (0.0, 0.0, 0.0))
-            print(f"- Creating light {name} at {pos}")
-            light_data = bpy.data.lights.new(name, 'POINT')
-            light_ob = bpy.data.objects.new(name=name, object_data=light_data)
-            scene.collection.objects.link(light_ob)
-            light_ob.location = pos
+    if not n_view:
+        # First time: create the lights
+        lights = jscene.get('lights')
+        if lights:
+            for light in lights:
+                name = light.get('name', 'unknown')
+                pos = light.get('position', (0.0, 0.0, 0.0))
+                print(f"- Creating light {name} at {pos}")
+                light_data = bpy.data.lights.new(name, 'POINT')
+                light_ob = bpy.data.objects.new(name=name, object_data=light_data)
+                scene.collection.objects.link(light_ob)
+                light_ob.location = pos
 
     bpy.context.view_layer.update()
 
     # Setup render options
-    if render:
+    render = jscene.get('render')
+    if render and not n_view:
         scene.cycles.samples = render.get('samples', 10)
         r = scene.render
         r.engine = 'CYCLES'
@@ -257,6 +273,7 @@ def apply_scene(file):
             r.image_settings.color_mode = 'RGBA'
         else:
             create_background_gradient(render.get('background1', '#66667F'), render.get('background2', '#CCCCE5'))
+    return len(povs)
 
 
 EXPORTERS = {'fbx': fbx_export,
@@ -328,12 +345,24 @@ def main():
                                      cut_boards=args.dont_cut_boards,
                                      stack_boards=args.dont_stack_boards,
                                      texture_dpi=args.texture_dpi)
-    # Apply the scene
-    apply_scene(args.scene)
-    # Do all the exports
-    for f, o in zip(args.format, args.output):
-        print(f"Exporting {o} in {f} format")
-        EXPORTERS[f](os.path.abspath(o))
+    # Apply the scene first scene
+    c_views = apply_scene(args.scene)
+    c_formats = len(args.format)
+    if c_formats % c_views:
+        print("The number of outputs must be a multiple of the views (views: {} outputs: {})".format(c_views, c_formats))
+        sys.exit(2)
+    per_pass = int(c_formats/c_views)
+    for n in range(c_views):
+        if n:
+            # Apply scene N
+            apply_scene(args.scene, n)
+        # Get the current slice
+        formats = args.format[n*per_pass:(n+1)*per_pass]
+        outputs = args.output[n*per_pass:(n+1)*per_pass]
+        # Do all the exports
+        for f, o in zip(formats, outputs):
+            print(f"Exporting {o} in {f} format")
+            EXPORTERS[f](os.path.abspath(o))
 
     print("batch job finished, exiting")
 

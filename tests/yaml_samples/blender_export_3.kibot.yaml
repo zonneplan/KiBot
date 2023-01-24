@@ -1,31 +1,29 @@
-# KiBot Blender export test 1
+# KiBot Blender export test 3
+# Generating the PCB3D in the blender_export
+# Multiple points of view
+# src/kibot -vv -b tests/data/ArduinoLearningKitStarter.kicad_pcb -c tests/yaml_samples/blender_export_1.kibot.yaml -d r3d_lst
 kibot:
   version: 1
-
-import:
-  - file: PCB2Blender_2_1
 
 outputs:
   - name: '3d_export'
     comment: "Exports the PCB in blender format"
     type: blender_export
-    disable_run_by_default: _PCB2Blender_2_1
     options:
-      pcb3d: _PCB2Blender_2_1
-#       camera:
-#         name: MyCamera
-#         pos_x: 0.3
-#         pos_y: width*2
-#         pos_z: size*3
+      pcb3d:
+        show_components: ["RV1", "RV2", "U1", "U2", "U3"]
+        highlight: ["RV1"]
       render_options:
         transparent_background: true
         samples: 10
         #resolution_x: 1920
         #resolution_y: 1080
       point_of_view:
-        rotate_x: 30
-        rotate_z: -20
-        # view: bottom
+        - rotate_x: 30
+          rotate_z: -20
+          # view: bottom
+          file_id: _30deg
+        - view: top
       outputs:
         - type: blender
         - type: render

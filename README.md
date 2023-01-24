@@ -1590,24 +1590,24 @@ Notes:
                                A short-cut to use for simple cases where a variant is an overkill.
             - `variant`: [string=''] Board variant to apply.
             - `version`: [string='2.1'] [2.1,2.1_haschtl] Variant of the format used.
-        - **`render_options`**: [dict] Render and point of view options.
-                                Controls how the render is done for the `render` output type,
-                                and how the object is viewed by the camera.
+        - **`point_of_view`**: [dict|list(dict)] How the object is viewed by the camera.
+          * Valid keys:
+            - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
+                          Compatible with `render_3d`.
+            - `file_id`: [string=''] String to diferentiate the name of this view.
+                         When empty we use the `view`.
+            - `rotate_x`: [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees].
+            - `rotate_y`: [number=0] Angle to rotate the board in the Y axis, positive is clockwise [degrees].
+            - `rotate_z`: [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees].
+        - **`render_options`**: [dict] Controls how the render is done for the `render` output type.
           * Valid keys:
             - **`samples`**: [number=10] How many samples we create. Each sample is a raytracing render.
                              Use 1 for a raw preview, 10 for a draft and 100 or more for the final render.
             - **`transparent_background`**: [boolean=false] Make the background transparent.
-            - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
-                          Compatible with `render_3d`.
             - `background1`: [string='#66667F'] First color for the background gradient.
             - `background2`: [string='#CCCCE5'] Second color for the background gradient.
-            - `file_id`: [string=''] String to diferentiate the name of this view.
-                         When empty we use the `view`.
             - `resolution_x`: [number=1280] Width of the image.
             - `resolution_y`: [number=720] Height of the image.
-            - `rotate_x`: [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees].
-            - `rotate_y`: [number=0] Angle to rotate the board in the Y axis, positive is clockwise [degrees].
-            - `rotate_z`: [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees].
         - `add_default_light`: [boolean=true] Add a default light when none specified.
                                The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB.
         - `camera`: [dict] Options for the camera.

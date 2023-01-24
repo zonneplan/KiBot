@@ -17,6 +17,7 @@ outputs:
         samples: 10
         #resolution_x: 1920
         #resolution_y: 1080
+      point_of_view:
         rotate_x: 30
         rotate_z: -20
         # view: bottom
