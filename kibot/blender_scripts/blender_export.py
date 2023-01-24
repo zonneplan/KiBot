@@ -201,12 +201,14 @@ def apply_scene(file):
     # Select the board
     print('- Select all')
     bpy.ops.object.select_all(action='SELECT')
-    # Apply point of view
-    do_point_of_view(jscene, 'view')
-    # Apply extra rotations
-    do_rotate(jscene, 'rotate_x', 0)
-    do_rotate(jscene, 'rotate_y', 1)
-    do_rotate(jscene, 'rotate_z', 2)
+    render = jscene.get('render')
+    if render:
+        # Apply point of view
+        do_point_of_view(render, 'view')
+        # Apply extra rotations
+        do_rotate(render, 'rotate_x', 0)
+        do_rotate(render, 'rotate_y', 1)
+        do_rotate(render, 'rotate_z', 2)
 
     # Add a camera
     auto_camera = False
@@ -242,7 +244,6 @@ def apply_scene(file):
     bpy.context.view_layer.update()
 
     # Setup render options
-    render = jscene.get('render')
     if render:
         scene.cycles.samples = render.get('samples', 10)
         r = scene.render

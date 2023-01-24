@@ -193,30 +193,35 @@ outputs:
         stack_boards: true
         # [number=1016.0] [508-2032] Texture density in dots per inch
         texture_dpi: 1016.0
-      # [dict] How the render is done for the `render` output type
+      # [dict] Render and point of view options.
+      # Controls how the render is done for the `render` output type,
+      # and how the object is viewed by the camera
       render_options:
         # [string='#66667F'] First color for the background gradient
         background1: '#66667F'
         # [string='#CCCCE5'] Second color for the background gradient
         background2: '#CCCCE5'
+        # [string=''] String to diferentiate the name of this view.
+        # When empty we use the `view`
+        file_id: ''
         # [number=1280] Width of the image
         resolution_x: 1280
         # [number=720] Height of the image
         resolution_y: 720
+        # [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees]
+        rotate_x: 0
+        # [number=0] Angle to rotate the board in the Y axis, positive is clockwise [degrees]
+        rotate_y: 0
+        # [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees]
+        rotate_z: 0
         # [number=10] How many samples we create. Each sample is a raytracing render.
         # Use 1 for a raw preview, 10 for a draft and 100 or more for the final render
         samples: 10
         # [boolean=false] Make the background transparent
         transparent_background: false
-      # [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees]
-      rotate_x: 0
-      # [number=0] Angle to rotate the board in the Y axis, positive is clockwise [degrees]
-      rotate_y: 0
-      # [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees]
-      rotate_z: 0
-      # [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
-      # Compatible with `render_3d`
-      view: 'top'
+        # [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
+        # Compatible with `render_3d`
+        view: 'top'
   # BoardView:
   # This format allows simple pads and connections navigation, mainly for circuit debug.
   # The output can be loaded using Open Board View (https://openboardview.org/)

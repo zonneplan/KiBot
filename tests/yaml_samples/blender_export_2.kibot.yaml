@@ -12,14 +12,14 @@ outputs:
       pcb3d:
         show_components: ["RV1", "RV2", "U1", "U2", "U3"]
         highlight: ["RV1"]
-      rotate_x: 30
-      rotate_z: -20
-      # view: bottom
       render_options:
         transparent_background: true
         samples: 10
         #resolution_x: 1920
         #resolution_y: 1080
+        rotate_x: 30
+        rotate_z: -20
+        # view: bottom
       outputs:
         - type: blender
         - type: render

@@ -115,6 +115,9 @@ class BlenderLightOptions(Optionable):
 
 class BlenderRenderOptions(Optionable):
     """ Render parameters """
+    _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
+    _rviews = {v: k for k, v in _views.items()}
+
     def __init__(self, field=None):
         super().__init__()
         with document:
@@ -131,7 +134,30 @@ class BlenderRenderOptions(Optionable):
             """ First color for the background gradient """
             self.background2 = "#CCCCE5"
             """ Second color for the background gradient """
+            self.rotate_x = 0
+            """ Angle to rotate the board in the X axis, positive is clockwise [degrees] """
+            self.rotate_y = 0
+            """ Angle to rotate the board in the Y axis, positive is clockwise [degrees] """
+            self.rotate_z = 0
+            """ Angle to rotate the board in the Z axis, positive is clockwise [degrees] """
+            self.view = 'top'
+            """ *[top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
+                Compatible with `render_3d` """
+            self.file_id = ''
+            """ String to diferentiate the name of this view.
+                When empty we use the `view` """
         self._unkown_is_error = True
+
+    def config(self, parent):
+        super().config(parent)
+        # View point
+        view = self._views.get(self.view, None)
+        if view is not None:
+            self.view = view
+        self._file_id = self.file_id
+        if not self._file_id:
+            self._file_id = '_'+self._rviews.get(self.view)
+        self._parent._expand_id += self._file_id
 
 
 class PCB3DExportOptions(Base3DOptionsWithHL):
@@ -149,9 +175,6 @@ class PCB3DExportOptions(Base3DOptionsWithHL):
 
 
 class Blender_ExportOptions(BaseOptions):
-    _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
-    _rviews = {v: k for k, v in _views.items()}
-
     def __init__(self):
         with document:
             self.pcb3d = PCB3DExportOptions
@@ -172,16 +195,9 @@ class Blender_ExportOptions(BaseOptions):
             """ [dict] Options for the camera.
                 If none specified KiBot will create a suitable camera """
             self.render_options = BlenderRenderOptions
-            """ *[dict] How the render is done for the `render` output type """
-            self.rotate_x = 0
-            """ Angle to rotate the board in the X axis, positive is clockwise [degrees] """
-            self.rotate_y = 0
-            """ Angle to rotate the board in the Y axis, positive is clockwise [degrees] """
-            self.rotate_z = 0
-            """ Angle to rotate the board in the Z axis, positive is clockwise [degrees] """
-            self.view = 'top'
-            """ *[top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
-                Compatible with `render_3d` """
+            """ *[dict] Render and point of view options.
+                Controls how the render is done for the `render` output type,
+                and how the object is viewed by the camera """
         super().__init__()
         self._expand_id = '3D_blender'
         self._unkown_is_error = True
@@ -237,11 +253,6 @@ class Blender_ExportOptions(BaseOptions):
         # Ensure we have some render options
         if isinstance(self.render_options, type):
             self.render_options = BlenderRenderOptions()
-        # View point
-        view = self._views.get(self.view, None)
-        if view is not None:
-            self.view = view
-        self._expand_id += '_'+self._rviews.get(self.view)
 
     def get_output_filename(self, o, output_dir):
         if o.type == 'render':
@@ -382,20 +393,21 @@ class Blender_ExportOptions(BaseOptions):
                 scene['camera'] = {'name': self.camera.name,
                                    'position': (self.camera.pos_x, self.camera.pos_y, self.camera.pos_z)}
             ro = self.render_options
-            scene['render'] = {'samples': ro.samples,
-                               'resolution_x': ro.resolution_x,
-                               'resolution_y': ro.resolution_y,
-                               'transparent_background': ro.transparent_background,
-                               'background1': ro.background1,
-                               'background2': ro.background2}
-            if self.rotate_x:
-                scene['rotate_x'] = -self.rotate_x
-            if self.rotate_y:
-                scene['rotate_y'] = -self.rotate_y
-            if self.rotate_z:
-                scene['rotate_z'] = -self.rotate_z
-            if self.view:
-                scene['view'] = self.view
+            scr = {'samples': ro.samples,
+                   'resolution_x': ro.resolution_x,
+                   'resolution_y': ro.resolution_y,
+                   'transparent_background': ro.transparent_background,
+                   'background1': ro.background1,
+                   'background2': ro.background2}
+            scene['render'] = scr
+            if ro.rotate_x:
+                scr['rotate_x'] = -ro.rotate_x
+            if ro.rotate_y:
+                scr['rotate_y'] = -ro.rotate_y
+            if ro.rotate_z:
+                scr['rotate_z'] = -ro.rotate_z
+            if ro.view:
+                scr['view'] = ro.view
             text = json.dumps(scene, sort_keys=True, indent=2)
             logger.debug('Scene:\n'+text)
             f.write(text)
@@ -480,7 +492,7 @@ class Blender_Export(Base3D):
             gb['dir'] = '3D'
             gb['output_id'] = '_30deg'
             gb['options'] = copy(out_ops)
-            gb['options'].update({'rotate_x': 30, 'rotate_z': -20})
+            gb['options']['render_options'] = {'rotate_x': 30, 'rotate_z': -20}
             outs.append(gb)
         if has_bottom:
             gb = {}
@@ -489,6 +501,6 @@ class Blender_Export(Base3D):
             gb['type'] = name
             gb['dir'] = '3D'
             gb['options'] = copy(out_ops)
-            gb['options'].update({'view': 'bottom'})
+            gb['options']['render_options'] = {'view': 'bottom'}
             outs.append(gb)
         return outs
