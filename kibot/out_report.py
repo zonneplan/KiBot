@@ -450,11 +450,13 @@ class ReportOptions(BaseOptions):
         draw_type = 'DRAWSEGMENT' if GS.ki5 else 'PCB_SHAPE'
         for d in board.GetDrawings():
             if d.GetClass() == draw_type and d.GetLayer() == edge_layer:
+                bb = GS.get_shape_bbox(d)
+                start = bb.GetOrigin()
+                end = bb.GetEnd()
                 if x1 is None:
-                    p = d.GetStart()
-                    x1 = x2 = p.x
-                    y1 = y2 = p.y
-                for p in [d.GetStart(), d.GetEnd()]:
+                    x1 = x2 = start.x
+                    y1 = y2 = start.y
+                for p in [start, end]:
                     x2 = max(x2, p.x)
                     y2 = max(y2, p.y)
                     x1 = min(x1, p.x)
@@ -463,11 +465,13 @@ class ReportOptions(BaseOptions):
         for m in GS.get_modules():
             for gi in m.GraphicalItems():
                 if gi.GetClass() == 'MGRAPHIC' and gi.GetLayer() == edge_layer:
+                    bb = GS.get_shape_bbox(gi)
+                    start = bb.GetOrigin()
+                    end = bb.GetEnd()
                     if x1 is None:
-                        p = gi.GetStart()
-                        x1 = x2 = p.x
-                        y1 = y2 = p.y
-                    for p in [gi.GetStart(), gi.GetEnd()]:
+                        x1 = x2 = start.x
+                        y1 = y2 = start.y
+                    for p in [start, end]:
                         x2 = max(x2, p.x)
                         y2 = max(y2, p.y)
                         x1 = min(x1, p.x)

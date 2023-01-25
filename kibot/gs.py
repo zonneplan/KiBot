@@ -506,6 +506,15 @@ class GS(object):
         return g.GetEnd()
 
     @staticmethod
+    def get_shape_bbox(s):
+        """ Bounding box without the width of the trace """
+        width = s.GetWidth()
+        s.SetWidth(0)
+        bbox = s.GetBoundingBox()
+        s.SetWidth(width)
+        return bbox
+
+    @staticmethod
     def get_kiauto_video_name(cmd):
         """ Compute the name for the video captured by KiAuto """
         command = os.path.basename(cmd[0])[:-3]

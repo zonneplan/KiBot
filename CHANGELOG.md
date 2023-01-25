@@ -47,20 +47,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SVG:
   - Options to limit the view box to the used area.
 ### Fixed
-- PCB_Print:
-  - Images not showing in custom frames. (#352)
-  - Problems when trying to use groups of layers (i.e. copper)
-- iBoM:
-  - Variant changes to the *.Fab weren't exported.
-    Now all 2D variant stuff is applied before calling iBoM (#350)
+- BoM:
+  - pre_transform filers can't be logic filters
 - Copy_Files:
   - Problems on KiCad 5 (no 3rd party dir) (#357)
   - Problems with compress output (also Makefile) (#372)
-- BoM:
-  - pre_transform filers can't be logic filters
 - DOCs
   - annotate_pcb pre-flight missing options (#360)
   - annotate_pcb pre-flight wrong example (#360)
+- iBoM:
+  - Variant changes to the *.Fab weren't exported.
+    Now all 2D variant stuff is applied before calling iBoM (#350)
+- PCB_Print:
+  - Images not showing in custom frames. (#352)
+  - Problems when trying to use groups of layers (i.e. copper)
+- Report:
+  - Computed size when using circles and some arcs in the PCB edge (#375)
 
 ## [1.5.1] - 2022-12-16
 ### Fixed

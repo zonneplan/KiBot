@@ -54,12 +54,7 @@ class Edge(object):
     def get_bbox(self):
         """ Get the Bounding Box for the shape, without its line width.
             KiKit uses the value in this way. """
-        s = self.shape
-        width = s.GetWidth()
-        s.SetWidth(0)
-        bbox = s.GetBoundingBox()
-        s.SetWidth(width)
-        return bbox
+        return GS.get_shape_bbox(self.shape)
 
     def __str__(self):
         return '{} {}-{}'.format(self.cls, point_str(self.start), point_str(self.end))

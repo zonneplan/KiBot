@@ -1044,6 +1044,17 @@ def test_report_edge_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.skipif(context.ki5(), reason="Example in KiCad 6 format")
+def test_report_edge_2(test_dir):
+    """ Meassures the PCB size when using circles in the PCB edge #375 """
+    prj = 'circle_edge'
+    ctx = context.TestContext(test_dir, prj, 'report_edge_1', POS_DIR)
+    ctx.run()
+    ctx.expect_out_file(prj+'-report.txt')
+    ctx.compare_txt(prj+'-report.txt')
+    ctx.clean_up()
+
+
 def test_board_view_1(test_dir):
     prj = 'glasgow'
     ctx = context.TestContext(test_dir, prj, 'boardview', POS_DIR)
