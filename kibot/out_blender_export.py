@@ -179,6 +179,17 @@ class PCB3DExportOptions(Base3DOptionsWithHL):
         self._expand_ext = 'pcb3d'
         self._unkown_is_error = True
 
+    def get_output_name(self, out_dir):
+        p = self._parent
+        cur_id = p._expand_id
+        cur_ext = p._expand_ext
+        p._expand_id = self._expand_id
+        p._expand_ext = self._expand_ext
+        out_name = p._parent.expand_filename(out_dir, self.output)
+        p._expand_id = cur_id
+        p._expand_ext = cur_ext
+        return out_name
+
 
 class Blender_ExportOptions(BaseOptions):
     def __init__(self):
@@ -279,7 +290,13 @@ class Blender_ExportOptions(BaseOptions):
         return name
 
     def get_targets(self, out_dir):
-        return [self.get_output_filename(o, out_dir) for o in self.outputs]
+        files = []
+        if isinstance(self.pcb3d, PCB3DExportOptions):
+            files.append(self.pcb3d.get_output_name(out_dir))
+        for pov in self.point_of_view:
+            for o in self.outputs:
+                files.append(self.get_output_filename(o, out_dir, pov))
+        return files
 
     def create_vrml(self, dest_dir):
         tree = {'name': '_temporal_vrml_for_pcb3d',
@@ -324,13 +341,7 @@ class Blender_ExportOptions(BaseOptions):
     def create_pcb3d(self, data_dir):
         out_dir = self._parent.output_dir
         # Compute the name for the PCB3D
-        cur_id = self._expand_id
-        cur_ext = self._expand_ext
-        self._expand_id = self.pcb3d._expand_id
-        self._expand_ext = self.pcb3d._expand_ext
-        out_name = self._parent.expand_filename(out_dir, self.pcb3d.output)
-        self._expand_id = cur_id
-        self._expand_ext = cur_ext
+        out_name = self.pcb3d.get_output_name(out_dir)
         tree = {'name': '_temporal_compress_pcb3d',
                 'type': 'compress',
                 'comment': 'Internally created for the PCB3D',
@@ -481,6 +492,14 @@ class Blender_Export(Base3D):
             self.options = Blender_ExportOptions
             """ *[dict] Options for the `blender_export` output """
         self._category = 'PCB/3D'
+
+    def get_dependencies(self):
+        files = BaseOutput.get_dependencies(self)  # noqa: F821
+        if isinstance(self.options.pcb3d, str):
+            files.append(self.options.pcb3d)
+        else:
+            files.extend(self.options.pcb3d.list_models())
+        return files
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
