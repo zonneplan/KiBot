@@ -271,7 +271,7 @@ KICAD5_SVG_SCALE = 116930/297002200
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'
 # Text used to disable 3D models
 DISABLE_3D_MODEL_TEXT = '_Disabled_by_KiBot'
-RENDERERS = ['pcbdraw', 'render_3d']
+RENDERERS = ['pcbdraw', 'render_3d', 'blender_export']
 PCB_GENERATORS = ['pcb_variant', 'panelize']
 KIKIT_UNIT_ALIASES = {'millimeters': 'mm', 'inches': 'inch', 'mils': 'mil'}
 

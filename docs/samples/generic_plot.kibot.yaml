@@ -209,10 +209,14 @@ outputs:
           view: 'top'
       # [dict] Controls how the render is done for the `render` output type
       render_options:
+        # [boolean=false] When enabled the image will be post-processed to remove the empty space around the image.
+        # In this mode the `background2` is changed to be the same as `background1`
+        auto_crop: false
         # [string='#66667F'] First color for the background gradient
         background1: '#66667F'
         # [string='#CCCCE5'] Second color for the background gradient
         background2: '#CCCCE5'
+        # `height` is an alias for `resolution_y`
         # [number=1280] Width of the image
         resolution_x: 1280
         # [number=720] Height of the image
@@ -222,6 +226,7 @@ outputs:
         samples: 10
         # [boolean=false] Make the background transparent
         transparent_background: false
+        # `width` is an alias for `resolution_x`
   # BoardView:
   # This format allows simple pads and connections navigation, mainly for circuit debug.
   # The output can be loaded using Open Board View (https://openboardview.org/)

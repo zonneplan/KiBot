@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -322,6 +322,29 @@ class PcbDrawOptions(VariantOptions):
         self._expand_id = 'bottom' if self.bottom else 'top'
         self._expand_ext = self.format
 
+    def setup_renderer(self, components, active_components, bottom, name):
+        super().setup_renderer(components, active_components)
+        self.add_to_variant = False
+        self.bottom = bottom
+        self.output = name
+        if not self.show_components:
+            self.show_components = None
+        return self.expand_filename_both(name, is_sch=False)
+
+    def save_renderer_options(self):
+        """ Save the current renderer settings """
+        super().save_renderer_options()
+        self.old_bottom = self.bottom
+        self.old_add_to_variant = self.add_to_variant
+        self.old_output = self.output
+
+    def restore_renderer_options(self):
+        """ Restore the renderer settings """
+        super().restore_renderer_options()
+        self.bottom = self.old_bottom
+        self.add_to_variant = self.old_add_to_variant
+        self.output = self.old_output
+
     def expand_filtered_components(self, components):
         """ Expands references to filters in show_components """
         if not components or not self._filters_to_expand:
@@ -529,6 +552,10 @@ class PcbDraw(BaseOutput):  # noqa: F821
         if isinstance(self.options.style, str) and os.path.isfile(self.options.style):
             files.append(self.options.style)
         return files
+
+    def get_renderer_options(self):
+        """ Where are the options for this output when used as a 'renderer' """
+        return self.options
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

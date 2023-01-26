@@ -990,6 +990,32 @@ class VariantOptions(BaseOptions):
             self._sub_pcb = self.variant._sub_pcb
         self._comps = comps
 
+    # The following 3 members are used by 2D and 3D renderers
+    def setup_renderer(self, components, active_components):
+        """ Setup the options to use it as a renderer """
+        self._show_all_components = False
+        self._filters_to_expand = False
+        self.highlight = self.solve_kf_filters([c for c in active_components if c])
+        self.show_components = [c for c in components if c]
+        if self.show_components:
+            self.show_components = self.solve_kf_filters(self.show_components)
+
+    def save_renderer_options(self):
+        """ Save the current renderer settings """
+        self.old_filters_to_expand = self._filters_to_expand
+        self.old_show_components = self.show_components
+        self.old_highlight = self.highlight
+        self.old_dir = self._parent.dir
+        self.old_done = self._parent._done
+
+    def restore_renderer_options(self):
+        """ Restore the renderer settings """
+        self._filters_to_expand = self.old_filters_to_expand
+        self.show_components = self.old_show_components
+        self.highlight = self.old_highlight
+        self._parent.dir = self.old_dir
+        self._parent._done = self.old_done
+
 
 class PcbMargin(Optionable):
     """ To adjust each margin """

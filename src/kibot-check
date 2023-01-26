@@ -250,17 +250,24 @@ deps = '{\
         ],\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 4,\
+        "importance": 5,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
         "name": "ImageMagick",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "navigate_results",\
+        "output": "blender_export",\
         "plugin_dirs": null,\
         "pypi_name": "ImageMagick",\
         "roles": [\
+            {\
+                "desc": "Automatically crop images",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "blender_export",\
+                "version": null\
+            },\
             {\
                 "desc": "Create outputs preview",\
                 "mandatory": false,\

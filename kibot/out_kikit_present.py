@@ -122,23 +122,19 @@ class PresentBoards(Optionable):
         return self.name, self.comment, self.pcb_file, self.front_image, self.back_image, self.gerbers
 
     def generate_image(self, back, tmp_name):
-        self.save_renderer_options()
-        options = self._renderer.options
+        options = self._renderer.get_renderer_options()
+        if options is None:
+            raise KiPlotConfigurationError('No suitable renderer ({})'.format(self._renderer))
+        # Memorize the current options
+        options.save_renderer_options()
         logger.debug('Starting renderer with back: {}, name: {}'.format(back, tmp_name))
         # Configure it according to our needs
-        options._filters_to_expand = False
-        options.show_components = None if self._renderer_is_pcbdraw else []
-        options.highlight = []
-        options.output = tmp_name
+        options.setup_renderer([], [], back, tmp_name)
+        self._renderer.dir = self._parent._parent.dir
         self._renderer._done = False
-        if self._renderer_is_pcbdraw:
-            options.add_to_variant = False
-            options.bottom = back
-        else:  # render_3D
-            options.view = 'Z' if back else 'z'
-            options._show_all_components = False
         run_output(self._renderer)
-        self.restore_renderer_options()
+        # Restore the options
+        options.restore_renderer_options()
 
     def do_compress(self, tmp_name, out):
         tree = {'name': '_temporal_compress_gerbers',
@@ -202,7 +198,6 @@ class PresentBoards(Optionable):
                                                format(out, RENDERERS))
         config_output(out)
         self._renderer = out
-        self._renderer_is_pcbdraw = out.type == 'pcbdraw'
         tmp_name = _get_tmp_name(out.get_extension())
         self.temporals.append(tmp_name)
         self.generate_image(back, tmp_name)

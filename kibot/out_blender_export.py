@@ -8,6 +8,8 @@ Dependencies:
   - from: Blender
     role: mandatory
     version: 3.4.0
+  - from: ImageMagick
+    role: Automatically crop images
 """
 import json
 import os
@@ -122,14 +124,21 @@ class BlenderRenderOptions(Optionable):
                 Use 1 for a raw preview, 10 for a draft and 100 or more for the final render """
             self.resolution_x = 1280
             """ Width of the image """
+            self.width = None
+            """ {resolution_x} """
             self.resolution_y = 720
             """ Height of the image """
+            self.height = None
+            """ {resolution_y} """
             self.transparent_background = False
             """ *Make the background transparent """
             self.background1 = "#66667F"
             """ First color for the background gradient """
             self.background2 = "#CCCCE5"
             """ Second color for the background gradient """
+            self.auto_crop = False
+            """ When enabled the image will be post-processed to remove the empty space around the image.
+                In this mode the `background2` is changed to be the same as `background1` """
         self._unkown_is_error = True
 
 
@@ -154,6 +163,7 @@ class BlenderPointOfViewOptions(Optionable):
             """ String to diferentiate the name of this view.
                 When empty we use the `view` """
         self._unkown_is_error = True
+        self._file_id = ''
 
     def config(self, parent):
         super().config(parent)
@@ -190,6 +200,38 @@ class PCB3DExportOptions(Base3DOptionsWithHL):
         p._expand_ext = cur_ext
         return out_name
 
+    def setup_renderer(self, components, active_components, bottom, name):
+        super().setup_renderer(components, active_components)
+        self._pov.view = 'Z' if bottom else 'z'
+        # Expand the name using .PNG
+        cur_ext = self._expand_ext
+        self._expand_ext = 'png'
+        o_name = self.expand_filename_both(name, is_sch=False)
+        self._expand_ext = cur_ext
+        self._out.output = o_name
+        return o_name
+
+    def save_renderer_options(self):
+        """ Save the current renderer settings """
+        p = self._parent
+        # We are an option inside another option
+        self._parent = self._parent._parent
+        super().save_renderer_options()
+        self._parent = p
+        self.old_show_all_components = self._show_all_components
+        self.old_view = self._pov.view
+        self.old_output = self._out.output
+
+    def restore_renderer_options(self):
+        """ Restore the renderer settings """
+        p = self._parent
+        self._parent = self._parent._parent
+        super().restore_renderer_options()
+        self._parent = p
+        self._show_all_components = self.old_show_all_components
+        self._pov.view = self.old_view
+        self._out.output = self.old_output
+
 
 class Blender_ExportOptions(BaseOptions):
     def __init__(self):
@@ -222,9 +264,12 @@ class Blender_ExportOptions(BaseOptions):
     def config(self, parent):
         super().config(parent)
         # Check we at least have a name for the source output
-        if isinstance(self.pcb3d, type) or (isinstance(self.pcb3d, str) and not self.pcb3d):
+        if isinstance(self.pcb3d, str) and not self.pcb3d:
             raise KiPlotConfigurationError('You must specify the name of the output that'
                                            ' generates the PCB3D file or its options')
+        if isinstance(self.pcb3d, type):
+            self.pcb3d = PCB3DExportOptions()
+            self.pcb3d.config(self)
         # Do we have outputs?
         if isinstance(self.outputs, type):
             self.outputs = []
@@ -409,6 +454,10 @@ class Blender_ExportOptions(BaseOptions):
             return
         # Make sure Blender is available
         command = self._pcb3d.ensure_tool('Blender')
+        if self.render_options.auto_crop:
+            # Avoid a gradient
+            self.render_options.background2 = self.render_options.background1
+            convert_command = self.ensure_tool('ImageMagick')
         # Create a JSON with the scene information
         with NamedTemporaryFile(mode='w', suffix='.json') as f:
             scene = {}
@@ -473,6 +522,13 @@ class Blender_ExportOptions(BaseOptions):
             cmd.append(pcb3d_file)
             # Execute the command
             run_command(cmd)
+        if self.render_options.auto_crop:
+            for pov in self.point_of_view:
+                for o in self.outputs:
+                    if o.type != 'render':
+                        continue
+                    name = self.get_output_filename(o, self._parent.output_dir, pov)
+                    run_command([convert_command, name, '-trim', '+repage', '-trim', '+repage', name])
 
 
 @output_class
@@ -500,6 +556,25 @@ class Blender_Export(Base3D):
         else:
             files.extend(self.options.pcb3d.list_models())
         return files
+
+    def get_renderer_options(self):
+        """ Where are the options for this output when used as a 'renderer' """
+        ops = self.options
+        out = next(filter(lambda x: x.type == 'render', ops.outputs), None)
+        res = None
+        if out is not None:
+            if isinstance(ops.pcb3d, str):
+                # We can't configure it
+                out = None
+            else:
+                res = ops.pcb3d
+                res._pov = ops.point_of_view[0]
+                res._out = out
+        return res if out is not None else None
+
+    def get_extension(self):
+        # Used when we are a renderer
+        return 'png'
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

@@ -201,6 +201,7 @@ Notes:
 
 [**ImageMagick**](https://imagemagick.org/) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://imagemagick.org/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/imagemagick) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Optional to:
+  - Automatically crop images for `blender_export`
   - Create outputs preview for `navigate_results`
   - Create monochrome prints and scaled PNG files for `pcb_print`
   - Create JPG and BMP images for `pcbdraw`
@@ -1608,10 +1609,14 @@ Notes:
             - **`samples`**: [number=10] How many samples we create. Each sample is a raytracing render.
                              Use 1 for a raw preview, 10 for a draft and 100 or more for the final render.
             - **`transparent_background`**: [boolean=false] Make the background transparent.
+            - `auto_crop`: [boolean=false] When enabled the image will be post-processed to remove the empty space around the image.
+                           In this mode the `background2` is changed to be the same as `background1`.
             - `background1`: [string='#66667F'] First color for the background gradient.
             - `background2`: [string='#CCCCE5'] Second color for the background gradient.
+            - *height*: Alias for resolution_y.
             - `resolution_x`: [number=1280] Width of the image.
             - `resolution_y`: [number=720] Height of the image.
+            - *width*: Alias for resolution_x.
         - `add_default_light`: [boolean=true] Add a default light when none specified.
                                The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB.
         - `camera`: [dict] Options for the camera.

@@ -176,6 +176,26 @@ class Render3DOptions(Base3DOptionsWithHL):
             self.view = view
         self._expand_id += '_'+self._rviews.get(self.view)
 
+    def setup_renderer(self, components, active_components, bottom, name):
+        super().setup_renderer(components, active_components)
+        self.view = 'Z' if bottom else 'z'
+        self.output = name
+        return self.expand_filename_both(name, is_sch=False)
+
+    def save_renderer_options(self):
+        """ Save the current renderer settings """
+        super().save_renderer_options()
+        self.old_show_all_components = self._show_all_components
+        self.old_view = self.view
+        self.old_output = self.output
+
+    def restore_renderer_options(self):
+        """ Restore the renderer settings """
+        super().restore_renderer_options()
+        self._show_all_components = self.old_show_all_components
+        self.view = self.old_view
+        self.output = self.old_output
+
     def add_step(self, cmd, steps, ops):
         if steps:
             cmd.extend([ops, str(steps)])
@@ -264,6 +284,10 @@ class Render_3D(Base3D):  # noqa: F821
             self.options = Render3DOptions
             """ *[dict] Options for the `render_3d` output """
         self._category = 'PCB/3D'
+
+    def get_renderer_options(self):
+        """ Where are the options for this output when used as a 'renderer' """
+        return self.options
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
