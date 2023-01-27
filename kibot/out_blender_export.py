@@ -269,7 +269,8 @@ class Blender_ExportOptions(BaseOptions):
                 The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB """
             self.camera = BlenderCameraOptions
             """ [dict] Options for the camera.
-                If none specified KiBot will create a suitable camera """
+                If none specified KiBot will create a suitable camera.
+                If no position is specified for the camera KiBot will look for a suitable position """
             self.render_options = BlenderRenderOptions
             """ *[dict] Controls how the render is done for the `render` output type """
             self.point_of_view = BlenderPointOfViewOptions

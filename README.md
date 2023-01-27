@@ -1623,6 +1623,7 @@ Notes:
                                The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB.
         - `camera`: [dict] Options for the camera.
                     If none specified KiBot will create a suitable camera.
+                    If no position is specified for the camera KiBot will look for a suitable position.
           * Valid keys:
             - `name`: [string=''] Name for the light.
             - `pos_x`: [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
