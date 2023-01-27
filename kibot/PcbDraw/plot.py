@@ -800,7 +800,7 @@ class PlotComponents(PlotInterface):
             ret = self._create_component(lib, name, ref, value)
             if ret is None:
                 if name[-5:] != '.back' or not self.no_warn_back:
-                    self._plotter.yield_warning("component", f"Component {lib}:{name} has not footprint.")
+                    self._plotter.yield_warning("component", f"Component {lib}:{name} has no footprint.")
                 return
             component_element, component_info = ret
             self._used_components[unique_name] = component_info
@@ -839,7 +839,7 @@ class PlotComponents(PlotInterface):
             origin_x, origin_y = element_position(origin, root=component_element)
             origin.getparent().remove(origin)
         else:
-            self._plotter.yield_warning("origin", f"component: Component {lib}:{name} has not origin")
+            self._plotter.yield_warning("origin", f"component: Component {lib}:{name} has no origin")
         svg_scale_x, svg_scale_y, svg_offset_x, svg_offset_y = self._component_to_board_scale_and_offset(svg_tree)
         component_info = PlacedComponentInfo(
             id=xml_id,
