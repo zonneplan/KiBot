@@ -229,9 +229,11 @@ def apply_scene(file, n_view=0):
             auto_camera = True
             name = 'kibot_camera'
             pos = (0.0, 0.0, 10.0)
+            type = 'PERSP'
         else:
             name = camera.get('name', 'unknown')
             pos = camera.get('position', None)
+            type = camera.get('type', 'PERSP')
             if pos is None:
                 auto_camera = True
                 pos = (0, 0, 0)
@@ -244,7 +246,7 @@ def apply_scene(file, n_view=0):
         scene.collection.objects.link(cam_ob)  # instance the camera object in the scene
         scene.camera = cam_ob       # set the active camera
         cam_ob.location = pos
-        cam_ob.data.type = camera.get('type', 'PERSP')
+        cam_ob.data.type = type
     if auto_camera:
         print('- Changing camera to focus the board')
         bpy.ops.view3d.camera_to_view_selected()
