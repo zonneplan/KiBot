@@ -5553,6 +5553,8 @@ The main differences between API 1 and 2 are:
 GitHub offers a mechanism to cache data between runs.
 One interesting use is to make the KiCost prices cache persistent, here is an [example](https://github.com/set-soft/kicost_ci_test)
 
+Another use is to cache [downloaded 3D models](https://github.com/set-soft/kibot_3d_models_cache_example)
+
 
 ## Contributing
 
@@ -5891,6 +5893,11 @@ If you need to install the KiCad 3D models in one of the `kicad_debian`, `kicad_
 `/usr/bin/kicad_3d_install.sh` script included with the current images.
 
 If you are running the GitHub action and you want to install the KiCad 3D models use the `install3D: YES` option.
+
+### Caching downloaded 3D models
+
+You can store the downloaded 3D models in a GitHub cache, an example can be found in the following
+[repo](https://github.com/set-soft/kibot_3d_models_cache_example)
 
 ### Self contained projects
 
