@@ -175,6 +175,7 @@ function run {
 
     if [ $CACHE3D == "YES" ]; then
         export KIBOT_3D_MODELS="$HOME/cache_3d"
+        echo Exporting KIBOT_3D_MODELS=$KIBOT_3D_MODELS
     fi
 
     if [ $QUICKSTART == "YES" ]; then
