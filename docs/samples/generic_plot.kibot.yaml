@@ -515,7 +515,8 @@ outputs:
         hide_stats_info: false
         # [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`
         highlight_empty: true
-        # [boolean=false] Enable KiCost worksheet creation
+        # [boolean=false] Enable KiCost worksheet creation.
+        # Note: an example of how to use it on CI/CD can be found [here](https://github.com/set-soft/kicost_ci_test)
         kicost: false
         # [string|list(string)=''] List of KiCost APIs to disable
         kicost_api_disable: ''
@@ -1391,6 +1392,7 @@ outputs:
   # KiCost (KiCad Cost calculator):
   # For more information: https://github.com/INTI-CMNB/KiCost
   # This output is what you get from the KiCost plug-in (eeschema).
+  # You can get KiCost costs using the internal BoM output (`bom`).
   - name: 'kicost_example'
     comment: 'Generates a spreadsheet containing components costs.'
     type: 'kicost'

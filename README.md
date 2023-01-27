@@ -1793,6 +1793,7 @@ Notes:
             - **`datasheet_as_link`**: [string=''] Column with links to the datasheet.
             - **`generate_dnf`**: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
             - **`kicost`**: [boolean=false] Enable KiCost worksheet creation.
+                            Note: an example of how to use it on CI/CD can be found [here](https://github.com/set-soft/kicost_ci_test).
             - **`logo`**: [string|boolean=''] PNG file to use as logo, use false to remove.
             - **`specs`**: [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
                            Works with only some KiCost APIs.
@@ -2801,6 +2802,7 @@ Notes:
   * Description: Generates a spreadsheet containing components costs.
                  For more information: https://github.com/INTI-CMNB/KiCost
                  This output is what you get from the KiCost plug-in (eeschema).
+                 You can get KiCost costs using the internal BoM output (`bom`).
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.

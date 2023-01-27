@@ -235,7 +235,8 @@ class KiCost(BaseOutput):  # noqa: F821
     """ KiCost (KiCad Cost calculator)
         Generates a spreadsheet containing components costs.
         For more information: https://github.com/INTI-CMNB/KiCost
-        This output is what you get from the KiCost plug-in (eeschema). """
+        This output is what you get from the KiCost plug-in (eeschema).
+        You can get KiCost costs using the internal BoM output (`bom`). """
     def __init__(self):
         super().__init__()
         self._sch_related = True

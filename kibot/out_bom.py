@@ -306,7 +306,8 @@ class BoMXLSX(BoMLinkable):
             self.style = 'modern-blue'
             """ Head style: modern-blue, modern-green, modern-red and classic """
             self.kicost = False
-            """ *Enable KiCost worksheet creation """
+            """ *Enable KiCost worksheet creation.
+                Note: an example of how to use it on CI/CD can be found [here](https://github.com/set-soft/kicost_ci_test) """
             self.kicost_api_enable = Optionable
             """ [string|list(string)=''] List of KiCost APIs to enable """
             self.kicost_api_disable = Optionable
