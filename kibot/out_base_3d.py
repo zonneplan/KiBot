@@ -169,6 +169,10 @@ class Base3DOptions(VariantOptions):
                                     url = url[:-4]+'.step'
                                     fname = fname[:-4]+'.step'
                                     self.download_model(url, fname, rel_dirs)
+                                elif force_wrl:  # This should be a .step, so we download the wrl
+                                    url = os.path.splitext(url)[0]+'.wrl'
+                                    fname = os.path.splitext(fname)[0]+'.wrl'
+                                    self.download_model(url, fname, rel_dirs)
                         if replace:
                             source_models.add(replace)
                             old_name = m3d.m_Filename
