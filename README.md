@@ -14,7 +14,7 @@
 - We are now uploading docker images to GitHub, the new tags are much more simple.
   Consult: [Usage for CI/CD](#usage-for-cicd)
 - The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
-  Consult: [Github Actions tags](#github-actions-tags)
+  Consult: [GitHub Actions tags](#github-actions-tags)
 
 **Important note about PcbDraw**
 - This release incorporates PcbDraw, so you don't need to install it as a separated tool.
@@ -72,8 +72,9 @@
   * [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing)
 * [Usage](#usage)
 * [Usage for CI/CD](#usage-for-cicd)
-  * [Github Actions](#usage-of-github-actions)
-    * [Github Actions tags](#github-actions-tags)
+  * [GitHub Actions](#usage-of-github-actions)
+    * [GitHub Actions tags](#github-actions-tags)
+  * [GitHub Cache](#github-cache)
 * [Contributing](#contributing)
 * [Notes about Gerber format](#notes-about-gerber-format)
 * [Notes about the position file](#notes-about-the-position-file)
@@ -5436,7 +5437,7 @@ The most important images are:
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
 
-### Usage of Github Actions
+### Usage of GitHub Actions
 
 Note: You can also use --quick-start functionality with GitHub actions, and example is this [workflow](https://github.com/INTI-CMNB/kibot_variants_arduprog/blob/master/.github/workflows/kibot_action_quick_start.yml)
 
@@ -5502,7 +5503,7 @@ The available options are:
 - **variant**: Global variant to use. No variant is applied when omitted.
 - **verbose**: Level of verbosity. Valid values are 0, 1, 2 or 3. Default is 0.
 
-#### Github Actions tags
+#### GitHub Actions tags
 
 There are several tags you can choose:
 
@@ -5526,6 +5527,12 @@ The main differences between API 1 and 2 are:
 - In API 1 you must specify the input files, in API 2 can be omitted
 - API 1 supports wildcards in the filenames, API 2 doesn't
 - API 2 supports spaces in the filenames, API 1 doesn't
+
+### GitHub Cache
+
+GitHub offers a mechanism to cache data between runs.
+One interesting use is to make the KiCost prices cache persistent, here is an [example](https://github.com/set-soft/kicost_ci_test)
+
 
 ## Contributing
 
@@ -5863,7 +5870,7 @@ As a side effect you'll get errors and/or warnings about the missing 3D models a
 If you need to install the KiCad 3D models in one of the `kicad_debian`, `kicad_auto` or `kicad_auto_test` images just run the
 `/usr/bin/kicad_3d_install.sh` script included with the current images.
 
-If you are running the Github action and you want to install the KiCad 3D models use the `install3D: YES` option.
+If you are running the GitHub action and you want to install the KiCad 3D models use the `install3D: YES` option.
 
 ### Self contained projects
 
