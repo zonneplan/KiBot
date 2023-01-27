@@ -227,9 +227,16 @@ def apply_scene(file, n_view=0):
         camera = jscene.get('camera')
         if not camera:
             auto_camera = True
-            camera = {'name': 'kibot_camera', 'position': (0.0, 0.0, 10.0)}
-        name = camera.get('name', 'unknown')
-        pos = camera.get('position', (0, 0, 0))
+            name = 'kibot_camera'
+            pos = (0.0, 0.0, 10.0)
+        else:
+            name = camera.get('name', 'unknown')
+            pos = camera.get('position', None)
+            if pos is None:
+                auto_camera = True
+                pos = (0, 0, 0)
+            else:
+                auto_camera = False
         print(f"- Creating camera {name} at {pos}")
         cam_data = bpy.data.cameras.new(name)
         global cam_ob
@@ -237,6 +244,7 @@ def apply_scene(file, n_view=0):
         scene.collection.objects.link(cam_ob)  # instance the camera object in the scene
         scene.camera = cam_ob       # set the active camera
         cam_ob.location = pos
+        cam_ob.data.type = camera.get('type', 'PERSP')
     if auto_camera:
         print('- Changing camera to focus the board')
         bpy.ops.view3d.camera_to_view_selected()

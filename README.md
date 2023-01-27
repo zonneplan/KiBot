@@ -1628,6 +1628,7 @@ Notes:
             - `pos_x`: [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_y`: [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_z`: [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            - `type`: [string='perspective'] [perspective,orthographic,panoramic] Type of camera.
         - `light`: [dict|list(dict)] Options for the light/s.
           * Valid keys:
             - `name`: [string=''] Name for the light.

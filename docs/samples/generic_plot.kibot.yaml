@@ -119,6 +119,8 @@ outputs:
         pos_y: 0
         # [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
         pos_z: 0
+        # [string='perspective'] [perspective,orthographic,panoramic] Type of camera
+        type: 'perspective'
       # [dict|list(dict)] Options for the light/s
       light:
         # [string=''] Name for the light

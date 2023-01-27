@@ -39,7 +39,7 @@ def get_board_size():
 
 class PCB2BlenderOptions(Optionable):
     """ How the PCB3D is imported """
-    def __init__(self, field=None):
+    def __init__(self):
         super().__init__()
         with document:
             self.components = True
@@ -64,7 +64,7 @@ class PCB2BlenderOptions(Optionable):
 
 class BlenderOutputOptions(Optionable):
     """ What is generated """
-    def __init__(self, field=None):
+    def __init__(self):
         super().__init__()
         with document:
             self.type = 'render'
@@ -83,7 +83,7 @@ class BlenderOutputOptions(Optionable):
 
 class BlenderLightOptions(Optionable):
     """ A light in the scene. Currently also for the camera """
-    def __init__(self, field=None):
+    def __init__(self):
         super().__init__()
         with document:
             self.name = ""
@@ -114,9 +114,23 @@ class BlenderLightOptions(Optionable):
         self.pos_z = self.solve('pos_z')
 
 
+class BlenderCameraOptions(BlenderLightOptions):
+    CAM_TYPE = {'perspective': 'PERSP', 'orthographic': 'ORTHO', 'panoramic': 'PANO'}
+
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.type = "perspective"
+            """ [perspective,orthographic,panoramic] Type of camera """
+
+    def config(self, parent):
+        super().config(parent)
+        self._type = self.CAM_TYPE[self.type]
+
+
 class BlenderRenderOptions(Optionable):
     """ Render parameters """
-    def __init__(self, field=None):
+    def __init__(self):
         super().__init__()
         with document:
             self.samples = 10
@@ -147,7 +161,7 @@ class BlenderPointOfViewOptions(Optionable):
     _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
     _rviews = {v: k for k, v in _views.items()}
 
-    def __init__(self, field=None):
+    def __init__(self):
         super().__init__()
         with document:
             self.rotate_x = 0
@@ -178,7 +192,7 @@ class BlenderPointOfViewOptions(Optionable):
 
 class PCB3DExportOptions(Base3DOptionsWithHL):
     """ Options to generate the PCB3D file """
-    def __init__(self, field=None):
+    def __init__(self):
         super().__init__()
         with document:
             self.output = GS.def_global_output
@@ -253,7 +267,7 @@ class Blender_ExportOptions(BaseOptions):
             self.add_default_light = True
             """ Add a default light when none specified.
                 The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB """
-            self.camera = BlenderLightOptions
+            self.camera = BlenderCameraOptions
             """ [dict] Options for the camera.
                 If none specified KiBot will create a suitable camera """
             self.render_options = BlenderRenderOptions
@@ -389,10 +403,6 @@ class Blender_ExportOptions(BaseOptions):
             if not self.pcb3d._show_all_components:
                 sc = 'none' if not self.pcb3d.show_components else self.pcb3d._show_components_raw
             tree['options']['show_components'] = sc
-        logger.error(tree)
-        logger.error(f"_show_all_components: {self.pcb3d._show_all_components}")
-        logger.error(f"show_components: {self.pcb3d.show_components}")
-        logger.error(f"_show_components_raw: {self.pcb3d._show_components_raw}")
         configure_and_run(tree, dest_dir, ' - Creating Pads and boundary ...')
 
     def create_pcb3d(self, data_dir):
@@ -477,8 +487,12 @@ class Blender_ExportOptions(BaseOptions):
                 lights = [{'name': light.name, 'position': (light.pos_x, light.pos_y, light.pos_z)} for light in self.light]
                 scene['lights'] = lights
             if self.camera:
-                scene['camera'] = {'name': self.camera.name,
-                                   'position': (self.camera.pos_x, self.camera.pos_y, self.camera.pos_z)}
+                ca = self.camera
+                scene['camera'] = {'name': ca.name,
+                                   'type': ca._type}
+                if (hasattr(ca, '_pos_x_user_defined') or hasattr(ca, '_pos_y_user_defined') or
+                   hasattr(ca, '_pos_z_user_defined')):
+                    scene['camera']['position'] = (ca.pos_x, ca.pos_y, ca.pos_z)
             ro = self.render_options
             scene['render'] = {'samples': ro.samples,
                                'resolution_x': ro.resolution_x,
