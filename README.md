@@ -1581,7 +1581,11 @@ Notes:
                        You can also specify the name of the output that generates the PCB3D file.
                        See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates.
           * Valid keys:
-            - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+            - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git.
+                              Only applies to models in KISYS3DMOD and KICAD6_3DMODEL_DIR.
+                              They are downloaded to a temporal directory and discarded.
+                              If you want to cache the downloaded files specify a directory using the
+                              KIBOT_3D_MODELS environment variable.
             - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
             - **`show_components`**: [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
                                      Unlike the `pcbdraw` output, the default is `all`.
@@ -1994,7 +1998,11 @@ Notes:
                   Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `copy_files` output.
       * Valid keys:
-        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git.
+                          Only applies to models in KISYS3DMOD and KICAD6_3DMODEL_DIR.
+                          They are downloaded to a temporal directory and discarded.
+                          If you want to cache the downloaded files specify a directory using the
+                          KIBOT_3D_MODELS environment variable.
         - **`files`**: [list(dict)] Which files will be included.
           * Valid keys:
             - **`source`**: [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
@@ -4151,7 +4159,11 @@ Notes:
                   Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `render_3d` output.
       * Valid keys:
-        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git.
+                          Only applies to models in KISYS3DMOD and KICAD6_3DMODEL_DIR.
+                          They are downloaded to a temporal directory and discarded.
+                          If you want to cache the downloaded files specify a directory using the
+                          KIBOT_3D_MODELS environment variable.
         - **`move_x`**: [number=0] Steps to move in the X axis, positive is to the right.
                         Just like pressing the right arrow in the 3D viewer.
         - **`move_y`**: [number=0] Steps to move in the Y axis, positive is up.
@@ -4423,7 +4435,11 @@ Notes:
                   Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `step` output.
       * Valid keys:
-        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git.
+                          Only applies to models in KISYS3DMOD and KICAD6_3DMODEL_DIR.
+                          They are downloaded to a temporal directory and discarded.
+                          If you want to cache the downloaded files specify a directory using the
+                          KIBOT_3D_MODELS environment variable.
         - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
         - **`origin`**: [string='grid'] Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
                         The drill option uses the auxiliary reference defined by the user.
@@ -4644,7 +4660,11 @@ Notes:
                   Avoid using `_` as first character. These names are reserved for KiBot.
     - **`options`**: [dict] Options for the `vrml` output.
       * Valid keys:
-        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD.
+        - **`download`**: [boolean=true] Downloads missing 3D models from KiCad git.
+                          Only applies to models in KISYS3DMOD and KICAD6_3DMODEL_DIR.
+                          They are downloaded to a temporal directory and discarded.
+                          If you want to cache the downloaded files specify a directory using the
+                          KIBOT_3D_MODELS environment variable.
         - **`no_virtual`**: [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=vrml, %x=wrl). Affected by global options.
         - **`show_components`**: [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
@@ -5860,7 +5880,7 @@ If you have any suggestion don't hesitate in contacting me to add them.
 ### 3D models and docker images
 
 The default KiCad 3D models aren't included in the KiBot docker images.
-This is because the 3D models currently needs around 5 GB and the current docker images are between 1 and 1.6 GB.
+This is because the 3D models currently needs around 5 GB and the current docker images are between 1 and 2.8 GB.
 So adding them means a huge increase in size.
 
 This is not a big problem because KiBot will download any missing 3D model from KiCad's repo.

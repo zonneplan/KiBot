@@ -2021,7 +2021,7 @@ If you have any suggestion don't hesitate in contacting me to add them.
 ### 3D models and docker images
 
 The default KiCad 3D models aren't included in the KiBot docker images.
-This is because the 3D models currently needs around 5 GB and the current docker images are between 1 and 1.6 GB.
+This is because the 3D models currently needs around 5 GB and the current docker images are between 1 and 2.8 GB.
 So adding them means a huge increase in size.
 
 This is not a big problem because KiBot will download any missing 3D model from KiCad's repo.

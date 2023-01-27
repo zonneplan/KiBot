@@ -62,7 +62,11 @@ class Base3DOptions(VariantOptions):
             self.no_virtual = False
             """ *Used to exclude 3D models for components with 'virtual' attribute """
             self.download = True
-            """ *Downloads missing 3D models from KiCad git. Only applies to models in KISYS3DMOD """
+            """ *Downloads missing 3D models from KiCad git.
+                Only applies to models in KISYS3DMOD and KICAD6_3DMODEL_DIR.
+                They are downloaded to a temporal directory and discarded.
+                If you want to cache the downloaded files specify a directory using the
+                KIBOT_3D_MODELS environment variable """
             self.kicad_3d_url = 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
             """ Base URL for the KiCad 3D models """
         # Temporal dir used to store the downloaded files
@@ -78,6 +82,22 @@ class Base3DOptions(VariantOptions):
 
     def download_model(self, url, fname, rel_dirs):
         """ Download the 3D model from the provided URL """
+        # Find a place to store the downloaded model
+        if self._tmp_dir is None:
+            self._tmp_dir = os.environ.get('KIBOT_3D_MODELS')
+            if self._tmp_dir is None:
+                self._tmp_dir = tempfile.mkdtemp()
+                self._files_to_remove.append(self._tmp_dir)
+            else:
+                self._tmp_dir = os.path.abspath(self._tmp_dir)
+            rel_dirs.append(self._tmp_dir)
+            logger.debug('Using `{}` as temporal dir for downloaded files'.format(self._tmp_dir))
+        dest = os.path.join(self._tmp_dir, fname)
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        # Is already there?
+        if os.path.isfile(dest):
+            logger.debug('Using cached model `{}`'.format(dest))
+            return dest
         logger.debug('Downloading `{}`'.format(url))
         failed = False
         try:
@@ -87,13 +107,6 @@ class Base3DOptions(VariantOptions):
         if failed or r.status_code != 200:
             logger.warning(W_FAILDL+'Failed to download `{}`'.format(url))
             return None
-        if self._tmp_dir is None:
-            self._tmp_dir = tempfile.mkdtemp()
-            self._files_to_remove.append(self._tmp_dir)
-            rel_dirs.append(self._tmp_dir)
-            logger.debug('Using `{}` as temporal dir for downloaded files'.format(self._tmp_dir))
-        dest = os.path.join(self._tmp_dir, fname)
-        os.makedirs(os.path.dirname(dest), exist_ok=True)
         with open(dest, 'wb') as f:
             f.write(r.content)
         return dest
