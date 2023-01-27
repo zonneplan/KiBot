@@ -1653,6 +1653,7 @@ Another example, but using variants can be found [here](https://github.com/INTI-
 The available options are:
 
 - **additional_args**: Additional text to add to the KiBot invocation. This is intended for advanced use, report problems.
+- **cache3D**: When `YES` you can cache the downloaded 3D models. An example can be found [here](https://github.com/set-soft/kibot_3d_models_cache_example/).
 - **config**: The KiBot config file to use. The first file that matches `*.kibot.yaml` is used when omitted.
 - **dir**: Output directory for the generated files. The current directory is used when omitted.
 - **board**: Name of the PCB file. The first file that matches `*.kicad_pcb` is used when omitted.
@@ -1688,6 +1689,9 @@ The main differences between API 1 and 2 are:
 - In API 1 you must specify the input files, in API 2 can be omitted
 - API 1 supports wildcards in the filenames, API 2 doesn't
 - API 2 supports spaces in the filenames, API 1 doesn't
+
+Also note that v2 images are currently using the *full* docker image (v1.5 and newer).
+It includes things like PanDoc and Blender.
 
 ### GitHub Cache
 
