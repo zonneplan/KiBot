@@ -185,6 +185,9 @@ class PCB3DExportOptions(Base3DOptionsWithHL):
             """ Name for the generated PCB3D file (%i='blender_export' %x='pcb3d') """
             self.version = '2.1'
             """ [2.1,2.1_haschtl] Variant of the format used """
+            self.solder_paste_for_populated = True
+            """ Add solder paste only for the populated components.
+                Populated components are the ones listed in `show_components` """
         self._expand_id = 'blender_export'
         self._expand_ext = 'pcb3d'
         self._unkown_is_error = True
@@ -381,6 +384,15 @@ class Blender_ExportOptions(BaseOptions):
                 'comment': 'Internally created for the PCB3D',
                 'dir': dest_dir,
                 'options': {'stackup_create': self.pcb3d.version == '2.1_haschtl'}}
+        if self.pcb3d.solder_paste_for_populated:
+            sc = 'all'
+            if not self.pcb3d._show_all_components:
+                sc = 'none' if not self.pcb3d.show_components else self.pcb3d._show_components_raw
+            tree['options']['show_components'] = sc
+        logger.error(tree)
+        logger.error(f"_show_all_components: {self.pcb3d._show_all_components}")
+        logger.error(f"show_components: {self.pcb3d.show_components}")
+        logger.error(f"_show_components_raw: {self.pcb3d._show_components_raw}")
         configure_and_run(tree, dest_dir, ' - Creating Pads and boundary ...')
 
     def create_pcb3d(self, data_dir):

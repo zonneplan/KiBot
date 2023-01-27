@@ -14,6 +14,7 @@ from pcbnew import B_Paste, F_Paste, PCB_TEXT_T, ToMM
 from .gs import GS
 from .misc import (MOD_THROUGH_HOLE, MOD_SMD, UI_VIRTUAL, W_UNKPCB3DTXT, W_NOPCB3DBR, W_NOPCB3DTL, W_BADPCB3DTXT,
                    W_UNKPCB3DNAME, W_BADPCB3DSTK)
+from .optionable import Optionable
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -71,9 +72,26 @@ class PCB2Blender_ToolsOptions(VariantOptions):
             """ File name for the sub-PCBs bounds """
             self.sub_boards_stacked_prefix = 'stacked_'
             """ Prefix used for the stack files """
+            self.show_components = Optionable
+            """ *[list(string)|string=all] [none,all] List of components to include in the pads list,
+                can be also a string for `none` or `all`. The default is `all` """
         super().__init__()
         self._expand_id = 'pcb2blender'
         self._expand_ext = 'pcb3d'
+
+    def config(self, parent):
+        super().config(parent)
+        # List of components
+        self._show_all_components = False
+        if isinstance(self.show_components, str):
+            if self.show_components == 'all':
+                self._show_all_components = True
+            self.show_components = []
+        elif isinstance(self.show_components, type):
+            # Default is all
+            self._show_all_components = True
+        else:  # a list
+            self.show_components = self.solve_kf_filters(self.show_components)
 
     def do_board_bounds(self, dir_name):
         if not self.board_bounds_create:
@@ -243,12 +261,14 @@ class PCB2Blender_ToolsOptions(VariantOptions):
     def run(self, output):
         super().run(output)
         dir_name = os.path.dirname(output)
+        self.apply_show_components()
         self.filter_pcb_components(do_3D=True)
         self.do_board_bounds(dir_name)
         self.do_pads_info(dir_name)
         self.do_stackup(dir_name)
         self.do_sub_boards(dir_name)
         self.unfilter_pcb_components(do_3D=True)
+        self.undo_show_components()
 
     def get_targets(self, out_dir):
         files = []

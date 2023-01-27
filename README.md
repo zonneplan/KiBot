@@ -1593,6 +1593,8 @@ Notes:
             - `output`: [string='%f-%i%I%v.%x'] Name for the generated PCB3D file (%i='blender_export' %x='pcb3d'). Affected by global options.
             - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                                A short-cut to use for simple cases where a variant is an overkill.
+            - `solder_paste_for_populated`: [boolean=true] Add solder paste only for the populated components.
+                                            Populated components are the ones listed in `show_components`.
             - `variant`: [string=''] Board variant to apply.
             - `version`: [string='2.1'] [2.1,2.1_haschtl] Variant of the format used.
         - **`point_of_view`**: [dict|list(dict)] How the object is viewed by the camera.
@@ -3344,6 +3346,8 @@ Notes:
     - **`options`**: [dict] Options for the `pcb2blender_tools` output.
       * Valid keys:
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=pcb2blender, %x=pcb3d). Affected by global options.
+        - **`show_components`**: [list(string)|string=all] [none,all] List of components to include in the pads list,
+                                 can be also a string for `none` or `all`. The default is `all`.
         - `board_bounds_create`: [boolean=true] Create the file that informs the size of the used PCB area.
                                  This is the bounding box reported by KiCad for the PCB edge with 1 mm of margin.
         - `board_bounds_dir`: [string='layers'] Sub-directory where the bounds file is stored.

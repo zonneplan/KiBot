@@ -990,7 +990,7 @@ class VariantOptions(BaseOptions):
             self._sub_pcb = self.variant._sub_pcb
         self._comps = comps
 
-    # The following 3 members are used by 2D and 3D renderers
+    # The following 5 members are used by 2D and 3D renderers
     def setup_renderer(self, components, active_components):
         """ Setup the options to use it as a renderer """
         self._show_all_components = False
@@ -998,6 +998,7 @@ class VariantOptions(BaseOptions):
         self.highlight = self.solve_kf_filters([c for c in active_components if c])
         self.show_components = [c for c in components if c]
         if self.show_components:
+            self._show_components_raw = self.show_components
             self.show_components = self.solve_kf_filters(self.show_components)
 
     def save_renderer_options(self):
@@ -1015,6 +1016,35 @@ class VariantOptions(BaseOptions):
         self.highlight = self.old_highlight
         self._parent.dir = self.old_dir
         self._parent._done = self.old_done
+
+    def apply_show_components(self):
+        if self._show_all_components:
+            # Don't change anything
+            return
+        logger.debug('Applying components list ...')
+        # The user specified a list of components, we must remove the rest
+        if not self._comps:
+            # No variant or filter applied
+            # Load the components
+            load_sch()
+            self._comps = GS.sch.get_components()
+            get_board_comps_data(self._comps)
+        # If the component isn't listed by the user make it DNF
+        show_components = set(self.expand_kf_components(self.show_components))
+        self.undo_show = set()
+        for c in self._comps:
+            if c.ref not in show_components and c.fitted:
+                c.fitted = False
+                self.undo_show.add(c.ref)
+                logger.debugl(2, '- Removing '+c.ref)
+
+    def undo_show_components(self):
+        if self._show_all_components:
+            # Don't change anything
+            return
+        for c in self._comps:
+            if c.ref in self.undo_show:
+                c.fitted = True
 
 
 class PcbMargin(Optionable):

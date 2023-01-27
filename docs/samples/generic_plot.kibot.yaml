@@ -169,6 +169,9 @@ outputs:
         # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
         # Unlike the `pcbdraw` output, the default is `all`
         show_components: all
+        # [boolean=true] Add solder paste only for the populated components.
+        # Populated components are the ones listed in `show_components`
+        solder_paste_for_populated: true
         # [string=''] Board variant to apply
         variant: ''
         # [string='2.1'] [2.1,2.1_haschtl] Variant of the format used
@@ -2061,6 +2064,9 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [list(string)|string=all] [none,all] List of components to include in the pads list,
+      # can be also a string for `none` or `all`. The default is `all`
+      show_components: all
       # [boolean=false] Create a JSON file containing the board stackup
       stackup_create: false
       # [string='.'] Directory for the stackup file
