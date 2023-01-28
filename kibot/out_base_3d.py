@@ -6,7 +6,6 @@
 from fnmatch import fnmatch
 import os
 import requests
-import tempfile
 from .misc import W_MISS3D, W_FAILDL, W_DOWN3D, DISABLE_3D_MODEL_TEXT
 from .gs import GS
 from .optionable import Optionable
@@ -86,12 +85,11 @@ class Base3DOptions(VariantOptions):
         if self._tmp_dir is None:
             self._tmp_dir = os.environ.get('KIBOT_3D_MODELS')
             if self._tmp_dir is None:
-                self._tmp_dir = tempfile.mkdtemp()
-                self._files_to_remove.append(self._tmp_dir)
+                self._tmp_dir = os.path.join(os.path.expanduser('~'), '.cache', 'kibot', '3d')
             else:
                 self._tmp_dir = os.path.abspath(self._tmp_dir)
             rel_dirs.append(self._tmp_dir)
-            logger.debug('Using `{}` as temporal dir for downloaded files'.format(self._tmp_dir))
+            logger.debug('Using `{}` as dir for downloaded 3D models'.format(self._tmp_dir))
         dest = os.path.join(self._tmp_dir, fname)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         # Is already there?

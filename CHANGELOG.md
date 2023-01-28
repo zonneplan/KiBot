@@ -64,6 +64,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems when trying to use groups of layers (i.e. copper)
 - Report:
   - Computed size when using circles and some arcs in the PCB edge (#375)
+### Changed
+- Downloaded 3D models are no longer discarded.
+  They are stored in ~/.cache/kibot/3d
+  You can change the directory using KIBOT_3D_MODELS
 
 ## [1.5.1] - 2022-12-16
 ### Fixed
