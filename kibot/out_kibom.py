@@ -75,7 +75,7 @@ class KiBoMColumns(Optionable):
         super().config(parent)
         if not self.field:
             raise KiPlotConfigurationError("Missing or empty `field` in columns list ({})".format(str(self._tree)))
-        self.column = Optionable.solve_field_name(self.column)
+        self.field = Optionable.solve_field_name(self.field)
         if isinstance(self.join, type):
             self.join = None
         elif isinstance(self.join, list):
