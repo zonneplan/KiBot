@@ -11,7 +11,7 @@ import re
 from re import compile
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .misc import W_UNKOPS
+from .misc import W_UNKOPS, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS
 from . import log
 
 logger = log.get_logger()
@@ -467,6 +467,67 @@ class Optionable(object):
 
     def color_str_to_rgb(self, color):
         return self.color_to_rgb(self.parse_one_color(color))
+
+    @staticmethod
+    def _solve_field_name(field, empty_when_none):
+        """ Applies special replacements for field """
+        # The global name for the LCSC part field
+        if GS.global_field_lcsc_part:
+            logger.debug('- User selected: '+GS.global_field_lcsc_part)
+            return GS.global_field_lcsc_part
+        # No name defined, try to figure out
+        if not GS.sch and GS.sch_file:
+            GS.load_sch()
+        if not GS.sch:
+            logger.debug("- No schematic loaded, can't search the name")
+            return '' if empty_when_none else 'LCSC#'
+        if hasattr(GS.sch, '_field_lcsc_part'):
+            return GS.sch._field_lcsc_part
+        # Look for a common name
+        fields = {f.lower() for f in GS.sch.get_field_names([])}
+        for stub in DISTRIBUTORS_STUBS:
+            fld = 'lcsc'+stub
+            if fld in fields:
+                GS.sch._field_lcsc_part = fld
+                return fld
+            if stub != '#':
+                for sep in DISTRIBUTORS_STUBS_SEPS:
+                    fld = 'lcsc'+sep+stub
+                    if fld in fields:
+                        GS.sch._field_lcsc_part = fld
+                        return fld
+        if 'lcsc' in fields:
+            GS.sch._field_lcsc_part = 'LCSC'
+            return 'LCSC'
+        # Look for a field that only contains LCSC codes
+        comps = GS.sch.get_components()
+        lcsc_re = re.compile(r'C\d+')
+        for f in fields:
+            found = False
+            for c in comps:
+                val = c.get_field_value(f).strip()
+                if not val:
+                    continue
+                if lcsc_re.match(val):
+                    found = True
+                else:
+                    break
+            if found:
+                GS.sch._field_lcsc_part = f
+                return f
+        logger.debug('- No LCSC field found')
+        res = '' if empty_when_none else 'LCSC#'
+        GS.sch._field_lcsc_part = res
+        return res
+
+    @staticmethod
+    def solve_field_name(field, empty_when_none=False):
+        if field != '_field_lcsc_part':
+            return field
+        logger.debug('Looking for LCSC field name')
+        field = Optionable._solve_field_name(field, empty_when_none)
+        logger.debug('Using {} as LCSC field name'.format(field))
+        return field
 
 
 class BaseOptions(Optionable):

@@ -199,7 +199,8 @@ class BoMRegex(Optionable):
         self._unkown_is_error = True
         with document:
             self.column = ''
-            """ Name of the column to apply the regular expression """
+            """ Name of the column to apply the regular expression.
+                Use `_field_lcsc_part` to get the value defined in the global options """
             self.regex = ''
             """ Regular expression to match """
             self.field = None
@@ -214,6 +215,11 @@ class BoMRegex(Optionable):
             """ Match if the field doesn't exists, no regex applied. Not affected by `invert` """
             self.invert = False
             """ Invert the regex match result """
+
+    def config(self, parent):
+        super().config(parent)
+        if not self.column:
+            raise KiPlotConfigurationError("Missing or empty `column` in field regex ({})".format(str(self._tree)))
 
 
 class VariantOptions(BaseOptions):

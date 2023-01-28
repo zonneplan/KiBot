@@ -790,6 +790,8 @@ global:
                          This is because the plating reduces the hole, so you need to use a bigger drill.
                          For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/.
     - `field_3D_model`: [string='_3D_model'] Name for the field controlling the 3D models used for a component.
+    - `field_lcsc_part`: [string=''] The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
+                         When empty KiBot will try to discover it.
     - `filters`: [list(dict)] KiBot warnings to be ignored.
       * Valid keys:
         - `error`: [string=''] Error id we want to exclude.
@@ -917,6 +919,7 @@ filters:
                      Column names are case-insensitive.
       * Valid keys:
         - `column`: [string=''] Name of the column to apply the regular expression.
+                    Use `_field_lcsc_part` to get the value defined in the global options.
         - *field*: Alias for column.
         - `invert`: [boolean=false] Invert the regex match result.
         - `match_if_field`: [boolean=false] Match if the field exists, no regex applied. Not affected by `invert`.
@@ -942,6 +945,7 @@ filters:
                       If empty this rule is ignored.
       * Valid keys:
         - `column`: [string=''] Name of the column to apply the regular expression.
+                    Use `_field_lcsc_part` to get the value defined in the global options.
         - *field*: Alias for column.
         - `invert`: [boolean=false] Invert the regex match result.
         - `match_if_field`: [boolean=false] Match if the field exists, no regex applied. Not affected by `invert`.
@@ -1732,6 +1736,7 @@ Notes:
                          Can be just the name of the field.
           * Valid keys:
             - **`field`**: [string=''] Name of the field to use for this column.
+                           Use `_field_lcsc_part` to get the value defined in the global options.
             - **`name`**: [string=''] Name to display in the header. The field is used when empty.
             - `comment`: [string=''] Used as explanation for this column. The XLSX output uses it.
             - `join`: [list(dict)|list(string)|string=''] List of fields to join to this column.
@@ -1826,6 +1831,7 @@ Notes:
                                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'.
               * Valid keys:
                 - **`field`**: [string=''] Name of the field to use for this column.
+                               Use `_field_lcsc_part` to get the value defined in the global options.
                 - **`name`**: [string=''] Name to display in the header. The field is used when empty.
                 - `comment`: [string=''] Used as explanation for this column. The XLSX output uses it.
                 - `join`: [list(dict)|list(string)|string=''] List of fields to join to this column.
@@ -1870,6 +1876,7 @@ Notes:
                                 Can be just the name of the field.
           * Valid keys:
             - **`field`**: [string=''] Name of the field to use for this column.
+                           Use `_field_lcsc_part` to get the value defined in the global options.
             - **`name`**: [string=''] Name to display in the header. The field is used when empty.
             - `comment`: [string=''] Used as explanation for this column. The XLSX output uses it.
             - `join`: [list(dict)|list(string)|string=''] List of fields to join to this column.
@@ -2723,6 +2730,7 @@ Notes:
                              Can be just the name of the field.
               * Valid keys:
                 - **`field`**: [string=''] Name of the field to use for this column.
+                               Use `_field_lcsc_part` to get the value defined in the global options.
                 - **`name`**: [string=''] Name to display in the header. The field is used when empty.
                 - `join`: [list(string)|string=''] List of fields to join to this column.
             - **`fit_field`**: [string='Config'] Field name used to determine if a particular part is to be fitted (also DNC and variants).
@@ -2766,6 +2774,7 @@ Notes:
                                regex: 'fiducial'.
               * Valid keys:
                 - `column`: [string=''] Name of the column to apply the regular expression.
+                            Use `_field_lcsc_part` to get the value defined in the global options.
                 - *field*: Alias for column.
                 - `regex`: [string=''] Regular expression to match.
                 - *regexp*: Alias for regex.
@@ -2779,6 +2788,7 @@ Notes:
                               If empty all the components are included.
               * Valid keys:
                 - `column`: [string=''] Name of the column to apply the regular expression.
+                            Use `_field_lcsc_part` to get the value defined in the global options.
                 - *field*: Alias for column.
                 - `regex`: [string=''] Regular expression to match.
                 - *regexp*: Alias for regex.
@@ -5093,7 +5103,8 @@ They include support for:
   - _FusionPCB_drill: Drill files
   - _FusionPCB_compress: Gerbers and drill files compressed in a ZIP
   - _FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill
-- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB
+- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB.
+  Use the `field_lcsc_part` global option to specify the LCSC part number field if KiBot fails to detect it.
   - _JLCPCB_gerbers: Gerbers.
   - _JLCPCB_drill: Drill files
   - _JLCPCB_position: Pick and place, applies the `_rot_footprint` filter. You can change this filter.

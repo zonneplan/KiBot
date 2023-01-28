@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Internal templates import
   - Better support for wrong pre-flight options (#360)
   - A mechanism to cache downloaded 3D models
+- Global options:
+  - field_lcsc_part: to select the LCSC/JLCPCB part field
 - New outputs:
   - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
   - `ps_sch_print`, `dxf_sch_print` and `hpgl_sch_print` variants of

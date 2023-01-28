@@ -9,7 +9,7 @@ filters:
     comment: 'Only parts with JLC (LCSC) code'
     type: generic
     include_only:
-      - column: 'LCSC#'
+      - column: _field_lcsc_part
         regex: '^C\d+'
 
 groups:
@@ -108,7 +108,7 @@ outputs:
         - field: References
           name: Designator
         - Footprint
-        - field: 'LCSC#'
+        - field: _field_lcsc_part
           name: 'LCSC Part #'
       csv:
         hide_pcb_info: true

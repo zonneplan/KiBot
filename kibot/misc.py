@@ -128,6 +128,8 @@ DNC = {
 # KiCost distributors
 DISTRIBUTORS = ['arrow', 'digikey', 'farnell', 'lcsc', 'mouser', 'newark', 'rs', 'tme']
 DISTRIBUTORS_F = [d+'#' for d in DISTRIBUTORS]
+DISTRIBUTORS_STUBS = ['part#', '#', 'p#', 'pn', 'vendor#', 'vp#', 'vpn', 'num']
+DISTRIBUTORS_STUBS_SEPS = '_- '
 # ISO ISO4217 currency codes
 # Not all, but the ones we get from the European Central Bank (march 2021)
 ISO_CURRENCIES = {'EUR', 'USD', 'JPY', 'BGN', 'CZK', 'DKK', 'GBP', 'HUF', 'PLN', 'RON', 'SEK', 'CHF', 'ISK', 'NOK', 'HRK',

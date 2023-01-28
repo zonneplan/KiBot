@@ -1559,3 +1559,34 @@ def test_sub_pcb_bp(test_dir):
     ctx.expect_out_file(fname_b+'charger.kicad_pcb')
     ctx.expect_out_file(fname_b+'connector.kicad_pcb')
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(context.ki5(), reason="Needs porting")
+def test_lcsc_field_known(test_dir):
+    """ Test we can detect a known LCSC field name """
+    prj = 'lcsc_field_known'
+    ctx = context.TestContextSCH(test_dir, prj, 'lcsc_field_detect', 'JLCPCB')
+    ctx.run(extra=['_JLCPCB_bom'])
+    r, _, _ = ctx.load_csv(prj+'_bom_jlc.csv')
+    assert r[0][3] == 'C1234'
+
+
+@pytest.mark.skipif(context.ki5(), reason="Needs porting")
+def test_lcsc_field_unknown(test_dir):
+    """ Test we can detect an unknown LCSC field name """
+    prj = 'lcsc_field_unknown'
+    ctx = context.TestContextSCH(test_dir, prj, 'lcsc_field_detect', 'JLCPCB')
+    ctx.run(extra=['_JLCPCB_bom'])
+    r, _, _ = ctx.load_csv(prj+'_bom_jlc.csv')
+    assert r[0][3] == 'C1234'
+
+
+@pytest.mark.skipif(context.ki5(), reason="Needs porting")
+def test_lcsc_field_specified(test_dir):
+    """ Test we select the field """
+    prj = 'lcsc_field_unknown'
+    ctx = context.TestContextSCH(test_dir, prj, 'lcsc_field_specified', 'JLCPCB')
+    ctx.run(extra=['_JLCPCB_bom'])
+    assert ctx.search_err('User selected.*Cryptic')
+    r, _, _ = ctx.load_csv(prj+'_bom_jlc.csv')
+    assert r[0][3] == 'C1234'

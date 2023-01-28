@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: MIT
 # Project: KiBot (formerly KiPlot)
 """
@@ -22,7 +22,7 @@ from copy import deepcopy
 import os
 import re
 from .gs import GS
-from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, W_NOPART, W_MISSREF
+from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, W_NOPART, W_MISSREF, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
@@ -137,7 +137,8 @@ class BoMColumns(Optionable):
         self._unkown_is_error = True
         with document:
             self.field = ''
-            """ *Name of the field to use for this column """
+            """ *Name of the field to use for this column.
+                Use `_field_lcsc_part` to get the value defined in the global options """
             self.name = ''
             """ *Name to display in the header. The field is used when empty """
             self.join = BoMJoinField
@@ -153,9 +154,10 @@ class BoMColumns(Optionable):
         super().config(parent)
         if not self.field:
             raise KiPlotConfigurationError("Missing or empty `field` in columns list ({})".format(str(self._tree)))
+        self.field = self.solve_field_name(self.field)
+        field = self.field.lower()
         # Ensure this is None or a list
         # Also arrange it as field, cols...
-        field = self.field.lower()
         if isinstance(self.join, type):
             self.join = None
         elif isinstance(self.join, str):
@@ -1030,12 +1032,12 @@ class BoM(BaseOutput):  # noqa: F821
         mpn_fields = fld_set.intersection(mpn_set)
         # Look for distributor part number
         dpn_set = set()
-        for stub in ['part#', '#', 'p#', 'pn', 'vendor#', 'vp#', 'vpn', 'num']:
+        for stub in DISTRIBUTORS_STUBS:
             for dist in DISTRIBUTORS:
                 dpn_set.add(dist+stub)
                 if stub != '#':
-                    dpn_set.add(dist+'_'+stub)
-                    dpn_set.add(dist+'-'+stub)
+                    for sep in DISTRIBUTORS_STUBS_SEPS:
+                        dpn_set.add(dist+sep+stub)
         dpn_fields = fld_set.intersection(dpn_set)
         # Collect the used distributors
         dists = set()

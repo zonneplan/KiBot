@@ -119,10 +119,11 @@ class GS(object):
     global_edge_plating = None
     global_extra_pth_drill = None
     global_field_3D_model = None
+    global_field_lcsc_part = None
     global_hide_excluded = None
+    global_impedance_controlled = None
     global_kiauto_time_out_scale = None
     global_kiauto_wait_start = None
-    global_impedance_controlled = None
     #  This value will overwrite GS.def_global_output if defined
     #  Classes supporting global "output" option must call super().__init__()
     #  after defining its own options to allow Optionable do the overwrite.

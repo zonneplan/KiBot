@@ -1297,7 +1297,8 @@ They include support for:
   - _FusionPCB_drill: Drill files
   - _FusionPCB_compress: Gerbers and drill files compressed in a ZIP
   - _FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill
-- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB
+- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB.
+  Use the `field_lcsc_part` global option to specify the LCSC part number field if KiBot fails to detect it.
   - _JLCPCB_gerbers: Gerbers.
   - _JLCPCB_drill: Drill files
   - _JLCPCB_position: Pick and place, applies the `_rot_footprint` filter. You can change this filter.

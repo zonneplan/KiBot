@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -8,6 +8,7 @@
 import os
 from pcbnew import (PLOT_FORMAT_GERBER, FromMM, ToMM)
 from .gs import GS
+from .optionable import Optionable
 from .out_any_layer import (AnyLayer, AnyLayerOptions)
 from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
@@ -122,6 +123,7 @@ class Gerber(AnyLayer):
         # Filter the list of layers using the ones we are interested on
         useful = GS.get_useful_layers(USEFUL_LAYERS, layers, include_copper=True)
         tpl_layers = [AnyLayer.layer2dict(la) for la in useful]
+        lcsc_field = Optionable.solve_field_name('_field_lcsc_part', empty_when_none=True)
         # Add the list of layers to the templates
         for tpl in templates:
             outs_used = []
@@ -135,7 +137,7 @@ class Gerber(AnyLayer):
                         skip = True
                         out['run_by_default'] = False
                     out['options'] = {'pre_transform': ['_kicost_rename', '_rot_footprint']}
-                if out['type'] == 'bom' and not GS.sch_file:
+                if out['type'] == 'bom' and (not GS.sch_file or (out['name'].startswith('JLCPCB') and not lcsc_field)):
                     skip = True
                     out['run_by_default'] = False
                 if out['type'] == 'compress':

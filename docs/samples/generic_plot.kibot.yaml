@@ -295,7 +295,8 @@ outputs:
       columns:
         # [string=''] Used as explanation for this column. The XLSX output uses it
         - comment: ''
-          # [string=''] Name of the field to use for this column
+          # [string=''] Name of the field to use for this column.
+          # Use `_field_lcsc_part` to get the value defined in the global options
           field: 'Row'
           # [list(dict)|list(string)|string=''] List of fields to join to this column
           join:
@@ -333,7 +334,8 @@ outputs:
       cost_extra_columns:
         # [string=''] Used as explanation for this column. The XLSX output uses it
         - comment: ''
-          # [string=''] Name of the field to use for this column
+          # [string=''] Name of the field to use for this column.
+          # Use `_field_lcsc_part` to get the value defined in the global options
           field: 'Row'
           # [list(dict)|list(string)|string=''] List of fields to join to this column
           join:
@@ -552,7 +554,8 @@ outputs:
         specs_columns:
           # [string=''] Used as explanation for this column. The XLSX output uses it
           - comment: ''
-            # [string=''] Name of the field to use for this column
+            # [string=''] Name of the field to use for this column.
+            # Use `_field_lcsc_part` to get the value defined in the global options
             field: 'Row'
             # [list(dict)|list(string)|string=''] List of fields to join to this column
             join:
@@ -1295,7 +1298,8 @@ outputs:
         # [list(dict)|list(string)] List of columns to display.
         # Can be just the name of the field
         columns:
-          # [string=''] Name of the field to use for this column
+          # [string=''] Name of the field to use for this column.
+          # Use `_field_lcsc_part` to get the value defined in the global options
           - field: 'Row'
             # [list(string)|string=''] List of fields to join to this column
             join: ''
@@ -1337,7 +1341,8 @@ outputs:
         # - column: Footprint
         #   regex: 'fiducial'
         exclude_any:
-          # [string=''] Name of the column to apply the regular expression
+          # [string=''] Name of the column to apply the regular expression.
+          # Use `_field_lcsc_part` to get the value defined in the global options
           - column: ''
             # `field` is an alias for `column`
             # [string=''] Regular expression to match
@@ -1365,7 +1370,8 @@ outputs:
         # Column names are case-insensitive.
         # If empty all the components are included
         include_only:
-          # [string=''] Name of the column to apply the regular expression
+          # [string=''] Name of the column to apply the regular expression.
+          # Use `_field_lcsc_part` to get the value defined in the global options
           - column: ''
             # `field` is an alias for `column`
             # [string=''] Regular expression to match
