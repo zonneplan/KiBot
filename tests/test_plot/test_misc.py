@@ -1491,7 +1491,9 @@ def test_copy_files_1(test_dir):
     """ Copy files and 3D models """
     prj = 'copy_files'
     ctx = context.TestContext(test_dir, prj, 'copy_files_1', 'test.files')
+    os.environ['KIBOT_3D_MODELS'] = '/tmp'
     ctx.run(kicost=True)  # We use the fake web server
+    del os.environ['KIBOT_3D_MODELS']
     # The modified PCB
     ctx.expect_out_file(prj+'.kicad_pcb', sub=True)
     # The 3D models
@@ -1522,7 +1524,9 @@ def test_copy_files_2(test_dir):
     """ Copy files and 3D models """
     prj = 'copy_files'
     ctx = context.TestContext(test_dir, prj, 'copy_files_2', 'test.files')
+    os.environ['KIBOT_3D_MODELS'] = '/tmp'
     ctx.run(kicost=True)  # We use the fake web server
+    del os.environ['KIBOT_3D_MODELS']
     # The modified PCB
     ctx.expect_out_file(prj+'.kicad_pcb', sub=True)
     # The 3D models
