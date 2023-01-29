@@ -292,8 +292,10 @@ def get_board_comps_data(comps):
         comps_hash[c.ref] = cur_list
     for m in GS.get_modules():
         ref = m.GetReference()
+        attrs = m.GetAttributes()
         if ref not in comps_hash:
-            logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
+            if not (attrs & MOD_BOARD_ONLY):
+                logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
             continue
         for c in comps_hash[ref]:
             c.bottom = m.IsFlipped()
@@ -303,7 +305,6 @@ def get_board_comps_data(comps):
             c.footprint_y = center.y
             (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
             c.has_pcb_info = True
-            attrs = m.GetAttributes()
             if GS.ki5:
                 # KiCad 5
                 if attrs == UI_SMD:
