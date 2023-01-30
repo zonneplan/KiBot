@@ -179,23 +179,72 @@ def get_vertices(obj_data: str) -> list:
     ]
 
 
+def map_materials(mats):
+    """ An heuristic to map generic colors to the names used by KiCad """
+    mat_map = {}
+    # Look for grey, black and yellow materials.
+    greys = []
+    blacks = []
+    golden = []
+    for id, mat in mats.items():
+        r, g, b = map(float, mat['diffuse_color'])
+        if abs(r-g) < 0.02 and abs(g-b) < 0.02:
+            # Same RGB components
+            if r < 0.97 and r > 0.6:
+                # In the 0.6 - 0.97 range
+                greys.append(id)
+            if r < 0.3 and r > 0.1:
+                blacks.append(id)
+        elif r > 0.8 and g < 0.8 and g > 0.7 and b < 0.5:
+            golden.append(id)
+        if (r == 0 and g == 0 and b == 0) or (r == 1 and g == 1 and b == 1):
+            mat['transparency'] = 1
+        else:
+            mat['transparency'] = 0
+        mat['diffuse_color'] = ('%5.3f' % r, '%5.3f' % g, '%5.3f' % b)
+        mat['specular_color'] = tuple('%5.3f' % float(c) for c in mat['specular_color'])
+    # Use greys for the pins and metal body
+    c_greys = len(greys)
+    if c_greys == 1:
+        mat_map[greys[0]] = 'PIN-01'
+    elif c_greys > 1:
+        # More than one grey, sort by specular level
+        greys = sorted(greys, key=lambda x: mats[x]['specular_color'][0], reverse=True)
+        mat_map[greys[0]] = 'PIN-01'
+        mat_map[greys[1]] = 'MET-01'
+    # Use black for the plastic body
+    c_blacks = len(blacks)
+    if c_blacks == 1:
+        mat_map[blacks[0]] = 'IC-BODY-EPOXY-01'
+    elif c_blacks > 1:
+        blacks = sorted(blacks, key=lambda x: mats[x]['diffuse_color'][0], reverse=True)
+        for c, b in enumerate(blacks):
+            mat_map[b] = 'IC-BODY-EPOXY-%02d' % c+1
+    # Use yellow for golden pins
+    if golden:
+        mat_map[golden[0]] = 'PIN-02'
+    return mat_map
+
+
 def generate_wrl_model(model_3d: Ee3dModel) -> Ki3dModel:
     materials = get_materials(obj_data=model_3d.raw_obj)
     vertices = get_vertices(obj_data=model_3d.raw_obj)
+    mat_map = map_materials(materials)
 
     raw_wrl = VRML_HEADER
     # Define all the materials
     for id, mat in materials.items():
+        id = mat_map.get(id, 'MATERIAL_'+id)
         mat_str = textwrap.dedent(
             f"""
             Shape {{
                 appearance Appearance {{
-                    material DEF MATERIAL_{id} Material {{
+                    material DEF {id} Material {{
                         ambientIntensity 0.2
                         diffuseColor {' '.join(mat['diffuse_color'])}
                         specularColor {' '.join(mat['specular_color'])}
                         shininess 0.5
-                        transparency 0.0
+                        transparency {mat['transparency']}
                     }}
                 }}
             }}"""
@@ -206,7 +255,7 @@ def generate_wrl_model(model_3d: Ee3dModel) -> Ki3dModel:
     for shape in shapes:
         lines = shape.splitlines()
         material_id = lines[0].replace(" ", "")
-        material = materials[material_id]
+        material_id = mat_map.get(material_id, 'MATERIAL_'+material_id)
         index_counter = 0
         link_dict = {}
         coord_index = []
@@ -242,7 +291,7 @@ def generate_wrl_model(model_3d: Ee3dModel) -> Ki3dModel:
                         {"".join(coord_index)}
                     ]
                 }}
-                appearance Appearance {{material USE MATERIAL_{material_id}}}
+                appearance Appearance {{material USE {material_id}}}
             }}"""
         )
 
