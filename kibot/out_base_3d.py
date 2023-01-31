@@ -187,6 +187,8 @@ class Base3DOptions(VariantOptions):
         if all_comps is None and GS.sch_file:
             GS.load_sch()
             all_comps = GS.sch.get_components()
+        if all_comps is None:
+            all_comps = []
         all_comps_hash = {c.ref: c for c in all_comps}
         # Find the LCSC field
         lcsc_field = self.solve_field_name('_field_lcsc_part', empty_when_none=True)
