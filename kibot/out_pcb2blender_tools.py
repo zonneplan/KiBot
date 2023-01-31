@@ -125,9 +125,10 @@ class PCB2Blender_ToolsOptions(VariantOptions):
             has_model = len(footprint.Models()) > 0
             is_tht_or_smd = is_not_virtual(footprint)
             value = footprint.GetValue()
+            value = value.replace('/', '_')
             reference = footprint.GetReference()
             for j, pad in enumerate(footprint.Pads()):
-                name = os.path.join(dir_name, "{}_{}_{}_{}".format(value, reference, i, j))
+                name = os.path.join(dir_name, sanitized("{}_{}_{}_{}".format(value, reference, i, j)))
                 is_flipped = pad.IsFlipped()
                 has_paste = pad.IsOnLayer(B_Paste if is_flipped else F_Paste)
                 with open(name, 'wb') as f:
@@ -280,7 +281,7 @@ class PCB2Blender_ToolsOptions(VariantOptions):
                 value = footprint.GetValue()
                 reference = footprint.GetReference()
                 for j in range(len(footprint.Pads())):
-                    files.append(os.path.join(dir_name, "{}_{}_{}_{}".format(value, reference, i, j)))
+                    files.append(os.path.join(dir_name, sanitized("{}_{}_{}_{}".format(value, reference, i, j))))
         if self.stackup_create and (GS.global_pcb_finish or GS.stackup):
             files.append(os.path.join(out_dir, self.stackup_dir, self.stackup_file))
         if self.sub_boards_create:
