@@ -42,8 +42,12 @@ def do_expand_env(fname, used_extra, extra_debug):
         if force_used_extra:
             used_extra[0] = True
         return full_name
+    # Look for ALIAS:file
     ind = fname.index(':')
     alias_name = fname[:ind]
+    if len(alias_name) == 1:
+        # Is a drive letter, not an alias
+        return full_name
     rest = fname[ind+1:]
     new_fname = '${'+alias_name+'}'+os.path.sep+rest
     new_full_name = KiConf.expand_env(new_fname, used_extra)
