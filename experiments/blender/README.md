@@ -402,6 +402,7 @@ docker run --rm \
   --workdir=$(pwd) \
   --volume="/tmp:/tmp" \
   --volume="/etc/group:/etc/group:ro" \
+  --volume="/etc/gshadow:/etc/gshadow:ro" \
   --volume="/etc/timezone:/etc/timezone:ro" \
   --volume="/home/$USER:/home/$USER:rw" \
   --volume="/etc/passwd:/etc/passwd:ro" \

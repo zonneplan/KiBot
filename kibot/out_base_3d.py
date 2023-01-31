@@ -6,6 +6,7 @@
 from fnmatch import fnmatch
 import os
 import requests
+from .EasyEDA.easyeda_3d import download_easyeda_3d_model
 from .misc import W_MISS3D, W_FAILDL, W_DOWN3D, DISABLE_3D_MODEL_TEXT
 from .gs import GS
 from .optionable import Optionable
@@ -85,15 +86,6 @@ class Base3DOptions(VariantOptions):
 
     def download_model(self, url, fname, rel_dirs):
         """ Download the 3D model from the provided URL """
-        # Find a place to store the downloaded model
-        if self._tmp_dir is None:
-            self._tmp_dir = os.environ.get('KIBOT_3D_MODELS')
-            if self._tmp_dir is None:
-                self._tmp_dir = os.path.join(os.path.expanduser('~'), '.cache', 'kibot', '3d')
-            else:
-                self._tmp_dir = os.path.abspath(self._tmp_dir)
-            rel_dirs.append(self._tmp_dir)
-            logger.debug('Using `{}` as dir for downloaded 3D models'.format(self._tmp_dir))
         dest = os.path.join(self._tmp_dir, fname)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         # Is already there?
@@ -126,7 +118,57 @@ class Base3DOptions(VariantOptions):
             return nm
         return name
 
-    def download_models(self, rename_filter=None, rename_function=None, rename_data=None, force_wrl=False):
+    def try_download_kicad(self, model, full_name, downloaded, rel_dirs, force_wrl):
+        if not (model.startswith('${KISYS3DMOD}/') or model.startswith('${KICAD6_3DMODEL_DIR}/')):
+            return None
+        # This is a model from KiCad, try to download it
+        fname = model[model.find('/')+1:]
+        replace = None
+        if full_name in downloaded:
+            # Already downloaded
+            return os.path.join(self._tmp_dir, fname)
+        # Download the model
+        url = self.kicad_3d_url+fname
+        replace = self.download_model(url, fname, rel_dirs)
+        if not replace:
+            return None
+        # Successfully downloaded
+        downloaded.add(full_name)
+        # If this is a .wrl also download the .step
+        if url.endswith('.wrl'):
+            url = url[:-4]+'.step'
+            fname = fname[:-4]+'.step'
+            self.download_model(url, fname, rel_dirs)
+        elif force_wrl:  # This should be a .step, so we download the wrl
+            url = os.path.splitext(url)[0]+'.wrl'
+            fname = os.path.splitext(fname)[0]+'.wrl'
+            self.download_model(url, fname, rel_dirs)
+        return replace
+
+    def try_download_easyeda(self, model, full_name, downloaded, sch_comp, lcsc_field):
+        if not lcsc_field or not sch_comp:
+            return None
+        lcsc_id = sch_comp.get_field_value(lcsc_field)
+        if not lcsc_id:
+            return None
+        fname = os.path.basename(model)
+        cache_name = os.path.join(self._tmp_dir, fname)
+        if full_name in downloaded:
+            # Already downloaded
+            return cache_name
+        if os.path.isfile(cache_name):
+            downloaded.add(full_name)
+            logger.debug('Using cached model `{}`'.format(cache_name))
+            return cache_name
+        logger.debug('- Trying to download {} component as {}/{}'.format(lcsc_id, self._tmp_dir, fname))
+        replace = download_easyeda_3d_model(lcsc_id, self._tmp_dir, fname)
+        if not replace:
+            return None
+        # Successfully downloaded
+        downloaded.add(full_name)
+        return replace
+
+    def download_models(self, rename_filter=None, rename_function=None, rename_data=None, force_wrl=False, all_comps=None):
         """ Check we have the 3D models.
             Inform missing models.
             Try to download the missing models
@@ -141,9 +183,26 @@ class Base3DOptions(VariantOptions):
         is_copy_mode = rename_filter is not None
         rel_dirs = getattr(rename_data, 'rel_dirs', [])
         extra_debug = GS.debug_level > 3
+        # Get a list of components in the schematic. Enables downloading LCSC parts.
+        if all_comps is None and GS.sch_file:
+            GS.load_sch()
+            all_comps = GS.sch.get_components()
+        all_comps_hash = {c.ref: c for c in all_comps}
+        # Find the LCSC field
+        lcsc_field = self.solve_field_name('_field_lcsc_part', empty_when_none=True)
+        # Find a place to store the downloaded models
+        if self._tmp_dir is None:
+            self._tmp_dir = os.environ.get('KIBOT_3D_MODELS')
+            if self._tmp_dir is None:
+                self._tmp_dir = os.path.join(os.path.expanduser('~'), '.cache', 'kibot', '3d')
+            else:
+                self._tmp_dir = os.path.abspath(self._tmp_dir)
+            rel_dirs.append(self._tmp_dir)
+            logger.debug('Using `{}` as dir for downloaded 3D models'.format(self._tmp_dir))
         # Look for all the footprints
         for m in GS.get_modules():
             ref = m.GetReference()
+            sch_comp = all_comps_hash.get(ref, None)
             # Extract the models (the iterator returns copies)
             models = m.Models()
             models_l = []
@@ -164,30 +223,10 @@ class Base3DOptions(VariantOptions):
                 if not os.path.isfile(full_name):
                     logger.debugl(2, 'Missing 3D model file {} ({})'.format(full_name, m3d.m_Filename))
                     # Missing 3D model
-                    if self.download and (m3d.m_Filename.startswith('${KISYS3DMOD}/') or
-                                          m3d.m_Filename.startswith('${KICAD6_3DMODEL_DIR}/')):
-                        # This is a model from KiCad, try to download it
-                        fname = m3d.m_Filename[m3d.m_Filename.find('/')+1:]
-                        replace = None
-                        if full_name in downloaded:
-                            # Already downloaded
-                            replace = os.path.join(self._tmp_dir, fname)
-                        else:
-                            # Download the model
-                            url = self.kicad_3d_url+fname
-                            replace = self.download_model(url, fname, rel_dirs)
-                            if replace:
-                                # Successfully downloaded
-                                downloaded.add(full_name)
-                                # If this is a .wrl also download the .step
-                                if url.endswith('.wrl'):
-                                    url = url[:-4]+'.step'
-                                    fname = fname[:-4]+'.step'
-                                    self.download_model(url, fname, rel_dirs)
-                                elif force_wrl:  # This should be a .step, so we download the wrl
-                                    url = os.path.splitext(url)[0]+'.wrl'
-                                    fname = os.path.splitext(fname)[0]+'.wrl'
-                                    self.download_model(url, fname, rel_dirs)
+                    if self.download:
+                        replace = self.try_download_kicad(m3d.m_Filename, full_name, downloaded, rel_dirs, force_wrl)
+                        if replace is None:
+                            replace = self.try_download_easyeda(m3d.m_Filename, full_name, downloaded, sch_comp, lcsc_field)
                         if replace:
                             source_models.add(replace)
                             old_name = m3d.m_Filename
@@ -244,7 +283,7 @@ class Base3DOptions(VariantOptions):
                 return ret
             return GS.pcb_file
         self.filter_pcb_components(do_3D=True, do_2D=True, highlight=highlight)
-        self.download_models(force_wrl=force_wrl)
+        self.download_models(force_wrl=force_wrl, all_comps=self._comps)
         fname = self.save_tmp_board()
         self.unfilter_pcb_components(do_3D=True, do_2D=True)
         return fname

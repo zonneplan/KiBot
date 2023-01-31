@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Internal templates import
   - Better support for wrong pre-flight options (#360)
   - A mechanism to cache downloaded 3D models
+  - Support to download 3D models from EasyEDA (using LCSC codes)
 - Global options:
   - field_lcsc_part: to select the LCSC/JLCPCB part field
 - New outputs:
