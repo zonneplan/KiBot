@@ -511,6 +511,7 @@ class Optionable(object):
                 if lcsc_re.match(val):
                     found = True
                 else:
+                    found = False
                     break
             if found:
                 GS.sch._field_lcsc_part = f
