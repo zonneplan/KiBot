@@ -102,3 +102,72 @@ This model uses d = 1, but isn't transparent
 ### Golden Metal
 
 - 0.949 0.761 0.180 - 0.761 0.608 0.145 (2x)
+
+
+# Position
+
+## C181094
+
+This is an analysis of the positions indicated by EasyEDA and KiCad.
+Is related to #380, the conclusion was that the 3D model adjust wasn't needed for the footprint once exported to KiCad.
+
+Data from the EasyEDA API:
+
+```
+translation=Ee3dModelBase(x='608', y='-320', z='0'),
+rotation=Ee3dModelBase(x='0', y='0', z='180'),
+```
+
+PAD 1 position according to EasyEDA footprint
+
+```
+PAD
+ - RECT
+ - 4003.937
+ - 3003.74
+ - 4.9213
+ - 2.7559
+ - 1
+ -
+ - 1
+ - 0
+ - 4001.4764
+```
+
+KiCad 3D model offset
+
+```
+      (offset (xyz -861.57 843.28 -0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 180))
+```
+
+KiCad PAD 1
+
+```
+    (pad "1" smd rect locked (at 1 0.95) (size 1.25 0.7) (layers "F.Cu" "F.Paste" "F.Mask")
+      (net 2 "GND") (pinfunction "G") (pintype "input") (tstamp 12c57c2f-095b-44d0-b46b-b41b1ec9add0))
+```
+
+Some math:
+
+```
+4003.937 - 608 = 3395.937*0.254 = 862.57 (1 mm off == x position for KiCad pad 1)
+3003.74 - (-320) = 3323.74*0.254 = 844.23 (0.95 mm off == y position for KiCad pad 1)
+
+1 mil = 25.4/1000 = 0.0254
+
+861.57/0.254 = 3392+608 = 4000 (rounded!)
+843.28/0.254 = 3320-320 = 3000 (rounded!)
+
+(EE_PAD.x - EE_3D_offset.x) * 25.4/100 - KI_PAD.x = (4003.937-608)*0.254-1 = 861.567998
+(EE_PAD.y - EE_3D_offset.y) * 25.4/100 - KI_PAD.y = (3003.74-(-320))*0.254-0.95 = 843.27996
+
+Rotated 180 degrees is x' = -x; y' = y
+x=-861.57
+y=843.28
+z=0
+```
+
+The VRML is scaled x/2.54, coordinates are from the PCB, but Y axis is negative.
+
