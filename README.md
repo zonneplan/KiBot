@@ -1060,6 +1060,7 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
   - References that match: '^TP[0-9]*' or '^FID'
   - Part names that match: 'regex': 'mount.*hole' or 'solder.*bridge' or 'solder.*jump' or 'test.*point'
   - Footprints that match:  'test.*point' or 'mount.*hole' or 'fiducial'
+- **_none** does nothing, useful when you want to remove a filter with default value
 - **_only_smd** is used to get only SMD parts
 - **_only_tht** is used to get only THT parts
 - **_only_virtual** is used to get only virtual parts
