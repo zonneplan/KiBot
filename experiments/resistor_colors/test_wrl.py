@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2023 Salvador E. Tropea
-# License: AGPLv3
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 #
 # KiCad axial resistor 3D color generator
 #
 # Works for R_Axial_DIN* KiCad 6.0.10 3D models
+# Nice tool: https://www.digikey.com/en/resources/conversion-calculators/conversion-calculator-resistor-color-code
 import re
 import sys
 
