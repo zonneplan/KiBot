@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -8,7 +8,7 @@ Dependencies:
   - from: KiAuto
     role: mandatory
     command: eeschema_do
-    version: 2.0.0
+    version: 2.1.1
 """
 from .gs import GS
 from .out_any_sch_print import Any_SCH_PrintOptions
@@ -32,9 +32,9 @@ class PDF_SCH_PrintOptions(Any_SCH_PrintOptions):
 @output_class
 class PDF_SCH_Print(BaseOutput):  # noqa: F821
     """ PDF Schematic Print (Portable Document Format)
-        Exports the PCB to the most common exchange format. Suitable for printing.
+        Exports the schematic to the most common exchange format. Suitable for printing.
         This is the main format to document your schematic.
-        This output is what you get from the 'File/Print' menu in eeschema. """
+        This output is what you get from the 'File/Plot' menu in eeschema. """
     def __init__(self):
         super().__init__()
         with document:

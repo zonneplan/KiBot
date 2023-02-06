@@ -1,0 +1,39 @@
+# PCB2Blender (PCB3D) format for plug-in v2.1
+# This is the variant used in the Haschtl fork
+# URL: https://github.com/haschtl/pcb2blender
+kibot:
+  version: 1
+
+import:
+  - file: PCB2Blender_2_1
+
+groups:
+  - name: _PCB2Blender_elements_2_1_haschtl
+    outputs:
+      - _PCB2Blender_tools_2_1_haschtl
+      - _PCB2Blender_layers_2_1
+      - _PCB2Blender_vrml_2_1
+
+outputs:
+  - name: _PCB2Blender_tools_2_1_haschtl
+    comment: Pads information and board bounds for PCB3D 2.1 (Haschtl fork)
+    type: pcb2blender_tools
+    dir: '%f%v_pcb3d'
+    run_by_default: false
+    options:
+      stackup_create: true
+
+  - name: _PCB2Blender_2_1_haschtl
+    comment: PCB3D model for pcb2blender plug-in (Haschtl fork)
+    type: compress
+    disable_run_by_default: _PCB2Blender_2_1
+    options:
+      output: '%f%v.pcb3d'
+      format: ZIP
+      files:
+        - from_output: _PCB2Blender_tools_2_1_haschtl
+          from_output_dir: true
+        - from_output: _PCB2Blender_layers_2_1
+          dest: layers
+        - from_output: _PCB2Blender_vrml_2_1
+          from_output_dir: true

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # The algorithm is from KiCost project (https://github.com/xesscorp/KiCost)
 # Description: Implements the KiCost variants mechanism.
 import re
 from .gs import GS
-from .misc import IFILT_VAR_RENAME_KICOST, IFILT_KICOST_RENAME, IFILT_KICOST_DNP
+from .misc import IFILT_KICOST_RENAME, IFILT_KICOST_DNP
 from .fil_base import BaseFilter
 from .macros import macros, document, variant_class  # noqa: F401
 from . import log
@@ -43,7 +43,7 @@ class KiCost(BaseVariant):  # noqa: F821
     def config(self, parent):
         super().config(parent)
         self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform',
-                                                     [IFILT_VAR_RENAME_KICOST, IFILT_KICOST_RENAME], is_transform=True)
+                                                     ['_var_rename_kicost', IFILT_KICOST_RENAME], is_transform=True)
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter', IFILT_KICOST_DNP)
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')

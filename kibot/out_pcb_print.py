@@ -28,6 +28,7 @@ Dependencies:
 #     role: Create EPS format
 #     version: '2.40'
 #     id: rsvg2
+from copy import deepcopy
 import re
 import os
 import subprocess
@@ -46,7 +47,6 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW
-from .kiplot import exec_with_retry, add_extra_options
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -153,6 +153,13 @@ class LayerOptions(Layer):
         if self.color:
             self.validate_color('color')
 
+    def copy_extra_from(self, ref):
+        """ Copy members specific to LayerOptions """
+        self.color = ref.color
+        self.plot_footprint_refs = ref.plot_footprint_refs
+        self.plot_footprint_values = ref.plot_footprint_values
+        self.force_plot_invisible_refs_vals = ref.force_plot_invisible_refs_vals
+
 
 class PagesOptions(Optionable):
     """ One page of the output document """
@@ -174,7 +181,10 @@ class PagesOptions(Optionable):
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
             self.sheet = 'Assembly'
-            """ Text to use for the `sheet` in the title block """
+            """ Text to use for the `sheet` in the title block.
+                Pattern (%*) and text variables are expanded.
+                In addition when you use `repeat_for_layer` the following patterns are available:
+                %ln layer name, %ls layer suffix and %ld layer description """
             self.sheet_reference_color = ''
             """ Color to use for the frame and title block """
             self.line_width = 0.1
@@ -197,9 +207,32 @@ class PagesOptions(Optionable):
                 You can reuse other layers lists, some options aren't used here, but they are valid """
             self.page_id = '%02d'
             """ Text to differentiate the pages. Use %d (like in C) to get the page number """
+            self.sketch_pads_on_fab_layers = False
+            """ Draw only the outline of the pads on the *.Fab layers (KiCad 6+) """
+            self.sketch_pad_line_width = 0.1
+            """ Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                Note that this value is currently ignored by KiCad (6.0.9) """
+            self.repeat_for_layer = ''
+            """ Use this page as a pattern to create more pages.
+                The other pages will change the layer mentioned here.
+                This can be used to generate a page for each copper layer, here you put `F.Cu`.
+                See `repeat_layers` """
+            self.repeat_layers = LayerOptions
+            """ [list(dict)|list(string)|string] List of layers to replace `repeat_for_layer`.
+                This can be used to generate a page for each copper layer, here you put `copper` """
+            self.repeat_inherit = True
+            """ If we will inherit the options of the layer we are replacing.
+                Disable it if you specify the options in `repeat_layers`, which is unlikely """
         self._scaling_example = 1.0
         self._autoscale_margin_x_example = 0
         self._autoscale_margin_y_example = 0
+
+    def expand_sheet_patterns(self, parent, layer=None):
+        if layer:
+            self.sheet = self.sheet.replace('%ln', layer.layer)
+            self.sheet = self.sheet.replace('%ls', layer.suffix)
+            self.sheet = self.sheet.replace('%ld', layer.description)
+        self.sheet = self.expand_filename_pcb(self.sheet)
 
     def config(self, parent):
         super().config(parent)
@@ -219,6 +252,20 @@ class PagesOptions(Optionable):
             self.autoscale_margin_x = parent.autoscale_margin_x
         if self.autoscale_margin_y is None:
             self.autoscale_margin_y = parent.autoscale_margin_y
+        self.sketch_pad_line_width = GS.from_mm(self.sketch_pad_line_width)
+        # Validate the repeat_* stuff
+        if self.repeat_for_layer:
+            layer = Layer.solve(self.repeat_for_layer)
+            if len(layer) > 1:
+                raise KiPlotConfigurationError('Please specify a single layer for `repeat_for_layer`')
+            layer = layer[0]
+            self._repeat_for_layer = next(filter(lambda x: x._id == layer._id, self.layers), None)
+            if self._repeat_for_layer is None:
+                raise KiPlotConfigurationError("Layer `{}` specified in `repeat_for_layer` isn't valid".format(layer))
+            self._repeat_for_layer_index = self.layers.index(self._repeat_for_layer)
+            if isinstance(self.repeat_layers, type):
+                raise KiPlotConfigurationError('`repeat_for_layer` specified, but nothing to repeat')
+            self._repeat_layers = LayerOptions.solve(self.repeat_layers)
 
 
 class PCB_PrintOptions(VariantOptions):
@@ -318,6 +365,22 @@ class PCB_PrintOptions(VariantOptions):
         super().config(parent)
         if isinstance(self.pages, type):
             raise KiPlotConfigurationError("Missing `pages` list")
+        # Expand any repeat_for_layer
+        pages = []
+        for page in self.pages:
+            if page.repeat_for_layer:
+                for la in page._repeat_layers:
+                    new_page = deepcopy(page)
+                    if page.repeat_inherit:
+                        la.copy_extra_from(page._repeat_for_layer)
+                    new_page.layers[page._repeat_for_layer_index] = la
+                    new_page.expand_sheet_patterns(parent, la)
+                    pages.append(new_page)
+            else:
+                page.expand_sheet_patterns(parent)
+                pages.append(page)
+        self.pages = pages
+        # Color theme
         self._color_theme = load_color_theme(self.color_theme)
         if self._color_theme is None:
             raise KiPlotConfigurationError("Unable to load `{}` color theme".format(self.color_theme))
@@ -467,28 +530,22 @@ class PCB_PrintOptions(VariantOptions):
         # Move all the drawings away
         # KiCad 5 always prints Edge.Cuts, so we make it empty
         self.clear_layer(layer)
+        # Start with a fresh list of files to remove
+        cur_files_to_remove = self._files_to_remove
+        self._files_to_remove = []
         # Save the PCB
         pcb_name, pcb_dir = self.save_tmp_dir_board('pcb_print')
+        self._files_to_remove.append(pcb_dir)
         # Restore the layer
         self.restore_layer()
         # Output file name
         cmd = [command, 'export', '--output_name', output, '--monochrome', '--svg', '--pads', '0',
                pcb_name, dir_name, layer]
-        cmd, video_remove = add_extra_options(cmd)
         # Execute it
-        ret = exec_with_retry(cmd)
-        # Remove the temporal PCB
-        logger.debug('Removing temporal PCB used for frame `{}`'.format(pcb_dir))
-        rmtree(pcb_dir)
-        if ret:
-            logger.error(command+' returned %d', ret)
-            exit(PDF_PCB_PRINT)
-        if video_remove:
-            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_export_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
+        self.exec_with_retry(self.add_extra_options(cmd, dir_name), PDF_PCB_PRINT)
         # Rotate the paper size if needed and remove the background (or it will be over the drawings)
         patch_svg_file(output, remove_bkg=True, is_portrait=self.paper_portrait)
+        self._files_to_remove = cur_files_to_remove
 
     def plot_pads(self, la, pc, p, filelist):
         id = la._id
@@ -669,7 +726,7 @@ class PCB_PrintOptions(VariantOptions):
                     img.data = f.read()
                 os.remove(fname)
                 os.remove(dest)
-        self.last_worksheet.add_images_to_svg(svg)
+        self.last_worksheet.add_images_to_svg(svg, self.svg_precision)
 
     def fill_polygons(self, svg, color):
         """ I don't know how to generate filled polygons on KiCad 5.
@@ -1003,7 +1060,7 @@ class PCB_PrintOptions(VariantOptions):
             id, ext = self.get_id_and_ext(n, p.page_id)
             user_name = self.expand_filename(output_dir, self.output, id, ext)
             if cur_name != user_name and os.path.isfile(cur_name):
-                os.rename(cur_name, user_name)
+                os.replace(cur_name, user_name)
 
     def generate_output(self, output):
         self.check_tools()
@@ -1066,6 +1123,9 @@ class PCB_PrintOptions(VariantOptions):
             if GS.ki5:
                 po.SetLineWidth(FromMM(p.line_width))
                 po.SetPlotPadsOnSilkLayer(not p.exclude_pads_from_silkscreen)
+            else:
+                po.SetSketchPadsOnFabLayers(p.sketch_pads_on_fab_layers)
+                po.SetSketchPadLineWidth(p.sketch_pad_line_width)
             filelist = []
             if self.force_edge_cuts and next(filter(lambda x: x._id == edge_id, p.layers), None) is None:
                 p.layers.append(edge_layer)
@@ -1142,9 +1202,9 @@ class PCB_PrintOptions(VariantOptions):
         svgutils = importlib.import_module('.svgutils.transform', package=__package__)
         global kicad_worksheet
         kicad_worksheet = importlib.import_module('.kicad.worksheet', package=__package__)
-        self.filter_pcb_components(GS.board)
+        self.filter_pcb_components()
         self.generate_output(output)
-        self.unfilter_pcb_components(GS.board)
+        self.unfilter_pcb_components()
 
 
 @output_class

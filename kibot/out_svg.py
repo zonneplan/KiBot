@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
-from pcbnew import (PLOT_FORMAT_SVG, FromMM, ToMM)
-from .out_any_layer import AnyLayer
+import os
+from pcbnew import PLOT_FORMAT_SVG, FromMM, ToMM
 from .drill_marks import DrillMarks
 from .gs import GS
+from .kicad.patch_svg import change_svg_viewbox
+from .misc import KICAD5_SVG_SCALE
+from .out_base import PcbMargin
+from .out_any_layer import AnyLayer
 from .macros import macros, document, output_class  # noqa: F401
+from . import log
+
+logger = log.get_logger()
 
 
 class SVGOptions(DrillMarks):
@@ -26,6 +33,19 @@ class SVGOptions(DrillMarks):
             """ [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
                 The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
                 Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
+            self.limit_viewbox = False
+            """ When enabled the view box is limited to a selected area """
+            self.size_detection = 'kicad_edge'
+            """ [kicad_edge,kicad_all] Method used to detect the size of the view box.
+                The `kicad_edge` method uses the size of the board as reported by KiCad,
+                components that extend beyond the PCB limit will be cropped. You can manually
+                adjust the margin to make them visible.
+                The `kicad_all` method uses the whole size reported by KiCad. Usually includes extra space.
+                See `limit_viewbox` option """
+            self.margin = PcbMargin
+            """ [number|dict] Margin around the view box [mm].
+                Using a number the margin is the same in the four directions.
+                See `limit_viewbox` option """
         self._plot_format = PLOT_FORMAT_SVG
 
     def _configure_plot_ctrl(self, po, output_dir):
@@ -43,6 +63,33 @@ class SVGOptions(DrillMarks):
             self.line_width = ToMM(po.GetLineWidth())
         self.negative_plot = po.GetNegative()
         self.mirror_plot = po.GetMirror()
+
+    def config(self, parent):
+        super().config(parent)
+        # Margin
+        self.margin = PcbMargin.solve(self.margin)
+
+    def run(self, output_dir, layers):
+        super().run(output_dir, layers)
+        if not self.limit_viewbox:
+            return
+        # Limit the view box of the SVG
+        bbox = GS.board.ComputeBoundingBox(self.size_detection == 'kicad_edge').getWxRect()
+        # Apply the margin (left right top bottom)
+        bbox = (bbox[0]-self.margin[0], bbox[1]-self.margin[2],
+                bbox[2]+self.margin[0]+self.margin[1], bbox[3]+self.margin[2]+self.margin[3])
+        # Width/height of the used area in cm
+        width = ToMM(bbox[2])*0.1
+        height = ToMM(bbox[3])*0.1
+        # Scale factor to convert KiCad IU to the SVG units
+        mult = KICAD5_SVG_SCALE if GS.ki5 else 10.0 ** (self.svg_precision - 6)
+        # View port in SVG units
+        bbox = tuple(map(lambda x: int(x*mult), bbox))
+        logger.debug('Adjusting SVG viewBox to {} for width {} cm and height {} cm'.format(bbox, width, height))
+        for f in self._generated_files.values():
+            fname = os.path.join(output_dir, f)
+            logger.debugl(2, '- '+f)
+            change_svg_viewbox(fname, bbox, width, height)
 
 
 @output_class

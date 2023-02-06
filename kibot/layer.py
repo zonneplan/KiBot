@@ -229,15 +229,15 @@ class Layer(Optionable):
                 else:  # A string
                     ext = None
                     if layer == 'all':
-                        ext = Layer._get_layers(Layer._pcb_layers)
+                        ext = cls._get_layers(Layer._pcb_layers)
                     elif layer == 'selected':
-                        ext = Layer._get_layers(Layer._plot_layers)
+                        ext = cls._get_layers(Layer._plot_layers)
                     elif layer == 'copper':
-                        ext = Layer._get_layers(Layer._get_copper())
+                        ext = cls._get_layers(Layer._get_copper())
                     elif layer == 'technical':
-                        ext = Layer._get_layers(Layer._get_technical())
+                        ext = cls._get_layers(Layer._get_technical())
                     elif layer == 'user':
-                        ext = Layer._get_layers(Layer._get_user())
+                        ext = cls._get_layers(Layer._get_user())
                     elif layer in Layer._pcb_layers:
                         ext = [cls.create_layer(layer)]
                     # Give compatibility for the KiCad 5 default names (automagically renamed by KiCad 6)
@@ -284,11 +284,11 @@ class Layer(Optionable):
         layer.clean_suffix()
         return layer
 
-    @staticmethod
-    def _get_layers(d_layers):
+    @classmethod
+    def _get_layers(cls, d_layers):
         layers = []
         for n in d_layers.keys():
-            layers.append(Layer.create_layer(n))
+            layers.append(cls.create_layer(n))
         return layers
 
     @staticmethod

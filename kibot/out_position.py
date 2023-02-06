@@ -222,6 +222,7 @@ class PositionOptions(VariantOptions):
 
     def run(self, fname):
         super().run(fname)
+        self.filter_pcb_components()
         output_dir = os.path.dirname(fname)
         columns = self.columns.values()
         conv = GS.unit_name_to_scale_factor(self.units)
@@ -303,6 +304,7 @@ class PositionOptions(VariantOptions):
             self._do_position_plot_ascii(output_dir, columns, modules, maxlengths, modules_side)
         else:  # if self.format == 'CSV':
             self._do_position_plot_csv(output_dir, columns, modules, modules_side)
+        self.unfilter_pcb_components()
 
 
 @output_class

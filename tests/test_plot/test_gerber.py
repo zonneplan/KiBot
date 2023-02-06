@@ -8,6 +8,7 @@ pytest-3 --log-cli-level debug
 """
 
 import os
+import pytest
 from . import context
 from kibot.misc import PLOT_ERROR
 from kibot.layer import Layer
@@ -188,3 +189,16 @@ def test_gerber_protel_2(test_dir):
     ctx.search_in_file_d('Report.txt', ['Top layer: good-project_F_Cu.GTL', 'Basename: good-project'])
     ctx.test_compress_d(prj+'-result.tar.gz', files)
     ctx.clean_up()
+
+
+@pytest.mark.skipif(context.ki5(), reason="KiKit currently supports KiCad 6 only")
+def test_gerber_sub_pcb_bp(test_dir):
+    """ Test a multiboard example """
+    prj = 'batteryPack'
+    ctx = context.TestContext(test_dir, prj, 'gerber_sub_pcb', GERBER_DIR)
+    ctx.run()
+    # Check all outputs are there
+    fname = prj+'-F_Cu_connector.gbr'
+    ctx.search_in_file_d(fname, [r'%ADD10C,4.000000\*%'])
+    ctx.search_not_in_file_d(fname, [r'%ADD10R,1.300000X0.450000\*%'])
+    ctx.clean_up(keep_project=True)

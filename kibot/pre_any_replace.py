@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Salvador E. Tropea
-# Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2023 Salvador E. Tropea
+# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -54,9 +54,9 @@ class Base_ReplaceOptions(Optionable):
         with document:
             self.date_command = ''
             """ Command to get the date to use in the PCB.\\
-                ```git log -1 --format='%as' -- $KIBOT_PCB_NAME```\\
+                ```git log -1 --format='%as' -- \"$KIBOT_PCB_NAME\"```\\
                 Will return the date in YYYY-MM-DD format.\\
-                ```date -d @`git log -1 --format='%at' -- $KIBOT_PCB_NAME` +%Y-%m-%d_%H-%M-%S```\\
+                ```date -d @`git log -1 --format='%at' -- \"$KIBOT_PCB_NAME\"` +%Y-%m-%d_%H-%M-%S```\\
                 Will return the date in YYYY-MM-DD_HH-MM-SS format.\\
                 Important: on KiCad 6 the title block data is optional.
                 This command will work only if you have a date in the PCB/Schematic """
@@ -80,10 +80,10 @@ class Base_Replace(BasePreFlight):  # noqa: F821
     @classmethod
     def get_example(cls):
         """ Returns a YAML value for the example config """
-        return ("\n    date_command: \"git log -1 --format='%as' -- $KIBOT_{}_NAME\""
+        return ("\n    date_command: 'git log -1 --format=\"%as\" -- \"$KIBOT_{}_NAME\"'"
                 "\n    replace_tags:"
                 "\n      - tag: '@git_hash@'"
-                "\n        command: 'git log -1 --format=\"%h\" $KIBOT_{}_NAME'"
+                "\n        command: 'git log -1 --format=\"%h\" \"$KIBOT_{}_NAME\"'"
                 "\n        before: 'Git hash: <'"
                 "\n        after: '>'".format(cls._context, cls._context))
 
@@ -93,6 +93,7 @@ class Base_Replace(BasePreFlight):  # noqa: F821
             content = f.read()
         os.environ['KIBOT_' + type(self)._context + '_NAME'] = file
         o = self._value
+        bash_command = None
         for r in o.replace_tags:
             text = r.text
             if not text:
@@ -100,7 +101,9 @@ class Base_Replace(BasePreFlight):  # noqa: F821
                 if re_git.search(command):
                     git_command = self.ensure_tool('git')
                     command = re_git.sub(r'\1'+git_command+' ', command)
-                cmd = ['/bin/bash', '-c', command]
+                if not bash_command:
+                    bash_command = self.ensure_tool('Bash')
+                cmd = [bash_command, '-c', command]
                 logger.debugl(2, 'Running: {}'.format(cmd))
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:

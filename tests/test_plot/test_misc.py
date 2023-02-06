@@ -110,7 +110,7 @@ def test_unknown_out_name_1(test_dir):
     prj = 'simple_2layer'
     ctx = context.TestContext(test_dir, prj, 'pre_and_position')
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'all', '-C', 'pp'])
-    assert ctx.search_err("Unknown output .?pp")
+    assert ctx.search_err("Unknown output/group .?pp")
     ctx.clean_up()
 
 
@@ -118,7 +118,7 @@ def test_unknown_out_name_2(test_dir):
     prj = 'simple_2layer'
     ctx = context.TestContext(test_dir, prj, 'pre_and_position')
     ctx.run(EXIT_BAD_ARGS, extra=['-s', 'all', 'pp'])
-    assert ctx.search_err("Unknown output .?pp")
+    assert ctx.search_err("Unknown output/group .?pp")
     ctx.clean_up()
 
 
@@ -866,6 +866,15 @@ def test_import_8(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+def test_import_internal_1(test_dir):
+    """ Import an internal file """
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'import_test_internal_1')
+    ctx.run(extra=['_Elecrow_drill'])
+    ctx.expect_out_file('Elecrow/light_control.TXT')
+    ctx.clean_up(keep_project=True)
+
+
 def test_disable_default_1(test_dir):
     """ Disable in the same file and out-of-order """
     prj = 'test_v5'
@@ -914,6 +923,7 @@ def test_date_format_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 def test_download_datasheets_1(test_dir):
     prj = 'kibom-variant_2ds'
     ctx = context.TestContextSCH(test_dir, prj, 'download_datasheets_1')
@@ -1027,6 +1037,17 @@ def test_report_simple_2(test_dir):
 def test_report_edge_1(test_dir):
     """ Meassures the PCB size when using a component that contains the real PCB edges #164 """
     prj = 'comp_edge'
+    ctx = context.TestContext(test_dir, prj, 'report_edge_1', POS_DIR)
+    ctx.run()
+    ctx.expect_out_file(prj+'-report.txt')
+    ctx.compare_txt(prj+'-report.txt')
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(context.ki5(), reason="Example in KiCad 6 format")
+def test_report_edge_2(test_dir):
+    """ Meassures the PCB size when using circles in the PCB edge #375 """
+    prj = 'circle_edge'
     ctx = context.TestContext(test_dir, prj, 'report_edge_1', POS_DIR)
     ctx.run()
     ctx.expect_out_file(prj+'-report.txt')
@@ -1464,12 +1485,15 @@ def test_diff_file_sch_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
 @pytest.mark.skipif(context.ki5(), reason="KiCad 6 aliases used")
 def test_copy_files_1(test_dir):
     """ Copy files and 3D models """
     prj = 'copy_files'
     ctx = context.TestContext(test_dir, prj, 'copy_files_1', 'test.files')
+    os.environ['KIBOT_3D_MODELS'] = '/tmp'
     ctx.run(kicost=True)  # We use the fake web server
+    del os.environ['KIBOT_3D_MODELS']
     # The modified PCB
     ctx.expect_out_file(prj+'.kicad_pcb', sub=True)
     # The 3D models
@@ -1494,12 +1518,15 @@ def test_copy_files_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
 @pytest.mark.skipif(context.ki5(), reason="KiCad 6 aliases used")
 def test_copy_files_2(test_dir):
     """ Copy files and 3D models """
     prj = 'copy_files'
     ctx = context.TestContext(test_dir, prj, 'copy_files_2', 'test.files')
+    os.environ['KIBOT_3D_MODELS'] = '/tmp'
     ctx.run(kicost=True)  # We use the fake web server
+    del os.environ['KIBOT_3D_MODELS']
     # The modified PCB
     ctx.expect_out_file(prj+'.kicad_pcb', sub=True)
     # The 3D models
@@ -1519,3 +1546,47 @@ def test_copy_files_2(test_dir):
     ctx.search_err(r'WARNING:\(W098\)  2 3D models downloaded')   # 2 models are missing and they are downloaded
     ctx.search_err(r'WARNING:\(W100\)', invert=True)   # 2 models has the same name, but goes to different target
     ctx.clean_up()
+
+
+def test_sub_pcb_bp(test_dir):
+    """ Test a multiboard example """
+    prj = 'batteryPack'
+    ctx = context.TestContext(test_dir, prj, 'pcb_variant_sub_pcb_bp', '')
+    ctx.run()
+    # Check all outputs are there
+    fname_b = prj+'-variant_'
+    ctx.expect_out_file(fname_b+'battery.kicad_pcb')
+    ctx.expect_out_file(fname_b+'charger.kicad_pcb')
+    ctx.expect_out_file(fname_b+'connector.kicad_pcb')
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(context.ki5(), reason="Needs porting")
+def test_lcsc_field_known(test_dir):
+    """ Test we can detect a known LCSC field name """
+    prj = 'lcsc_field_known'
+    ctx = context.TestContextSCH(test_dir, prj, 'lcsc_field_detect', 'JLCPCB')
+    ctx.run(extra=['_JLCPCB_bom'])
+    r, _, _ = ctx.load_csv(prj+'_bom_jlc.csv')
+    assert r[0][3] == 'C1234'
+
+
+@pytest.mark.skipif(context.ki5(), reason="Needs porting")
+def test_lcsc_field_unknown(test_dir):
+    """ Test we can detect an unknown LCSC field name """
+    prj = 'lcsc_field_unknown'
+    ctx = context.TestContextSCH(test_dir, prj, 'lcsc_field_detect', 'JLCPCB')
+    ctx.run(extra=['_JLCPCB_bom'])
+    r, _, _ = ctx.load_csv(prj+'_bom_jlc.csv')
+    assert r[0][3] == 'C1234'
+
+
+@pytest.mark.skipif(context.ki5(), reason="Needs porting")
+def test_lcsc_field_specified(test_dir):
+    """ Test we select the field """
+    prj = 'lcsc_field_unknown'
+    ctx = context.TestContextSCH(test_dir, prj, 'lcsc_field_specified', 'JLCPCB')
+    ctx.run(extra=['_JLCPCB_bom'])
+    assert ctx.search_err('User selected.*Cryptic')
+    r, _, _ = ctx.load_csv(prj+'_bom_jlc.csv')
+    assert r[0][3] == 'C1234'

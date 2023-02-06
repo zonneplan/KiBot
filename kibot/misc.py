@@ -41,6 +41,9 @@ MISSING_WKS = 27
 MISSING_FILES = 28
 DIFF_TOO_BIG = 29
 NETLIST_DIFF = 30
+PS_SCH_PRINT = 31
+DXF_SCH_PRINT = 32
+HPGL_SCH_PRINT = 33
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
@@ -83,13 +86,8 @@ TRY_INSTALL_CHECK = 'Try running the installation checker: kibot-check'
 
 # Internal filter names
 IFILT_MECHANICAL = '_mechanical'
-IFILT_VAR_RENAME = '_var_rename'
-IFILT_VAR_RENAME_KICOST = '_var_rename_kicost'
-IFILT_ROT_FOOTPRINT = '_rot_footprint'
 IFILT_KICOST_RENAME = '_kicost_rename'
 IFILT_KICOST_DNP = '_kicost_dnp'
-IFILT_EXPAND_TEXT_VARS = '_expand_text_vars'
-IFILT_DATASHEET_LINK = '_datasheet_link'
 # KiCad 5 GUI values for the attribute
 UI_THT = 0       # 1 for KiCad 6
 UI_SMD = 1       # 2 for KiCad 6
@@ -130,6 +128,8 @@ DNC = {
 # KiCost distributors
 DISTRIBUTORS = ['arrow', 'digikey', 'farnell', 'lcsc', 'mouser', 'newark', 'rs', 'tme']
 DISTRIBUTORS_F = [d+'#' for d in DISTRIBUTORS]
+DISTRIBUTORS_STUBS = ['part#', '#', 'p#', 'pn', 'vendor#', 'vp#', 'vpn', 'num']
+DISTRIBUTORS_STUBS_SEPS = '_- '
 # ISO ISO4217 currency codes
 # Not all, but the ones we get from the European Central Bank (march 2021)
 ISO_CURRENCIES = {'EUR', 'USD', 'JPY', 'BGN', 'CZK', 'DKK', 'GBP', 'HUF', 'PLN', 'RON', 'SEK', 'CHF', 'ISK', 'NOK', 'HRK',
@@ -245,6 +245,14 @@ W_ONWIN = '(W106) '
 W_AUTONONE = '(W106) '
 W_AUTOPROB = '(W107) '
 W_MORERES = '(W108) '
+W_NOGROUPS = '(W109) '
+W_UNKPCB3DTXT = '(W110) '
+W_NOPCB3DBR = '(W111) '
+W_NOPCB3DTL = '(W112) '
+W_BADPCB3DTXT = '(W113) '
+W_UNKPCB3DNAME = '(W114) '
+W_BADPCB3DSTK = '(W115) '
+W_EEDA3D = '(W116) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
@@ -266,8 +274,9 @@ KICAD5_SVG_SCALE = 116930/297002200
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'
 # Text used to disable 3D models
 DISABLE_3D_MODEL_TEXT = '_Disabled_by_KiBot'
-RENDERERS = ['pcbdraw', 'render_3d']
+RENDERERS = ['pcbdraw', 'render_3d', 'blender_export']
 PCB_GENERATORS = ['pcb_variant', 'panelize']
+KIKIT_UNIT_ALIASES = {'millimeters': 'mm', 'inches': 'inch', 'mils': 'mil'}
 
 
 class Rect(object):
@@ -300,7 +309,7 @@ def name2make(name):
 def hide_stderr():
     """ Low level stderr suppression, used to hide KiCad bugs. """
     newstderr = os.dup(2)
-    devnull = os.open('/dev/null', os.O_WRONLY)
+    devnull = os.open(os.devnull, os.O_WRONLY)
     os.dup2(devnull, 2)
     os.close(devnull)
     try:

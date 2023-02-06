@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -18,7 +18,7 @@ from collections import OrderedDict
 
 from .error import KiPlotConfigurationError
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
-                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS)
+                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
@@ -37,7 +37,7 @@ PYPI_LOGO = ('![PyPi dependency]('+GITHUB_RAW+'PyPI_logo_simplified-22x22.png)')
 PY_LOGO = ('![Python module]('+GITHUB_RAW+'Python-logo-notext-22x22.png)')
 TOOL_LOGO = '![Tool]('+GITHUB_RAW+'llave-inglesa-22x22.png)'
 AUTO_DOWN = '![Auto-download]('+GITHUB_RAW+'auto_download-22x22.png)'
-VALID_SECTIONS = {'kiplot', 'kibot', 'import', 'global', 'filters', 'variants', 'preflight', 'outputs'}
+VALID_SECTIONS = {'kiplot', 'kibot', 'import', 'global', 'filters', 'variants', 'preflight', 'outputs', 'groups'}
 VALID_KIBOT_SEC = {'version', 'imported_global_has_less_priority'}
 
 
@@ -69,6 +69,7 @@ class CollectedImports(object):
         self.variants = {}
         self.globals = {}
         self.preflights = []
+        self.groups = {}
         self.imported_global_has_less_priority = False
 
 
@@ -160,7 +161,38 @@ class CfgYamlReader(object):
             raise KiPlotConfigurationError("`outputs` must be a list")
         return outputs
 
-    def _parse_variant_or_filter(self, o_tree, kind, reg_class):
+    def _parse_group(self, tree, groups):
+        try:
+            name = str(tree['name'])
+            if not name:
+                raise KeyError
+        except KeyError:
+            raise KiPlotConfigurationError("Group needs a name in: "+str(tree))
+        try:
+            outs = tree['outputs']
+            if not outs:
+                raise KeyError
+        except KeyError:
+            raise KiPlotConfigurationError("Group `"+name+"` must contain outputs")
+        if not isinstance(outs, list):
+            raise KiPlotConfigurationError("'outputs' in group `"+name+"` must be a list (not {})".format(type(outs)))
+        for v in outs:
+            if not isinstance(v, str):
+                raise KiPlotConfigurationError("In group `"+name+"`: all outputs must be strings (not {})".format(type(v)))
+        if name in groups:
+            raise KiPlotConfigurationError("Duplicated group `{}`".format(name))
+        groups[name] = outs
+
+    def _parse_groups(self, v):
+        groups = {}
+        if isinstance(v, list):
+            for o in v:
+                self._parse_group(o, groups)
+        else:
+            raise KiPlotConfigurationError("`groups` must be a list")
+        return groups
+
+    def _parse_variant_or_filter(self, o_tree, kind, reg_class, is_internal=False):
         kind_f = kind[0].upper()+kind[1:]
         try:
             name = str(o_tree['name'])
@@ -181,27 +213,28 @@ class CfgYamlReader(object):
         name_type = "`"+name+"` ("+otype+")"
         logger.debug("Parsing "+kind+" "+name_type)
         o_var = reg_class.get_class_for(otype)()
+        o_var._internal = is_internal
         o_var.set_tree(o_tree)
         o_var.name = name
         o_var._name_type = name_type
         # Don't configure it yet, wait until we finish loading (could be an import)
         return o_var
 
-    def _parse_variants(self, v):
+    def _parse_variants(self, v, is_internal=False):
         variants = {}
         if isinstance(v, list):
             for o in v:
-                o_var = self._parse_variant_or_filter(o, 'variant', RegVariant)
+                o_var = self._parse_variant_or_filter(o, 'variant', RegVariant, is_internal)
                 variants[o_var.name] = o_var
         else:
             raise KiPlotConfigurationError("`variants` must be a list")
         return variants
 
-    def _parse_filters(self, v):
+    def _parse_filters(self, v, is_internal=False):
         filters = {}
         if isinstance(v, list):
             for o in v:
-                o_fil = self._parse_variant_or_filter(o, 'filter', RegFilter)
+                o_fil = self._parse_variant_or_filter(o, 'filter', RegFilter, is_internal)
                 self.configure_variant_or_filter(o_fil)
                 filters[o_fil.name] = o_fil
         else:
@@ -317,11 +350,11 @@ class CfgYamlReader(object):
             logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
         return sel_pres
 
-    def _parse_import_filters(self, filters, explicit_fils, fn_rel, data, imported):
+    def _parse_import_filters(self, filters, explicit_fils, fn_rel, data, imported, is_internal):
         sel_fils = {}
         if filters is None or len(filters) > 0:
             if 'filters' in data:
-                imported.filters.update(self._parse_filters(data['filters']))
+                imported.filters.update(self._parse_filters(data['filters'], is_internal))
             i_fils = imported.filters
             if filters is not None:
                 for f in filters:
@@ -340,11 +373,34 @@ class CfgYamlReader(object):
             logger.warning(W_NOFILTERS+"No filters found in `{}`".format(fn_rel))
         return sel_fils
 
-    def _parse_import_variants(self, vars, explicit_vars, fn_rel, data, imported):
+    def _parse_import_groups(self, groups, explicit_grps, fn_rel, data, imported):
+        sel_grps = {}
+        if groups is None or len(groups) > 0:
+            if 'groups' in data:
+                imported.groups.update(self._parse_groups(data['groups']))
+            i_grps = imported.groups
+            if groups is not None:
+                for f in groups:
+                    if f in i_grps:
+                        sel_grps[f] = i_grps[f]
+                    else:
+                        logger.warning(W_UNKOUT+"can't import `{}` group from `{}` (missing)".format(f, fn_rel))
+            else:
+                sel_grps = i_grps
+            if len(sel_grps) == 0:
+                if explicit_grps:
+                    logger.warning(W_NOGROUPS+"No groups found in `{}`".format(fn_rel))
+            else:
+                logger.debug('groups loaded from `{}`: {}'.format(fn_rel, sel_grps.keys()))
+        if groups is None and explicit_grps and 'groups' not in data:
+            logger.warning(W_NOGROUPS+"No groups found in `{}`".format(fn_rel))
+        return sel_grps
+
+    def _parse_import_variants(self, vars, explicit_vars, fn_rel, data, imported, is_internal):
         sel_vars = {}
         if vars is None or len(vars) > 0:
             if 'variants' in data:
-                imported.variants.update(self._parse_variants(data['variants']))
+                imported.variants.update(self._parse_variants(data['variants'], is_internal))
             i_vars = imported.variants
             if vars is not None:
                 for f in vars:
@@ -397,6 +453,27 @@ class CfgYamlReader(object):
         for o_var in variants.values():
             self.configure_variant_or_filter(o_var)
 
+    def check_import_file_name(self, dir_name, fn, is_external):
+        fn = os.path.expandvars(os.path.expanduser(fn))
+        is_internal = False
+        if not is_external and not os.path.splitext(fn)[1] and not os.path.isabs(fn):
+            name = fn
+            fn = os.path.join(GS.get_resource_path('config_templates'), fn+'.kibot.yaml')
+            if not os.path.isfile(fn):
+                fn_abs = os.path.join(dir_name, name)
+                if not os.path.isfile(fn_abs):
+                    raise KiPlotConfigurationError("Unknown internal import file `{}` ({})".format(name, fn))
+                # Bizarre case: looks like an internal
+                fn = fn_abs
+            else:
+                is_internal = True
+        else:
+            if not os.path.isabs(fn):
+                fn = os.path.join(dir_name, fn)
+            if not os.path.isfile(fn):
+                raise KiPlotConfigurationError("Missing import file `{}`".format(fn))
+        return fn, is_internal
+
     def _parse_import(self, imp, name, apply=True, depth=0):
         """ Get imports """
         logger.debug("Parsing imports: {}".format(imp))
@@ -406,29 +483,32 @@ class CfgYamlReader(object):
         if not isinstance(imp, list):
             raise KiPlotConfigurationError("Incorrect `import` section (must be a list)")
         # Import the files
-        dir = os.path.dirname(os.path.abspath(name))
+        dir_name = os.path.dirname(os.path.abspath(name))
         all_collected = CollectedImports()
         for entry in imp:
+            explicit_fils = explicit_vars = explicit_globals = explicit_pres = explicit_groups = False
             if isinstance(entry, str):
+                is_external = True
                 fn = entry
                 outs = None
                 filters = []
                 vars = []
                 globals = []
                 pre = []
+                groups = []
                 explicit_outs = True
-                explicit_fils = False
-                explicit_vars = False
-                explicit_globals = False
-                explicit_pres = False
             elif isinstance(entry, dict):
-                fn = outs = filters = vars = globals = pre = None
-                explicit_outs = explicit_fils = explicit_vars = explicit_globals = explicit_pres = False
+                fn = outs = filters = vars = globals = pre = groups = None
+                explicit_outs = is_external = False
                 for k, v in entry.items():
                     if k == 'file':
                         if not isinstance(v, str):
                             raise KiPlotConfigurationError("`import.file` must be a string ({})".format(str(v)))
                         fn = v
+                    elif k == 'is_external':
+                        if not isinstance(v, bool):
+                            raise KiPlotConfigurationError("`import.is_external` must be a true/false ({})".format(str(v)))
+                        is_external = v
                     elif k == 'outputs':
                         outs = self._parse_import_items(k, fn, v)
                         explicit_outs = True
@@ -444,17 +524,16 @@ class CfgYamlReader(object):
                     elif k in ['global', 'globals']:
                         globals = self._parse_import_items(k, fn, v)
                         explicit_globals = True
+                    elif k == 'groups':
+                        groups = self._parse_import_items(k, fn, v)
+                        explicit_groups = True
                     else:
-                        self._config_error_import(fn, "unknown import entry `{}`".format(str(v)))
+                        self._config_error_import(fn, "Unknown import entry `{}`".format(str(v)))
                 if fn is None:
                     raise KiPlotConfigurationError("`import` entry without `file` ({})".format(str(entry)))
             else:
                 raise KiPlotConfigurationError("`import` items must be strings or dicts ({})".format(str(entry)))
-            fn = os.path.expandvars(os.path.expanduser(fn))
-            if not os.path.isabs(fn):
-                fn = os.path.join(dir, fn)
-            if not os.path.isfile(fn):
-                raise KiPlotConfigurationError("missing import file `{}`".format(fn))
+            fn, is_internal = self.check_import_file_name(dir_name, fn, is_external)
             fn_rel = os.path.relpath(fn)
             data = self.load_yaml(open(fn))
             if 'import' in data:
@@ -469,11 +548,15 @@ class CfgYamlReader(object):
             # Preflights
             all_collected.preflights.extend(self._parse_import_preflights(pre, explicit_pres, fn_rel, data, imported))
             # Filters
-            all_collected.filters.update(self._parse_import_filters(filters, explicit_fils, fn_rel, data, imported))
+            all_collected.filters.update(self._parse_import_filters(filters, explicit_fils, fn_rel, data, imported,
+                                         is_internal))
             # Variants
-            all_collected.variants.update(self._parse_import_variants(vars, explicit_vars, fn_rel, data, imported))
+            all_collected.variants.update(self._parse_import_variants(vars, explicit_vars, fn_rel, data, imported,
+                                          is_internal))
             # Globals
             update_dict(all_collected.globals, self._parse_import_globals(globals, explicit_globals, fn_rel, data, imported))
+            # Groups
+            all_collected.groups.update(self._parse_import_groups(groups, explicit_groups, fn_rel, data, imported))
         if apply:
             # This is the main import (not a recursive one) apply the results
             RegOutput.add_filters(all_collected.filters)
@@ -482,6 +565,7 @@ class CfgYamlReader(object):
             self.imported_globals = all_collected.globals
             BasePreFlight.add_preflights(all_collected.preflights)
             RegOutput.add_outputs(all_collected.outputs, fn_rel)
+            RegOutput.add_groups(all_collected.groups, fn_rel)
         return all_collected
 
     def load_yaml(self, fstream):
@@ -562,6 +646,10 @@ class CfgYamlReader(object):
         v1 = data.get('outputs', None)
         if v1:
             RegOutput.add_outputs(self._parse_outputs(v1))
+        # Look for groups
+        v1 = data.get('groups', None)
+        if v1:
+            RegOutput.add_groups(self._parse_groups(v1))
         # Report invalid sections (the first we find)
         defined_sections = set(data.keys())
         invalid_sections = defined_sections-VALID_SECTIONS

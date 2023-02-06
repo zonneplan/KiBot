@@ -1,0 +1,20 @@
+# Drills and Gerber drills
+kibot:
+  version: 1
+
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
+
+outputs:
+  - name: excellon_drill
+    comment: "Excellon drill files"
+    type: excellon
+    dir: Drill
+    options:
+      variant: default[connector]
+      metric_units: true
+      use_aux_axis_as_origin: false
+      minimal_header: false
+      mirror_y_axis: false
+      report: '%f-%i.%x'
+      map: 'pdf'

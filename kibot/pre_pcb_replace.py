@@ -7,6 +7,8 @@
 Dependencies:
   - from: Git
     role: Find commit hash and/or date
+  - from: Bash
+    role: Run external commands to create replacement text
 """
 from .gs import GS
 from .pre_any_replace import TagReplaceBase, Base_ReplaceOptions, Base_Replace

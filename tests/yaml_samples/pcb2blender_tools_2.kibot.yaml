@@ -1,0 +1,6 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+import:
+  - file: PCB2Blender_2_1

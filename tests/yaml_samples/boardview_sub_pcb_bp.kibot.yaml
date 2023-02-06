@@ -1,0 +1,11 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
+
+outputs:
+  - name: 'Board View Test'
+    comment: "Example of board view export"
+    type: boardview

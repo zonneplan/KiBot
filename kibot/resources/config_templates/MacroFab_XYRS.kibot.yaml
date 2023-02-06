@@ -1,0 +1,47 @@
+# MacroFab compatible XYRS
+# https://help.macrofab.com/knowledge/macrofab-required-design-files
+kibot:
+  version: 1
+
+outputs:
+  - name: _macrofab_xyrs
+    comment: "Pick and place file, XYRS style"
+    type: bom
+    options:
+      pre_transform: ['_kicost_rename', '_rot_footprint']
+      dnf_filter: _only_smd
+      output: '%f-%i%I%v_MacroFab.XYRS'
+      units: mils
+      group_fields: []
+      sort_style: ref
+      use_aux_axis_as_origin: true
+      ignore_dnf: false
+      footprint_populate_values: '0,1'
+      footprint_type_values: '1,2,0'
+      csv:
+        separator: '	'
+        hide_pcb_info: true
+        hide_stats_info: true
+        hide_header: true
+      columns:
+        - field: References
+          name: Designator
+        - field: Footprint X
+          name: X-Loc
+        - field: Footprint Y
+          name: Y-Loc
+        - field: Footprint Rot
+          name: Rotation
+        - field: Footprint Side
+          name: Side
+        - field: Footprint Type
+          name: Type
+        - field: Footprint X-Size
+          name: X-Size
+        - field: Footprint Y-Size
+          name: Y-Size
+        - field: Value
+        - field: Footprint
+        - field: Footprint Populate
+          name: Populate
+        - field: MPN

@@ -1,0 +1,16 @@
+---
+title:  | 
+		| ACME GmbH
+		| PCB Specifications
+subtitle:	|
+			| Project ${PROJECT} Rev ${REVISION}
+			| ${SAP}
+author: ${AUTHOR}
+date: ${ISSUE_DATE}
+footer: ${git_hash}
+geometry: "left=2cm, right=2cm, top=3cm, bottom=3cm"
+---
+
+
+Git hash: ${git_hash}
+\newpage

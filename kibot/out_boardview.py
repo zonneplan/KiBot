@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Salvador E. Tropea
-# Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2022 Salvador E. Tropea
+# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018-2020 @whitequark
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -8,7 +8,7 @@
 import re
 from pcbnew import SHAPE_POLY_SET
 from .gs import GS
-from .optionable import BaseOptions
+from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -150,7 +150,7 @@ def convert(pcb, brd):
     brd.write("\n")
 
 
-class BoardViewOptions(BaseOptions):
+class BoardViewOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
@@ -158,10 +158,14 @@ class BoardViewOptions(BaseOptions):
         super().__init__()
         self._expand_id = 'boardview'
         self._expand_ext = 'brd'
+        self.help_only_sub_pcbs()
 
     def run(self, output):
+        super().run(output)
+        self.filter_pcb_components()
         with open(output, 'wt') as f:
             convert(GS.board, f)
+        self.unfilter_pcb_components()
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -41,6 +41,7 @@ logger = log.get_logger()
 # Cache to avoid running external many times to check their versions
 script_versions = {}
 actions_loaded = False
+needed_imports = set()
 
 try:
     import yaml
@@ -49,6 +50,11 @@ except ImportError:
     logger.error('No yaml module for Python, install python3-yaml')
     logger.error(TRY_INSTALL_CHECK)
     exit(NO_YAML_MODULE)
+
+
+def cased_path(path):
+    r = glob(re.sub(r'([^:/\\])(?=[/\\]|$)|\[', r'[\g<0>]', path))
+    return r and r[0] or path
 
 
 def try_register_deps(mod, name):
@@ -171,11 +177,11 @@ def run_command(command, change_to=None, just_raise=False, use_x11=False):
     return res.stdout.decode().rstrip()
 
 
-def exec_with_retry(cmd):
+def exec_with_retry(cmd, exit_with=None):
     cmd_str = shlex.join(cmd)
     logger.debug('Executing: '+cmd_str)
     if GS.debug_level > 2:
-        logger.debug('Command line: '+cmd_str)
+        logger.debug('Command line: '+str(cmd))
     retry = 2
     while retry:
         result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
@@ -191,28 +197,14 @@ def exec_with_retry(cmd):
             if 'Timed out' in err:
                 logger.warning(W_TIMEOUT+'Time out detected, on slow machines or complex projects try:')
                 logger.warning(W_TIMEOUT+'`kiauto_time_out_scale` and/or `kiauto_wait_start` global options')
+            if exit_with is not None and ret:
+                logger.error(cmd[0]+' returned %d', ret)
+                exit(exit_with)
             return ret
 
 
-def add_extra_options(cmd):
-    is_gitlab_ci = 'GITLAB_CI' in os.environ
-    video_remove = (not GS.debug_enabled) and is_gitlab_ci
-    if GS.debug_enabled:
-        cmd.insert(1, '-'+'v'*GS.debug_level)
-    if GS.debug_enabled or is_gitlab_ci:
-        # Forcing record on GitLab CI/CD (black magic)
-        cmd.insert(1, '-r')
-    if GS.global_kiauto_time_out_scale:
-        cmd.insert(1, str(GS.global_kiauto_time_out_scale))
-        cmd.insert(1, '--time_out_scale')
-    if GS.global_kiauto_wait_start:
-        cmd.insert(1, str(GS.global_kiauto_wait_start))
-        cmd.insert(1, '--wait_start')
-    return cmd, video_remove
-
-
-def load_board(pcb_file=None):
-    if GS.board is not None:
+def load_board(pcb_file=None, forced=False):
+    if GS.board is not None and not forced:
         # Already loaded
         return GS.board
     import pcbnew
@@ -402,6 +394,17 @@ def config_output(out, dry=False, dont_stop=False):
     return ok
 
 
+def get_output_targets(output, parent):
+    out = RegOutput.get_output(output)
+    if out is None:
+        logger.error('Unknown output `{}` selected in {}'.format(output, parent))
+        exit(WRONG_ARGUMENTS)
+    config_output(out)
+    out_dir = get_output_dir(out.dir, out, dry=True)
+    files_list = out.get_targets(out_dir)
+    return files_list, out_dir, out
+
+
 def run_output(out, dont_stop=False):
     if out._done:
         return
@@ -430,6 +433,14 @@ def run_output(out, dont_stop=False):
             raise
 
 
+def configure_and_run(tree, out_dir, msg):
+    out = RegOutput.get_class_for(tree['type'])()
+    out.set_tree(tree)
+    config_output(out)
+    logger.debug(' - Creating the PCB3D ...')
+    out.run(out_dir)
+
+
 def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
     # Make a list of target outputs
@@ -443,15 +454,21 @@ def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority
             targets = [out for out in RegOutput.get_outputs() if out.run_by_default]
     else:
         # Check we got a valid list of outputs
-        for name in targets:
-            out = RegOutput.get_output(name)
-            if out is None:
-                logger.error('Unknown output `{}`'.format(name))
-                exit(EXIT_BAD_ARGS)
+        unknown = next(filter(lambda x: not RegOutput.is_output_or_group(x), targets), None)
+        if unknown:
+            logger.error('Unknown output/group `{}`'.format(unknown))
+            exit(EXIT_BAD_ARGS)
         # Check for CLI+invert inconsistency
         if cli_order and invert:
             logger.error("CLI order and invert options can't be used simultaneously")
             exit(EXIT_BAD_ARGS)
+        # Expand groups
+        logger.debug('Outputs before groups expansion: {}'.format(targets))
+        try:
+            targets = RegOutput.solve_groups(targets, 'command line')
+        except KiPlotConfigurationError as e:
+            config_error(str(e))
+        logger.debug('Outputs after groups expansion: {}'.format(targets))
         # Now convert the list of names into a list of output objects
         if cli_order:
             # Add them in the same order found at the command line
@@ -474,14 +491,14 @@ def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority
                     else:
                         logger.debug('Skipping `{}` output'.format(out.name))
             targets = new_targets
-    logger.debug('Outputs before preflights: {}'.format(targets))
+    logger.debug('Outputs before preflights: {}'.format([t.name for t in targets]))
     # Run the preflights
     preflight_checks(skip_pre, targets)
-    logger.debug('Outputs after preflights: {}'.format(targets))
+    logger.debug('Outputs after preflights: {}'.format([t.name for t in targets]))
     if not cli_order and not no_priority:
         # Sort by priority
         targets = sorted(targets, key=lambda o: o.priority, reverse=True)
-        logger.debug('Outputs after sorting: {}'.format(targets))
+        logger.debug('Outputs after sorting: {}'.format([t.name for t in targets]))
     # Configure and run the outputs
     for out in targets:
         if config_output(out, dont_stop=dont_stop):
@@ -722,6 +739,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
     if schematic:
         schematic = os.path.abspath(schematic)
         logger.debug('Using schematic: `{}`'.format(schematic))
+        logger.debug('Real schematic name: `{}`'.format(cased_path(schematic)))
     else:
         logger.debug('No schematic file found')
     return schematic
@@ -753,6 +771,7 @@ def solve_board_file(base_dir, a_board_file=None, sug_b=True):
     check_board_file(board_file)
     if board_file:
         logger.debug('Using PCB: `{}`'.format(board_file))
+        logger.debug('Real PCB name: `{}`'.format(cased_path(board_file)))
     else:
         logger.debug('No PCB file found')
     return board_file
@@ -829,6 +848,12 @@ def yaml_dump(f, tree):
         f.write(yaml.dump(tree, sort_keys=False))
 
 
+def register_xmp_import(name):
+    """ Register an import we need for an example """
+    global needed_imports
+    needed_imports.add(name)
+
+
 def generate_one_example(dest_dir, types):
     """ Generate a example config for dest_dir """
     fname = discover_files(dest_dir)
@@ -861,20 +886,9 @@ def generate_one_example(dest_dir, types):
         glb = {'filters': fil}
         yaml_dump(f, {'global': glb})
         f.write('\n')
-        # A helper for the JLCPCB stuff
-        fil = {'name': 'only_jlc_parts'}
-        fil['comment'] = 'Only parts with JLC (LCSC) code'
-        fil['type'] = 'generic'
-        fil['include_only'] = [{'column': 'LCSC#', 'regex': r'^C\d+'}]
-        yaml_dump(f, {'filters': [fil]})
-        f.write('\n')
-        # A helper for KiCost demo
-        var = {'name': 'place_holder'}
-        var['comment'] = 'Just a place holder for pre_transform filters'
-        var['type'] = 'kicost'
-        var['pre_transform'] = ['_kicost_rename', '_rot_footprint']
-        yaml_dump(f, {'variants': [var]})
-        f.write('\n')
+        # A helper for the internal templates
+        global needed_imports
+        needed_imports = set()
         # All the outputs
         outputs = []
         for n, cls in OrderedDict(sorted(outs.items())).items():
@@ -891,7 +905,13 @@ def generate_one_example(dest_dir, types):
             if tpls:
                 # Load the templates
                 tpl_names = tpls
-                tpls = [yaml.safe_load(open(t))['outputs'] for t in tpls]
+                tpls = []
+                for t in tpl_names:
+                    tree = yaml.safe_load(open(t))
+                    tpls.append(tree['outputs'])
+                    imps = tree.get('import')
+                    if imps:
+                        needed_imports.update([imp['file'] for imp in imps])
             tree = cls.get_conf_examples(n, layers, tpls)
             if tree:
                 logger.debug('- {}, generated'.format(n))
@@ -900,6 +920,10 @@ def generate_one_example(dest_dir, types):
                 outputs.extend(tree)
             else:
                 logger.debug('- {}, nothing to do'.format(n))
+        if needed_imports:
+            imports = [{'file': man} for man in sorted(needed_imports)]
+            yaml_dump(f, {'import': imports})
+            f.write('\n')
         if outputs:
             yaml_dump(f, {'outputs': outputs})
         else:
@@ -997,3 +1021,4 @@ def generate_examples(start_dir, dry, types):
 # To avoid circular dependencies: Optionable needs it, but almost everything needs Optionable
 GS.load_board = load_board
 GS.load_sch = load_sch
+GS.exec_with_retry = exec_with_retry

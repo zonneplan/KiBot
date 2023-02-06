@@ -15,6 +15,8 @@ outputs:
       plot_footprint_values: true
       force_plot_invisible_refs_vals: false
       tent_vias: true
+      sketch_pads_on_fab_layers: true
+      sketch_pad_line_width: 0.1
 
       # PS options
       line_width: 0.15

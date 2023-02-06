@@ -1,0 +1,8 @@
+kibot:
+  version: 1
+
+preflight:
+  annotate_pcb:
+    - top_main_axis: y
+    - top_main_ascending: true
+

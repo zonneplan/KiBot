@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -15,7 +15,7 @@ from .macros import macros, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
-from .kiplot import exec_with_retry, load_board, add_extra_options
+from .kiplot import load_board
 from .misc import DRC_ERROR
 from .log import get_logger
 
@@ -27,7 +27,9 @@ class Run_DRC(BasePreFlight):  # noqa: F821
     """ [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
         The report file name is controlled by the global output pattern (%i=drc %x=txt).
         Note that the KiCad 6 *Test for parity between PCB and schematic* option is not supported.
-        If you need to check the parity use the `update_xml` preflight """
+        If you need to check the parity use the `update_xml` preflight.
+        KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
+        This will change in the future """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):
@@ -61,18 +63,14 @@ class Run_DRC(BasePreFlight):  # noqa: F821
             cmd.append('-i')
         cmd.extend([GS.pcb_file, self.expand_dirname(GS.out_dir)])
         # If we are in verbose mode enable debug in the child
-        cmd, video_remove = add_extra_options(cmd)
+        cmd = self.add_extra_options(cmd)
         logger.info('- Running the DRC')
-        ret = exec_with_retry(cmd)
-        if video_remove:
-            video_name = os.path.join(self.expand_dirname(GS.out_dir), 'pcbnew_run_drc_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
+        ret = self.exec_with_retry(cmd)
         if ret:
             if ret > 127:
                 ret = -(256-ret)
             if ret < 0:
-                logger.error('DRC errors: %d', -ret)
+                logger.error('DRC violations: %d', -ret)
             else:
                 logger.error('DRC returned %d', ret)
             exit(DRC_ERROR)

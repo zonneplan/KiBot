@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """ Base class for output options """
@@ -11,12 +11,15 @@ import re
 from re import compile
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .misc import W_UNKOPS
+from .misc import W_UNKOPS, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS
 from . import log
 
 logger = log.get_logger()
 HEX_DIGIT = '[A-Fa-f0-9]{2}'
 INVALID_CHARS = r'[?%*:|"<>]'
+PATTERNS_DEP = ['%c', '%d', '%F', '%f', '%p', '%r']
+for n in range(1, 10):
+    PATTERNS_DEP.append('%C'+str(n))
 
 
 def do_filter(v):
@@ -49,6 +52,8 @@ class Optionable(object):
         self._expand_ext = ''
         # Used to indicate we have an output pattern and it must be suitable to generate multiple files
         self._output_multiple_files = False
+        # The KiBoM output uses "variant" for the KiBoM variant, not for KiBot variants
+        self._variant_is_real = True
         super().__init__()
         for var in ['output', 'variant', 'units', 'hide_excluded']:
             glb = getattr(GS, 'global_'+var)
@@ -128,6 +133,8 @@ class Optionable(object):
     def _perform_config_mapping(self):
         """ Map the options to class attributes """
         attrs = self.get_attrs_for()
+        if not isinstance(self._tree, dict):
+            raise KiPlotConfigurationError('Found {} instead of dict'.format(type(self._tree)))
         for k, v in self._tree.items():
             # Map known attributes and avoid mapping private ones
             if (k[0] == '_') or (k not in attrs):
@@ -246,7 +253,10 @@ class Optionable(object):
         """ Returns the text to add for the current variant.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
-        if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'file_id'):
+        if not self._variant_is_real:
+            return self.variant
+        if hasattr(self, 'variant') and self.variant:
+            self.variant = GS.solve_variant(self.variant)
             return self.variant.file_id
         return Optionable._find_global_variant()
 
@@ -260,9 +270,30 @@ class Optionable(object):
         """ Returns the name for the current variant.
             Also try with the globally defined variant.
             If no variant is defined an empty string is returned. """
-        if hasattr(self, 'variant') and self.variant and hasattr(self.variant, 'name'):
+        if not self._variant_is_real:
+            return self.variant
+        if hasattr(self, 'variant') and self.variant:
+            self.variant = GS.solve_variant(self.variant)
             return self.variant.name
         return Optionable._find_global_variant_name()
+
+    @staticmethod
+    def _find_global_subpcb():
+        if GS.solved_global_variant and GS.solved_global_variant._sub_pcb:
+            return GS.solved_global_variant._sub_pcb.name
+        return ''
+
+    def _find_subpcb(self):
+        """ Returns the name of the sub-PCB.
+            Also try with the globally defined variant.
+            If no variant is defined an empty string is returned. """
+        if not self._variant_is_real:
+            return ''
+        if hasattr(self, 'variant') and self.variant:
+            self.variant = GS.solve_variant(self.variant)
+            if self.variant._sub_pcb:
+                return self.variant._sub_pcb.name
+        return Optionable._find_global_subpcb()
 
     def expand_filename_common(self, name, parent):
         """ Expansions common to the PCB and Schematic """
@@ -295,6 +326,7 @@ class Optionable(object):
             name = name.replace('%i', self._expand_id)
             name = name.replace('%v', _cl(self._find_variant()))
             name = name.replace('%V', _cl(self._find_variant_name()))
+            name = name.replace('%S', _cl(self._find_subpcb()))
             name = name.replace('%x', self._expand_ext)
             replace_id = ''
             if parent and hasattr(parent, 'output_id'):
@@ -317,7 +349,7 @@ class Optionable(object):
         # Replace KiCad 6 variables first
         name = GS.expand_text_variables(name)
         # Determine if we need to expand SCH and/or PCB related data
-        has_dep_exp = any(map(lambda x: x in name, ['%c', '%d', '%F', '%f', '%p', '%r', '%C1', '%C2', '%C3', '%C4']))
+        has_dep_exp = any(map(lambda x: x in name, PATTERNS_DEP))
         do_sch = is_sch and has_dep_exp
         # logger.error(name + '  is_sch ' +str(is_sch)+"   "+ str(do_sch))
         # raise
@@ -436,37 +468,67 @@ class Optionable(object):
     def color_str_to_rgb(self, color):
         return self.color_to_rgb(self.parse_one_color(color))
 
-    def save_renderer_options(self):
-        """ Save the current renderer settings """
-        options = self._renderer.options
-        self.old_filters_to_expand = options._filters_to_expand
-        self.old_show_components = options.show_components
-        self.old_highlight = options.highlight
-        self.old_output = options.output
-        self.old_dir = self._renderer.dir
-        self.old_done = self._renderer._done
-        if self._renderer_is_pcbdraw:
-            self.old_bottom = options.bottom
-            self.old_add_to_variant = options.add_to_variant
-        else:  # render_3D
-            self.old_view = options.view
-            self.old_show_all_components = options._show_all_components
+    @staticmethod
+    def _solve_field_name(field, empty_when_none):
+        """ Applies special replacements for field """
+        # The global name for the LCSC part field
+        if GS.global_field_lcsc_part:
+            logger.debug('- User selected: '+GS.global_field_lcsc_part)
+            return GS.global_field_lcsc_part
+        # No name defined, try to figure out
+        if not GS.sch and GS.sch_file:
+            GS.load_sch()
+        if not GS.sch:
+            logger.debug("- No schematic loaded, can't search the name")
+            return '' if empty_when_none else 'LCSC#'
+        if hasattr(GS.sch, '_field_lcsc_part'):
+            return GS.sch._field_lcsc_part
+        # Look for a common name
+        fields = {f.lower() for f in GS.sch.get_field_names([])}
+        for stub in DISTRIBUTORS_STUBS:
+            fld = 'lcsc'+stub
+            if fld in fields:
+                GS.sch._field_lcsc_part = fld
+                return fld
+            if stub != '#':
+                for sep in DISTRIBUTORS_STUBS_SEPS:
+                    fld = 'lcsc'+sep+stub
+                    if fld in fields:
+                        GS.sch._field_lcsc_part = fld
+                        return fld
+        if 'lcsc' in fields:
+            GS.sch._field_lcsc_part = 'LCSC'
+            return 'LCSC'
+        # Look for a field that only contains LCSC codes
+        comps = GS.sch.get_components()
+        lcsc_re = re.compile(r'C\d+')
+        for f in fields:
+            found = False
+            for c in comps:
+                val = c.get_field_value(f).strip()
+                if not val:
+                    continue
+                if lcsc_re.match(val):
+                    found = True
+                else:
+                    found = False
+                    break
+            if found:
+                GS.sch._field_lcsc_part = f
+                return f
+        logger.debug('- No LCSC field found')
+        res = '' if empty_when_none else 'LCSC#'
+        GS.sch._field_lcsc_part = res
+        return res
 
-    def restore_renderer_options(self):
-        """ Restore the renderer settings """
-        options = self._renderer.options
-        options._filters_to_expand = self.old_filters_to_expand
-        options.show_components = self.old_show_components
-        options.highlight = self.old_highlight
-        options.output = self.old_output
-        self._renderer.dir = self.old_dir
-        self._renderer._done = self.old_done
-        if self._renderer_is_pcbdraw:
-            options.bottom = self.old_bottom
-            options.add_to_variant = self.old_add_to_variant
-        else:  # render_3D
-            options.view = self.old_view
-            options._show_all_components = self.old_show_all_components
+    @staticmethod
+    def solve_field_name(field, empty_when_none=False):
+        if field != '_field_lcsc_part':
+            return field
+        logger.debug('Looking for LCSC field name')
+        field = Optionable._solve_field_name(field, empty_when_none)
+        logger.debug('Using {} as LCSC field name'.format(field))
+        return field
 
 
 class BaseOptions(Optionable):
@@ -501,3 +563,56 @@ class BaseOptions(Optionable):
         self._expand_id = cur_id
         self._expand_ext = cur_ext
         return res
+
+
+class PanelOptions(BaseOptions):
+    """ A class for options that uses KiKit's units """
+    _num_regex = re.compile(r'([\d\.]+)(mm|cm|dm|m|mil|inch|in)')
+    _ang_regex = re.compile(r'([\d\.]+)(deg|°|rad)')
+
+    def add_units(self, ops, def_units=None, convert=False):
+        if def_units is None:
+            def_units = self._parent._parent.units
+        for op in ops:
+            val = getattr(self, op)
+            _op = '_'+op
+            if val is None:
+                if convert:
+                    setattr(self, _op, 0)
+                continue
+            if isinstance(val, (int, float)):
+                setattr(self, op, str(val)+def_units)
+                if convert:
+                    setattr(self, _op, val*GS.kikit_units_to_kicad[def_units])
+            else:
+                m = PanelOptions._num_regex.match(val)
+                if m is None:
+                    raise KiPlotConfigurationError('Malformed value `{}: {}` must be a number and units'.format(op, val))
+                num = m.group(1)
+                try:
+                    num_d = float(num)
+                except ValueError:
+                    num_d = None
+                if num_d is None:
+                    raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))
+                if convert:
+                    setattr(self, _op, num_d*GS.kikit_units_to_kicad[m.group(2)])
+
+    def add_angle(self, ops, def_units=None):
+        if def_units is None:
+            def_units = self._parent._parent.units
+        for op in ops:
+            val = getattr(self, op)
+            if isinstance(val, (int, float)):
+                setattr(self, op, str(val)+def_units)
+            else:
+                m = PanelOptions._ang_regex.match(val)
+                if m is None:
+                    raise KiPlotConfigurationError('Malformed angle `{}: {}` must be a number and its type'.format(op, val))
+                num = m.group(1)
+                try:
+                    num_d = float(num)
+                except ValueError:
+                    num_d = None
+                if num_d is None:
+                    raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))

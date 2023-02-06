@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .error import PlotError
@@ -131,18 +131,22 @@ class Annotate_PCB(BasePreFlight):  # noqa: F821
         self._sch_related = True
         self._pcb_related = True
 
+    @classmethod
+    def get_doc(cls):
+        return cls.__doc__, Annotate_PCBOptions
+
     def get_example():
         """ Returns a YAML value for the example config """
-        return "\n    - top_main_axis: y"\
-               "\n    - top_main_ascending: true"\
-               "\n    - top_secondary_ascending: true"\
-               "\n    - top_start: 1"\
-               "\n    - bottom_main_axis: y"\
-               "\n    - bottom_main_ascending: true"\
-               "\n    - bottom_secondary_ascending: true"\
-               "\n    - bottom_start: 101"\
-               "\n    - use_position_of: 'footprint'"\
-               "\n    - grid: 1.0"
+        return ("\n    top_main_axis: y"
+                "\n    top_main_ascending: true"
+                "\n    top_secondary_ascending: true"
+                "\n    top_start: 1"
+                "\n    bottom_main_axis: y"
+                "\n    bottom_main_ascending: true"
+                "\n    bottom_secondary_ascending: true"
+                "\n    bottom_start: 101"
+                "\n    use_position_of: 'footprint'"
+                "\n    grid: 1.0")
 
     def annotate_ki6(self, changes):
         """ Apply changes to the KiCad 6 schematic """

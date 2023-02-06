@@ -1,0 +1,9 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  field_lcsc_part: Cryptic
+
+import:
+  - file: JLCPCB

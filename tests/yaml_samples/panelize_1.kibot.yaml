@@ -8,7 +8,7 @@ outputs:
     type: panelize
     options:
       title: '+ (Panel)'
-      default_units: mm
+      units: mm
       configs:
         - layout:
             rows: 4

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+import os
+from shutil import rmtree
 from .gs import GS
 from .registrable import Registrable
 from .optionable import Optionable
@@ -28,6 +30,7 @@ class BasePreFlight(Registrable):
         self._enabled = True
         self._expand_id = ''
         self._expand_ext = ''
+        self._files_to_remove = []
 
     @staticmethod
     def add_preflight(o_pre):
@@ -149,6 +152,12 @@ class BasePreFlight(Registrable):
             return self._variant.name
         return Optionable._find_global_variant_name()
 
+    def _find_subpcb(self):
+        # Preflights doesn't have a variant, but we could have one global default
+        if hasattr(self, '_variant') and self._variant and self.variant._sub_pcb:
+            return self.variant._sub_pcb.name
+        return Optionable._find_global_subpcb()
+
     def ensure_tool(self, name):
         """ Looks for a mandatory dependency """
         return GS.check_tool_dep(self._name, name, fatal=True)
@@ -156,3 +165,34 @@ class BasePreFlight(Registrable):
     def check_tool(self, name):
         """ Looks for a dependency """
         return GS.check_tool_dep(self._name, name, fatal=False)
+
+    def add_extra_options(self, cmd, dir=None):
+        """ KiAuto extra options (debug, record, etc.) """
+        cmd, video_remove = GS.add_extra_options(cmd)
+        if video_remove:
+            self._files_to_remove.append(os.path.join(dir or cmd[-1], GS.get_kiauto_video_name(cmd)))
+        return cmd
+
+    def exec_with_retry(self, cmd, exit_with=None):
+        try:
+            ret = GS.exec_with_retry(cmd, exit_with)
+        finally:
+            if GS.debug_enabled:
+                if self._files_to_remove:
+                    logger.error('Keeping temporal files: '+str(self._files_to_remove))
+            else:
+                self.remove_temporals()
+        if self._files_to_remove:
+            self.remove_temporals()
+        return ret
+
+    def remove_temporals(self):
+        logger.debug('Removing temporal files')
+        for f in self._files_to_remove:
+            if os.path.isfile(f):
+                logger.debug('- File `{}`'.format(f))
+                os.remove(f)
+            elif os.path.isdir(f):
+                logger.debug('- Dir `{}`'.format(f))
+                rmtree(f)
+        self._files_to_remove = []

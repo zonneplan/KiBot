@@ -10,19 +10,14 @@
 @doc_id@
 
 **Important for CI/CD**:
-- We are now uploading docker images to GitHub, the new tags are much more simple.
-  Consult: [Usage for CI/CD](#usage-for-cicd)
-- The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
-  Consult: [Github Actions tags](#github-actions-tags)
+- The GitHub actions now use the full/test docker images. So now they include PanDoc and also Blender.
 
-**Important note about PcbDraw**
-- This release incorporates PcbDraw, so you don't need to install it as a separated tool.
-- Please report PcbDraw issues to the KiBot project.
-
-**New on v1.5.0**
-- `populate`, `panelize`, `stencil_3d`, `stencil_for_jig` and `kikit_present` outputs.
-- New options for: BoM, Diff, iBoM, Navigate Results, PcbDraw, PCB_Print, Render_3D and SVG.
-- More than 12 fixes.
+**New on v1.6.0**
+- `vrml`, `ps_sch_print`, `dxf_sch_print`, `hpgl_sch_print`, `pdf_sch_print` and `blender_export` outputs.
+- New options for: `compress`, `ibom`, `pcb_print`, all plot, `report`, *`sch_print` and `svg` outputs
+- Internal templates
+- Gorgeous 3D renders using Blender
+- More than 6 fixes.
 
 ## Index
 
@@ -35,6 +30,7 @@
   * [Installation on other targets](#installation-on-other-targets)
 * [Configuration](#configuration)
   * [Quick start](#quick-start)
+  * [Section order](#section-order)
   * [The header](#the-header)
   * [The *preflight* section](#the-preflight-section)
     * [Supported *preflight* options](#supported-preflight-options)
@@ -63,13 +59,16 @@
     * [Supported outputs](#supported-outputs)
     * [Consolidating BoMs](#consolidating-boms)
     * [Importing outputs from another file](#importing-outputs-from-another-file)
+    * [Importing other stuff from another file](#importing-other-stuff-from-another-file)
+    * [Importing internal templates](#importing-internal-templates)
     * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
-    * [Importing filters and variants from another file](#importing-filters-and-variants-from-another-file)
+    * [Grouping outputs](#grouping-outputs)
   * [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing)
 * [Usage](#usage)
 * [Usage for CI/CD](#usage-for-cicd)
-  * [Github Actions](#usage-of-github-actions)
-    * [Github Actions tags](#github-actions-tags)
+  * [GitHub Actions](#usage-of-github-actions)
+    * [GitHub Actions tags](#github-actions-tags)
+  * [GitHub Cache](#github-cache)
 * [Contributing](#contributing)
 * [Notes about Gerber format](#notes-about-gerber-format)
 * [Notes about the position file](#notes-about-the-position-file)
@@ -93,7 +92,7 @@ For example, it's common that you might want for each board rev:
 * Gerbers, drills and drill maps for a fab in their favourite format
 * Fab docs for the assembler, including the BoM (Bill of Materials), costs spreadsheet and board view
 * Pick and place files
-* PCB 3D model in STEP format
+* PCB 3D model in STEP, VRML and PCB3D formats
 * PCB 3D render in PNG format
 * Compare PCB/SCHs
 * Panelization
@@ -122,7 +121,7 @@ Notes:
 - When installing from the [Debian repo](https://set-soft.github.io/debian/) you don't need to worry about dependencies, just pay attention to *recommended* and *suggested* packages.
 - When installing using `pip` the dependencies marked with ![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) will be automatically installed.
 - The dependencies marked with ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png) can be downloaded on-demand by KiBot.
-  Note this is experimental and is mostly oriented to 64 bits Linux systems.
+  Note this is poorly tested and is mostly oriented to 64 bits Linux systems. Please report problems.
 - The `kibot-check` tool can help you to know which dependencies are missing.
 - Note that on some systems (i.e. Debian) ImageMagick disables PDF manipulation in its `policy.xml` file.
   Comment or remove lines like this: `<policy domain="coder" rights="none" pattern="PDF" />` (On Debian: `/etc/ImageMagick-6/policy.xml`)
@@ -265,12 +264,15 @@ The file is divided in various sections. Some of them are optional.
 The order in which they are declared is not relevant, they are interpreted in the following order:
 
 - `kiplot`/`kibot` see [The header](#the-header)
-- `import` see [Importing outputs from another file](#importing-outputs-from-another-file)
+- `import` see [Importing outputs from another file](#importing-outputs-from-another-file),
+  [Importing filters and variants from another file](#importing-other-stuff-from-another-file) and
+  [Importing internal templates](#importing-internal-templates)
 - `global` see [Default global options](#default-global-options)
 - `filters` see [Filters and variants](#filters-and-variants)
 - `variants` see [Filters and variants](#filters-and-variants)
 - `preflight` see [The *preflight* section](#the-preflight-section)
 - `outputs` see [The *outputs* section](#the-outputs-section)
+- `groups` see [Grouping outputs](#grouping-outputs)
 
 ### The header
 
@@ -390,13 +392,14 @@ The pattern uses the following expansions:
 - **%I** an ID defined by the user for this output.
 - **%p** pcb/sch title from pcb metadata.
 - **%r** revision from pcb/sch metadata.
+- **%S** sub-PCB name (related to multiboards).
 - **%T** time the script was started.
 - **%x** a suitable extension for the output type.
 - **%v** the `file_id` of the current variant, or the global variant if outside a variant scope.
 - **%V** the `name` of the current variant, or the global variant if outside a variant scope.
 
 They are compatible with the ones used by IBoM.
-The default value for `global.output` is `%f-%i.%x`.
+The default value for `global.output` is `%f-%i%I%v.%x`.
 If you want to include the revision you could add the following definition:
 
 ```yaml
@@ -408,6 +411,8 @@ Note that the following patterns: **%c**, **%C`n`**, **%d**, **%f**, **%F**, **%
 If you use them for an output related to the PCB these values will be obtained from the PCB.
 If you need to force the origin of the data you can use **%bX** for the PCB and **%sX** for the schematic, where
 **X** is the pattern to expand.
+
+You can also use text variables (introduced in KiCad 6). To expand a text variable use `${VARIABLE}`.
 
 #### Default *dir* option
 
@@ -442,6 +447,8 @@ Note that the command line option has precedence over it.
 
 Expansion patterns are applied to this value, but you should avoid using patterns that expand according to the context, i.e. **%c**, **%d**, **%f**, **%F**, **%p** and **%r**.
 The behavior of these patterns isn't fully defined in this case and the results may change in the future.
+
+You can also use text variables (introduced in KiCad 6). To expand a text variable use `${VARIABLE}`.
 
 #### Date format option
 
@@ -559,6 +566,10 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
   - References that match: '^TP[0-9]*' or '^FID'
   - Part names that match: 'regex': 'mount.*hole' or 'solder.*bridge' or 'solder.*jump' or 'test.*point'
   - Footprints that match:  'test.*point' or 'mount.*hole' or 'fiducial'
+- **_none** does nothing, useful when you want to remove a filter with default value
+- **_only_smd** is used to get only SMD parts
+- **_only_tht** is used to get only THT parts
+- **_only_virtual** is used to get only virtual parts
 - **_rot_footprint** is a default `rot_footprint` filter
 - **_var_rename** is a default `var_rename` filter
 - **_var_rename_kicost** is a default `var_rename_kicost` filter
@@ -725,6 +736,9 @@ The available values for *type* are:
 - Documentation
     - `pdf_sch_print` schematic in PDF format
     - `svg_sch_print` schematic in SVG format
+    - `ps_sch_print` schematic in PS format
+    - `dxf_sch_print` schematic in DXF format
+    - `hpgl_sch_print` schematic in HPGL format
     - `pdf_pcb_print` PDF file containing one or more layer and the page frame
     - `svg_pcb_print` SVG file containing one or more layer and the page frame
     - `pcb_print` PDF/SVG/PNG/EPS/PS, similar to `pdf_pcb_print` and `svg_pcb_print`, with more flexibility
@@ -737,7 +751,11 @@ The available values for *type* are:
     - `kicost` BoM in XLSX format with costs generated by [KiCost](https://github.com/INTI-CMNB/KiCost)
 - 3D model:
     - `step` *Standard for the Exchange of Product Data* for the PCB
-    - `render_3d` PCB render, from the KiCad's 3D Viewer (broken in KiCad 6.0.0)
+    - `vrml` *Virtual Reality Modeling Language* for the PCB
+    - `render_3d` PCB render, from the KiCad's 3D Viewer
+    - `blender_export` PCB export to Blender and high quality 3D render.
+       Including export to: `fbx` (Kaydara's Filmbox), 'obj' (Wavefront), 'x3d' (ISO/IEC standard),
+       `gltf` (GL format), `stl` (3D printing) and 'ply' (Stanford).
 - Web pages:
     - `populate` To create step-by-step assembly instructions.
     - `kikit_present` To create a project presentation web page.
@@ -1172,19 +1190,7 @@ import:
 This will import all the outputs from the listed files.
 
 
-#### Using other output as base for a new one
-
-If you need to define an output that is similar to another, and you want to avoid copying the options from the former, you can *extend* an output.
-To achieve it just specify the name of the base output in the `extends` value.
-Note that this will use the `options` of the other output as base, not other data as the comment.
-
-Also note that you can use YAML anchors, but this won't work if you are importing the base output from other file.
-
-Additionally you must be aware that extending an output doesn't disable the base output.
-If you need to disable the original output use `disable_run_by_default` option.
-
-
-#### Importing filters and variants from another file
+#### Importing other stuff from another file
 
 This is a more complex case of the previous [Importing outputs from another file](#importing-outputs-from-another-file).
 In this case you must use the more general syntax:
@@ -1197,9 +1203,11 @@ import:
     filters: LIST_OF_FILTERS
     variants: LIST_OF_VARIANTS
     global: LIST_OF_GLOBALS
+    groups: LIST_OF_GROUPS
 ```
 
-This syntax is flexible. If you don't define which `outputs`, `filters`, `variants` and/or `global` all will be imported. So you can just omit them, like this:
+This syntax is flexible. If you don't define which `outputs`, `preflights`, `filters`, `variants`, `global` and/or `groups` all will be imported.
+So you can just omit them, like this:
 
 ```yaml
 import:
@@ -1216,6 +1224,7 @@ import:
 ```
 
 This will import the `one_name` output and the `name1` and `name2` filters. As `variants` is omitted, all variants will be imported.
+The same applies to other things like globals and groups.
 You can also use the `all` and `none` special names, like this:
 
 ```yaml
@@ -1229,9 +1238,9 @@ import:
 
 This will import all outputs and filters, but not variants or globals.
 Also note that imported globals has more precedence than the ones defined in the same file.
-If you want give more priority to the local values use:
+If you want to give more priority to the local values use:
 
-```
+```yaml
 kibot:
   version: 1
   imported_global_has_less_priority: true
@@ -1243,6 +1252,187 @@ import:
 Another important detail is that global options that are lists gets the values merged.
 The last set of values found is inserted at the beginning of the list.
 You can collect filters for all the imported global sections.
+
+It's recommended to always use some file extension in the *FILE_CONTAINING_THE_YAML_DEFINITIONS* name.
+If you don't use any file extension and you use a relative path this name could be confused with an internal template.
+See [Importing internal templates](#importing-internal-templates).
+If you need to use a name without any extension and a relative path, and this name is the same used for a KiBot template use the `is_external` option:
+
+```yaml
+import:
+  - file: Elecrow
+    is_external: true
+```
+
+
+#### Importing internal templates
+
+KiBot has some internally defined outputs, groups and filters.
+You can easily use them with the `import` mechanism.
+Use the `file` mechanism and don't include the extension for the file.
+When importing an internal template you don't need to specify its location.
+Here is an example:
+
+```yaml
+import:
+  - file: Elecrow
+```
+
+This will import the definitions for the internal Elecrow configuration.
+Here is a list of currently defined templates:
+
+They include support for:
+
+- [Elecrow](https://www.elecrow.com/): contain fabrication outputs compatible with Elecrow
+  - _Elecrow_gerbers: Gerbers
+  - _Elecrow_drill: Drill files
+  - _Elecrow_compress: Gerbers and drill files compressed in a ZIP
+  - _Elecrow: _Elecrow_gerbers+_Elecrow_drill
+- [FusionPCB](https://www.seeedstudio.io/fusion.html): contain fabrication outputs compatible with FusionPCB
+  - _FusionPCB_gerbers: Gerbers
+  - _FusionPCB_drill: Drill files
+  - _FusionPCB_compress: Gerbers and drill files compressed in a ZIP
+  - _FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill
+- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB.
+  Use the `field_lcsc_part` global option to specify the LCSC part number field if KiBot fails to detect it.
+  - _JLCPCB_gerbers: Gerbers.
+  - _JLCPCB_drill: Drill files
+  - _JLCPCB_position: Pick and place, applies the `_rot_footprint` filter. You can change this filter.
+  - _JLCPCB_bom: List of LCSC parts, assumes a field named `LCSC#` contains the LCSC codes. You can change this filter.
+  - _JLCPCB_compress: Gerbers, drill, position and BoM files compressed in a ZIP
+  - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_drill
+  - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
+  - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
+- [JLCPCB_stencil](https://jlcpcb.com/): Derived from JLCPCB, adds solder paste gerbers for stencils
+  - _JLCPCB_gerbers: Gerbers.
+  - _JLCPCB_gerbers_stencil: Gerbers for the solder paste stencils. Disabled by default.
+  - _JLCPCB_drill: Drill files
+  - _JLCPCB_position: Pick and place, applies the `_rot_footprint` filter. You can change this filter.
+  - _JLCPCB_bom: List of LCSC parts, assumes a field named `LCSC#` contains the LCSC codes. You can change this filter.
+  - _JLCPCB_compress: Gerbers, drill, position and BoM files compressed in a ZIP
+  - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_gerbers_stencil+_JLCPCB_drill
+  - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
+  - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
+- [MacroFab_XYRS](https://help.macrofab.com/knowledge/macrofab-required-design-files): XYRS position file in MacroFab format
+  - _macrofab_xyrs: Position file in XYRS format compatible with MacroFab.
+- [P-Ban](https://www.p-ban.com/): contain fabrication outputs compatible with P-Ban
+  - _P-Ban_gerbers: Gerbers. You need to define the layers for more than 8.
+  - _P-Ban_drill: Drill files
+  - _P-Ban: _P-Ban_gerbers+_P-Ban_drill
+- [PCB2Blender_2_1](https://github.com/30350n/pcb2blender)
+  - _PCB2Blender_layers_2_1: The layers in SVG format. Disabled by default.
+  - _PCB2Blender_vrml_2_1: The VRML for the board. Disabled by default.
+  - _PCB2Blender_tools_2_1: Pads and bounds information. Disabled by default.
+  - _PCB2Blender_2_1: The PCB3D file. Is enabled and creates the other files.
+  - _PCB2Blender_elements_2_1: _PCB2Blender_tools_2_1+_PCB2Blender_layers_2_1+_PCB2Blender_vrml_2_1
+- [PCB2Blender_2_1_haschtl](https://github.com/haschtl/pcb2blender)
+  - Imports `PCB2Blender_2_1` and disables `_PCB2Blender_2_1`
+  - _PCB2Blender_tools_2_1_haschtl: Pads, bounds and stack-up information. Disabled by default.
+  - _PCB2Blender_2_1_haschtl: The PCB3D file. Is enabled and creates the other files.
+  - _PCB2Blender_elements_2_1_haschtl: _PCB2Blender_tools_2_1_haschtl+_PCB2Blender_layers_2_1+_PCB2Blender_vrml_2_1
+- [PCBWay](https://www.pcbway.com): contain fabrication outputs compatible with PCBWay
+  - _PCBWay_gerbers: Gerbers
+  - _PCBWay_drill: Drill files
+  - _PCBWay_compress: Gerbers and drill files compressed in a ZIP
+  - _PCBWay: _PCBWay_gerbers+_PCBWay_drill
+
+
+#### Using other output as base for a new one
+
+If you need to define an output that is similar to another, and you want to avoid copying the options from the former, you can *extend* an output.
+To achieve it just specify the name of the base output in the `extends` value.
+Note that this will use the `options` of the other output as base, not other data as the comment.
+
+Also note that you can use [YAML anchors](https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet#anchors), but this won't work if you are
+importing the base output from other file.
+
+Additionally you must be aware that extending an output doesn't disable the base output.
+If you need to disable the original output use `disable_run_by_default` option.
+
+
+#### Grouping outputs
+
+Sometimes you want to generate various outputs together. An example could be the fabrication files, or the documentation for the project.
+
+To explain it we will use an example where you have six outputs.
+Three are used for fabrication: `gerbers`, `excellon_drill` and `position`.
+Another three are used for documentation: `SVG`, `PcbDraw` and `PcbDraw2`.
+The YAML config containing this example can be found [here](tests/yaml_samples/groups_1.kibot.yaml).
+If you need to generate the fabrication outputs you must run:
+
+```
+kibot gerbers excellon_drill position
+```
+
+One mechanism to group the outputs is to create a `compress` output that just includes the outputs you want to group.
+Here is one example:
+
+```yaml
+  - name: compress_fab
+    comment: "Generates a ZIP file with all the fab outputs"
+    type: compress
+    run_by_default: false
+    options:
+      files:
+        - from_output: gerbers
+        - from_output: excellon_drill
+        - from_output: position
+```
+
+The `compress_fab` output will generate the `gerbers`, `excellon_drill` and `position` outputs.
+Then it will create a ZIP file containing the files generated by these outputs.
+The command line invocation for this is:
+
+```
+kibot compress_fab
+```
+
+Using this mechanism you are forced to create a compressed output.
+To avoid it you can use `groups`.
+The `groups` section is used to create groups of outputs.
+Here is the example for fabrication files:
+
+```yaml
+groups:
+  - name: fab
+    outputs:
+      - gerbers
+      - excellon_drill
+      - position
+```
+
+So now you can just run:
+
+```
+kibot fab
+```
+
+The `gerbers`, `excellon_drill` and `position` outputs will be generated without the need to generate an extra file.
+Groups can be nested, here is an example:
+
+```yaml
+groups:
+  - name: fab
+    outputs:
+      - gerbers
+      - excellon_drill
+      - position
+  - name: plot
+    outputs:
+      - SVG
+      - PcbDraw
+      - PcbDraw2
+  - name: fab_svg
+    outputs:
+      - fab
+      - SVG
+```
+
+Here the `fab_svg` group will contain `gerbers`, `excellon_drill`, `position` and `SVG`.
+
+Groups can be imported from another YAML file.
+
+Avoid naming groups using `_` as first character. These names are reserved for KiBot.
 
 ### Doing YAML substitution or preprocessing
 
@@ -1389,6 +1579,7 @@ If you need to run the current development version of KiBot you can use the foll
 [ghcr.io/inti-cmnb/kicad5_auto:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto) or
 [ghcr.io/inti-cmnb/kicad6_auto:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto)
 ([setsoft/kicad_auto:dev](https://hub.docker.com/repository/docker/setsoft/kicad_auto)).
+These images are based on the *full* (also named *test*) images.
 
 The most important images are:
 
@@ -1404,7 +1595,7 @@ The most important images are:
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
 
-### Usage of Github Actions
+### Usage of GitHub Actions
 
 Note: You can also use --quick-start functionality with GitHub actions, and example is this [workflow](https://github.com/INTI-CMNB/kibot_variants_arduprog/blob/master/.github/workflows/kibot_action_quick_start.yml)
 
@@ -1458,7 +1649,8 @@ Another example, but using variants can be found [here](https://github.com/INTI-
 
 The available options are:
 
-- **additional_args**: Additional text to add to the KiBot invocation. This is experimental and only intended for advanced use.
+- **additional_args**: Additional text to add to the KiBot invocation. This is intended for advanced use, report problems.
+- **cache3D**: When `YES` you can cache the downloaded 3D models. An example can be found [here](https://github.com/set-soft/kibot_3d_models_cache_example/).
 - **config**: The KiBot config file to use. The first file that matches `*.kibot.yaml` is used when omitted.
 - **dir**: Output directory for the generated files. The current directory is used when omitted.
 - **board**: Name of the PCB file. The first file that matches `*.kicad_pcb` is used when omitted.
@@ -1470,7 +1662,7 @@ The available options are:
 - **variant**: Global variant to use. No variant is applied when omitted.
 - **verbose**: Level of verbosity. Valid values are 0, 1, 2 or 3. Default is 0.
 
-#### Github Actions tags
+#### GitHub Actions tags
 
 There are several tags you can choose:
 
@@ -1482,6 +1674,10 @@ There are several tags you can choose:
 | v2_k6_1_2_0 |  2  | 1.2.0        | 6.0.5 |
 | v2_1_3_0    |  2  | 1.3.0        | 5.1.9 |
 | v2_k6_1_3_0 |  2  | 1.3.0        | 6.0.7 |
+| v2_1_4_0    |  2  | 1.4.0        | 5.1.9 |
+| v2_k6_1_4_0 |  2  | 1.4.0        | 6.0.9 |
+| v2_1_5_1    |  2  | 1.5.1        | 5.1.9 |
+| v2_k6_1_5_1 |  2  | 1.5.1        | 6.0.9 |
 | v2          |  2  | last release | 5.1.9 |
 | v2_k6       |  2  | last release | 6.x   |
 | v2_d        |  2  | git code     | 5.1.9 |
@@ -1494,6 +1690,17 @@ The main differences between API 1 and 2 are:
 - In API 1 you must specify the input files, in API 2 can be omitted
 - API 1 supports wildcards in the filenames, API 2 doesn't
 - API 2 supports spaces in the filenames, API 1 doesn't
+
+Also note that v2 images are currently using the *full* docker image (v1.5 and newer).
+It includes things like PanDoc and Blender.
+
+### GitHub Cache
+
+GitHub offers a mechanism to cache data between runs.
+One interesting use is to make the KiCost prices cache persistent, here is an [example](https://github.com/set-soft/kicost_ci_test)
+
+Another use is to cache [downloaded 3D models](https://github.com/set-soft/kibot_3d_models_cache_example)
+
 
 ## Contributing
 
@@ -1576,14 +1783,7 @@ If your manufacturer has problems with your files check the following:
 * Disable **aperture macros** (KiCad 6 only: `disable_aperture_macros` set to `true`)
 
 The [kicad-gerberzipper](https://github.com/g200kg/kicad-gerberzipper) is an action plugin for KiCad oriented to help to generate gerber and drill files for some manufacturers.
-I adapted the configurations from kicad-gerberzipper to KiBot configurations, you can find them in the `docs/samples/` directory.
-They include support for:
-
-- [Elecrow](https://www.elecrow.com/)
-- [FusionPCB](https://www.seeedstudio.io/fusion.html)
-- [JLCPCB](https://jlcpcb.com/)
-- [P-Ban](https://www.p-ban.com/)
-- [PCBWay](https://www.pcbway.com)
+I adapted the configurations from kicad-gerberzipper to KiBot configurations, they are available as [internal templates](#importing-internal-templates).
 
 
 ## Notes about the position file
@@ -1828,7 +2028,7 @@ If you have any suggestion don't hesitate in contacting me to add them.
 ### 3D models and docker images
 
 The default KiCad 3D models aren't included in the KiBot docker images.
-This is because the 3D models currently needs around 5 GB and the current docker images are between 1 and 1.6 GB.
+This is because the 3D models currently needs around 5 GB and the current docker images are between 1 and 2.8 GB.
 So adding them means a huge increase in size.
 
 This is not a big problem because KiBot will download any missing 3D model from KiCad's repo.
@@ -1838,7 +2038,12 @@ As a side effect you'll get errors and/or warnings about the missing 3D models a
 If you need to install the KiCad 3D models in one of the `kicad_debian`, `kicad_auto` or `kicad_auto_test` images just run the
 `/usr/bin/kicad_3d_install.sh` script included with the current images.
 
-If you are running the Github action and you want to install the KiCad 3D models use the `install3D: YES` option.
+If you are running the GitHub action and you want to install the KiCad 3D models use the `install3D: YES` option.
+
+### Caching downloaded 3D models
+
+You can store the downloaded 3D models in a GitHub cache, an example can be found in the following
+[repo](https://github.com/set-soft/kibot_3d_models_cache_example)
 
 ### Self contained projects
 
@@ -1853,6 +2058,12 @@ The 3D models are a very special case. KiCad doesn't help much in this regard.
 I strongly suggest including all used 3D models in your repo.
 You can then use `${KIPRJMOD}` as base for the path to the models, this will be expanded to the current path to your project.
 So you can use things like `${KIPRJMOD}/3D/MODEL_NAME` and store all the 3D models in the *3D* folder inside your project folder.
+
+### LCSC/JLCPCB/EasyEDA 3D models
+
+KiBot can download 3D models for components that has an LCSC code and that has a 3D model at [EasyEDA](https://easyeda.com/).
+If the 3D model is used locally, but not found in the repo, KiBot will try to download it.
+Use the `field_lcsc_part` option if KiBot fails to detect the schematic field containing the LCSC code.
 
 ### 3D models aliases
 
@@ -1959,3 +2170,6 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
   - **Most icons for the navigate_results output**: The KiCad project
   - **PTV09A 3D Model**: Dmitry Levin ([GrabCad](https://grabcad.com/dmitry.levin-6))
   - **PcbDraw PCB example**: [Arduino Learning Kit Starter](https://github.com/RoboticsBrno/ArduinoLearningKitStarter)
+  - **Battery charger example**: [RB0002-BatteryPack](https://cadlab.io/project/22740/master/files)
+  - **IT-1187A 3D Model**: Anton Pavlov ([GrabCad](https://grabcad.com/anton.pavlov-2))
+  - **105017-0001 3D Model**: M.B.I. ([GrabCad](https://grabcad.com/m.b.i-1))

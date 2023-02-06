@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .registrable import RegFilter, Registrable, RegOutput
 from .optionable import Optionable
 from .gs import GS
-from .misc import (IFILT_MECHANICAL, IFILT_VAR_RENAME, IFILT_ROT_FOOTPRINT, IFILT_KICOST_RENAME, DISTRIBUTORS,
-                   IFILT_VAR_RENAME_KICOST, IFILT_KICOST_DNP, IFILT_EXPAND_TEXT_VARS, IFILT_DATASHEET_LINK)
+from .misc import IFILT_MECHANICAL, DISTRIBUTORS, IFILT_KICOST_DNP, IFILT_KICOST_RENAME
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
 from .macros import macros, document  # noqa: F401
@@ -59,6 +58,30 @@ KICOST_NAME_TRANSLATIONS = {
     'description': 'desc',
     'pdf': 'datasheet',
 }
+# Some very simple internal filters
+SIMP_FIL = {'_only_smd': {'comment': 'Internal filter for only SMD parts',
+                          'type': 'generic',
+                          'exclude_virtual': True,
+                          'exclude_tht': True},
+            '_only_tht': {'comment': 'Internal filter for only THT parts',
+                          'type': 'generic',
+                          'exclude_virtual': True,
+                          'exclude_smd': True},
+            '_only_virtual': {'comment': 'Internal filter for only virtual parts',
+                              'type': 'generic',
+                              'exclude_tht': True,
+                              'exclude_smd': True},
+            '_rot_footprint': {'type': 'rot_footprint',
+                               'comment': 'Internal default footprint rotator'},
+            '_expand_text_vars': {'type': 'expand_text_vars',
+                                  'comment': 'Internal default text variables expander'},
+            '_datasheet_link': {'type': 'urlify',
+                                'comment': 'Internal datasheet URL to HTML link'},
+            '_var_rename': {'type': 'var_rename',
+                            'comment': 'Internal default variant field renamer filter'},
+            '_var_rename_kicost': {'type': 'var_rename_kicost',
+                                   'comment': 'Internal default variant field renamer filter (KiCost style)'},
+            }
 
 
 class DummyFilter(Registrable):
@@ -220,46 +243,6 @@ class BaseFilter(RegFilter):
         return o_tree
 
     @staticmethod
-    def _create_var_rename(name):
-        o_tree = {'name': name}
-        o_tree['type'] = 'var_rename'
-        o_tree['comment'] = 'Internal default variant field renamer filter'
-        logger.debug('Creating internal filter: '+str(o_tree))
-        return o_tree
-
-    @staticmethod
-    def _create_var_rename_kicost(name):
-        o_tree = {'name': name}
-        o_tree['type'] = 'var_rename_kicost'
-        o_tree['comment'] = 'Internal default variant field renamer filter (KiCost style)'
-        logger.debug('Creating internal filter: '+str(o_tree))
-        return o_tree
-
-    @staticmethod
-    def _create_rot_footprint(name):
-        o_tree = {'name': name}
-        o_tree['type'] = 'rot_footprint'
-        o_tree['comment'] = 'Internal default footprint rotator'
-        logger.debug('Creating internal filter: '+str(o_tree))
-        return o_tree
-
-    @staticmethod
-    def _create_expand_text_vars(name):
-        o_tree = {'name': name}
-        o_tree['type'] = 'expand_text_vars'
-        o_tree['comment'] = 'Internal default text variables expander'
-        logger.debug('Creating internal filter: '+str(o_tree))
-        return o_tree
-
-    @staticmethod
-    def _create_datasheet_link(name):
-        o_tree = {'name': name}
-        o_tree['type'] = 'urlify'
-        o_tree['comment'] = 'Internal datasheet URL to HTML link'
-        logger.debug('Creating internal filter: '+str(o_tree))
-        return o_tree
-
-    @staticmethod
     def _create_kibom_dnx(name):
         type = name[7:10]
         if len(name) > 11:
@@ -314,22 +297,16 @@ class BaseFilter(RegFilter):
             tree = BaseFilter._create_mechanical(name)
         elif name.startswith('_kibom_dn') and len(name) >= 10:
             tree = BaseFilter._create_kibom_dnx(name)
-        elif name == IFILT_VAR_RENAME:
-            tree = BaseFilter._create_var_rename(name)
-        elif name == IFILT_ROT_FOOTPRINT:
-            tree = BaseFilter._create_rot_footprint(name)
         elif name == IFILT_KICOST_RENAME:
             tree = BaseFilter._create_kicost_rename(name)
-        elif name == IFILT_VAR_RENAME_KICOST:
-            tree = BaseFilter._create_var_rename_kicost(name)
         elif name == IFILT_KICOST_DNP:
             tree = BaseFilter._create_kicost_dnp(name)
-        elif name == IFILT_EXPAND_TEXT_VARS:
-            tree = BaseFilter._create_expand_text_vars(name)
-        elif name == IFILT_DATASHEET_LINK:
-            tree = BaseFilter._create_datasheet_link(name)
         else:
-            return None
+            tree = SIMP_FIL.get(name)
+            if tree is None:
+                return None
+            tree['name'] = name
+            logger.debug('Creating internal filter: '+str(tree))
         filter = RegFilter.get_class_for(tree['type'])()
         filter._internal = True
         filter.set_tree(tree)

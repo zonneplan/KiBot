@@ -666,7 +666,7 @@ def test_error_import_not_str(test_dir):
 def test_error_import_miss_file(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_import_miss_file')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err(r"missing import file")
+    assert ctx.search_err(r"issing import file")
     ctx.clean_up(keep_project=True)
 
 
@@ -706,4 +706,12 @@ def test_extends_1(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_extends_1')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"In section 'position_mine' \(position\): Unknown output `position2` in `extends`")
+    ctx.clean_up(keep_project=True)
+
+
+def test_pre_list_instead_of_dict(test_dir):
+    """ Extend an undefined output """
+    ctx = context.TestContext(test_dir, PRJ, 'error_pre_list_instead_of_dict_issue_360')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Found .*list.* instead of dict")
     ctx.clean_up(keep_project=True)

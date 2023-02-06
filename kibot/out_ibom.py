@@ -117,6 +117,9 @@ class IBoMOptions(VariantOptions):
             """ Name of the extra field that indicates do not populate status.
                 Components with this field not empty will be blacklisted.
                 IBoM option, avoid using in conjunction with KiBot variants/filters """
+            self.hide_excluded = False
+            """ Hide components in the Fab layer that are marked as excluded by a variant.
+                Affected by global options """
         super().__init__()
         self.add_to_doc('variant', WARNING_MIX)
         self.add_to_doc('dnf_filter', WARNING_MIX)
@@ -172,7 +175,7 @@ class IBoMOptions(VariantOptions):
         ori_extra_data_file = self.extra_data_file
         net_dir = None
         pcb_name = GS.pcb_file
-        if self._comps:
+        if self.will_filter_pcb_components():
             # Write a custom netlist to a temporal dir
             net_dir = mkdtemp(prefix='tmp-kibot-ibom-')
             netlist = os.path.join(net_dir, GS.pcb_basename+'.xml')
@@ -181,8 +184,9 @@ class IBoMOptions(VariantOptions):
             with open(netlist, 'wb') as f:
                 GS.sch.save_netlist(f, self._comps)
             # Write a board with the filtered values applied
-            self.sch_fields_to_pcb(self._comps, GS.board)
+            self.filter_pcb_components()
             pcb_name, _ = self.save_tmp_dir_board('ibom', force_dir=net_dir)
+            self.unfilter_pcb_components()
         else:
             # Check if the user wants extra_fields but there is no data about them (#68)
             if self.need_extra_fields() and not os.path.isfile(self.extra_data_file):
@@ -204,7 +208,7 @@ class IBoMOptions(VariantOptions):
         self.blacklist += to_remove
         # Convert attributes into options
         for k, v in self.get_attrs_gen():
-            if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform']:
+            if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform', 'hide_excluded']:
                 continue
             if k == 'offset_back_rotation' and version < (2, 5, 0, 2):
                 continue
@@ -230,14 +234,12 @@ class IBoMOptions(VariantOptions):
             if net_dir:
                 logger.debug('Removing temporal variant dir `{}`'.format(net_dir))
                 rmtree(net_dir)
-                # Restore the PCB properties and values
-                self.restore_sch_fields_to_pcb(GS.board)
             # Restore the real name selected
             self.extra_data_file = ori_extra_data_file
         logger.debug('Output from command:\n'+cmd_output_dec+'\n')
         if output:
             logger.debug('Renaming output file: {} -> {}'.format(cur, output))
-            os.rename(cur, output)
+            os.replace(cur, output)
 
 
 @output_class

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -16,13 +16,14 @@ Dependencies:
 import glob
 import os
 import shutil
+import stat
 import subprocess
 import sys
 from tempfile import NamedTemporaryFile, TemporaryDirectory, mkdtemp
 from .error import KiPlotConfigurationError
 from .misc import PCB_GENERATORS, RENDERERS, W_MORERES
 from .gs import GS
-from .kiplot import config_output, run_output, get_output_dir, load_board, run_command
+from .kiplot import config_output, run_output, get_output_dir, load_board, run_command, configure_and_run
 from .optionable import BaseOptions, Optionable
 from .out_base import BaseOutput
 from .registrable import RegOutput
@@ -36,6 +37,7 @@ logger = log.get_logger()
 def _get_tmp_name(ext):
     with NamedTemporaryFile(mode='w', suffix='.'+ext, delete=False) as f:
         f.close()
+    os.chmod(f.name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
     return f.name
 
 
@@ -120,34 +122,26 @@ class PresentBoards(Optionable):
         return self.name, self.comment, self.pcb_file, self.front_image, self.back_image, self.gerbers
 
     def generate_image(self, back, tmp_name):
-        self.save_renderer_options()
-        options = self._renderer.options
+        options = self._renderer.get_renderer_options()
+        if options is None:
+            raise KiPlotConfigurationError('No suitable renderer ({})'.format(self._renderer))
+        # Memorize the current options
+        options.save_renderer_options()
         logger.debug('Starting renderer with back: {}, name: {}'.format(back, tmp_name))
         # Configure it according to our needs
-        options._filters_to_expand = False
-        options.show_components = None if self._renderer_is_pcbdraw else []
-        options.highlight = []
-        options.output = tmp_name
+        options.setup_renderer([], [], back, tmp_name)
+        self._renderer.dir = self._parent._parent.dir
         self._renderer._done = False
-        if self._renderer_is_pcbdraw:
-            options.add_to_variant = False
-            options.bottom = back
-        else:  # render_3D
-            options.view = 'Z' if back else 'z'
-            options._show_all_components = False
         run_output(self._renderer)
-        self.restore_renderer_options()
+        # Restore the options
+        options.restore_renderer_options()
 
     def do_compress(self, tmp_name, out):
         tree = {'name': '_temporal_compress_gerbers',
                 'type': 'compress',
                 'comment': 'Internally created to compress gerbers',
                 'options': {'output': tmp_name, 'files': [{'from_output': out.name, 'dest': '/'}]}}
-        out = RegOutput.get_class_for('compress')()
-        out.set_tree(tree)
-        config_output(out)
-        logger.debug('Creating gerbers archive ...')
-        out.options.run(tmp_name)
+        configure_and_run(tree, os.path.dirname(tmp_name), 'Creating gerbers archive ...')
 
     def generate_archive(self, out, tmp_name):
         out.options
@@ -204,7 +198,6 @@ class PresentBoards(Optionable):
                                                format(out, RENDERERS))
         config_output(out)
         self._renderer = out
-        self._renderer_is_pcbdraw = out.type == 'pcbdraw'
         tmp_name = _get_tmp_name(out.get_extension())
         self.temporals.append(tmp_name)
         self.generate_image(back, tmp_name)

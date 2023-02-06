@@ -240,6 +240,9 @@ class Globals(FiltersOptions):
                 more precedence than KiCad paths defined in the GUI.
                 You can make reference to any OS environment variable using ${VARIABLE}.
                 The KIPRJMOD is also available for expansion """
+            self.field_lcsc_part = ''
+            """ The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
+                When empty KiBot will try to discover it """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

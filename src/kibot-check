@@ -19,6 +19,90 @@ import subprocess
 import sys
 
 deps = '{\
+    "Bash": {\
+        "arch": "bash",\
+        "command": "bash",\
+        "comments": [],\
+        "deb_package": "bash",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 3,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": false,\
+        "name": "Bash",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "pcb_replace",\
+        "plugin_dirs": null,\
+        "pypi_name": "Bash",\
+        "roles": [\
+            {\
+                "desc": "Run external commands to create replacement text",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "pcb_replace",\
+                "version": null\
+            },\
+            {\
+                "desc": "Run external commands to create replacement text",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "sch_replace",\
+                "version": null\
+            },\
+            {\
+                "desc": "Run external commands to create replacement text",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "set_text_variables",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": "https://www.gnu.org/software/bash/",\
+        "url_down": null\
+    },\
+    "Blender": {\
+        "arch": "blender",\
+        "command": "blender",\
+        "comments": [],\
+        "deb_package": "blender",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 10000,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": false,\
+        "name": "Blender",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "blender_export",\
+        "plugin_dirs": null,\
+        "pypi_name": "Blender",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "blender_export",\
+                "version": [\
+                    3,\
+                    4,\
+                    0\
+                ]\
+            }\
+        ],\
+        "tests": [],\
+        "url": "https://www.blender.org/",\
+        "url_down": null\
+    },\
     "Colorama": {\
         "arch": "python-colorama",\
         "command": "colorama",\
@@ -166,17 +250,24 @@ deps = '{\
         ],\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 4,\
+        "importance": 5,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
         "name": "ImageMagick",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "navigate_results",\
+        "output": "blender_export",\
         "plugin_dirs": null,\
         "pypi_name": "ImageMagick",\
         "roles": [\
+            {\
+                "desc": "Automatically crop images",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "blender_export",\
+                "version": null\
+            },\
             {\
                 "desc": "Create outputs preview",\
                 "mandatory": false,\
@@ -300,7 +391,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 110003,\
+        "importance": 150003,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -326,11 +417,33 @@ deps = '{\
                 "desc": null,\
                 "mandatory": true,\
                 "max_version": null,\
+                "output": "dxf_sch_print",\
+                "version": [\
+                    2,\
+                    1,\
+                    1\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
                 "output": "gencad",\
                 "version": [\
                     1,\
                     6,\
                     5\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "hpgl_sch_print",\
+                "version": [\
+                    2,\
+                    1,\
+                    1\
                 ]\
             },\
             {\
@@ -384,8 +497,19 @@ deps = '{\
                 "output": "pdf_sch_print",\
                 "version": [\
                     2,\
-                    0,\
-                    0\
+                    1,\
+                    1\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "ps_sch_print",\
+                "version": [\
+                    2,\
+                    1,\
+                    1\
                 ]\
             },\
             {\
@@ -428,7 +552,18 @@ deps = '{\
                 "output": "svg_sch_print",\
                 "version": [\
                     2,\
-                    0,\
+                    1,\
+                    1\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "vrml",\
+                "version": [\
+                    2,\
+                    1,\
                     0\
                 ]\
             },\
@@ -565,17 +700,24 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 30000,\
+        "importance": 30100,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
         "name": "KiKit",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "panelize",\
+        "output": "global",\
         "plugin_dirs": null,\
         "pypi_name": "KiKit",\
         "roles": [\
+            {\
+                "desc": "Separate multiboard projects",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "global",\
+                "version": null\
+            },\
             {\
                 "desc": null,\
                 "mandatory": true,\
@@ -1252,7 +1394,7 @@ def search_as_plugin(cmd, names):
 def hide_stderr():
     """ Low level stderr suppression, used to hide KiCad bugs. """
     newstderr = os.dup(2)
-    devnull = os.open('/dev/null', os.O_WRONLY)
+    devnull = os.open(os.devnull, os.O_WRONLY)
     os.dup2(devnull, 2)
     os.close(devnull)
     yield

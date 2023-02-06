@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from copy import deepcopy
-from glob import glob
 import math
 import os
 import re
+from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
@@ -58,16 +58,18 @@ class BaseOutput(RegOutput):
         super().__init__()
         with document:
             self.name = ''
-            """ *Used to identify this particular output definition """
+            """ *Used to identify this particular output definition.
+                Avoid using `_` as first character. These names are reserved for KiBot """
             self.type = ''
             """ *Type of output """
             self.dir = './'
             """ *Output directory for the generated files.
                 If it starts with `+` the rest is concatenated to the default dir """
             self.comment = ''
-            """ *A comment for documentation purposes """
+            """ *A comment for documentation purposes. It helps to identify the output """
             self.extends = ''
-            """ Copy the `options` section from the indicated output """
+            """ Copy the `options` section from the indicated output.
+                Used to inherit options from another output of the same type """
             self.run_by_default = True
             """ When enabled this output will be created when no specific outputs are requested """
             self.disable_run_by_default = ''
@@ -78,7 +80,8 @@ class BaseOutput(RegOutput):
             """ Text to use for the %I expansion content. To differentiate variations of this output """
             self.category = Optionable
             """ [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
-                Categories looks like file system paths, i.e. PCB/fabrication/gerber """
+                Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                The categories are currently used for `navigate_results` """
             self.priority = 50
             """ [0,100] Priority for this output. High priority outputs are created first.
                 Internally we use 10 for low priority, 90 for high priority and 50 for most outputs """
@@ -196,7 +199,8 @@ class BoMRegex(Optionable):
         self._unkown_is_error = True
         with document:
             self.column = ''
-            """ Name of the column to apply the regular expression """
+            """ Name of the column to apply the regular expression.
+                Use `_field_lcsc_part` to get the value defined in the global options """
             self.regex = ''
             """ Regular expression to match """
             self.field = None
@@ -211,6 +215,11 @@ class BoMRegex(Optionable):
             """ Match if the field doesn't exists, no regex applied. Not affected by `invert` """
             self.invert = False
             """ Invert the regex match result """
+
+    def config(self, parent):
+        super().config(parent)
+        if not self.column:
+            raise KiPlotConfigurationError("Missing or empty `column` in field regex ({})".format(str(self._tree)))
 
 
 class VariantOptions(BaseOptions):
@@ -227,6 +236,7 @@ class VariantOptions(BaseOptions):
                 A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
         self._comps = None
+        self._sub_pcb = None
         self.undo_3d_models = {}
         self.undo_3d_models_rep = {}
         self._highlight_3D_file = None
@@ -237,6 +247,11 @@ class VariantOptions(BaseOptions):
         self.variant = RegOutput.check_variant(self.variant)
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
+
+    def copy_options(self, ref):
+        self.variant = ref.variant
+        self.dnf_filter = ref.dnf_filter
+        self.pre_transform = ref.pre_transform
 
     def get_refs_hash(self):
         if not self._comps:
@@ -254,6 +269,9 @@ class VariantOptions(BaseOptions):
         if not self._comps:
             return []
         return [c.ref for c in self._comps if not c.fitted or not c.included]
+
+    def help_only_sub_pcbs(self):
+        self.add_to_doc('variant', 'Used for sub-PCBs')
 
     # Here just to avoid pulling pcbnew for this
     @staticmethod
@@ -362,6 +380,7 @@ class VariantOptions(BaseOptions):
         """ Remove from solder paste layers the filtered components. """
         if comps_hash is None or not (GS.global_remove_solder_paste_for_dnp or GS.global_remove_adhesive_for_dnp):
             return
+        logger.debug('Removing paste and glue')
         exclude = LSET()
         fpaste = board.GetLayerID('F.Paste')
         bpaste = board.GetLayerID('B.Paste')
@@ -394,32 +413,40 @@ class VariantOptions(BaseOptions):
                             logger.warning(W_WRONGPASTE+'Pad with solder paste, but no copper or solder mask aperture in '+ref)
                         p.SetLayerSet(pad_layers)
                     old_layers.append(old_c_layers)
+                    logger.debugl(3, '- Removed paste from '+ref)
                 # Remove any graphical item in the *.Adhes layers
                 if GS.global_remove_adhesive_for_dnp:
+                    found = False
                     for gi in m.GraphicalItems():
                         l_gi = gi.GetLayer()
                         if l_gi == fadhes:
                             gi.SetLayer(rescue)
                             old_fadhes.append(gi)
+                            found = True
                         if l_gi == badhes:
                             gi.SetLayer(rescue)
                             old_badhes.append(gi)
+                            found = True
+                    if found:
+                        logger.debugl(3, '- Removed adhesive from '+ref)
         # Store the data to undo the above actions
         self.old_layers = old_layers
         self.old_fadhes = old_fadhes
         self.old_badhes = old_badhes
-        self.fadhes = fadhes
-        self.badhes = badhes
+        self._fadhes = fadhes
+        self._badhes = badhes
         return exclude
 
     def restore_paste_and_glue(self, board, comps_hash):
         if comps_hash is None:
             return
+        logger.debug('Restoring paste and glue')
         if GS.global_remove_solder_paste_for_dnp:
             for m in GS.get_modules_board(board):
                 ref = m.GetReference()
                 c = comps_hash.get(ref, None)
                 if c and c.included and not c.fitted:
+                    logger.debugl(3, '- Restoring paste for '+ref)
                     restore = self.old_layers.pop(0)
                     for p in m.Pads():
                         pad_layers = p.GetLayerSet()
@@ -428,9 +455,9 @@ class VariantOptions(BaseOptions):
                         p.SetLayerSet(pad_layers)
         if GS.global_remove_adhesive_for_dnp:
             for gi in self.old_fadhes:
-                gi.SetLayer(self.fadhes)
+                gi.SetLayer(self._fadhes)
             for gi in self.old_badhes:
-                gi.SetLayer(self.badhes)
+                gi.SetLayer(self._badhes)
 
     def remove_fab(self, board, comps_hash):
         """ Remove from Fab the excluded components. """
@@ -457,16 +484,16 @@ class VariantOptions(BaseOptions):
         # Store the data to undo the above actions
         self.old_ffab = old_ffab
         self.old_bfab = old_bfab
-        self.ffab = ffab
-        self.bfab = bfab
+        self._ffab = ffab
+        self._bfab = bfab
 
     def restore_fab(self, board, comps_hash):
         if comps_hash is None:
             return
         for gi in self.old_ffab:
-            gi.SetLayer(self.ffab)
+            gi.SetLayer(self._ffab)
         for gi in self.old_bfab:
-            gi.SetLayer(self.bfab)
+            gi.SetLayer(self._bfab)
 
     def replace_3D_models(self, models, new_model, c):
         """ Changes the 3D model using a provided model.
@@ -637,6 +664,7 @@ class VariantOptions(BaseOptions):
             return
         with NamedTemporaryFile(mode='w', suffix='.wrl', delete=False) as f:
             self._highlight_3D_file = f.name
+            self._files_to_remove.append(f.name)
             logger.debug('Creating temporal highlight file '+f.name)
             f.write(HIGHLIGHT_3D_WRL)
 
@@ -710,45 +738,54 @@ class VariantOptions(BaseOptions):
             m.Models().pop()
         self._highlighted_3D_components = None
 
-    def filter_pcb_components(self, board, do_3D=False, do_2D=True, highlight=None):
-        if not self._comps:
+    def will_filter_pcb_components(self):
+        """ True if we will apply filters/variants """
+        return self._comps or self._sub_pcb
+
+    def filter_pcb_components(self, do_3D=False, do_2D=True, highlight=None):
+        if not self.will_filter_pcb_components():
             return False
         self.comps_hash = self.get_refs_hash()
-        if do_2D:
-            self.cross_modules(board, self.comps_hash)
-            self.remove_paste_and_glue(board, self.comps_hash)
-            if hasattr(self, 'hide_excluded') and self.hide_excluded:
-                self.remove_fab(board, self.comps_hash)
-        if do_3D:
-            # Disable the models that aren't for this variant
-            self.apply_3D_variant_aspect(board)
-            # Remove the 3D models for not fitted components (also rename)
-            self.remove_3D_models(board, self.comps_hash)
-            # Highlight selected components
-            self.highlight_3D_models(board, highlight)
+        if self._sub_pcb:
+            self._sub_pcb.apply(self.comps_hash)
+        if self._comps:
+            if do_2D:
+                self.cross_modules(GS.board, self.comps_hash)
+                self.remove_paste_and_glue(GS.board, self.comps_hash)
+                if hasattr(self, 'hide_excluded') and self.hide_excluded:
+                    self.remove_fab(GS.board, self.comps_hash)
+                # Copy any change in the schematic fields to the PCB properties
+                # I.e. the value of a component so it gets updated in the *.Fab layer
+                # Also useful for iBoM that can read the sch fields from the PCB
+                self.sch_fields_to_pcb(GS.board, self.comps_hash)
+            if do_3D:
+                # Disable the models that aren't for this variant
+                self.apply_3D_variant_aspect(GS.board)
+                # Remove the 3D models for not fitted components (also rename)
+                self.remove_3D_models(GS.board, self.comps_hash)
+                # Highlight selected components
+                self.highlight_3D_models(GS.board, highlight)
         return True
 
-    def unfilter_pcb_components(self, board, do_3D=False, do_2D=True):
-        if not self._comps:
+    def unfilter_pcb_components(self, do_3D=False, do_2D=True):
+        if not self.will_filter_pcb_components():
             return
-        if do_2D:
-            self.uncross_modules(board, self.comps_hash)
-            self.restore_paste_and_glue(board, self.comps_hash)
+        if do_2D and self.comps_hash:
+            self.uncross_modules(GS.board, self.comps_hash)
+            self.restore_paste_and_glue(GS.board, self.comps_hash)
             if hasattr(self, 'hide_excluded') and self.hide_excluded:
-                self.restore_fab(board, self.comps_hash)
-        if do_3D:
+                self.restore_fab(GS.board, self.comps_hash)
+            # Restore the PCB properties and values
+            self.restore_sch_fields_to_pcb(GS.board)
+        if do_3D and self.comps_hash:
             # Undo the removing (also rename)
-            self.restore_3D_models(board, self.comps_hash)
+            self.restore_3D_models(GS.board, self.comps_hash)
             # Re-enable the modules that aren't for this variant
-            self.apply_3D_variant_aspect(board, enable=True)
+            self.apply_3D_variant_aspect(GS.board, enable=True)
             # Remove the highlight 3D object
-            self.unhighlight_3D_models(board)
-
-    def remove_highlight_3D_file(self):
-        # Remove the highlight 3D file if it was created
-        if self._highlight_3D_file:
-            os.remove(self._highlight_3D_file)
-            self._highlight_3D_file = None
+            self.unhighlight_3D_models(GS.board)
+        if self._sub_pcb:
+            self._sub_pcb.revert(self.comps_hash)
 
     def set_title(self, title, sch=False):
         self.old_title = None
@@ -774,11 +811,11 @@ class VariantOptions(BaseOptions):
                 GS.board.GetTitleBlock().SetTitle(self.old_title)
             self.old_title = None
 
-    def sch_fields_to_pcb(self, comps, board):
+    def sch_fields_to_pcb(self, board, comps_hash):
         """ Change the module/footprint data according to the filtered fields.
             iBoM can parse it. """
-        comps_hash = self.get_refs_hash()
         self.sch_fields_to_pcb_bkp = {}
+        has_GetFPIDAsString = False
         first = True
         for m in GS.get_modules_board(board):
             if first:
@@ -820,8 +857,7 @@ class VariantOptions(BaseOptions):
                 else:
                     m.SetValue(data)
 
-    @staticmethod
-    def save_tmp_board(dir=None):
+    def save_tmp_board(self, dir=None):
         """ Save the PCB to a temporal file.
             Advantage: all relative paths inside the file remains valid
             Disadvantage: the name of the file gets altered """
@@ -832,6 +868,20 @@ class VariantOptions(BaseOptions):
         logger.debug('Storing modified PCB to `{}`'.format(fname))
         GS.board.Save(fname)
         GS.copy_project(fname)
+        self._files_to_remove.extend(GS.get_pcb_and_pro_names(fname))
+        return fname
+
+    def save_tmp_board_if_variant(self, new_title='', dir=None, do_3D=False):
+        """ If we have a variant apply it and save the PCB to a file """
+        if not self.will_filter_pcb_components() and not new_title:
+            return GS.pcb_file
+        logger.debug('Creating modified PCB')
+        self.filter_pcb_components(do_3D=do_3D)
+        self.set_title(new_title)
+        fname = self.save_tmp_board()
+        self.restore_title()
+        self.unfilter_pcb_components(do_3D=do_3D)
+        logger.debug('- Modified PCB: '+fname)
         return fname
 
     @staticmethod
@@ -846,13 +896,6 @@ class VariantOptions(BaseOptions):
         pro_name = GS.copy_project(fname)
         KiConf.fix_page_layout(pro_name)
         return fname, pcb_dir
-
-    def remove_tmp_board(self, board_name):
-        # Remove the temporal PCB
-        if board_name != GS.pcb_file:
-            # KiCad likes to create project files ...
-            for f in glob(board_name.replace('.kicad_pcb', '.*')):
-                os.remove(f)
 
     def solve_kf_filters(self, components):
         """ Solves references to KiBot filters in the list of components to show.
@@ -902,8 +945,40 @@ class VariantOptions(BaseOptions):
             new_list += ext_list
         return new_list
 
+    def remove_temporals(self):
+        logger.debug('Removing temporal files')
+        for f in self._files_to_remove:
+            if os.path.isfile(f):
+                logger.debug('- File `{}`'.format(f))
+                os.remove(f)
+            elif os.path.isdir(f):
+                logger.debug('- Dir `{}`'.format(f))
+                rmtree(f)
+        self._files_to_remove = []
+        self._highlight_3D_file = None
+
+    def add_extra_options(self, cmd, dir=None):
+        cmd, video_remove = GS.add_extra_options(cmd)
+        if video_remove:
+            self._files_to_remove.append(os.path.join(dir or cmd[-1], GS.get_kiauto_video_name(cmd)))
+        return cmd
+
+    def exec_with_retry(self, cmd, exit_with):
+        try:
+            GS.exec_with_retry(cmd, exit_with)
+        except SystemExit:
+            if GS.debug_enabled:
+                if self._files_to_remove:
+                    logger.error('Keeping temporal files: '+str(self._files_to_remove))
+            else:
+                self.remove_temporals()
+            raise
+        if self._files_to_remove:
+            self.remove_temporals()
+
     def run(self, output_dir):
         """ Makes the list of components available """
+        self._files_to_remove = []
         if not self.dnf_filter and not self.variant and not self.pre_transform:
             return
         load_sch()
@@ -918,4 +993,85 @@ class VariantOptions(BaseOptions):
         if self.variant:
             # Apply the variant
             comps = self.variant.filter(comps)
+            self._sub_pcb = self.variant._sub_pcb
         self._comps = comps
+
+    # The following 5 members are used by 2D and 3D renderers
+    def setup_renderer(self, components, active_components):
+        """ Setup the options to use it as a renderer """
+        self._show_all_components = False
+        self._filters_to_expand = False
+        self.highlight = self.solve_kf_filters([c for c in active_components if c])
+        self.show_components = [c for c in components if c]
+        if self.show_components:
+            self._show_components_raw = self.show_components
+            self.show_components = self.solve_kf_filters(self.show_components)
+
+    def save_renderer_options(self):
+        """ Save the current renderer settings """
+        self.old_filters_to_expand = self._filters_to_expand
+        self.old_show_components = self.show_components
+        self.old_highlight = self.highlight
+        self.old_dir = self._parent.dir
+        self.old_done = self._parent._done
+
+    def restore_renderer_options(self):
+        """ Restore the renderer settings """
+        self._filters_to_expand = self.old_filters_to_expand
+        self.show_components = self.old_show_components
+        self.highlight = self.old_highlight
+        self._parent.dir = self.old_dir
+        self._parent._done = self.old_done
+
+    def apply_show_components(self):
+        if self._show_all_components:
+            # Don't change anything
+            return
+        logger.debug('Applying components list ...')
+        # The user specified a list of components, we must remove the rest
+        if not self._comps:
+            # No variant or filter applied
+            # Load the components
+            load_sch()
+            self._comps = GS.sch.get_components()
+            get_board_comps_data(self._comps)
+        # If the component isn't listed by the user make it DNF
+        show_components = set(self.expand_kf_components(self.show_components))
+        self.undo_show = set()
+        for c in self._comps:
+            if c.ref not in show_components and c.fitted:
+                c.fitted = False
+                self.undo_show.add(c.ref)
+                logger.debugl(2, '- Removing '+c.ref)
+
+    def undo_show_components(self):
+        if self._show_all_components:
+            # Don't change anything
+            return
+        for c in self._comps:
+            if c.ref in self.undo_show:
+                c.fitted = True
+
+
+class PcbMargin(Optionable):
+    """ To adjust each margin """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.left = 0
+            """ Left margin [mm] """
+            self.right = 0
+            """ Right margin [mm] """
+            self.top = 0
+            """ Top margin [mm] """
+            self.bottom = 0
+            """ Bottom margin [mm] """
+
+    @staticmethod
+    def solve(margin):
+        if isinstance(margin, type):
+            return (0, 0, 0, 0)
+        if isinstance(margin, PcbMargin):
+            return (GS.from_mm(margin.left), GS.from_mm(margin.right), GS.from_mm(margin.top), GS.from_mm(margin.bottom))
+        margin = GS.from_mm(margin)
+        return (margin, margin, margin, margin)

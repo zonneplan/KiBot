@@ -403,7 +403,7 @@ class WksBitmap(WksDrawing):
         # Make a list to be added to the SVG output
         p.images.append(e)
 
-    def add_to_svg(e, svg, p):
+    def add_to_svg(e, svg, p, svg_precision):
         s = e.data
         w, h = unpack('>LL', s[16:24])
         # For KiCad 300 dpi is 1:1 scale
@@ -413,6 +413,10 @@ class WksBitmap(WksDrawing):
         h = FromMM(h/dpi*25.4)
         # KiCad informs the position for the center of the image
         pos, posi = p.solve_ref(e.pos, e.incrx, e.incry, e.pos_ref)
+        # KiCad 6 can adjust the precision
+        # The default is 6 and makes 1 KiCad unit == 1 SVG unit
+        # But this isn't supported by browsers (Chrome and Firefox)
+        scale = 10.0 ** (svg_precision - 6)
         for _ in range(e.repeat):
             img = ImageElement(io.BytesIO(s), w, h)
             x = pos.x-round(w/2)
@@ -421,6 +425,8 @@ class WksBitmap(WksDrawing):
             if GS.ki5:
                 # KiCad 5 uses Inches and with less resolution
                 img.scale(KICAD5_SVG_SCALE)
+            elif svg_precision != 6:
+                img.scale(scale)
             # Put the image in a group
             g = GroupElement([img])
             # Add the group to the SVG
@@ -527,9 +533,9 @@ class Worksheet(object):
                 continue
             e.draw(self)
 
-    def add_images_to_svg(self, svg):
+    def add_images_to_svg(self, svg, svg_precision):
         for e in self.images:
-            e.add_to_svg(svg, self)
+            e.add_to_svg(svg, self, svg_precision)
 
     def out_of_margin(self, p):
         """ Used to check if the repeat went outside the page usable area """

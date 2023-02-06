@@ -7,10 +7,13 @@
 Dependencies:
   - from: Git
     role: Find commit hash and/or date
+  - from: Bash
+    role: Run external commands to create replacement text
 """
 import json
 import os
 import re
+import shlex
 from subprocess import run, PIPE
 import sys
 from .error import KiPlotConfigurationError
@@ -38,7 +41,11 @@ class KiCadVariable(Optionable):
             self.text = ''
             """ Text to insert instead of the variable """
             self.command = ''
-            """ Command to execute to get the text, will be used only if `text` is empty """
+            """ Command to execute to get the text, will be used only if `text` is empty.
+                This command will be executed using the Bash shell.
+                Be careful about spaces in file names (i.e. use "$KIBOT_PCB_NAME").
+                The `KIBOT_PCB_NAME` environment variable is the PCB file and the
+                `KIBOT_SCH_NAME` environment variable is the schematic file """
             self.before = ''
             """ Text to add before the output of `command` """
             self.after = ''
@@ -88,7 +95,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
     def get_example(cls):
         """ Returns a YAML value for the example config """
         return ("\n    - name: 'git_hash'"
-                "\n      command: 'git log -1 --format=\"%h\" $KIBOT_PCB_NAME'"
+                "\n      command: 'git log -1 --format=\"%h\" \"$KIBOT_PCB_NAME\"'"
                 "\n      before: 'Git hash: <'"
                 "\n      after: '>'")
 
@@ -114,6 +121,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
             os.environ['KIBOT_PCB_NAME'] = GS.pcb_file
         if GS.sch_file:
             os.environ['KIBOT_SCH_NAME'] = GS.sch_file
+        bash_command = None
         for r in o:
             text = r.text
             if not text and r.command:
@@ -121,10 +129,17 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 if re_git.search(command):
                     git_command = self.ensure_tool('git')
                     command = re_git.sub(r'\1'+git_command.replace('\\', r'\\')+' ', command)
-                cmd = ['/bin/bash', '-c', command]
+                if not bash_command:
+                    bash_command = self.ensure_tool('Bash')
+                cmd = [bash_command, '-c', command]
+                logger.debug('Executing: '+shlex.join(command))
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
                     logger.error('Failed to execute:\n{}\nreturn code {}'.format(r.command, result.returncode))
+                    if result.stdout:
+                        logger.error('stdout:\n{}'.format(result.stdout))
+                    if result.stderr:
+                        logger.error('stderr:\n{}'.format(result.stderr))
                     sys.exit(FAILED_EXECUTE)
                 if not result.stdout:
                     logger.warning(W_EMPTREP+"Empty value from `{}`".format(r.command))

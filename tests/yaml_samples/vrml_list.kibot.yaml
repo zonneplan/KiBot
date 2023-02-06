@@ -1,0 +1,18 @@
+# Example KiBot config file
+# kibot -b tests/data/ArduinoLearningKitStarter.kicad_pcb -c tests/yaml_samples/vrml_3d_list.kibot.yaml -d r3d_lst
+# r3d_lst/ArduinoLearningKitStarter-vrml.wrl
+kibot:
+  version: 1
+
+global:
+  solder_mask_color: blue
+  pcb_finish: ENIG
+
+outputs:
+  - name: vrml_list
+    comment: "VRML with only some components"
+    type: vrml
+    options:
+      show_components: ["RV1", "RV2", "U1", "U2", "U3"]
+      highlight: ["RV1"]
+      # highlight_on_top: true

@@ -1,0 +1,54 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  hide_excluded: true
+  pcb_finish: ENIG
+  solder_mask_color: blue
+
+variants:
+  - name: 'default'
+    comment: 'Default variant'
+    type: ibom
+    sub_pcbs:
+      - name: charger
+        tlx: 175
+        tly: 50
+        brx: 245
+        bry: 90
+        # tolerance: 100
+        # tool: kikit
+      - name: battery
+        tlx: 20
+        tly: 20
+        brx: 90
+        bry: 118
+      - name: connector
+        tlx: 116
+        tly: 52
+        brx: 146
+        bry: 88
+        # tolerance: 1
+
+outputs:
+  - name: 'pcb_charger'
+    comment: "PCB charger"
+    type: pcb_variant
+    options:
+      variant: default[charger]
+      title: 'Battery pack (%S)'
+
+  - name: 'pcb_battery'
+    comment: "PCB battery"
+    type: pcb_variant
+    options:
+      variant: default[battery]
+      title: 'Battery pack (%S)'
+
+  - name: 'pcb_connector'
+    comment: "PCB connector"
+    type: pcb_variant
+    options:
+      variant: default[connector]
+      title: 'Battery pack (%S)'

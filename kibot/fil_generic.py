@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements the KiBoM and IBoM filters.
@@ -123,6 +123,7 @@ class Generic(BaseFilter):  # noqa: F821
         if not self.include_only:  # Nothing to match against, means include all
             return True
         for reg in self.include_only:
+            reg.column = Optionable.solve_field_name(reg.column)
             if reg.skip_if_no_field and not c.is_field(reg.column):
                 # Skip the check if the field doesn't exist
                 continue
@@ -148,6 +149,7 @@ class Generic(BaseFilter):  # noqa: F821
         if not self.exclude_any:  # Nothing to match against, means don't exclude any
             return False
         for reg in self.exclude_any:
+            reg.column = Optionable.solve_field_name(reg.column)
             if reg.skip_if_no_field and not c.is_field(reg.column):
                 # Skip the check if the field doesn't exist
                 continue

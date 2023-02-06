@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -17,10 +17,9 @@ from tempfile import NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import run_command, config_output
-
 from .layer import Layer
-from .misc import W_PANELEMPTY
-from .optionable import BaseOptions
+from .misc import W_PANELEMPTY, KIKIT_UNIT_ALIASES
+from .optionable import PanelOptions
 from .out_base import VariantOptions
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
@@ -38,47 +37,6 @@ def update_dict(d, u):
         else:
             d[k] = v
     return d
-
-
-class PanelOptions(BaseOptions):
-    _num_regex = re.compile(r'([\d\.]+)(mm|cm|dm|m|mil|inch|in)')
-    _ang_regex = re.compile(r'([\d\.]+)(deg|°|rad)')
-
-    def add_units(self, ops):
-        for op in ops:
-            val = getattr(self, op)
-            if val is None:
-                continue
-            if isinstance(val, (int, float)):
-                setattr(self, op, str(val)+self._parent._parent.units)
-            else:
-                m = PanelOptions._num_regex.match(val)
-                if m is None:
-                    raise KiPlotConfigurationError('Malformed value `{}: {}` must be a number and units'.format(op, val))
-                num = m.group(1)
-                try:
-                    num_d = float(num)
-                except ValueError:
-                    num_d = None
-                if num_d is None:
-                    raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))
-
-    def add_angle(self, ops):
-        for op in ops:
-            val = getattr(self, op)
-            if isinstance(val, (int, float)):
-                setattr(self, op, str(val)+self._parent._parent.default_angles)
-            else:
-                m = PanelOptions._ang_regex.match(val)
-                if m is None:
-                    raise KiPlotConfigurationError('Malformed angle `{}: {}` must be a number and its type'.format(op, val))
-                num = m.group(1)
-                try:
-                    num_d = float(num)
-                except ValueError:
-                    num_d = None
-                if num_d is None:
-                    raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))
 
 
 class PanelOptionsWithPlugin(PanelOptions):
@@ -584,7 +542,6 @@ class PanelizeConfig(PanelOptions):
 
 class PanelizeOptions(VariantOptions):
     _extends_regex = re.compile(r'(.+)\[(.+)\]')
-    _unit_alias = {'millimeters': 'mm', 'inches': 'inch', 'mils': 'mil'}
 
     def __init__(self):
         with document:
@@ -688,7 +645,7 @@ class PanelizeOptions(VariantOptions):
         if configs:
             list(map(self.solve_extends, filter(lambda x: 'extends' in x, configs)))
         super().config(parent)
-        self.units = PanelizeOptions._unit_alias.get(self.units, self.units)
+        self.units = KIKIT_UNIT_ALIASES.get(self.units, self.units)
         if isinstance(self.configs, type):
             logger.warning(W_PANELEMPTY+'Generating a panel with default options, not very useful')
             self.configs = []
@@ -735,20 +692,7 @@ class PanelizeOptions(VariantOptions):
         if GS.ki5 and version >= (1, 1, 0):
             raise KiPlotConfigurationError("Installed KiKit doesn't support KiCad 5")
         super().run(output)
-        to_remove = []
-        # Create the input PCB
-        if self._comps or self.title:
-            logger.debug('Creating modified PCB')
-            self.set_title(self.title)
-            self.filter_pcb_components(GS.board, do_3D=True)
-            fname = self.save_tmp_board()
-            self.unfilter_pcb_components(GS.board, do_3D=True)
-            self.restore_title()
-            to_remove.extend(GS.get_pcb_and_pro_names(fname))
-            logger.debug('- Modified PCB: '+fname)
-        else:
-            fname = GS.pcb_file
-
+        fname = self.save_tmp_board_if_variant(new_title=self.title, do_3D=True)
         # Create the command
         cmd = [cmd_kikit, 'panelize']  # , '--dump', 'test.json'
         # Add all the configurations
@@ -760,7 +704,7 @@ class PanelizeOptions(VariantOptions):
                 cmd.append(cfg)
             else:
                 cfg_f = self.create_config(cfg)
-                to_remove.append(cfg_f)
+                self._files_to_remove.append(cfg_f)
                 cmd.append(cfg_f)
         # Add the PCB and output
         cmd.append(fname)
@@ -769,10 +713,7 @@ class PanelizeOptions(VariantOptions):
             run_command(cmd)
             self.create_preview_file(output)
         finally:
-            # Remove temporals
-            for f in to_remove:
-                if os.path.isfile(f):
-                    os.remove(f)
+            self.remove_temporals()
 
     def get_targets(self, out_dir):
         pcb_name = self._parent.expand_filename(out_dir, self.output)

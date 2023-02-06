@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2022 Salvador E. Tropea
-# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2023 Salvador E. Tropea
+# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad 6/6.0.1 bug: https://gitlab.com/kicad/code/kicad/-/issues/9890
@@ -14,14 +14,11 @@ Dependencies:
 """
 import os
 import shlex
-from shutil import rmtree
 import subprocess
 from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL)
 from .gs import GS
-from .kiplot import exec_with_retry, add_extra_options, load_sch, get_board_comps_data
-from .optionable import Optionable
-from .out_base_3d import Base3DOptions, Base3D
+from .out_base_3d import Base3DOptionsWithHL, Base3D
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -41,7 +38,7 @@ def _run_command(cmd):
         logger.debug('- Output from command:\n'+cmd_output.decode())
 
 
-class Render3DOptions(Base3DOptions):
+class Render3DOptions(Base3DOptionsWithHL):
     _colors = {'background1': 'bg_color_1',
                'background2': 'bg_color_2',
                'copper': 'copper_color',
@@ -121,15 +118,6 @@ class Render3DOptions(Base3DOptions):
             """ Clip silkscreen at via annuli (KiCad 6) """
             self.subtract_mask_from_silk = True
             """ Clip silkscreen at solder mask edges (KiCad 6) """
-            self.show_components = Optionable
-            """ *[list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
-                Unlike the `pcbdraw` output, the default is `all` """
-            self.highlight = Optionable
-            """ [list(string)=[]] List of components to highlight """
-            self.highlight_padding = 1.5
-            """ [0,1000] How much the highlight extends around the component [mm] """
-            self.highlight_on_top = False
-            """ Highlight over the component (not under) """
             self.auto_crop = False
             """ When enabled the image will be post-processed to remove the empty space around the image.
                 In this mode the `background2` is changed to be the same as `background1` """
@@ -144,7 +132,6 @@ class Render3DOptions(Base3DOptions):
         self._expand_ext = 'png'
 
     def config(self, parent):
-        self._filters_to_expand = False
         # Apply global defaults
         if GS.global_pcb_material is not None:
             material = GS.global_pcb_material.lower()
@@ -180,28 +167,34 @@ class Render3DOptions(Base3DOptions):
                 if nm in name:
                     self.copper = "#"+color
                     break
+        # Now we can configure (defaults applied)
         super().config(parent)
         self.validate_colors(list(self._colors.keys())+['transparent_background_color'])
+        # View and also add it to the ID
         view = self._views.get(self.view, None)
         if view is not None:
             self.view = view
-        # List of components
-        self._show_all_components = False
-        if isinstance(self.show_components, str):
-            if self.show_components == 'all':
-                self._show_all_components = True
-            self.show_components = []
-        elif isinstance(self.show_components, type):
-            # Default is all
-            self._show_all_components = True
-        else:  # a list
-            self.show_components = self.solve_kf_filters(self.show_components)
         self._expand_id += '_'+self._rviews.get(self.view)
-        # highlight
-        if isinstance(self.highlight, type):
-            self.highlight = None
-        else:
-            self.highlight = self.solve_kf_filters(self.highlight)
+
+    def setup_renderer(self, components, active_components, bottom, name):
+        super().setup_renderer(components, active_components)
+        self.view = 'Z' if bottom else 'z'
+        self.output = name
+        return self.expand_filename_both(name, is_sch=False)
+
+    def save_renderer_options(self):
+        """ Save the current renderer settings """
+        super().save_renderer_options()
+        self.old_show_all_components = self._show_all_components
+        self.old_view = self.view
+        self.old_output = self.output
+
+    def restore_renderer_options(self):
+        """ Restore the renderer settings """
+        super().restore_renderer_options()
+        self._show_all_components = self.old_show_all_components
+        self.view = self.old_view
+        self.output = self.old_output
 
     def add_step(self, cmd, steps, ops):
         if steps:
@@ -248,33 +241,6 @@ class Render3DOptions(Base3DOptions):
         if not self.subtract_mask_from_silk:
             cmd.append('--dont_substrack_mask_from_silk')
 
-    def apply_show_components(self):
-        if self._show_all_components:
-            # Don't change anything
-            return
-        # The user specified a list of components, we must remove the rest
-        if not self._comps:
-            # No variant or filter applied
-            # Load the components
-            load_sch()
-            self._comps = GS.sch.get_components()
-            get_board_comps_data(self._comps)
-        # If the component isn't listed by the user make it DNF
-        show_components = set(self.expand_kf_components(self.show_components))
-        self.undo_show = set()
-        for c in self._comps:
-            if c.ref not in show_components and c.fitted:
-                c.fitted = False
-                self.undo_show.add(c.ref)
-
-    def undo_show_components(self):
-        if self._show_all_components:
-            # Don't change anything
-            return
-        for c in self._comps:
-            if c.ref in self.undo_show:
-                c.fitted = True
-
     def run(self, output):
         super().run(output)
         if GS.ki6 and GS.kicad_version_n < KICAD_VERSION_6_0_2:
@@ -299,22 +265,8 @@ class Render3DOptions(Base3DOptions):
         board_name = self.filter_components(highlight=set(self.expand_kf_components(self.highlight)))
         self.undo_show_components()
         cmd.extend([board_name, os.path.dirname(output)])
-        cmd, video_remove = add_extra_options(cmd)
         # Execute it
-        ret = exec_with_retry(cmd)
-        # Remove the temporal PCB
-        self.remove_tmp_board(board_name)
-        self.remove_highlight_3D_file()
-        # Remove the downloaded 3D models
-        if self._tmp_dir:
-            rmtree(self._tmp_dir)
-        if ret:
-            logger.error(command+' returned %d', ret)
-            exit(RENDER_3D_ERR)
-        if video_remove:
-            video_name = os.path.join(self.expand_filename_pcb(GS.out_dir), 'pcbnew_3d_view_screencast.ogv')
-            if os.path.isfile(video_name):
-                os.remove(video_name)
+        self.exec_with_retry(self.add_extra_options(cmd), RENDER_3D_ERR)
         if self.auto_crop:
             _run_command([convert_command, output, '-trim', '+repage', '-trim', '+repage', output])
         if self.transparent_background:
@@ -332,6 +284,10 @@ class Render_3D(Base3D):  # noqa: F821
             self.options = Render3DOptions
             """ *[dict] Options for the `render_3d` output """
         self._category = 'PCB/3D'
+
+    def get_renderer_options(self):
+        """ Where are the options for this output when used as a 'renderer' """
+        return self.options
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

@@ -1,0 +1,62 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
+
+outputs:
+  - name: 'print_front'
+    comment: "Print Top and Bottom layers"
+    type: pcb_print
+    dir: Layers
+    options:
+      # title: 'Fake title for front copper and silk'
+      # color_theme: _builtin_default
+      # drill_marks: small
+      title: Chau
+      # plot_sheet_reference: false
+      format: 'PDF'
+      # enable_ki6_frame_fix: true
+      keep_temporal_files: true
+      add_background: true
+      background_color: "#C5C4BF"
+      # background_color: "#FFFFFF"
+      background_image: "tests/data/confidential_optimized.svg"
+      sheet_reference_layout: "${KIPRJMOD}/../../data/test_img.kicad_wks"
+      pages:
+        - # monochrome: true
+          scaling: 2.0
+          #mirror: true
+          title: Hola
+          sheet: Front
+          sheet_reference_color: "#A02020"
+          # black_holes: false
+          # holes_color: "#8080FF"
+          layers:
+            - layer: Edge.Cuts
+            - layer: F.Cu
+            - layer: F.Mask
+              color: '#14332440'
+            - layer: F.Paste
+            - layer: F.SilkS
+            - layer: F.Fab
+              plot_footprint_refs: false
+              plot_footprint_values: false
+            - layer: Dwgs.User
+        - mirror: true
+          scaling: 2.0
+          layers:
+            - layer: B.Fab
+              color: "#000080"
+            - layer: Edge.Cuts
+              color: "#FF8000"
+            - layer: B.SilkS
+              color: "#626262"
+            - layer: B.Paste
+              color: "#FF8A8A"
+            - layer: B.Cu
+              color: "#B3FFB3"
+            - layer: B.Mask
+              color: '#14332480'
+            - layer: Dwgs.User

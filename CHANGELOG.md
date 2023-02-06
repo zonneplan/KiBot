@@ -4,6 +4,75 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2023-02-06
+### Added
+- General:
+  - Support for `groups` of `outputs`
+  - Internal templates import
+  - Better support for wrong pre-flight options (#360)
+  - A mechanism to cache downloaded 3D models
+  - Support to download 3D models from EasyEDA (using LCSC codes)
+- Global options:
+  - field_lcsc_part: to select the LCSC/JLCPCB part field
+- New outputs:
+  - `vrml` export the 3D model in Virtual Reality Modeling Language (#349)
+  - `ps_sch_print`, `dxf_sch_print` and `hpgl_sch_print` variants of
+    `pdf_sch_print`
+  - `blender_export` exports the PCB to Blender and other 3D formats,
+     renders the PCB with impressive quality (experimental)
+- New internal filters:
+  - `_only_smd` used to get only SMD parts
+  - `_only_tht` used to get only THT parts
+  - `_only_virtual` used to get only virtual parts
+- Variants:
+  - Support for multi-boards as defined by KiKit
+- Internal templates:
+  - FusionPCB: gerber, drill and compress
+  - Elecrow: gerber, drill and compress
+  - JLCPCB: gerber, drill, position, BoM and compress
+  - MacroFab_XYRS: XYRS position file compatible with MacroFab
+  - P-Ban: gerber, drill and compress
+  - PCB2Blender_2_1: generates a pcb2blender 2.1 file to import on Blender
+    (See #349)
+  - PCB2Blender_2_1_haschtl: PCB2Blender_2_1 variant for @Haschtl fork.
+  - PCBWay: gerber, drill and compress
+- Compress:
+  - Option to use the output's `dir` as reference (`from_output_dir`)
+- iBoM:
+  - `hide_excluded` to hide excluded *.Fab drawings.
+- PCB_Print:
+  - Added a mechanism to create a page for each copper layer. (#365)
+- Plot related outputs and PCB_Print:
+  - Added support for the KiCad 6 "sketch_pads_on_fab_layers" option. (#356)
+- Report:
+  - Expansion for KiCad text variables and environment variables (See #368)
+- *SCH_Print:
+  - Added options to select the color theme and enable background color. (#362)
+- SVG:
+  - Options to limit the view box to the used area.
+### Fixed
+- BoM:
+  - pre_transform filers can't be logic filters
+- Copy_Files:
+  - Problems on KiCad 5 (no 3rd party dir) (#357)
+  - Problems with compress output (also Makefile) (#372)
+- DOCs
+  - annotate_pcb pre-flight missing options (#360)
+  - annotate_pcb pre-flight wrong example (#360)
+- iBoM:
+  - Variant changes to the *.Fab weren't exported.
+    Now all 2D variant stuff is applied before calling iBoM (#350)
+- PCB_Print:
+  - Images not showing in custom frames. (#352)
+  - Problems when trying to use groups of layers (i.e. copper)
+- Report:
+  - Computed size when using circles and some arcs in the PCB edge (#375)
+### Changed
+- Downloaded 3D models are no longer discarded.
+  They are stored in ~/.cache/kibot/3d
+  You can change the directory using KIBOT_3D_MODELS
+- License is now AGPL v3, since we are incorporating AGPL code.
+
 ## [1.5.1] - 2022-12-16
 ### Fixed
 - System level resources look-up

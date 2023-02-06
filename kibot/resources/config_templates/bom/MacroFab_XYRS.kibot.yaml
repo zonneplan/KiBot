@@ -1,46 +1,17 @@
 # MacroFab compatible XYRS
-# https://help.macrofab.com/knowledge/macrofab-required-design-files
+# This is just a template for the quick-start
 kibot:
   version: 1
 
-filters:
-  - name: fix_rotation
-    comment: 'Adjust rotation for JLC'
-    type: rot_footprint
-
-  - name: only_smd
-    comment: 'Only SMD parts'
-    type: generic
-    exclude_virtual: true
-    exclude_tht: true
-
-variants:
-  - name: rotated
-    comment: 'Just a place holder for the rotation filter'
-    type: kibom
-    variant: rotated
-    pre_transform: fix_rotation
-    dnf_filter: only_smd
+import:
+  - file: MacroFab_XYRS
 
 outputs:
-  - name: 'macrofab_xyrs'
+  - name: macrofab_xyrs
     comment: "Pick and place file, XYRS style"
+    extends: _macrofab_xyrs
     type: bom
     options:
-      variant: rotated
-      output: '%f_MacroFab.XYRS'
-      units: mils
-      group_fields: []
-      sort_style: ref
-      use_aux_axis_as_origin: true
-      ignore_dnf: false
-      footprint_populate_values: '0,1'
-      footprint_type_values: '1,2,0'
-      csv:
-        separator: '	'
-        hide_pcb_info: true
-        hide_stats_info: true
-        hide_header: true
       columns:
         - field: References
           name: Designator

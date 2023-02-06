@@ -129,7 +129,7 @@ def search_as_plugin(cmd, names):
 def hide_stderr():
     """ Low level stderr suppression, used to hide KiCad bugs. """
     newstderr = os.dup(2)
-    devnull = os.open('/dev/null', os.O_WRONLY)
+    devnull = os.open(os.devnull, os.O_WRONLY)
     os.dup2(devnull, 2)
     os.close(devnull)
     yield

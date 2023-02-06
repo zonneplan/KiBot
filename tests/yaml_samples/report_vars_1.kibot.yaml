@@ -1,0 +1,27 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  set_text_variables:
+    - name: PROJECT
+      text: Test project
+    - name: SAP
+      text: XYZ
+    - name: AUTHOR
+      text: Juan de los palotes
+    - name: date
+      command: 'git log -1 --format="%as" -- "$KIBOT_PCB_NAME"'
+    - name: git_hash
+      command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
+      before: 'Git hash: <'
+      after: '>'
+    - name: gh
+      command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
+
+outputs:
+  - name: 'report_vars'
+    comment: "Various variables"
+    type: report
+    options:
+      template: tests/data/report_vars.txt

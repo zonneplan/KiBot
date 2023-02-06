@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: MIT
 # Project: KiBot (formerly KiPlot)
 """
@@ -22,7 +22,7 @@ from copy import deepcopy
 import os
 import re
 from .gs import GS
-from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, IFILT_EXPAND_TEXT_VARS, W_NOPART, W_MISSREF
+from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, W_NOPART, W_MISSREF, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
@@ -137,7 +137,8 @@ class BoMColumns(Optionable):
         self._unkown_is_error = True
         with document:
             self.field = ''
-            """ *Name of the field to use for this column """
+            """ *Name of the field to use for this column.
+                Use `_field_lcsc_part` to get the value defined in the global options """
             self.name = ''
             """ *Name to display in the header. The field is used when empty """
             self.join = BoMJoinField
@@ -153,9 +154,10 @@ class BoMColumns(Optionable):
         super().config(parent)
         if not self.field:
             raise KiPlotConfigurationError("Missing or empty `field` in columns list ({})".format(str(self._tree)))
+        self.field = self.solve_field_name(self.field)
+        field = self.field.lower()
         # Ensure this is None or a list
         # Also arrange it as field, cols...
-        field = self.field.lower()
         if isinstance(self.join, type):
             self.join = None
         elif isinstance(self.join, str):
@@ -306,7 +308,8 @@ class BoMXLSX(BoMLinkable):
             self.style = 'modern-blue'
             """ Head style: modern-blue, modern-green, modern-red and classic """
             self.kicost = False
-            """ *Enable KiCost worksheet creation """
+            """ *Enable KiCost worksheet creation.
+                Note: an example of how to use it on CI/CD can be found [here](https://github.com/set-soft/kicost_ci_test) """
             self.kicost_api_enable = Optionable
             """ [string|list(string)=''] List of KiCost APIs to enable """
             self.kicost_api_disable = Optionable
@@ -596,11 +599,8 @@ class BoMOptions(BaseOptions):
 
     def _normalize_variant(self):
         """ Replaces the name of the variant by an object handling it. """
-        if self.variant:
-            if not RegOutput.is_variant(self.variant):
-                raise KiPlotConfigurationError("Unknown variant name `{}`".format(self.variant))
-            self.variant = RegOutput.get_variant(self.variant)
-        else:
+        self.variant = RegOutput.check_variant(self.variant)
+        if self.variant is None:
             # If no variant is specified use the KiBoM variant class with basic functionality
             self.variant = KiBoM()
             self.variant.config_field = self.fit_field
@@ -723,7 +723,7 @@ class BoMOptions(BaseOptions):
         if isinstance(self.component_aliases, type):
             self.component_aliases = DEFAULT_ALIASES
         # Filters
-        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform')
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
@@ -919,7 +919,7 @@ class BoMOptions(BaseOptions):
         # Now expand the text variables, the user can disable it and insert a customized filter
         # in the variant or even before.
         if self.expand_text_vars:
-            comps = apply_pre_transform(comps, BaseFilter.solve_filter(IFILT_EXPAND_TEXT_VARS, 'KiCad 6 text vars',
+            comps = apply_pre_transform(comps, BaseFilter.solve_filter('_expand_text_vars', 'KiCad 6 text vars',
                                                                        is_transform=True))
         # We add the main project to the aggregate list so do_bom sees a complete list
         base_sch = Aggregate()
@@ -998,8 +998,6 @@ class BoM(BaseOutput):  # noqa: F821
         for tpl in templates:
             for out in tpl:
                 if out['type'] == 'bom':
-                    # Use the KiCost + rotate variant
-                    out['options']['variant'] = 'place_holder'
                     columns = out['options'].get('columns', None)
                     if columns:
                         # Rename MPN for something we have, or just remove it
@@ -1034,12 +1032,12 @@ class BoM(BaseOutput):  # noqa: F821
         mpn_fields = fld_set.intersection(mpn_set)
         # Look for distributor part number
         dpn_set = set()
-        for stub in ['part#', '#', 'p#', 'pn', 'vendor#', 'vp#', 'vpn', 'num']:
+        for stub in DISTRIBUTORS_STUBS:
             for dist in DISTRIBUTORS:
                 dpn_set.add(dist+stub)
                 if stub != '#':
-                    dpn_set.add(dist+'_'+stub)
-                    dpn_set.add(dist+'-'+stub)
+                    for sep in DISTRIBUTORS_STUBS_SEPS:
+                        dpn_set.add(dist+sep+stub)
         dpn_fields = fld_set.intersection(dpn_set)
         # Collect the used distributors
         dists = set()
@@ -1088,7 +1086,9 @@ class BoM(BaseOutput):  # noqa: F821
                     grp.append(d+'#')
             gb = BoM.create_bom('XLSX', 'Costs', grp, join_fields, fld_names)
             gb['options']['xlsx'] = {'style': 'modern-green', 'kicost': True, 'specs': True}
-            gb['options']['variant'] = 'place_holder'
+            # KitSpace seems to be failing all the time
+            gb['options']['xlsx']['kicost_api_disable'] = 'KitSpace'
+            gb['options']['pre_transform'] = '_kicost_rename'
             # gb['options']['distributors'] = list(dists)
             outs.append(gb)
         # Add the list of layers to the templates

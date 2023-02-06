@@ -1,0 +1,11 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: pcb2blender
+    comment: "PCB to Blender tools test"
+    dir: pcb2blender
+    type: pcb2blender_tools
+    options:
+      stackup_create: true

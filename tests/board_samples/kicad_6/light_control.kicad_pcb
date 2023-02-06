@@ -663,6 +663,11 @@
       (net 5 "/EN") (tstamp 639c0e59-e95c-4114-bccd-2e7277505454))
     (pad "2" smd rect locked (at -3 1.875) (size 1 0.75) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 5 "/EN") (tstamp 8ca3e20d-bcc7-4c5e-9deb-562dfed9fecb))
+    (model "${KIPRJMOD}/3d/IT-1187A.wrl"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (footprint "Package_TO_SOT_SMD:SOT-223-3_TabPin2" (layer "F.Cu")
@@ -1083,7 +1088,7 @@
       (net 1 "GND") (tstamp dc628a9d-67e8-4a03-b99f-8cc7a42af6ef))
     (pad "6" thru_hole circle locked (at -2.5 -1.4625 270) (size 1.45 1.45) (drill 0.85) (layers *.Cu *.Mask)
       (net 1 "GND") (tstamp df9a1242-2d73-4343-b170-237bc9a8080f))
-    (model "${KISYS3DMOD}/Connector_USB.3dshapes/USB_Micro-B_Molex-105017-0001.wrl"
+    (model "${KIPRJMOD}/3d/105017-0001.wrl"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))

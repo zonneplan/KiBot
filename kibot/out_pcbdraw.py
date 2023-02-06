@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -29,7 +29,7 @@ from .misc import (PCBDRAW_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS
 from .gs import GS
 from .layer import Layer
 from .optionable import Optionable
-from .out_base import VariantOptions
+from .out_base import VariantOptions, PcbMargin
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -183,21 +183,6 @@ class PcbDrawRemapComponents(Optionable):
             raise KiPlotConfigurationError("The component remapping must specify a `ref`, a `lib` and a `comp`")
 
 
-class PcbDrawMargin(Optionable):
-    """ To adjust each margin """
-    def __init__(self):
-        super().__init__()
-        with document:
-            self.left = 0
-            """ Left margin [mm] """
-            self.right = 0
-            """ Right margin [mm] """
-            self.top = 0
-            """ Top margin [mm] """
-            self.bottom = 0
-            """ Bottom margin [mm] """
-
-
 class PcbDrawOptions(VariantOptions):
     def __init__(self):
         with document:
@@ -248,8 +233,9 @@ class PcbDrawOptions(VariantOptions):
             """ *[svg,png,jpg,bmp] Output format. Only used if no `output` is specified """
             self.output = GS.def_global_output
             """ *Name for the generated file """
-            self.margin = PcbDrawMargin
-            """ [number|dict] Margin around the generated image [mm] """
+            self.margin = PcbMargin
+            """ [number|dict] Margin around the generated image [mm].
+                Using a number the margin is the same in the four directions """
             self.outline_width = 0.15
             """ [0,10] Width of the trace to draw the PCB border [mm].
                 Note this also affects the drill holes """
@@ -294,14 +280,7 @@ class PcbDrawOptions(VariantOptions):
         else:
             self.highlight = self.solve_kf_filters(self.highlight)
         # Margin
-        if isinstance(self.margin, type):
-            self.margin = (0, 0, 0, 0)
-        elif isinstance(self.margin, PcbDrawMargin):
-            self.margin = (mm2ki(self.margin.left), mm2ki(self.margin.right),
-                           mm2ki(self.margin.top), mm2ki(self.margin.bottom))
-        else:
-            margin = mm2ki(self.margin)
-            self.margin = (margin, margin, margin, margin)
+        self.margin = PcbMargin.solve(self.margin)
         # Filter
         if isinstance(self.show_components, type):
             # Default option is 'none'
@@ -342,6 +321,29 @@ class PcbDrawOptions(VariantOptions):
             self.style = self.style.to_dict()
         self._expand_id = 'bottom' if self.bottom else 'top'
         self._expand_ext = self.format
+
+    def setup_renderer(self, components, active_components, bottom, name):
+        super().setup_renderer(components, active_components)
+        self.add_to_variant = False
+        self.bottom = bottom
+        self.output = name
+        if not self.show_components:
+            self.show_components = None
+        return self.expand_filename_both(name, is_sch=False)
+
+    def save_renderer_options(self):
+        """ Save the current renderer settings """
+        super().save_renderer_options()
+        self.old_bottom = self.bottom
+        self.old_add_to_variant = self.add_to_variant
+        self.old_output = self.output
+
+    def restore_renderer_options(self):
+        """ Restore the renderer settings """
+        super().restore_renderer_options()
+        self.bottom = self.old_bottom
+        self.add_to_variant = self.old_add_to_variant
+        self.output = self.old_output
 
     def expand_filtered_components(self, components):
         """ Expands references to filters in show_components """
@@ -521,11 +523,11 @@ class PcbDrawOptions(VariantOptions):
     def run(self, name):
         super().run(name)
         # Apply any variant
-        self.filter_pcb_components(GS.board, do_3D=True)
+        self.filter_pcb_components(do_3D=True)
         # Create the image
         self.create_image(name, GS.board)
         # Undo the variant
-        self.unfilter_pcb_components(GS.board, do_3D=True)
+        self.unfilter_pcb_components(do_3D=True)
 
 
 @output_class
@@ -533,7 +535,11 @@ class PcbDraw(BaseOutput):  # noqa: F821
     """ PcbDraw - Beautiful 2D PCB render
         Exports the PCB as a 2D model (SVG, PNG or JPG).
         Uses configurable colors.
-        Can also render the components if the 2D models are available """
+        Can also render the components if the 2D models are available.
+        Note that this output is fast for simple PCBs, but becomes useless for huge ones.
+        You can easily create very complex PCBs using the `panelize` output.
+        In this case you can use other outputs, like `render_3d`, which are slow for small
+        PCBs but can handle big ones """
     def __init__(self):
         super().__init__()
         with document:
@@ -546,6 +552,10 @@ class PcbDraw(BaseOutput):  # noqa: F821
         if isinstance(self.options.style, str) and os.path.isfile(self.options.style):
             files.append(self.options.style)
         return files
+
+    def get_renderer_options(self):
+        """ Where are the options for this output when used as a 'renderer' """
+        return self.options
 
     @staticmethod
     def get_conf_examples(name, layers, templates):

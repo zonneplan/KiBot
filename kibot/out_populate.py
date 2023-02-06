@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -82,33 +82,22 @@ class PopulateOptions(VariantOptions):
         img_dir = os.path.dirname(self._parent.expand_filename(out_dir, self.imgname))
         return [self._parent.expand_filename(out_dir, self.get_out_file_name()), img_dir]
 
-    def generate_image(self, side, components, active_components, name):
-        options = self._renderer.options
+    def generate_image(self, side, components, active_components, name, options):
         logger.debug('Starting renderer with side: {}, components: {}, high: {}, image: {}'.
                      format(side, components, active_components, name))
         # Configure it according to our needs
-        options._filters_to_expand = False
-        options.show_components = [c for c in components if c]
-        if not options.show_components:
-            options.show_components = None if self._renderer_is_pcbdraw else []
-        else:
-            options.show_components = options.solve_kf_filters(options.show_components)
-        options.highlight = options.solve_kf_filters([c for c in active_components if c])
-        options.output = name
+        o_name = options.setup_renderer(components, active_components, side.startswith("back"), name)
         self._renderer.dir = self._parent.dir
         self._renderer._done = False
-        if self._renderer_is_pcbdraw:
-            options.add_to_variant = False
-            options.bottom = side.startswith("back")
-        else:  # render_3D
-            options.view = 'Z' if side.startswith("back") else 'z'
-            options._show_all_components = False
         run_output(self._renderer)
-        return options.expand_filename_both(name, is_sch=False)
+        return o_name
 
     def generate_images(self, dir_name, content):
+        options = self._renderer.get_renderer_options()
+        if options is None:
+            raise KiPlotConfigurationError('No suitable renderer ({})'.format(self._renderer))
         # Memorize the current options
-        self.save_renderer_options()
+        options.save_renderer_options()
         dir = os.path.dirname(os.path.join(dir_name, self.imgname))
         if not os.path.exists(dir):
             os.makedirs(dir)
@@ -119,9 +108,9 @@ class PopulateOptions(VariantOptions):
             for x in item["steps"]:
                 counter += 1
                 filename = self.imgname.replace('%d', str(counter))
-                x["img"] = self.generate_image(x["side"], x["components"], x["active_components"], filename)
+                x["img"] = self.generate_image(x["side"], x["components"], x["active_components"], filename, options)
         # Restore the options
-        self.restore_renderer_options()
+        options.restore_renderer_options()
         return content
 
     def run(self, dir_name):
@@ -140,7 +129,6 @@ class PopulateOptions(VariantOptions):
         if out.type not in RENDERERS:
             raise KiPlotConfigurationError('The `renderer` must be {} type, not {}'.format(RENDERERS, out.type))
         self._renderer = out
-        self._renderer_is_pcbdraw = out.type == 'pcbdraw'
         # Load the input content
         try:
             _, content = load_content(self.input)

@@ -51,6 +51,8 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
         cov.save()
         # We should get the following name:
         logging.debug('Result: {} Version: {}'.format(res, version))
+        with open(ctx.get_out_path('caplog.txt'), 'wt') as f:
+            f.write(caplog.text)
         assert res == os.path.join(home, b_dir, dep.command)
         # We executed the file
 
@@ -58,6 +60,7 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
 def try_dependency_module(ctx, caplog, monkeypatch, docstring, name_dep, downloader_name):
     # Note: every attempt to install in a chosen dir failed, even when the module was there and in the sys.path the
     # importlib call miserably failed.
+    caplog.set_level(logging.INFO)
     with monkeypatch.context():
         # Refresh the module with actual dependencies
         mod = importlib.reload(downloader)
@@ -85,6 +88,7 @@ def test_dep_rar(test_dir, caplog, monkeypatch):
     try_dependency(ctx, caplog, monkeypatch, compress.__doc__, 'rar', 'rar', bin_dir, use_wrapper=True)
 
 
+@pytest.mark.slow
 def test_dep_pytool(test_dir, caplog, monkeypatch):
     """ Check the pytool_downloader """
     # Create a context to get an output directory
@@ -93,6 +97,7 @@ def test_dep_pytool(test_dir, caplog, monkeypatch):
     try_dependency(ctx, caplog, monkeypatch, kibom.__doc__, 'kibom', 'pytool', bin_dir_py)
 
 
+@pytest.mark.slow
 def test_dep_rsvg(test_dir, caplog, monkeypatch):
     """ Check the rsvg_downloader """
     # Create a context to get an output directory
@@ -111,6 +116,7 @@ def test_dep_git(test_dir, caplog, monkeypatch):
     try_dependency(ctx, caplog, monkeypatch, downloader.__doc__+dep, 'git', 'git', bin_dir)
 
 
+@pytest.mark.slow
 def test_dep_gs(test_dir, caplog, monkeypatch):
     """ Check the git_downloader """
     # Create a context to get an output directory

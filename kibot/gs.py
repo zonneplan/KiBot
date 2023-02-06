@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -11,7 +11,8 @@ try:
 except ImportError:
     # This is caught by __main__, ignore the error here
     class pcbnew(object):
-        pass
+        IU_PER_MM = 1
+        IU_PER_MILS = 1
 from datetime import datetime, date
 from sys import exit
 from shutil import copy2
@@ -89,6 +90,9 @@ class GS(object):
     stackup = None
     # Preprocessor definitions
     cli_defines = {}
+    kikit_units_to_kicad = {'mm': pcbnew.IU_PER_MM, 'cm': 10*pcbnew.IU_PER_MM, 'dm': 100*pcbnew.IU_PER_MM,
+                            'm': 1000*pcbnew.IU_PER_MM, 'mil': pcbnew.IU_PER_MILS, 'inch': 1000*pcbnew.IU_PER_MILS,
+                            'in': 1000*pcbnew.IU_PER_MILS}
     #
     # Global defaults
     #
@@ -115,10 +119,11 @@ class GS(object):
     global_edge_plating = None
     global_extra_pth_drill = None
     global_field_3D_model = None
+    global_field_lcsc_part = None
     global_hide_excluded = None
+    global_impedance_controlled = None
     global_kiauto_time_out_scale = None
     global_kiauto_wait_start = None
-    global_impedance_controlled = None
     #  This value will overwrite GS.def_global_output if defined
     #  Classes supporting global "output" option must call super().__init__()
     #  after defining its own options to allow Optionable do the overwrite.
@@ -289,11 +294,17 @@ class GS(object):
         return 0.001/pcbnew.IU_PER_MILS
 
     @staticmethod
+    def to_mm(val):
+        return val/pcbnew.IU_PER_MM
+
+    @staticmethod
+    def from_mm(val):
+        return int(val*pcbnew.IU_PER_MM)
+
+    @staticmethod
     def make_bkp(fname):
         bkp = fname+'-bak'
-        if os.path.isfile(bkp):
-            os.remove(bkp)
-        os.rename(fname, bkp)
+        os.replace(fname, bkp)
 
     @staticmethod
     def zones():
@@ -381,7 +392,8 @@ class GS(object):
     def get_pcb_and_pro_names(name):
         if GS.ki5:
             return [name, name.replace('kicad_pcb', 'pro')]
-        return [name, name.replace('kicad_pcb', 'kicad_pro'), name.replace('kicad_pcb', 'kicad_prl')]
+        return [name, name.replace('kicad_pcb', 'kicad_pro'), name.replace('kicad_pcb', 'kicad_prl'),
+                name.replace('kicad_pcb', 'kicad_pro-bak'), name.replace('kicad_pcb', 'kicad_prl-bak')]
 
     @staticmethod
     def remove_pcb_and_pro(name):
@@ -392,6 +404,11 @@ class GS(object):
 
     @staticmethod
     def load_board():
+        """ Will be repplaced by kiplot.py """
+        raise AssertionError()
+
+    @staticmethod
+    def exec_with_retry():
         """ Will be repplaced by kiplot.py """
         raise AssertionError()
 
@@ -442,8 +459,86 @@ class GS(object):
         if os.path.isdir(dir_name):
             return dir_name
         # Try using the system level path
-        dir_name = os.path.join('/', 'usr', 'share', 'kibot', name)
+        dir_name = os.path.join(os.path.sep, 'usr', 'share', 'kibot', name)
         if os.path.isdir(dir_name):
             return dir_name
         logger.error('Missing resource directory `{}`'.format(name))
         exit(WRONG_INSTALL)
+
+    @staticmethod
+    def create_eda_rect(tlx, tly, brx, bry):
+        return pcbnew.EDA_RECT(pcbnew.wxPoint(tlx, tly), pcbnew.wxSize(brx-tlx, bry-tly))
+
+    # @staticmethod
+    # def create_wxpoint(x, y):
+    #     return pcbnew.wxPoint(x, y)
+
+    @staticmethod
+    def is_valid_pcb_shape(g):
+        return g.GetShape() != pcbnew.S_SEGMENT or g.GetLength() > 0
+
+    @staticmethod
+    def get_start_point(g):
+        shape = g.GetShape()
+        if GS.ki6:
+            if shape == pcbnew.S_CIRCLE:
+                # Circle start is circle center
+                return g.GetStart()+pcbnew.wxPoint(g.GetRadius(), 0)
+            return g.GetStart()
+        if shape in [pcbnew.S_ARC, pcbnew.S_CIRCLE]:
+            return g.GetArcStart()
+        return g.GetStart()
+
+    @staticmethod
+    def get_end_point(g):
+        shape = g.GetShape()
+        if GS.ki6:
+            if shape == pcbnew.S_CIRCLE:
+                # This is closed start == end
+                return g.GetStart()+pcbnew.wxPoint(g.GetRadius(), 0)
+            if shape == pcbnew.S_RECT:
+                # Also closed start == end
+                return g.GetStart()
+            return g.GetEnd()
+        if shape == pcbnew.S_ARC:
+            return g.GetArcEnd()
+        if shape == pcbnew.S_CIRCLE:
+            return g.GetArcStart()
+        return g.GetEnd()
+
+    @staticmethod
+    def get_shape_bbox(s):
+        """ Bounding box without the width of the trace """
+        width = s.GetWidth()
+        s.SetWidth(0)
+        bbox = s.GetBoundingBox()
+        s.SetWidth(width)
+        return bbox
+
+    @staticmethod
+    def get_kiauto_video_name(cmd):
+        """ Compute the name for the video captured by KiAuto """
+        command = os.path.basename(cmd[0])[:-3]
+        subcommand = next(filter(lambda x: x[0] != '-' and (not x[0].isdigit() or x[1] == 'd'), cmd[1:]))
+        if command == 'pcbnew':
+            return command+'_'+subcommand+'_screencast.ogv'
+        if command == 'eeschema':
+            return subcommand+'_'+command+'_screencast.ogv'
+        return command+'_screencast.ogv'
+
+    @staticmethod
+    def add_extra_options(cmd):
+        is_gitlab_ci = 'GITLAB_CI' in os.environ
+        video_remove = (not GS.debug_enabled) and is_gitlab_ci
+        if GS.debug_enabled:
+            cmd.insert(1, '-'+'v'*GS.debug_level)
+        if GS.debug_enabled or is_gitlab_ci:
+            # Forcing record on GitLab CI/CD (black magic)
+            cmd.insert(1, '-r')
+        if GS.global_kiauto_time_out_scale:
+            cmd.insert(1, str(GS.global_kiauto_time_out_scale))
+            cmd.insert(1, '--time_out_scale')
+        if GS.global_kiauto_wait_start:
+            cmd.insert(1, str(GS.global_kiauto_wait_start))
+            cmd.insert(1, '--wait_start')
+        return cmd, video_remove

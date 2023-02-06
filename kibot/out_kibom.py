@@ -35,7 +35,8 @@ class KiBoMRegex(Optionable):
         self._unkown_is_error = True
         with document:
             self.column = ''
-            """ Name of the column to apply the regular expression """
+            """ Name of the column to apply the regular expression.
+                Use `_field_lcsc_part` to get the value defined in the global options """
             self.regex = ''
             """ Regular expression to match """
             self.field = None
@@ -43,6 +44,12 @@ class KiBoMRegex(Optionable):
             self.regexp = None
             """ {regex} """
         self._category = 'Schematic/BoM'
+
+    def config(self, parent):
+        super().config(parent)
+        if not self.column:
+            raise KiPlotConfigurationError("Missing or empty `column` in regex ({})".format(str(self._tree)))
+        self.column = Optionable.solve_field_name(self.column)
 
     def __str__(self):
         return self.column+'\t'+self.regex
@@ -55,7 +62,8 @@ class KiBoMColumns(Optionable):
         self._unkown_is_error = True
         with document:
             self.field = ''
-            """ *Name of the field to use for this column """
+            """ *Name of the field to use for this column.
+                Use `_field_lcsc_part` to get the value defined in the global options """
             self.name = ''
             """ *Name to display in the header. The field is used when empty """
             self.join = Optionable
@@ -67,6 +75,7 @@ class KiBoMColumns(Optionable):
         super().config(parent)
         if not self.field:
             raise KiPlotConfigurationError("Missing or empty `field` in columns list ({})".format(str(self._tree)))
+        self.field = Optionable.solve_field_name(self.field)
         if isinstance(self.join, type):
             self.join = None
         elif isinstance(self.join, list):
@@ -360,6 +369,8 @@ class KiBoMOptions(BaseOptions):
             """ *[HTML,CSV,XML,XLSX] Format for the BoM """
         super().__init__()
         self._expand_id = 'bom'
+        # Variant isn't related to Kibot
+        self._variant_is_real = False
 
     def config(self, parent):
         super().config(parent)
@@ -423,7 +434,7 @@ class KiBoMOptions(BaseOptions):
             if m and m.group(1) != output:
                 cur = m.group(1)
                 logger.debug('Renaming output file: {} -> {}'.format(cur, output))
-                os.rename(cur, output)
+                os.replace(cur, output)
         logger.debug('Output from command:\n'+cmd_output.decode())
 
 
@@ -434,7 +445,8 @@ class KiBoM(BaseOutput):  # noqa: F821
         For more information: https://github.com/INTI-CMNB/KiBoM
         Note that this output is provided as a compatibility tool.
         We recommend using the `bom` output instead.
-        This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema. """
+        This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
+        Also note that here the KiBot concept of variants doesn't apply. """
     def __init__(self):
         super().__init__()
         with document:

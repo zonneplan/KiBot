@@ -11,4 +11,5 @@ outputs:
       format: XLSX
       xlsx:
         logo: docs/images/bot.png
+        logo_scale: 0.1
         col_colors: false

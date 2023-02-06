@@ -75,12 +75,18 @@ class AnyLayerOptions(VariantOptions):
             """ Used to configure the edge cuts layer extension for Protel mode. Include the dot """
             self.custom_reports = CustomReport
             """ [list(dict)] A list of customized reports for the manufacturer """
+            self.sketch_pads_on_fab_layers = False
+            """ Draw only the outline of the pads on the *.Fab layers (KiCad 6+) """
+            self.sketch_pad_line_width = 0.1
+            """ Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+                Note that this value is currently ignored by KiCad (6.0.9) """
         super().__init__()
 
     def config(self, parent):
         super().config(parent)
         if isinstance(self.custom_reports, type):
             self.custom_reports = []
+        self.sketch_pad_line_width = GS.from_mm(self.sketch_pad_line_width)
 
     def _configure_plot_ctrl(self, po, output_dir):
         logger.debug("Configuring plot controller for output")
@@ -92,6 +98,9 @@ class AnyLayerOptions(VariantOptions):
         po.SetExcludeEdgeLayer(self.exclude_edge_layer)
         if GS.ki5:
             po.SetPlotPadsOnSilkLayer(not self.exclude_pads_from_silkscreen)
+        else:
+            po.SetSketchPadsOnFabLayers(self.sketch_pads_on_fab_layers)
+            po.SetSketchPadLineWidth(self.sketch_pad_line_width)
         po.SetPlotViaOnMaskLayer(not self.tent_vias)
         # Only useful for gerber outputs
         po.SetCreateGerberJobFile(False)
@@ -116,6 +125,8 @@ class AnyLayerOptions(VariantOptions):
 
     def run(self, output_dir, layers):
         super().run(output_dir)
+        # Apply the variants and filters
+        exclude = self.filter_pcb_components()
         # fresh plot controller
         plot_ctrl = PLOT_CONTROLLER(GS.board)
         # set up plot options for the whole output
@@ -127,8 +138,6 @@ class AnyLayerOptions(VariantOptions):
         if create_job:
             jobfile_writer = GERBER_JOBFILE_WRITER(GS.board)
         plot_ctrl.SetColorMode(True)
-        # Apply the variants and filters
-        exclude = self.filter_pcb_components(GS.board)
         # Plot every layer in the output
         generated = {}
         layers = Layer.solve(layers)
@@ -157,7 +166,7 @@ class AnyLayerOptions(VariantOptions):
             plot_ctrl.PlotLayer()
             plot_ctrl.ClosePlot()
             if self.output and k_filename != filename:
-                os.rename(k_filename, filename)
+                os.replace(k_filename, filename)
             if create_job:
                 jobfile_writer.AddGbrFile(id, os.path.basename(filename))
             generated[la.layer] = os.path.basename(filename)
@@ -185,7 +194,8 @@ class AnyLayerOptions(VariantOptions):
                 f.write(content)
         # Restore the eliminated layers
         if exclude:
-            self.unfilter_pcb_components(GS.board)
+            self.unfilter_pcb_components()
+        self._generated_files = generated
 
     def solve_extension(self, layer):
         if self._plot_format == PLOT_FORMAT_GERBER and self.use_protel_extensions:
@@ -226,6 +236,9 @@ class AnyLayerOptions(VariantOptions):
         if GS.ki5:
             # padsonsilk
             self.exclude_pads_from_silkscreen = not po.GetPlotPadsOnSilkLayer()
+        else:
+            self.sketch_pads_on_fab_layers = po.GetSketchPadsOnFabLayers()
+            self.sketch_pad_line_width = po.GetSketchPadLineWidth()
 
 
 class AnyLayer(BaseOutput):

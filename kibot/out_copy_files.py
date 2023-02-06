@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import fnmatch
 import glob
 import os
 import re
-from shutil import copy2, rmtree
+from shutil import copy2
 from sys import exit
 from .error import KiPlotConfigurationError
 from .gs import GS
@@ -90,7 +90,7 @@ class Copy_FilesOptions(Base3DOptions):
     def config(self, parent):
         super().config(parent)
         if isinstance(self.files, type):
-            KiPlotConfigurationError('No files provided')
+            raise KiPlotConfigurationError('No files provided')
 
     def get_from_output(self, f, no_out_run):
         from_output = f.source
@@ -126,7 +126,7 @@ class Copy_FilesOptions(Base3DOptions):
             dest_dir = dest_dir[:-1]
         f.output_dir = dest_dir
         # Apply any variant
-        self.filter_pcb_components(GS.board, do_3D=True, do_2D=True)
+        self.filter_pcb_components(do_3D=True, do_2D=True)
         # Download missing models and rename all collect 3D models (renamed)
         f.rel_dirs = self.rel_dirs
         files_list = self.download_models(rename_filter=f.source, rename_function=FilesList.apply_rename, rename_data=f)
@@ -139,7 +139,7 @@ class Copy_FilesOptions(Base3DOptions):
             # We must undo the download/rename
             self.undo_3d_models_rename(GS.board)
         else:
-            self.unfilter_pcb_components(GS.board, do_3D=True, do_2D=True)
+            self.unfilter_pcb_components(do_3D=True, do_2D=True)
         # Also include the step/wrl counterpart
         new_list = []
         for fn in files_list:
@@ -157,9 +157,12 @@ class Copy_FilesOptions(Base3DOptions):
         files = []
         src_dir_cwd = os.getcwd()
         src_dir_outdir = self.expand_filename_sch(GS.out_dir)
-        self.rel_dirs = [os.path.normpath(os.path.join(GS.pcb_dir, KiConf.models_3d_dir)),
-                         os.path.normpath(os.path.join(GS.pcb_dir, KiConf.party_3rd_dir)),
-                         GS.pcb_dir]
+        self.rel_dirs = []
+        if KiConf.models_3d_dir:
+            self.rel_dirs.append(os.path.normpath(os.path.join(GS.pcb_dir, KiConf.models_3d_dir)))
+        if KiConf.party_3rd_dir:
+            self.rel_dirs.append(os.path.normpath(os.path.join(GS.pcb_dir, KiConf.party_3rd_dir)))
+        self.rel_dirs.append(GS.pcb_dir)
         for f in self.files:
             from_outdir = False
             if f.source_type == 'out_files' or f.source_type == 'output':
@@ -194,26 +197,25 @@ class Copy_FilesOptions(Base3DOptions):
                             dest = os.path.relpath(dest, d)
                             break
                     else:
-                        logger.error(fname)
-                        logger.error(self.rel_dirs)
                         dest = os.path.basename(fname)
                     if mode_3d_append:
                         dest = os.path.join(f.dest[:-1], dest)
                 else:
                     dest = os.path.relpath(dest, src_dir)
                 files.append((fname_real, dest))
-
         return files
 
     def get_targets(self, out_dir):
+        self.output_dir = out_dir
         files = self.get_files(no_out_run=True)
-        return sorted([os.path.join(out_dir, v) for v in files.values()])
+        return sorted([os.path.join(out_dir, v) for _, v in files])
 
     def get_dependencies(self):
         files = self.get_files(no_out_run=True)
-        return files.keys()
+        return sorted([v for v, _ in files])
 
     def run(self, output):
+        super().run(output)
         # Output file name
         logger.debug('Collecting files')
         # Collect the files
@@ -230,6 +232,11 @@ class Copy_FilesOptions(Base3DOptions):
             if dest in copied:
                 logger.warning(W_COPYOVER+'`{}` and `{}` both are copied to `{}`'.
                                format(may_be_rel(src), may_be_rel(copied[dest]), may_be_rel(dest)))
+            try:
+                if os.path.samefile(src, dest):
+                    raise KiPlotConfigurationError('Trying to copy {} over itself {}'.format(src, dest))
+            except FileNotFoundError:
+                pass
             if os.path.isfile(dest) or os.path.islink(dest):
                 os.remove(dest)
             if self.link_no_copy:
@@ -238,9 +245,7 @@ class Copy_FilesOptions(Base3DOptions):
                 copy2(src, dest)
             copied[dest] = src
         # Remove the downloaded 3D models
-        if self._tmp_dir:
-            rmtree(self._tmp_dir)
-            self._tmp_dir = None
+        self.remove_temporals()
 
 
 @output_class

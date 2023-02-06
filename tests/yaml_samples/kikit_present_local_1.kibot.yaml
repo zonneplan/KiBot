@@ -13,7 +13,8 @@ outputs:
         mode: local
         comment: This is a comment
         name: Light control
-        back_image: Raytraced
+        # back_image: Raytraced
+        back_image: Blender
       repository: 'https://github.com/INTI-CMNB/KiBot/'
 
   - name: PcbDraw
@@ -36,6 +37,18 @@ outputs:
       rotate_x: 3
       rotate_z: -2
       ray_tracing: true
+
+  - name: Blender
+    type: blender_export
+    run_by_default: false
+    options:
+      outputs:
+        - type: render
+      render_options:
+        transparent_background: true
+        auto_crop: true
+        # width: 640
+        # height: 480
 
   - name: 'gerbers'
     comment: "Gerbers for the Gerber god"

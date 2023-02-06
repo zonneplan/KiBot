@@ -1751,9 +1751,7 @@ class SchematicV6(Schematic):
             # Keep a back-up of existing files
             if os.path.isfile(fname):
                 bkp = fname+'-bak'
-                if os.path.isfile(bkp):
-                    os.remove(bkp)
-                os.rename(fname, bkp)
+                os.replace(fname, bkp)
             with open(fname, 'wt') as f:
                 f.write(dumps(sch))
                 f.write('\n')

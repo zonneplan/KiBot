@@ -99,3 +99,16 @@ def test_drill_legacy_3Rs(test_dir):
 
 def test_drill_legacy_s_3Rs(test_dir):
     do_3Rs(test_dir, 'drill_legacy_s', False, True)
+
+
+def test_drill_sub_pcb_bp(test_dir):
+    """ Test a multiboard example """
+    prj = 'batteryPack'
+    ctx = context.TestContext(test_dir, prj, 'drill_sub_pcb', 'Drill')
+    ctx.run()
+    # Check all outputs are there
+    fname = prj+'-drill_connector.drl'
+    # ctx.search_in_file_d(fname, ['X29.75Y-28.09', 'T3C3.200']) KiKit
+    ctx.search_in_file_d(fname, ['X137.5Y-102.0', 'T3C3.200'])  # Currently us
+    ctx.search_not_in_file_d(fname, ['X189.0Y-59.0', 'T1C0.400'])
+    ctx.clean_up(keep_project=True)

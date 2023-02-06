@@ -6,11 +6,15 @@ global:
   environment:
     # Relative to the PCB file
     models_3d: '../../data/metrico/'
+    define_old: true
   aliases_for_3d_models:
     - name: ALIAS1
       value: '3d/1'
     - name: ALIAS2
       value: '3d/2'
+
+import:
+  - file: battery_pack_sub_pcbs.kibot.yaml
 
 outputs:
   - name: 'position'

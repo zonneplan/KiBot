@@ -13,6 +13,7 @@ VARIANT=""
 TARGETS=""
 QUICKSTART="NO"
 INSTALL3D="NO"
+CACHE3D="NO"
 EXTRA_ARGS=""
 
 # Exit error code
@@ -39,6 +40,7 @@ function msg_illegal_arg {
 function msg_help {
     echo -e "\nOptional control arguments:"
     echo -e "  '-c FILE' .kibot.yaml config file"
+    echo -e "  '-C YES' cache the 3D models."
     echo -e "  '-d DIR' output path. Default: current dir, will be used as prefix of dir configured in config file"
     echo -e "  '-b FILE' .kicad_pcb board file. Use __SCAN__ to get the first board file found in current folder."
     echo -e "  '-e FILE' .sch schematic file.  Use __SCAN__ to get the first schematic file found in current folder."
@@ -129,6 +131,8 @@ function args_process {
                ;;
            -i) INSTALL3D="$VAL"
                ;;
+           -C) CACHE3D="$VAL"
+               ;;
            -s) if [ "$VAL" == "__NONE__" ]; then
                    SKIP=""
                else
@@ -167,6 +171,11 @@ function run {
 
     if [ $INSTALL3D == "YES" ]; then
         /usr/bin/kicad_3d_install.sh
+    fi
+
+    if [ $CACHE3D == "YES" ]; then
+        export KIBOT_3D_MODELS="$HOME/cache_3d"
+        echo Exporting KIBOT_3D_MODELS=$KIBOT_3D_MODELS
     fi
 
     if [ $QUICKSTART == "YES" ]; then

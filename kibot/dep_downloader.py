@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -73,6 +73,8 @@ Dependencies:
     github: yaqwsx/KiKit
     pypi: KiKit
     downloader: pytool
+  - from: KiKit
+    role: Separate multiboard projects
   - name: Xvfbwrapper
     python_module: true
     debian: python3-xvfbwrapper
@@ -84,23 +86,32 @@ Dependencies:
     debian: xvfb
     arch: xorg-server-xvfb
     no_cmd_line_version: true
+  - name: Bash
+    url: https://www.gnu.org/software/bash/
+    debian: bash
+    arch: bash
+  - name: Blender
+    url: https://www.blender.org/
+    debian: blender
+    arch: blender
 """
-import importlib
-import os
-import re
-import subprocess
-import requests
-import platform
-import io
-import tarfile
-import stat
-import json
-import fnmatch
-import site
-from sys import exit, stdout, modules
-from shutil import which, rmtree, move
-from math import ceil
 from copy import deepcopy
+import fnmatch
+import importlib
+import io
+import json
+from math import ceil
+import os
+import platform
+import re
+import requests
+from shutil import which, rmtree, move
+import site
+import stat
+import subprocess
+from sys import exit, stdout, modules
+import tarfile
+from time import sleep
 from .misc import MISSING_TOOL, TRY_INSTALL_CHECK, W_DOWNTOOL, W_MISSTOOL, USER_AGENT, version_str2tuple
 from .gs import GS
 from .registrable import RegDependency
@@ -144,6 +155,21 @@ def show_progress(done):
 def end_show_progress():
     stdout.write("\n")
     stdout.flush()
+
+
+def get_request(url):
+    retry = 4
+    while retry:
+        r = requests.get(url, timeout=20, allow_redirects=True, headers={'User-Agent': USER_AGENT})
+        if r.status_code == 200:
+            return r
+        if r.status_code == 403:
+            # GitHub returns 403 randomly (sturated?)
+            sleep(1 << (4-retry))
+            retry -= 1
+        else:
+            return r
+    return r
 
 
 def download(url, progress=True):
@@ -470,7 +496,7 @@ def gs_downloader(dep, system, plat):
         return None, None
     # Get the download page
     url = 'https://api.github.com/repos/ArtifexSoftware/ghostpdl-downloads/releases/latest'
-    r = requests.get(url, allow_redirects=True)
+    r = get_request(url)
     if r.status_code != 200:
         logger.debug('- Failed to download `{}`'.format(dep.url_down))
         return None, None
@@ -505,7 +531,7 @@ def rsvg_downloader(dep, system, plat):
         return None, None
     # Get the download page
     url = 'https://api.github.com/repos/set-soft/rsvg-convert-aws-lambda-binary/releases/latest'
-    r = requests.get(url, allow_redirects=True)
+    r = get_request(url)
     if r.status_code != 200:
         logger.debug('- Failed to download `{}`'.format(dep.url_down))
         return None, None
@@ -527,7 +553,7 @@ def rsvg_downloader(dep, system, plat):
 
 def rar_downloader(dep, system, plat):
     # Get the download page
-    r = requests.get(dep.url_down, allow_redirects=True)
+    r = get_request(dep.url_down)
     if r.status_code != 200:
         logger.debug('- Failed to download `{}`'.format(dep.url_down))
         return None, None

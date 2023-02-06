@@ -7,6 +7,8 @@
 Dependencies:
   - from: Git
     role: Find commit hash and/or date
+  - from: Bash
+    role: Run external commands to create replacement text
 """
 import os
 from .gs import GS
