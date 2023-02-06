@@ -157,7 +157,7 @@ def end_show_progress():
     stdout.flush()
 
 
-def get_request(request, url):
+def get_request(url):
     retry = 4
     while retry:
         r = requests.get(url, timeout=20, allow_redirects=True, headers={'User-Agent': USER_AGENT})
