@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.5.2] - Unreleased
+## [1.6.0] - 2023-02-06
 ### Added
 - General:
   - Support for `groups` of `outputs`
@@ -71,7 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Downloaded 3D models are no longer discarded.
   They are stored in ~/.cache/kibot/3d
   You can change the directory using KIBOT_3D_MODELS
-- Licence is now AGPL v3, since we are incorporating AGPL code.
+- License is now AGPL v3, since we are incorporating AGPL code.
 
 ## [1.5.1] - 2022-12-16
 ### Fixed

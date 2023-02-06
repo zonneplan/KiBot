@@ -1,8 +1,43 @@
-kibot (1.5.2-1) UNRELEASED; urgency=medium
+kibot (1.6.0-1) stable; urgency=medium
 
-  * Reserved for next release
+  * Added support for `groups` of `outputs`
+  * Added internal templates import
+  * Better support for wrong pre-flight options
+  * Added a mechanism to cache downloaded 3D models
+  * Added support to download 3D models from EasyEDA (using LCSC codes)
+  * Added field_lcsc_part global option to select the LCSC/JLCPCB part field
+  * New outputs: vrml, ps_sch_print, dxf_sch_print, hpgl_sch_print,
+    pdf_sch_print and blender_export
+  * New internal filters: _only_smd, _only_tht and _only_virtual
+  * Added support for multi-boards as defined by KiKit to variants
+  * Internal templates: FusionPCB, Elecrow, JLCPCB, MacroFab_XYRS, P-Ban,
+    PCB2Blender_2_1, PCB2Blender_2_1_haschtl and PCBWay
+  * Compress: added option to use the output's `dir` as reference
+    (`from_output_dir`)
+  * iBoM: added `hide_excluded` to hide excluded *.Fab drawings.
+  * PCB_Print: added a mechanism to create a page for each copper layer.
+  * Plot related outputs and PCB_Print: added support for the KiCad 6
+    "sketch_pads_on_fab_layers" option.
+  * Report: added expansion for KiCad text variables and environment
+    variables
+  * *SCH_Print: added options to select the color theme and enable
+    background color.
+  * SVG: added options to limit the view box to the used area.
+  * BoM: fixed pre_transform filers can't be logic filters
+  * Copy_Files: fixed problems on KiCad 5 (no 3rd party dir) and
+    problems with compress output (also Makefile)
+  * DOCs fixed annotate_pcb pre-flight missing options and wrong example
+  * iBoM: fixed variant changes to the *.Fab weren't exported.
+    Now all 2D variant stuff is applied before calling iBoM
+  * PCB_Print: fixed images not showing in custom frames and problems when
+    trying to use groups of layers (i.e. copper)
+  * Report: fixed computed size when using circles and some arcs in the PCB
+    edge
+  * Downloaded 3D models are no longer discarded. They are stored in
+    ~/.cache/kibot/3d You can change the directory using KIBOT_3D_MODELS
+  * Changed: License is now AGPL v3, since we are incorporating AGPL code.
 
- -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Fri, 16 Dec 2022 13:42:01 -0300
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Mon, 06 Feb 2023 08:46:31 -0300
 
 kibot (1.5.1-1) stable; urgency=medium
 

@@ -10,19 +10,14 @@
 @doc_id@
 
 **Important for CI/CD**:
-- We are now uploading docker images to GitHub, the new tags are much more simple.
-  Consult: [Usage for CI/CD](#usage-for-cicd)
-- The GitHub actions with KiCad 6 support are tagged as `v2_k6` (stable) and `v2_dk6` (development).
-  Consult: [GitHub Actions tags](#github-actions-tags)
+- The GitHub actions now use the full/test docker images. So now they include PanDoc and also Blender.
 
-**Important note about PcbDraw**
-- This release incorporates PcbDraw, so you don't need to install it as a separated tool.
-- Please report PcbDraw issues to the KiBot project.
-
-**New on v1.5.0**
-- `populate`, `panelize`, `stencil_3d`, `stencil_for_jig` and `kikit_present` outputs.
-- New options for: BoM, Diff, iBoM, Navigate Results, PcbDraw, PCB_Print, Render_3D and SVG.
-- More than 12 fixes.
+**New on v1.6.0**
+- `vrml`, `ps_sch_print`, `dxf_sch_print`, `hpgl_sch_print`, `pdf_sch_print` and `blender_export` outputs.
+- New options for: `compress`, `ibom`, `pcb_print`, all plot, `report`, *`sch_print` and `svg` outputs
+- Internal templates
+- Gorgeous 3D renders using Blender
+- More than 6 fixes.
 
 ## Index
 
