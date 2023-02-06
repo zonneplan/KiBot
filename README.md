@@ -7,7 +7,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
 
-# **This is the documentation for KiBot v1.5.1 for the current development read [here](https://github.com/INTI-CMNB/KiBot/tree/dev).**
+# **This is the documentation for KiBot v1.6.0 for the current development read [here](https://github.com/INTI-CMNB/KiBot/tree/dev).**
 
 
 **Important for CI/CD**:
