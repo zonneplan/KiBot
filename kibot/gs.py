@@ -20,6 +20,12 @@ from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL
 from .log import get_logger
 
 logger = get_logger(__name__)
+if hasattr(pcbnew, 'IU_PER_MM'):
+    IU_PER_MM = pcbnew.IU_PER_MM
+    IU_PER_MILS = pcbnew.IU_PER_MILS
+else:
+    IU_PER_MM = pcbnew.pcbIUScale.IU_PER_MM
+    IU_PER_MILS = pcbnew.pcbIUScale.IU_PER_MILS
 
 
 class GS(object):
@@ -90,9 +96,9 @@ class GS(object):
     stackup = None
     # Preprocessor definitions
     cli_defines = {}
-    kikit_units_to_kicad = {'mm': pcbnew.IU_PER_MM, 'cm': 10*pcbnew.IU_PER_MM, 'dm': 100*pcbnew.IU_PER_MM,
-                            'm': 1000*pcbnew.IU_PER_MM, 'mil': pcbnew.IU_PER_MILS, 'inch': 1000*pcbnew.IU_PER_MILS,
-                            'in': 1000*pcbnew.IU_PER_MILS}
+    kikit_units_to_kicad = {'mm': IU_PER_MM, 'cm': 10*IU_PER_MM, 'dm': 100*IU_PER_MM,
+                            'm': 1000*IU_PER_MM, 'mil': IU_PER_MILS, 'inch': 1000*IU_PER_MILS,
+                            'in': 1000*IU_PER_MILS}
     #
     # Global defaults
     #
@@ -287,19 +293,23 @@ class GS(object):
     @staticmethod
     def unit_name_to_scale_factor(units):
         if units == 'millimeters':
-            return 1.0/pcbnew.IU_PER_MM
+            return 1.0/IU_PER_MM
         if units == 'mils':
-            return 1.0/pcbnew.IU_PER_MILS
+            return 1.0/IU_PER_MILS
         # Inches
-        return 0.001/pcbnew.IU_PER_MILS
+        return 0.001/IU_PER_MILS
 
     @staticmethod
     def to_mm(val):
-        return val/pcbnew.IU_PER_MM
+        return val/IU_PER_MM
 
     @staticmethod
     def from_mm(val):
-        return int(val*pcbnew.IU_PER_MM)
+        return int(val*IU_PER_MM)
+
+    @staticmethod
+    def to_mils(val):
+        return val/IU_PER_MM
 
     @staticmethod
     def make_bkp(fname):

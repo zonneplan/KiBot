@@ -36,9 +36,9 @@ from . import __version__
 logger = log.get_logger()
 INF = float('inf')
 # This OAR is the minimum Eurocircuits does without extra charge
-EC_SMALL_OAR = 0.125*pcbnew.IU_PER_MM
+EC_SMALL_OAR = GS.from_mm(0.125)
 # The minimum drill tool
-EC_MIN_DRILL = 0.1*pcbnew.IU_PER_MM
+EC_MIN_DRILL = GS.from_mm(0.1)
 
 
 def do_round(v, dig):
@@ -49,20 +49,20 @@ def do_round(v, dig):
 def to_mm(iu, dig=2):
     """ KiCad Internal Units to millimeters """
     if isinstance(iu, pcbnew.wxPoint):
-        return (do_round(iu.x/pcbnew.IU_PER_MM, dig), do_round(iu.y/pcbnew.IU_PER_MM, dig))
+        return (do_round(GS.to_mm(iu.x), dig), do_round(GS.to_mm(iu.y), dig))
     if isinstance(iu, pcbnew.wxSize):
-        return (do_round(iu.x/pcbnew.IU_PER_MM, dig), do_round(iu.y/pcbnew.IU_PER_MM, dig))
-    return do_round(iu/pcbnew.IU_PER_MM, dig)
+        return (do_round(GS.to_mm(iu.x), dig), do_round(GS.to_mm(iu.y), dig))
+    return do_round(GS.to_mm(iu), dig)
 
 
 def to_mils(iu, dig=0):
     """ KiCad Internal Units to mils (1/1000 inch) """
-    return do_round(iu/pcbnew.IU_PER_MILS, dig)
+    return do_round(GS.to_mils(iu), dig)
 
 
 def to_inches(iu, dig=2):
     """ KiCad Internal Units to inches """
-    return do_round(iu/(pcbnew.IU_PER_MILS*1000), dig)
+    return do_round(GS.to_mils(iu)/1000, dig)
 
 
 def get_class_index(val, lst):
@@ -157,9 +157,9 @@ def adjust_drill(val, is_pth=True, pad=None):
     """ Add drill_size_increment if this is a PTH hole and round it to global_extra_pth_drill """
     if val == INF:
         return val
-    step = GS.global_drill_size_increment*pcbnew.IU_PER_MM
+    step = GS.from_mm(GS.global_drill_size_increment)
     if is_pth:
-        val += GS.global_extra_pth_drill*pcbnew.IU_PER_MM
+        val += GS.from_mm(GS.global_extra_pth_drill)
     res = int((val+step/2)/step)*step
     # if pad:
     #     logger.error(f"{to_mm(val)} -> {to_mm(res)} {get_pad_info(pad)}")
@@ -485,7 +485,7 @@ class ReportOptions(BaseOptions):
     def compute_oar(self, pad, hole):
         """ Compute the OAR and the corrected OAR for Eurocircuits """
         oar_ec = oar = (pad-hole)/2
-        if oar < EC_SMALL_OAR and oar > 0 and hole < self.eurocircuits_reduce_holes*pcbnew.IU_PER_MM:
+        if oar < EC_SMALL_OAR and oar > 0 and hole < GS.from_mm(self.eurocircuits_reduce_holes):
             # This hole is classified as "via hole" and has a problematic OAR
             hole_ec = max(adjust_drill(pad-2*EC_SMALL_OAR, is_pth=False), EC_MIN_DRILL)
             oar_ec = (pad-hole_ec)/2
@@ -524,7 +524,7 @@ class ReportOptions(BaseOptions):
 
     def collect_data(self, board):
         ds = board.GetDesignSettings()
-        self.extra_pth_drill = GS.global_extra_pth_drill*pcbnew.IU_PER_MM
+        self.extra_pth_drill = GS.from_mm(GS.global_extra_pth_drill)
         ###########################################################
         # Board size
         ###########################################################
@@ -604,7 +604,7 @@ class ReportOptions(BaseOptions):
         bottom_layer = board.GetLayerID('B.Cu')
         is_pure_smd, is_not_virtual = self.get_attr_tests()
         npth_attrib = 3 if GS.ki5 else pcbnew.PAD_ATTRIB_NPTH
-        min_oar = 0.1*pcbnew.IU_PER_MM
+        min_oar = GS.from_mm(0.1)
         for m in modules:
             layer = m.GetLayer()
             if layer == top_layer:
