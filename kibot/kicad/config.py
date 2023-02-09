@@ -434,21 +434,30 @@ class KiConf(object):
         if not os.path.isfile(fname):
             return False
         logger.debug('Loading symbols lib table `{}`'.format(fname))
+        version = 0
         with open(fname, 'rt') as f:
             line = f.readline().strip()
             if line != '(sym_lib_table':
-                raise KiConfError('Symbol libs table missing signature', SYM_LIB_TABLE, 1, line)
+                raise KiConfError('Symbol libs table missing signature', fname, 1, line)
             line = f.readline()
             cline = 2
+            lib_regex = re.compile(r'\(lib\s*(.*)\)')
+            ver_regex = re.compile(r'\(version\s*(.*)\)')
             while line and line[0] != ')':
-                m = re.match(r'\s*\(lib\s*(.*)\)', line)
+                line = line.strip()
+                m = lib_regex.match(line)
                 if m:
                     alias = LibAlias.parse(m.group(1), cline, KiConf.kicad_env, {})
                     if GS.debug_level > 1:
                         logger.debug('- Adding lib alias '+str(alias))
                     KiConf.lib_aliases[alias.name] = alias
                 else:
-                    raise KiConfError('Unknown symbol table entry', SYM_LIB_TABLE, cline, line)
+                    m = ver_regex.match(line)
+                    if m:
+                        version = int(m.group(1))
+                        logger.debug('Symbols library table version {}'.format(version))
+                    else:
+                        raise KiConfError('Unknown symbol table entry', fname, cline, line)
                 line = f.readline()
                 cline += 1
         return True
