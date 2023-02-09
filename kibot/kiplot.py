@@ -239,6 +239,13 @@ def load_board(pcb_file=None, forced=False):
     return board
 
 
+def ki_conf_error(e):
+    trace_dump()
+    logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
+    logger.error('Line content: `{}`'.format(e.code.rstrip()))
+    exit(EXIT_BAD_CONFIG)
+
+
 def load_any_sch(file, project):
     if file[-9:] == 'kicad_sch':
         sch = SchematicV6()
@@ -263,10 +270,7 @@ def load_any_sch(file, project):
         logger.error(str(e))
         exit(CORRUPTED_SCH)
     except KiConfError as e:
-        trace_dump()
-        logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
-        logger.error('Line content: `{}`'.format(e.code))
-        exit(EXIT_BAD_CONFIG)
+        ki_conf_error(e)
     return sch
 
 
@@ -428,6 +432,8 @@ def run_output(out, dont_stop=False):
             logger.error(msg)
         else:
             config_error(msg)
+    except KiConfError as e:
+        ki_conf_error(e)
     except SystemExit:
         if not dont_stop:
             raise
