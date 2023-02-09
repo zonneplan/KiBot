@@ -1,0 +1,9 @@
+bom/
+print_err.pro
+test_v5/
+zone-refill.pro
+fp-info-cache
+*-bak
+*-backups
+pcb_parity.xml
+batteryPack.kicad_prl
