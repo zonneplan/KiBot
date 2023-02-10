@@ -291,15 +291,15 @@ class VariantOptions(BaseOptions):
             The layer is which layer id will be used. """
         seg1 = VariantOptions.create_module_element(m)
         seg1.SetWidth(120000)
-        seg1.SetStart(wxPoint(rect.x1, rect.y1))
-        seg1.SetEnd(wxPoint(rect.x2, rect.y2))
+        seg1.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y1)))
+        seg1.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y2)))
         seg1.SetLayer(layer)
         seg1.SetLocalCoord()  # Update the local coordinates
         m.Add(seg1)
         seg2 = VariantOptions.create_module_element(m)
         seg2.SetWidth(120000)
-        seg2.SetStart(wxPoint(rect.x1, rect.y2))
-        seg2.SetEnd(wxPoint(rect.x2, rect.y1))
+        seg2.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y2)))
+        seg2.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y1)))
         seg2.SetLayer(layer)
         seg2.SetLocalCoord()  # Update the local coordinates
         m.Add(seg2)
@@ -326,9 +326,9 @@ class VariantOptions(BaseOptions):
                     if gi.GetClass() == 'MGRAPHIC':
                         l_gi = gi.GetLayer()
                         if l_gi == ffab:
-                            frect.Union(gi.GetBoundingBox().getWxRect())
+                            frect.Union(GS.get_rect_for(gi.GetBoundingBox()))
                         if l_gi == bfab:
-                            brect.Union(gi.GetBoundingBox().getWxRect())
+                            brect.Union(GS.get_rect_for(gi.GetBoundingBox()))
                 # Cross the graphics in *.Fab
                 if frect.x1 is not None:
                     extra_ffab_lines.append(self.cross_module(m, frect, ffab))
@@ -676,7 +676,7 @@ class VariantOptions(BaseOptions):
             if gi.GetClass() == 'MGRAPHIC':
                 l_gi = gi.GetLayer()
                 if l_gi == fcrtyd or l_gi == bcrtyd:
-                    bbox.Union(gi.GetBoundingBox().getWxRect())
+                    bbox.Union(GS.get_rect_for(gi.GetBoundingBox()))
         return bbox
 
     def highlight_3D_models(self, board, highlight):

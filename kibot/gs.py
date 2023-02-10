@@ -495,6 +495,13 @@ class GS(object):
             return pcbnew.BOX2I(pcbnew.VECTOR2I(tlx, tly), pcbnew.VECTOR2I(brx-tlx, bry-tly))
         return pcbnew.EDA_RECT(pcbnew.wxPoint(tlx, tly), pcbnew.wxSize(brx-tlx, bry-tly))
 
+    @staticmethod
+    def get_rect_for(bound):
+        if GS.ki7:
+            pos = bound.GetPosition()
+            return pcbnew.wxRect(pcbnew.wxPoint(pos.x, pos.y), pcbnew.wxSize(bound.GetWidth(), bound.GetHeight()))
+        return bound.getWxRect()
+
     # @staticmethod
     # def create_wxpoint(x, y):
     #     return pcbnew.wxPoint(x, y)
