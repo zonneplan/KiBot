@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -8,7 +8,7 @@
 import os
 import re
 from pcbnew import (GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, F_Cu, B_Cu, Edge_Cuts, PLOT_FORMAT_HPGL,
-                    PLOT_FORMAT_GERBER, PLOT_FORMAT_POST, PLOT_FORMAT_DXF, PLOT_FORMAT_PDF, PLOT_FORMAT_SVG)
+                    PLOT_FORMAT_GERBER, PLOT_FORMAT_POST, PLOT_FORMAT_DXF, PLOT_FORMAT_PDF, PLOT_FORMAT_SVG, LSET)
 from .optionable import Optionable
 from .out_base import BaseOutput, VariantOptions
 from .error import PlotError, KiPlotConfigurationError
@@ -95,7 +95,15 @@ class AnyLayerOptions(VariantOptions):
         po.SetPlotReference(self.plot_footprint_refs)
         po.SetPlotValue(self.plot_footprint_values)
         po.SetPlotInvisibleText(self.force_plot_invisible_refs_vals)
-        po.SetExcludeEdgeLayer(self.exclude_edge_layer)
+        # Edge layer included or not
+        if not GS.ki7:
+            po.SetExcludeEdgeLayer(self.exclude_edge_layer)
+        elif not self.exclude_edge_layer:
+            # Include the edge on all layers
+            # Doesn't work. A bug? https://gitlab.com/kicad/code/kicad/-/issues/13841
+            include = LSET()
+            include.addLayer(GS.board.GetLayerID('Edge.Cuts'))
+            po.SetPlotOnAllLayersSelection(include)
         if GS.ki5:
             po.SetPlotPadsOnSilkLayer(not self.exclude_pads_from_silkscreen)
         else:
