@@ -583,7 +583,7 @@ class PanelOptions(BaseOptions):
             if isinstance(val, (int, float)):
                 setattr(self, op, str(val)+def_units)
                 if convert:
-                    setattr(self, _op, val*GS.kikit_units_to_kicad[def_units])
+                    setattr(self, _op, int(val*GS.kikit_units_to_kicad[def_units]))
             else:
                 m = PanelOptions._num_regex.match(val)
                 if m is None:
@@ -596,7 +596,7 @@ class PanelOptions(BaseOptions):
                 if num_d is None:
                     raise KiPlotConfigurationError('Malformed number in `{}` ({})'.format(op, num))
                 if convert:
-                    setattr(self, _op, num_d*GS.kikit_units_to_kicad[m.group(2)])
+                    setattr(self, _op, int(num_d*GS.kikit_units_to_kicad[m.group(2)]))
 
     def add_angle(self, ops, def_units=None):
         if def_units is None:
