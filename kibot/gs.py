@@ -257,6 +257,12 @@ class GS(object):
         return ''
 
     @staticmethod
+    def p2v_k7(point):
+        """ KiCad v7 changed various wxPoint args to VECTOR2I.
+            This helper changes the types accordingly """
+        return pcbnew.VECTOR2I(point) if GS.ki7 else point
+
+    @staticmethod
     def get_modules():
         if GS.ki6:
             return GS.board.GetFootprints()
@@ -485,6 +491,8 @@ class GS(object):
 
     @staticmethod
     def create_eda_rect(tlx, tly, brx, bry):
+        if GS.ki7:
+            return pcbnew.BOX2I(pcbnew.VECTOR2I(tlx, tly), pcbnew.VECTOR2I(brx-tlx, bry-tly))
         return pcbnew.EDA_RECT(pcbnew.wxPoint(tlx, tly), pcbnew.wxSize(brx-tlx, bry-tly))
 
     # @staticmethod
