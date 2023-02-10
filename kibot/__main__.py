@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -83,7 +83,6 @@ from . import __version__, __copyright__, __license__
 from . import log
 log.set_domain('kibot')
 logger = log.init()
-from . import dep_downloader
 from .docopt import docopt
 # GS will import pcbnew, so we must solve the nightly setup first
 # Check if we have to run the nightly KiCad build
@@ -99,6 +98,7 @@ if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
         os.environ['PYTHONPATH'] = pcbnew_path
     nightly = True
 from .gs import GS
+from . import dep_downloader
 from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK, W_ONWIN
 from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError, config_error
