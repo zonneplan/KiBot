@@ -317,7 +317,7 @@ class GS(object):
 
     @staticmethod
     def to_mils(val):
-        return val/IU_PER_MM
+        return val/IU_PER_MILS
 
     @staticmethod
     def make_bkp(fname):
