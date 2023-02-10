@@ -1865,7 +1865,7 @@ class SchematicV6(Schematic):
             # Sheet instances
             _add_items_list('sheet_instances', self.sheet_instances, sch)
             # Symbol instances
-            if version < KICAD_7_VER:
+            if version < KICAD_7_VER and base_sheet == self:
                 _add_items_list('symbol_instances', self.symbol_instances, sch)
             logger.debug('Saving schematic: `{}`'.format(fname))
             # Keep a back-up of existing files
