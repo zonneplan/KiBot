@@ -27,6 +27,7 @@ if shutil.which(COVERAGE_SCRIPT) is None:
 KICAD_PCB_EXT = '.kicad_pcb'
 KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_6_0_0 = 6000000
+KICAD_VERSION_7_0_0 = 7000000
 KICAD_VERSION_5_1_7 = 5001007
 MODE_SCH = 1
 MODE_PCB = 0
@@ -75,6 +76,10 @@ else:
         REF_DIR = 'tests/reference/5_1_6'
     PRO_EXT = '.pro'
 logging.debug('Detected KiCad v{}.{}.{} ({})'.format(kicad_major, kicad_minor, kicad_patch, kicad_version))
+
+
+def ki7():
+    return kicad_version >= KICAD_VERSION_7_0_0
 
 
 def ki6():
