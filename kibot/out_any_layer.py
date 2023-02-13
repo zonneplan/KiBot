@@ -230,7 +230,11 @@ class AnyLayerOptions(VariantOptions):
 
     def read_vals_from_po(self, po):
         # excludeedgelayer
-        self.exclude_edge_layer = po.GetExcludeEdgeLayer()
+        if GS.ki7:
+            self.exclude_edge_layer = not po.GetPlotOnAllLayersSelection().Contains(GS.board.GetLayerID('Edge.Cuts'))
+            logger.error(self.exclude_edge_layer)
+        else:
+            self.exclude_edge_layer = po.GetExcludeEdgeLayer()
         # plotframeref
         self.plot_sheet_reference = po.GetPlotFrameRef()
         # plotreference
