@@ -170,8 +170,8 @@ class WksLine(WksDrawing):
     def draw_line(e, p, st, en):
         s = PCB_SHAPE()
         s.SetShape(e.shape)
-        s.SetStart(st)
-        s.SetEnd(en)
+        s.SetStart(GS.p2v_k7(st))
+        s.SetEnd(GS.p2v_k7(en))
         s.SetWidth(e.line_width)
         s.SetLayer(p.layer)
         p.board.Add(s)
@@ -298,8 +298,8 @@ class WksText(WksDrawing):
         for _ in range(e.repeat):
             s = PCB_TEXT(None)
             s.SetText(text)
-            s.SetPosition(pos)
-            s.SetTextSize(e.font.size)
+            s.SetPosition(GS.p2v_k7(pos))
+            s.SetTextSize(GS.p2v_k7(e.font.size))
             if e.font.bold:
                 s.SetBold(True)
                 thickness = round(e.font.line_width*2)
