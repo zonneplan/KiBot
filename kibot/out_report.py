@@ -694,8 +694,12 @@ class ReportOptions(BaseOptions):
         ###########################################################
         # Vias
         ###########################################################
-        self.micro_vias = 'yes' if ds.m_MicroViasAllowed else 'no'
-        self.blind_vias = 'yes' if ds.m_BlindBuriedViaAllowed else 'no'
+        if GS.ki7:
+            self.micro_vias = 'unknown'
+            self.blind_vias = 'unknown'
+        else:
+            self.micro_vias = 'yes' if ds.m_MicroViasAllowed else 'no'
+            self.blind_vias = 'yes' if ds.m_BlindBuriedViaAllowed else 'no'
         self.uvia_pad = ds.m_MicroViasMinSize
         self.uvia_drill = ds.m_MicroViasMinDrill
         via_sizes = board.GetViasDimensionsList()
