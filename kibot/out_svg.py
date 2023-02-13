@@ -54,8 +54,7 @@ class SVGOptions(DrillMarks):
         if GS.ki5:
             po.SetLineWidth(FromMM(self.line_width))
         po.SetNegative(self.negative_plot)
-        if GS.ki6:
-            po.SetSvgPrecision(self.svg_precision, False)
+        GS.SetSvgPrecision(po, self.svg_precision)
 
     def read_vals_from_po(self, po):
         super().read_vals_from_po(po)

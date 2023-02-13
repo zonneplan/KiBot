@@ -1087,11 +1087,10 @@ class PCB_PrintOptions(VariantOptions):
         pc = PLOT_CONTROLLER(GS.board)
         po = pc.GetPlotOptions()
         # Set General Options:
-        po.SetExcludeEdgeLayer(True)   # We plot it separately
+        GS.SetExcludeEdgeLayer(po, True)   # We plot it separately
         po.SetUseAuxOrigin(False)
         po.SetAutoScale(False)
-        if GS.ki6:
-            po.SetSvgPrecision(self.svg_precision, False)
+        GS.SetSvgPrecision(po, self.svg_precision)
         # Helpers for force_edge_cuts
         if self.force_edge_cuts:
             edge_layer = LayerOptions.create_layer('Edge.Cuts')

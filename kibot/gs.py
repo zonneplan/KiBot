@@ -575,3 +575,22 @@ class GS(object):
             cmd.insert(1, str(GS.global_kiauto_wait_start))
             cmd.insert(1, '--wait_start')
         return cmd, video_remove
+
+    @staticmethod
+    def SetExcludeEdgeLayer(po, exclude_edge_layer):
+        if not GS.ki7:
+            po.SetExcludeEdgeLayer(exclude_edge_layer)
+        elif not exclude_edge_layer:
+            # Include the edge on all layers
+            # Doesn't work in 7.0.0. Bug: https://gitlab.com/kicad/code/kicad/-/issues/13841
+            include = pcbnew.LSET()
+            include.addLayer(GS.board.GetLayerID('Edge.Cuts'))
+            po.SetPlotOnAllLayersSelection(include)
+
+    @staticmethod
+    def SetSvgPrecision(po, svg_precision):
+        if GS.ki7:
+            po.SetSvgPrecision(svg_precision)
+        elif GS.ki6:
+            po.SetSvgPrecision(svg_precision, False)
+        # No ki5 equivalent
