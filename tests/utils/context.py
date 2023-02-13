@@ -47,7 +47,10 @@ kicad_patch = int(m.group(3))
 kicad_version = kicad_major*1000000+kicad_minor*1000+kicad_patch
 if kicad_version >= KICAD_VERSION_5_99:
     BOARDS_DIR = '../board_samples/kicad_'+str(kicad_major)
-    REF_DIR = 'tests/reference/6_0_8'
+    if kicad_version >= KICAD_VERSION_7_0_0:
+        REF_DIR = 'tests/reference/7_0_0'
+    else:
+        REF_DIR = 'tests/reference/6_0_8'
     KICAD_SCH_EXT = '.kicad_sch'
     # Now these layers can be renamed.
     # KiCad 6 takes the freedom to give them more descriptive names ...
