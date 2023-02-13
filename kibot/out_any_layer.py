@@ -232,7 +232,6 @@ class AnyLayerOptions(VariantOptions):
         # excludeedgelayer
         if GS.ki7:
             self.exclude_edge_layer = not po.GetPlotOnAllLayersSelection().Contains(GS.board.GetLayerID('Edge.Cuts'))
-            logger.error(self.exclude_edge_layer)
         else:
             self.exclude_edge_layer = po.GetExcludeEdgeLayer()
         # plotframeref
