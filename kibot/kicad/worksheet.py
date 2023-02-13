@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad bugs:
 # - Text bold doesn't work
@@ -13,17 +13,30 @@ Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-worksheet/
 """
 import io
 from struct import unpack
-from pcbnew import (wxPoint, wxSize, FromMM, GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
-                    GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM, wxPointMM)
+from pcbnew import (wxPoint, wxSize, FromMM, wxPointMM)
 from ..gs import GS
 if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
     detect_kicad()
-if GS.ki6:
-    from pcbnew import PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY
+if GS.ki7:
+    from pcbnew import (PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, GR_TEXT_H_ALIGN_LEFT,
+                        GR_TEXT_H_ALIGN_RIGHT, GR_TEXT_H_ALIGN_CENTER, GR_TEXT_V_ALIGN_TOP, GR_TEXT_V_ALIGN_CENTER,
+                        GR_TEXT_V_ALIGN_BOTTOM)
+    # Is this change really needed??!!! People doesn't have much to do ...
+    GR_TEXT_HJUSTIFY_LEFT = GR_TEXT_H_ALIGN_LEFT
+    GR_TEXT_HJUSTIFY_RIGHT = GR_TEXT_H_ALIGN_RIGHT
+    GR_TEXT_HJUSTIFY_CENTER = GR_TEXT_H_ALIGN_CENTER
+    GR_TEXT_VJUSTIFY_TOP = GR_TEXT_V_ALIGN_TOP
+    GR_TEXT_VJUSTIFY_CENTER = GR_TEXT_V_ALIGN_CENTER
+    GR_TEXT_VJUSTIFY_BOTTOM = GR_TEXT_V_ALIGN_BOTTOM
+elif GS.ki6:
+    from pcbnew import (PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, GR_TEXT_HJUSTIFY_LEFT,
+                        GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER,
+                        GR_TEXT_VJUSTIFY_BOTTOM)
 else:
-    from pcbnew import DRAWSEGMENT, TEXTE_PCB
+    from pcbnew import (DRAWSEGMENT, TEXTE_PCB, GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
+                        GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM)
     PCB_SHAPE = DRAWSEGMENT
     PCB_TEXT = TEXTE_PCB
     FILL_T_FILLED_SHAPE = 0
