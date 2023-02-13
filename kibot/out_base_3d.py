@@ -253,8 +253,8 @@ class Base3DOptions(VariantOptions):
                             logger.debug('- Modifying models with text vars')
                         models_replaced = True
             # Push the models back
-            for model in models_l:
-                models.push_front(model)
+            for model in reversed(models_l):
+                models.append(model)
         if downloaded:
             logger.warning(W_DOWN3D+' {} 3D models downloaded'.format(len(downloaded)))
         return models_replaced if not is_copy_mode else list(source_models)

@@ -520,8 +520,8 @@ class VariantOptions(BaseOptions):
             m3d.m_Filename = new_model[i]
         self.undo_3d_models_rep[c.ref] = replaced
         # Push the models back
-        for model in models_l:
-            models.push_front(model)
+        for model in reversed(models_l):
+            models.append(model)
 
     def undo_3d_models_rename(self, board):
         """ Restores the file name for any renamed 3D module """
@@ -539,8 +539,8 @@ class VariantOptions(BaseOptions):
                 if replaced:
                     m3d.m_Filename = replaced[i]
             # Push the models back
-            for model in models_l:
-                models.push_front(model)
+            for model in reversed(models_l):
+                models.append(model)
         # Reset the list of changes
         self.undo_3d_models = {}
         self.undo_3d_models_rep = {}
@@ -585,8 +585,8 @@ class VariantOptions(BaseOptions):
             if c and c.included and not c.fitted:
                 models = m.Models()
                 restore = self.rem_models.pop(0)
-                for model in restore:
-                    models.push_front(model)
+                for model in reversed(restore):
+                    models.append(model)
 
     def apply_list_of_3D_models(self, enable, slots, m, var):
         # Disable the unused models adding bogus text to the end
