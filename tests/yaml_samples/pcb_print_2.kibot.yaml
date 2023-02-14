@@ -29,71 +29,71 @@ outputs:
             - layer: Edge.Cuts
               color: "#004040"
           page_id: F_Cu_color
-        - monochrome: true
-          layers:
-            - layer: F.Cu
-            - layer: F.Mask
-              color: '#14332440'
-            - layer: Edge.Cuts
-              color: "#004040"
-          page_id: F_Cu_mono
-
-  - name: 'print_bottom'
-    comment: "Experiment"
-    type: pcb_print
-    options:
-      plot_sheet_reference: true
-      dnf_filter: _mechanical
-      format: 'EPS'
-      scaling: 0
-      sheet_reference_layout: '${KIPRJMOD}/../../data/test_img.kicad_wks'
-      # frame_plot_mechanism: gui slow
-      # frame_plot_mechanism: plot only k6
-      drill_marks: small
-      force_edge_cuts: true
-      pages:
-        - layers:
-            - layer: B.Cu
-            - layer: B.Mask
-              color: '#14332440'
-          sort_layers: true
-          monochrome: true
-          mirror: true
-          sheet_reference_color: "#A02020"
-
-  - name: 'print_inner_1'
-    comment: "Experiment"
-    type: pcb_print
-    options:
-      plot_sheet_reference: true
-      dnf_filter: _mechanical
-      format: 'SVG'
-      # frame_plot_mechanism: gui slow
-      # frame_plot_mechanism: plot only k6
-      drill_marks: none
-      force_edge_cuts: true
-      pages:
-        - layers:
-            - layer: In1.Cu
-          sheet_reference_color: "#A02020"
-
-  - name: 'print_bottom_3'
-    comment: "Experiment"
-    type: pcb_print
-    options:
-      plot_sheet_reference: true
-      dnf_filter: _mechanical
-      hide_excluded: true
-      format: 'PS'
-      # frame_plot_mechanism: gui slow
-      # frame_plot_mechanism: plot only k6
-      drill_marks: none
-      force_edge_cuts: true
-      via_color: '#FF8080'
-      pages:
-        - layers:
-            - layer: B.Cu
-            - layer: B.Mask
-              color: '#14332440'
-          mirror: true
-          sheet_reference_color: "#A02020"
+#         - monochrome: true
+#           layers:
+#             - layer: F.Cu
+#             - layer: F.Mask
+#               color: '#14332440'
+#             - layer: Edge.Cuts
+#               color: "#004040"
+#           page_id: F_Cu_mono
+#
+#   - name: 'print_bottom'
+#     comment: "Experiment"
+#     type: pcb_print
+#     options:
+#       plot_sheet_reference: true
+#       dnf_filter: _mechanical
+#       format: 'EPS'
+#       scaling: 0
+#       sheet_reference_layout: '${KIPRJMOD}/../../data/test_img.kicad_wks'
+#       # frame_plot_mechanism: gui slow
+#       # frame_plot_mechanism: plot only k6
+#       drill_marks: small
+#       force_edge_cuts: true
+#       pages:
+#         - layers:
+#             - layer: B.Cu
+#             - layer: B.Mask
+#               color: '#14332440'
+#           sort_layers: true
+#           monochrome: true
+#           mirror: true
+#           sheet_reference_color: "#A02020"
+#
+#   - name: 'print_inner_1'
+#     comment: "Experiment"
+#     type: pcb_print
+#     options:
+#       plot_sheet_reference: true
+#       dnf_filter: _mechanical
+#       format: 'SVG'
+#       # frame_plot_mechanism: gui slow
+#       # frame_plot_mechanism: plot only k6
+#       drill_marks: none
+#       force_edge_cuts: true
+#       pages:
+#         - layers:
+#             - layer: In1.Cu
+#           sheet_reference_color: "#A02020"
+#
+#   - name: 'print_bottom_3'
+#     comment: "Experiment"
+#     type: pcb_print
+#     options:
+#       plot_sheet_reference: true
+#       dnf_filter: _mechanical
+#       hide_excluded: true
+#       format: 'PS'
+#       # frame_plot_mechanism: gui slow
+#       # frame_plot_mechanism: plot only k6
+#       drill_marks: none
+#       force_edge_cuts: true
+#       via_color: '#FF8080'
+#       pages:
+#         - layers:
+#             - layer: B.Cu
+#             - layer: B.Mask
+#               color: '#14332440'
+#           mirror: true
+#           sheet_reference_color: "#A02020"

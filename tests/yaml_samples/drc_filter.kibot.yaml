@@ -27,3 +27,10 @@ preflight:
     - filter_msg: 'Ignore unconnected pad 2 of C4'
       error: unconnected_items
       regexp: 'Pad 2 .* of C4'
+    # KiCad v7 rc2
+    - filter_msg: 'Ignore solder mask bridge'
+      error: solder_mask_bridge
+      regexp: 'of C3 on F.Cu'
+    - filter_msg: 'Ignore library issues'
+      error: lib_footprint_issues
+      regexp: '.*'

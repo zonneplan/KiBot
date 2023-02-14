@@ -118,7 +118,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
                 errors.append('PCB net code {} missing connection/s: {}'.format(n, ','.join(list(dif))))
 
     def check_pcb_parity(self):
-        if GS.ki5:
+        if GS.ki5 or GS.ki7:
             logger.error('PCB vs schematic parity only available for KiCad 6')
             exit(MISSING_TOOL)
         fname = GS.sch_no_ext+'.xml'

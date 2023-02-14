@@ -81,12 +81,14 @@ def test_erc_warning_2(test_dir):
 
 
 def test_drc_1(test_dir):
-    prj = 'bom'
+    prj = name = 'bom'
+    if context.ki7():
+        prj = 'bom/'+prj
     ctx = context.TestContext(test_dir, prj, 'drc', '')
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file(prj+'-drc.txt')
-    ctx.clean_up()
+    ctx.expect_out_file(name+'-drc.txt')
+    ctx.clean_up(keep_project=context.ki7())
 
 
 def test_drc_filter_1(test_dir):
@@ -177,7 +179,7 @@ def test_update_xml_1(test_dir):
 
 @pytest.mark.slow
 @pytest.mark.eeschema
-@pytest.mark.skipif(context.ki5(), reason="KiCad 6 implementation")
+@pytest.mark.skipif(context.ki5() or context.ki7(), reason="KiCad 6 implementation")
 def test_update_xml_2(test_dir):
     prj = 'pcb_parity'
     ctx = context.TestContext(test_dir, prj, 'update_xml_2', '')
