@@ -377,7 +377,7 @@ class WksPolygon(WksDrawing):
                 s.SetShape(SHAPE_T_POLY)
                 if hasattr(s, 'SetFillMode'):
                     s.SetFillMode(FILL_T_FILLED_SHAPE)
-                s.SetPolyPoints([pos+p for p in pts])
+                s.SetPolyPoints([GS.p2v_k7(pos+p) for p in pts])
                 s.SetWidth(e.line_width)
                 s.SetLayer(p.layer)
                 if e.rotate:
