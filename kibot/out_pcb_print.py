@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Base idea: https://gitlab.com/dennevi/Board2Pdf/ (Released as Public Domain)
@@ -915,22 +915,34 @@ class PCB_PrintOptions(VariantOptions):
         # Compute the coordinates translation for mirror
         transform = ''
         if scale != 1.0 and scale:
-            # This the autocenter computation used by KiCad
+            # This is the autocenter computation used by KiCad
             scale_x = scale_y = scale
             board_center = GS.board.GetBoundingBox().GetCenter()
+            # We use fresh variables because board_center is a VECTOR2I in v7 (integers)
+            bcx = board_center.x
+            bcy = board_center.y
             if GS.ki5:
                 # KiCad 5 uses a different precision, we must adjust
-                board_center.x = round(board_center.x*KICAD5_SVG_SCALE)
-                board_center.y = round(board_center.y*KICAD5_SVG_SCALE)
+                bcx = round(board_center.x*KICAD5_SVG_SCALE)
+                bcy = round(board_center.y*KICAD5_SVG_SCALE)
+            elif GS.ki7:
+                # KiCad 7 coordinates are in mm
+                bcx = GS.to_mm(board_center.x)
+                bcy = GS.to_mm(board_center.y)
             elif self.svg_precision != 6:
                 # KiCad 6 can adjust the precision
                 # The default is 6 and makes 1 KiCad unit == 1 SVG unit
                 # But this isn't supported by browsers (Chrome and Firefox)
                 divider = 10.0 ** (6 - self.svg_precision)
-                board_center.x = round(board_center.x/divider)
-                board_center.y = round(board_center.y/divider)
-            offset_x = round((board_center.x*scale-(paper_size_x/2.0))/scale)
-            offset_y = round((board_center.y*scale-(paper_size_y/2.0))/scale)
+                bcx = round(board_center.x/divider)
+                bcy = round(board_center.y/divider)
+            if GS.ki7:
+                offset_x = (bcx*scale-(paper_size_x/2.0))/scale
+                offset_y = (bcy*scale-(paper_size_y/2.0))/scale
+            else:
+                # Work with integers
+                offset_x = round((bcx*scale-(paper_size_x/2.0))/scale)
+                offset_y = round((bcy*scale-(paper_size_y/2.0))/scale)
             if mirror:
                 scale_x = -scale_x
                 offset_x += round(paper_size_x/scale)
@@ -966,7 +978,7 @@ class PCB_PrintOptions(VariantOptions):
                             if len(color) == 9:
                                 alpha = int(color[7:], 16)/255
                                 color = color[:7]
-                            gf.set('style', "fill:{0}; fill-opacity:{1}; stroke:{0};".format(color, alpha))
+                            gf.set('style', "fill:{0}; fill-opacity:{1}; stroke:{0}; stroke-width:0;".format(color, alpha))
         if g is None or defs is None:
             logger.warning(W_PDMASKFAIL+'Failed to extract elements from the PcbDraw SVG')
             return
@@ -981,7 +993,9 @@ class PCB_PrintOptions(VariantOptions):
         if scaling:
             po.SetScale(scaling)
             return scaling
-        sz = GS.board.GetBoundingBox().GetSize()
+        bbox = GS.board.GetBoundingBox()
+        # KiCad 7 workaround, doing GS.board.GetBoundingBox().GetSize() fails
+        sz = bbox.GetSize()
         scale_x = FromMM(self.paper_w-self.autoscale_margin_x*2)/sz.x
         scale_y = FromMM(self.paper_h-self.autoscale_margin_y*2)/sz.y
         scale = min(scale_x, scale_y)

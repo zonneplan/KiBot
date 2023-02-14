@@ -315,7 +315,7 @@ class GS(object):
 
     @staticmethod
     def to_mm(val):
-        return val/IU_PER_MM
+        return float(val)/IU_PER_MM
 
     @staticmethod
     def from_mm(val):
