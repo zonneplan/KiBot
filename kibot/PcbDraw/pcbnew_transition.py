@@ -105,6 +105,7 @@ if not isV6(KICAD_VERSION) and not isV7(KICAD_VERSION):
     pcbnew.ZONE = pcbnew.ZONE_CONTAINER
     pcbnew.ZONES = pcbnew.ZONE_CONTAINERS
     pcbnew.DXF_UNITS_MILLIMETERS = pcbnew.DXF_PLOTTER.DXF_UNIT_MILLIMETERS
+    pcbnew.PAD = pcbnew.D_PAD
 
     # Introduce renamed functions
     pcbnew.BOARD.GetFootprints = pcbnew.BOARD.GetModules
@@ -180,16 +181,17 @@ if not isV7(KICAD_VERSION):
     for x in dir(pcbnew):
         patchRotate(getattr(pcbnew, x))
 
-    originalCalcArcAngles = pcbnew.EDA_SHAPE.CalcArcAngles
-    if not getattr(originalCalcArcAngles, "patched", False):
-        def newCalcArcAngles(self, start, end):
-            start.value = self.GetArcAngleStart() / 10
-            if self.GetShape() == pcbnew.SHAPE_T_CIRCLE:
-                end.value = start.value + 360
-            else:
-                end.value = start.value + self.GetArcAngle() / 10
-        setattr(newCalcArcAngles, "patched", True)
-        pcbnew.EDA_SHAPE.CalcArcAngles = newCalcArcAngles
+    if isV6():
+        originalCalcArcAngles = pcbnew.EDA_SHAPE.CalcArcAngles
+        if not getattr(originalCalcArcAngles, "patched", False):
+            def newCalcArcAngles(self, start, end):
+                start.value = self.GetArcAngleStart() / 10
+                if self.GetShape() == pcbnew.SHAPE_T_CIRCLE:
+                    end.value = start.value + 360
+                else:
+                    end.value = start.value + self.GetArcAngle() / 10
+            setattr(newCalcArcAngles, "patched", True)
+            pcbnew.EDA_SHAPE.CalcArcAngles = newCalcArcAngles
 
     # GetSelectMenuText
     for x in dir(pcbnew):
@@ -205,4 +207,3 @@ if not isV7(KICAD_VERSION):
 
     originalSetSize = pcbnew.PAD.SetSize
     pcbnew.PAD.SetSize = lambda self, size: originalSetSize(self, pcbnew.wxSize(size[0], size[1]))
-
