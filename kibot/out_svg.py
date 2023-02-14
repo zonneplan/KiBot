@@ -73,7 +73,7 @@ class SVGOptions(DrillMarks):
         if not self.limit_viewbox:
             return
         # Limit the view box of the SVG
-        bbox = GS.board.ComputeBoundingBox(self.size_detection == 'kicad_edge').getWxRect()
+        bbox = GS.get_rect_for(GS.board.ComputeBoundingBox(self.size_detection == 'kicad_edge'))
         # Apply the margin (left right top bottom)
         bbox = (bbox[0]-self.margin[0], bbox[1]-self.margin[2],
                 bbox[2]+self.margin[0]+self.margin[1], bbox[3]+self.margin[2]+self.margin[3])
@@ -81,7 +81,12 @@ class SVGOptions(DrillMarks):
         width = ToMM(bbox[2])*0.1
         height = ToMM(bbox[3])*0.1
         # Scale factor to convert KiCad IU to the SVG units
-        mult = KICAD5_SVG_SCALE if GS.ki5 else 10.0 ** (self.svg_precision - 6)
+        if GS.ki5:
+            mult = KICAD5_SVG_SCALE
+        elif GS.ki7:
+            mult = GS.to_mm(1)
+        else:
+            mult = 10.0 ** (self.svg_precision - 6)
         # View port in SVG units
         bbox = tuple(map(lambda x: int(x*mult), bbox))
         logger.debug('Adjusting SVG viewBox to {} for width {} cm and height {} cm'.format(bbox, width, height))
