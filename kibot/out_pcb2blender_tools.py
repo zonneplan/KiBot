@@ -100,7 +100,7 @@ class PCB2Blender_ToolsOptions(VariantOptions):
         os.makedirs(dir_name, exist_ok=True)
         fname = os.path.join(dir_name, self.board_bounds_file)
         # PCB bounding box using the PCB edge, converted to mm
-        bounds = tuple(map(GS.to_mm, GS.board.ComputeBoundingBox(aBoardEdgesOnly=True).getWxRect()))
+        bounds = tuple(map(GS.to_mm, GS.get_rect_for(GS.board.ComputeBoundingBox(aBoardEdgesOnly=True))))
         # Apply 1 mm margin (x, y, w, h)
         bounds = (bounds[0]-1, bounds[1]-1, bounds[2]+2, bounds[3]+2)
         with open(fname, 'wb') as f:
@@ -141,7 +141,7 @@ class PCB2Blender_ToolsOptions(VariantOptions):
                                         pad.GetAttribute(),
                                         pad.GetShape(),
                                         *map(GS.to_mm, pad.GetSize()),
-                                        pad.GetOrientationRadians(),
+                                        GS.get_pad_orientation_in_radians(pad),
                                         pad.GetRoundRectRadiusRatio(),
                                         pad.GetDrillShape(),
                                         *map(GS.to_mm, pad.GetDrillSize())))

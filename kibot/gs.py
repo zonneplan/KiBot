@@ -506,6 +506,10 @@ class GS(object):
             return pcbnew.wxRect(pcbnew.wxPoint(pos.x, pos.y), pcbnew.wxSize(bound.GetWidth(), bound.GetHeight()))
         return bound.getWxRect()
 
+    @staticmethod
+    def get_pad_orientation_in_radians(pad):
+        return pad.GetOrientation().AsRadians() if GS.ki7 else pad.GetOrientationRadians()
+
     # @staticmethod
     # def create_wxpoint(x, y):
     #     return pcbnew.wxPoint(x, y)
