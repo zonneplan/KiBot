@@ -438,6 +438,8 @@ class WksBitmap(WksDrawing):
             if GS.ki5:
                 # KiCad 5 uses Inches and with less resolution
                 img.scale(KICAD5_SVG_SCALE)
+            elif GS.ki7:
+                img.scale(GS.to_mm(1))
             elif svg_precision != 6:
                 img.scale(scale)
             # Put the image in a group
