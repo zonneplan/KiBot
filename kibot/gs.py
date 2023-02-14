@@ -341,6 +341,10 @@ class GS(object):
         return id in layers.Seq()
 
     @staticmethod
+    def zone_get_first_layer(e):
+        return e.GetFirstLayer() if GS.ki7 else e.GetLayer()
+
+    @staticmethod
     def expand_text_variables(text, extra_vars=None):
         vars = GS.load_pro_variables()
         new_text = ''

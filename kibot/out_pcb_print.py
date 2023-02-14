@@ -584,7 +584,7 @@ class PCB_PrintOptions(VariantOptions):
                 removed.append(e)
                 found = True
             # But this isn't enough if the zone is only one layer, move it to another
-            if e.GetLayer() == id:
+            if GS.zone_get_first_layer(e) == id:
                 e.SetLayer(tmp_layer)
                 moved.append(e)
                 found = True
@@ -654,7 +654,7 @@ class PCB_PrintOptions(VariantOptions):
                 removed.append(e)
                 found = True
             # But this isn't enough if the zone is only one layer, move it to another
-            if e.GetLayer() == id:
+            if GS.zone_get_first_layer(e) == id:
                 e.SetLayer(tmp_layer)
                 moved.append(e)
                 found = True
