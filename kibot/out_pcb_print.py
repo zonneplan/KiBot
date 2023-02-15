@@ -46,7 +46,7 @@ from .kicad.patch_svg import patch_svg_file
 from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
-from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW
+from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -918,31 +918,9 @@ class PCB_PrintOptions(VariantOptions):
             # This is the autocenter computation used by KiCad
             scale_x = scale_y = scale
             board_center = GS.board.GetBoundingBox().GetCenter()
-            # We use fresh variables because board_center is a VECTOR2I in v7 (integers)
-            bcx = board_center.x
-            bcy = board_center.y
-            if GS.ki5:
-                # KiCad 5 uses a different precision, we must adjust
-                bcx = round(board_center.x*KICAD5_SVG_SCALE)
-                bcy = round(board_center.y*KICAD5_SVG_SCALE)
-            elif GS.ki7:
-                # KiCad 7 coordinates are in mm
-                bcx = GS.to_mm(board_center.x)
-                bcy = GS.to_mm(board_center.y)
-            elif self.svg_precision != 6:
-                # KiCad 6 can adjust the precision
-                # The default is 6 and makes 1 KiCad unit == 1 SVG unit
-                # But this isn't supported by browsers (Chrome and Firefox)
-                divider = 10.0 ** (6 - self.svg_precision)
-                bcx = round(board_center.x/divider)
-                bcy = round(board_center.y/divider)
-            if GS.ki7:
-                offset_x = (bcx*scale-(paper_size_x/2.0))/scale
-                offset_y = (bcy*scale-(paper_size_y/2.0))/scale
-            else:
-                # Work with integers
-                offset_x = round((bcx*scale-(paper_size_x/2.0))/scale)
-                offset_y = round((bcy*scale-(paper_size_y/2.0))/scale)
+            bcx, bcy = GS.iu_to_svg((board_center.x, board_center.y), self.svg_precision)
+            offset_x = GS.svg_round((bcx*scale-(paper_size_x/2.0))/scale)
+            offset_y = GS.svg_round((bcy*scale-(paper_size_y/2.0))/scale)
             if mirror:
                 scale_x = -scale_x
                 offset_x += round(paper_size_x/scale)

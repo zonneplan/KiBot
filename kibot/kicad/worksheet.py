@@ -45,7 +45,7 @@ from .sexpdata import load, SExpData
 from .v6_sch import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
                      _check_relaxed, _get_points, _check_symbol_str)
 from ..svgutils.transform import ImageElement, GroupElement
-from ..misc import W_WKSVERSION, KICAD5_SVG_SCALE
+from ..misc import W_WKSVERSION
 from .. import log
 
 logger = log.get_logger()
@@ -429,19 +429,13 @@ class WksBitmap(WksDrawing):
         # KiCad 6 can adjust the precision
         # The default is 6 and makes 1 KiCad unit == 1 SVG unit
         # But this isn't supported by browsers (Chrome and Firefox)
-        scale = 10.0 ** (svg_precision - 6)
+        scale = GS.iu_to_svg(1.0, svg_precision)[0]
         for _ in range(e.repeat):
             img = ImageElement(io.BytesIO(s), w, h)
             x = pos.x-round(w/2)
             y = pos.y-round(h/2)
             img.moveto(x, y)
-            if GS.ki5:
-                # KiCad 5 uses Inches and with less resolution
-                img.scale(KICAD5_SVG_SCALE)
-            elif GS.ki7:
-                img.scale(GS.to_mm(1))
-            elif svg_precision != 6:
-                img.scale(scale)
+            img.scale(scale)
             # Put the image in a group
             g = GroupElement([img])
             # Add the group to the SVG

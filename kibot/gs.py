@@ -34,6 +34,10 @@ elif hasattr(pcbnew, 'PCB_PLOT_PARAMS'):
     NO_DRILL_SHAPE = pcbnew.PCB_PLOT_PARAMS.NO_DRILL_SHAPE
     SMALL_DRILL_SHAPE = pcbnew.PCB_PLOT_PARAMS.SMALL_DRILL_SHAPE
     FULL_DRILL_SHAPE = pcbnew.PCB_PLOT_PARAMS.FULL_DRILL_SHAPE
+# KiCad 6 uses IUs for SVGs, with option for SVG_Precision
+# KiCad 5 uses a very different scale based on inches
+# KiCad 7 uses mm
+KICAD5_SVG_SCALE = 116930/297002200
 
 
 class GS(object):
@@ -509,6 +513,26 @@ class GS(object):
     @staticmethod
     def get_pad_orientation_in_radians(pad):
         return pad.GetOrientation().AsRadians() if GS.ki7 else pad.GetOrientationRadians()
+
+    @staticmethod
+    def iu_to_svg(values, svg_precision):
+        """ Converts 1 or more values from KiCad internal IUs to the units used for SVGs """
+        if not isinstance(values, tuple):
+            values = [values]
+        if GS.ki5:
+            return tuple(map(lambda x: int(round(x*KICAD5_SVG_SCALE)), values))
+        if GS.ki7:
+            return tuple(map(GS.to_mm, values))
+        # KiCad 6
+        mult = 10.0 ** (svg_precision - 6)
+        return tuple(map(lambda x: int(round(x*mult)), values))
+
+    @staticmethod
+    def svg_round(val):
+        """ KiCad 5/6 uses integers for SVG units, KiCad 7 uses mm and hence floating point """
+        if GS.ki7:
+            return val
+        return int(round(val))
 
     # @staticmethod
     # def create_wxpoint(x, y):

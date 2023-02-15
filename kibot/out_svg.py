@@ -10,7 +10,6 @@ from pcbnew import PLOT_FORMAT_SVG, FromMM, ToMM
 from .drill_marks import DrillMarks
 from .gs import GS
 from .kicad.patch_svg import change_svg_viewbox
-from .misc import KICAD5_SVG_SCALE
 from .out_base import PcbMargin
 from .out_any_layer import AnyLayer
 from .macros import macros, document, output_class  # noqa: F401
@@ -81,17 +80,7 @@ class SVGOptions(DrillMarks):
         width = ToMM(bbox[2])*0.1
         height = ToMM(bbox[3])*0.1
         # Scale factor to convert KiCad IU to the SVG units
-        if GS.ki5:
-            mult = KICAD5_SVG_SCALE
-            # View port in SVG units
-            bbox = tuple(map(lambda x: int(x*mult), bbox))
-        elif GS.ki7:
-            # View port in SVG units
-            bbox = tuple(map(lambda x: GS.to_mm(x), bbox))
-        else:
-            mult = 10.0 ** (self.svg_precision - 6)
-            # View port in SVG units
-            bbox = tuple(map(lambda x: int(x*mult), bbox))
+        bbox = GS.iu_to_svg(bbox, self.svg_precision)
         logger.debug('Adjusting SVG viewBox to {} for width {} cm and height {} cm'.format(bbox, width, height))
         for f in self._generated_files.values():
             fname = os.path.join(output_dir, f)
