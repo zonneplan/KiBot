@@ -83,12 +83,15 @@ class SVGOptions(DrillMarks):
         # Scale factor to convert KiCad IU to the SVG units
         if GS.ki5:
             mult = KICAD5_SVG_SCALE
+            # View port in SVG units
+            bbox = tuple(map(lambda x: int(x*mult), bbox))
         elif GS.ki7:
-            mult = GS.to_mm(1)
+            # View port in SVG units
+            bbox = tuple(map(lambda x: GS.to_mm(x), bbox))
         else:
             mult = 10.0 ** (self.svg_precision - 6)
-        # View port in SVG units
-        bbox = tuple(map(lambda x: int(x*mult), bbox))
+            # View port in SVG units
+            bbox = tuple(map(lambda x: int(x*mult), bbox))
         logger.debug('Adjusting SVG viewBox to {} for width {} cm and height {} cm'.format(bbox, width, height))
         for f in self._generated_files.values():
             fname = os.path.join(output_dir, f)
