@@ -109,7 +109,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
                 errors.append('PCB net code {} name mismatch ({} vs {})'.format(n, net_name, sch_name))
             sch_nodes = net_nodes[n]
             pcb_nodes = {pad.GetParent().GetReference()+' pin '+pad.GetNumber()
-                         for pad in con.GetNetItems(n, [pcbnew.PCB_PAD_T])}
+                         for pad in con.GetNetItems(n, pcbnew.PCB_PAD_T)}
             dif = pcb_nodes-sch_nodes
             if dif:
                 errors.append('PCB net code {} extra connection/s: {}'.format(n, ','.join(list(dif))))
@@ -118,7 +118,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
                 errors.append('PCB net code {} missing connection/s: {}'.format(n, ','.join(list(dif))))
 
     def check_pcb_parity(self):
-        if GS.ki5 or GS.ki7:
+        if GS.ki5:
             logger.error('PCB vs schematic parity only available for KiCad 6')
             exit(MISSING_TOOL)
         fname = GS.sch_no_ext+'.xml'

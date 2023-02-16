@@ -179,7 +179,7 @@ def test_update_xml_1(test_dir):
 
 @pytest.mark.slow
 @pytest.mark.eeschema
-@pytest.mark.skipif(context.ki5() or context.ki7(), reason="KiCad 6 implementation")
+@pytest.mark.skipif(context.ki5(), reason="KiCad 6 implementation")
 def test_update_xml_2(test_dir):
     prj = 'pcb_parity'
     ctx = context.TestContext(test_dir, prj, 'update_xml_2', '')
