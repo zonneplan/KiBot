@@ -763,6 +763,8 @@ class SchematicFieldV6(object):
         self.ang = ang
         self.effects = None
         self.hide = False
+        self.do_not_autoplace = False
+        self.show_name = False
 
     @staticmethod
     def parse(items, number):
@@ -783,6 +785,10 @@ class SchematicFieldV6(object):
                 field.effects = FontEffects.parse(i)
             elif i_type == 'id':
                 field.number = _check_integer(i, 1, name+' id')
+            elif i_type == 'do_not_autoplace':
+                field.do_not_autoplace = True
+            elif i_type == 'show_name':
+                field.show_name = True
             else:
                 raise SchError('Unknown property attribute `{}`'.format(i))
         if not found_at:
@@ -797,6 +803,10 @@ class SchematicFieldV6(object):
             # Removed in KiCad 7
             data.append(_symbol('id', [self.number]))
         data.append(_symbol('at', [self.x, self.y, self.ang]))
+        if self.do_not_autoplace:
+            data.append(_symbol('do_not_autoplace'))
+        if self.show_name:
+            data.append(_symbol('show_name'))
         if self.effects:
             data.extend([Sep(), self.effects.write(), Sep()])
         return _symbol('property', data)
