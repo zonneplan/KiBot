@@ -582,6 +582,24 @@
     (uuid fb03d859-dcc9-4533-b352-64830e0e5423)
   )
 
+  (arc (start 203.2 120.65) (mid 205.0599 116.1599) (end 209.55 114.3)
+    (stroke (width 0) (type default))
+    (fill (type none))
+    (uuid 00f81073-f297-4ecd-ab0d-4dd899b8db01)
+  )
+
+  (circle (center 190.5 120.65) (radius 6.8392)
+    (stroke (width 0) (type default))
+    (fill (type none))
+    (uuid a4112622-c24a-41b1-ad3f-0c48820cef36)
+  )
+
+  (rectangle (start 165.1 114.3) (end 177.8 127)
+    (stroke (width 0) (type default))
+    (fill (type none))
+    (uuid c6a9521c-c2a2-4070-921e-e6a55261b68a)
+  )
+
   (image (at 133.35 40.64)
     (uuid 9a9f2d82-f64d-4264-8bec-c182528fc4de)
     (data
@@ -1604,6 +1622,20 @@
     )
   )
 
+  (text_box "Hi! this is DejaVu Serif"
+    (at 226.06 130.81 0) (size 13.97 6.35)
+    (stroke (width 0) (type default))
+    (fill (type none))
+    (effects (font (face "DejaVu Serif") (size 1.27 1.27)) (justify left top))
+    (uuid 88be47bb-d548-4cac-a873-52ec32621961)
+  )
+  (text_box "Text box, above drawing shapes aaa"
+    (at 170.18 130.81 0) (size 36.83 7.62)
+    (stroke (width 1) (type dot) (color 56 85 255 1))
+    (fill (type color) (color 255 117 107 1))
+    (effects (font (size 1.27 1.27) (thickness 0.254) bold (color 124 255 131 1)) (justify left top) (href "https://github.com/INTI-CMNB/KiBot/"))
+    (uuid ffbdc5a8-2780-4490-aa6c-ee3ed66dc37a)
+  )
   (text "Text box B" (at 81.28 57.15 90)
     (effects (font (size 1.27 1.27) italic) (justify left bottom))
     (uuid 2f3deced-880d-4075-a81b-95c62da5b94d)
