@@ -149,6 +149,11 @@ def _get_at(items, pos, name):
     return _check_float(value, 1, 'at x'), _check_float(value, 2, 'at y'), angle
 
 
+def _get_size(items, pos, name):
+    value = _check_symbol_value(items, pos, name, 'size')
+    return _get_xy(value)
+
+
 class Point(object):
     def __init__(self, items):
         super().__init__()
@@ -232,11 +237,14 @@ class FontEffects(object):
         self.bold = self.italic = False
         self.hjustify = self.vjustify = 'C'
         self.mirror = False
+        self.color = None
+        self.href = None
+        self.face = None
 
     @staticmethod
     def parse_font(items):
         w = h = 1.27
-        thickness = None
+        thickness = color = face = None
         bold = italic = False
         for i in items[1:]:
             if isinstance(i, Symbol):
@@ -254,9 +262,13 @@ class FontEffects(object):
                     w = _check_float(i, 2, 'font width')
                 elif i_type == 'thickness':
                     thickness = _check_float(i, 1, 'font thickness')
+                elif i_type == 'color':
+                    color = Color.parse(i)
+                elif i_type == 'face':
+                    face = _check_str(i, 1, 'font face')
                 else:
                     raise SchError('Unknown font effect attribute `{}`'.format(i))
-        return w, h, thickness, bold, italic
+        return w, h, thickness, bold, italic, color, face
 
     @staticmethod
     def parse_justify(items):
@@ -291,21 +303,28 @@ class FontEffects(object):
             elif isinstance(i, list):
                 i_type = _check_is_symbol_list(i)
                 if i_type == 'font':
-                    o.w, o.h, o.thickness, o.bold, o.italic = FontEffects.parse_font(i)
+                    o.w, o.h, o.thickness, o.bold, o.italic, o.color, o.face = FontEffects.parse_font(i)
                 elif i_type == 'justify':
                     o.hjustify, o.vjustify, o.mirror = FontEffects.parse_justify(i)
+                elif i_type == 'href':
+                    o.href = _check_str(i, 1, 'font effect')
                 else:
                     raise SchError('Unknown font effect attribute `{}`'.format(i))
         return o
 
     def write_font(self):
-        data = [_symbol('size', [self.h, self.w])]
+        data = []
+        if self.face is not None:
+            data.append(_symbol('face', [self.face]))
+        data.append(_symbol('size', [self.h, self.w]))
         if self.thickness is not None:
             data.append(_symbol('thickness', [self.thickness]))
         if self.bold:
             data.append(Symbol('bold'))
         if self.italic:
             data.append(Symbol('italic'))
+        if self.color is not None:
+            data.append(self.color.write())
         return _symbol('font', data)
 
     def write_justify(self):
@@ -328,6 +347,8 @@ class FontEffects(object):
             data.append(self.write_justify())
         if self.hide:
             data.append(Symbol('hide'))
+        if self.href is not None:
+            data.append(_symbol('href', [self.href]))
         return _symbol('effects', data)
 
 
@@ -419,11 +440,12 @@ class DrawArcV6(object):
         self.end = None
         self.stroke = None
         self.fill = None
+        self.uuid = None
 
     @staticmethod
     def parse(items):
         arc = DrawArcV6()
-        for i in items[1:]:
+        for c, i in enumerate(items[1:]):
             i_type = _check_is_symbol_list(i)
             if i_type == 'start':
                 arc.start = _get_xy(i)
@@ -435,6 +457,8 @@ class DrawArcV6(object):
                 arc.stroke = Stroke.parse(i)
             elif i_type == 'fill':
                 arc.fill = Fill.parse(i)
+            elif i_type == 'uuid':
+                arc.uuid = _get_uuid(items, c+1, 'arc')
             else:
                 raise SchError('Unknown arc attribute `{}`'.format(i))
         arc.box = Box([arc.start, arc.mid, arc.end])
@@ -447,6 +471,8 @@ class DrawArcV6(object):
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
+        if self.uuid is not None:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('arc', data)
 
 
@@ -457,11 +483,12 @@ class DrawCircleV6(object):
         self.radius = 0
         self.stroke = None
         self.fill = None
+        self.uuid = None
 
     @staticmethod
     def parse(items):
         circle = DrawCircleV6()
-        for i in items[1:]:
+        for c, i in enumerate(items[1:]):
             i_type = _check_is_symbol_list(i)
             if i_type == 'center':
                 circle.center = _get_xy(i)
@@ -471,6 +498,8 @@ class DrawCircleV6(object):
                 circle.stroke = Stroke.parse(i)
             elif i_type == 'fill':
                 circle.fill = Fill.parse(i)
+            elif i_type == 'uuid':
+                circle.uuid = _get_uuid(items, c+1, 'circle')
             else:
                 raise SchError('Unknown circle attribute `{}`'.format(i))
         p1 = PointXY(circle.center.x-circle.radius, circle.center.x-circle.radius)
@@ -484,6 +513,8 @@ class DrawCircleV6(object):
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
+        if self.uuid is not None:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('circle', data)
 
 
@@ -494,11 +525,12 @@ class DrawRectangleV6(object):
         self.end = None
         self.stroke = None
         self.fill = None
+        self.uuid = None
 
     @staticmethod
     def parse(items):
         rectangle = DrawRectangleV6()
-        for i in items[1:]:
+        for c, i in enumerate(items[1:]):
             i_type = _check_is_symbol_list(i)
             if i_type == 'start':
                 rectangle.start = _get_xy(i)
@@ -508,6 +540,8 @@ class DrawRectangleV6(object):
                 rectangle.stroke = Stroke.parse(i)
             elif i_type == 'fill':
                 rectangle.fill = Fill.parse(i)
+            elif i_type == 'uuid':
+                rectangle.uuid = _get_uuid(items, c+1, 'rectangle')
             else:
                 raise SchError('Unknown rectangle attribute `{}`'.format(i))
         rectangle.box = Box([rectangle.start, rectangle.end])
@@ -519,6 +553,8 @@ class DrawRectangleV6(object):
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
+        if self.uuid is not None:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('rectangle', data)
 
 
@@ -1311,8 +1347,7 @@ class BusEntry(object):
         _check_len_total(items, 5, 'bus entry')
         buse = BusEntry()
         buse.pos_x, buse.pos_y, buse.ang = _get_at(items, 1, 'bus entry')
-        values = _check_symbol_value(items, 2, 'bus entry size', 'size')
-        buse.size = _get_xy(values)
+        buse.size = _get_size(items, 2, 'bus entry')
         buse.stroke = Stroke.parse(items[3])
         buse.uuid = _get_uuid(items, 4, 'bus entry')
         return buse
@@ -1385,6 +1420,30 @@ class Text(object):
     def write(self):
         data = [self.text,
                 _symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
+                self.effects.write(), Sep(),
+                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+        return _symbol(self.name, data)
+
+
+class TextBox(object):
+    @staticmethod
+    def parse(items, name):
+        text = TextBox()
+        text.name = name
+        text.text = _check_str(items, 1, name)
+        text.pos_x, text.pos_y, text.ang = _get_at(items, 2, name)
+        text.size = _get_size(items, 3, name)
+        text.stroke = Stroke.parse(items[4])
+        text.fill = Fill.parse(items[5])
+        text.effects = _get_effects(items, 6, name)
+        text.uuid = _get_uuid(items, 7, name)
+        return text
+
+    def write(self):
+        data = [self.text, Sep(),
+                _symbol('at', [self.pos_x, self.pos_y, self.ang]), _symbol('size', [self.size.x, self.size.y]), Sep(),
+                self.stroke.write(), Sep(),
+                self.fill.write(), Sep(),
                 self.effects.write(), Sep(),
                 _symbol('uuid', [Symbol(self.uuid)]), Sep()]
         return _symbol(self.name, data)
@@ -1848,8 +1907,16 @@ class SchematicV6(Schematic):
                     sch.append(e.write())
                     old_type = e.type
                     sch.append(Sep())
+            # Arcs
+            _add_items(self.arcs, sch)
+            # Circles
+            _add_items(self.circles, sch)
+            # Rectangles
+            _add_items(self.rectangles, sch)
             # Images
             _add_items(self.bitmaps, sch)
+            # Text Boxes
+            _add_items(self.text_boxes, sch)
             # Texts
             _add_items(self.texts, sch)
             # Labels
@@ -1949,7 +2016,11 @@ class SchematicV6(Schematic):
         self.no_conn = []
         self.bus_entry = []
         self.wires = []
+        self.arcs = []
+        self.circles = []
+        self.rectangles = []
         self.bitmaps = []
+        self.text_boxes = []
         self.texts = []
         self.labels = []
         self.glabels = []
@@ -2011,8 +2082,16 @@ class SchematicV6(Schematic):
                 self.bus_entry.append(BusEntry.parse(e))
             elif e_type == 'bus' or e_type == 'wire' or e_type == 'polyline':
                 self.wires.append(SchematicWireV6.parse(e, e_type))
+            elif e_type == 'arc':
+                self.arcs.append(DrawArcV6.parse(e))
+            elif e_type == 'circle':
+                self.circles.append(DrawCircleV6.parse(e))
+            elif e_type == 'rectangle':
+                self.rectangles.append(DrawRectangleV6.parse(e))
             elif e_type == 'image':
                 self.bitmaps.append(SchematicBitmapV6.parse(e))
+            elif e_type == 'text_box':
+                self.texts.append(TextBox.parse(e, e_type))
             elif e_type == 'text':
                 self.texts.append(Text.parse(e, e_type))
             elif e_type == 'label':
