@@ -47,7 +47,7 @@ class SVG_PCB_PrintOptions(Any_PCB_PrintOptions):
 
 @output_class
 class SVG_PCB_Print(BaseOutput):  # noqa: F821
-    """ SVG PCB Print (Scalable Vector Graphics)
+    """ SVG PCB Print (Scalable Vector Graphics) *Deprecated*
         Exports the PCB to the scalable vector graphics format.
         This output is what you get from the 'File/Print' menu in pcbnew.
         The `pcb_print` is usually a better alternative. """

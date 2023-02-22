@@ -2511,7 +2511,7 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
-  # PDF PCB Print (Portable Document Format):
+  # PDF PCB Print (Portable Document Format) *Deprecated*:
   # This is the main format to document your PCB.
   # This output is what you get from the 'File/Print' menu in pcbnew.
   # The `pcb_print` is usually a better alternative.
@@ -3230,7 +3230,7 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
-  # SVG PCB Print (Scalable Vector Graphics):
+  # SVG PCB Print (Scalable Vector Graphics) *Deprecated*:
   # This output is what you get from the 'File/Print' menu in pcbnew.
   # The `pcb_print` is usually a better alternative.
   - name: 'svg_pcb_print_example'
@@ -3282,6 +3282,7 @@ outputs:
     layers: all
   # SVG Schematic Print:
   # This is a format to document your schematic.
+  # This output is what you get from the 'File/Plot' menu in eeschema.
   - name: 'svg_sch_print_example'
     comment: 'Exports the schematic in a vectorized graphics format.'
     type: 'svg_sch_print'
