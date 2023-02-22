@@ -710,7 +710,9 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
                     # Unhide hidden config
                     config = config[1:]
                 # Remove any extension
-                while '.' in config:
+                last_split = None
+                while '.' in config and last_split != config:
+                    last_split = config
                     config = os.path.splitext(config)[0]
                 # Try KiCad 5
                 sch = os.path.join(base_dir, config+'.sch')

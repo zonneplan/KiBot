@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.6.1] - UNRELEASED
-
+### Fixed
+- Problems to detect the schematic name when the path to the config contained a
+  dot that isn't used for an extension and some particular conditions were met.
 
 ## [1.6.0] - 2023-02-06
 ### Added
