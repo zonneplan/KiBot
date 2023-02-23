@@ -2067,6 +2067,9 @@ Use the `field_lcsc_part` option if KiBot fails to detect the schematic field co
 
 ### 3D models aliases
 
+This is a KiCad 6 feature that was removed in KiCad 7. If you use it please migrate to environment variables as KiCad 7 did.
+If you still interested on it continue reading.
+
 This is a very limited feature in KiCad. You can define an `ALIAS` and then use `ALIAS:MODEL_NAME`.
 The `ALIAS` will say where to look for `MODEL_NAME`. This looks coherent with the way KiCad handles symbols and footprints.
 But it currently has a huge limitation: this information is stored along with the user configuration and there is no way to
