@@ -22,8 +22,8 @@ import shlex
 from subprocess import check_output, STDOUT, CalledProcessError
 
 from .gs import GS
-from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES,
-                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST)
+from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, FAILED_EXECUTE, W_WRONGEXT,
+                   W_WRONGOAR, W_ECCLASST, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED, VIATYPE_MICROVIA, W_BLINDVIAS, W_MICROVIAS)
 from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
@@ -39,6 +39,7 @@ INF = float('inf')
 EC_SMALL_OAR = GS.from_mm(0.125)
 # The minimum drill tool
 EC_MIN_DRILL = GS.from_mm(0.1)
+YES_NO = ['no', 'yes']
 
 
 def do_round(v, dig):
@@ -306,7 +307,7 @@ class ReportOptions(BaseOptions):
         text = ''
         for t in sorted(self._tracks_m.keys()):
             text += self.do_replacements(line, {'track': t, 'count': self._tracks_m[t],
-                                         'defined': 'yes' if t in self._tracks_defined else 'no'})
+                                         'defined': YES_NO[t in self._tracks_defined]})
         return text
 
     def context_defined_vias(self, line):
@@ -336,7 +337,7 @@ class ReportOptions(BaseOptions):
             defined['count'] = self._vias[v]
             defined['aspect'] = aspect
             defined['producibility_level'] = producibility_level
-            defined['defined'] = 'yes' if (h, d) in self._vias_defined else 'no'
+            defined['defined'] = YES_NO[(h, d) in self._vias_defined]
             text += self.do_replacements(line, defined)
         return text
 
@@ -572,6 +573,7 @@ class ReportOptions(BaseOptions):
         self._drills_ec = {}
         track_type = 'TRACK' if GS.ki5 else 'PCB_TRACK'
         via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
+        self.thru_vias_count = self.blind_vias_count = self.micro_vias_count = self.vias_count = 0
         for t in tracks:
             tclass = t.GetClass()
             if tclass == track_type:
@@ -590,6 +592,14 @@ class ReportOptions(BaseOptions):
                 self.oar_vias_ec = min(self.oar_vias_ec, oar_ec)
                 self._drills_real[d] = self._drills_real.get(d, 0) + 1
                 self._drills_ec[d_ec] = self._drills_ec.get(d_ec, 0) + 1
+                self.vias_count += 1
+                via_t = via.GetViaType()
+                if via_t == VIATYPE_THROUGH:
+                    self.thru_vias_count += 1
+                elif via_t == VIATYPE_BLIND_BURIED:
+                    self.blind_vias_count += 1
+                elif via_t == VIATYPE_MICROVIA:
+                    self.micro_vias_count += 1
         self.track_min = min(self.track_d, self.track)
         ###########################################################
         # Drill (min)
@@ -695,11 +705,15 @@ class ReportOptions(BaseOptions):
         # Vias
         ###########################################################
         if GS.ki7:
-            self.micro_vias = 'unknown'
-            self.blind_vias = 'unknown'
+            self.micro_vias = YES_NO[GS.global_allow_microvias]
+            self.blind_vias = YES_NO[GS.global_allow_blind_buried_vias]
         else:
-            self.micro_vias = 'yes' if ds.m_MicroViasAllowed else 'no'
-            self.blind_vias = 'yes' if ds.m_BlindBuriedViaAllowed else 'no'
+            self.micro_vias = YES_NO[ds.m_MicroViasAllowed]
+            self.blind_vias = YES_NO[ds.m_BlindBuriedViaAllowed]
+        if self.blind_vias == 'no' and self.blind_vias_count:
+            logger.warning(W_BLINDVIAS+"Buried/blind vias not allowed, but found {}".format(self.blind_vias_count))
+        if self.micro_vias == 'no' and self.micro_vias_count:
+            logger.warning(W_MICROVIAS+"Micro vias not allowed, but found {}".format(self.micro_vias_count))
         self.uvia_pad = ds.m_MicroViasMinSize
         self.uvia_drill = ds.m_MicroViasMinDrill
         via_sizes = board.GetViasDimensionsList()

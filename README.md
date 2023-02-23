@@ -741,7 +741,11 @@ global:
         - *text*: Alias for value.
         - `value`: [string=''] Path to the 3D model.
         - *variable*: Alias for name.
-    - `castellated_pads`: [boolean=false] Has the PCB castelletad pads?
+    - `allow_blind_buried_vias`: [boolean=true] Allow the use of buried vias. This value is only used for KiCad 7+.
+                                 For KiCad 5 and 6 use the design rules settings, stored in the project.
+    - `allow_microvias`: [boolean=true] Allow the use of micro vias. This value is only used for KiCad 7+.
+                         For KiCad 5 and 6 use the design rules settings, stored in the project.
+    - `castellated_pads`: [boolean=false] Has the PCB castellated pads?
                           KiCad 6: you should set this in the Board Setup -> Board Finish -> Has castellated pads.
     - *copper_finish*: Alias for pcb_finish.
     - `copper_thickness`: [number|string] Copper thickness in micrometers (1 Oz is 35 micrometers).

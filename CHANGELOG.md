@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.6.1] - UNRELEASED
+### Added
+- Global options:
+  - allow_blind_buried_vias and allow_microvias for KiCad 7 (no longer in KiCad)
+- Report:
+  - Counters for total vias and by via type (vias_count, thru_vias_count,
+    blind_vias_count and micro_vias_count)
+  - Warnings when micro and/or blind vias aren't allowed, but we found them.
+
 ### Fixed
 - Problems to detect the schematic name when the path to the config contained a
   dot that isn't used for an extension and some particular conditions were met.

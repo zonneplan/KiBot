@@ -163,6 +163,9 @@ class GS(object):
     global_units = None
     global_use_dir_for_preflights = None
     global_variant = None
+    # Only for v7+
+    global_allow_blind_buried_vias = None
+    global_allow_microvias = None
 
     @staticmethod
     def set_sch(name):

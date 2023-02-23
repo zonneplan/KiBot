@@ -100,6 +100,10 @@ MOD_EXCLUDE_FROM_BOM = 8
 MOD_BOARD_ONLY = 16  # Footprint has no corresponding symbol
 # This is what a virtual component gets when loaded by KiCad 6
 MOD_VIRTUAL = MOD_EXCLUDE_FROM_POS_FILES | MOD_EXCLUDE_FROM_BOM
+# VIATYPE, not exported by KiCad
+VIATYPE_THROUGH = 3
+VIATYPE_BLIND_BURIED = 2
+VIATYPE_MICROVIA = 1
 
 # Supported values for "do not fit"
 DNF = {
@@ -253,6 +257,8 @@ W_BADPCB3DTXT = '(W113) '
 W_UNKPCB3DNAME = '(W114) '
 W_BADPCB3DSTK = '(W115) '
 W_EEDA3D = '(W116) '
+W_MICROVIAS = '(W117) '
+W_BLINDVIAS = '(W118) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",

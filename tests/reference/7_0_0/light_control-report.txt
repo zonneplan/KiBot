@@ -61,8 +61,9 @@ Drill: 0.35 mm (14 mils)
 Via: 0.51/0.25 mm (20/10 mils)
 
 - By design rules: 0.46/0.2 mm (18/8 mils)
-- Micro via: unknown [0.2/0.1 mm (8/4 mils)]
-- Burried/blind via: unknown
+- Micro via: yes [0.2/0.1 mm (8/4 mils)]
+- Buried/blind via: yes
+- Total: 56 (thru: 56 buried/blind: 0 micro: 0)
 
 Outer Annular Ring: 0.08 mm (3 mils)
 

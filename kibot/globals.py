@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -125,7 +125,7 @@ class Globals(FiltersOptions):
                 The values defined here has precedence over the KiCad configuration.
                 Related to https://gitlab.com/kicad/code/kicad/-/issues/3792 """
             self.castellated_pads = False
-            """ Has the PCB castelletad pads?
+            """ Has the PCB castellated pads?
                 KiCad 6: you should set this in the Board Setup -> Board Finish -> Has castellated pads """
             self.copper_finish = None
             """ {pcb_finish} """
@@ -243,6 +243,12 @@ class Globals(FiltersOptions):
             self.field_lcsc_part = ''
             """ The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
                 When empty KiBot will try to discover it """
+            self.allow_blind_buried_vias = True
+            """ Allow the use of buried vias. This value is only used for KiCad 7+.
+                For KiCad 5 and 6 use the design rules settings, stored in the project """
+            self.allow_microvias = True
+            """ Allow the use of micro vias. This value is only used for KiCad 7+.
+                For KiCad 5 and 6 use the design rules settings, stored in the project """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

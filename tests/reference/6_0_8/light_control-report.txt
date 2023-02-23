@@ -62,7 +62,8 @@ Via: 0.51/0.25 mm (20/10 mils)
 
 - By design rules: 0.46/0.2 mm (18/8 mils)
 - Micro via: no [0.2/0.1 mm (8/4 mils)]
-- Burried/blind via: no
+- Buried/blind via: no
+- Total: 56 (thru: 56 buried/blind: 0 micro: 0)
 
 Outer Annular Ring: 0.08 mm (3 mils)
 
