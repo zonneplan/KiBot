@@ -165,7 +165,7 @@
       (net 3 "VCC") (tstamp ca5dee75-0100-4e80-9909-6f982562aed0))
     (pad "2" smd roundrect (at 0.9125 0 180) (size 1.025 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.243902)
       (net 2 "Net-(C1-Pad1)") (tstamp 2eaaa66f-26c8-4f24-a908-203ddfbb8a05))
-    (model "${KICAD6_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0805_2012Metrico.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
