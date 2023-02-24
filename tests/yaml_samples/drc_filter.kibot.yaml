@@ -34,3 +34,6 @@ preflight:
     - filter_msg: 'Ignore library issues'
       error: lib_footprint_issues
       regexp: '.*'
+    - filter_msg: 'Ignore library missmatches'
+      error: lib_footprint_mismatch
+      regexp: '.*'
