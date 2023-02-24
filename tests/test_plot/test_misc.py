@@ -855,7 +855,8 @@ def test_import_7(test_dir):
     if context.ki7():
         ctx.board_file.replace('kicad_pcb', 'kicad_pro')
         with open(ctx.board_file.replace('kicad_pcb', 'kicad_pro'), 'wt') as f:
-            f.write(json.dumps({"board": {"design_settings": {"rule_severities": {"lib_footprint_issues": "ignore"}}}}))
+            f.write(json.dumps({"board": {"design_settings": {"rule_severities": {"lib_footprint_issues": "ignore",
+                               "lib_footprint_mismatch": "ignore"}}}}))
     ctx.run(extra=[])
     ctx.expect_out_file('3Rs-drc.txt')
     ctx.clean_up()
