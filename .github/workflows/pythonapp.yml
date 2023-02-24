@@ -29,11 +29,11 @@ jobs:
   test:
     strategy:
       matrix:
-        ki_release: [latest, ki6]
+        ki_release: [latest, ki6, nightly]
         w_tests: [g1, g2, g3]
 
     runs-on: ubuntu-latest
-    container: setsoft/kicad_auto_test:${{ matrix.ki_release }}
+    container: ghcr.io/inti-cmnb/kicad_auto_test:${{ matrix.ki_release }}
 
     steps:
     - uses: actions/checkout@v3
