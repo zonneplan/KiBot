@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ $KI_RELEASE == "nightly" ]; then
      export KIAUS_USE_NIGHTLY="7.0"
 fi
