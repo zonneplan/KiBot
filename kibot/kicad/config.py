@@ -337,7 +337,8 @@ class KiConf(object):
         names = []
         if GS.ki6 and ki6_diff:
             # KiCad 6 specific name goes first when using KiCad 6
-            names.append('KICAD{}_{}'.format(GS.kicad_version_major, base_name))
+            for n in reversed(range(6, GS.kicad_version_major+1)):
+                names.append('KICAD{}_{}'.format(n, base_name))
         # KiCad 5 names, allowed even when using KiCad 6
         if not only_old:
             # A KICAD_* is valid

@@ -54,18 +54,20 @@ class Environment(Optionable):
             defs['KICAD_USER_TEMPLATE_DIR'] = self.user_templates
 
     def define_k6_vars(self, defs):
-        if self.symbols:
-            defs['KICAD6_SYMBOL_DIR'] = self.symbols
-        if self.footprints:
-            defs['KICAD6_FOOTPRINT_DIR'] = self.footprints
-        if self.models_3d:
-            defs['KICAD6_3DMODEL_DIR'] = self.models_3d
-        if self.templates:
-            defs['KICAD6_TEMPLATE_DIR'] = self.templates
         if self.user_templates:
             defs['KICAD_USER_TEMPLATE_DIR'] = self.user_templates
-        if self.third_party:
-            defs['KICAD6_3RD_PARTY'] = self.third_party
+        for n in reversed(range(6, GS.kicad_version_major+1)):
+            ki_ver = 'KICAD'+str(n)
+            if self.symbols:
+                defs[ki_ver+'_SYMBOL_DIR'] = self.symbols
+            if self.footprints:
+                defs[ki_ver+'_FOOTPRINT_DIR'] = self.footprints
+            if self.models_3d:
+                defs[ki_ver+'_3DMODEL_DIR'] = self.models_3d
+            if self.templates:
+                defs[ki_ver+'_TEMPLATE_DIR'] = self.templates
+            if self.third_party:
+                defs[ki_ver+'_3RD_PARTY'] = self.third_party
 
     def config(self, parent):
         super().config(parent)
