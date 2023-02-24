@@ -82,6 +82,8 @@ def test_erc_warning_2(test_dir):
 
 def test_drc_1(test_dir):
     prj = name = 'bom'
+    if context.ki7():
+        prj = name = 'bom_ok_drc'
     ctx = context.TestContext(test_dir, prj, 'drc', '')
     ctx.run()
     # Check all outputs are there
