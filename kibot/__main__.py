@@ -93,7 +93,7 @@ if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
     sys_path.insert(0, pcbnew_path)
     # This helps other tools like iBoM to pick-up the right pcbnew module
     if 'PYTHONPATH' in os.environ:
-        os.environ['PYTHONPATH'] += ':'+pcbnew_path
+        os.environ['PYTHONPATH'] += os.pathsep+pcbnew_path
     else:
         os.environ['PYTHONPATH'] = pcbnew_path
     nightly = True
