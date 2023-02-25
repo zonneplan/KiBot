@@ -1,0 +1,11 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'print_dxf_svg'
+    comment: "Plot schematic (DXF)"
+    type: dxf_sch_print
+    dir: .
+    options:
+      output: Schematic.dxf
