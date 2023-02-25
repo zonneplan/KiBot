@@ -263,6 +263,55 @@ jobs:
           ghcr.io/inti-cmnb/kicad6_auto_full:dev
         labels: ${{ steps.meta.outputs.labels }}
 
+  push_to_registry_ng:
+    name: Push Docker image to Docker Hub (KiCad 7)
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      packages: write
+      contents: read
+    # Don't create `dev` images using the `master`
+    if: github.ref == 'refs/heads/dev'
+
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: |
+          setsoft/kicad_auto_test
+          ghcr.io/inti-cmnb/kicad_auto_test
+          ghcr.io/inti-cmnb/kicad7_auto_full
+        tags: |
+          type=raw,dev_k7
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v3
+      with:
+        context: tools/dev_image_k7
+        push: true
+        tags: |
+          setsoft/kicad_auto_test:dev_k7
+          ghcr.io/inti-cmnb/kicad_auto_test:dev_k7
+          # ghcr.io/inti-cmnb/kicad7_auto_full:dev
+        labels: ${{ steps.meta.outputs.labels }}
+
   coveralls:
     name: Finish Coveralls
     needs: test
