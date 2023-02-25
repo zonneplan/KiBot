@@ -309,7 +309,6 @@ jobs:
         tags: |
           setsoft/kicad_auto_test:dev_k7
           ghcr.io/inti-cmnb/kicad_auto_test:dev_k7
-          # ghcr.io/inti-cmnb/kicad7_auto_full:dev
         labels: ${{ steps.meta.outputs.labels }}
 
   coveralls:
