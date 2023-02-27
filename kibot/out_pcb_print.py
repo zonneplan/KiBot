@@ -573,21 +573,10 @@ class PCB_PrintOptions(VariantOptions):
                 e.SetLayer(tmp_layer)
                 moved.append(e)
         for e in list(GS.board.Zones()):
-            found = False
-            # Remove from the set
             layers = e.GetLayerSet()
             if GS.layers_contains(layers, id):
-                layers.removeLayer(id)
-                e.SetLayerSet(layers)
-                removed.append(e)
-                found = True
-            # But this isn't enough if the zone is only one layer, move it to another
-            if GS.zone_get_first_layer(e) == id:
-                e.SetLayer(tmp_layer)
-                moved.append(e)
-                found = True
-            if found:
                 zones.append(e)
+                e.UnFill()
         via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
         for e in GS.board.GetTracks():
             if e.GetClass() == via_type:
@@ -643,21 +632,10 @@ class PCB_PrintOptions(VariantOptions):
                 e.SetLayer(tmp_layer)
                 moved.append(e)
         for e in list(GS.board.Zones()):
-            found = False
-            # Remove from the set
             layers = e.GetLayerSet()
             if GS.layers_contains(layers, id):
-                layers.removeLayer(id)
-                e.SetLayerSet(layers)
-                removed.append(e)
-                found = True
-            # But this isn't enough if the zone is only one layer, move it to another
-            if GS.zone_get_first_layer(e) == id:
-                e.SetLayer(tmp_layer)
-                moved.append(e)
-                found = True
-            if found:
                 zones.append(e)
+                e.UnFill()
         via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
         for e in GS.board.GetTracks():
             if e.GetClass() == via_type:
