@@ -215,7 +215,7 @@ def load_board(pcb_file=None, forced=False):
         with hide_stderr():
             board = pcbnew.LoadBoard(pcb_file)
         if BasePreFlight.get_option('check_zone_fills'):
-            pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+            GS.fill_zones(board)
         if GS.global_units and GS.ki6:
             # In KiCad 6 "dimensions" has units.
             # The default value is DIM_UNITS_MODE_AUTOMATIC.

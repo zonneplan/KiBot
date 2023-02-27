@@ -33,7 +33,7 @@ import re
 import os
 import subprocess
 import importlib
-from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, F_Mask, B_Mask, ZONE_FILLER
+from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, F_Mask, B_Mask
 import shlex
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
@@ -614,7 +614,7 @@ class PCB_PrintOptions(VariantOptions):
             via.SetDrill(drill)
             via.SetWidth(width)
         if len(zones):
-            ZONE_FILLER(GS.board).Fill(zones)
+            GS.fill_zones(GS.board, zones)
         # Add it to the list
         filelist.append((pc.GetPlotFileName(), self.pad_color))
 
@@ -704,7 +704,7 @@ class PCB_PrintOptions(VariantOptions):
             via.SetTopLayer(top)
             via.SetBottomLayer(bottom)
         if len(zones):
-            ZONE_FILLER(GS.board).Fill(zones)
+            GS.fill_zones(GS.board, zones)
         # Add it to the list
         filelist.append((pc.GetPlotFileName(), via_c))
 

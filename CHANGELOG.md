@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Problems to detect the schematic name when the path to the config contained a
   dot that isn't used for an extension and some particular conditions were met.
+- PCB Print: KiCad crashing on some complex filled zones (#396)
 
 ## [1.6.0] - 2023-02-06
 ### Added

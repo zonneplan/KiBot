@@ -584,6 +584,13 @@ class GS(object):
         return bbox
 
     @staticmethod
+    def fill_zones(board, zones=None):
+        if zones is None:
+            zones = board.Zones()
+        pcbnew.ZONE_FILLER(board).Fill(zones)
+        board.BuildConnectivity()
+
+    @staticmethod
     def get_kiauto_video_name(cmd):
         """ Compute the name for the video captured by KiAuto """
         command = os.path.basename(cmd[0])[:-3]
