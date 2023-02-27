@@ -15,6 +15,7 @@ from .macros import macros, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
+from .kicad.config import KiConf
 from .kiplot import load_board
 from .misc import DRC_ERROR
 from .log import get_logger
@@ -51,6 +52,9 @@ class Run_DRC(BasePreFlight):  # noqa: F821
 
     def run(self):
         command = self.ensure_tool('KiAuto')
+        if GS.ki7:
+            # KiCad 7 can do some library parity checks, but we need to be sure that the KICAD7* vars are defined
+            KiConf.init(GS.pcb_file)
         output = self.get_targets()[0]
         os.makedirs(os.path.dirname(output), exist_ok=True)
         logger.debug('DRC report: '+output)

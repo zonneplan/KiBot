@@ -58,6 +58,39 @@ def test_print_sch_svg_ok(test_dir):
     ctx.clean_up()
 
 
+# @pytest.mark.slow
+# @pytest.mark.eeschema
+# def test_print_sch_ps_ok(test_dir):
+#     prj = 'test_v5'
+#     ctx = context.TestContext(test_dir, prj, 'print_sch_ps')
+#     ctx.run()
+#     # Check all outputs are there
+#     ctx.expect_out_file(SVG_FILE.replace('svg', 'ps'))
+#     ctx.clean_up()
+
+
+# @pytest.mark.slow
+# @pytest.mark.eeschema
+# def test_print_sch_dxf_ok(test_dir):
+#     prj = 'test_v5'
+#     ctx = context.TestContext(test_dir, prj, 'print_sch_dxf')
+#     ctx.run()
+#     # Check all outputs are there
+#     ctx.expect_out_file(SVG_FILE.replace('svg', 'dxf'))
+#     ctx.clean_up()
+
+
+# @pytest.mark.slow
+# @pytest.mark.eeschema
+# def test_print_sch_hpgl_ok(test_dir):
+#     prj = 'test_v5'
+#     ctx = context.TestContext(test_dir, prj, 'print_sch_hpgl')
+#     ctx.run()
+#     # Check all outputs are there
+#     ctx.expect_out_file(SVG_FILE.replace('svg', 'hpgl'))
+#     ctx.clean_up()
+
+
 @pytest.mark.slow
 @pytest.mark.eeschema
 def test_print_sch_svg_fail(test_dir):
