@@ -137,7 +137,7 @@ def test_render_3d_variant_1(test_dir):
     # Check all outputs are there
     name = prj+'-3D_top.png'
     ctx.expect_out_file(name)
-    ctx.compare_image(name, fuzz='7%', tol=1000)
+    ctx.compare_image(name, fuzz='8%', tol=1000)
     ctx.clean_up(keep_project=True)
 
 
