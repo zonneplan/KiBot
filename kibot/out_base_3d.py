@@ -18,7 +18,7 @@ from . import log
 logger = log.get_logger()
 
 
-def do_expand_env(fname, used_extra, extra_debug):
+def do_expand_env(fname, used_extra, extra_debug, lib_nickname):
     # Is it using ALIAS:xxxxx?
     force_used_extra = False
     if ':' in fname:
@@ -40,6 +40,18 @@ def do_expand_env(fname, used_extra, extra_debug):
         if os.path.isfile(full_name_cwd):
             full_name = full_name_cwd
             force_used_extra = True
+        else:
+            # We still missing the 3D model
+            # Try relative to the footprint lib
+            aliases = KiConf.get_fp_lib_aliases()
+            lib_alias = aliases.get(lib_nickname)
+            if lib_alias is not None:
+                full_name_lib = os.path.join(lib_alias.uri, fname)
+                if os.path.isfile(full_name_lib):
+                    logger.debug("- Using path relative to `{}` for `{}` ({})".format(lib_nickname, fname, full_name_lib))
+                    full_name = full_name_lib
+                    # KiCad 5 and 6 will need help
+                    force_used_extra = not GS.ki7
         if force_used_extra:
             used_extra[0] = True
         return full_name
@@ -204,6 +216,8 @@ class Base3DOptions(VariantOptions):
         # Look for all the footprints
         for m in GS.get_modules():
             ref = m.GetReference()
+            lib_id = m.GetFPID()
+            lib_nickname = str(lib_id.GetLibNickname())
             sch_comp = all_comps_hash.get(ref, None)
             # Extract the models (the iterator returns copies)
             models = m.Models()
@@ -221,7 +235,7 @@ class Base3DOptions(VariantOptions):
                     # Skip filtered footprints
                     continue
                 used_extra = [False]
-                full_name = do_expand_env(m3d.m_Filename, used_extra, extra_debug)
+                full_name = do_expand_env(m3d.m_Filename, used_extra, extra_debug, lib_nickname)
                 if not os.path.isfile(full_name):
                     logger.debugl(2, 'Missing 3D model file {} ({})'.format(full_name, m3d.m_Filename))
                     # Missing 3D model
