@@ -136,7 +136,7 @@ Notes:
 [**Requests**](https://pypi.org/project/Requests/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/Requests/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/Requests/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-requests)
 - Mandatory
 
-[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v2.2.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v2.2.1 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `dxf_sch_print`, `gencad`, `hpgl_sch_print`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `ps_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`, `vrml`
 - Optional to:
   - Compare schematics for `diff` (v2.2.0)
@@ -785,6 +785,10 @@ global:
         - `templates`: [string=''] System level templates dir. KiCad 5: KICAD_TEMPLATE_DIR. KiCad 6: KICAD6_TEMPLATE_DIR.
         - `third_party`: [string=''] 3rd party dir. KiCad 6: KICAD6_3RD_PARTY.
         - `user_templates`: [string=''] User level templates dir. KiCad 5/6: KICAD_USER_TEMPLATE_DIR.
+    - `erc_grid`: [number=50] Grid size used for the ERC. This value must be in mils.
+                  This is needed for KiCad 7 in order to run the off grid check.
+                  Shouldn't be needed in KiCad 8.
+                  https://gitlab.com/kicad/code/kicad/-/issues/14110.
     - `extra_pth_drill`: [number=0.1] How many millimeters the manufacturer will add to plated holes.
                          This is because the plating reduces the hole, so you need to use a bigger drill.
                          For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/.

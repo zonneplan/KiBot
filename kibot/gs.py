@@ -166,6 +166,7 @@ class GS(object):
     # Only for v7+
     global_allow_blind_buried_vias = None
     global_allow_microvias = None
+    global_erc_grid = None
 
     @staticmethod
     def set_sch(name):

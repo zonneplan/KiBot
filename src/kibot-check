@@ -584,9 +584,9 @@ deps = '{\
                 "max_version": null,\
                 "output": "run_erc",\
                 "version": [\
-                    1,\
-                    5,\
-                    4\
+                    2,\
+                    2,\
+                    1\
                 ]\
             },\
             {\

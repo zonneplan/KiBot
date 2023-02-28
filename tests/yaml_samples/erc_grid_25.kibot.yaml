@@ -1,0 +1,14 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  erc_grid: 25
+
+preflight:
+  run_erc: true
+  erc_warnings: true
+  filters:
+    - filter: 'Ignore KiCad 6 lib_symbol_issues'
+      error: lib_symbol_issues
+      regex: ''

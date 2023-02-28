@@ -251,6 +251,11 @@ class Globals(FiltersOptions):
             self.allow_microvias = True
             """ Allow the use of micro vias. This value is only used for KiCad 7+.
                 For KiCad 5 and 6 use the design rules settings, stored in the project """
+            self.erc_grid = 50
+            """ Grid size used for the ERC. This value must be in mils.
+                This is needed for KiCad 7 in order to run the off grid check.
+                Shouldn't be needed in KiCad 8.
+                https://gitlab.com/kicad/code/kicad/-/issues/14110 """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot
