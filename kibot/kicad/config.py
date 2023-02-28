@@ -507,7 +507,8 @@ class KiConf(object):
 
     def get_sym_lib_aliases(fname=None):
         if KiConf.lib_aliases is None:
-            fname |= GS.sch_file
+            if fname is None:
+                fname = GS.sch_file
             KiConf.init(fname)
             pattern = '*.kicad_sym' if GS.ki6 else '*.lib'
             KiConf.lib_aliases = KiConf.load_all_lib_aliases(SYM_LIB_TABLE, KiConf.sym_lib_dir, pattern)
@@ -515,7 +516,8 @@ class KiConf(object):
 
     def get_fp_lib_aliases(fname=None):
         if KiConf.fp_aliases is None:
-            fname |= GS.pcb_file
+            if fname is None:
+                fname = GS.pcb_file
             KiConf.init(fname)
             KiConf.fp_aliases = KiConf.load_all_lib_aliases(FP_LIB_TABLE, KiConf.footprint_dir, '*.pretty')
         return KiConf.fp_aliases
