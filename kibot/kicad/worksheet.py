@@ -42,8 +42,8 @@ else:
     FILL_T_FILLED_SHAPE = 0
     SHAPE_T_POLY = 4
 from .sexpdata import load, SExpData
-from .v6_sch import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
-                     _check_relaxed, _get_points, _check_symbol_str)
+from .sexp_helpers import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
+                           _check_relaxed, _get_points, _check_symbol_str)
 from ..svgutils.transform import ImageElement, GroupElement
 from ..misc import W_WKSVERSION
 from .. import log
