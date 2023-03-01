@@ -119,7 +119,7 @@ def test_kicad_conf_sym_err_1(monkeypatch):
     with monkeypatch.context() as m:
         m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_err_1')
         res = check_load_conf(dir='kicad_err_1', catch_conf_error=True)
-    assert "raise KiConfError('Symbol libs table missing signature" in res, res
+    assert "Too many closing brackets. Expected no character left in the sexp" in res, res
 
 
 def test_kicad_conf_sym_err_2(monkeypatch):
@@ -128,7 +128,7 @@ def test_kicad_conf_sym_err_2(monkeypatch):
     with monkeypatch.context() as m:
         m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_err_2')
         res = check_load_conf(dir='kicad_err_2', catch_conf_error=True)
-    assert "raise KiConfError('Unknown symbol table entry" in res, res
+    assert "Unknown lib table entry" in res, res
 
 
 def mocked_get_path_1(name, scheme):
