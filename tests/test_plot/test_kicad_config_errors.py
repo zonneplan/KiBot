@@ -18,7 +18,6 @@ import logging
 import sysconfig
 from subprocess import run, STDOUT, PIPE
 from . import context
-from kibot.misc import EXIT_BAD_CONFIG
 from kibot.kicad.config import KiConf
 from kibot.gs import GS
 
@@ -27,16 +26,13 @@ cov = coverage.Coverage()
 _real_posix_prefix = None
 
 
+@pytest.mark.skipif(context.ki6(), reason="sym-lib-table used by KiCad 5")
 def test_kicad_conf_bad_sym_lib_table(test_dir):
     """ Check various problems in the sym-lib-table file """
-    if context.ki6():
-        # We currently don't use the sym-lib-table for KiCad 6.
-        # All data is in the Schematic file.
-        return
     sch = 'sym-lib-table_errors/kibom-test'
     ctx = context.TestContextSCH(test_dir, sch, 'int_bom_simple_csv')
-    ctx.run(EXIT_BAD_CONFIG, extra_debug=True)
-    ctx.search_err('Malformed lib entry')
+    ctx.run(extra_debug=True)
+    # ctx.search_err('Malformed lib entry') Now the lack of descr isn't an error
     ctx.search_err(r'Unable to expand .?BOGUS.? in')
     ctx.search_err(r'unnamed LibAlias')
     ctx.clean_up()
