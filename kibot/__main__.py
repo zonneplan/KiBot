@@ -36,7 +36,7 @@ Options:
   -C, --cli-order                  Generate outputs using the indicated order
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -D, --dont-stop                  Try to continue if an output fails
-  -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
+  -e SCHEMA, --schematic SCHEMA    The schematic file (.sch/.kicad_sch)
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
