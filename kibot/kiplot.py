@@ -685,17 +685,25 @@ def guess_ki6_sch(schematics):
     return None
 
 
+def avoid_mixing_5_and_6():
+    logger.error('Found KiCad 5 and KiCad 6 files, make sure the whole project uses one version')
+    exit(EXIT_BAD_CONFIG)
+
+
 def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, sug_e=True):
     schematic = a_schematic
     if not schematic and a_board_file:
         base = os.path.splitext(a_board_file)[0]
         sch = os.path.join(base_dir, base+'.sch')
-        if os.path.isfile(sch):
+        kicad_sch = os.path.join(base_dir, base+'.kicad_sch')
+        found_sch = os.path.isfile(sch)
+        found_kicad_sch = os.path.isfile(kicad_sch)
+        if found_sch and found_kicad_sch:
+            avoid_mixing_5_and_6()
+        if found_sch:
             schematic = sch
-        else:
-            sch = os.path.join(base_dir, base+'.kicad_sch')
-            if os.path.isfile(sch):
-                schematic = sch
+        elif GS.ki6 and found_kicad_sch:
+            schematic = kicad_sch
     if not schematic:
         schematics = glob(os.path.join(base_dir, '*.sch'))
         if GS.ki6:
@@ -716,13 +724,16 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
                     config = os.path.splitext(config)[0]
                 # Try KiCad 5
                 sch = os.path.join(base_dir, config+'.sch')
-                if os.path.isfile(sch):
+                found_sch = os.path.isfile(sch)
+                # Try KiCad 6
+                kicad_sch = os.path.join(base_dir, config+'.kicad_sch')
+                found_kicad_sch = os.path.isfile(kicad_sch)
+                if found_sch and found_kicad_sch:
+                    avoid_mixing_5_and_6()
+                if found_sch:
                     schematic = sch
-                elif GS.ki6:
-                    # Try KiCad 6
-                    sch = os.path.join(base_dir, config+'.kicad_sch')
-                    if os.path.isfile(sch):
-                        schematic = sch
+                elif GS.ki6 and found_kicad_sch:
+                    schematic = kicad_sch
             if not schematic:
                 # Look for a schematic with a PCB and/or project
                 for sch in schematics:
