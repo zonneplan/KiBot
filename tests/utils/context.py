@@ -486,7 +486,7 @@ class TestContext(object):
         return self.search_not_in_file(os.path.join(self.sub_dir, file), texts)
 
     def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False, fuzz='5%', tol=0, height='87%',
-                      off_y='0'):
+                      off_y='0', sub=False):
         """ For images and single page PDFs """
         if reference is None:
             reference = image
@@ -494,7 +494,7 @@ class TestContext(object):
             reference = self.get_out_path(reference)
         else:
             reference = os.path.join(REF_DIR, reference)
-        image = self.get_out_path(image)
+        image = self.get_out_path(image, sub)
         png_ref = None
         if reference[-3:] == 'svg':
             png_ref = reference[:-3]+'png'
