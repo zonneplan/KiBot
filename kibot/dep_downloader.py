@@ -73,7 +73,7 @@ Dependencies:
     github: yaqwsx/KiKit
     pypi: KiKit
     downloader: pytool
-    version: 1.3.0
+    version: 1.3.0.4
   - from: KiKit
     role: Separate multiboard projects
   - name: Xvfbwrapper

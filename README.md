@@ -143,7 +143,7 @@ Notes:
   - Show KiAuto installation information for `info` (v2.0.0)
   - Print the page frame in GUI mode for `pcb_print` (v1.6.7)
 
-[**KiKit**](https://github.com/yaqwsx/KiKit) v1.3.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/yaqwsx/KiKit) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiKit**](https://github.com/yaqwsx/KiKit) v1.3.0.4 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/yaqwsx/KiKit) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `panelize`, `stencil_3d`, `stencil_for_jig`
 - Optional to separate multiboard projects for general use
 
