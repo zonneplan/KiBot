@@ -11,7 +11,7 @@ from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
-from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD
+from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD, MOD_ALLOW_MISSING_COURTYARD
 if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
@@ -706,7 +706,8 @@ class VariantOptions(BaseOptions):
                 w = bbox.GetWidth()
                 h = bbox.GetHeight()
                 m_cen = m.GetCenter()
-                logger.warning(W_NOCRTYD+"Missing courtyard for `{}`".format(ref))
+                if not (m.GetAttributes() & MOD_ALLOW_MISSING_COURTYARD):
+                    logger.warning(W_NOCRTYD+"Missing courtyard for `{}`".format(ref))
             # Compute the offset
             off_x = m_cen.x - m_pos.x
             off_y = m_cen.y - m_pos.y

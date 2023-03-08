@@ -98,6 +98,9 @@ MOD_SMD = 2
 MOD_EXCLUDE_FROM_POS_FILES = 4
 MOD_EXCLUDE_FROM_BOM = 8
 MOD_BOARD_ONLY = 16  # Footprint has no corresponding symbol
+MOD_JUST_ADDED = 32  # The footprint was added by the netlist update
+MOD_ALLOW_SOLDERMASK_BRIDGES = 64
+MOD_ALLOW_MISSING_COURTYARD = 128
 # This is what a virtual component gets when loaded by KiCad 6
 MOD_VIRTUAL = MOD_EXCLUDE_FROM_POS_FILES | MOD_EXCLUDE_FROM_BOM
 # VIATYPE, not exported by KiCad
