@@ -809,6 +809,7 @@ global:
                               KiCad 6: you should set this in the Board Setup -> Physical Stackup.
     - `kiauto_time_out_scale`: [number=0.0] Time-out multiplier for KiAuto operations.
     - `kiauto_wait_start`: [number=0] Time to wait for KiCad in KiAuto operations.
+    - `kicad_dnp_applied`: [boolean=true] The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag before running any filter.
     - `out_dir`: [string=''] Base output dir, same as command line `--out-dir`.
     - `output`: [string='%f-%i%I%v.%x'] Default pattern for output file names. Affected by global options.
     - `pcb_finish`: [string='HAL'] Finishing used to protect pads. Currently used for documentation and to choose default colors.
@@ -5454,21 +5455,21 @@ The images are based on [kicad5_debian](https://github.com/INTI-CMNB/kicad_auto/
 ([setsoft/kicad_debian](https://hub.docker.com/repository/docker/setsoft/kicad_debian) on Docker Hub), containing KiCad on Debian GNU/Linux.
 
 If you need to run the current development version of KiBot you can use the following docker images:
-[ghcr.io/inti-cmnb/kicad5_auto:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto) or
-[ghcr.io/inti-cmnb/kicad6_auto:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto)
+[ghcr.io/inti-cmnb/kicad5_auto_full:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto_full) or
+[ghcr.io/inti-cmnb/kicad6_auto_full:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto_full)
 ([setsoft/kicad_auto:dev](https://hub.docker.com/repository/docker/setsoft/kicad_auto)).
 These images are based on the *full* (also named *test*) images.
 
 The most important images are:
 
-| Name                                 | KiBot        | KiCad |
-| :----------------------------------- | ------------ | ----: |
-| ghcr.io/inti-cmnb/kicad5_auto:latest | last release | 5.1.9 |
-| ghcr.io/inti-cmnb/kicad6_auto:latest | last release | 6.x   |
-| ghcr.io/inti-cmnb/kicad5_auto:dev    | git code     | 5.1.9 |
-| ghcr.io/inti-cmnb/kicad6_auto:dev    | git code     | 6.x   |
-| ghcr.io/inti-cmnb/kicad5_auto:1.2.0  | 1.2.0        | 5.1.9 |
-| ghcr.io/inti-cmnb/kicad6_auto:1.2.0  | 1.2.0        | 6.0.5 |
+| Name                                      | KiBot        | KiCad |
+| :---------------------------------------- | ------------ | ----: |
+| ghcr.io/inti-cmnb/kicad5_auto:latest      | last release | 5.1.9 |
+| ghcr.io/inti-cmnb/kicad6_auto:latest      | last release | 6.x   |
+| ghcr.io/inti-cmnb/kicad5_auto_full:dev    | git code     | 5.1.9 |
+| ghcr.io/inti-cmnb/kicad6_auto_full:dev    | git code     | 6.x   |
+| ghcr.io/inti-cmnb/kicad5_auto:1.2.0       | 1.2.0        | 5.1.9 |
+| ghcr.io/inti-cmnb/kicad6_auto:1.2.0       | 1.2.0        | 6.0.5 |
 
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
