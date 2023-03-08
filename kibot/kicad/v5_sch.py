@@ -859,6 +859,7 @@ class SchematicComponent(object):
         - footprint_w: width of the footprint (pads only).
         - footprint_h: height of the footprint (pads only)
         - qty: amount of this part used.
+        - kicad_dnp: is the KiCad v7 DNP flag. If not defined (v5/6) is None and is like False.
         """
     ref_re = re.compile(r'([^\d]+)([\?\d]+)')
 
@@ -890,12 +891,15 @@ class SchematicComponent(object):
         self.virtual = False
         self.tht = False
         # KiCad 6 SCH flags
-        self.in_bom = True
-        self.on_board = True
+        self.in_bom = True          # not Exclude from bill of materials
+        self.on_board = True        # not Exclude from BoM
         # KiCad 6 PCB flags
-        self.in_bom_pcb = True
-        self.in_pos = True
-        self.in_pcb_only = False
+        self.in_bom_pcb = True      # not Exclude from bill of materials
+        self.in_pos = True          # not Exclude from position files
+        self.in_pcb_only = False    # Not in schematic
+        # KiCad 7 PCB flags
+        self.kicad_dnp = None       # Do Not Populate
+        # Exclude from simulation is a field Sim.Enable
 
     def get_field_value(self, field):
         field = field.lower()

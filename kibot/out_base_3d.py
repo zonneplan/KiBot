@@ -7,6 +7,7 @@ from fnmatch import fnmatch
 import os
 import requests
 from .EasyEDA.easyeda_3d import download_easyeda_3d_model
+from .fil_base import reset_filters
 from .misc import W_MISS3D, W_FAILDL, W_DOWN3D, DISABLE_3D_MODEL_TEXT
 from .gs import GS
 from .optionable import Optionable
@@ -195,10 +196,6 @@ class Base3DOptions(VariantOptions):
         is_copy_mode = rename_filter is not None
         rel_dirs = getattr(rename_data, 'rel_dirs', [])
         extra_debug = GS.debug_level > 3
-        # Get a list of components in the schematic. Enables downloading LCSC parts.
-        if all_comps is None and GS.sch_file:
-            GS.load_sch()
-            all_comps = GS.sch.get_components()
         if all_comps is None:
             all_comps = []
         all_comps_hash = {c.ref: c for c in all_comps}
@@ -289,13 +286,29 @@ class Base3DOptions(VariantOptions):
 
     def filter_components(self, highlight=None, force_wrl=False):
         if not self._comps:
+            # No filters, but we need to apply some stuff
+            all_comps = None
+            dnp_removed = False
+            # Get a list of components in the schematic. Enables downloading LCSC parts.
+            if GS.sch_file:
+                GS.load_sch()
+                all_comps = GS.sch.get_components()
+                if (GS.global_kicad_dnp_applies_to_3D and
+                   any(map(lambda c: c.kicad_dnp is not None and c.kicad_dnp, all_comps))):
+                    # One or more components are DNP, remove them
+                    reset_filters(all_comps)
+                    all_comps_hash = {c.ref: c for c in all_comps}
+                    self.remove_3D_models(GS.board, all_comps_hash)
+                    dnp_removed = True
             # No variant/filter to apply
-            if self.download_models(force_wrl=force_wrl):
+            if self.download_models(force_wrl=force_wrl, all_comps=all_comps) or dnp_removed:
                 # Some missing components found and we downloaded them
                 # Save the fixed board
                 ret = self.save_tmp_board()
                 # Undo the changes done during download
                 self.undo_3d_models_rename(GS.board)
+                if dnp_removed:
+                    self.restore_3D_models(GS.board, all_comps_hash)
                 return ret
             return GS.pcb_file
         self.filter_pcb_components(do_3D=True, do_2D=True, highlight=highlight)

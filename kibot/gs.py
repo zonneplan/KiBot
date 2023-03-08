@@ -167,6 +167,8 @@ class GS(object):
     global_allow_blind_buried_vias = None
     global_allow_microvias = None
     global_erc_grid = None
+    global_kicad_dnp_applied = None
+    global_kicad_dnp_applies_to_3D = None
 
     @staticmethod
     def set_sch(name):

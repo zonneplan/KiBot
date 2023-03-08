@@ -184,7 +184,8 @@ def reset_filters(comps):
     logger.debug('Filters reset')
     for c in comps:
         c.included = True
-        c.fitted = True
+        # If the global kicad_dnp_applied variable is True try to copy the DNP flag from KiCad v7
+        c.fitted = not GS.global_kicad_dnp_applied or c.kicad_dnp is None or not c.kicad_dnp
         c.fixed = False
         c.back_up_fields()
 

@@ -7,12 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.6.1] - UNRELEASED
 ### Added
 - Global options:
-  - `allow_blind_buried_vias` and `allow_microvias` for KiCad 7 (no longer in KiCad)
+  - `allow_blind_buried_vias` and `allow_microvias` for KiCad 7 (no longer in
+     KiCad)
   - `erc_grid` to specify the grid size for KiCad 7 ERC tests
 - Report:
   - Counters for total vias and by via type (`vias_count`, `thru_vias_count`,
     `blind_vias_count` and `micro_vias_count`)
   - Warnings when micro and/or blind vias aren't allowed, but we found them.
+- KiCad 7 specific:
+  - Avoid warnings about missing coutyard for footprints marked as excluded
+    from courtyard tests.
+  - `kicad_dnp_applied` global option to use the *Do Not Populate* schematic
+    flag as *do not fit* for KiBot, enabled by default.
+  - `kicad_dnp_applies_to_3D` global option to eliminate the 3D models of
+    components marked as *Do Not Populate*. This option applies to the case
+    where no filter or variants are in use. Enabled by default. The
+    `kicad_dnp_applied` option also disables it.
 
 ### Fixed
 - Problems to detect the schematic name when the path to the config contained a

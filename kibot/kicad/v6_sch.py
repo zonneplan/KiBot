@@ -936,7 +936,6 @@ class SchematicComponentV6(SchematicComponent):
         self.convert = None
         self.pin_alternates = {}
         # KiCad v7:
-        self.kicad_dnp = None
         # Instances classified by project (v7)
         self.projects = None
         # All instances, by path (v7)

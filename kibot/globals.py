@@ -256,6 +256,12 @@ class Globals(FiltersOptions):
                 This is needed for KiCad 7 in order to run the off grid check.
                 Shouldn't be needed in KiCad 8.
                 https://gitlab.com/kicad/code/kicad/-/issues/14110 """
+            self.kicad_dnp_applied = True
+            """ The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag before running any filter """
+            self.kicad_dnp_applies_to_3D = True
+            """ The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag for 3D models,
+                even when no filter/variant is specified. Disabling `kicad_dnp_applied` also disables
+                this flag """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot
