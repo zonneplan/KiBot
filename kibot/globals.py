@@ -137,7 +137,9 @@ class Globals(FiltersOptions):
             self.cross_footprints_for_dnp = True
             """ Draw a cross for excluded components in the `Fab` layer """
             self.cross_no_body = False
-            """ Cross components even when they don't have a body. Only for KiCad 6 """
+            """ Cross components even when they don't have a body. Only for KiCad 6 and internal cross """
+            self.cross_using_kicad = True
+            """ When using KiCad 7+ let KiCad cross the components """
             self.csv_accept_no_ref = False
             """ Accept aggregating CSV files without references (Experimental) """
             self.date_format = '%Y-%m-%d'

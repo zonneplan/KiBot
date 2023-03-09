@@ -751,7 +751,8 @@ global:
     - `copper_thickness`: [number|string] Copper thickness in micrometers (1 Oz is 35 micrometers).
                           KiCad 6: you should set this in the Board Setup -> Physical Stackup.
     - `cross_footprints_for_dnp`: [boolean=true] Draw a cross for excluded components in the `Fab` layer.
-    - `cross_no_body`: [boolean=false] Cross components even when they don't have a body. Only for KiCad 6.
+    - `cross_no_body`: [boolean=false] Cross components even when they don't have a body. Only for KiCad 6 and internal cross.
+    - `cross_using_kicad`: [boolean=true] When using KiCad 7+ let KiCad cross the components.
     - `csv_accept_no_ref`: [boolean=false] Accept aggregating CSV files without references (Experimental).
     - `date_format`: [string='%Y-%m-%d'] Format used for the day we started the script.
                      Is also used for the PCB/SCH date formatting when `time_reformat` is enabled (default behavior).
@@ -810,6 +811,9 @@ global:
     - `kiauto_time_out_scale`: [number=0.0] Time-out multiplier for KiAuto operations.
     - `kiauto_wait_start`: [number=0] Time to wait for KiCad in KiAuto operations.
     - `kicad_dnp_applied`: [boolean=true] The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag before running any filter.
+    - `kicad_dnp_applies_to_3D`: [boolean=true] The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag for 3D models,
+                                 even when no filter/variant is specified. Disabling `kicad_dnp_applied` also disables
+                                 this flag.
     - `out_dir`: [string=''] Base output dir, same as command line `--out-dir`.
     - `output`: [string='%f-%i%I%v.%x'] Default pattern for output file names. Affected by global options.
     - `pcb_finish`: [string='HAL'] Finishing used to protect pads. Currently used for documentation and to choose default colors.

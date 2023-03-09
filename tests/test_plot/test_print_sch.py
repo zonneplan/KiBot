@@ -119,8 +119,11 @@ def check_l1(ctx):
     l1 = next(c for c in comps if c.ref == 'L1')
     assert l1
     logging.debug('Found L1')
-    lib_name = 'n' if context.ki5() else 'kibot_crossed'
-    assert l1.lib == lib_name
+    if context.ki7():
+        assert l1.kicad_dnp
+    else:
+        lib_name = 'n' if context.ki5() else 'kibot_crossed'
+        assert l1.lib == lib_name
     logging.debug('L1 is crossed')
     ctx.clean_up()
 

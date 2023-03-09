@@ -169,6 +169,7 @@ class GS(object):
     global_erc_grid = None
     global_kicad_dnp_applied = None
     global_kicad_dnp_applies_to_3D = None
+    global_cross_using_kicad = None
 
     @staticmethod
     def set_sch(name):

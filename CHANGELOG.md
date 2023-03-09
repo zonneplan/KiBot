@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     components marked as *Do Not Populate*. This option applies to the case
     where no filter or variants are in use. Enabled by default. The
     `kicad_dnp_applied` option also disables it.
+  - `cross_using_kicad` global option to use KiCad to cross DNP components in
+    the schematic. Enabled by default.
 
 ### Fixed
 - Problems to detect the schematic name when the path to the config contained a

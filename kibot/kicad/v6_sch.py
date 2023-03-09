@@ -1106,9 +1106,15 @@ class SchematicComponentV6(SchematicComponent):
     def write(self, cross=False):
         lib_id = self.lib_id
         is_crossed = not(self.fitted or not self.included)
+        native_cross = GS.ki7 and GS.global_cross_using_kicad
+        dnp = False if native_cross else self.kicad_dnp
         if cross and (self.lib or self.local_name) and is_crossed:
-            # Use an alternative name
-            lib_id = CROSSED_LIB+':'+(self.local_name if self.local_name else self.name)
+            if native_cross:
+                # Just inform KiCad we want to make it DNP
+                dnp = True
+            else:
+                # Use an alternative name
+                lib_id = CROSSED_LIB+':'+(self.local_name if self.local_name else self.name)
         data = [_symbol('lib_id', [lib_id]),
                 _symbol('at', [self.x, self.y, self.ang])]
         if self.mirror:
@@ -1120,8 +1126,8 @@ class SchematicComponentV6(SchematicComponent):
         data.append(Sep())
         data.append(_symbol('in_bom', [Symbol(NO_YES[self.in_bom])]))
         data.append(_symbol('on_board', [Symbol(NO_YES[self.on_board])]))
-        if self.kicad_dnp is not None:
-            data.append(_symbol('dnp', [Symbol(NO_YES[self.kicad_dnp])]))
+        if dnp is not None:
+            data.append(_symbol('dnp', [Symbol(NO_YES[dnp])]))
         if self.fields_autoplaced:
             data.append(_symbol('fields_autoplaced'))
         data.append(Sep())
@@ -1704,6 +1710,9 @@ class SchematicV6(Schematic):
         return [Sep(), Sep(), _symbol('title_block', [Sep()]+data)]
 
     def write_lib_symbols(self, cross=False):
+        if GS.ki7 and GS.global_cross_using_kicad:
+            # KiCad 7 can cross it by itself
+            cross = False
         data = [Sep()]
         for s in self.lib_symbols:
             data.extend([s.write(), Sep()])
