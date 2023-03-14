@@ -486,7 +486,7 @@ class TestContext(object):
         return self.search_not_in_file(os.path.join(self.sub_dir, file), texts)
 
     def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False, fuzz='5%', tol=0, height='87%',
-                      off_y='0', sub=False):
+                      off_y='0', sub=False, trim=False):
         """ For images and single page PDFs """
         if reference is None:
             reference = image
@@ -505,6 +505,9 @@ class TestContext(object):
             png_image = image[:-3]+'png'
             subprocess.check_call(['rsvg-convert', '-d', '300', '-p', '300', '-o', png_image, image])
             image = png_image
+        if trim:
+            cmd = ['convert', image, '-trim', image]
+            subprocess.run(cmd)
         cmd = ['compare',
                # Tolerate 5 % error in color
                '-fuzz', fuzz,
