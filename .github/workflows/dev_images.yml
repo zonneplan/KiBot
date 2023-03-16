@@ -13,7 +13,6 @@ jobs:
 
     name: Docker ${{ matrix.ki_release }}
     runs-on: ubuntu-latest
-    needs: test
     permissions:
       packages: write
       contents: read
