@@ -4,6 +4,7 @@ LABEL Description="KiCad 5 with KiBot and other automation scripts"
 
 RUN     dpkg --remove kicost kibot && \
 	apt-get update && \
+	apt-get -y install --no-install-recommends curl unzip python3-pip && \
 	curl https://codeload.github.com/INTI-CMNB/KiBot/zip/refs/heads/dev --output pp.zip && \
 	unzip pp.zip && \
 	pip3 install --no-compile KiBot-dev/ && \
@@ -11,6 +12,7 @@ RUN     dpkg --remove kicost kibot && \
 	curl https://codeload.github.com/hildogjr/KiCost/zip/refs/heads/master --output pp.zip && \
 	unzip pp.zip && \
 	pip3 install KiCost-master/ && \
+	apt-get -y remove curl unzip python3-pip && \
 	rm -rf KiCost-master pp.zip && \
 	rm -rf /var/lib/apt/lists/*
 
