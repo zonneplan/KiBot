@@ -80,7 +80,7 @@ test_docker_local_1:
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
 	#docker run --rm -it -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:latest '/bin/bash'
-	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:latest \
+	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:latest  \
 		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run -a src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage.* htmlcov/"
 	#$(PY_COV) report
 	#x-www-browser htmlcov/index.html
@@ -93,16 +93,18 @@ test_docker_local_1_ki6:
 	#$(PY_COV) erase
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
-	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:ki6 \
+	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:ki6 \
 		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/"
+#	docker run --rm -it -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad6_auto_full:latest
 	#$(PY_COV) report
 	#x-www-browser htmlcov/index.html
+#	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad6_auto_full:latest \
 
 test_docker_local_1_ki7:
 	rm -rf output
 	rm -f tests/.local
-	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:nightly \
-		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/"
+	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:ki7 \
+		/bin/bash -c "python3-coverage run src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/"
 
 test_docker_local:
 	rm -rf output
@@ -110,7 +112,7 @@ test_docker_local:
 	$(PY_COV) erase
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
-	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:latest \
+	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:latest \
 		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run src/kibot --help-outputs ; pytest-3 --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/"
 	$(PY_COV) combine
 	$(PY_COV) report
@@ -122,8 +124,18 @@ test_docker_local_ki6:
 	$(PY_COV) erase
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
-	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" setsoft/kicad_auto_test:ki6 \
-		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run src/kibot --help-outputs ; pytest-3 --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/"
+	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:ki6 \
+		/bin/bash -c "python3-coverage run src/kibot --help-outputs ; pytest-3 --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/"
+	$(PY_COV) combine
+	$(PY_COV) report
+	x-www-browser htmlcov/index.html
+
+test_docker_local_ki7:
+	rm -rf output
+	rm -f tests/.local
+	$(PY_COV) erase
+	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:ki7 \
+		/bin/bash -c "python3-coverage run src/kibot --help-outputs ; pytest-3 --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/"
 	$(PY_COV) combine
 	$(PY_COV) report
 	x-www-browser htmlcov/index.html
@@ -219,6 +231,16 @@ update_gha:
 	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 6 latest" Dockerfile
 	git push
 	git tag -f -a v2_k6 -m "GitHub Action v2 for KiCad 6"
+	git push origin -f --tags
+	cp Dockerfile_dk7 Dockerfile
+	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 7 development" Dockerfile
+	git push
+	git tag -f -a v2_dk7 -m "GitHub Action v2 for KiCad 7 (development)"
+	git push origin -f --tags
+	cp Dockerfile_k7 Dockerfile
+	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 7 latest" Dockerfile
+	git push
+	git tag -f -a v2_k7 -m "GitHub Action v2 for KiCad 7"
 	git push origin -f --tags
 
 
