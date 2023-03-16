@@ -1654,7 +1654,7 @@ jobs:
         path: output
 ```
 
-For KiCad 6 use `v2_k6` instead of `v2`.
+For KiCad 6 use `v2_k6` instead of `v2` (`v2_k7` for KiCad 7).
 These actions use the last KiBot stable release, to use the current development code use `v2_dk6` (KiCad 6) and `v2_d` (KiCad 5).
 
 A working example applied to a repo can be found [here](https://github.com/INTI-CMNB/kicad-ci-test-spora/tree/test_gh_action)
@@ -1694,10 +1694,14 @@ There are several tags you can choose:
 | v2_k6_1_4_0 |  2  | 1.4.0        | 6.0.9 |
 | v2_1_5_1    |  2  | 1.5.1        | 5.1.9 |
 | v2_k6_1_5_1 |  2  | 1.5.1        | 6.0.9 |
+| v2_1_6_0    |  2  | 1.6.0        | 5.1.9 |
+| v2_k6_1_6_0 |  2  | 1.6.0        | 6.0.9 |
 | v2          |  2  | last release | 5.1.9 |
 | v2_k6       |  2  | last release | 6.x   |
+| v2_k7       |  2  | last release | 7.x   |
 | v2_d        |  2  | git code     | 5.1.9 |
 | v2_dk6      |  2  | git code     | 6.x   |
+| v2_dk7      |  2  | git code     | 7.x   |
 
 The main differences between API 1 and 2 are:
 
