@@ -3,6 +3,7 @@
 name: Create `dev` images
 
 on:
+  workflow_dispatch
   repository_dispatch:
     types: [create_dev]
 
