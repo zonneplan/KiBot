@@ -4,8 +4,6 @@ name: Create `dev` images
 
 on:
   workflow_dispatch
-  repository_dispatch:
-    types: [create_dev]
 
 jobs:
   push_to_registry_ki5:
