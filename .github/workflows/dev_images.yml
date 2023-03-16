@@ -9,8 +9,7 @@ jobs:
   push_to_registry_ki5:
     strategy:
       matrix:
-        ki_release: [dev_image_k5, dev_image_k6, dev_image_k5f, dev_image_k6f]
-#        ki_release: [dev_image_k5, dev_image_k6, dev_image_k7, dev_image_k5f, dev_image_k6f, dev_image_k7f]
+        ki_release: [dev_image_k5, dev_image_k6, dev_image_k7, dev_image_k5f, dev_image_k6f, dev_image_k7f]
 
     name: Docker ${{ matrix.ki_release }}
     runs-on: ubuntu-latest
