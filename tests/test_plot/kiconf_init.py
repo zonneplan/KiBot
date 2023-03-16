@@ -67,6 +67,8 @@ def do_init():
     KiConf.init(os.path.join(context.BOARDS_DIR, 'v5_errors/kibom-test.sch'))
     # Check we can call it again and nothing is done
     KiConf.init('bogus')
+    # Try to load the sym-lib-table
+    KiConf.get_sym_lib_aliases()
 
 
 if args.patch_get_path:

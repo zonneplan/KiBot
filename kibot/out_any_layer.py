@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -8,13 +8,13 @@
 import os
 import re
 from pcbnew import (GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, F_Cu, B_Cu, Edge_Cuts, PLOT_FORMAT_HPGL,
-                    PLOT_FORMAT_GERBER, PLOT_FORMAT_POST, PLOT_FORMAT_DXF, PLOT_FORMAT_PDF, PLOT_FORMAT_SVG)
+                    PLOT_FORMAT_GERBER, PLOT_FORMAT_POST, PLOT_FORMAT_DXF, PLOT_FORMAT_PDF, PLOT_FORMAT_SVG, LSEQ)
 from .optionable import Optionable
 from .out_base import BaseOutput, VariantOptions
 from .error import PlotError, KiPlotConfigurationError
 from .layer import Layer
 from .gs import GS
-from .misc import W_NOLAYER
+from .misc import W_NOLAYER, KICAD_VERSION_7_0_1, MISSING_TOOL
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -49,7 +49,7 @@ class AnyLayerOptions(VariantOptions):
             self.exclude_pads_from_silkscreen = False
             """ Do not plot the component pads in the silk screen (KiCad 5.x only) """
             self.plot_sheet_reference = False
-            """ *Include the frame and title block. Only available for KiCad 6 and you get a poor result
+            """ *Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                 (i.e. always the default worksheet style, also problems expanding text variables).
                 The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs """
             self.plot_footprint_refs = True
@@ -95,7 +95,8 @@ class AnyLayerOptions(VariantOptions):
         po.SetPlotReference(self.plot_footprint_refs)
         po.SetPlotValue(self.plot_footprint_values)
         po.SetPlotInvisibleText(self.force_plot_invisible_refs_vals)
-        po.SetExcludeEdgeLayer(self.exclude_edge_layer)
+        # Edge layer included or not
+        GS.SetExcludeEdgeLayer(po, self.exclude_edge_layer)
         if GS.ki5:
             po.SetPlotPadsOnSilkLayer(not self.exclude_pads_from_silkscreen)
         else:
@@ -123,8 +124,23 @@ class AnyLayerOptions(VariantOptions):
             filename = os.path.splitext(filename)[0]+os.path.splitext(filename)[1].upper()
         return filename
 
+    def plot_layer(self, plot_ctrl, id):
+        if GS.ki7 and not self.exclude_edge_layer:
+            # In KiCad 7 this is not an option, but we can plot more than one layer
+            # Note that this needs KiCad 7.0.1 or newer
+            seq = LSEQ()
+            seq.push_back(Edge_Cuts)
+            seq.push_back(id)
+            plot_ctrl.PlotLayers(seq)
+            return
+        plot_ctrl.PlotLayer()
+
     def run(self, output_dir, layers):
         super().run(output_dir)
+        if GS.ki7 and GS.kicad_version_n < KICAD_VERSION_7_0_1 and not self.exclude_edge_layer:
+            logger.error("Plotting the edge layer is not supported by KiCad 7.0.0\n"
+                         "Please upgrade KiCad to 7.0.1 or newer")
+            exit(MISSING_TOOL)
         # Apply the variants and filters
         exclude = self.filter_pcb_components()
         # fresh plot controller
@@ -163,7 +179,7 @@ class AnyLayerOptions(VariantOptions):
             k_filename = plot_ctrl.GetPlotFileName()
             filename = self.compute_name(k_filename, output_dir, self.output, id, suffix)
             logger.debug("Plotting layer `{}` to `{}`".format(la, filename))
-            plot_ctrl.PlotLayer()
+            self.plot_layer(plot_ctrl, id)
             plot_ctrl.ClosePlot()
             if self.output and k_filename != filename:
                 os.replace(k_filename, filename)
@@ -222,7 +238,10 @@ class AnyLayerOptions(VariantOptions):
 
     def read_vals_from_po(self, po):
         # excludeedgelayer
-        self.exclude_edge_layer = po.GetExcludeEdgeLayer()
+        if GS.ki7:
+            self.exclude_edge_layer = not po.GetPlotOnAllLayersSelection().Contains(GS.board.GetLayerID('Edge.Cuts'))
+        else:
+            self.exclude_edge_layer = po.GetExcludeEdgeLayer()
         # plotframeref
         self.plot_sheet_reference = po.GetPlotFrameRef()
         # plotreference

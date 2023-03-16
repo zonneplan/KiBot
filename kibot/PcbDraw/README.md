@@ -206,3 +206,12 @@ This file comes from KiKit, but it has too much in common with `populate.py`.
 - Adapted Template._renderBoards to just copy the files (keeping the extensions)
 - Added listResources, with some changes to copyRelativeTo and _copyResources
 - The command used for git is now configurable
+
+## 2023-02-14 Update
+
+- Changed to transition 0.3.2 (is a tag, detached from main?!)
+- Applied v7 compatibility patches from 9c676a7494995c5aeab086e041bc0ca3967f472d to 6e9c0b7077b5cfed58866f13ad745130e8920185 (2023-01-12)
+
+## 2023-03-01 Update
+
+- Bumped lib footprints (afbab947d981c4583fc6e168c66fc63c31ba6d69)

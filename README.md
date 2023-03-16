@@ -13,12 +13,8 @@
 **Important for CI/CD**:
 - The GitHub actions now use the full/test docker images. So now they include PanDoc and also Blender.
 
-**New on v1.6.0**
-- `vrml`, `ps_sch_print`, `dxf_sch_print`, `hpgl_sch_print`, `pdf_sch_print` and `blender_export` outputs.
-- New options for: `compress`, `ibom`, `pcb_print`, all plot, `report`, *`sch_print` and `svg` outputs
-- Internal templates
-- Gorgeous 3D renders using Blender
-- More than 6 fixes.
+**New on v1.6.1**
+- KiCad 7.0.1 support
 
 ## Index
 
@@ -136,14 +132,14 @@ Notes:
 [**Requests**](https://pypi.org/project/Requests/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/Requests/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/Requests/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-requests)
 - Mandatory
 
-[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v2.1.1 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiCad Automation tools**](https://github.com/INTI-CMNB/KiAuto) v2.2.1 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiAuto)![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `dxf_sch_print`, `gencad`, `hpgl_sch_print`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `ps_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`, `vrml`
 - Optional to:
-  - Compare schematics for `diff` (v2.0.0)
+  - Compare schematics for `diff` (v2.2.0)
   - Show KiAuto installation information for `info` (v2.0.0)
   - Print the page frame in GUI mode for `pcb_print` (v1.6.7)
 
-[**KiKit**](https://github.com/yaqwsx/KiKit) [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/yaqwsx/KiKit) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiKit**](https://github.com/yaqwsx/KiKit) v1.3.0.4 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/yaqwsx/KiKit) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for: `panelize`, `stencil_3d`, `stencil_for_jig`
 - Optional to separate multiboard projects for general use
 
@@ -172,7 +168,7 @@ Notes:
 [**KiBoM**](https://github.com/INTI-CMNB/KiBoM) v1.8.0 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiBoM) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `kibom`
 
-[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.3 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
+[**KiCad PCB/SCH Diff**](https://github.com/INTI-CMNB/KiDiff) v2.4.4 [![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png)](https://github.com/INTI-CMNB/KiDiff) ![Auto-download](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/auto_download-22x22.png)
 - Mandatory for `diff`
 
 [**markdown2**](https://pypi.org/project/markdown2/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/markdown2/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/markdown2/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-markdown2)
@@ -461,7 +457,7 @@ This section is used to specify tasks that will be executed before generating an
         - `text`: [string=''] Text to insert instead of the tag.
 - `run_drc`: [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
         The report file name is controlled by the global output pattern (%i=drc %x=txt).
-        Note that the KiCad 6 *Test for parity between PCB and schematic* option is not supported.
+        Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
         If you need to check the parity use the `update_xml` preflight.
         KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
         This will change in the future.
@@ -741,13 +737,18 @@ global:
         - *text*: Alias for value.
         - `value`: [string=''] Path to the 3D model.
         - *variable*: Alias for name.
-    - `castellated_pads`: [boolean=false] Has the PCB castelletad pads?
+    - `allow_blind_buried_vias`: [boolean=true] Allow the use of buried vias. This value is only used for KiCad 7+.
+                                 For KiCad 5 and 6 use the design rules settings, stored in the project.
+    - `allow_microvias`: [boolean=true] Allow the use of micro vias. This value is only used for KiCad 7+.
+                         For KiCad 5 and 6 use the design rules settings, stored in the project.
+    - `castellated_pads`: [boolean=false] Has the PCB castellated pads?
                           KiCad 6: you should set this in the Board Setup -> Board Finish -> Has castellated pads.
     - *copper_finish*: Alias for pcb_finish.
     - `copper_thickness`: [number|string] Copper thickness in micrometers (1 Oz is 35 micrometers).
                           KiCad 6: you should set this in the Board Setup -> Physical Stackup.
     - `cross_footprints_for_dnp`: [boolean=true] Draw a cross for excluded components in the `Fab` layer.
-    - `cross_no_body`: [boolean=false] Cross components even when they don't have a body. Only for KiCad 6.
+    - `cross_no_body`: [boolean=false] Cross components even when they don't have a body. Only for KiCad 6 and internal cross.
+    - `cross_using_kicad`: [boolean=true] When using KiCad 7+ let KiCad cross the components.
     - `csv_accept_no_ref`: [boolean=false] Accept aggregating CSV files without references (Experimental).
     - `date_format`: [string='%Y-%m-%d'] Format used for the day we started the script.
                      Is also used for the PCB/SCH date formatting when `time_reformat` is enabled (default behavior).
@@ -781,6 +782,10 @@ global:
         - `templates`: [string=''] System level templates dir. KiCad 5: KICAD_TEMPLATE_DIR. KiCad 6: KICAD6_TEMPLATE_DIR.
         - `third_party`: [string=''] 3rd party dir. KiCad 6: KICAD6_3RD_PARTY.
         - `user_templates`: [string=''] User level templates dir. KiCad 5/6: KICAD_USER_TEMPLATE_DIR.
+    - `erc_grid`: [number=50] Grid size used for the ERC. This value must be in mils.
+                  This is needed for KiCad 7 in order to run the off grid check.
+                  Shouldn't be needed in KiCad 8.
+                  https://gitlab.com/kicad/code/kicad/-/issues/14110.
     - `extra_pth_drill`: [number=0.1] How many millimeters the manufacturer will add to plated holes.
                          This is because the plating reduces the hole, so you need to use a bigger drill.
                          For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/.
@@ -801,6 +806,10 @@ global:
                               KiCad 6: you should set this in the Board Setup -> Physical Stackup.
     - `kiauto_time_out_scale`: [number=0.0] Time-out multiplier for KiAuto operations.
     - `kiauto_wait_start`: [number=0] Time to wait for KiCad in KiAuto operations.
+    - `kicad_dnp_applied`: [boolean=true] The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag before running any filter.
+    - `kicad_dnp_applies_to_3D`: [boolean=true] The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag for 3D models,
+                                 even when no filter/variant is specified. Disabling `kicad_dnp_applied` also disables
+                                 this flag.
     - `out_dir`: [string=''] Base output dir, same as command line `--out-dir`.
     - `output`: [string='%f-%i%I%v.%x'] Default pattern for output file names. Affected by global options.
     - `pcb_finish`: [string='HAL'] Finishing used to protect pads. Currently used for documentation and to choose default colors.
@@ -1563,6 +1572,7 @@ Notes:
   * Type: `blender_export`
   * Description: Exports the PCB in various 3D file formats.
                  Also renders the PCB with high-quality.
+                 Needs KiCad 6 or newer.
                  This output is complex to setup and needs very big dependencies.
                  Please be patient when using it.
                  You need Blender with the pcb2blender plug-in installed.
@@ -2184,7 +2194,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -2427,7 +2437,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - **`subtract_mask_from_silk`**: [boolean=false] Subtract the solder mask from the silk screen.
@@ -2498,7 +2508,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -3352,6 +3362,7 @@ Notes:
   * Type: `pcb2blender_tools`
   * Description: A bunch of tools used to generate PCB3D files used to export PCBs to Blender.
                  Blender is the most important free software 3D render package.
+                 This output needs KiCad 6 or newer.
                  The PCB3D file format is used by the PCB2Blender project (https://github.com/30350n/pcb2blender)
                  to import KiCad PCBs in Blender.
                  You need to install a Blender plug-in to load PCB3D files.
@@ -3703,7 +3714,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -3738,7 +3749,7 @@ Notes:
                     IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                     For this reason you must avoid generating two variants at the same directory when one of
                     them uses the default KiCad name. Affected by global options.
-    - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+    - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                   (i.e. always the default worksheet style, also problems expanding text variables).
                                   The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -3779,7 +3790,7 @@ Notes:
     - `uppercase_extensions`: [boolean=false] Use uppercase names for the extensions.
     - `variant`: [string=''] Board variant to apply.
 
-* PDF PCB Print (Portable Document Format)
+* PDF PCB Print (Portable Document Format) *Deprecated*
   * Type: `pdf_pcb_print`
   * Description: Exports the PCB to the most common exchange format. Suitable for printing.
                  This is the main format to document your PCB.
@@ -4022,7 +4033,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
@@ -4497,7 +4508,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -4559,7 +4570,7 @@ Notes:
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
     - `run_by_default`: [boolean=true] When enabled this output will be created when no specific outputs are requested.
 
-* SVG PCB Print (Scalable Vector Graphics)
+* SVG PCB Print (Scalable Vector Graphics) *Deprecated*
   * Type: `svg_pcb_print`
   * Description: Exports the PCB to the scalable vector graphics format.
                  This output is what you get from the 'File/Print' menu in pcbnew.
@@ -4620,6 +4631,7 @@ Notes:
   * Type: `svg_sch_print`
   * Description: Exports the schematic in a vectorized graphics format.
                  This is a format to document your schematic.
+                 This output is what you get from the 'File/Plot' menu in eeschema.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -5385,7 +5397,7 @@ Options:
   -C, --cli-order                  Generate outputs using the indicated order
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -D, --dont-stop                  Try to continue if an output fails
-  -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
+  -e SCHEMA, --schematic SCHEMA    The schematic file (.sch/.kicad_sch)
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
@@ -5432,34 +5444,54 @@ Examples of how to use KiBot can be found [here for GitHub](https://github.com/I
 
 In order to run KiBot on these environments you need a lot of software installed. The usual mechanism to achieve this is using [docker](https://www.docker.com/).
 Docker images containing KiBot, all the supporting scripts and a corresponding KiCad can be found in the
-[kicad5_auto](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto) and
-[kicad6_auto](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto) GitHub packages.
-More complete images, with Pandoc and testing tools, can be found in the following packages:
-[kicad5_auto_full](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto_full) and
-[kicad6_auto_full](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto_full) GitHub packages.
-Old images can be found at [Docker Hub](https://hub.docker.com/) as [setsoft/kicad_auto](https://hub.docker.com/repository/docker/setsoft/kicad_auto) and
+[kicad5_auto](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto),
+[kicad6_auto](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto) and
+[kicad7_auto](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad7_auto) GitHub packages.
+More complete images, with Pandoc, LaTeX, Blender and testing tools, can be found in the following packages:
+[kicad5_auto_full](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto_full),
+[kicad6_auto_full](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto_full) and
+[kicad7_auto_full](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad7_auto_full) GitHub packages.
+Old images can be found at [Docker Hub](https://hub.docker.com/) as
+[setsoft/kicad_auto](https://hub.docker.com/repository/docker/setsoft/kicad_auto) and
 [setsoft/kicad_auto_test](https://hub.docker.com/repository/docker/setsoft/kicad_auto_test).
 
-The images are based on [kicad5_debian](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_debian) and
-[kicad6_debian](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_debian)
-([setsoft/kicad_debian](https://hub.docker.com/repository/docker/setsoft/kicad_debian) on Docker Hub), containing KiCad on Debian GNU/Linux.
+The images are based on
+[kicad5_debian](https://github.com/INTI-CMNB/kicad_debian/pkgs/container/kicad5_debian),
+[kicad6_debian](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_debian) and
+[kicad7_debian](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad7_debian).
+([setsoft/kicad_debian](https://hub.docker.com/repository/docker/setsoft/kicad_debian) on Docker Hub),
+containing KiCad on Debian GNU/Linux.
 
 If you need to run the current development version of KiBot you can use the following docker images:
-[ghcr.io/inti-cmnb/kicad5_auto:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto) or
-[ghcr.io/inti-cmnb/kicad6_auto:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto)
+[ghcr.io/inti-cmnb/kicad5_auto_full:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto_full),
+[ghcr.io/inti-cmnb/kicad6_auto_full:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto_full) or
+[ghcr.io/inti-cmnb/kicad7_auto_full:dev](https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad7_auto_full)
 ([setsoft/kicad_auto:dev](https://hub.docker.com/repository/docker/setsoft/kicad_auto)).
 These images are based on the *full* (also named *test*) images.
 
 The most important images are:
 
-| Name                                 | KiBot        | KiCad |
-| :----------------------------------- | ------------ | ----: |
-| ghcr.io/inti-cmnb/kicad5_auto:latest | last release | 5.1.9 |
-| ghcr.io/inti-cmnb/kicad6_auto:latest | last release | 6.x   |
-| ghcr.io/inti-cmnb/kicad5_auto:dev    | git code     | 5.1.9 |
-| ghcr.io/inti-cmnb/kicad6_auto:dev    | git code     | 6.x   |
-| ghcr.io/inti-cmnb/kicad5_auto:1.2.0  | 1.2.0        | 5.1.9 |
-| ghcr.io/inti-cmnb/kicad6_auto:1.2.0  | 1.2.0        | 6.0.5 |
+| Name                                      | KiBot        | KiCad  |
+| :---------------------------------------- | ------------ | -----: |
+| ghcr.io/inti-cmnb/kicad5_auto_full:latest | last release | 5.1.9  |
+| ghcr.io/inti-cmnb/kicad6_auto_full:latest | last release | 6.x    |
+| ghcr.io/inti-cmnb/kicad7_auto_full:latest | last release | 7.x    |
+| ghcr.io/inti-cmnb/kicad5_auto:latest      | last release | 5.1.9  |
+| ghcr.io/inti-cmnb/kicad6_auto:latest      | last release | 6.x    |
+| ghcr.io/inti-cmnb/kicad7_auto:latest      | last release | 7.x    |
+| ghcr.io/inti-cmnb/kicad5_auto_full:dev    | git code     | 5.1.9  |
+| ghcr.io/inti-cmnb/kicad6_auto_full:dev    | git code     | 6.x    |
+| ghcr.io/inti-cmnb/kicad7_auto_full:dev    | git code     | 7.x    |
+| ghcr.io/inti-cmnb/kicad5_auto_full:1.6.0  | 1.6.0        | 5.1.9  |
+| ghcr.io/inti-cmnb/kicad6_auto_full:1.6.0  | 1.6.0        | 6.0.10 |
+| ghcr.io/inti-cmnb/kicad5_auto_full:1.5.1  | 1.5.1        | 5.1.9  |
+| ghcr.io/inti-cmnb/kicad6_auto_full:1.5.1  | 1.5.1        | 6.0.10 |
+| ghcr.io/inti-cmnb/kicad5_auto_full:1.4.0  | 1.4.0        | 5.1.9  |
+| ghcr.io/inti-cmnb/kicad6_auto_full:1.4.0  | 1.4.0        | 6.0.9  |
+| ghcr.io/inti-cmnb/kicad5_auto_full:1.3.0  | 1.3.0        | 5.1.9  |
+| ghcr.io/inti-cmnb/kicad6_auto_full:1.3.0  | 1.3.0        | 6.0.7  |
+| ghcr.io/inti-cmnb/kicad5_auto:1.2.0       | 1.2.0        | 5.1.9  |
+| ghcr.io/inti-cmnb/kicad6_auto:1.2.0       | 1.2.0        | 6.0.5  |
 
 For more information about the docker images visit [kicad_debian](https://github.com/INTI-CMNB/kicad_debian) and [kicad_auto](https://github.com/INTI-CMNB/kicad_auto).
 
@@ -5935,6 +5967,9 @@ If the 3D model is used locally, but not found in the repo, KiBot will try to do
 Use the `field_lcsc_part` option if KiBot fails to detect the schematic field containing the LCSC code.
 
 ### 3D models aliases
+
+This is a KiCad 6 feature that was removed in KiCad 7. If you use it please migrate to environment variables as KiCad 7 did.
+If you still interested on it continue reading.
 
 This is a very limited feature in KiCad. You can define an `ALIAS` and then use `ALIAS:MODEL_NAME`.
 The `ALIAS` will say where to look for `MODEL_NAME`. This looks coherent with the way KiCad handles symbols and footprints.

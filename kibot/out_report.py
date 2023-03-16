@@ -22,8 +22,8 @@ import shlex
 from subprocess import check_output, STDOUT, CalledProcessError
 
 from .gs import GS
-from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES,
-                   FAILED_EXECUTE, W_WRONGEXT, W_WRONGOAR, W_ECCLASST)
+from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, FAILED_EXECUTE, W_WRONGEXT,
+                   W_WRONGOAR, W_ECCLASST, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED, VIATYPE_MICROVIA, W_BLINDVIAS, W_MICROVIAS)
 from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
@@ -36,9 +36,10 @@ from . import __version__
 logger = log.get_logger()
 INF = float('inf')
 # This OAR is the minimum Eurocircuits does without extra charge
-EC_SMALL_OAR = 0.125*pcbnew.IU_PER_MM
+EC_SMALL_OAR = GS.from_mm(0.125)
 # The minimum drill tool
-EC_MIN_DRILL = 0.1*pcbnew.IU_PER_MM
+EC_MIN_DRILL = GS.from_mm(0.1)
+YES_NO = ['no', 'yes']
 
 
 def do_round(v, dig):
@@ -49,20 +50,20 @@ def do_round(v, dig):
 def to_mm(iu, dig=2):
     """ KiCad Internal Units to millimeters """
     if isinstance(iu, pcbnew.wxPoint):
-        return (do_round(iu.x/pcbnew.IU_PER_MM, dig), do_round(iu.y/pcbnew.IU_PER_MM, dig))
+        return (do_round(GS.to_mm(iu.x), dig), do_round(GS.to_mm(iu.y), dig))
     if isinstance(iu, pcbnew.wxSize):
-        return (do_round(iu.x/pcbnew.IU_PER_MM, dig), do_round(iu.y/pcbnew.IU_PER_MM, dig))
-    return do_round(iu/pcbnew.IU_PER_MM, dig)
+        return (do_round(GS.to_mm(iu.x), dig), do_round(GS.to_mm(iu.y), dig))
+    return do_round(GS.to_mm(iu), dig)
 
 
 def to_mils(iu, dig=0):
     """ KiCad Internal Units to mils (1/1000 inch) """
-    return do_round(iu/pcbnew.IU_PER_MILS, dig)
+    return do_round(GS.to_mils(iu), dig)
 
 
 def to_inches(iu, dig=2):
     """ KiCad Internal Units to inches """
-    return do_round(iu/(pcbnew.IU_PER_MILS*1000), dig)
+    return do_round(GS.to_mils(iu)/1000, dig)
 
 
 def get_class_index(val, lst):
@@ -157,9 +158,9 @@ def adjust_drill(val, is_pth=True, pad=None):
     """ Add drill_size_increment if this is a PTH hole and round it to global_extra_pth_drill """
     if val == INF:
         return val
-    step = GS.global_drill_size_increment*pcbnew.IU_PER_MM
+    step = GS.from_mm(GS.global_drill_size_increment)
     if is_pth:
-        val += GS.global_extra_pth_drill*pcbnew.IU_PER_MM
+        val += GS.from_mm(GS.global_extra_pth_drill)
     res = int((val+step/2)/step)*step
     # if pad:
     #     logger.error(f"{to_mm(val)} -> {to_mm(res)} {get_pad_info(pad)}")
@@ -306,7 +307,7 @@ class ReportOptions(BaseOptions):
         text = ''
         for t in sorted(self._tracks_m.keys()):
             text += self.do_replacements(line, {'track': t, 'count': self._tracks_m[t],
-                                         'defined': 'yes' if t in self._tracks_defined else 'no'})
+                                         'defined': YES_NO[t in self._tracks_defined]})
         return text
 
     def context_defined_vias(self, line):
@@ -336,7 +337,7 @@ class ReportOptions(BaseOptions):
             defined['count'] = self._vias[v]
             defined['aspect'] = aspect
             defined['producibility_level'] = producibility_level
-            defined['defined'] = 'yes' if (h, d) in self._vias_defined else 'no'
+            defined['defined'] = YES_NO[(h, d) in self._vias_defined]
             text += self.do_replacements(line, defined)
         return text
 
@@ -485,7 +486,7 @@ class ReportOptions(BaseOptions):
     def compute_oar(self, pad, hole):
         """ Compute the OAR and the corrected OAR for Eurocircuits """
         oar_ec = oar = (pad-hole)/2
-        if oar < EC_SMALL_OAR and oar > 0 and hole < self.eurocircuits_reduce_holes*pcbnew.IU_PER_MM:
+        if oar < EC_SMALL_OAR and oar > 0 and hole < GS.from_mm(self.eurocircuits_reduce_holes):
             # This hole is classified as "via hole" and has a problematic OAR
             hole_ec = max(adjust_drill(pad-2*EC_SMALL_OAR, is_pth=False), EC_MIN_DRILL)
             oar_ec = (pad-hole_ec)/2
@@ -524,7 +525,7 @@ class ReportOptions(BaseOptions):
 
     def collect_data(self, board):
         ds = board.GetDesignSettings()
-        self.extra_pth_drill = GS.global_extra_pth_drill*pcbnew.IU_PER_MM
+        self.extra_pth_drill = GS.from_mm(GS.global_extra_pth_drill)
         ###########################################################
         # Board size
         ###########################################################
@@ -572,6 +573,7 @@ class ReportOptions(BaseOptions):
         self._drills_ec = {}
         track_type = 'TRACK' if GS.ki5 else 'PCB_TRACK'
         via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
+        self.thru_vias_count = self.blind_vias_count = self.micro_vias_count = self.vias_count = 0
         for t in tracks:
             tclass = t.GetClass()
             if tclass == track_type:
@@ -590,6 +592,14 @@ class ReportOptions(BaseOptions):
                 self.oar_vias_ec = min(self.oar_vias_ec, oar_ec)
                 self._drills_real[d] = self._drills_real.get(d, 0) + 1
                 self._drills_ec[d_ec] = self._drills_ec.get(d_ec, 0) + 1
+                self.vias_count += 1
+                via_t = via.GetViaType()
+                if via_t == VIATYPE_THROUGH:
+                    self.thru_vias_count += 1
+                elif via_t == VIATYPE_BLIND_BURIED:
+                    self.blind_vias_count += 1
+                elif via_t == VIATYPE_MICROVIA:
+                    self.micro_vias_count += 1
         self.track_min = min(self.track_d, self.track)
         ###########################################################
         # Drill (min)
@@ -604,7 +614,7 @@ class ReportOptions(BaseOptions):
         bottom_layer = board.GetLayerID('B.Cu')
         is_pure_smd, is_not_virtual = self.get_attr_tests()
         npth_attrib = 3 if GS.ki5 else pcbnew.PAD_ATTRIB_NPTH
-        min_oar = 0.1*pcbnew.IU_PER_MM
+        min_oar = GS.from_mm(0.1)
         for m in modules:
             layer = m.GetLayer()
             if layer == top_layer:
@@ -694,8 +704,16 @@ class ReportOptions(BaseOptions):
         ###########################################################
         # Vias
         ###########################################################
-        self.micro_vias = 'yes' if ds.m_MicroViasAllowed else 'no'
-        self.blind_vias = 'yes' if ds.m_BlindBuriedViaAllowed else 'no'
+        if GS.ki7:
+            self.micro_vias = YES_NO[GS.global_allow_microvias]
+            self.blind_vias = YES_NO[GS.global_allow_blind_buried_vias]
+        else:
+            self.micro_vias = YES_NO[ds.m_MicroViasAllowed]
+            self.blind_vias = YES_NO[ds.m_BlindBuriedViaAllowed]
+        if self.blind_vias == 'no' and self.blind_vias_count:
+            logger.warning(W_BLINDVIAS+"Buried/blind vias not allowed, but found {}".format(self.blind_vias_count))
+        if self.micro_vias == 'no' and self.micro_vias_count:
+            logger.warning(W_MICROVIAS+"Micro vias not allowed, but found {}".format(self.micro_vias_count))
         self.uvia_pad = ds.m_MicroViasMinSize
         self.uvia_drill = ds.m_MicroViasMinDrill
         via_sizes = board.GetViasDimensionsList()

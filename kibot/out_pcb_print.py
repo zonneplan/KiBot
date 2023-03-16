@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Base idea: https://gitlab.com/dennevi/Board2Pdf/ (Released as Public Domain)
@@ -33,7 +33,7 @@ import re
 import os
 import subprocess
 import importlib
-from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, F_Mask, B_Mask, ZONE_FILLER
+from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, F_Mask, B_Mask
 import shlex
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
@@ -46,7 +46,8 @@ from .kicad.patch_svg import patch_svg_file
 from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
-from .misc import PDF_PCB_PRINT, W_PDMASKFAIL, KICAD5_SVG_SCALE, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW
+from .misc import (PDF_PCB_PRINT, W_PDMASKFAIL, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED,
+                   VIATYPE_MICROVIA)
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -55,9 +56,6 @@ from . import __version__
 from . import log
 
 logger = log.get_logger()
-VIATYPE_THROUGH = 3
-VIATYPE_BLIND_BURIED = 2
-VIATYPE_MICROVIA = 1
 POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stroke-opacity:1; stroke-linecap:round; "
                    "stroke-linejoin:round;fill-rule:evenodd;")
 DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
@@ -575,21 +573,10 @@ class PCB_PrintOptions(VariantOptions):
                 e.SetLayer(tmp_layer)
                 moved.append(e)
         for e in list(GS.board.Zones()):
-            found = False
-            # Remove from the set
             layers = e.GetLayerSet()
             if GS.layers_contains(layers, id):
-                layers.removeLayer(id)
-                e.SetLayerSet(layers)
-                removed.append(e)
-                found = True
-            # But this isn't enough if the zone is only one layer, move it to another
-            if e.GetLayer() == id:
-                e.SetLayer(tmp_layer)
-                moved.append(e)
-                found = True
-            if found:
                 zones.append(e)
+                e.UnFill()
         via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
         for e in GS.board.GetTracks():
             if e.GetClass() == via_type:
@@ -616,7 +603,7 @@ class PCB_PrintOptions(VariantOptions):
             via.SetDrill(drill)
             via.SetWidth(width)
         if len(zones):
-            ZONE_FILLER(GS.board).Fill(zones)
+            GS.fill_zones(GS.board, zones)
         # Add it to the list
         filelist.append((pc.GetPlotFileName(), self.pad_color))
 
@@ -645,21 +632,10 @@ class PCB_PrintOptions(VariantOptions):
                 e.SetLayer(tmp_layer)
                 moved.append(e)
         for e in list(GS.board.Zones()):
-            found = False
-            # Remove from the set
             layers = e.GetLayerSet()
             if GS.layers_contains(layers, id):
-                layers.removeLayer(id)
-                e.SetLayerSet(layers)
-                removed.append(e)
-                found = True
-            # But this isn't enough if the zone is only one layer, move it to another
-            if e.GetLayer() == id:
-                e.SetLayer(tmp_layer)
-                moved.append(e)
-                found = True
-            if found:
                 zones.append(e)
+                e.UnFill()
         via_type = 'VIA' if GS.ki5 else 'PCB_VIA'
         for e in GS.board.GetTracks():
             if e.GetClass() == via_type:
@@ -706,7 +682,7 @@ class PCB_PrintOptions(VariantOptions):
             via.SetTopLayer(top)
             via.SetBottomLayer(bottom)
         if len(zones):
-            ZONE_FILLER(GS.board).Fill(zones)
+            GS.fill_zones(GS.board, zones)
         # Add it to the list
         filelist.append((pc.GetPlotFileName(), via_c))
 
@@ -910,27 +886,17 @@ class PCB_PrintOptions(VariantOptions):
         view_box = svg_kicad.root.get('viewBox')
         view_box_elements = view_box.split(' ')
         # This is the paper size using the SVG precision
-        paper_size_x = int(view_box_elements[2])
-        paper_size_y = int(view_box_elements[3])
+        paper_size_x = int(round(float(view_box_elements[2])))
+        paper_size_y = int(round(float(view_box_elements[3])))
         # Compute the coordinates translation for mirror
         transform = ''
         if scale != 1.0 and scale:
-            # This the autocenter computation used by KiCad
+            # This is the autocenter computation used by KiCad
             scale_x = scale_y = scale
             board_center = GS.board.GetBoundingBox().GetCenter()
-            if GS.ki5:
-                # KiCad 5 uses a different precision, we must adjust
-                board_center.x = round(board_center.x*KICAD5_SVG_SCALE)
-                board_center.y = round(board_center.y*KICAD5_SVG_SCALE)
-            elif self.svg_precision != 6:
-                # KiCad 6 can adjust the precision
-                # The default is 6 and makes 1 KiCad unit == 1 SVG unit
-                # But this isn't supported by browsers (Chrome and Firefox)
-                divider = 10.0 ** (6 - self.svg_precision)
-                board_center.x = round(board_center.x/divider)
-                board_center.y = round(board_center.y/divider)
-            offset_x = round((board_center.x*scale-(paper_size_x/2.0))/scale)
-            offset_y = round((board_center.y*scale-(paper_size_y/2.0))/scale)
+            bcx, bcy = GS.iu_to_svg((board_center.x, board_center.y), self.svg_precision)
+            offset_x = GS.svg_round((bcx*scale-(paper_size_x/2.0))/scale)
+            offset_y = GS.svg_round((bcy*scale-(paper_size_y/2.0))/scale)
             if mirror:
                 scale_x = -scale_x
                 offset_x += round(paper_size_x/scale)
@@ -966,7 +932,7 @@ class PCB_PrintOptions(VariantOptions):
                             if len(color) == 9:
                                 alpha = int(color[7:], 16)/255
                                 color = color[:7]
-                            gf.set('style', "fill:{0}; fill-opacity:{1}; stroke:{0};".format(color, alpha))
+                            gf.set('style', "fill:{0}; fill-opacity:{1}; stroke:{0}; stroke-width:0;".format(color, alpha))
         if g is None or defs is None:
             logger.warning(W_PDMASKFAIL+'Failed to extract elements from the PcbDraw SVG')
             return
@@ -981,7 +947,9 @@ class PCB_PrintOptions(VariantOptions):
         if scaling:
             po.SetScale(scaling)
             return scaling
-        sz = GS.board.GetBoundingBox().GetSize()
+        bbox = GS.board.GetBoundingBox()
+        # KiCad 7 workaround, doing GS.board.GetBoundingBox().GetSize() fails
+        sz = bbox.GetSize()
         scale_x = FromMM(self.paper_w-self.autoscale_margin_x*2)/sz.x
         scale_y = FromMM(self.paper_h-self.autoscale_margin_y*2)/sz.y
         scale = min(scale_x, scale_y)
@@ -1087,11 +1055,10 @@ class PCB_PrintOptions(VariantOptions):
         pc = PLOT_CONTROLLER(GS.board)
         po = pc.GetPlotOptions()
         # Set General Options:
-        po.SetExcludeEdgeLayer(True)   # We plot it separately
+        GS.SetExcludeEdgeLayer(po, True)   # We plot it separately
         po.SetUseAuxOrigin(False)
         po.SetAutoScale(False)
-        if GS.ki6:
-            po.SetSvgPrecision(self.svg_precision, False)
+        GS.SetSvgPrecision(po, self.svg_precision)
         # Helpers for force_edge_cuts
         if self.force_edge_cuts:
             edge_layer = LayerOptions.create_layer('Edge.Cuts')

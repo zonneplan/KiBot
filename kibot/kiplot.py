@@ -215,7 +215,7 @@ def load_board(pcb_file=None, forced=False):
         with hide_stderr():
             board = pcbnew.LoadBoard(pcb_file)
         if BasePreFlight.get_option('check_zone_fills'):
-            pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+            GS.fill_zones(board)
         if GS.global_units and GS.ki6:
             # In KiCad 6 "dimensions" has units.
             # The default value is DIM_UNITS_MODE_AUTOMATIC.
@@ -237,6 +237,13 @@ def load_board(pcb_file=None, forced=False):
     assert board is not None
     logger.debug("Board loaded")
     return board
+
+
+def ki_conf_error(e):
+    trace_dump()
+    logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
+    logger.error('Line content: `{}`'.format(e.code.rstrip()))
+    exit(EXIT_BAD_CONFIG)
 
 
 def load_any_sch(file, project):
@@ -263,10 +270,7 @@ def load_any_sch(file, project):
         logger.error(str(e))
         exit(CORRUPTED_SCH)
     except KiConfError as e:
-        trace_dump()
-        logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
-        logger.error('Line content: `{}`'.format(e.code))
-        exit(EXIT_BAD_CONFIG)
+        ki_conf_error(e)
     return sch
 
 
@@ -428,6 +432,8 @@ def run_output(out, dont_stop=False):
             logger.error(msg)
         else:
             config_error(msg)
+    except KiConfError as e:
+        ki_conf_error(e)
     except SystemExit:
         if not dont_stop:
             raise
@@ -679,17 +685,25 @@ def guess_ki6_sch(schematics):
     return None
 
 
+def avoid_mixing_5_and_6():
+    logger.error('Found KiCad 5 and KiCad 6 files, make sure the whole project uses one version')
+    exit(EXIT_BAD_CONFIG)
+
+
 def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, sug_e=True):
     schematic = a_schematic
     if not schematic and a_board_file:
         base = os.path.splitext(a_board_file)[0]
         sch = os.path.join(base_dir, base+'.sch')
-        if os.path.isfile(sch):
+        kicad_sch = os.path.join(base_dir, base+'.kicad_sch')
+        found_sch = os.path.isfile(sch)
+        found_kicad_sch = os.path.isfile(kicad_sch)
+        if found_sch and found_kicad_sch:
+            avoid_mixing_5_and_6()
+        if found_sch:
             schematic = sch
-        else:
-            sch = os.path.join(base_dir, base+'.kicad_sch')
-            if os.path.isfile(sch):
-                schematic = sch
+        elif GS.ki6 and found_kicad_sch:
+            schematic = kicad_sch
     if not schematic:
         schematics = glob(os.path.join(base_dir, '*.sch'))
         if GS.ki6:
@@ -704,17 +718,22 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
                     # Unhide hidden config
                     config = config[1:]
                 # Remove any extension
-                while '.' in config:
+                last_split = None
+                while '.' in config and last_split != config:
+                    last_split = config
                     config = os.path.splitext(config)[0]
                 # Try KiCad 5
                 sch = os.path.join(base_dir, config+'.sch')
-                if os.path.isfile(sch):
+                found_sch = os.path.isfile(sch)
+                # Try KiCad 6
+                kicad_sch = os.path.join(base_dir, config+'.kicad_sch')
+                found_kicad_sch = os.path.isfile(kicad_sch)
+                if found_sch and found_kicad_sch:
+                    avoid_mixing_5_and_6()
+                if found_sch:
                     schematic = sch
-                elif GS.ki6:
-                    # Try KiCad 6
-                    sch = os.path.join(base_dir, config+'.kicad_sch')
-                    if os.path.isfile(sch):
-                        schematic = sch
+                elif GS.ki6 and found_kicad_sch:
+                    schematic = kicad_sch
             if not schematic:
                 # Look for a schematic with a PCB and/or project
                 for sch in schematics:

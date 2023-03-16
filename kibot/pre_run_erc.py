@@ -8,7 +8,7 @@ Dependencies:
   - from: KiAuto
     role: mandatory
     command: eeschema_do
-    version: 1.5.4
+    version: 2.2.1
 """
 import os
 from sys import exit
@@ -53,7 +53,7 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         output = self.get_targets()[0]
         os.makedirs(os.path.dirname(output), exist_ok=True)
         logger.debug('ERC report: '+output)
-        cmd = [command, 'run_erc', '-o', output]
+        cmd = [command, 'run_erc', '-o', output, '-g', str(GS.global_erc_grid)]
         if BasePreFlight.get_option('erc_warnings'):  # noqa: F821
             cmd.append('-w')
         if GS.filter_file:

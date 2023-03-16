@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
@@ -54,18 +54,20 @@ class Environment(Optionable):
             defs['KICAD_USER_TEMPLATE_DIR'] = self.user_templates
 
     def define_k6_vars(self, defs):
-        if self.symbols:
-            defs['KICAD6_SYMBOL_DIR'] = self.symbols
-        if self.footprints:
-            defs['KICAD6_FOOTPRINT_DIR'] = self.footprints
-        if self.models_3d:
-            defs['KICAD6_3DMODEL_DIR'] = self.models_3d
-        if self.templates:
-            defs['KICAD6_TEMPLATE_DIR'] = self.templates
         if self.user_templates:
             defs['KICAD_USER_TEMPLATE_DIR'] = self.user_templates
-        if self.third_party:
-            defs['KICAD6_3RD_PARTY'] = self.third_party
+        for n in reversed(range(6, GS.kicad_version_major+1)):
+            ki_ver = 'KICAD'+str(n)
+            if self.symbols:
+                defs[ki_ver+'_SYMBOL_DIR'] = self.symbols
+            if self.footprints:
+                defs[ki_ver+'_FOOTPRINT_DIR'] = self.footprints
+            if self.models_3d:
+                defs[ki_ver+'_3DMODEL_DIR'] = self.models_3d
+            if self.templates:
+                defs[ki_ver+'_TEMPLATE_DIR'] = self.templates
+            if self.third_party:
+                defs[ki_ver+'_3RD_PARTY'] = self.third_party
 
     def config(self, parent):
         super().config(parent)
@@ -125,7 +127,7 @@ class Globals(FiltersOptions):
                 The values defined here has precedence over the KiCad configuration.
                 Related to https://gitlab.com/kicad/code/kicad/-/issues/3792 """
             self.castellated_pads = False
-            """ Has the PCB castelletad pads?
+            """ Has the PCB castellated pads?
                 KiCad 6: you should set this in the Board Setup -> Board Finish -> Has castellated pads """
             self.copper_finish = None
             """ {pcb_finish} """
@@ -135,7 +137,9 @@ class Globals(FiltersOptions):
             self.cross_footprints_for_dnp = True
             """ Draw a cross for excluded components in the `Fab` layer """
             self.cross_no_body = False
-            """ Cross components even when they don't have a body. Only for KiCad 6 """
+            """ Cross components even when they don't have a body. Only for KiCad 6 and internal cross """
+            self.cross_using_kicad = True
+            """ When using KiCad 7+ let KiCad cross the components """
             self.csv_accept_no_ref = False
             """ Accept aggregating CSV files without references (Experimental) """
             self.date_format = '%Y-%m-%d'
@@ -243,6 +247,23 @@ class Globals(FiltersOptions):
             self.field_lcsc_part = ''
             """ The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
                 When empty KiBot will try to discover it """
+            self.allow_blind_buried_vias = True
+            """ Allow the use of buried vias. This value is only used for KiCad 7+.
+                For KiCad 5 and 6 use the design rules settings, stored in the project """
+            self.allow_microvias = True
+            """ Allow the use of micro vias. This value is only used for KiCad 7+.
+                For KiCad 5 and 6 use the design rules settings, stored in the project """
+            self.erc_grid = 50
+            """ Grid size used for the ERC. This value must be in mils.
+                This is needed for KiCad 7 in order to run the off grid check.
+                Shouldn't be needed in KiCad 8.
+                https://gitlab.com/kicad/code/kicad/-/issues/14110 """
+            self.kicad_dnp_applied = True
+            """ The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag before running any filter """
+            self.kicad_dnp_applies_to_3D = True
+            """ The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag for 3D models,
+                even when no filter/variant is specified. Disabling `kicad_dnp_applied` also disables
+                this flag """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

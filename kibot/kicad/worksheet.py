@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad bugs:
 # - Text bold doesn't work
@@ -13,26 +13,39 @@ Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-worksheet/
 """
 import io
 from struct import unpack
-from pcbnew import (wxPoint, wxSize, FromMM, GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
-                    GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM, wxPointMM)
+from pcbnew import (wxPoint, wxSize, FromMM, wxPointMM)
 from ..gs import GS
 if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
     detect_kicad()
-if GS.ki6:
-    from pcbnew import PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY
+if GS.ki7:
+    from pcbnew import (PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, GR_TEXT_H_ALIGN_LEFT,
+                        GR_TEXT_H_ALIGN_RIGHT, GR_TEXT_H_ALIGN_CENTER, GR_TEXT_V_ALIGN_TOP, GR_TEXT_V_ALIGN_CENTER,
+                        GR_TEXT_V_ALIGN_BOTTOM)
+    # Is this change really needed??!!! People doesn't have much to do ...
+    GR_TEXT_HJUSTIFY_LEFT = GR_TEXT_H_ALIGN_LEFT
+    GR_TEXT_HJUSTIFY_RIGHT = GR_TEXT_H_ALIGN_RIGHT
+    GR_TEXT_HJUSTIFY_CENTER = GR_TEXT_H_ALIGN_CENTER
+    GR_TEXT_VJUSTIFY_TOP = GR_TEXT_V_ALIGN_TOP
+    GR_TEXT_VJUSTIFY_CENTER = GR_TEXT_V_ALIGN_CENTER
+    GR_TEXT_VJUSTIFY_BOTTOM = GR_TEXT_V_ALIGN_BOTTOM
+elif GS.ki6:
+    from pcbnew import (PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, GR_TEXT_HJUSTIFY_LEFT,
+                        GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER,
+                        GR_TEXT_VJUSTIFY_BOTTOM)
 else:
-    from pcbnew import DRAWSEGMENT, TEXTE_PCB
+    from pcbnew import (DRAWSEGMENT, TEXTE_PCB, GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
+                        GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM)
     PCB_SHAPE = DRAWSEGMENT
     PCB_TEXT = TEXTE_PCB
     FILL_T_FILLED_SHAPE = 0
     SHAPE_T_POLY = 4
 from .sexpdata import load, SExpData
-from .v6_sch import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
-                     _check_relaxed, _get_points, _check_symbol_str)
+from .sexp_helpers import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
+                           _check_relaxed, _get_points, _check_symbol_str)
 from ..svgutils.transform import ImageElement, GroupElement
-from ..misc import W_WKSVERSION, KICAD5_SVG_SCALE
+from ..misc import W_WKSVERSION
 from .. import log
 
 logger = log.get_logger()
@@ -157,8 +170,8 @@ class WksLine(WksDrawing):
     def draw_line(e, p, st, en):
         s = PCB_SHAPE()
         s.SetShape(e.shape)
-        s.SetStart(st)
-        s.SetEnd(en)
+        s.SetStart(GS.p2v_k7(st))
+        s.SetEnd(GS.p2v_k7(en))
         s.SetWidth(e.line_width)
         s.SetLayer(p.layer)
         p.board.Add(s)
@@ -285,8 +298,8 @@ class WksText(WksDrawing):
         for _ in range(e.repeat):
             s = PCB_TEXT(None)
             s.SetText(text)
-            s.SetPosition(pos)
-            s.SetTextSize(e.font.size)
+            s.SetPosition(GS.p2v_k7(pos))
+            s.SetTextSize(GS.p2v_k7(e.font.size))
             if e.font.bold:
                 s.SetBold(True)
                 thickness = round(e.font.line_width*2)
@@ -364,7 +377,7 @@ class WksPolygon(WksDrawing):
                 s.SetShape(SHAPE_T_POLY)
                 if hasattr(s, 'SetFillMode'):
                     s.SetFillMode(FILL_T_FILLED_SHAPE)
-                s.SetPolyPoints([pos+p for p in pts])
+                s.SetPolyPoints([GS.p2v_k7(pos+p) for p in pts])
                 s.SetWidth(e.line_width)
                 s.SetLayer(p.layer)
                 if e.rotate:
@@ -416,17 +429,13 @@ class WksBitmap(WksDrawing):
         # KiCad 6 can adjust the precision
         # The default is 6 and makes 1 KiCad unit == 1 SVG unit
         # But this isn't supported by browsers (Chrome and Firefox)
-        scale = 10.0 ** (svg_precision - 6)
+        scale = GS.iu_to_svg(1.0, svg_precision)[0]
         for _ in range(e.repeat):
             img = ImageElement(io.BytesIO(s), w, h)
             x = pos.x-round(w/2)
             y = pos.y-round(h/2)
             img.moveto(x, y)
-            if GS.ki5:
-                # KiCad 5 uses Inches and with less resolution
-                img.scale(KICAD5_SVG_SCALE)
-            elif svg_precision != 6:
-                img.scale(scale)
+            img.scale(scale)
             # Put the image in a group
             g = GroupElement([img])
             # Add the group to the SVG

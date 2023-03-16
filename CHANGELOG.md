@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2023-03-16
+### Added
+- KiCad 7.0.1 support
+- Global options:
+  - `allow_blind_buried_vias` and `allow_microvias` for KiCad 7 (no longer in
+     KiCad)
+  - `erc_grid` to specify the grid size for KiCad 7 ERC tests
+- Report:
+  - Counters for total vias and by via type (`vias_count`, `thru_vias_count`,
+    `blind_vias_count` and `micro_vias_count`)
+  - Warnings when micro and/or blind vias aren't allowed, but we found them.
+- KiCad 7 specific:
+  - Avoid warnings about missing coutyard for footprints marked as excluded
+    from courtyard tests.
+  - `kicad_dnp_applied` global option to use the *Do Not Populate* schematic
+    flag as *do not fit* for KiBot, enabled by default.
+  - `kicad_dnp_applies_to_3D` global option to eliminate the 3D models of
+    components marked as *Do Not Populate*. This option applies to the case
+    where no filter or variants are in use. Enabled by default. The
+    `kicad_dnp_applied` option also disables it.
+  - `cross_using_kicad` global option to use KiCad to cross DNP components in
+    the schematic. Enabled by default.
+
+### Fixed
+- Problems to detect the schematic name when the path to the config contained a
+  dot that isn't used for an extension and some particular conditions were met.
+- PCB Print: KiCad crashing on some complex filled zones (#396)
+
 ## [1.6.0] - 2023-02-06
 ### Added
 - General:

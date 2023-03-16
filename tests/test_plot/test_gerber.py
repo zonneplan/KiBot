@@ -98,7 +98,6 @@ def test_gerber_2layer(test_dir):
 
     # Expect a flash for the square pad
     ctx.expect_gerber_flash_at(f_cu, 5, (140, -100))
-
     ctx.clean_up()
 
 

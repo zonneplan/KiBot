@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -36,7 +36,7 @@ Options:
   -C, --cli-order                  Generate outputs using the indicated order
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -D, --dont-stop                  Try to continue if an output fails
-  -e SCHEMA, --schematic SCHEMA    The schematic file (.sch)
+  -e SCHEMA, --schematic SCHEMA    The schematic file (.sch/.kicad_sch)
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
@@ -83,7 +83,6 @@ from . import __version__, __copyright__, __license__
 from . import log
 log.set_domain('kibot')
 logger = log.init()
-from . import dep_downloader
 from .docopt import docopt
 # GS will import pcbnew, so we must solve the nightly setup first
 # Check if we have to run the nightly KiCad build
@@ -94,11 +93,12 @@ if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
     sys_path.insert(0, pcbnew_path)
     # This helps other tools like iBoM to pick-up the right pcbnew module
     if 'PYTHONPATH' in os.environ:
-        os.environ['PYTHONPATH'] += ':'+pcbnew_path
+        os.environ['PYTHONPATH'] += os.pathsep+pcbnew_path
     else:
         os.environ['PYTHONPATH'] = pcbnew_path
     nightly = True
 from .gs import GS
+from . import dep_downloader
 from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK, W_ONWIN
 from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError, config_error
@@ -183,16 +183,20 @@ def detect_kicad():
     except ValueError:
         pass
 
-    m = re.search(r'(\d+)\.(\d+)\.(\d+)', GS.kicad_version)
+    m = re.search(r'(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?', GS.kicad_version)
     if m is None:
         logger.error("Unable to detect KiCad version, got: `{}`".format(GS.kicad_version))
         sys.exit(NO_PCBNEW_MODULE)
     GS.kicad_version_major = int(m.group(1))
     GS.kicad_version_minor = int(m.group(2))
     GS.kicad_version_patch = int(m.group(3))
-    GS.kicad_version_n = GS.kicad_version_major*1000000+GS.kicad_version_minor*1000+GS.kicad_version_patch
-    GS.ki6 = GS.kicad_version_major >= 6
+    GS.kicad_version_subpatch = 0 if m.group(4) is None else int(m.group(4))
+    GS.kicad_version_n = (GS.kicad_version_major*10000000+GS.kicad_version_minor*10000+GS.kicad_version_patch*10 +
+                          GS.kicad_version_subpatch)
     GS.ki5 = GS.kicad_version_major < 6
+    GS.ki6 = GS.kicad_version_major >= 6
+    GS.ki6_only = GS.kicad_version_major == 6
+    GS.ki7 = GS.kicad_version_major >= 7
     logger.debug('Detected KiCad v{}.{}.{} ({} {})'.format(GS.kicad_version_major, GS.kicad_version_minor,
                  GS.kicad_version_patch, GS.kicad_version, GS.kicad_version_n))
     # Used to look for plug-ins.

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from pcbnew import EXCELLON_WRITER
 from .out_any_drill import AnyDrill
+from .gs import GS
 from .macros import macros, document, output_class  # noqa: F401
 
 ZF = {'DECIMAL_FORMAT': EXCELLON_WRITER.DECIMAL_FORMAT,
@@ -37,7 +38,7 @@ class ExcellonOptions(AnyDrill):
 
     def _configure_writer(self, board, offset):
         drill_writer = EXCELLON_WRITER(board)
-        drill_writer.SetOptions(self.mirror_y_axis, self.minimal_header, offset, self.pth_and_npth_single_file)
+        drill_writer.SetOptions(self.mirror_y_axis, self.minimal_header, GS.p2v_k7(offset), self.pth_and_npth_single_file)
         drill_writer.SetRouteModeForOvalHoles(self.route_mode_for_oval_holes)
         drill_writer.SetFormat(self.metric_units, ZF[self.zeros_format], self.left_digits, self.right_digits)
         self._unified_output = self.pth_and_npth_single_file

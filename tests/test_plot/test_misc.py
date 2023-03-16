@@ -852,6 +852,11 @@ def test_import_7(test_dir):
     """ Import a preflight """
     prj = '3Rs'
     ctx = context.TestContext(test_dir, prj, 'import_test_7')
+    if context.ki7():
+        ctx.board_file.replace('kicad_pcb', 'kicad_pro')
+        with open(ctx.board_file.replace('kicad_pcb', 'kicad_pro'), 'wt') as f:
+            f.write(json.dumps({"board": {"design_settings": {"rule_severities": {"lib_footprint_issues": "ignore",
+                               "lib_footprint_mismatch": "ignore"}}}}))
     ctx.run(extra=[])
     ctx.expect_out_file('3Rs-drc.txt')
     ctx.clean_up()
@@ -1590,3 +1595,34 @@ def test_lcsc_field_specified(test_dir):
     assert ctx.search_err('User selected.*Cryptic')
     r, _, _ = ctx.load_csv(prj+'_bom_jlc.csv')
     assert r[0][3] == 'C1234'
+
+
+@pytest.mark.skipif(context.ki5(), reason="KiKit is v6+")
+def test_stencil_3D_1(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'stencil_3D_1', 'stencil/3D')
+    ctx.run(extra=[])
+    ctx.expect_out_file_d(prj+'-stencil_3d_top.stl')
+    ctx.compare_image(prj+'-stencil_3d_top.png', sub=True, tol=100)
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(context.ki5(), reason="KiKit is v6+")
+def test_stencil_steel_1(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'stencil_for_jig_1', 'stencil/Jig')
+    ctx.run(extra=[])
+    ctx.expect_out_file_d(prj+'-stencil_for_jig_top.stl')
+    ctx.compare_image(prj+'-stencil_for_jig_top.png', sub=True, tol=100)
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(context.ki5(), reason="KiKit is v6+")
+def test_panelize_1(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'panelize_2')
+    ctx.run(extra=[])
+    ctx.compare_image(prj+'-panel.png')
+    ctx.clean_up(keep_project=True)

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2022 Salvador E. Tropea
-# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2023 Salvador E. Tropea
+# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
-KiCad v6 Schematic format.
+KiCad v6/7 Schematic format.
 A basic implementation of the .kicad_sch file format.
-Currently oriented to collect the components for the BoM.
+Currently oriented to collect the components for the BoM and create a variant of the SCH
 Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-schematic/
 """
 # Encapsulate file/line
@@ -16,144 +16,20 @@ from collections import OrderedDict
 from ..gs import GS
 from .. import log
 from ..misc import W_NOLIB, W_UNKFLD, W_MISSCMP
-from .v5_sch import SchError, SchematicComponent, Schematic
+from .error import SchError
 from .sexpdata import load, SExpData, Symbol, dumps, Sep
+from .sexp_helpers import (_check_is_symbol_list, _check_len, _check_len_total, _check_symbol, _check_hide, _check_integer,
+                           _check_float, _check_str, _check_symbol_value, _check_symbol_float, _check_symbol_int,
+                           _check_symbol_str, _get_offset, _get_yes_no, _get_at, _get_size, _get_xy, _get_points)
+from .v5_sch import SchematicComponent, Schematic
 
 logger = log.get_logger()
 CROSSED_LIB = 'kibot_crossed'
 NO_YES = ['no', 'yes']
-
-
-def _check_is_symbol_list(e, allow_orphan_symbol=()):
-    # Each entry is a list
-    if not isinstance(e, list):
-        if isinstance(e, Symbol):
-            name = e.value()
-            if name in allow_orphan_symbol:
-                return name
-            raise SchError('Orphan symbol `{}`'.format(e.value()))
-        else:
-            raise SchError('Orphan data `{}`'.format(e))
-    # The first element is a symbol
-    if not isinstance(e[0], Symbol):
-        raise SchError('Orphan data `{}`'.format(e[0]))
-    return e[0].value()
-
-
-def _check_len(items, pos, name):
-    if len(items) < pos+1:
-        raise SchError('Missing argument {} in `{}`'.format(pos, name))
-    return items[pos]
-
-
-def _check_len_total(items, num, name):
-    if len(items) != num:
-        raise SchError('Wrong number of attributes for {} `{}`'.format(name, items))
-
-
-def _check_symbol(items, pos, name):
-    value = _check_len(items, pos, name)
-    if not isinstance(value, Symbol):
-        raise SchError('{} is not a Symbol `{}`'.format(name, value))
-    return value.value()
-
-
-def _check_hide(items, pos, name):
-    value = _check_symbol(items, pos, name + ' hide')
-    if value != 'hide':
-        raise SchError('Found Symbol `{}` when `hide` expected'.format(value))
-    return True
-
-
-def _check_integer(items, pos, name):
-    value = _check_len(items, pos, name)
-    if not isinstance(value, int):
-        raise SchError('{} is not an integer `{}`'.format(name, value))
-    return value
-
-
-def _check_float(items, pos, name):
-    value = _check_len(items, pos, name)
-    if not isinstance(value, (float, int)):
-        raise SchError('{} is not a float `{}`'.format(name, value))
-    return value
-
-
-def _check_str(items, pos, name):
-    value = _check_len(items, pos, name)
-    if not isinstance(value, str):
-        raise SchError('{} is not a string `{}`'.format(name, value))
-    return value
-
-
-def _check_relaxed(items, pos, name):
-    value = _check_len(items, pos, name)
-    if isinstance(value, str):
-        return value
-    if isinstance(value, Symbol):
-        return value.value()
-    if isinstance(value, (float, int)):
-        return str(value)
-    raise SchError('{} is not a string, Symbol or number `{}`'.format(name, value))
-
-
-def _check_symbol_value(items, pos, name, sym):
-    value = _check_len(items, pos, name)
-    if not isinstance(value, list) or not isinstance(value[0], Symbol) or value[0].value() != sym:
-        raise SchError('Missing `{}` in `{}`'.format(sym, name))
-    return value
-
-
-def _check_symbol_float(items, pos, name, sym):
-    name += ' ' + sym
-    values = _check_symbol_value(items, pos, name, sym)
-    return _check_float(values, 1, name)
-
-
-def _check_symbol_int(items, pos, name, sym):
-    name += ' ' + sym
-    values = _check_symbol_value(items, pos, name, sym)
-    return _check_integer(values, 1, name)
-
-
-def _check_symbol_str(items, pos, name, sym):
-    name += ' ' + sym
-    values = _check_symbol_value(items, pos, name, sym)
-    return _check_str(values, 1, name)
-
-
-def _get_offset(items, pos, name):
-    value = _check_symbol_value(items, pos, name, 'offset')
-    return _check_float(value, 1, 'offset')
-
-
-def _get_yes_no(items, pos, name):
-    sym = _check_symbol(items, pos, name)
-    return sym == 'yes'
-
-
-def _get_id(items, pos, name):
-    value = _check_symbol_value(items, pos, name, 'id')
-    return _check_integer(value, 1, 'id')
-
-
-def _get_at(items, pos, name):
-    value = _check_symbol_value(items, pos, name, 'at')
-    angle = 0
-    if len(value) > 3:
-        angle = _check_float(value, 3, 'at angle')
-    return _check_float(value, 1, 'at x'), _check_float(value, 2, 'at y'), angle
-
-
-class Point(object):
-    def __init__(self, items):
-        super().__init__()
-        self.x = _check_float(items, 1, 'x coord')
-        self.y = _check_float(items, 2, 'y coord')
-
-    @staticmethod
-    def parse(items):
-        return Point(items)
+version = None
+KICAD_7_VER = 20230121
+SHEET_FILE = {'Sheet file', 'Sheetfile'}
+SHEET_NAME = {'Sheet name', 'Sheetname'}
 
 
 class PointXY(object):
@@ -201,23 +77,6 @@ class Box(object):
             self.y2 = max(self.y2, b.y2)
 
 
-def _get_xy(items):
-    if len(items) != 3:
-        raise SchError('Point definition with wrong args (`{}`)'.format(items))
-    return Point.parse(items)
-
-
-def _get_points(items):
-    points = []
-    for i in items[1:]:
-        i_type = _check_is_symbol_list(i)
-        if i_type == 'xy':
-            points.append(_get_xy(i))
-        else:
-            raise SchError('Unknown points attribute `{}`'.format(i))
-    return points
-
-
 class FontEffects(object):
     """ Class used to describe text attributes """
     def __init__(self):
@@ -228,11 +87,14 @@ class FontEffects(object):
         self.bold = self.italic = False
         self.hjustify = self.vjustify = 'C'
         self.mirror = False
+        self.color = None
+        self.href = None
+        self.face = None
 
     @staticmethod
     def parse_font(items):
         w = h = 1.27
-        thickness = None
+        thickness = color = face = None
         bold = italic = False
         for i in items[1:]:
             if isinstance(i, Symbol):
@@ -250,9 +112,13 @@ class FontEffects(object):
                     w = _check_float(i, 2, 'font width')
                 elif i_type == 'thickness':
                     thickness = _check_float(i, 1, 'font thickness')
+                elif i_type == 'color':
+                    color = Color.parse(i)
+                elif i_type == 'face':
+                    face = _check_str(i, 1, 'font face')
                 else:
                     raise SchError('Unknown font effect attribute `{}`'.format(i))
-        return w, h, thickness, bold, italic
+        return w, h, thickness, bold, italic, color, face
 
     @staticmethod
     def parse_justify(items):
@@ -287,21 +153,28 @@ class FontEffects(object):
             elif isinstance(i, list):
                 i_type = _check_is_symbol_list(i)
                 if i_type == 'font':
-                    o.w, o.h, o.thickness, o.bold, o.italic = FontEffects.parse_font(i)
+                    o.w, o.h, o.thickness, o.bold, o.italic, o.color, o.face = FontEffects.parse_font(i)
                 elif i_type == 'justify':
                     o.hjustify, o.vjustify, o.mirror = FontEffects.parse_justify(i)
+                elif i_type == 'href':
+                    o.href = _check_str(i, 1, 'font effect')
                 else:
                     raise SchError('Unknown font effect attribute `{}`'.format(i))
         return o
 
     def write_font(self):
-        data = [_symbol('size', [self.h, self.w])]
+        data = []
+        if self.face is not None:
+            data.append(_symbol('face', [self.face]))
+        data.append(_symbol('size', [self.h, self.w]))
         if self.thickness is not None:
             data.append(_symbol('thickness', [self.thickness]))
         if self.bold:
             data.append(Symbol('bold'))
         if self.italic:
             data.append(Symbol('italic'))
+        if self.color is not None:
+            data.append(self.color.write())
         return _symbol('font', data)
 
     def write_justify(self):
@@ -324,6 +197,8 @@ class FontEffects(object):
             data.append(self.write_justify())
         if self.hide:
             data.append(Symbol('hide'))
+        if self.href is not None:
+            data.append(_symbol('href', [self.href]))
         return _symbol('effects', data)
 
 
@@ -372,7 +247,9 @@ class Stroke(object):
     def write(self):
         data = [_symbol('width', [self.width])]
         data.append(_symbol('type', [Symbol(self.type)]))
-        data.append(self.color.write())
+        c = self.color
+        if version < KICAD_7_VER or c.r+c.g+c.b+c.a != 0:
+            data.append(c.write())
         return _symbol('stroke', data)
 
 
@@ -413,11 +290,12 @@ class DrawArcV6(object):
         self.end = None
         self.stroke = None
         self.fill = None
+        self.uuid = None
 
     @staticmethod
     def parse(items):
         arc = DrawArcV6()
-        for i in items[1:]:
+        for c, i in enumerate(items[1:]):
             i_type = _check_is_symbol_list(i)
             if i_type == 'start':
                 arc.start = _get_xy(i)
@@ -429,6 +307,8 @@ class DrawArcV6(object):
                 arc.stroke = Stroke.parse(i)
             elif i_type == 'fill':
                 arc.fill = Fill.parse(i)
+            elif i_type == 'uuid':
+                arc.uuid = _get_uuid(items, c+1, 'arc')
             else:
                 raise SchError('Unknown arc attribute `{}`'.format(i))
         arc.box = Box([arc.start, arc.mid, arc.end])
@@ -441,6 +321,8 @@ class DrawArcV6(object):
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
+        if self.uuid is not None:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('arc', data)
 
 
@@ -451,11 +333,12 @@ class DrawCircleV6(object):
         self.radius = 0
         self.stroke = None
         self.fill = None
+        self.uuid = None
 
     @staticmethod
     def parse(items):
         circle = DrawCircleV6()
-        for i in items[1:]:
+        for c, i in enumerate(items[1:]):
             i_type = _check_is_symbol_list(i)
             if i_type == 'center':
                 circle.center = _get_xy(i)
@@ -465,6 +348,8 @@ class DrawCircleV6(object):
                 circle.stroke = Stroke.parse(i)
             elif i_type == 'fill':
                 circle.fill = Fill.parse(i)
+            elif i_type == 'uuid':
+                circle.uuid = _get_uuid(items, c+1, 'circle')
             else:
                 raise SchError('Unknown circle attribute `{}`'.format(i))
         p1 = PointXY(circle.center.x-circle.radius, circle.center.x-circle.radius)
@@ -478,6 +363,8 @@ class DrawCircleV6(object):
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
+        if self.uuid is not None:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('circle', data)
 
 
@@ -488,11 +375,12 @@ class DrawRectangleV6(object):
         self.end = None
         self.stroke = None
         self.fill = None
+        self.uuid = None
 
     @staticmethod
     def parse(items):
         rectangle = DrawRectangleV6()
-        for i in items[1:]:
+        for c, i in enumerate(items[1:]):
             i_type = _check_is_symbol_list(i)
             if i_type == 'start':
                 rectangle.start = _get_xy(i)
@@ -502,6 +390,8 @@ class DrawRectangleV6(object):
                 rectangle.stroke = Stroke.parse(i)
             elif i_type == 'fill':
                 rectangle.fill = Fill.parse(i)
+            elif i_type == 'uuid':
+                rectangle.uuid = _get_uuid(items, c+1, 'rectangle')
             else:
                 raise SchError('Unknown rectangle attribute `{}`'.format(i))
         rectangle.box = Box([rectangle.start, rectangle.end])
@@ -513,6 +403,8 @@ class DrawRectangleV6(object):
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
+        if self.uuid is not None:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('rectangle', data)
 
 
@@ -721,27 +613,50 @@ class SchematicFieldV6(object):
         self.ang = ang
         self.effects = None
         self.hide = False
+        self.do_not_autoplace = False
+        self.show_name = False
 
     @staticmethod
-    def parse(items):
-        if len(items) != 6:
-            _check_len_total(items, 5, 'property')
+    def parse(items, number):
         field = SchematicFieldV6()
-        field.name = _check_str(items, 1, 'field name')
-        field.value = _check_str(items, 2, 'field value')
-        field.number = _get_id(items, 3, 'field id')
-        field.x, field.y, field.ang = _get_at(items, 4, 'field')
-        if len(items) > 5:
-            field.effects = _get_effects(items, 5, 'field')
-        else:
-            field.effects = None
+        name = 'field'
+        field.name = _check_str(items, 1, name+' name')
+        field.value = _check_str(items, 2, name+' value')
+        # Default values
+        field.number = number
+        field.effects = None
+        found_at = False
+        for c, i in enumerate(items[3:]):
+            i_type = _check_is_symbol_list(i)
+            if i_type == 'at':
+                field.x, field.y, field.ang = _get_at(items, c+3, name)
+                found_at = True
+            elif i_type == 'effects':
+                field.effects = FontEffects.parse(i)
+            elif i_type == 'id':
+                field.number = _check_integer(i, 1, name+' id')
+            elif i_type == 'do_not_autoplace':
+                field.do_not_autoplace = True
+            elif i_type == 'show_name':
+                field.show_name = True
+            else:
+                raise SchError('Unknown property attribute `{}`'.format(i))
+        if not found_at:
+            raise SchError('Missing position for property `{}`'.format(field.name))
         return field
 
     def write(self):
         if self.number < 0:
             return None
-        data = [self.name, self.value, _symbol('id', [self.number])]
+        data = [self.name, self.value]
+        if version < KICAD_7_VER:
+            # Removed in KiCad 7
+            data.append(_symbol('id', [self.number]))
         data.append(_symbol('at', [self.x, self.y, self.ang]))
+        if self.do_not_autoplace:
+            data.append(_symbol('do_not_autoplace'))
+        if self.show_name:
+            data.append(_symbol('show_name'))
         if self.effects:
             data.extend([Sep(), self.effects.write(), Sep()])
         return _symbol('property', data)
@@ -811,6 +726,7 @@ class LibComponent(object):
         comp.pins = []
         comp.all_pins = []
         comp.unit_count = 1
+        field_id = 0
         # Variable list
         for i in c[2:]:
             i_type = _check_is_symbol_list(i)
@@ -838,7 +754,8 @@ class LibComponent(object):
                 comp.is_power = True
             # SYMBOL_PROPERTIES...
             elif i_type == 'property':
-                field = SchematicFieldV6.parse(i)
+                field = SchematicFieldV6.parse(i, field_id)
+                field_id += 1
                 comp.fields.append(field)
                 comp.dfields[field.name.lower()] = field
             # GRAPHIC_ITEMS...
@@ -970,6 +887,42 @@ class LibComponent(object):
         return _symbol('symbol', sdata)
 
 
+class SymbolInstance(object):
+    def __init__(self):
+        super().__init__()
+        # Doesn't exist on v7
+        self.value = None
+        self.footprint = None
+
+    @staticmethod
+    def parse(items):
+        name = 'symbol instance'
+        instances = []
+        for c, _ in enumerate(items[1:]):
+            v = _check_symbol_value(items, c+1, name, 'path')
+            instance = SymbolInstance()
+            instance.path = _check_str(v, 1, name+' path')
+            instance.reference = _check_symbol_str(v, 2, name, 'reference')
+            instance.unit = _check_symbol_int(v, 3, name, 'unit')
+            if len(v) > 4:
+                # KiCad 6
+                instance.value = _check_symbol_str(v, 4, name, 'value')
+                instance.footprint = _check_symbol_str(v, 5, name, 'footprint')
+            instances.append(instance)
+        return instances
+
+    def write(self):
+        data = [self.path, Sep(),
+                _symbol('reference', [self.reference]),
+                _symbol('unit', [self.unit])]
+        if self.value is not None:
+            data.append(_symbol('value', [self.value]))
+        if self.footprint is not None:
+            data.append(_symbol('footprint', [self.footprint]))
+        data.append(Sep())
+        return _symbol('path', data)
+
+
 class SchematicComponentV6(SchematicComponent):
     def __init__(self):
         super().__init__()
@@ -982,6 +935,11 @@ class SchematicComponentV6(SchematicComponent):
         self.mirror = None
         self.convert = None
         self.pin_alternates = {}
+        # KiCad v7:
+        # Instances classified by project (v7)
+        self.projects = None
+        # All instances, by path (v7)
+        self.all_instances = {}
 
     def set_ref(self, ref):
         self.ref = ref
@@ -1028,6 +986,21 @@ class SchematicComponentV6(SchematicComponent):
             # Not documented
             self.pin_alternates[pin_name] = _check_symbol_str(i, 3, name, 'alternate')
 
+    def load_project(self, prj):
+        name = _check_str(prj, 1, 'instance project')
+        instances = SymbolInstance().parse(prj[1:])
+        for i in instances:
+            self.all_instances[i.path] = i
+        return name, instances
+
+    def load_instances(self, i):
+        self.projects = []
+        for prj in i[1:]:
+            i_type = _check_is_symbol_list(prj)
+            if i_type != 'project':
+                raise SchError('Found `{}` instead of `project` in symbol instance'.format(i_type))
+            self.projects.append(self.load_project(prj))
+
     @staticmethod
     def load(c, project, parent):
         if not isinstance(c, list):
@@ -1044,6 +1017,7 @@ class SchematicComponentV6(SchematicComponent):
         name = 'component'
         lib_id_found = False
         at_found = False
+        field_id = 0
 
         # Variable list
         for i in c[1:]:
@@ -1077,6 +1051,8 @@ class SchematicComponentV6(SchematicComponent):
                 comp.in_bom = _get_yes_no(i, 1, i_type)
             elif i_type == 'on_board':
                 comp.on_board = _get_yes_no(i, 1, i_type)
+            elif i_type == 'dnp':
+                comp.kicad_dnp = _get_yes_no(i, 1, i_type)
             elif i_type == 'fields_autoplaced':
                 # Not documented
                 comp.fields_autoplaced = True
@@ -1084,7 +1060,8 @@ class SchematicComponentV6(SchematicComponent):
                 comp.uuid = _check_symbol(i, 1, name + ' uuid')
             # SYMBOL_PROPERTIES...
             elif i_type == 'property':
-                field = SchematicFieldV6.parse(i)
+                field = SchematicFieldV6.parse(i, field_id)
+                field_id += 1
                 name_lc = field.name.lower()
                 # Add to the global collection
                 if name_lc not in parent.fields_lc:
@@ -1099,6 +1076,20 @@ class SchematicComponentV6(SchematicComponent):
             # PINS...
             elif i_type == 'pin':
                 comp.load_pin(i, name)
+            # KiCad v7 instances
+            elif i_type == 'instances':
+                comp.load_instances(i)
+                # We should get an instance for us
+                ins = comp.all_instances.get(parent.get_full_path())
+                if ins is None:
+                    raise SchError('Missing {} symbol instance for `{}`'.format(comp.name, parent.get_full_path()))
+                # Translate the instance to the v6 format (remove UUID for / and add the component UUID)
+                v6_ins = SymbolInstance()
+                v6_ins.path = os.path.join('/', '/'.join(ins.path.split('/')[2:]), comp.uuid)
+                v6_ins.reference = ins.reference
+                v6_ins.unit = ins.unit
+                # Add to the root symbol_instances, so we reconstruct it
+                parent.symbol_instances.append(v6_ins)
             else:
                 raise SchError('Unknown component attribute `{}`'.format(i))
         if not lib_id_found or not at_found:
@@ -1115,9 +1106,15 @@ class SchematicComponentV6(SchematicComponent):
     def write(self, cross=False):
         lib_id = self.lib_id
         is_crossed = not(self.fitted or not self.included)
+        native_cross = GS.ki7 and GS.global_cross_using_kicad
+        dnp = False if native_cross else self.kicad_dnp
         if cross and (self.lib or self.local_name) and is_crossed:
-            # Use an alternative name
-            lib_id = CROSSED_LIB+':'+(self.local_name if self.local_name else self.name)
+            if native_cross:
+                # Just inform KiCad we want to make it DNP
+                dnp = True
+            else:
+                # Use an alternative name
+                lib_id = CROSSED_LIB+':'+(self.local_name if self.local_name else self.name)
         data = [_symbol('lib_id', [lib_id]),
                 _symbol('at', [self.x, self.y, self.ang])]
         if self.mirror:
@@ -1129,6 +1126,8 @@ class SchematicComponentV6(SchematicComponent):
         data.append(Sep())
         data.append(_symbol('in_bom', [Symbol(NO_YES[self.in_bom])]))
         data.append(_symbol('on_board', [Symbol(NO_YES[self.on_board])]))
+        if dnp is not None:
+            data.append(_symbol('dnp', [Symbol(NO_YES[dnp])]))
         if self.fields_autoplaced:
             data.append(_symbol('fields_autoplaced'))
         data.append(Sep())
@@ -1143,6 +1142,14 @@ class SchematicComponentV6(SchematicComponent):
             if alternate:
                 pin_data.append(_symbol('alternate', [alternate]))
             data.extend([_symbol('pin', pin_data), Sep()])
+        if self.projects is not None:
+            prj_data = [Sep()]
+            for prj, ins in self.projects:
+                ins_data = [prj, Sep()]
+                for i in ins:
+                    ins_data.extend([i.write(), Sep()])
+                prj_data.extend([_symbol('project', ins_data), Sep()])
+            data.extend([_symbol('instances', prj_data), Sep()])
         return _symbol('symbol', data)
 
 
@@ -1205,8 +1212,7 @@ class BusEntry(object):
         _check_len_total(items, 5, 'bus entry')
         buse = BusEntry()
         buse.pos_x, buse.pos_y, buse.ang = _get_at(items, 1, 'bus entry')
-        values = _check_symbol_value(items, 2, 'bus entry size', 'size')
-        buse.size = _get_xy(values)
+        buse.size = _get_size(items, 2, 'bus entry')
         buse.stroke = Stroke.parse(items[3])
         buse.uuid = _get_uuid(items, 4, 'bus entry')
         return buse
@@ -1267,11 +1273,11 @@ class SchematicBitmapV6(object):
 class Text(object):
     @staticmethod
     def parse(items, name):
-        _check_len_total(items, 5, name)
         text = Text()
         text.name = name
         text.text = _check_str(items, 1, name)
         text.pos_x, text.pos_y, text.ang = _get_at(items, 2, name)
+
         text.effects = _get_effects(items, 3, name)
         text.uuid = _get_uuid(items, 4, name)
         return text
@@ -1279,6 +1285,30 @@ class Text(object):
     def write(self):
         data = [self.text,
                 _symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
+                self.effects.write(), Sep(),
+                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+        return _symbol(self.name, data)
+
+
+class TextBox(object):
+    @staticmethod
+    def parse(items, name):
+        text = TextBox()
+        text.name = name
+        text.text = _check_str(items, 1, name)
+        text.pos_x, text.pos_y, text.ang = _get_at(items, 2, name)
+        text.size = _get_size(items, 3, name)
+        text.stroke = Stroke.parse(items[4])
+        text.fill = Fill.parse(items[5])
+        text.effects = _get_effects(items, 6, name)
+        text.uuid = _get_uuid(items, 7, name)
+        return text
+
+    def write(self):
+        data = [self.text, Sep(),
+                _symbol('at', [self.pos_x, self.pos_y, self.ang]), _symbol('size', [self.size.x, self.size.y]), Sep(),
+                self.stroke.write(), Sep(),
+                self.fill.write(), Sep(),
                 self.effects.write(), Sep(),
                 _symbol('uuid', [Symbol(self.uuid)]), Sep()]
         return _symbol(self.name, data)
@@ -1294,61 +1324,57 @@ class GlobalLabel(object):
         self.effects = None
         self.uuid = None
         self.properties = []
+        self.name = 'global_label'
 
-    @staticmethod
-    def parse(items):
-        label = GlobalLabel()
-        label.text = _check_str(items, 1, 'global_label')
+    @classmethod
+    def parse(cls, items):
+        label = cls()
+        label.text = _check_str(items, 1, label.name)
+        field_id = 0
         for c, i in enumerate(items[2:]):
             i_type = _check_is_symbol_list(i)
             if i_type == 'shape':
-                label.shape = _check_symbol(i, 1, i_type)
+                label.shape = _check_symbol(i, 1, label.name+' '+i_type)
             elif i_type == 'fields_autoplaced':
                 label.fields_autoplaced = True
             elif i_type == 'at':
-                label.pos_x, label.pos_y, label.ang = _get_at(items, c+2, 'global_label')
+                label.pos_x, label.pos_y, label.ang = _get_at(items, c+2, label.name)
             elif i_type == 'effects':
                 label.effects = FontEffects.parse(i)
             elif i_type == 'uuid':
-                label.uuid = _get_uuid(items, c+2, 'global_label')
+                label.uuid = _get_uuid(items, c+2, label.name)
             elif i_type == 'property':
-                label.properties.append(SchematicFieldV6.parse(i))
+                label.properties.append(SchematicFieldV6.parse(i, field_id))
+                field_id += 1
             else:
-                raise SchError('Unknown label attribute `{}`'.format(i))
+                raise SchError('Unknown {} attribute `{}`'.format(label.name, i))
         return label
 
     def write(self):
-        data = [self.text,
-                _symbol('shape', [Symbol(self.shape)]),
-                _symbol('at', [self.pos_x, self.pos_y, self.ang])]
+        data = [self.text]
+        if self.shape is not None:
+            data.append(_symbol('shape', [Symbol(self.shape)]))
+        data.append(_symbol('at', [self.pos_x, self.pos_y, self.ang]))
         if self.fields_autoplaced:
             data.append(_symbol('fields_autoplaced', []))
-        data.extend([Sep(), self.effects.write(), Sep(), _symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        if self.effects is not None:
+            data.extend([Sep(), self.effects.write()])
+        data.extend([Sep(), _symbol('uuid', [Symbol(self.uuid)]), Sep()])
         for p in self.properties:
             data.extend([p.write(), Sep()])
-        return _symbol('global_label', data)
+        return _symbol(self.name, data)
 
 
-class HierarchicalLabel(object):
-    @staticmethod
-    def parse(items):
-        name = 'hierarchical_label'
-        _check_len_total(items, 6, name)
-        label = HierarchicalLabel()
-        label.text = _check_str(items, 1, name)
-        label.shape = _check_symbol(items[2], 1, 'shape')
-        label.pos_x, label.pos_y, label.ang = _get_at(items, 3, name)
-        label.effects = _get_effects(items, 4, name)
-        label.uuid = _get_uuid(items, 5, name)
-        return label
+class Label(GlobalLabel):
+    def __init__(self):
+        super().__init__()
+        self.name = 'label'
 
-    def write(self):
-        data = [self.text,
-                _symbol('shape', [Symbol(self.shape)]),
-                _symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
-                self.effects.write(), Sep(),
-                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
-        return _symbol('hierarchical_label', data)
+
+class HierarchicalLabel(GlobalLabel):
+    def __init__(self):
+        super().__init__()
+        self.name = 'hierarchical_label'
 
 
 class HSPin(object):
@@ -1375,82 +1401,6 @@ class HSPin(object):
         return _symbol('pin', data)
 
 
-class Sheet(object):
-    def __init__(self):
-        super().__init__()
-        self.pos_x = self.pos_y = self.ang = 0
-        self.w = self.h = 0
-        self.fields_autoplaced = False
-        self.stroke = self.fill = self.uuid = None
-        self.properties = []
-        self.name = self.file = ''
-        self.pins = []
-        self.sch = None
-
-    @staticmethod
-    def parse(items):
-        sheet = Sheet()
-        for c, i in enumerate(items[1:]):
-            i_type = _check_is_symbol_list(i)
-            if i_type == 'at':
-                sheet.pos_x, sheet.pos_y, sheet.ang = _get_at(items, c+1, 'sheet')
-            elif i_type == 'size':
-                sheet.w = _check_float(i, 1, 'sheet width')
-                sheet.h = _check_float(i, 2, 'sheet height')
-            elif i_type == 'fields_autoplaced':
-                sheet.fields_autoplaced = True
-            elif i_type == 'stroke':
-                sheet.stroke = Stroke.parse(i)
-            elif i_type == 'fill':
-                sheet.fill = Fill.parse(i)
-            elif i_type == 'uuid':
-                sheet.uuid = _get_uuid(items, c+1, 'sheet')
-            elif i_type == 'property':
-                field = SchematicFieldV6.parse(i)
-                sheet.properties.append(field)
-                if field.name == 'Sheet name':
-                    sheet.name = field.value
-                elif field.name == 'Sheet file':
-                    sheet.file = field.value
-                else:
-                    logger.warning(W_UNKFLD+"Unknown sheet property `{}` ({})".format(field.name, field.value))
-            elif i_type == 'pin':
-                sheet.pins.append(HSPin.parse(i))
-            else:
-                raise SchError('Unknown sheet attribute `{}`'.format(i))
-        return sheet
-
-    def load_sheet(self, project, parent_file, parent_obj):
-        assert self.name
-        sheet = SchematicV6()
-        self.sheet = sheet
-        parent_dir = os.path.dirname(parent_file)
-        sheet.sheet_path = os.path.join(parent_obj.sheet_path, self.uuid)
-        sheet.sheet_path_h = os.path.join(parent_obj.sheet_path_h, self.name)
-        parent_obj.sheet_paths[sheet.sheet_path] = sheet
-        sheet.load(os.path.join(parent_dir, self.file), project, parent_obj)
-        return sheet
-
-    def write(self, cross=False):
-        data = [_symbol('at', [self.pos_x, self.pos_y]),
-                _symbol('size', [self.w, self.h])]
-        if self.fields_autoplaced:
-            data.append(_symbol('fields_autoplaced', []))
-        data.extend([Sep(), self.stroke.write(), Sep(),
-                    self.fill.write(), Sep(),
-                    _symbol('uuid', [Symbol(self.uuid)]), Sep()])
-        for p in self.properties:
-            change_file = cross and p.name == 'Sheet file'
-            if change_file:
-                p.value = self.flat_file
-            data.extend([p.write(), Sep()])
-            if change_file:
-                p.value = self.file
-        for p in self.pins:
-            data.extend([p.write(), Sep()])
-        return _symbol('sheet', data)
-
-
 class SheetInstance(object):
     @staticmethod
     def parse(items):
@@ -1468,29 +1418,121 @@ class SheetInstance(object):
         return _symbol('path', [self.path, _symbol('page', [self.page])])
 
 
-class SymbolInstance(object):
+class Sheet(object):
+    def __init__(self):
+        super().__init__()
+        self.pos_x = self.pos_y = self.ang = 0
+        self.w = self.h = 0
+        self.fields_autoplaced = False
+        self.stroke = self.fill = self.uuid = None
+        self.properties = []
+        self.name = self.file = ''
+        self.pins = []
+        self.sch = None
+        # KiCad v7:
+        # Instances classified by project
+        self.projects = None
+        # All instances, by path (page look-up)
+        self.all_instances = {}
+
+    def load_project(self, prj):
+        name = _check_str(prj, 1, 'instance project')
+        instances = SheetInstance().parse(prj[1:])
+        for i in instances:
+            self.all_instances[i.path] = i.page
+        return name, instances
+
+    def load_instances(self, i):
+        self.projects = []
+        for prj in i[1:]:
+            i_type = _check_is_symbol_list(prj)
+            if i_type != 'project':
+                raise SchError('Found `{}` instead of `project` in sheet instance'.format(i_type))
+            self.projects.append(self.load_project(prj))
+
     @staticmethod
     def parse(items):
-        name = 'symbol instance'
-        instances = []
-        for c, _ in enumerate(items[1:]):
-            v = _check_symbol_value(items, c+1, name, 'path')
-            instance = SymbolInstance()
-            instance.path = _check_str(v, 1, name+' path')
-            instance.reference = _check_symbol_str(v, 2, name, 'reference')
-            instance.unit = _check_symbol_int(v, 3, name, 'unit')
-            instance.value = _check_symbol_str(v, 4, name, 'value')
-            instance.footprint = _check_symbol_str(v, 5, name, 'footprint')
-            instances.append(instance)
-        return instances
+        sheet = Sheet()
+        field_id = 0
+        for c, i in enumerate(items[1:]):
+            i_type = _check_is_symbol_list(i)
+            if i_type == 'at':
+                sheet.pos_x, sheet.pos_y, sheet.ang = _get_at(items, c+1, 'sheet')
+            elif i_type == 'size':
+                sheet.w = _check_float(i, 1, 'sheet width')
+                sheet.h = _check_float(i, 2, 'sheet height')
+            elif i_type == 'fields_autoplaced':
+                sheet.fields_autoplaced = True
+            elif i_type == 'stroke':
+                sheet.stroke = Stroke.parse(i)
+            elif i_type == 'fill':
+                sheet.fill = Fill.parse(i)
+            elif i_type == 'uuid':
+                sheet.uuid = _get_uuid(items, c+1, 'sheet')
+            elif i_type == 'property':
+                field = SchematicFieldV6.parse(i, field_id)
+                field_id += 1
+                sheet.properties.append(field)
+                if field.name in SHEET_NAME:
+                    sheet.name = field.value
+                elif field.name in SHEET_FILE:
+                    sheet.file = field.value
+                else:
+                    logger.warning(W_UNKFLD+"Unknown sheet property `{}` ({})".format(field.name, field.value))
+            elif i_type == 'pin':
+                sheet.pins.append(HSPin.parse(i))
+            elif i_type == 'instances':
+                sheet.load_instances(i)
+            else:
+                raise SchError('Unknown sheet attribute `{}`'.format(i))
+        return sheet
 
-    def write(self):
-        data = [self.path, Sep(),
-                _symbol('reference', [self.reference]),
-                _symbol('unit', [self.unit]),
-                _symbol('value', [self.value]),
-                _symbol('footprint', [self.footprint]), Sep()]
-        return _symbol('path', data)
+    def load_sheet(self, project, parent_file, parent_obj):
+        assert self.name
+        sheet = SchematicV6()
+        self.sheet = sheet
+        parent_dir = os.path.dirname(parent_file)
+        sheet.sheet_path = os.path.join(parent_obj.sheet_path, self.uuid)
+        sheet.sheet_path_h = os.path.join(parent_obj.sheet_path_h, self.name)
+        parent_obj.sheet_paths[sheet.sheet_path] = sheet
+        sheet.load(os.path.join(parent_dir, self.file), project, parent_obj)
+        # self.sheet_paths
+        if self.projects is not None:
+            # KiCad v7 sheet pages are here
+            page = self.all_instances.get(parent_obj.get_full_path())
+            if page is None:
+                raise SchError('Missing sheet instance for `{}`'.format(parent_obj.get_full_path()))
+            else:
+                sheet.sheet = page
+                parent_obj.all_sheets.append(sheet)
+        return sheet
+
+    def write(self, cross=False):
+        data = [_symbol('at', [self.pos_x, self.pos_y]),
+                _symbol('size', [self.w, self.h])]
+        if self.fields_autoplaced:
+            data.append(_symbol('fields_autoplaced', []))
+        data.extend([Sep(), self.stroke.write(), Sep(),
+                    self.fill.write(), Sep(),
+                    _symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        for p in self.properties:
+            change_file = cross and p.name in SHEET_FILE
+            if change_file:
+                p.value = self.flat_file
+            data.extend([p.write(), Sep()])
+            if change_file:
+                p.value = self.file
+        for p in self.pins:
+            data.extend([p.write(), Sep()])
+        if self.projects is not None:
+            prj_data = [Sep()]
+            for prj, ins in self.projects:
+                ins_data = [prj, Sep()]
+                for i in ins:
+                    ins_data.extend([i.write(), Sep()])
+                prj_data.extend([_symbol('project', ins_data), Sep()])
+            data.extend([_symbol('instances', prj_data), Sep()])
+        return _symbol('sheet', data)
 
 
 # Here because we have al s-expr tools here
@@ -1668,6 +1710,9 @@ class SchematicV6(Schematic):
         return [Sep(), Sep(), _symbol('title_block', [Sep()]+data)]
 
     def write_lib_symbols(self, cross=False):
+        if GS.ki7 and GS.global_cross_using_kicad:
+            # KiCad 7 can cross it by itself
+            cross = False
         data = [Sep()]
         for s in self.lib_symbols:
             data.extend([s.write(), Sep()])
@@ -1680,6 +1725,14 @@ class SchematicV6(Schematic):
         if base_sheet is None:
             # We are the base sheet
             base_sheet = self
+            # Copy potentially modified data from components
+            for s in self.symbol_instances:
+                comp = s.component
+                s.reference = comp.ref
+                if s.value is not None:
+                    s.value = comp.value
+                if s.footprint is not None:
+                    s.footprint = comp.footprint_lib+':'+comp.footprint if comp.footprint_lib else comp.footprint
         if saved is None:
             # Start memorizing saved files
             saved = set()
@@ -1722,8 +1775,16 @@ class SchematicV6(Schematic):
                     sch.append(e.write())
                     old_type = e.type
                     sch.append(Sep())
+            # Arcs
+            _add_items(self.arcs, sch)
+            # Circles
+            _add_items(self.circles, sch)
+            # Rectangles
+            _add_items(self.rectangles, sch)
             # Images
             _add_items(self.bitmaps, sch)
+            # Text Boxes
+            _add_items(self.text_boxes, sch)
             # Texts
             _add_items(self.texts, sch)
             # Labels
@@ -1739,14 +1800,8 @@ class SchematicV6(Schematic):
             # Sheet instances
             _add_items_list('sheet_instances', self.sheet_instances, sch)
             # Symbol instances
-            # Copy potentially modified data from components
-            if base_sheet == self:
-                for s in self.symbol_instances:
-                    comp = s.component
-                    s.reference = comp.ref
-                    s.value = comp.value
-                    s.footprint = comp.footprint_lib+':'+comp.footprint if comp.footprint_lib else comp.footprint
-            _add_items_list('symbol_instances', self.symbol_instances, sch)
+            if version < KICAD_7_VER and base_sheet == self:
+                _add_items_list('symbol_instances', self.symbol_instances, sch)
             logger.debug('Saving schematic: `{}`'.format(fname))
             # Keep a back-up of existing files
             if os.path.isfile(fname):
@@ -1785,6 +1840,14 @@ class SchematicV6(Schematic):
         self.title_ori = title
         return old_title
 
+    def get_full_path(self):
+        """ Path using the UUID of the root. Used by v7 """
+        path = '/'+self.root_sheet.uuid
+        # Avoid returning /UUID/
+        if self.sheet_path != '/':
+            path += self.sheet_path
+        return path
+
     def load(self, fname, project, parent=None):  # noqa: C901
         """ Load a v6.x KiCad Schematic.
             The caller must be sure the file exists.
@@ -1798,13 +1861,19 @@ class SchematicV6(Schematic):
             self.sheet_path = '/'
             self.sheet_path_h = '/'
             self.sheet_names = {}
+            self.all_sheets = []
+            self.root_sheet = self
+            self.symbol_instances = []
         else:
             self.fields = parent.fields
             self.fields_lc = parent.fields_lc
             self.sheet_paths = parent.sheet_paths
             self.lib_symbol_names = parent.lib_symbol_names
+            # self.sheet_path/_h is set by sch.load_sheet
             self.sheet_names = parent.sheet_names
-            # self.sheet_path is set by sch.load_sheet
+            self.all_sheets = parent.all_sheets
+            self.root_sheet = parent.root_sheet
+            self.symbol_instances = parent.symbol_instances
         self.parent = parent
         self.fname = fname
         self.project = project
@@ -1815,14 +1884,17 @@ class SchematicV6(Schematic):
         self.no_conn = []
         self.bus_entry = []
         self.wires = []
+        self.arcs = []
+        self.circles = []
+        self.rectangles = []
         self.bitmaps = []
+        self.text_boxes = []
         self.texts = []
         self.labels = []
         self.glabels = []
         self.hlabels = []
         self.sheets = []
         self.sheet_instances = []
-        self.symbol_instances = []
         self.bus_alias = []
         self.libs = {}  # Just for compatibility with v5 class
         # TODO: this assumes we are expanding the schematic to allow variant.
@@ -1830,6 +1902,8 @@ class SchematicV6(Schematic):
         # If we don't want to expand the schematic this member should be shared with the parent
         # TODO: We must fix some UUIDs because now we expanded them.
         self.symbol_uuids = {}
+        if not os.path.isfile(fname):
+            raise SchError('Missing subsheet: '+fname)
         with open(fname, 'rt') as fh:
             error = None
             try:
@@ -1845,6 +1919,8 @@ class SchematicV6(Schematic):
             obj = None
             if e_type == 'version':
                 self.version = _check_integer(e, 1, e_type)
+                global version
+                version = self.version
             elif e_type == 'generator':
                 self.generator = _check_symbol(e, 1, e_type)
             elif e_type == 'uuid':
@@ -1874,12 +1950,23 @@ class SchematicV6(Schematic):
                 self.bus_entry.append(BusEntry.parse(e))
             elif e_type == 'bus' or e_type == 'wire' or e_type == 'polyline':
                 self.wires.append(SchematicWireV6.parse(e, e_type))
+            elif e_type == 'arc':
+                self.arcs.append(DrawArcV6.parse(e))
+            elif e_type == 'circle':
+                self.circles.append(DrawCircleV6.parse(e))
+            elif e_type == 'rectangle':
+                self.rectangles.append(DrawRectangleV6.parse(e))
             elif e_type == 'image':
                 self.bitmaps.append(SchematicBitmapV6.parse(e))
+            elif e_type == 'text_box':
+                self.texts.append(TextBox.parse(e, e_type))
             elif e_type == 'text':
                 self.texts.append(Text.parse(e, e_type))
             elif e_type == 'label':
-                self.labels.append(Text.parse(e, e_type))
+                if self.version < KICAD_7_VER:
+                    self.labels.append(Text.parse(e, e_type))
+                else:
+                    self.labels.append(Label.parse(e))
             elif e_type == 'global_label':
                 self.glabels.append(GlobalLabel.parse(e))
             elif e_type == 'hierarchical_label':
@@ -1908,7 +1995,10 @@ class SchematicV6(Schematic):
             # Here we finished for sub-sheets
             return
         # On the main sheet analyze the sheet and symbol instances
-        self.all_sheets = []
+        # Solve the sheet pages: assign the page numbers.
+        # KiCad 6: for all pages
+        # KiCad 7: only for /, the rest are already assigned
+        # We use the page number for the netlist generation
         for i in self.sheet_instances:
             sheet = self.sheet_paths.get(i.path)
             if sheet:
@@ -1925,8 +2015,11 @@ class SchematicV6(Schematic):
             # Transfer the instance data
             comp.set_ref(s.reference)
             comp.unit = s.unit
-            comp.set_value(s.value)
-            comp.set_footprint(s.footprint)
+            # Value and footprint were available in v6, but they were just copies, not really used
+            if s.value is not None:
+                comp.set_value(s.value)
+            if s.footprint is not None:
+                comp.set_footprint(s.footprint)
             comp.sheet_path = path
             comp.sheet_path_h = self.path_to_human(path)
             comp.id = comp_uuid

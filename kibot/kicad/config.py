@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -24,9 +24,13 @@ import re
 from shutil import copy2
 import sys
 import sysconfig
+from ..error import KiPlotConfigurationError
 from ..gs import GS
 from .. import log
-from ..misc import W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB, MISSING_WKS, W_MAXDEPTH, W_3DRESVER
+from ..misc import (W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB, MISSING_WKS, W_MAXDEPTH, W_3DRESVER, W_LIBTVERSION,
+                    W_LIBTUNK)
+from .sexpdata import load, SExpData
+from .sexp_helpers import _check_is_symbol_list, _check_integer, _check_relaxed
 
 # Check python version to determine which version of ConfirParser to import
 if sys.version_info.major >= 3:
@@ -37,8 +41,10 @@ else:  # pragma: no cover (Py2)
 
 logger = log.get_logger()
 SYM_LIB_TABLE = 'sym-lib-table'
+FP_LIB_TABLE = 'fp-lib-table'
 KICAD_COMMON = 'kicad_common'
 MAXDEPTH = 20
+SUP_VERSION = 7
 reported = set()
 
 
@@ -106,10 +112,6 @@ def expand_env(val, env, extra_env, used_extra=None):
 
 class LibAlias(object):
     """ An entry for the symbol libs table """
-    libs_re = re.compile(r'\(name\s+(\S+|"(?:[^"]|\\")+")\)\s*\(type\s+(\S+|"(?:[^"]|\\")+")\)'
-                         r'\s*\(uri\s+(\S+|"(?:[^"]|\\")+")\)\s*\(options\s+(\S+|"(?:[^"]|\\")+")\)'
-                         r'\s*\(descr\s+(\S+|"(?:[^"]|\\")+")\)')
-
     def __init__(self):
         super().__init__()
         self.name = None
@@ -119,17 +121,23 @@ class LibAlias(object):
         self.descr = None
 
     @staticmethod
-    def parse(options, cline, env, extra_env):
-        m = LibAlias.libs_re.match(options)
-        if not m:
-            raise KiConfError('Malformed lib entry', SYM_LIB_TABLE, cline, options)
-        lib = LibAlias()
-        lib.name = un_quote(m.group(1))
-        lib.legacy = m.group(2) == 'Legacy'
-        lib.uri = os.path.abspath(expand_env(un_quote(m.group(3)), env, extra_env))
-        lib.options = un_quote(m.group(4))
-        lib.descr = un_quote(m.group(5))
-        return lib
+    def parse(items, env, extra_env):
+        s = LibAlias()
+        for i in items[1:]:
+            i_type = _check_is_symbol_list(i)
+            if i_type == 'name':
+                s.name = _check_relaxed(i, 1, i_type)
+            elif i_type == 'type':
+                s.type = _check_relaxed(i, 1, i_type)
+            elif i_type == 'uri':
+                s.uri = os.path.abspath(expand_env(_check_relaxed(i, 1, i_type), env, extra_env))
+            elif i_type == 'options':
+                s.options = _check_relaxed(i, 1, i_type)
+            elif i_type == 'descr':
+                s.descr = _check_relaxed(i, 1, i_type)
+            else:
+                logger.warning(W_LIBTUNK+'Unknown lib table attribute `{}`'.format(i))
+        return s
 
     def __str__(self):
         if not self.name:
@@ -148,7 +156,8 @@ class KiConf(object):
     models_3d_dir = None
     party_3rd_dir = None
     kicad_env = {}
-    lib_aliases = {}
+    lib_aliases = None
+    fp_aliases = None
     aliases_3D = {}
 
     def __init__(self):
@@ -162,9 +171,13 @@ class KiConf(object):
         KiConf.dirname = os.path.dirname(fname)
         KiConf.kicad_env['KIPRJMOD'] = KiConf.dirname
         KiConf.load_kicad_common()
-        KiConf.load_all_lib_aliases()
         KiConf.load_3d_aliases()
         KiConf.loaded = True
+        # Loaded on demand, here to debug
+        # KiConf.get_sym_lib_aliases()
+        # logger.error(KiConf.lib_aliases)
+        # KiConf.get_fp_lib_aliases()
+        # logger.error(KiConf.fp_aliases)
 
     def find_kicad_common():
         """ Looks for kicad_common config file.
@@ -337,7 +350,8 @@ class KiConf(object):
         names = []
         if GS.ki6 and ki6_diff:
             # KiCad 6 specific name goes first when using KiCad 6
-            names.append('KICAD6_'+base_name)
+            for n in reversed(range(6, GS.kicad_version_major+1)):
+                names.append('KICAD{}_{}'.format(n, base_name))
         # KiCad 5 names, allowed even when using KiCad 6
         if not only_old:
             # A KICAD_* is valid
@@ -378,7 +392,7 @@ class KiConf(object):
         if not no_dir:
             base_name += '_DIR'
         if GS.ki6 and ki6_diff:
-            name = 'KICAD6_'+base_name
+            name = 'KICAD{}_{}'.format(GS.kicad_version_major, base_name)
         else:
             name = 'KICAD_'+base_name
         KiConf.kicad_env[name] = val
@@ -430,33 +444,41 @@ class KiConf(object):
                 os.environ[k] = v
                 logger.debug('Exporting {}="{}"'.format(k, v))
 
-    def load_lib_aliases(fname):
+    def load_lib_aliases(fname, lib_aliases):
         if not os.path.isfile(fname):
             return False
         logger.debug('Loading symbols lib table `{}`'.format(fname))
+        version = 0
         with open(fname, 'rt') as f:
-            line = f.readline().strip()
-            if line != '(sym_lib_table':
-                raise KiConfError('Symbol libs table missing signature', SYM_LIB_TABLE, 1, line)
-            line = f.readline()
-            cline = 2
-            while line and line[0] != ')':
-                m = re.match(r'\s*\(lib\s*(.*)\)', line)
-                if m:
-                    alias = LibAlias.parse(m.group(1), cline, KiConf.kicad_env, {})
-                    if GS.debug_level > 1:
-                        logger.debug('- Adding lib alias '+str(alias))
-                    KiConf.lib_aliases[alias.name] = alias
-                else:
-                    raise KiConfError('Unknown symbol table entry', SYM_LIB_TABLE, cline, line)
-                line = f.readline()
-                cline += 1
+            error = None
+            try:
+                table = load(f)[0]
+            except SExpData as e:
+                error = str(e)
+            if error:
+                raise KiPlotConfigurationError('Error loading `{}`: {}'.format(fname, error))
+        if not isinstance(table, list) or (table[0].value() != 'sym_lib_table' and table[0].value() != 'fp_lib_table'):
+            raise KiPlotConfigurationError('Error loading `{}`: not a library table'.format(fname))
+        for e in table[1:]:
+            e_type = _check_is_symbol_list(e)
+            if e_type == 'version':
+                version = _check_integer(e, 1, e_type)
+                if version > SUP_VERSION:
+                    logger.warning(W_LIBTVERSION+"Unsupported lib table version, loading could fail")
+            elif e_type == 'lib':
+                alias = LibAlias.parse(e, KiConf.kicad_env, {})
+                if GS.debug_level > 1:
+                    logger.debug('- Adding lib alias '+str(alias))
+                lib_aliases[alias.name] = alias
+            else:
+                logger.warning(W_LIBTUNK+"Unknown lib table entry `{}`".format(e_type))
         return True
 
-    def load_all_lib_aliases():
+    def load_all_lib_aliases(table_name, sys_dir, pattern):
         # Load the default symbol libs table.
         # This is the list of libraries enabled by the user.
         loaded = False
+        lib_aliases = {}
         if KiConf.config_dir:
             conf_dir = KiConf.config_dir
             if 'KICAD_CONFIG_HOME' in KiConf.kicad_env:
@@ -464,22 +486,41 @@ class KiConf(object):
                 # https://forum.kicad.info/t/kicad-config-home-inconsistencies-and-detail/26875
                 conf_dir = KiConf.kicad_env['KICAD_CONFIG_HOME']
                 logger.debug('Redirecting symbols lib table to '+conf_dir)
-            loaded = KiConf.load_lib_aliases(os.path.join(conf_dir, SYM_LIB_TABLE))
+            loaded = KiConf.load_lib_aliases(os.path.join(conf_dir, table_name), lib_aliases)
         if not loaded and 'KICAD_TEMPLATE_DIR' in KiConf.kicad_env:
-            loaded = KiConf.load_lib_aliases(os.path.join(KiConf.kicad_env['KICAD_TEMPLATE_DIR'], SYM_LIB_TABLE))
+            loaded = KiConf.load_lib_aliases(os.path.join(KiConf.kicad_env['KICAD_TEMPLATE_DIR'], table_name), lib_aliases)
         if not loaded:
             logger.warning(W_NODEFSYMLIB + 'Missing default symbol library table')
             # No default symbol libs table, try to create one
             if KiConf.sym_lib_dir:
-                for f in glob(os.path.join(KiConf.sym_lib_dir, '*.lib')):
+                logger.error(os.path.join(sys_dir, pattern))
+                for f in glob(os.path.join(sys_dir, pattern)):
                     alias = LibAlias()
                     alias.name = os.path.splitext(os.path.basename(f))[0]
                     alias.uri = f
                     if GS.debug_level > 1:
                         logger.debug('Detected lib alias '+str(alias))
-                    KiConf.lib_aliases[alias.name] = alias
+                    lib_aliases[alias.name] = alias
         # Load the project's table
-        KiConf.load_lib_aliases(os.path.join(KiConf.dirname, SYM_LIB_TABLE))
+        KiConf.load_lib_aliases(os.path.join(KiConf.dirname, table_name), lib_aliases)
+        return lib_aliases
+
+    def get_sym_lib_aliases(fname=None):
+        if KiConf.lib_aliases is None:
+            if fname is None:
+                fname = GS.sch_file
+            KiConf.init(fname)
+            pattern = '*.kicad_sym' if GS.ki6 else '*.lib'
+            KiConf.lib_aliases = KiConf.load_all_lib_aliases(SYM_LIB_TABLE, KiConf.sym_lib_dir, pattern)
+        return KiConf.lib_aliases
+
+    def get_fp_lib_aliases(fname=None):
+        if KiConf.fp_aliases is None:
+            if fname is None:
+                fname = GS.pcb_file
+            KiConf.init(fname)
+            KiConf.fp_aliases = KiConf.load_all_lib_aliases(FP_LIB_TABLE, KiConf.footprint_dir, '*.pretty')
+        return KiConf.fp_aliases
 
     def load_3d_aliases():
         if not KiConf.config_dir:

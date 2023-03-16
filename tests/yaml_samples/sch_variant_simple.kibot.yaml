@@ -1,0 +1,10 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'sch'
+    comment: "Schematic copied"
+    type: sch_variant
+    options:
+      copy_project: true

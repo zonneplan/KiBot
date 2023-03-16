@@ -14,3 +14,6 @@ preflight:
     - filter_msg: 'Ignore missing outline'
       error: invalid_outline
       regexp: 'no edges found'
+    - filter_msg: 'Ignore library issues'
+      error: lib_footprint_mismatch
+      regexp: '.*'

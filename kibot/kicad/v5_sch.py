@@ -17,6 +17,7 @@ from datetime import datetime
 from copy import deepcopy
 from collections import OrderedDict
 from .config import KiConf, un_quote
+from .error import SchError, SchFileError, SchLibError
 from ..gs import GS
 from ..misc import (W_BADPOLI, W_POLICOORDS, W_BADSQUARE, W_BADCIRCLE, W_BADARC, W_BADTEXT, W_BADPIN, W_BADCOMP, W_BADDRAW,
                     W_UNKDCM, W_UNKAR, W_ARNOPATH, W_ARNOREF, W_MISCFLD, W_EXTRASPC, W_NOLIB, W_INCPOS, W_NOANNO, W_MISSLIB,
@@ -24,24 +25,6 @@ from ..misc import (W_BADPOLI, W_POLICOORDS, W_BADSQUARE, W_BADCIRCLE, W_BADARC,
 from .. import log
 
 logger = log.get_logger()
-
-
-class SchError(Exception):
-    pass
-
-
-class SchFileError(SchError):
-    def __init__(self, msg, code, reader):
-        super().__init__()
-        self.line = reader.line
-        self.file = reader.file
-        self.msg = msg
-        self.code = code
-
-
-class SchLibError(SchFileError):
-    def __init__(self, msg, code, reader):
-        super().__init__(msg, code, reader)
 
 
 class LineReader(object):
@@ -876,6 +859,7 @@ class SchematicComponent(object):
         - footprint_w: width of the footprint (pads only).
         - footprint_h: height of the footprint (pads only)
         - qty: amount of this part used.
+        - kicad_dnp: is the KiCad v7 DNP flag. If not defined (v5/6) is None and is like False.
         """
     ref_re = re.compile(r'([^\d]+)([\?\d]+)')
 
@@ -907,12 +891,15 @@ class SchematicComponent(object):
         self.virtual = False
         self.tht = False
         # KiCad 6 SCH flags
-        self.in_bom = True
-        self.on_board = True
+        self.in_bom = True          # not Exclude from bill of materials
+        self.on_board = True        # not Exclude from BoM
         # KiCad 6 PCB flags
-        self.in_bom_pcb = True
-        self.in_pos = True
-        self.in_pcb_only = False
+        self.in_bom_pcb = True      # not Exclude from bill of materials
+        self.in_pos = True          # not Exclude from position files
+        self.in_pcb_only = False    # Not in schematic
+        # KiCad 7 PCB flags
+        self.kicad_dnp = None       # Do Not Populate
+        # Exclude from simulation is a field Sim.Enable
 
     def get_field_value(self, field):
         field = field.lower()
@@ -1695,10 +1682,10 @@ class Schematic(object):
                         logger.debug('Filling desc for {}:{} `{}`'.format(c.lib, c.name, c.desc))
 
     def load_libs(self, fname):
-        KiConf.init(fname)
+        aliases = KiConf.get_sym_lib_aliases(fname)
         # Try to find the library paths
         for k in self.libs.keys():
-            alias = KiConf.lib_aliases.get(k)
+            alias = aliases.get(k)
             if k and alias:
                 self.libs[k] = alias.uri
                 if GS.debug_level > 1:

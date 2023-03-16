@@ -20,6 +20,24 @@ from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL
 from .log import get_logger
 
 logger = get_logger(__name__)
+if hasattr(pcbnew, 'IU_PER_MM'):
+    IU_PER_MM = pcbnew.IU_PER_MM
+    IU_PER_MILS = pcbnew.IU_PER_MILS
+else:
+    IU_PER_MM = pcbnew.pcbIUScale.IU_PER_MM
+    IU_PER_MILS = pcbnew.pcbIUScale.IU_PER_MILS
+if hasattr(pcbnew, 'DRILL_MARKS_NO_DRILL_SHAPE'):
+    NO_DRILL_SHAPE = pcbnew.DRILL_MARKS_NO_DRILL_SHAPE
+    SMALL_DRILL_SHAPE = pcbnew.DRILL_MARKS_SMALL_DRILL_SHAPE
+    FULL_DRILL_SHAPE = pcbnew.DRILL_MARKS_FULL_DRILL_SHAPE
+elif hasattr(pcbnew, 'PCB_PLOT_PARAMS'):
+    NO_DRILL_SHAPE = pcbnew.PCB_PLOT_PARAMS.NO_DRILL_SHAPE
+    SMALL_DRILL_SHAPE = pcbnew.PCB_PLOT_PARAMS.SMALL_DRILL_SHAPE
+    FULL_DRILL_SHAPE = pcbnew.PCB_PLOT_PARAMS.FULL_DRILL_SHAPE
+# KiCad 6 uses IUs for SVGs, with option for SVG_Precision
+# KiCad 5 uses a very different scale based on inches
+# KiCad 7 uses mm
+KICAD5_SVG_SCALE = 116930/297002200
 
 
 class GS(object):
@@ -90,9 +108,9 @@ class GS(object):
     stackup = None
     # Preprocessor definitions
     cli_defines = {}
-    kikit_units_to_kicad = {'mm': pcbnew.IU_PER_MM, 'cm': 10*pcbnew.IU_PER_MM, 'dm': 100*pcbnew.IU_PER_MM,
-                            'm': 1000*pcbnew.IU_PER_MM, 'mil': pcbnew.IU_PER_MILS, 'inch': 1000*pcbnew.IU_PER_MILS,
-                            'in': 1000*pcbnew.IU_PER_MILS}
+    kikit_units_to_kicad = {'mm': IU_PER_MM, 'cm': 10*IU_PER_MM, 'dm': 100*IU_PER_MM,
+                            'm': 1000*IU_PER_MM, 'mil': IU_PER_MILS, 'inch': 1000*IU_PER_MILS,
+                            'in': 1000*IU_PER_MILS}
     #
     # Global defaults
     #
@@ -145,6 +163,13 @@ class GS(object):
     global_units = None
     global_use_dir_for_preflights = None
     global_variant = None
+    # Only for v7+
+    global_allow_blind_buried_vias = None
+    global_allow_microvias = None
+    global_erc_grid = None
+    global_kicad_dnp_applied = None
+    global_kicad_dnp_applies_to_3D = None
+    global_cross_using_kicad = None
 
     @staticmethod
     def set_sch(name):
@@ -243,6 +268,12 @@ class GS(object):
         return ''
 
     @staticmethod
+    def p2v_k7(point):
+        """ KiCad v7 changed various wxPoint args to VECTOR2I.
+            This helper changes the types accordingly """
+        return pcbnew.VECTOR2I(point) if GS.ki7 else point
+
+    @staticmethod
     def get_modules():
         if GS.ki6:
             return GS.board.GetFootprints()
@@ -287,19 +318,23 @@ class GS(object):
     @staticmethod
     def unit_name_to_scale_factor(units):
         if units == 'millimeters':
-            return 1.0/pcbnew.IU_PER_MM
+            return 1.0/IU_PER_MM
         if units == 'mils':
-            return 1.0/pcbnew.IU_PER_MILS
+            return 1.0/IU_PER_MILS
         # Inches
-        return 0.001/pcbnew.IU_PER_MILS
+        return 0.001/IU_PER_MILS
 
     @staticmethod
     def to_mm(val):
-        return val/pcbnew.IU_PER_MM
+        return float(val)/IU_PER_MM
 
     @staticmethod
     def from_mm(val):
-        return int(val*pcbnew.IU_PER_MM)
+        return int(val*IU_PER_MM)
+
+    @staticmethod
+    def to_mils(val):
+        return val/IU_PER_MILS
 
     @staticmethod
     def make_bkp(fname):
@@ -315,6 +350,10 @@ class GS(object):
         if GS.ki6:
             return layers.Contains(id)
         return id in layers.Seq()
+
+    @staticmethod
+    def zone_get_first_layer(e):
+        return e.GetFirstLayer() if GS.ki7 else e.GetLayer()
 
     @staticmethod
     def expand_text_variables(text, extra_vars=None):
@@ -467,7 +506,40 @@ class GS(object):
 
     @staticmethod
     def create_eda_rect(tlx, tly, brx, bry):
+        if GS.ki7:
+            return pcbnew.BOX2I(pcbnew.VECTOR2I(tlx, tly), pcbnew.VECTOR2I(brx-tlx, bry-tly))
         return pcbnew.EDA_RECT(pcbnew.wxPoint(tlx, tly), pcbnew.wxSize(brx-tlx, bry-tly))
+
+    @staticmethod
+    def get_rect_for(bound):
+        if GS.ki7:
+            pos = bound.GetPosition()
+            return pcbnew.wxRect(pcbnew.wxPoint(pos.x, pos.y), pcbnew.wxSize(bound.GetWidth(), bound.GetHeight()))
+        return bound.getWxRect()
+
+    @staticmethod
+    def get_pad_orientation_in_radians(pad):
+        return pad.GetOrientation().AsRadians() if GS.ki7 else pad.GetOrientationRadians()
+
+    @staticmethod
+    def iu_to_svg(values, svg_precision):
+        """ Converts 1 or more values from KiCad internal IUs to the units used for SVGs """
+        if not isinstance(values, tuple):
+            values = [values]
+        if GS.ki5:
+            return tuple(map(lambda x: int(round(x*KICAD5_SVG_SCALE)), values))
+        if GS.ki7:
+            return tuple(map(GS.to_mm, values))
+        # KiCad 6
+        mult = 10.0 ** (svg_precision - 6)
+        return tuple(map(lambda x: int(round(x*mult)), values))
+
+    @staticmethod
+    def svg_round(val):
+        """ KiCad 5/6 uses integers for SVG units, KiCad 7 uses mm and hence floating point """
+        if GS.ki7:
+            return val
+        return int(round(val))
 
     # @staticmethod
     # def create_wxpoint(x, y):
@@ -516,6 +588,13 @@ class GS(object):
         return bbox
 
     @staticmethod
+    def fill_zones(board, zones=None):
+        if zones is None:
+            zones = board.Zones()
+        pcbnew.ZONE_FILLER(board).Fill(zones)
+        board.BuildConnectivity()
+
+    @staticmethod
     def get_kiauto_video_name(cmd):
         """ Compute the name for the video captured by KiAuto """
         command = os.path.basename(cmd[0])[:-3]
@@ -542,3 +621,16 @@ class GS(object):
             cmd.insert(1, str(GS.global_kiauto_wait_start))
             cmd.insert(1, '--wait_start')
         return cmd, video_remove
+
+    @staticmethod
+    def SetExcludeEdgeLayer(po, exclude_edge_layer):
+        if not GS.ki7:
+            po.SetExcludeEdgeLayer(exclude_edge_layer)
+
+    @staticmethod
+    def SetSvgPrecision(po, svg_precision):
+        if GS.ki7:
+            po.SetSvgPrecision(svg_precision)
+        elif GS.ki6:
+            po.SetSvgPrecision(svg_precision, False)
+        # No ki5 equivalent

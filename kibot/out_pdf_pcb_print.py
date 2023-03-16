@@ -30,7 +30,7 @@ class PDF_PCB_PrintOptions(Any_PCB_PrintOptions):
 
 @output_class
 class PDF_PCB_Print(BaseOutput):  # noqa: F821
-    """ PDF PCB Print (Portable Document Format)
+    """ PDF PCB Print (Portable Document Format) *Deprecated*
         Exports the PCB to the most common exchange format. Suitable for printing.
         This is the main format to document your PCB.
         This output is what you get from the 'File/Print' menu in pcbnew.

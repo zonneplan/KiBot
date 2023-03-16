@@ -11,7 +11,7 @@ from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
-from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD
+from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD, MOD_ALLOW_MISSING_COURTYARD
 if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
@@ -291,15 +291,15 @@ class VariantOptions(BaseOptions):
             The layer is which layer id will be used. """
         seg1 = VariantOptions.create_module_element(m)
         seg1.SetWidth(120000)
-        seg1.SetStart(wxPoint(rect.x1, rect.y1))
-        seg1.SetEnd(wxPoint(rect.x2, rect.y2))
+        seg1.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y1)))
+        seg1.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y2)))
         seg1.SetLayer(layer)
         seg1.SetLocalCoord()  # Update the local coordinates
         m.Add(seg1)
         seg2 = VariantOptions.create_module_element(m)
         seg2.SetWidth(120000)
-        seg2.SetStart(wxPoint(rect.x1, rect.y2))
-        seg2.SetEnd(wxPoint(rect.x2, rect.y1))
+        seg2.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y2)))
+        seg2.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y1)))
         seg2.SetLayer(layer)
         seg2.SetLocalCoord()  # Update the local coordinates
         m.Add(seg2)
@@ -326,9 +326,9 @@ class VariantOptions(BaseOptions):
                     if gi.GetClass() == 'MGRAPHIC':
                         l_gi = gi.GetLayer()
                         if l_gi == ffab:
-                            frect.Union(gi.GetBoundingBox().getWxRect())
+                            frect.Union(GS.get_rect_for(gi.GetBoundingBox()))
                         if l_gi == bfab:
-                            brect.Union(gi.GetBoundingBox().getWxRect())
+                            brect.Union(GS.get_rect_for(gi.GetBoundingBox()))
                 # Cross the graphics in *.Fab
                 if frect.x1 is not None:
                     extra_ffab_lines.append(self.cross_module(m, frect, ffab))
@@ -520,8 +520,8 @@ class VariantOptions(BaseOptions):
             m3d.m_Filename = new_model[i]
         self.undo_3d_models_rep[c.ref] = replaced
         # Push the models back
-        for model in models_l:
-            models.push_front(model)
+        for model in reversed(models_l):
+            models.append(model)
 
     def undo_3d_models_rename(self, board):
         """ Restores the file name for any renamed 3D module """
@@ -539,8 +539,8 @@ class VariantOptions(BaseOptions):
                 if replaced:
                     m3d.m_Filename = replaced[i]
             # Push the models back
-            for model in models_l:
-                models.push_front(model)
+            for model in reversed(models_l):
+                models.append(model)
         # Reset the list of changes
         self.undo_3d_models = {}
         self.undo_3d_models_rep = {}
@@ -585,8 +585,8 @@ class VariantOptions(BaseOptions):
             if c and c.included and not c.fitted:
                 models = m.Models()
                 restore = self.rem_models.pop(0)
-                for model in restore:
-                    models.push_front(model)
+                for model in reversed(restore):
+                    models.append(model)
 
     def apply_list_of_3D_models(self, enable, slots, m, var):
         # Disable the unused models adding bogus text to the end
@@ -676,7 +676,7 @@ class VariantOptions(BaseOptions):
             if gi.GetClass() == 'MGRAPHIC':
                 l_gi = gi.GetLayer()
                 if l_gi == fcrtyd or l_gi == bcrtyd:
-                    bbox.Union(gi.GetBoundingBox().getWxRect())
+                    bbox.Union(GS.get_rect_for(gi.GetBoundingBox()))
         return bbox
 
     def highlight_3D_models(self, board, highlight):
@@ -706,7 +706,8 @@ class VariantOptions(BaseOptions):
                 w = bbox.GetWidth()
                 h = bbox.GetHeight()
                 m_cen = m.GetCenter()
-                logger.warning(W_NOCRTYD+"Missing courtyard for `{}`".format(ref))
+                if not (m.GetAttributes() & MOD_ALLOW_MISSING_COURTYARD):
+                    logger.warning(W_NOCRTYD+"Missing courtyard for `{}`".format(ref))
             # Compute the offset
             off_x = m_cen.x - m_pos.x
             off_y = m_cen.y - m_pos.y

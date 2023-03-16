@@ -18,7 +18,6 @@ import logging
 import sysconfig
 from subprocess import run, STDOUT, PIPE
 from . import context
-from kibot.misc import EXIT_BAD_CONFIG
 from kibot.kicad.config import KiConf
 from kibot.gs import GS
 
@@ -27,16 +26,13 @@ cov = coverage.Coverage()
 _real_posix_prefix = None
 
 
+@pytest.mark.skipif(context.ki6(), reason="sym-lib-table used by KiCad 5")
 def test_kicad_conf_bad_sym_lib_table(test_dir):
     """ Check various problems in the sym-lib-table file """
-    if context.ki6():
-        # We currently don't use the sym-lib-table for KiCad 6.
-        # All data is in the Schematic file.
-        return
     sch = 'sym-lib-table_errors/kibom-test'
     ctx = context.TestContextSCH(test_dir, sch, 'int_bom_simple_csv')
-    ctx.run(EXIT_BAD_CONFIG, extra_debug=True)
-    ctx.search_err('Malformed lib entry')
+    ctx.run(extra_debug=True)
+    # ctx.search_err('Malformed lib entry') Now the lack of descr isn't an error
     ctx.search_err(r'Unable to expand .?BOGUS.? in')
     ctx.search_err(r'unnamed LibAlias')
     ctx.clean_up()
@@ -90,7 +86,9 @@ def test_kicad_conf_guess_libs(monkeypatch):
     """ Check no HOME and fail to load kicad_common.
         Also check we correctly guess the libs dir. """
     res = check_load_conf(fail=True, no_conf_path=True)
-    if context.ki6():
+    if context.ki7():
+        name = "KICAD7_SYMBOL_DIR"
+    elif context.ki6():
         name = "KICAD6_SYMBOL_DIR"
     else:
         name = "KICAD_SYMBOL_DIR"
@@ -99,7 +97,9 @@ def test_kicad_conf_guess_libs(monkeypatch):
 
 def test_kicad_conf_lib_env(monkeypatch):
     """ Check we can use KICAD_SYMBOL_DIR as fallback """
-    if context.ki6():
+    if context.ki7():
+        name = "KICAD7_SYMBOL_DIR"
+    elif context.ki6():
         name = "KICAD6_SYMBOL_DIR"
     else:
         name = "KICAD_SYMBOL_DIR"
@@ -115,7 +115,7 @@ def test_kicad_conf_sym_err_1(monkeypatch):
     with monkeypatch.context() as m:
         m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_err_1')
         res = check_load_conf(dir='kicad_err_1', catch_conf_error=True)
-    assert "raise KiConfError('Symbol libs table missing signature" in res, res
+    assert "Too many closing brackets. Expected no character left in the sexp" in res, res
 
 
 def test_kicad_conf_sym_err_2(monkeypatch):
@@ -124,7 +124,7 @@ def test_kicad_conf_sym_err_2(monkeypatch):
     with monkeypatch.context() as m:
         m.setenv("KICAD_CONFIG_HOME", 'tests/data/kicad_err_2')
         res = check_load_conf(dir='kicad_err_2', catch_conf_error=True)
-    assert "raise KiConfError('Unknown symbol table entry" in res, res
+    assert "Unknown lib table entry" in res, res
 
 
 def mocked_get_path_1(name, scheme):

@@ -34,7 +34,8 @@ class SVG_SCH_PrintOptions(Any_SCH_PrintOptions):
 class SVG_SCH_Print(BaseOutput):  # noqa: F821
     """ SVG Schematic Print
         Exports the schematic in a vectorized graphics format.
-        This is a format to document your schematic. """
+        This is a format to document your schematic.
+        This output is what you get from the 'File/Plot' menu in eeschema. """
     def __init__(self):
         super().__init__()
         with document:

@@ -37,11 +37,11 @@ Impedance controlled: YES
 #?stackup
 
 #?stackup
-| Name                 | Type                 | Color    | Thickness | Material        | Epsilon_r | Loss tangent |
+| Name                 | Type                 | Color            | Thickness | Material        | Epsilon_r | Loss tangent |
 #?stackup
-|----------------------|----------------------|----------|-----------|-----------------|-----------|--------------|
+|----------------------|----------------------|------------------|-----------|-----------------|-----------|--------------|
 #?stackup
-#stackup:| ${%-20s,name} | ${%-20s,type} | ${%-8s,color} | ${%9d,thickness} | ${%-15s,material} | ${%9.1f,epsilon_r} | ${%12.3f,loss_tangent} |
+#stackup:| ${%-20s,name} | ${%-20s,type} | ${%-16s,color} | ${%9d,thickness} | ${%-15s,material} | ${%9.1f,epsilon_r} | ${%12.3f,loss_tangent} |
 #?stackup
 
 # Important sizes
@@ -62,7 +62,8 @@ Via: ${via_pad_mm}/${via_drill_mm} mm (${via_pad_mils}/${via_drill_mils} mils)
 
 - By design rules: ${via_pad_d_mm}/${via_drill_d_mm} mm (${via_pad_d_mils}/${via_drill_d_mils} mils)
 - Micro via: ${micro_vias} [${uvia_pad_mm}/${uvia_drill_mm} mm (${uvia_pad_mils}/${uvia_drill_mils} mils)]
-- Burried/blind via: ${blind_vias}
+- Buried/blind via: ${blind_vias}
+- Total: ${vias_count} (thru: ${thru_vias_count} buried/blind: ${blind_vias_count} micro: ${micro_vias_count})
 
 Outer Annular Ring: ${oar_mm} mm (${oar_mils} mils)
 

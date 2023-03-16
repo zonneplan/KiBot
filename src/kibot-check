@@ -409,7 +409,7 @@ deps = '{\
                 "output": "diff",\
                 "version": [\
                     2,\
-                    0,\
+                    2,\
                     0\
                 ]\
             },\
@@ -584,9 +584,9 @@ deps = '{\
                 "max_version": null,\
                 "output": "run_erc",\
                 "version": [\
-                    1,\
-                    5,\
-                    4\
+                    2,\
+                    2,\
+                    1\
                 ]\
             },\
             {\
@@ -634,7 +634,7 @@ deps = '{\
                 "version": [\
                     2,\
                     4,\
-                    3\
+                    4\
                 ]\
             }\
         ],\
@@ -716,28 +716,48 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "global",\
-                "version": null\
+                "version": [\
+                    1,\
+                    3,\
+                    0,\
+                    4\
+                ]\
             },\
             {\
                 "desc": null,\
                 "mandatory": true,\
                 "max_version": null,\
                 "output": "panelize",\
-                "version": null\
+                "version": [\
+                    1,\
+                    3,\
+                    0,\
+                    4\
+                ]\
             },\
             {\
                 "desc": null,\
                 "mandatory": true,\
                 "max_version": null,\
                 "output": "stencil_3d",\
-                "version": null\
+                "version": [\
+                    1,\
+                    3,\
+                    0,\
+                    4\
+                ]\
             },\
             {\
                 "desc": null,\
                 "mandatory": true,\
                 "max_version": null,\
                 "output": "stencil_for_jig",\
-                "version": null\
+                "version": [\
+                    1,\
+                    3,\
+                    0,\
+                    4\
+                ]\
             }\
         ],\
         "tests": [],\

@@ -1,0 +1,11 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'print_ps_svg'
+    comment: "Plot schematic (PS)"
+    type: ps_sch_print
+    dir: .
+    options:
+      output: Schematic.ps

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from pcbnew import PCB_PLOT_PARAMS
+from .gs import NO_DRILL_SHAPE, SMALL_DRILL_SHAPE, FULL_DRILL_SHAPE
 from .out_any_layer import AnyLayerOptions
 from . import log
 
@@ -11,15 +11,15 @@ logger = log.get_logger()
 
 # Mappings to KiCad values
 DRILL_MARKS_MAP = {
-                   'none': PCB_PLOT_PARAMS.NO_DRILL_SHAPE,
-                   'small': PCB_PLOT_PARAMS.SMALL_DRILL_SHAPE,
-                   'full': PCB_PLOT_PARAMS.FULL_DRILL_SHAPE,
+                   'none': NO_DRILL_SHAPE,
+                   'small': SMALL_DRILL_SHAPE,
+                   'full': FULL_DRILL_SHAPE,
                   }
 # Mappings from KiCad values
 DRILL_MARKS_REV_MAP = {
-                       PCB_PLOT_PARAMS.NO_DRILL_SHAPE: 'none',
-                       PCB_PLOT_PARAMS.SMALL_DRILL_SHAPE: 'small',
-                       PCB_PLOT_PARAMS.FULL_DRILL_SHAPE: 'full',
+                       NO_DRILL_SHAPE: 'none',
+                       SMALL_DRILL_SHAPE: 'small',
+                       FULL_DRILL_SHAPE: 'full',
                       }
 
 

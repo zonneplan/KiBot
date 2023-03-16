@@ -17,7 +17,7 @@ from .macros import macros, document, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import load_board
-from .misc import BOM_ERROR, NETLIST_DIFF, W_PARITY, MISSING_TOOL
+from .misc import BOM_ERROR, NETLIST_DIFF, W_PARITY, MISSING_TOOL, KICAD_VERSION_7_0_1
 from .log import get_logger
 from .optionable import Optionable
 import pcbnew
@@ -109,7 +109,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
                 errors.append('PCB net code {} name mismatch ({} vs {})'.format(n, net_name, sch_name))
             sch_nodes = net_nodes[n]
             pcb_nodes = {pad.GetParent().GetReference()+' pin '+pad.GetNumber()
-                         for pad in con.GetNetItems(n, [pcbnew.PCB_PAD_T])}
+                         for pad in con.GetNetItems(n, pcbnew.PCB_PAD_T)}
             dif = pcb_nodes-sch_nodes
             if dif:
                 errors.append('PCB net code {} extra connection/s: {}'.format(n, ','.join(list(dif))))
@@ -120,6 +120,10 @@ class Update_XML(BasePreFlight):  # noqa: F821
     def check_pcb_parity(self):
         if GS.ki5:
             logger.error('PCB vs schematic parity only available for KiCad 6')
+            exit(MISSING_TOOL)
+        if GS.ki7 and GS.kicad_version_n < KICAD_VERSION_7_0_1:
+            logger.error("Connectivity API is broken on KiCad 7.0.0\n"
+                         "Please upgrade KiCad to 7.0.1 or newer")
             exit(MISSING_TOOL)
         fname = GS.sch_no_ext+'.xml'
         logger.debug('Loading XML: '+fname)

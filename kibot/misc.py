@@ -79,9 +79,11 @@ error_level_to_name = ['NONE',
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 EXAMPLE_CFG = 'example_template.kibot.yaml'
 AUTO_SCALE = 0
-KICAD_VERSION_5_99 = 5099000
-KICAD_VERSION_6_0_0 = 6000000
-KICAD_VERSION_6_0_2 = 6000002
+KICAD_VERSION_5_99 = 50990000
+KICAD_VERSION_6_0_0 = 60000000
+KICAD_VERSION_6_0_2 = 60000020
+KICAD_VERSION_7_0_1 = 70000010
+KICAD_VERSION_7_0_1_1 = 70000011
 TRY_INSTALL_CHECK = 'Try running the installation checker: kibot-check'
 
 # Internal filter names
@@ -98,8 +100,15 @@ MOD_SMD = 2
 MOD_EXCLUDE_FROM_POS_FILES = 4
 MOD_EXCLUDE_FROM_BOM = 8
 MOD_BOARD_ONLY = 16  # Footprint has no corresponding symbol
+MOD_JUST_ADDED = 32  # The footprint was added by the netlist update
+MOD_ALLOW_SOLDERMASK_BRIDGES = 64
+MOD_ALLOW_MISSING_COURTYARD = 128
 # This is what a virtual component gets when loaded by KiCad 6
 MOD_VIRTUAL = MOD_EXCLUDE_FROM_POS_FILES | MOD_EXCLUDE_FROM_BOM
+# VIATYPE, not exported by KiCad
+VIATYPE_THROUGH = 3
+VIATYPE_BLIND_BURIED = 2
+VIATYPE_MICROVIA = 1
 
 # Supported values for "do not fit"
 DNF = {
@@ -253,6 +262,11 @@ W_BADPCB3DTXT = '(W113) '
 W_UNKPCB3DNAME = '(W114) '
 W_BADPCB3DSTK = '(W115) '
 W_EEDA3D = '(W116) '
+W_MICROVIAS = '(W117) '
+W_BLINDVIAS = '(W118) '
+W_LIBTVERSION = '(W119) '
+W_LIBTUNK = '(W120) '
+W_DRC7BUG = '(W121) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
@@ -268,8 +282,6 @@ SOLDER_COLORS = {'green': ("#285e3a", "#208b47"),
                  'yellow': ("#73823d", "#f2a756"),
                  'purple': ("#30234a", "#451d70")}
 SILK_COLORS = {'black': "0b1013", 'white': "d5dce4"}
-# KiCad 6 uses IUs for SVGs, but KiCad 5 uses a very different scale based on inches
-KICAD5_SVG_SCALE = 116930/297002200
 # Some browser name to pretend
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'
 # Text used to disable 3D models

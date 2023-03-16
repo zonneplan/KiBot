@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
   - name: KiCad PCB/SCH Diff
-    version: 2.4.3
+    version: 2.4.4
     role: mandatory
     github: INTI-CMNB/KiDiff
     command: kicad-diff.py
@@ -17,7 +17,7 @@ Dependencies:
     role: Compare with files in the repo
   - from: KiAuto
     role: Compare schematics
-    version: 2.0.0
+    version: 2.2.0
 """
 from hashlib import sha1
 from itertools import combinations

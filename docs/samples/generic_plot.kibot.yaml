@@ -54,7 +54,7 @@ preflight:
         after: '>'
   # [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
   # The report file name is controlled by the global output pattern (%i=drc %x=txt).
-  # Note that the KiCad 6 *Test for parity between PCB and schematic* option is not supported.
+  # Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
   # If you need to check the parity use the `update_xml` preflight.
   # KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
   # This will change in the future.
@@ -94,6 +94,7 @@ preflight:
 outputs:
   # Blender Export **Experimental**:
   # Also renders the PCB with high-quality.
+  # Needs KiCad 6 or newer.
   # This output is complex to setup and needs very big dependencies.
   # Please be patient when using it.
   # You need Blender with the pcb2blender plug-in installed.
@@ -812,7 +813,7 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
@@ -1034,7 +1035,7 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
@@ -1111,7 +1112,7 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
@@ -2055,6 +2056,7 @@ outputs:
       variant: ''
   # PCB2Blender Tools:
   # Blender is the most important free software 3D render package.
+  # This output needs KiCad 6 or newer.
   # The PCB3D file format is used by the PCB2Blender project (https://github.com/30350n/pcb2blender)
   # to import KiCad PCBs in Blender.
   # You need to install a Blender plug-in to load PCB3D files.
@@ -2492,7 +2494,7 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
@@ -2511,7 +2513,7 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
-  # PDF PCB Print (Portable Document Format):
+  # PDF PCB Print (Portable Document Format) *Deprecated*:
   # This is the main format to document your PCB.
   # This output is what you get from the 'File/Print' menu in pcbnew.
   # The `pcb_print` is usually a better alternative.
@@ -2737,7 +2739,7 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
@@ -3200,7 +3202,7 @@ outputs:
       plot_footprint_refs: true
       # [boolean=true] Include the footprint values
       plot_footprint_values: true
-      # [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+      # [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
       # (i.e. always the default worksheet style, also problems expanding text variables).
       # The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs
       plot_sheet_reference: false
@@ -3230,7 +3232,7 @@ outputs:
       # [string=''] Board variant to apply
       variant: ''
     layers: all
-  # SVG PCB Print (Scalable Vector Graphics):
+  # SVG PCB Print (Scalable Vector Graphics) *Deprecated*:
   # This output is what you get from the 'File/Print' menu in pcbnew.
   # The `pcb_print` is usually a better alternative.
   - name: 'svg_pcb_print_example'
@@ -3282,6 +3284,7 @@ outputs:
     layers: all
   # SVG Schematic Print:
   # This is a format to document your schematic.
+  # This output is what you get from the 'File/Plot' menu in eeschema.
   - name: 'svg_sch_print_example'
     comment: 'Exports the schematic in a vectorized graphics format.'
     type: 'svg_sch_print'

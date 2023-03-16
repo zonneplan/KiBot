@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>kibom-variant_kicost.kicad_sch</source>
+    <date>jue 09 feb 2023 07:55:15</date>
+    <tool>Eeschema 7.0.0-rc2-unknown-rc2+208+g52b07b8bac</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>KiBom Test Schematic</title>
+        <company>https://github.com/SchrodingersGat/KiBom</company>
+        <rev>A</rev>
+        <date>2020-03-12</date>
+        <source>kibom-variant_kicost.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C1">
+      <value>1nF</value>
+      <fields>
+        <field name="kicost.default:dnp">1</field>
+        <field name="kicost.production:nopop">a</field>
+        <field name="kicost.test:dnp">0.0</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="kicost.default:dnp" value="1"/>
+      <property name="kicost.test:dnp" value="0.0"/>
+      <property name="kicost.production:nopop" value="a"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="kibom-variant_kicost.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00005f43bec2</tstamps>
+    </comp>
+    <comp ref="C2">
+      <value>1000 pF</value>
+      <fields>
+        <field name="version">production,test</field>
+      </fields>
+      <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
+      <property name="version" value="production,test"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="kibom-variant_kicost.kicad_sch"/>
+      <property name="ki_description" value="Unpolarized capacitor"/>
+      <property name="ki_keywords" value="cap capacitor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00005f43ce1c</tstamps>
+    </comp>
+    <comp ref="R1">
+      <value>1k</value>
+      <fields>
+        <field name="kicost.test:Value">3k3</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="kicost.test:Value" value="3k3"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="kibom-variant_kicost.kicad_sch"/>
+      <property name="ki_description" value="Resistor"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00005f43d144</tstamps>
+    </comp>
+    <comp ref="R2">
+      <value>1000</value>
+      <fields>
+        <field name="Variant">production default</field>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Variant" value="production default"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="kibom-variant_kicost.kicad_sch"/>
+      <property name="ki_description" value="Resistor"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00005f43d4bb</tstamps>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Device" part="C">
+      <description>Unpolarized capacitor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="R">
+      <description>Resistor</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Device">
+      <uri>/usr/share/kicad-nightly/symbols//Device.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="unconnected-(C1-Pad1)">
+      <node ref="C1" pin="1" pintype="passive"/>
+    </net>
+    <net code="2" name="unconnected-(C1-Pad2)">
+      <node ref="C1" pin="2" pintype="passive"/>
+    </net>
+    <net code="3" name="unconnected-(C2-Pad1)">
+      <node ref="C2" pin="1" pintype="passive"/>
+    </net>
+    <net code="4" name="unconnected-(C2-Pad2)">
+      <node ref="C2" pin="2" pintype="passive"/>
+    </net>
+    <net code="5" name="unconnected-(R1-Pad1)">
+      <node ref="R1" pin="1" pintype="passive"/>
+    </net>
+    <net code="6" name="unconnected-(R1-Pad2)">
+      <node ref="R1" pin="2" pintype="passive"/>
+    </net>
+    <net code="7" name="unconnected-(R2-Pad1)">
+      <node ref="R2" pin="1" pintype="passive"/>
+    </net>
+    <net code="8" name="unconnected-(R2-Pad2)">
+      <node ref="R2" pin="2" pintype="passive"/>
+    </net>
+  </nets>
+</export>

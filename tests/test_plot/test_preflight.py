@@ -80,13 +80,28 @@ def test_erc_warning_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
+@pytest.mark.eeschema
+@pytest.mark.skipif(not context.ki7(), reason="KiCad 7 off grid check")
+def test_erc_off_grid_1(test_dir):
+    """ ERC using 25 mils grid """
+    prj = 'off-grid'
+    ctx = context.TestContextSCH(test_dir, prj, 'erc_grid_25')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.txt', sub=True)
+    ctx.clean_up()
+
+
 def test_drc_1(test_dir):
-    prj = 'bom'
+    prj = name = 'bom'
+    if context.ki7():
+        prj = name = 'bom_ok_drc'
     ctx = context.TestContext(test_dir, prj, 'drc', '')
     ctx.run()
     # Check all outputs are there
-    ctx.expect_out_file(prj+'-drc.txt')
-    ctx.clean_up()
+    ctx.expect_out_file(name+'-drc.txt')
+    ctx.clean_up(keep_project=context.ki7())
 
 
 def test_drc_filter_1(test_dir):

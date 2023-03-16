@@ -7,6 +7,7 @@ from fnmatch import fnmatch
 import os
 import requests
 from .EasyEDA.easyeda_3d import download_easyeda_3d_model
+from .fil_base import reset_filters
 from .misc import W_MISS3D, W_FAILDL, W_DOWN3D, DISABLE_3D_MODEL_TEXT
 from .gs import GS
 from .optionable import Optionable
@@ -18,7 +19,7 @@ from . import log
 logger = log.get_logger()
 
 
-def do_expand_env(fname, used_extra, extra_debug):
+def do_expand_env(fname, used_extra, extra_debug, lib_nickname):
     # Is it using ALIAS:xxxxx?
     force_used_extra = False
     if ':' in fname:
@@ -40,6 +41,18 @@ def do_expand_env(fname, used_extra, extra_debug):
         if os.path.isfile(full_name_cwd):
             full_name = full_name_cwd
             force_used_extra = True
+        else:
+            # We still missing the 3D model
+            # Try relative to the footprint lib
+            aliases = KiConf.get_fp_lib_aliases()
+            lib_alias = aliases.get(lib_nickname)
+            if lib_alias is not None:
+                full_name_lib = os.path.join(lib_alias.uri, fname)
+                if os.path.isfile(full_name_lib):
+                    logger.debug("- Using path relative to `{}` for `{}` ({})".format(lib_nickname, fname, full_name_lib))
+                    full_name = full_name_lib
+                    # KiCad 5 and 6 will need help
+                    force_used_extra = not GS.ki7
         if force_used_extra:
             used_extra[0] = True
         return full_name
@@ -183,10 +196,6 @@ class Base3DOptions(VariantOptions):
         is_copy_mode = rename_filter is not None
         rel_dirs = getattr(rename_data, 'rel_dirs', [])
         extra_debug = GS.debug_level > 3
-        # Get a list of components in the schematic. Enables downloading LCSC parts.
-        if all_comps is None and GS.sch_file:
-            GS.load_sch()
-            all_comps = GS.sch.get_components()
         if all_comps is None:
             all_comps = []
         all_comps_hash = {c.ref: c for c in all_comps}
@@ -204,6 +213,8 @@ class Base3DOptions(VariantOptions):
         # Look for all the footprints
         for m in GS.get_modules():
             ref = m.GetReference()
+            lib_id = m.GetFPID()
+            lib_nickname = str(lib_id.GetLibNickname())
             sch_comp = all_comps_hash.get(ref, None)
             # Extract the models (the iterator returns copies)
             models = m.Models()
@@ -221,7 +232,7 @@ class Base3DOptions(VariantOptions):
                     # Skip filtered footprints
                     continue
                 used_extra = [False]
-                full_name = do_expand_env(m3d.m_Filename, used_extra, extra_debug)
+                full_name = do_expand_env(m3d.m_Filename, used_extra, extra_debug, lib_nickname)
                 if not os.path.isfile(full_name):
                     logger.debugl(2, 'Missing 3D model file {} ({})'.format(full_name, m3d.m_Filename))
                     # Missing 3D model
@@ -253,8 +264,8 @@ class Base3DOptions(VariantOptions):
                             logger.debug('- Modifying models with text vars')
                         models_replaced = True
             # Push the models back
-            for model in models_l:
-                models.push_front(model)
+            for model in reversed(models_l):
+                models.append(model)
         if downloaded:
             logger.warning(W_DOWN3D+' {} 3D models downloaded'.format(len(downloaded)))
         return models_replaced if not is_copy_mode else list(source_models)
@@ -275,13 +286,29 @@ class Base3DOptions(VariantOptions):
 
     def filter_components(self, highlight=None, force_wrl=False):
         if not self._comps:
+            # No filters, but we need to apply some stuff
+            all_comps = None
+            dnp_removed = False
+            # Get a list of components in the schematic. Enables downloading LCSC parts.
+            if GS.sch_file:
+                GS.load_sch()
+                all_comps = GS.sch.get_components()
+                if (GS.global_kicad_dnp_applies_to_3D and
+                   any(map(lambda c: c.kicad_dnp is not None and c.kicad_dnp, all_comps))):
+                    # One or more components are DNP, remove them
+                    reset_filters(all_comps)
+                    all_comps_hash = {c.ref: c for c in all_comps}
+                    self.remove_3D_models(GS.board, all_comps_hash)
+                    dnp_removed = True
             # No variant/filter to apply
-            if self.download_models(force_wrl=force_wrl):
+            if self.download_models(force_wrl=force_wrl, all_comps=all_comps) or dnp_removed:
                 # Some missing components found and we downloaded them
                 # Save the fixed board
                 ret = self.save_tmp_board()
                 # Undo the changes done during download
                 self.undo_3d_models_rename(GS.board)
+                if dnp_removed:
+                    self.restore_3D_models(GS.board, all_comps_hash)
                 return ret
             return GS.pcb_file
         self.filter_pcb_components(do_3D=True, do_2D=True, highlight=highlight)

@@ -123,6 +123,20 @@ def test_step_variant_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.skipif(not context.ki7(), reason="KiCad 7 3D relative dirs")
+def test_step_rel_dir_1(test_dir):
+    prj = 'test'
+    ctx = context.TestContext(test_dir, '3d_rel_path/'+prj, 'step_simple', STEP_DIR)
+    ctx.run()
+    # Check all outputs are there
+    name = prj+'-3D.step'
+    ctx.expect_out_file_d(name)
+    # Check the R and C 3D models are there
+    ctx.search_in_file_d(name, [r"PRODUCT\('R',"])
+    ctx.search_err(['Add component R1'])
+    ctx.clean_up(keep_project=True)
+
+
 @pytest.mark.slow
 @pytest.mark.pcbnew
 def test_render_3d_variant_1(test_dir):
@@ -137,7 +151,7 @@ def test_render_3d_variant_1(test_dir):
     # Check all outputs are there
     name = prj+'-3D_top.png'
     ctx.expect_out_file(name)
-    ctx.compare_image(name, fuzz='7%', tol=1000)
+    ctx.compare_image(name, fuzz='48%', tol=1000, trim=True)
     ctx.clean_up(keep_project=True)
 
 

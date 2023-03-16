@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2023 Salvador E. Tropea
+# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -29,6 +29,7 @@ except ImportError:
 logger = log.get_logger()
 TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
                'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
+SHEET_FILE = {'Sheet file', 'Sheetfile'}
 
 
 def is_symbol(name, sexp):
@@ -484,7 +485,7 @@ class QR_LibOptions(BaseOptions):
         for s in sexp_iter(sheet, 'kicad_sch/sheet'):
             sub_name = None
             for prop in sexp_iter(s, 'property'):
-                if len(prop) > 2 and isinstance(prop[1], str) and isinstance(prop[2], str) and prop[1] == 'Sheet file':
+                if len(prop) > 2 and isinstance(prop[1], str) and isinstance(prop[2], str) and prop[1] in SHEET_FILE:
                     sub_name = prop[2]
             if sub_name is not None:
                 sub_name = os.path.abspath(os.path.join(path, sub_name))

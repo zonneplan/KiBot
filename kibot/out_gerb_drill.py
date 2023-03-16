@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from pcbnew import GERBER_WRITER
+from .gs import GS
 from .out_any_drill import AnyDrill
 from .macros import macros, document, output_class  # noqa: F401
 
@@ -17,7 +18,7 @@ class Gerb_DrillOptions(AnyDrill):
         drill_writer = GERBER_WRITER(board)
         # hard coded in UI?
         drill_writer.SetFormat(5)
-        drill_writer.SetOptions(offset)
+        drill_writer.SetOptions(GS.p2v_k7(offset))
         return drill_writer
 
 
