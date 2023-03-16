@@ -1,6 +1,6 @@
-FROM setsoft/kicad_auto_test:latest
+FROM ghcr.io/inti-cmnb/kicad_auto_test:ki6
 MAINTAINER Salvador E. Tropea <stropea@inti.gob.ar>
-LABEL Description="KiCad 5 with KiBot and other automation scripts"
+LABEL Description="KiCad 6 with KiBot and other automation scripts"
 
 RUN     dpkg --remove kicost kibot && \
 	apt-get update && \

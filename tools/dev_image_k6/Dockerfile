@@ -1,4 +1,4 @@
-FROM setsoft/kicad_auto_test:ki6
+FROM ghcr.io/inti-cmnb/kicad_auto:ki6
 MAINTAINER Salvador E. Tropea <stropea@inti.gob.ar>
 LABEL Description="KiCad 6 with KiBot and other automation scripts"
 
