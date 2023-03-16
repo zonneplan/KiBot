@@ -14,7 +14,7 @@ from .out_base import BaseOutput, VariantOptions
 from .error import PlotError, KiPlotConfigurationError
 from .layer import Layer
 from .gs import GS
-from .misc import W_NOLAYER
+from .misc import W_NOLAYER, KICAD_VERSION_7_0_1, MISSING_TOOL
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -49,7 +49,7 @@ class AnyLayerOptions(VariantOptions):
             self.exclude_pads_from_silkscreen = False
             """ Do not plot the component pads in the silk screen (KiCad 5.x only) """
             self.plot_sheet_reference = False
-            """ *Include the frame and title block. Only available for KiCad 6 and you get a poor result
+            """ *Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                 (i.e. always the default worksheet style, also problems expanding text variables).
                 The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs """
             self.plot_footprint_refs = True
@@ -137,6 +137,10 @@ class AnyLayerOptions(VariantOptions):
 
     def run(self, output_dir, layers):
         super().run(output_dir)
+        if GS.ki7 and GS.kicad_version_n < KICAD_VERSION_7_0_1 and not self.exclude_edge_layer:
+            logger.error("Plotting the edge layer is not supported by KiCad 7.0.0\n"
+                         "Please upgrade KiCad to 7.0.1 or newer")
+            exit(MISSING_TOOL)
         # Apply the variants and filters
         exclude = self.filter_pcb_components()
         # fresh plot controller

@@ -17,7 +17,7 @@ from .gs import GS
 from .optionable import Optionable
 from .kicad.config import KiConf
 from .kiplot import load_board
-from .misc import DRC_ERROR
+from .misc import DRC_ERROR, KICAD_VERSION_7_0_1_1, W_DRC7BUG
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -27,7 +27,7 @@ logger = get_logger(__name__)
 class Run_DRC(BasePreFlight):  # noqa: F821
     """ [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
         The report file name is controlled by the global output pattern (%i=drc %x=txt).
-        Note that the KiCad 6 *Test for parity between PCB and schematic* option is not supported.
+        Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
         If you need to check the parity use the `update_xml` preflight.
         KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
         This will change in the future """
@@ -55,6 +55,10 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         if GS.ki7:
             # KiCad 7 can do some library parity checks, but we need to be sure that the KICAD7* vars are defined
             KiConf.init(GS.pcb_file)
+            if GS.kicad_version_n < KICAD_VERSION_7_0_1_1:
+                logger.warning(W_DRC7BUG+"KiCad 7.0.0/1 fails to load the global footprints table. "
+                               "You may get a lot of `lib_footprint_issues` reports. "
+                               "Try enabling the global `drc_exclusions_workaround` option.")
         output = self.get_targets()[0]
         os.makedirs(os.path.dirname(output), exist_ok=True)
         logger.debug('DRC report: '+output)

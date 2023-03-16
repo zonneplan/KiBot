@@ -183,14 +183,16 @@ def detect_kicad():
     except ValueError:
         pass
 
-    m = re.search(r'(\d+)\.(\d+)\.(\d+)', GS.kicad_version)
+    m = re.search(r'(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?', GS.kicad_version)
     if m is None:
         logger.error("Unable to detect KiCad version, got: `{}`".format(GS.kicad_version))
         sys.exit(NO_PCBNEW_MODULE)
     GS.kicad_version_major = int(m.group(1))
     GS.kicad_version_minor = int(m.group(2))
     GS.kicad_version_patch = int(m.group(3))
-    GS.kicad_version_n = GS.kicad_version_major*1000000+GS.kicad_version_minor*1000+GS.kicad_version_patch
+    GS.kicad_version_subpatch = 0 if m.group(4) is None else int(m.group(4))
+    GS.kicad_version_n = (GS.kicad_version_major*10000000+GS.kicad_version_minor*10000+GS.kicad_version_patch*10 +
+                          GS.kicad_version_subpatch)
     GS.ki5 = GS.kicad_version_major < 6
     GS.ki6 = GS.kicad_version_major >= 6
     GS.ki6_only = GS.kicad_version_major == 6

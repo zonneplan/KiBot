@@ -6,7 +6,7 @@
 import os
 from .pre_base import BasePreFlight
 from .gs import GS
-from .misc import PDF_PCB_PRINT
+from .misc import PDF_PCB_PRINT, KICAD_VERSION_7_0_1, MISSING_TOOL
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import add_drill_marks, DRILL_MARKS_MAP
@@ -69,6 +69,10 @@ class Any_PCB_PrintOptions(VariantOptions):
 
     def run(self, output, svg=False):
         super().run(self._layers)
+        if GS.ki7 and GS.kicad_version_n < KICAD_VERSION_7_0_1 and self.scaling != 0 and self.scaling != 1.0:
+            logger.error("Scaled printing is broken in KiCad 7.0.0\n"
+                         "Please upgrade KiCad to 7.0.1 or newer")
+            exit(MISSING_TOOL)
         command = self.ensure_tool('KiAuto')
         # Output file name
         cmd = [command, 'export', '--output_name', output]
