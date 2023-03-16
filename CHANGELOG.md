@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.1] - UNRELEASED
+## [1.6.1] - 2023-03-16
 ### Added
+- KiCad 7.0.1 support
 - Global options:
   - `allow_blind_buried_vias` and `allow_microvias` for KiCad 7 (no longer in
      KiCad)

@@ -1,8 +1,8 @@
-kibot (1.6.1-1) UNRELEASED; urgency=medium
+kibot (1.6.1-1) stable; urgency=medium
 
-  * Rserved for the next release
+  * KiCad 7.0.1 support
 
- -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Mon, 06 Feb 2023 13:14:58 -0300
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Thu, 16 Mar 2023 07:33:52 -0300
 
 kibot (1.6.0-1) stable; urgency=medium
 

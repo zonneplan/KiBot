@@ -461,7 +461,7 @@ This section is used to specify tasks that will be executed before generating an
         - `text`: [string=''] Text to insert instead of the tag.
 - `run_drc`: [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
         The report file name is controlled by the global output pattern (%i=drc %x=txt).
-        Note that the KiCad 6 *Test for parity between PCB and schematic* option is not supported.
+        Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
         If you need to check the parity use the `update_xml` preflight.
         KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
         This will change in the future.
@@ -2197,7 +2197,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -2440,7 +2440,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - **`subtract_mask_from_silk`**: [boolean=false] Subtract the solder mask from the silk screen.
@@ -2511,7 +2511,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -3716,7 +3716,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
@@ -3751,7 +3751,7 @@ Notes:
                     IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                     For this reason you must avoid generating two variants at the same directory when one of
                     them uses the default KiCad name. Affected by global options.
-    - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+    - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                   (i.e. always the default worksheet style, also problems expanding text variables).
                                   The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -4035,7 +4035,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
@@ -4510,7 +4510,7 @@ Notes:
                         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
                         For this reason you must avoid generating two variants at the same directory when one of
                         them uses the default KiCad name. Affected by global options.
-        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6 and you get a poor result
+        - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
