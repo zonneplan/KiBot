@@ -94,6 +94,7 @@ preflight:
 outputs:
   # Blender Export **Experimental**:
   # Also renders the PCB with high-quality.
+  # Needs KiCad 6 or newer.
   # This output is complex to setup and needs very big dependencies.
   # Please be patient when using it.
   # You need Blender with the pcb2blender plug-in installed.
@@ -2055,6 +2056,7 @@ outputs:
       variant: ''
   # PCB2Blender Tools:
   # Blender is the most important free software 3D render package.
+  # This output needs KiCad 6 or newer.
   # The PCB3D file format is used by the PCB2Blender project (https://github.com/30350n/pcb2blender)
   # to import KiCad PCBs in Blender.
   # You need to install a Blender plug-in to load PCB3D files.

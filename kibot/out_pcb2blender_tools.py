@@ -13,7 +13,7 @@ from typing import List
 from pcbnew import B_Paste, F_Paste, PCB_TEXT_T, ToMM
 from .gs import GS
 from .misc import (MOD_THROUGH_HOLE, MOD_SMD, UI_VIRTUAL, W_UNKPCB3DTXT, W_NOPCB3DBR, W_NOPCB3DTL, W_BADPCB3DTXT,
-                   W_UNKPCB3DNAME, W_BADPCB3DSTK)
+                   W_UNKPCB3DNAME, W_BADPCB3DSTK, MISSING_TOOL)
 from .optionable import Optionable
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
@@ -261,6 +261,9 @@ class PCB2Blender_ToolsOptions(VariantOptions):
 
     def run(self, output):
         super().run(output)
+        if GS.ki5:
+            logger.error("`pcb2blender_tools` needs KiCad 6+")
+            exit(MISSING_TOOL)
         dir_name = os.path.dirname(output)
         self.apply_show_components()
         self.filter_pcb_components(do_3D=True)
@@ -302,6 +305,7 @@ class PCB2Blender_Tools(BaseOutput):  # noqa: F821
     """ PCB2Blender Tools
         A bunch of tools used to generate PCB3D files used to export PCBs to Blender.
         Blender is the most important free software 3D render package.
+        This output needs KiCad 6 or newer.
         The PCB3D file format is used by the PCB2Blender project (https://github.com/30350n/pcb2blender)
         to import KiCad PCBs in Blender.
         You need to install a Blender plug-in to load PCB3D files.

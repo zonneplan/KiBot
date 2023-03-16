@@ -1572,6 +1572,7 @@ Notes:
   * Type: `blender_export`
   * Description: Exports the PCB in various 3D file formats.
                  Also renders the PCB with high-quality.
+                 Needs KiCad 6 or newer.
                  This output is complex to setup and needs very big dependencies.
                  Please be patient when using it.
                  You need Blender with the pcb2blender plug-in installed.
@@ -3361,6 +3362,7 @@ Notes:
   * Type: `pcb2blender_tools`
   * Description: A bunch of tools used to generate PCB3D files used to export PCBs to Blender.
                  Blender is the most important free software 3D render package.
+                 This output needs KiCad 6 or newer.
                  The PCB3D file format is used by the PCB2Blender project (https://github.com/30350n/pcb2blender)
                  to import KiCad PCBs in Blender.
                  You need to install a Blender plug-in to load PCB3D files.

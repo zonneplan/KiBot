@@ -17,6 +17,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .error import KiPlotConfigurationError
 from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output, configure_and_run
 from .gs import GS
+from .misc import MISSING_TOOL
 from .optionable import Optionable, BaseOptions
 from .out_base_3d import Base3D, Base3DOptionsWithHL
 from .registrable import RegOutput
@@ -470,6 +471,9 @@ class Blender_ExportOptions(BaseOptions):
         return pcb3d_file
 
     def run(self, output):
+        if GS.ki5:
+            logger.error("`blender_export` needs KiCad 6+")
+            exit(MISSING_TOOL)
         pcb3d_file = self.solve_pcb3d()
         # If no outputs specified just finish
         # Can be used to export the PCB to Blender
@@ -563,6 +567,7 @@ class Blender_Export(Base3D):
     """ Blender Export **Experimental**
         Exports the PCB in various 3D file formats.
         Also renders the PCB with high-quality.
+        Needs KiCad 6 or newer.
         This output is complex to setup and needs very big dependencies.
         Please be patient when using it.
         You need Blender with the pcb2blender plug-in installed.
@@ -605,7 +610,7 @@ class Blender_Export(Base3D):
 
     @staticmethod
     def get_conf_examples(name, layers, templates):
-        if not GS.check_tool(name, 'Blender'):
+        if not GS.check_tool(name, 'Blender') or GS.ki5:
             return None
         has_top = False
         has_bottom = False
