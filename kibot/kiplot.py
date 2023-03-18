@@ -657,6 +657,7 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
         else:
             kibot_cmd = '\t@$(KIBOT_CMD)'
             log_action = ' 2>> $(LOGFILE)'
+        skip_all = ','.join(is_pre)
         for name, dep in dependencies.items():
             if name in comments:
                 f.write('# '+comments[name]+'\n')
@@ -666,7 +667,7 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
                 skip = filter(lambda n: n != name, is_pre)
                 f.write('{} -s {} -i{}\n\n'.format(kibot_cmd, ','.join(skip), log_action))
             else:
-                f.write('{} -s all "{}"{}\n\n'.format(kibot_cmd, ori_names[name], log_action))
+                f.write('{} -s {} "{}"{}\n\n'.format(kibot_cmd, skip_all, ori_names[name], log_action))
         # Mark all outputs as PHONY
         f.write('.PHONY: '+' '.join(extra_targets+list(targets.keys()))+'\n')
 
