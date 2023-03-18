@@ -118,6 +118,10 @@ class PresentBoards(Optionable):
                 raise KiPlotConfigurationError('Unknown output `{}` selected in board {}'.
                                                format(self.pcb_from_output, self.name))
 
+    def fill_empty_values(self, parent):
+        # The defaults are good enough, but we need to attach to a parent
+        self._parent = parent
+
     def solve_file(self):
         return self.name, self.comment, self.pcb_file, self.front_image, self.back_image, self.gerbers
 
@@ -316,7 +320,7 @@ class KiKit_PresentOptions(BaseOptions):
         # List of boards
         if isinstance(self.boards, type):
             a_board = PresentBoards()
-            a_board.fill_empty_values()
+            a_board.fill_empty_values(self)
             self.boards = [a_board]
         elif isinstance(self.boards, PresentBoards):
             self.boards = [self.boards]
