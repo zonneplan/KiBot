@@ -1,3 +1,9 @@
+kibot (1.6.1-2) stable; urgency=medium
+
+  * Also accept KiCad nightly as dependency
+
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Sun, 19 Mar 2023 12:41:04 -0300
+
 kibot (1.6.1-1) stable; urgency=medium
 
   * KiCad 7.0.1 support
