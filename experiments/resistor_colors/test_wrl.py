@@ -97,7 +97,7 @@ def add_colors(file, colors):
 
 
 val = 1200
-tol = 5
+tol = 20
 
 if val < 0.01:
     print('Minimum value is 10 mOhms')
@@ -138,6 +138,11 @@ if tol_color is None:
     print('Unknown tolerance {}'.format(tol))
     exit(3)
 bars[nbars-1] = tol_color
+# For 20% remove the last bar
+if tol_color == 12:
+    bars = bars[:-1]
+    WIDTHS[-3] = WIDTHS[-1]+WIDTHS[-2]+WIDTHS[-3]
+    WIDTHS = WIDTHS[:-2]
 # Show the result
 print(bars)
 
