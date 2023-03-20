@@ -215,3 +215,70 @@ This file comes from KiKit, but it has too much in common with `populate.py`.
 ## 2023-03-01 Update
 
 - Bumped lib footprints (afbab947d981c4583fc6e168c66fc63c31ba6d69)
+
+## 2023-03-20 Various fixes and changes in resistor colors
+
+diff --git a/kibot/PcbDraw/plot.py b/kibot/PcbDraw/plot.py
+index 8ca660e6..a262732b 100644
+--- a/kibot/PcbDraw/plot.py
++++ b/kibot/PcbDraw/plot.py
+@@ -56,6 +56,8 @@ default_style = {
+         7: '#cc00cc',
+         8: '#666666',
+         9: '#cccccc',
++        -1: '#ffc800',
++        -2: '#d9d9d9',
+         '1%': '#805500',
+         '2%': '#ff0000',
+         '0.5%': '#00cc11',
+@@ -64,6 +66,7 @@ default_style = {
+         '0.05%': '#666666',
+         '5%': '#ffc800',
+         '10%': '#d9d9d9',
++        '20%': '#ffe598',
+     }
+ }
+ 
+@@ -884,10 +887,15 @@ class PlotComponents(PlotInterface):
+         try:
+             res, tolerance = self._get_resistance_from_value(value)
+             power = math.floor(res.log10()) - 1
+-            res = Decimal(int(res / 10 ** power))
++            res = str(Decimal(int(res / Decimal(10) ** power)))
++            if power == -3:
++                power += 1
++                res = '0'+res
++            elif power < -3:
++                raise UserWarning(f"Resistor value must be 0.01 or bigger")
+             resistor_colors = [
+-                self._plotter.get_style("tht-resistor-band-colors", int(str(res)[0])),
+-                self._plotter.get_style("tht-resistor-band-colors", int(str(res)[1])),
++                self._plotter.get_style("tht-resistor-band-colors", int(res[0])),
++                self._plotter.get_style("tht-resistor-band-colors", int(res[1])),
+                 self._plotter.get_style("tht-resistor-band-colors", int(power)),
+                 self._plotter.get_style("tht-resistor-band-colors", tolerance)
+             ]
+@@ -914,7 +922,7 @@ class PlotComponents(PlotInterface):
+             return
+ 
+     def _get_resistance_from_value(self, value: str) -> Tuple[Decimal, str]:
+-        res, tolerance = None, "5%"
++        res, tolerance = None, "20%"
+         value_l = value.split(" ", maxsplit=1)
+         try:
+             res = read_resistance(value_l[0])
+@@ -1084,6 +1092,11 @@ class PcbPlotter():
+             lib = str(footprint.GetFPID().GetLibNickname()).strip()
+             name = str(footprint.GetFPID().GetLibItemName()).strip()
+             value = footprint.GetValue().strip()
++            # Look for a tolerance in the properties
++            prop = footprint.GetProperties()
++            tol = prop.get('tol', prop.get('tolerance', None))
++            if tol:
++                value = value+' '+tol
+             ref = footprint.GetReference().strip()
+             center = footprint.GetPosition()
+             orient = math.radians(footprint.GetOrientation().AsDegrees())
+
+
+
