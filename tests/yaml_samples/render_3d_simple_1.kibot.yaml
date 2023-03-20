@@ -1,0 +1,10 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: '3d_default'
+    comment: "3D view"
+    type: render_3d
+    options:
+      ray_tracing: false
