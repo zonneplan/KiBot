@@ -5,10 +5,13 @@
 # Project: KiBot (formerly KiPlot)
 from fnmatch import fnmatch
 import os
+import re
 import requests
+from shutil import copy2
+from .bom.units import comp_match
 from .EasyEDA.easyeda_3d import download_easyeda_3d_model
 from .fil_base import reset_filters
-from .misc import W_MISS3D, W_FAILDL, W_DOWN3D, DISABLE_3D_MODEL_TEXT
+from .misc import W_MISS3D, W_FAILDL, W_DOWN3D, DISABLE_3D_MODEL_TEXT, W_BADTOL, W_BADRES, W_RESVALISSUE, W_RES3DNAME
 from .gs import GS
 from .optionable import Optionable
 from .out_base import VariantOptions, BaseOutput
@@ -17,6 +20,46 @@ from .macros import macros, document  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+# 3D models for resistors data
+
+# Tolerance bar:
+# 20%     -     3
+# 10%   Silver  4
+#  5%    Gold   4
+#  2%    Red    5
+#  1%   Brown   5
+# 0.5%  Green   5
+# 0.25%  Blue   5
+# 0.1%  Violet  5
+# 0.05% Orange  5
+# 0.02% Yellow  5
+# 0.01%  Grey   5
+
+# Special multipliers
+# Multiplier < 1
+# 0.1   Gold
+# 0.01  Silver
+
+X = 0
+Y = 1
+Z = 2
+COLORS = [(0.149, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.4),  # 0 Black
+          (0.149, 0.40, 0.26, 0.13, 0.40, 0.26, 0.13, 0.4),  # 1 Brown
+          (0.149, 0.85, 0.13, 0.13, 0.85, 0.13, 0.13, 0.4),  # 2 Red
+          (0.149, 0.94, 0.37, 0.14, 0.94, 0.37, 0.14, 0.4),  # 3 Naraja
+          (0.149, 0.98, 0.99, 0.06, 0.98, 0.99, 0.06, 0.4),  # 4 Yellow
+          (0.149, 0.20, 0.80, 0.20, 0.20, 0.80, 0.20, 0.4),  # 5 Green
+          (0.149, 0.03, 0.00, 0.77, 0.03, 0.00, 0.77, 0.4),  # 6 Blue
+          (0.149, 0.56, 0.00, 1.00, 0.56, 0.00, 1.00, 0.4),  # 7 Violet
+          (0.149, 0.62, 0.62, 0.62, 0.62, 0.62, 0.62, 0.4),  # 8 Grey
+          (0.149, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.4),  # 9 White
+          (0.379, 0.86, 0.74, 0.50, 0.86, 0.74, 0.50, 1.0),  # 5% Gold (10)
+          (0.271, 0.82, 0.82, 0.78, 0.33, 0.26, 0.17, 0.7),  # 10% Silver (11)
+          (0.149, 0.883, 0.711, 0.492, 0.043, 0.121, 0.281, 0.4),  # Body color
+          ]
+TOL_COLORS = {5: 10, 10: 11, 20: 12, 2: 2, 1: 1, 0.5: 5, 0.25: 6, 0.1: 7, 0.05: 3, 0.02: 4, 0.01: 8}
+WIDTHS_4 = [5, 12, 10.5, 12, 10.5, 12, 21, 12, 5]
+WIDTHS_5 = [5, 10, 8.5, 10, 8.5, 10, 8.5, 10, 14.5, 10, 5]
 
 
 def do_expand_env(fname, used_extra, extra_debug, lib_nickname):
@@ -181,18 +224,219 @@ class Base3DOptions(VariantOptions):
         downloaded.add(full_name)
         return replace
 
+    def is_tht_resistor(self, name):
+        # Works for R_Axial_DIN* KiCad 6.0.10 3D models
+        name = os.path.splitext(os.path.basename(name))[0]
+        return name.startswith('R_Axial_DIN')
+
+    def colored_tht_resistor_name(self, name, bars):
+        name = os.path.splitext(os.path.basename(name))[0]
+        return os.path.join(self._tmp_dir, name+'_'+'_'.join(map(str, bars))+'.wrl')
+
+    def add_tht_resistor_colors(self, file, colors):
+        for bar, c in enumerate(colors):
+            col = COLORS[c]
+            file.write("Shape {\n")
+            file.write("\t\tappearance Appearance {material DEF RES-BAR-%02d Material {\n" % (bar+1))
+            file.write("\t\tambientIntensity {}\n".format(col[0]))
+            file.write("\t\tdiffuseColor {} {} {}\n".format(col[1], col[2], col[3]))
+            file.write("\t\tspecularColor {} {} {}\n".format(col[4], col[5], col[6]))
+            file.write("\t\temissiveColor 0.0 0.0 0.0\n")
+            file.write("\t\ttransparency 0.0\n")
+            file.write("\t\tshininess {}\n".format(col[7]))
+            file.write("\t\t}\n")
+            file.write("\t}\n")
+            file.write("}\n")
+
+    def write_tht_resistor_strip(self, points, file, axis, n, mat, index, only_coord=False):
+        if not only_coord:
+            file.write("Shape { geometry IndexedFaceSet\n")
+            file.write(index)
+        end = points[0][axis]
+        start = points[2][axis]
+        length = start-end
+        length/15
+        n_start = start-self.starts[n]*length
+        n_end = n_start-self.widths[n]*length
+        new_points = []
+        for p in points:
+            ax = []
+            for a, v in enumerate(p):
+                if a == axis:
+                    ax.append("%.3f" % (n_start if v == start else n_end))
+                else:
+                    ax.append("%.3f" % v)
+            new_points.append(' '.join(ax))
+        file.write("coord Coordinate { point ["+','.join(new_points)+"]\n")
+        if only_coord:
+            return
+        file.write("}}\n")
+        file.write("appearance Appearance{material USE "+mat+" }\n")
+        file.write("}\n")
+
+    def create_colored_tht_resistor(self, ori, name, bars, r_len):
+        # ** Process the 3D model
+        # Fill the starts
+        ac = 0
+        self.starts = []
+        for c, w in enumerate(self.widths):
+            self.starts.append(ac/100)
+            self.widths[c] = w/100
+            ac += w
+        # Create the model
+        coo_re = re.compile(r"coord Coordinate \{ point \[((\S+ \S+ \S+,?)+)\](.*)")
+        with open(ori, "rt") as f:
+            prev_ln = None
+            points = None
+            axis = None
+            with open(name, "wt") as d:
+                colors_defined = False
+                for ln in f:
+                    if not colors_defined and ln.startswith('Shape { geometry IndexedFaceSet'):
+                        self.add_tht_resistor_colors(d, bars)
+                        colors_defined = True
+                    m = coo_re.match(ln)
+                    if m:
+                        index = prev_ln
+                        points = list(map(lambda x: tuple(map(float, x.split(' '))), m.group(1).split(',')))
+                        x_len = (points[0][X]-points[2][X])*2.54*2
+                        if abs(x_len-r_len) < 0.01:
+                            logger.debug('  - Found horizontal: {}'.format(round(x_len, 2)))
+                            self.write_tht_resistor_strip(points, d, X, 0, 'PIN-01', index, only_coord=True)
+                            # d.write(ln)
+                            axis = X
+                        else:
+                            y_len = (points[0][Z]-points[2][Z])*2.54*2
+                            if abs(y_len-r_len) < 0.01:
+                                logger.debug('  - Found vertical: {}'.format(round(y_len, 2)))
+                                self.write_tht_resistor_strip(points, d, Z, 0, 'PIN-01', index, only_coord=True)
+                                axis = Z
+                            else:
+                                d.write(ln)
+                                points = None
+                    else:
+                        d.write(ln)
+                    if ln == "}\n" and points is not None:
+                        for st in range(1, len(self.widths)):
+                            bar = (st >> 1)+1
+                            self.write_tht_resistor_strip(points, d, axis, st,
+                                                          'RES-BAR-%02d' % bar if st % 2 else 'RES-THT-01', index)
+                        points = None
+                    prev_ln = ln
+        # Copy the STEP model (no colors)
+        step_ori = os.path.splitext(ori)[0]+'.step'
+        if os.path.isfile(step_ori):
+            step_name = os.path.splitext(name)[0]+'.step'
+            copy2(step_ori, step_name)
+        else:
+            logger.warning(W_MISS3D+'Missing 3D model {}'.format(step_ori))
+
+    def do_colored_tht_resistor(self, name, c, changed):
+        if not GS.global_colored_tht_resistors or not self.is_tht_resistor(name) or c is None:
+            return name
+        # Find the length of the resistor (is in the name of the 3D model)
+        m = re.search(r"L([\d\.]+)mm", name)
+        if not m:
+            logger.warning(W_RES3DNAME+'3D model for resistor without length: {}'.format(name))
+            return name
+        r_len = float(m.group(1))
+        # THT Resistor that we want to add colors
+        # Check the tolerance
+        # TODO: Configurable
+        tol = c.get_field_value('tol') or c.get_field_value('tolerance')
+        if not tol:
+            tol = 20
+            logger.warning(W_BADTOL+'Missing tolerance for {}, using 20%'.format(c.ref))
+        else:
+            tol = tol.strip()
+            if tol[-1] == '%':
+                tol = tol[:-1].strip()
+            try:
+                tol = float(tol)
+            except ValueError:
+                logger.warning(W_BADTOL+'Malformed tolerance for {}: `{}`'.format(c.ref, tol))
+                return name
+        if tol not in TOL_COLORS:
+            logger.warning(W_BADTOL+'Unknown tolerance for {}: `{}`'.format(c.ref, tol))
+            return name
+        tol_color = TOL_COLORS[tol]
+        # Check the value
+        res = comp_match(c.value, c.ref_prefix, c.ref)
+        if res is None:
+            return name
+        val = res[0]*res[1][0]
+        if val < 0.01:
+            logger.warning(W_BADRES+'Resistor {} out of range, minimum value is 10 mOhms'.format(c.ref))
+            return name
+        val_str = "{0:.0f}".format(val*100)
+        # Find how many bars we'll use
+        if tol < 5:
+            # Use 5 bars for 2 % tol or better
+            self.widths = WIDTHS_5.copy()
+            nbars = 5
+        else:
+            self.widths = WIDTHS_4.copy()
+            nbars = 4
+        bars = [0]*nbars
+        # Bars with digits
+        dig_bars = nbars-2
+        # Fill the multiplier
+        mult = len(val_str)-nbars
+        if mult < 0:
+            val_str = val_str.rjust(dig_bars, '0')
+            mult = min(9-mult, 11)
+        bars[dig_bars] = mult
+        # Max is all 99 with 9 as multiplier
+        max_val = pow(10, dig_bars)-1
+        if val > max_val*1e9:
+            logger.warning(W_BADRES+'Resistor {} out of range, maximum value is {} GOhms'.format(c.ref, max_val))
+            return name
+        # Fill the digits
+        for bar in range(dig_bars):
+            bars[bar] = ord(val_str[bar])-ord('0')
+        # Make sure we don't have digits that can't be represented
+        rest = val_str[dig_bars:]
+        if rest and not all(map(lambda x: x == '0', rest)):
+            logger.warning(W_RESVALISSUE+'Digits not represented in {} {}'.format(c.ref, c.value))
+        bars[nbars-1] = tol_color
+        # For 20% remove the last bar
+        if tol_color == 12:
+            bars = bars[:-1]
+            self.widths[-3] = self.widths[-1]+self.widths[-2]+self.widths[-3]
+            self.widths = self.widths[:-2]
+        # Create the name in the cache
+        cache_name = self.colored_tht_resistor_name(name, bars)
+        if os.path.isfile(cache_name):
+            status = 'cached'
+        else:
+            status = 'created'
+            self.create_colored_tht_resistor(name, cache_name, bars, r_len)
+        changed[0] = True
+        # Show the result
+        logger.debug('- {} {} {}% {} ({})'.format(c.ref, c.value, tol, bars, status))
+        return cache_name
+
+    def replace_model(self, replace, m3d, force_wrl, is_copy_mode, rename_function, rename_data):
+        """ Helper function to replace the 3D model in m3d using the `replace` file """
+        self.source_models.add(replace)
+        old_name = m3d.m_Filename
+        new_name = self.wrl_name(replace, force_wrl) if not is_copy_mode else rename_function(rename_data, replace)
+        self.undo_3d_models[new_name] = old_name
+        m3d.m_Filename = new_name
+        self.models_replaced = True
+
     def download_models(self, rename_filter=None, rename_function=None, rename_data=None, force_wrl=False, all_comps=None):
         """ Check we have the 3D models.
             Inform missing models.
             Try to download the missing models
             Stores changes in self.undo_3d_models_rep """
-        models_replaced = False
+        self.models_replaced = False
         # Load KiCad configuration so we can expand the 3D models path
         KiConf.init(GS.pcb_file)
         # List of models we already downloaded
         downloaded = set()
         # For the mode where we copy the 3D models
-        source_models = set()
+        self.source_models = set()
         is_copy_mode = rename_filter is not None
         rel_dirs = getattr(rename_data, 'rel_dirs', [])
         extra_debug = GS.debug_level > 3
@@ -241,34 +485,24 @@ class Base3DOptions(VariantOptions):
                         if replace is None:
                             replace = self.try_download_easyeda(m3d.m_Filename, full_name, downloaded, sch_comp, lcsc_field)
                         if replace:
-                            source_models.add(replace)
-                            old_name = m3d.m_Filename
-                            new_name = (self.wrl_name(replace, force_wrl) if not is_copy_mode else
-                                        rename_function(rename_data, replace))
-                            self.undo_3d_models[new_name] = old_name
-                            m3d.m_Filename = new_name
-                            models_replaced = True
+                            replace = self.do_colored_tht_resistor(replace, sch_comp, used_extra)
+                            self.replace_model(replace, m3d, force_wrl, is_copy_mode, rename_function, rename_data)
                     if full_name not in downloaded:
                         logger.warning(W_MISS3D+'Missing 3D model for {}: `{}`'.format(ref, full_name))
                 else:  # File was found
+                    replace = self.do_colored_tht_resistor(full_name, sch_comp, used_extra)
                     if used_extra[0] or is_copy_mode:
                         # The file is there, but we got it expanding a user defined text
                         # This is completely valid for KiCad, but kicad2step doesn't support it
-                        source_models.add(full_name)
-                        old_name = m3d.m_Filename
-                        new_name = (self.wrl_name(full_name, force_wrl) if not is_copy_mode else
-                                    rename_function(rename_data, full_name))
-                        self.undo_3d_models[new_name] = old_name
-                        m3d.m_Filename = new_name
-                        if not models_replaced and extra_debug:
+                        if not self.models_replaced and extra_debug:
                             logger.debug('- Modifying models with text vars')
-                        models_replaced = True
+                        self.replace_model(replace, m3d, force_wrl, is_copy_mode, rename_function, rename_data)
             # Push the models back
             for model in reversed(models_l):
                 models.append(model)
         if downloaded:
             logger.warning(W_DOWN3D+' {} 3D models downloaded'.format(len(downloaded)))
-        return models_replaced if not is_copy_mode else list(source_models)
+        return self.models_replaced if not is_copy_mode else list(self.source_models)
 
     def list_models(self, even_missing=False):
         """ Get the list of 3D models """

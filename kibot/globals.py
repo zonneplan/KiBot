@@ -264,6 +264,8 @@ class Globals(FiltersOptions):
             """ The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag for 3D models,
                 even when no filter/variant is specified. Disabling `kicad_dnp_applied` also disables
                 this flag """
+            self.colored_tht_resistors = True
+            """ Try to add color bands to the 3D models of KiCad THT resistors """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

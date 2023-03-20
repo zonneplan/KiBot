@@ -123,6 +123,7 @@ class GS(object):
     # The class that controls the global options
     class_for_global_opts = None
     global_castellated_pads = None
+    global_colored_tht_resistors = None
     global_copper_thickness = None
     global_cross_footprints_for_dnp = None
     global_cross_no_body = None
