@@ -2,6 +2,9 @@
 kibot:
   version: 1
 
+# globals:
+#   default_resistor_tolerance: 5
+
 outputs:
   - name: '3d_default'
     comment: "3D view"

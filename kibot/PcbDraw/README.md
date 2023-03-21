@@ -219,10 +219,18 @@ This file comes from KiKit, but it has too much in common with `populate.py`.
 ## 2023-03-20 Various fixes and changes in resistor colors
 
 diff --git a/kibot/PcbDraw/plot.py b/kibot/PcbDraw/plot.py
-index 8ca660e6..a262732b 100644
+index 8ca660e6..9dc45ba9 100644
 --- a/kibot/PcbDraw/plot.py
 +++ b/kibot/PcbDraw/plot.py
-@@ -56,6 +56,8 @@ default_style = {
+@@ -18,6 +18,7 @@ from . import np
+ from .unit import read_resistance
+ from lxml import etree, objectify # type: ignore
+ from .pcbnew_transition import KICAD_VERSION, isV6, isV7, pcbnew # type: ignore
++from ..gs import GS
+ 
+ T = TypeVar("T")
+ Numeric = Union[int, float]
+@@ -56,6 +57,8 @@ default_style = {
          7: '#cc00cc',
          8: '#666666',
          9: '#cccccc',
@@ -231,7 +239,7 @@ index 8ca660e6..a262732b 100644
          '1%': '#805500',
          '2%': '#ff0000',
          '0.5%': '#00cc11',
-@@ -64,6 +66,7 @@ default_style = {
+@@ -64,6 +67,7 @@ default_style = {
          '0.05%': '#666666',
          '5%': '#ffc800',
          '10%': '#d9d9d9',
@@ -239,7 +247,7 @@ index 8ca660e6..a262732b 100644
      }
  }
  
-@@ -884,10 +887,15 @@ class PlotComponents(PlotInterface):
+@@ -884,10 +888,15 @@ class PlotComponents(PlotInterface):
          try:
              res, tolerance = self._get_resistance_from_value(value)
              power = math.floor(res.log10()) - 1
@@ -258,27 +266,26 @@ index 8ca660e6..a262732b 100644
                  self._plotter.get_style("tht-resistor-band-colors", int(power)),
                  self._plotter.get_style("tht-resistor-band-colors", tolerance)
              ]
-@@ -914,7 +922,7 @@ class PlotComponents(PlotInterface):
+@@ -914,7 +923,7 @@ class PlotComponents(PlotInterface):
              return
  
      def _get_resistance_from_value(self, value: str) -> Tuple[Decimal, str]:
 -        res, tolerance = None, "5%"
-+        res, tolerance = None, "20%"
++        res, tolerance = None, str(GS.global_default_resistor_tolerance)+"%"
          value_l = value.split(" ", maxsplit=1)
          try:
              res = read_resistance(value_l[0])
-@@ -1084,6 +1092,11 @@ class PcbPlotter():
+@@ -1084,6 +1093,12 @@ class PcbPlotter():
              lib = str(footprint.GetFPID().GetLibNickname()).strip()
              name = str(footprint.GetFPID().GetLibItemName()).strip()
              value = footprint.GetValue().strip()
-+            # Look for a tolerance in the properties
-+            prop = footprint.GetProperties()
-+            tol = prop.get('tol', prop.get('tolerance', None))
-+            if tol:
-+                value = value+' '+tol
++            if not LEGACY_KICAD:
++                # Look for a tolerance in the properties
++                prop = footprint.GetProperties()
++                tol = next(filter(lambda x: x, map(prop.get, GS.global_field_tolerance)), None)
++                if tol:
++                    value = value+' '+tol
              ref = footprint.GetReference().strip()
              center = footprint.GetPosition()
              orient = math.radians(footprint.GetOrientation().AsDegrees())
-
-
 

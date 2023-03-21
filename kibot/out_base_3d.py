@@ -342,11 +342,10 @@ class Base3DOptions(VariantOptions):
         r_len = float(m.group(1))
         # THT Resistor that we want to add colors
         # Check the tolerance
-        # TODO: Configurable
-        tol = c.get_field_value('tol') or c.get_field_value('tolerance')
+        tol = next(filter(lambda x: x, map(c.get_field_value, GS.global_field_tolerance)), None)
         if not tol:
-            tol = 20
-            logger.warning(W_BADTOL+'Missing tolerance for {}, using 20%'.format(c.ref))
+            tol = GS.global_default_resistor_tolerance
+            logger.warning(W_BADTOL+'Missing tolerance for {}, using {}%'.format(c.ref, tol))
         else:
             tol = tol.strip()
             if tol[-1] == '%':
@@ -397,7 +396,7 @@ class Base3DOptions(VariantOptions):
         # Make sure we don't have digits that can't be represented
         rest = val_str[dig_bars:]
         if rest and not all(map(lambda x: x == '0', rest)):
-            logger.warning(W_RESVALISSUE+'Digits not represented in {} {}'.format(c.ref, c.value))
+            logger.warning(W_RESVALISSUE+'Digits not represented in {} {} ({} %)'.format(c.ref, c.value, tol))
         bars[nbars-1] = tol_color
         # For 20% remove the last bar
         if tol_color == 12:

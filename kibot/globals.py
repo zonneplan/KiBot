@@ -266,6 +266,14 @@ class Globals(FiltersOptions):
                 this flag """
             self.colored_tht_resistors = True
             """ Try to add color bands to the 3D models of KiCad THT resistors """
+            self.field_tolerance = Optionable
+            """ [string|list(string)] Name/s of the field/s used for the tolerance.
+                Used while creating colored resistors.
+                The default is ['tol', 'tolerance'] """
+            self.default_resistor_tolerance = 20
+            """ When no tolerance is specified we use this value.
+                Note that I know 5% is a common default, but technically speaking 20% is the default.
+                Used while creating colored resistors """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot
@@ -374,6 +382,7 @@ class Globals(FiltersOptions):
         if GS.ki6 and GS.pcb_file and os.path.isfile(GS.pcb_file):
             self.get_stack_up()
         super().config(parent)
+        self.field_tolerance = Optionable.force_list(self.field_tolerance, default=['tol', 'tolerance'])
         # Transfer options to the GS globals
         for option in filter(lambda x: x[0] != '_', self.__dict__.keys()):
             gl = 'global_'+option

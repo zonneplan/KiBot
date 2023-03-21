@@ -130,6 +130,7 @@ class GS(object):
     global_csv_accept_no_ref = None
     global_date_format = None
     global_date_time_format = None
+    global_default_resistor_tolerance = None
     global_drc_exclusions_workaround = None
     global_dir = None
     global_disable_3d_alias_as_env = None
@@ -139,6 +140,7 @@ class GS(object):
     global_extra_pth_drill = None
     global_field_3D_model = None
     global_field_lcsc_part = None
+    global_field_tolerance = None
     global_hide_excluded = None
     global_impedance_controlled = None
     global_kiauto_time_out_scale = None

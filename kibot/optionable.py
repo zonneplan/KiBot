@@ -414,12 +414,12 @@ class Optionable(object):
         return Optionable.expand_filename_both(self, name)
 
     @staticmethod
-    def force_list(val, comma_sep=True, lower_case=False):
+    def force_list(val, comma_sep=True, lower_case=False, default=None):
         """ Used for values that accept a string or a list of strings.
             The string can be a comma separated list """
         if isinstance(val, type):
             # Not used
-            val = []
+            val = [] if default is None else default
         elif isinstance(val, str):
             # A string
             if val:

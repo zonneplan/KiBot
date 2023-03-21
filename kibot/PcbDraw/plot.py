@@ -18,6 +18,7 @@ from . import np
 from .unit import read_resistance
 from lxml import etree, objectify # type: ignore
 from .pcbnew_transition import KICAD_VERSION, isV6, isV7, pcbnew # type: ignore
+from ..gs import GS
 
 T = TypeVar("T")
 Numeric = Union[int, float]
@@ -922,7 +923,7 @@ class PlotComponents(PlotInterface):
             return
 
     def _get_resistance_from_value(self, value: str) -> Tuple[Decimal, str]:
-        res, tolerance = None, "20%"
+        res, tolerance = None, str(GS.global_default_resistor_tolerance)+"%"
         value_l = value.split(" ", maxsplit=1)
         try:
             res = read_resistance(value_l[0])
@@ -1095,7 +1096,7 @@ class PcbPlotter():
             if not LEGACY_KICAD:
                 # Look for a tolerance in the properties
                 prop = footprint.GetProperties()
-                tol = prop.get('tol', prop.get('tolerance', None))
+                tol = next(filter(lambda x: x, map(prop.get, GS.global_field_tolerance)), None)
                 if tol:
                     value = value+' '+tol
             ref = footprint.GetReference().strip()
