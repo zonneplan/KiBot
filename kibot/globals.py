@@ -274,6 +274,9 @@ class Globals(FiltersOptions):
             """ When no tolerance is specified we use this value.
                 Note that I know 5% is a common default, but technically speaking 20% is the default.
                 Used while creating colored resistors """
+            self.cache_3d_resistors = False
+            """ Use a cache for the generated 3D models of colored resistors.
+                Will save time, but you could need to remove the cache if you need to regenerate them """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

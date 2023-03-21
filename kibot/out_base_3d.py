@@ -405,7 +405,7 @@ class Base3DOptions(VariantOptions):
             self.widths = self.widths[:-2]
         # Create the name in the cache
         cache_name = self.colored_tht_resistor_name(name, bars)
-        if os.path.isfile(cache_name):
+        if os.path.isfile(cache_name) and GS.global_cache_3d_resistors:
             status = 'cached'
         else:
             status = 'created'
