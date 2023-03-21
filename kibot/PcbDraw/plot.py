@@ -1092,11 +1092,12 @@ class PcbPlotter():
             lib = str(footprint.GetFPID().GetLibNickname()).strip()
             name = str(footprint.GetFPID().GetLibItemName()).strip()
             value = footprint.GetValue().strip()
-            # Look for a tolerance in the properties
-            prop = footprint.GetProperties()
-            tol = prop.get('tol', prop.get('tolerance', None))
-            if tol:
-                value = value+' '+tol
+            if not LEGACY_KICAD:
+                # Look for a tolerance in the properties
+                prop = footprint.GetProperties()
+                tol = prop.get('tol', prop.get('tolerance', None))
+                if tol:
+                    value = value+' '+tol
             ref = footprint.GetReference().strip()
             center = footprint.GetPosition()
             orient = math.radians(footprint.GetOrientation().AsDegrees())
