@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - KiKit present: problems when no board was specified. (#402)
 - Datasheet download:
   - Avoid interruptions when too many redirections is detected (#408)
+- PcbDraw:
+  - KiCad 7.0.1 polygons used as board edge. (yaqwsx/PcbDraw#142)
 
 
 ## [1.6.1] - 2023-03-16

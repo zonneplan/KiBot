@@ -289,3 +289,35 @@ index 8ca660e6..9dc45ba9 100644
              center = footprint.GetPosition()
              orient = math.radians(footprint.GetOrientation().AsDegrees())
 
+
+## 2023-03-27 Fixe for KiCad 7.0.1 polygons
+
+diff --git a/kibot/PcbDraw/plot.py b/kibot/PcbDraw/plot.py
+index 9dc45ba9..8df84469 100644
+--- a/kibot/PcbDraw/plot.py
++++ b/kibot/PcbDraw/plot.py
+@@ -408,7 +408,22 @@ def get_board_polygon(svg_elements: etree.Element) -> etree.Element:
+     for group in svg_elements:
+         for svg_element in group:
+             if svg_element.tag == "path":
+-                elements.append(SvgPathItem(svg_element.attrib["d"]))
++                path = svg_element.attrib["d"]
++                # Check if this is a closed polygon (KiCad 7.0.1+)
++                polygon = re.fullmatch(r"M ((\d+\.\d+),(\d+\.\d+) )+Z", path)
++                if polygon:
++                    # Yes, decompose it in lines
++                    polygon = re.findall(r"(\d+\.\d+),(\d+\.\d+) ", path)
++                    start = polygon[0]
++                    # Close it
++                    polygon.append(polygon[0])
++                    # Add the lines
++                    for end in polygon[1:]:
++                        path = 'M'+start[0]+' '+start[1]+' L'+end[0]+' '+end[1]
++                        elements.append(SvgPathItem(path))
++                        start = end
++                else:
++                    elements.append(SvgPathItem(path))
+             elif svg_element.tag == "circle":
+                 # Convert circle to path
+                 att = svg_element.attrib
+
