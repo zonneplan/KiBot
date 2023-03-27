@@ -75,6 +75,9 @@ class Download_Datasheets_Options(VariantOptions):
                 except requests.exceptions.SSLError:
                     logger.warning(W_FAILDL+'SSL Error during download `{}`'.format(ds))
                     return None
+                except requests.exceptions.TooManyRedirects:
+                    logger.warning(W_FAILDL+'More than 30 redirections downloading `{}`'.format(ds))
+                    return None
                 if r.status_code != 200:
                     logger.warning(W_FAILDL+'Failed to download `{}`'.format(ds))
                     return None
