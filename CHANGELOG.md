@@ -12,13 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `default_resistor_tolerance` which tolerance to use when none found.
   - `cache_3d_resistors` to avoid generating them all the time.
 - 3D: colored 3D models for THT resistors
-- Datasheet download:
-  - Avoid interruptions when too many redirections is detected (#408)
+- Datasheet download: now the warnings mention which reference failed.
 
 ### Fixed
 - Makefile: don't skip all preflights on each run, just the ones we generate
   as targets. (#405)
 - KiKit present: problems when no board was specified. (#402)
+- Datasheet download:
+  - Avoid interruptions when too many redirections is detected (#408)
 
 
 ## [1.6.1] - 2023-03-16

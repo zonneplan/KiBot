@@ -50,6 +50,10 @@ class Download_Datasheets_Options(VariantOptions):
             raise KiPlotConfigurationError("Empty `output` ({})".format(str(self._tree)))
         self.field = self.field.lower()
 
+    def do_warning(self, msg, ds, c):
+        logger.warning(W_FAILDL+'{} during download of `{}` [{}]'.format(msg, ds, c.ref))
+        return None
+
     def download(self, c, ds, dir, name, known):
         dest = os.path.join(dir, name)
         logger.debug('To download: {} -> {}'.format(ds, dest))
@@ -67,20 +71,17 @@ class Download_Datasheets_Options(VariantOptions):
                 try:
                     r = requests.get(ds, allow_redirects=True, headers={'User-Agent': USER_AGENT}, timeout=20)
                 except requests.exceptions.ReadTimeout:
-                    logger.warning(W_FAILDL+'Timeout during download `{}`'.format(ds))
-                    return None
-                except requests.exceptions.ConnectionError:
-                    logger.warning(W_FAILDL+'Connection error during download `{}`'.format(ds))
-                    return None
+                    return self.do_warning('Timeout', ds, c)
                 except requests.exceptions.SSLError:
-                    logger.warning(W_FAILDL+'SSL Error during download `{}`'.format(ds))
-                    return None
+                    return self.do_warning('SSL Error', ds, c)
                 except requests.exceptions.TooManyRedirects:
-                    logger.warning(W_FAILDL+'More than 30 redirections downloading `{}`'.format(ds))
-                    return None
+                    return self.do_warning('More than 30 redirections', ds, c)
+                except requests.exceptions.ConnectionError:
+                    return self.do_warning('Connection', ds, c)
+                except requests.exceptions.RequestException as e:
+                    return self.do_warning(str(e), ds, c)
                 if r.status_code != 200:
-                    logger.warning(W_FAILDL+'Failed to download `{}`'.format(ds))
-                    return None
+                    return self.do_warning('Failed with status '+str(r.status_code), ds, c)
                 with open(dest, 'wb') as f:
                     f.write(r.content)
             self._downloaded.add(name)
