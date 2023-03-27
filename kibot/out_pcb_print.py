@@ -33,7 +33,7 @@ import re
 import os
 import subprocess
 import importlib
-from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, F_Mask, B_Mask
+from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, F_Mask, B_Mask, LSET
 import shlex
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
@@ -1051,6 +1051,8 @@ class PCB_PrintOptions(VariantOptions):
             layout = os.path.abspath(os.path.join(GS.get_resource_path('kicad_layouts'), 'default.kicad_wks'))
         logger.debug('- Using layout: '+layout)
         self.layout = layout
+        # Memorize the list of visible layers
+        old_visible = GS.board.GetVisibleLayers()
         # Plot options
         pc = PLOT_CONTROLLER(GS.board)
         po = pc.GetPlotOptions()
@@ -1074,6 +1076,12 @@ class PCB_PrintOptions(VariantOptions):
         # Generate the output, page by page
         pages = []
         for n, p in enumerate(self.pages):
+            # Make visible only the layers we need
+            # This is very important when scaling, otherwise the results are controlled by the .kicad_prl (See #407)
+            vis_layers = LSET()
+            for la in p.layers:
+                vis_layers.addLayer(la._id)
+            GS.board.SetVisibleLayers(vis_layers)
             # Use a dir for each page, avoid overwriting files, just for debug purposes
             page_str = "%02d" % (n+1)
             temp_dir = os.path.join(temp_dir_base, page_str)
@@ -1160,6 +1168,8 @@ class PCB_PrintOptions(VariantOptions):
         # Remove the temporal files
         if not self.keep_temporal_files:
             rmtree(temp_dir_base)
+        # Restore the list of visible layers
+        GS.board.SetVisibleLayers(old_visible)
         logger.debug('Finished generating `{}`'.format(output))
 
     def run(self, output):

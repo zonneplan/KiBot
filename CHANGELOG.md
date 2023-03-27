@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Avoid interruptions when too many redirections is detected (#408)
 - PcbDraw:
   - KiCad 7.0.1 polygons used as board edge. (yaqwsx/PcbDraw#142)
+- PCB Print:
+  - Interference between the visible layers in the PRL file and the results
+    when scaling. (#407)
 
 
 ## [1.6.1] - 2023-03-16
