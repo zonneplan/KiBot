@@ -496,7 +496,9 @@ def gs_downloader(dep, system, plat):
         logger.debug('- No binary for this system')
         return None, None
     # Get the download page
-    url = 'https://api.github.com/repos/ArtifexSoftware/ghostpdl-downloads/releases/latest'
+    # url = 'https://api.github.com/repos/ArtifexSoftware/ghostpdl-downloads/releases/latest'
+    # 2023-03-27: 10.x doesn't contain Linux binaries (yet?)
+    url = 'https://api.github.com/repos/ArtifexSoftware/ghostpdl-downloads/releases/tags/gs9561'
     r = get_request(url)
     if r.status_code != 200:
         logger.debug('- Failed to download `{}`'.format(dep.url_down))
