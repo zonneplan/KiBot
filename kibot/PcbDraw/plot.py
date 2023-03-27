@@ -408,12 +408,12 @@ def get_board_polygon(svg_elements: etree.Element) -> etree.Element:
     for group in svg_elements:
         for svg_element in group:
             if svg_element.tag == "path":
-                path = svg_element.attrib["d"]
+                p = svg_element.attrib["d"]
                 # Check if this is a closed polygon (KiCad 7.0.1+)
-                polygon = re.fullmatch(r"M ((\d+\.\d+),(\d+\.\d+) )+Z", path)
+                polygon = re.fullmatch(r"M ((\d+\.\d+),(\d+\.\d+) )+Z", p)
                 if polygon:
                     # Yes, decompose it in lines
-                    polygon = re.findall(r"(\d+\.\d+),(\d+\.\d+) ", path)
+                    polygon = re.findall(r"(\d+\.\d+),(\d+\.\d+) ", p)
                     start = polygon[0]
                     # Close it
                     polygon.append(polygon[0])
@@ -423,7 +423,7 @@ def get_board_polygon(svg_elements: etree.Element) -> etree.Element:
                         elements.append(SvgPathItem(path))
                         start = end
                 else:
-                    elements.append(SvgPathItem(path))
+                    elements.append(SvgPathItem(p))
             elif svg_element.tag == "circle":
                 # Convert circle to path
                 att = svg_element.attrib
