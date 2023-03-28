@@ -86,7 +86,6 @@ class AnyLayerOptions(VariantOptions):
             """ Tell KiCad to apply the scaling for each layer as a separated entity.
                 Disabling it the pages are coherent and can be superposed """
         super().__init__()
-        self._unkown_is_error = True
 
     def config(self, parent):
         super().config(parent)
