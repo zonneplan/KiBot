@@ -337,6 +337,9 @@ class PCB_PrintOptions(VariantOptions):
             """ Color used for the `force_edge_cuts` option """
             self.scaling = 1.0
             """ *Default scale factor (0 means autoscaling)"""
+            self.individual_page_scaling = True
+            """ Tell KiCad to apply the scaling for each page as a separated entity.
+                Disabling it the pages are coherent and can be superposed """
             self.autoscale_margin_x = 0
             """ Default horizontal margin used for the autoscaling mode [mm] """
             self.autoscale_margin_y = 0
@@ -1073,15 +1076,24 @@ class PCB_PrintOptions(VariantOptions):
                     edge_layer.color = layer_id2color[edge_id]
                 else:
                     edge_layer.color = "#000000"
+        # Make visible only the layers we need
+        # This is very important when scaling, otherwise the results are controlled by the .kicad_prl (See #407)
+        if not self.individual_page_scaling:
+            vis_layers = LSET()
+            for p in self.pages:
+                for la in p.layers:
+                    vis_layers.addLayer(la._id)
+            GS.board.SetVisibleLayers(vis_layers)
         # Generate the output, page by page
         pages = []
         for n, p in enumerate(self.pages):
             # Make visible only the layers we need
             # This is very important when scaling, otherwise the results are controlled by the .kicad_prl (See #407)
-            vis_layers = LSET()
-            for la in p.layers:
-                vis_layers.addLayer(la._id)
-            GS.board.SetVisibleLayers(vis_layers)
+            if self.individual_page_scaling:
+                vis_layers = LSET()
+                for la in p.layers:
+                    vis_layers.addLayer(la._id)
+                GS.board.SetVisibleLayers(vis_layers)
             # Use a dir for each page, avoid overwriting files, just for debug purposes
             page_str = "%02d" % (n+1)
             temp_dir = os.path.join(temp_dir_base, page_str)
