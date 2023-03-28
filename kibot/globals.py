@@ -21,7 +21,7 @@ class Environment(Optionable):
     """ Used to define the KiCad environment vars """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.symbols = ''
             """ System level symbols dir. KiCad 5: KICAD_SYMBOL_DIR. KiCad 6: KICAD6_SYMBOL_DIR """
@@ -95,7 +95,7 @@ class KiCadAlias(Optionable):
     """ KiCad alias (for 3D models) """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.name = ''
             """ Name of the alias """
@@ -280,7 +280,7 @@ class Globals(FiltersOptions):
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         self._error_context = 'global '
 
     def set_global(self, opt):

@@ -135,7 +135,7 @@ class LayerOptions(Layer):
     """ Data for a layer """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.color = ""
             """ Color used for this layer """
@@ -163,7 +163,7 @@ class PagesOptions(Optionable):
     """ One page of the output document """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.mirror = False
             """ Print mirrored (X axis inverted) """

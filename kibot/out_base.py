@@ -90,7 +90,7 @@ class BaseOutput(RegOutput):
         self._sch_related = False
         self._both_related = False
         self._none_related = False
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         self._done = False
         self._category = None
 
@@ -196,7 +196,7 @@ class BoMRegex(Optionable):
     """ Implements the pair column/regex """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.column = ''
             """ Name of the column to apply the regular expression.

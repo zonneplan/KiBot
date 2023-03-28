@@ -74,7 +74,7 @@ class BoMJoinField(Optionable):
             self.text_before = ''
             self.text_after = ''
             return
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.field = ''
             """ *Name of the field """
@@ -134,7 +134,7 @@ class BoMColumns(Optionable):
     """ Information for the BoM columns """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.field = ''
             """ *Name of the field to use for this column.

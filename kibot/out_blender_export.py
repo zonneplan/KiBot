@@ -60,7 +60,7 @@ class PCB2BlenderOptions(Optionable):
                 This option controls if we add it for none, all or only for THT/SMD pads with solder paste """
             self.stack_boards = True
             """ Move the sub-PCBs to their relative position """
-        self._unkown_is_error = True
+        self._unknown_is_error = True
 
 
 class BlenderOutputOptions(Optionable):
@@ -79,7 +79,7 @@ class BlenderOutputOptions(Optionable):
             self.output = GS.def_global_output
             """ Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
                 The extension is selected from the type """
-        self._unkown_is_error = True
+        self._unknown_is_error = True
 
 
 class BlenderLightOptions(Optionable):
@@ -95,7 +95,7 @@ class BlenderLightOptions(Optionable):
             """ [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions """
             self.pos_z = 0
             """ [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions """
-        self._unkown_is_error = True
+        self._unknown_is_error = True
 
     def solve(self, member):
         val = getattr(self, member)
@@ -154,7 +154,7 @@ class BlenderRenderOptions(Optionable):
             self.auto_crop = False
             """ When enabled the image will be post-processed to remove the empty space around the image.
                 In this mode the `background2` is changed to be the same as `background1` """
-        self._unkown_is_error = True
+        self._unknown_is_error = True
 
 
 class BlenderPointOfViewOptions(Optionable):
@@ -177,7 +177,7 @@ class BlenderPointOfViewOptions(Optionable):
             self.file_id = ''
             """ String to diferentiate the name of this view.
                 When empty we use the `view` """
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         self._file_id = ''
 
     def config(self, parent):
@@ -205,7 +205,7 @@ class PCB3DExportOptions(Base3DOptionsWithHL):
                 Populated components are the ones listed in `show_components` """
         self._expand_id = 'blender_export'
         self._expand_ext = 'pcb3d'
-        self._unkown_is_error = True
+        self._unknown_is_error = True
 
     def get_output_name(self, out_dir):
         p = self._parent
@@ -278,7 +278,7 @@ class Blender_ExportOptions(BaseOptions):
             """ *[dict|list(dict)] How the object is viewed by the camera """
         super().__init__()
         self._expand_id = '3D_blender'
-        self._unkown_is_error = True
+        self._unknown_is_error = True
 
     def config(self, parent):
         super().config(parent)

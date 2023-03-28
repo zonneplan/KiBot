@@ -40,7 +40,7 @@ class Download_Datasheets_Options(VariantOptions):
             """ Instead of download things we already downloaded use symlinks """
         # Used to collect the targets
         self._dry = False
-        self._unkown_is_error = True
+        self._unknown_is_error = True
 
     def config(self, parent):
         super().config(parent)

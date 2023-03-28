@@ -32,7 +32,7 @@ class KiCadVariable(Optionable):
     """ KiCad variable definition """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.name = ''
             """ Name of the variable. The `version` variable will be expanded using `${version}` """

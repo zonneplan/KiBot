@@ -43,7 +43,7 @@ class Optionable(object):
     _color_re_component = re.compile(HEX_DIGIT)
 
     def __init__(self):
-        self._unkown_is_error = False
+        self._unknown_is_error = False
         self._error_context = ''
         self._tree = {}
         self._configured = False
@@ -138,7 +138,7 @@ class Optionable(object):
         for k, v in self._tree.items():
             # Map known attributes and avoid mapping private ones
             if (k[0] == '_') or (k not in attrs):
-                if self._unkown_is_error:
+                if self._unknown_is_error:
                     valid = list(filter(lambda x: x[0] != '_', attrs.keys()))
                     msg = "Unknown {}option `{}`.".format(self._error_context, k)
                     possible = difflib.get_close_matches(k, valid, n=1)
