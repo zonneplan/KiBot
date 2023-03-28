@@ -798,6 +798,9 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] Include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
+      # [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+      # Disabling it the pages are coherent and can be superposed
+      individual_page_scaling: true
       # [string=''] Used to change the Protel style extensions for inner layers.
       # The replacement pattern can contain %n for the inner layer number and %N for the layer number.
       # Example '.g%n'
@@ -823,6 +826,8 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [number=1] Scale factor (0 means autoscaling)
+      scaling: 1
       # [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
       # Note that this value is currently ignored by KiCad (6.0.9)
       sketch_pad_line_width: 0.1
@@ -1091,6 +1096,9 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] Include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
+      # [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+      # Disabling it the pages are coherent and can be superposed
+      individual_page_scaling: true
       # [string=''] Used to change the Protel style extensions for inner layers.
       # The replacement pattern can contain %n for the inner layer number and %N for the layer number.
       # Example '.g%n'
@@ -2160,6 +2168,9 @@ outputs:
       # [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
       # Affected by global options
       hide_excluded: false
+      # [boolean=true] Tell KiCad to apply the scaling for each page as a separated entity.
+      # Disabling it the pages are coherent and can be superposed
+      individual_page_scaling: true
       # [boolean=false] Store the temporal page and layer files in the output dir and don't delete them
       keep_temporal_files: false
       # [string=''] Color used for micro `colored_vias`
@@ -2475,6 +2486,9 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] Include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
+      # [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+      # Disabling it the pages are coherent and can be superposed
+      individual_page_scaling: true
       # [string=''] Used to change the Protel style extensions for inner layers.
       # The replacement pattern can contain %n for the inner layer number and %N for the layer number.
       # Example '.g%n'
@@ -2501,6 +2515,8 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [number=1] Scale factor (0 means autoscaling)
+      scaling: 1
       # [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
       # Note that this value is currently ignored by KiCad (6.0.9)
       sketch_pad_line_width: 0.1
@@ -2720,6 +2736,9 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] Include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
+      # [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+      # Disabling it the pages are coherent and can be superposed
+      individual_page_scaling: true
       # [string=''] Used to change the Protel style extensions for inner layers.
       # The replacement pattern can contain %n for the inner layer number and %N for the layer number.
       # Example '.g%n'
@@ -3169,11 +3188,15 @@ outputs:
       exclude_pads_from_silkscreen: false
       # [boolean=false] Include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
+      # [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+      # Disabling it the pages are coherent and can be superposed
+      individual_page_scaling: true
       # [string=''] Used to change the Protel style extensions for inner layers.
       # The replacement pattern can contain %n for the inner layer number and %N for the layer number.
       # Example '.g%n'
       inner_extension_pattern: ''
-      # [boolean=false] When enabled the view box is limited to a selected area
+      # [boolean=false] When enabled the view box is limited to a selected area.
+      # This option can't be enabled when using a scale
       limit_viewbox: false
       # [number=0.25] [0.02,2] For objects without width [mm] (KiCad 5)
       line_width: 0.25
@@ -3209,6 +3232,8 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [number=1] Scale factor (0 means autoscaling)
+      scaling: 1
       # [string='kicad_edge'] [kicad_edge,kicad_all] Method used to detect the size of the view box.
       # The `kicad_edge` method uses the size of the board as reported by KiCad,
       # components that extend beyond the PCB limit will be cropped. You can manually

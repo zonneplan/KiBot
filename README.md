@@ -741,8 +741,11 @@ global:
                                  For KiCad 5 and 6 use the design rules settings, stored in the project.
     - `allow_microvias`: [boolean=true] Allow the use of micro vias. This value is only used for KiCad 7+.
                          For KiCad 5 and 6 use the design rules settings, stored in the project.
+    - `cache_3d_resistors`: [boolean=false] Use a cache for the generated 3D models of colored resistors.
+                            Will save time, but you could need to remove the cache if you need to regenerate them.
     - `castellated_pads`: [boolean=false] Has the PCB castellated pads?
                           KiCad 6: you should set this in the Board Setup -> Board Finish -> Has castellated pads.
+    - `colored_tht_resistors`: [boolean=true] Try to add color bands to the 3D models of KiCad THT resistors.
     - *copper_finish*: Alias for pcb_finish.
     - `copper_thickness`: [number|string] Copper thickness in micrometers (1 Oz is 35 micrometers).
                           KiCad 6: you should set this in the Board Setup -> Physical Stackup.
@@ -754,6 +757,9 @@ global:
                      Is also used for the PCB/SCH date formatting when `time_reformat` is enabled (default behavior).
                      Uses the `strftime` format.
     - `date_time_format`: [string='%Y-%m-%d_%H-%M-%S'] Format used for the PCB and schematic date when using the file timestamp. Uses the `strftime` format.
+    - `default_resistor_tolerance`: [number=20] When no tolerance is specified we use this value.
+                                    Note that I know 5% is a common default, but technically speaking 20% is the default.
+                                    Used while creating colored resistors.
     - `dir`: [string=''] Default pattern for the output directories. It also applies to the preflights, unless
              `use_dir_for_preflights` is disabled.
     - `disable_3d_alias_as_env`: [boolean=false] Disable the use of environment and text variables as 3D models aliases.
@@ -792,6 +798,9 @@ global:
     - `field_3D_model`: [string='_3D_model'] Name for the field controlling the 3D models used for a component.
     - `field_lcsc_part`: [string=''] The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
                          When empty KiBot will try to discover it.
+    - `field_tolerance`: [string|list(string)] Name/s of the field/s used for the tolerance.
+                         Used while creating colored resistors.
+                         The default is ['tol', 'tolerance'].
     - `filters`: [list(dict)] KiBot warnings to be ignored.
       * Valid keys:
         - `error`: [string=''] Error id we want to exclude.
@@ -2197,6 +2206,7 @@ Notes:
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+        - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -2209,6 +2219,8 @@ Notes:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
@@ -2523,6 +2535,8 @@ Notes:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
@@ -3511,6 +3525,8 @@ Notes:
                                   You get the default frame and some substitutions doesn't work.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
                            Affected by global options.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each page as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `keep_temporal_files`: [boolean=false] Store the temporal page and layer files in the output dir and don't delete them.
         - `micro_via_color`: [string=''] Color used for micro `colored_vias`.
         - `pad_color`: [string=''] Color used for `colored_pads`.
@@ -3717,6 +3733,7 @@ Notes:
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+        - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -3729,6 +3746,8 @@ Notes:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
@@ -3752,6 +3771,7 @@ Notes:
     - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                   (i.e. always the default worksheet style, also problems expanding text variables).
                                   The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+    - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                   The categories are currently used for `navigate_results`.
@@ -3772,6 +3792,8 @@ Notes:
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
     - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+    - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                 Disabling it the pages are coherent and can be superposed.
     - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                  The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                  Example '.g%n'.
@@ -4050,6 +4072,8 @@ Notes:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
@@ -4511,6 +4535,7 @@ Notes:
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+        - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -4523,10 +4548,13 @@ Notes:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
         - `limit_viewbox`: [boolean=false] When enabled the view box is limited to a selected area.
+                           This option can't be enabled when using a scale.
         - `line_width`: [number=0.25] [0.02,2] For objects without width [mm] (KiCad 5).
         - `margin`: [number|dict] Margin around the view box [mm].
                     Using a number the margin is the same in the four directions.
