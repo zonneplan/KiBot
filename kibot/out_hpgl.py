@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from pcbnew import PLOT_FORMAT_HPGL, SKETCH, FILLED
-from .misc import AUTO_SCALE
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
 from .macros import macros, document, output_class  # noqa: F401
@@ -35,13 +34,6 @@ class HPGLOptions(DrillMarks):
         po.SetHPGLPenSpeed(self.pen_speed)
         po.SetPlotMode(SKETCH if self.sketch_plot else FILLED)
         po.SetMirror(self.mirror_plot)
-        # Scaling/Autoscale
-        if self.scaling == AUTO_SCALE:
-            po.SetAutoScale(True)
-            po.SetScale(1)
-        else:
-            po.SetAutoScale(False)
-            po.SetScale(self.scaling)
 
     def read_vals_from_po(self, po):
         super().read_vals_from_po(po)
@@ -50,10 +42,6 @@ class HPGLOptions(DrillMarks):
         self.pen_speed = po.GetHPGLPenSpeed()
         self.sketch_plot = po.GetPlotMode() == SKETCH
         self.mirror_plot = po.GetMirror()
-        # scaleselection
-        sel = po.GetScaleSelection()
-        sel = sel if sel < 0 or sel > 4 else 4
-        self.scaling = (AUTO_SCALE, 1.0, 1.5, 2.0, 3.0)[sel]
 
 
 @output_class

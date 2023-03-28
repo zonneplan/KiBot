@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `cache_3d_resistors` to avoid generating them all the time.
 - 3D: colored 3D models for THT resistors
 - Datasheet download: now the warnings mention which reference failed.
+- Plot related outputs and PCB_Print:
+  - `individual_page_scaling`: to control if the center of the page is computed
+    using all pages or individually.
+- Plot related outputs:
+  - All outputs now support scaling.
 
 ### Fixed
 - Makefile: don't skip all preflights on each run, just the ones we generate

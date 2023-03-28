@@ -8,13 +8,13 @@
 import os
 import re
 from pcbnew import (GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, F_Cu, B_Cu, Edge_Cuts, PLOT_FORMAT_HPGL,
-                    PLOT_FORMAT_GERBER, PLOT_FORMAT_POST, PLOT_FORMAT_DXF, PLOT_FORMAT_PDF, PLOT_FORMAT_SVG, LSEQ)
+                    PLOT_FORMAT_GERBER, PLOT_FORMAT_POST, PLOT_FORMAT_DXF, PLOT_FORMAT_PDF, PLOT_FORMAT_SVG, LSEQ, LSET)
 from .optionable import Optionable
 from .out_base import BaseOutput, VariantOptions
 from .error import PlotError, KiPlotConfigurationError
 from .layer import Layer
 from .gs import GS
-from .misc import W_NOLAYER, KICAD_VERSION_7_0_1, MISSING_TOOL
+from .misc import W_NOLAYER, KICAD_VERSION_7_0_1, MISSING_TOOL, AUTO_SCALE
 from .macros import macros, document  # noqa: F401
 from . import log
 
@@ -80,7 +80,13 @@ class AnyLayerOptions(VariantOptions):
             self.sketch_pad_line_width = 0.1
             """ Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
                 Note that this value is currently ignored by KiCad (6.0.9) """
+            self.scaling = 1
+            """ *Scale factor (0 means autoscaling) """
+            self.individual_page_scaling = True
+            """ Tell KiCad to apply the scaling for each layer as a separated entity.
+                Disabling it the pages are coherent and can be superposed """
         super().__init__()
+        self._unkown_is_error = True
 
     def config(self, parent):
         super().config(parent)
@@ -107,6 +113,14 @@ class AnyLayerOptions(VariantOptions):
         po.SetCreateGerberJobFile(False)
         # We'll come back to this on a per-layer basis
         po.SetSkipPlotNPTH_Pads(False)
+        # Scaling/Autoscale
+        if self._plot_format != PLOT_FORMAT_GERBER:
+            if self.scaling == AUTO_SCALE:
+                po.SetAutoScale(True)
+                po.SetScale(1)
+            else:
+                po.SetAutoScale(False)
+                po.SetScale(self.scaling)
 
     def compute_name(self, k_filename, output_dir, output, id, suffix):
         if output:
@@ -141,6 +155,8 @@ class AnyLayerOptions(VariantOptions):
             logger.error("Plotting the edge layer is not supported by KiCad 7.0.0\n"
                          "Please upgrade KiCad to 7.0.1 or newer")
             exit(MISSING_TOOL)
+        # Memorize the list of visible layers
+        old_visible = GS.board.GetVisibleLayers()
         # Apply the variants and filters
         exclude = self.filter_pcb_components()
         # fresh plot controller
@@ -157,6 +173,13 @@ class AnyLayerOptions(VariantOptions):
         # Plot every layer in the output
         generated = {}
         layers = Layer.solve(layers)
+        # Make visible only the layers we need
+        # This is very important when scaling, otherwise the results are controlled by the .kicad_prl (See #407)
+        if self._plot_format != PLOT_FORMAT_GERBER and not self.individual_page_scaling:
+            vis_layers = LSET()
+            for la in layers:
+                vis_layers.addLayer(la._id)
+            GS.board.SetVisibleLayers(vis_layers)
         for la in layers:
             suffix = la.suffix
             desc = la.description
@@ -164,6 +187,11 @@ class AnyLayerOptions(VariantOptions):
             if not GS.board.IsLayerEnabled(id):
                 logger.warning(W_NOLAYER+'Layer "{}" isn\'t used'.format(desc))
                 continue
+            if self._plot_format != PLOT_FORMAT_GERBER and self.individual_page_scaling:
+                # Only this layer is visible
+                vis_layers = LSET()
+                vis_layers.addLayer(la._id)
+                GS.board.SetVisibleLayers(vis_layers)
             # Set current layer
             plot_ctrl.SetLayer(id)
             # Skipping NPTH is controlled by whether or not this is
@@ -211,6 +239,8 @@ class AnyLayerOptions(VariantOptions):
         # Restore the eliminated layers
         if exclude:
             self.unfilter_pcb_components()
+        # Restore the list of visible layers
+        GS.board.SetVisibleLayers(old_visible)
         self._generated_files = generated
 
     def solve_extension(self, layer):
@@ -258,6 +288,11 @@ class AnyLayerOptions(VariantOptions):
         else:
             self.sketch_pads_on_fab_layers = po.GetSketchPadsOnFabLayers()
             self.sketch_pad_line_width = po.GetSketchPadLineWidth()
+        # scaleselection
+        if self._plot_format != PLOT_FORMAT_GERBER:
+            sel = po.GetScaleSelection()
+            sel = sel if sel < 0 or sel > 4 else 4
+            self.scaling = (AUTO_SCALE, 1.0, 1.5, 2.0, 3.0)[sel]
 
 
 class AnyLayer(BaseOutput):

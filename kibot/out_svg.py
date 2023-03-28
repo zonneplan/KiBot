@@ -10,6 +10,7 @@ from pcbnew import PLOT_FORMAT_SVG, FromMM, ToMM
 from .drill_marks import DrillMarks
 from .gs import GS
 from .kicad.patch_svg import change_svg_viewbox
+from .misc import W_ESCINV
 from .out_base import PcbMargin
 from .out_any_layer import AnyLayer
 from .macros import macros, document, output_class  # noqa: F401
@@ -33,7 +34,8 @@ class SVGOptions(DrillMarks):
                 The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
                 Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
             self.limit_viewbox = False
-            """ When enabled the view box is limited to a selected area """
+            """ When enabled the view box is limited to a selected area.
+                This option can't be enabled when using a scale """
             self.size_detection = 'kicad_edge'
             """ [kicad_edge,kicad_all] Method used to detect the size of the view box.
                 The `kicad_edge` method uses the size of the board as reported by KiCad,
@@ -70,6 +72,9 @@ class SVGOptions(DrillMarks):
     def run(self, output_dir, layers):
         super().run(output_dir, layers)
         if not self.limit_viewbox:
+            return
+        if self.scaling != 1:
+            logger.warning(W_ESCINV+"Scaling and view port limit can't be mixed")
             return
         # Limit the view box of the SVG
         bbox = GS.get_rect_for(GS.board.ComputeBoundingBox(self.size_detection == 'kicad_edge'))
