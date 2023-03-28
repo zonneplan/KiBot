@@ -18,9 +18,9 @@ if not GS.kicad_version_n:
     detect_kicad()
 if GS.ki6:
     # New name, no alias ...
-    from pcbnew import FP_SHAPE, wxPoint, LSET, FP_3DMODEL, ToMM
+    from pcbnew import wxPoint, LSET, FP_3DMODEL, ToMM
 else:
-    from pcbnew import EDGE_MODULE, wxPoint, LSET, MODULE_3D_SETTINGS, ToMM
+    from pcbnew import wxPoint, LSET, MODULE_3D_SETTINGS, ToMM
     FP_3DMODEL = MODULE_3D_SETTINGS
 from .registrable import RegOutput
 from .optionable import Optionable, BaseOptions
@@ -279,24 +279,18 @@ class VariantOptions(BaseOptions):
         return ToMM(val)
 
     @staticmethod
-    def create_module_element(m):
-        if GS.ki6:
-            return FP_SHAPE(m)
-        return EDGE_MODULE(m)
-
-    @staticmethod
     def cross_module(m, rect, layer):
         """ Draw a cross over a module.
             The rect is a Rect object with the size.
             The layer is which layer id will be used. """
-        seg1 = VariantOptions.create_module_element(m)
+        seg1 = GS.create_module_element(m)
         seg1.SetWidth(120000)
         seg1.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y1)))
         seg1.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y2)))
         seg1.SetLayer(layer)
         seg1.SetLocalCoord()  # Update the local coordinates
         m.Add(seg1)
-        seg2 = VariantOptions.create_module_element(m)
+        seg2 = GS.create_module_element(m)
         seg2.SetWidth(120000)
         seg2.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y2)))
         seg2.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y1)))
