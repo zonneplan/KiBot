@@ -33,7 +33,7 @@ import re
 import os
 import subprocess
 import importlib
-from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, F_Mask, B_Mask, LSET
+from pcbnew import B_Cu, B_Mask, F_Cu, F_Mask, FromMM, IsCopperLayer, LSET, PLOT_CONTROLLER, PLOT_FORMAT_SVG
 import shlex
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
@@ -587,8 +587,9 @@ class PCB_PrintOptions(VariantOptions):
                 e.SetDrill(0)
                 e.SetWidth(self.min_w)
             elif e.GetLayer() == id:
-                e.SetLayer(tmp_layer)
-                moved.append(e)
+                if e.GetWidth():
+                    e.SetLayer(tmp_layer)
+                    moved.append(e)
         # Plot the layer
         # pc.SetLayer(id) already selected
         suffix = la.suffix+'_pads'
@@ -665,8 +666,9 @@ class PCB_PrintOptions(VariantOptions):
                     vias.append((e, d, w, top, bottom))
                     e.SetWidth(self.min_w)
             elif e.GetLayer() == id:
-                e.SetLayer(tmp_layer)
-                moved.append(e)
+                if e.GetWidth():
+                    e.SetLayer(tmp_layer)
+                    moved.append(e)
         # Plot the layer
         suffix = la.suffix+'_vias_'+str(via_t)
         pc.OpenPlotfile(suffix, PLOT_FORMAT_SVG, p.sheet)
@@ -845,12 +847,22 @@ class PCB_PrintOptions(VariantOptions):
     def plot_extra_cu(self, id, la, pc, p, filelist):
         """ Plot pads and vias to make them different """
         if id >= F_Cu and id <= B_Cu:
+            # Here we force the same bounding box
+            # Problem: we will remove items, so the bbox can be affected
+            # Solution: we add a couple of points at the edges of the bbox
+            bbox = GS.board.GetBoundingBox()
+            track1 = GS.create_puntual_track(GS.board, bbox.GetOrigin(), id)
+            track2 = GS.create_puntual_track(GS.board, bbox.GetEnd(), id)
+
             if self.colored_pads:
                 self.plot_pads(la, pc, p, filelist)
             if self.colored_vias:
                 self.plot_vias(la, pc, p, filelist, VIATYPE_THROUGH, self.via_color)
                 self.plot_vias(la, pc, p, filelist, VIATYPE_BLIND_BURIED, self.blind_via_color)
                 self.plot_vias(la, pc, p, filelist, VIATYPE_MICROVIA, self.micro_via_color)
+
+            GS.board.Remove(track1)
+            GS.board.Remove(track2)
 
     def pcbdraw_by_module(self, pcbdraw_file, back):
         self.ensure_tool('LXML')

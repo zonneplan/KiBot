@@ -592,6 +592,28 @@ class GS(object):
         return bbox
 
     @staticmethod
+    def create_module_element(m):
+        if GS.ki6:
+            return pcbnew.FP_SHAPE(m)
+        return pcbnew.EDGE_MODULE(m)
+
+    @staticmethod
+    def create_track(parent):
+        if GS.ki6:
+            return pcbnew.PCB_TRACK(parent)
+        return pcbnew.TRACK(parent)
+
+    @staticmethod
+    def create_puntual_track(parent, position, layer):
+        track = GS.create_track(parent)
+        track.SetStart(position)
+        track.SetEnd(position)
+        track.SetLayer(layer)
+        track.SetWidth(0)
+        parent.Add(track)
+        return track
+
+    @staticmethod
     def fill_zones(board, zones=None):
         if zones is None:
             zones = board.Zones()
