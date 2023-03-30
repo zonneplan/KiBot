@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -12,7 +12,7 @@ All the logic to convert a list of components into the rows and columns used to 
 import locale
 from copy import deepcopy
 from math import ceil
-from .units import compare_values, comp_match, get_last_warning
+from .units import compare_values, comp_match
 from .bom_writer import write_bom
 from .columnlist import ColumnList
 from ..misc import DNF, W_FIELDCONF, W_MISSFPINFO
@@ -382,14 +382,7 @@ def get_value_sort(comp, fallback_ref=False):
     """ Try to better sort R, L and C components """
     res = comp.value_sort
     if res:
-        value, (mult, mult_s), unit = res
-        if comp.ref_prefix in "CL":
-            # femto Farads
-            value = "{0:15d}".format(int(value * 1e15 * mult + 0.1))
-        else:
-            # milli Ohms
-            value = "{0:15d}".format(int(value * 1000 * mult + 0.1))
-        return value
+        return res.get_sortable()
     if fallback_ref:
         return comp.ref_prefix + "{0:15d}".format(_suffix_to_num(comp.ref_suffix))
     return comp.value
@@ -397,14 +390,11 @@ def get_value_sort(comp, fallback_ref=False):
 
 def normalize_value(c, decimal_point):
     if c.value_sort is None:
-        return c.value
-    value, (mult, mult_s), unit = c.value_sort
-    ivalue = int(value)
-    if value == ivalue:
-        value = ivalue
-    elif decimal_point:
-        value = str(value).replace('.', decimal_point)
-    return '{} {}{}'.format(value, mult_s, unit)
+        return c.value.strip()
+    value = str(c.value_sort)
+    if decimal_point:
+        value = value.replace('.', decimal_point)
+    return value
 
 
 def compute_multiple_stats(cfg, groups):
@@ -443,14 +433,6 @@ def group_components(cfg, components):
         # Cache the value used to sort
         if c.ref_prefix in RLC_PREFIX and c.value.lower() not in DNF:
             c.value_sort = comp_match(c.value, c.ref_prefix, c.ref)
-            if c.value_sort is None and (' ' in c.value):
-                # Try with the data before a space
-                value = c.value.split(' ')[0]
-                value_sort = comp_match(value, c.ref_prefix)
-                if value_sort is not None:
-                    c.value_sort = value_sort
-                    extra = ', only for sorting purposes' if not cfg.normalize_values else ''
-                    logger.warning(get_last_warning() + "Using `{}` for {} instead{}".format(value, c.ref, extra))
         else:
             c.value_sort = None
         # Try to add the component to an existing group

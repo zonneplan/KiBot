@@ -684,7 +684,7 @@
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid bb38c897-d2f8-4276-a663-bb1f35f5db41)
     (property "Reference" "R26" (id 0) (at 92.71 101.9642 90))
-    (property "Value" "0.01" (id 1) (at 92.71 104.5011 90))
+    (property "Value" "0.01 5%" (id 1) (at 92.71 104.5011 90))
     (property "Footprint" "Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P25.40mm_Horizontal" (id 2) (at 92.71 108.458 90)
       (effects (font (size 1.27 1.27)) hide)
     )
@@ -1001,7 +1001,7 @@
       (reference "R25") (unit 1) (value "33k") (footprint "Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P20.32mm_Horizontal")
     )
     (path "/bb38c897-d2f8-4276-a663-bb1f35f5db41"
-      (reference "R26") (unit 1) (value "0.01") (footprint "Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P25.40mm_Horizontal")
+      (reference "R26") (unit 1) (value "0.01 5%") (footprint "Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P25.40mm_Horizontal")
     )
     (path "/9cfcad2d-3334-4d64-b2a9-fb405ef03985"
       (reference "R27") (unit 1) (value "0.12") (footprint "Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P5.08mm_Vertical")

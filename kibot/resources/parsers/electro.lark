@@ -1,0 +1,214 @@
+//*****************************************************************************
+//
+// Copyright (c) 2023 Salvador E. Tropea
+// Copyright (c) 2023 Instituto Nacional de Tecnologia Industrial
+// Copyright (c) 2017-2018 Kaspar Emanuel
+//
+// LICENSE: MIT
+//
+//  Grammar to parse electronic components.
+//  Can currently parse resistors, capacitors, inductors and LEDs.
+//  Is strongly based on "electro-grammar" created by Kaspar Emanuel.
+//  This description was coded to be used with Lark, a Python tool.
+//  Is an ambiguous description, so it needs the Early algorithm.
+//  Unlike the original version by Kaspar, implemented using Nearly, this
+// grammar handles the stuff to ignore in the grammar description, not retrying
+// in the parser. I think Lark can't retry. This makes things a little bit more
+// complicated, and harder to debug.
+//
+//*****************************************************************************
+%import common.INT
+%import common.NUMBER
+%import common.WS
+%import common.CNAME
+
+?main: capacitor | inductor | resistor | led
+
+// All we ignore
+crap: CNAME | NUMBER
+// Whitespace and separators
+_WS: WS
+_SEP: _WS | /[,;]/
+
+//************************************
+//************ Capacitors ************
+//************************************
+
+// When we know this is a capacitor we don't need the units
+capacitor: _c_specs capacitance _c_specs
+         | _CAP _c_specs (capacitance_no_farad | capacitance)? (_c_specs | c_spec)
+
+_c_specs: ((c_spec _SEP)+ | (_SEP c_spec)+ | _SEP)*
+?c_spec: tolerance | temp_coef | voltage_rating | package_size | crap
+
+// Give priority to things like "25 V" to avoid separating the "V" as crap
+voltage_rating.6: NUMBER _WS? _VOLT INT?
+
+// See https://en.wikipedia.org/wiki/Ceramic_capacitor#Class_1_ceramic_capacitor
+//     https://en.wikipedia.org/wiki/Ceramic_capacitor#Class_2_ceramic_capacitor
+temp_coef: _class1 | _class2
+_class1: P100 | C0G | N33 | N75 | N150 | N220 | N330 | N470 | N750 | N1000 | N1500
+_class2: /[XYZ]/i "4".."9" /[PRSTUV]/i
+
+tolerance: (_PLUSMINUS _WS?)? NUMBER _WS? "%"
+
+capacitance.10: (_capacitance_no_farad | NUMBER) _WS? _FARAD
+capacitance_no_farad.10: _capacitance_no_farad
+_capacitance_no_farad: INT _c_metric_prefix INT?
+                     | NUMBER _WS? _c_metric_prefix
+_c_metric_prefix: milli | micro | nano | pico
+
+//***********************************
+//************ Inductors ************
+//***********************************
+
+// When we know this is an inductor we don't need the units
+inductor: _l_specs inductance _l_specs
+        | _IND _l_specs (inductance_no_henry | inductance)? (_l_specs | l_spec)
+
+_l_specs: ((l_spec _SEP)+ | (_SEP l_spec)+ | _SEP)*
+?l_spec: tolerance | voltage_rating | package_size | crap
+
+inductance: _inductance_no_henry _WS? _HENRY
+inductance_no_henry: _inductance_no_henry
+_inductance_no_henry: NUMBER _WS? _l_metric_prefix? INT?
+_l_metric_prefix: milli | micro | nano | pico
+
+//***********************************
+//************ Resistors ************
+//***********************************
+
+// When we know this is a resistor we don't need the units
+resistor: _r_specs resistance _r_specs
+        | _RES _r_specs (resistance_no_r | resistance)? (_r_specs | r_spec)
+
+_r_specs:  ((r_spec _SEP)+ | (_SEP r_spec)+ | _SEP)*
+?r_spec: tolerance | power_rating | package_size | crap
+
+power_rating: _power_rating_decimal | _power_rating_fraction
+_power_rating_fraction: INT "/" INT _WS? _WATTS
+_power_rating_decimal: NUMBER _WS? _power_metric_prefix? _WS? _WATTS
+_power_metric_prefix: giga | mega | kilo | milli | micro | nano | pico | femto
+
+resistance.9: NUMBER _WS? (_r_metric_prefix INT? (_WS? _OHM)? | _OHM)
+// Just a number, no R, K, ohm etc.
+resistance_no_r.9: NUMBER
+_r_metric_prefix: giga | mega | kilo | unit | milli | micro
+
+//******************************
+//************ LEDs ************
+//******************************
+
+led: _led_specs _LED (_SEP _led_specs _led_spec?)?
+
+_led_specs: ((_led_spec _SEP)+ | (_SEP _led_spec)+ | _SEP)*
+_led_spec: package_size | color | crap
+
+!color: "red"i
+     | "green"i
+     | "blue"i
+     | "yellow"i
+     | "orange"i
+     | "white"i
+     | "amber"i
+     | "cyan"i
+     | "purple"i
+     | "yellow" WS "green"
+
+//******************************
+//************ Size ************
+//******************************
+
+// Sizes looks like numbers and resistors doesn't need units, things like 2512 are hard to differentiate from a
+// resistor value. So we use a high priority here
+?package_size.11: imperial_size | metric_size
+!imperial_size.11: IS01005 | IS0201 | IS0402 | IS0603 | IS0805 | IS1008 | IS1206 | IS1210 | IS1806 | IS2010 | IS2512
+?metric_size.11: metric_size_base _WS _METRIC
+           | _METRIC _WS metric_size_base
+           | unambigious_metric_size
+// Metric sizes, with names to avoid anonymous
+!unambigious_metric_size.11: MS1005 | MS1608 | MS2012 | MS2520 | MS3216 | MS3225 | MS4516 | MS5025 | MS6332
+!metric_size_base.11: unambigious_metric_size | MS0402 | MS0603
+
+//******************************
+//****** Metric prefixes *******
+//******************************
+
+// !exa:   "E"  | "exa"i
+// !peta:  "P"  | "peta"i
+// !tera:  "T"  | "tera"i
+!giga:  "G"  | "gig"i "a"i?
+!mega:  "M"  | "meg"i "a"i?
+!kilo:  "K"i "ilo"i?
+!unit:  "R"i
+// !hecto: "h"  | "hecto"i
+// !deci:  "d"  | "deci"i
+// !centi: "c"  | "centi"i
+!milli: "m"  | "milli"i
+!micro: "U"i
+  | "\u03BC"
+  | "\u00B5"
+  | "𝛍"
+  | "𝜇"
+  | "𝝁"
+  | "𝝻"
+  | "𝞵"
+  | /micro/i
+!nano:  "N"i | "nan"i "o"i?
+!pico:  "P"i "ico"i?
+!femto: "f"  | "femto"i
+// !atto:  "a"  | "atto"i
+
+//******************************
+//****** Named terminals *******
+//******************************
+// Components
+_CAP: ("CAPACITOR"i | "CAPA"i | "C"i "AP"i?) _SEP
+_RES: ("RESISTOR"i | "RES"i | "R"i) _SEP
+_IND: ("IND"i "UCTOR"i? | "L"i) _SEP
+_LED: "LED"i
+// Units
+_FARAD: "F"i "arad"i?
+_OHM: "ohm"i "s"i? | "Ω" | "Ω"
+_HENRY: "h"i "enry"i?
+_VOLT: "Volt"i "s"i? | "V"i
+_WATTS: "W"i "atts"i?
+// Used for percent
+_PLUSMINUS: "+/-" | "±" | "+-"
+// Size
+IS01005: "01005"
+IS0201: "0201"
+IS0402: "0402"
+IS0603: "0603"
+IS0805: "0805"
+IS1008: "1008"
+IS1206: "1206"
+IS1210: "1210"
+IS1806: "1806"
+IS2010: "2010"
+IS2512: "2512"
+_METRIC: "METRIC"i
+MS1005: "1005"
+MS1608: "1608"
+MS2012: "2012"
+MS2520: "2520"
+MS3216: "3216"
+MS3225: "3225"
+MS4516: "4516"
+MS5025: "5025"
+MS6332: "6332"
+MS0402: "0402"
+MS0603: "0603"
+// Capacitor temp. coef. classes
+P100:  "P100"i  "/" "M7G"i | "M7G"i "/" "P100"i  | "P100"i  | "M7G"i
+N33:   "N33"i   "/" "H2G"i | "H2G"i "/" "N33"i   | "N33"i   | "H2G"i
+N75:   "N75"i   "/" "L2G"i | "L2G"i "/" "N75"i   | "N75"i   | "L2G"i
+N150:  "N150"i  "/" "P2H"i | "P2H"i "/" "N150"i  | "N150"i  | "P2H"i
+N220:  "N220"i  "/" "R2H"i | "R2H"i "/" "N220"i  | "N220"i  | "R2H"i
+N330:  "N330"i  "/" "S2H"i | "S2H"i "/" "N330"i  | "N330"i  | "S2H"i
+N470:  "N470"i  "/" "T2H"i | "T2H"i "/" "N470"i  | "N470"i  | "T2H"i
+N750:  "N750"i  "/" "U2J"i | "U2J"i "/" "N750"i  | "N750"i  | "U2J"i
+N1000: "N1000"i "/" "Q3K"i | "Q3K"i "/" "N1000"i | "N1000"i | "Q3K"i
+N1500: "N1500"i "/" "P3K"i | "P3K"i "/" "N1500"i | "N1500"i | "P3K"i
+C0G:   /C[O0]G/i "/" /NP[O0]/i | /NP[O0]/i "/" /C[O0]G/i | /C[O0]G/i | /NP[O0]/i
+

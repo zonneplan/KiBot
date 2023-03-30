@@ -3,6 +3,7 @@
 # Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+from decimal import Decimal
 from fnmatch import fnmatch
 import os
 import re
@@ -341,11 +342,23 @@ class Base3DOptions(VariantOptions):
             return name
         r_len = float(m.group(1))
         # THT Resistor that we want to add colors
-        # Check the tolerance
+        # Check the value
+        res = comp_match(c.value, c.ref_prefix, c.ref)
+        if res is None:
+            return name
+        val = res.get_decimal()
+        if val < Decimal('0.01'):
+            logger.warning(W_BADRES+'Resistor {} out of range, minimum value is 10 mOhms'.format(c.ref))
+            return name
+        val_str = "{0:.0f}".format(val*100)
+        # Check the tolerance (from the schematic fields)
         tol = next(filter(lambda x: x, map(c.get_field_value, GS.global_field_tolerance)), None)
         if not tol:
-            tol = GS.global_default_resistor_tolerance
-            logger.warning(W_BADTOL+'Missing tolerance for {}, using {}%'.format(c.ref, tol))
+            # Try using the parsed value (i.e. Value="12k 1%")
+            tol = res.get_extra('tolerance')
+            if not tol:
+                tol = GS.global_default_resistor_tolerance
+                logger.warning(W_BADTOL+'Missing tolerance for {}, using {}%'.format(c.ref, tol))
         else:
             tol = tol.strip()
             if tol[-1] == '%':
@@ -359,15 +372,6 @@ class Base3DOptions(VariantOptions):
             logger.warning(W_BADTOL+'Unknown tolerance for {}: `{}`'.format(c.ref, tol))
             return name
         tol_color = TOL_COLORS[tol]
-        # Check the value
-        res = comp_match(c.value, c.ref_prefix, c.ref)
-        if res is None:
-            return name
-        val = res[0]*res[1][0]
-        if val < 0.01:
-            logger.warning(W_BADRES+'Resistor {} out of range, minimum value is 10 mOhms'.format(c.ref))
-            return name
-        val_str = "{0:.0f}".format(val*100)
         # Find how many bars we'll use
         if tol < 5:
             # Use 5 bars for 2 % tol or better

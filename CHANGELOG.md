@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     using all pages or individually.
 - Plot related outputs:
   - All outputs now support scaling.
+- BoM:
+  - Support for extra information in the *Value* field.
+    Currently just parsed, not rejected.
 
 ### Fixed
 - Makefile: don't skip all preflights on each run, just the ones we generate
@@ -32,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     when scaling. (#407)
 - Diff:
   - Problems when using an output and no variant specified.
+
+### Changed:
+- Some R, L and C values that were rejected are accepted now. You just get a
+  warning about what part of the value was discarded.
 
 
 ## [1.6.1] - 2023-03-16

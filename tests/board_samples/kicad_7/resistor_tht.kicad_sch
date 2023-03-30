@@ -1082,7 +1082,7 @@
     (property "Reference" "R26" (at 92.71 101.9642 90)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "0.01" (at 92.71 104.5011 90)
+    (property "Value" "0.01 5%" (at 92.71 104.5011 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P25.40mm_Horizontal" (at 92.71 108.458 90)

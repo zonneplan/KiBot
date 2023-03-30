@@ -16,7 +16,8 @@ from kibot.dep_downloader import search_as_plugin
 from kibot.registrable import RegOutput, RegFilter
 from kibot.misc import (WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, KICAD2STEP_ERR)
 from kibot.bom.columnlist import ColumnList
-from kibot.bom.units import get_prefix
+from kibot.bom.units import get_prefix, comp_match
+from kibot.bom.electro_grammar import parse
 from kibot.__main__ import detect_kicad
 from kibot.kicad.config import KiConf
 from kibot.globals import Globals
@@ -291,7 +292,7 @@ def test_step_fail(test_dir, caplog, monkeypatch):
 
 def test_unknown_prefix(caplog):
     with context.cover_it(cov):
-        get_prefix('y')
+        get_prefix(1, 'y')
     assert 'Unknown prefix, please report' in caplog.text
 
 
@@ -346,21 +347,166 @@ def test_makefile_kibot_sys(test_dir):
     ctx.clean_up()
 
 
+def test_units_1():
+    with context.cover_it(cov):
+        assert str(comp_match("1", 'R')) == "1 Ω"
+        assert str(comp_match("1000", 'R')) == "1 kΩ"
+        assert str(comp_match("1000000", 'R')) == "1 MΩ"
+        assert str(comp_match("1000000000", 'R')) == "1 GΩ"
+        assert str(comp_match("3.3 pF", 'C')) == "3.3 pF"
+        assert str(comp_match("0.0033 nF", 'C')) == "3.3 pF"
+        assert str(comp_match("3p3", 'C')) == "3.3 pF"
+        a = comp_match("3k3 1% 0805", 'R')
+        assert str(a) == "3.3 kΩ"
+        assert a.extra['tolerance'] == 1
+        assert a.extra['size'] == '0805'
+        a = comp_match("0.01 1%", 'R')
+        assert str(a) == "10 mΩ"
+        assert a.extra['tolerance'] == 1
+
+
 def test_read_resistance():
-    assert read_resistance("4k7") == D("4700")
-    assert read_resistance("4k7") == D("4700")
-    assert read_resistance("4.7R") == D("4.7")
-    assert read_resistance("4R7") == D("4.7")
-    assert read_resistance("0R47") == D("0.47")
-    assert read_resistance("4700k") == D("4700000")
-    assert read_resistance("470m") == D("0.47")
-    assert read_resistance("470M") == D("470000000")
-    assert read_resistance("4M7") == D("4700000")
-    assert read_resistance("470") == D("470")
-    assert read_resistance("470Ω") == D("470")
-    assert read_resistance("470 Ω") == D("470")
-    assert read_resistance("470Ohm") == D("470")
-    assert read_resistance("470 Ohms") == D("470")
-    assert read_resistance("R47") == D("0.47")
-    assert read_resistance("1G") == D("1000000000")
-    assert read_resistance("4k7000") == D("4700")
+    with context.cover_it(cov):
+        assert read_resistance("4k7")[0] == D("4700")
+        assert read_resistance("4k7")[0] == D("4700")
+        assert read_resistance("4.7R")[0] == D("4.7")
+        assert read_resistance("4R7")[0] == D("4.7")
+        assert read_resistance("0R47")[0] == D("0.47")
+        assert read_resistance("4700k")[0] == D("4700000")
+        assert read_resistance("470m")[0] == D("0.47")
+        assert read_resistance("470M")[0] == D("470000000")
+        assert read_resistance("4M7")[0] == D("4700000")
+        assert read_resistance("470")[0] == D("470")
+        assert read_resistance("470Ω")[0] == D("470")
+        assert read_resistance("470 Ω")[0] == D("470")
+        assert read_resistance("470Ohm")[0] == D("470")
+        assert read_resistance("470 Ohms")[0] == D("470")
+        assert read_resistance("R47")[0] == D("0.47")
+        assert read_resistance("1G")[0] == D("1000000000")
+        assert read_resistance("4k7000")[0] == D("4700")
+
+
+def test_electro_grammar_1():
+    with context.cover_it(cov):
+        C2UF_0603_30P = {'type': 'capacitor', 'capacitance': 2e-6, 'size': '0603', 'tolerance': 30}
+        C2UF_0603 = {'type': 'capacitor', 'capacitance': 2e-6, 'size': '0603'}
+        C10UF_0402 = {'type': 'capacitor', 'capacitance': 10e-6, 'size': '0402'}
+        C100NF_0603 = {'type': 'capacitor', 'capacitance': 100e-9, 'size': '0603'}
+        C100NF_0603_X7R = {'type': 'capacitor', 'capacitance': 100e-9, 'size': '0603', 'characteristic': 'X7R'}
+        C100NF_0603_Z5U = {'type': 'capacitor', 'capacitance': 100e-9, 'size': '0603', 'characteristic': 'Z5U'}
+        C100NF_0603_Y5V = {'type': 'capacitor', 'capacitance': 100e-9, 'size': '0603', 'characteristic': 'Y5V'}
+        C100NF_0603_C0G = {'type': 'capacitor', 'capacitance': 100e-9, 'size': '0603', 'characteristic': 'C0G'}
+        C100NF_0603_25V = {'type': 'capacitor', 'capacitance': 100e-9, 'size': '0603', 'voltage_rating': 25}
+        C100NF_0603_6V3 = {'type': 'capacitor', 'capacitance': 100e-9, 'size': '0603', 'voltage_rating': 6.3}
+        C100UF_0603 = {'type': 'capacitor', 'capacitance': 100e-6, 'size': '0603'}
+        C100UF_0603_X7R = {'type': 'capacitor', 'capacitance': 100e-6, 'size': '0603', 'characteristic': 'X7R'}
+        C1N5_0603_X7R = {'type': 'capacitor', 'capacitance': 1.5e-9, 'size': '0603', 'characteristic': 'X7R'}
+        C1F_0603_25V = {'type': 'capacitor', 'capacitance': 1, 'size': '0603', 'voltage_rating': 25}
+        C_01005 = {'type': 'capacitor', 'size': '01005'}
+        C_0201 = {'type': 'capacitor', 'size': '0201'}
+        C_0402 = {'type': 'capacitor', 'size': '0402'}
+        C_0603 = {'type': 'capacitor', 'size': '0603'}
+        C_0805 = {'type': 'capacitor', 'size': '0805'}
+        C_1206 = {'type': 'capacitor', 'size': '1206'}
+        C_TESTS = ((('this is total rubbish', ''), {}),
+                   (('2uF 0603',), C2UF_0603),
+                   (('2uF 0603 30%', '2uF 0603 +/-30%', '2uF 0603 ±30%', '2uF 0603 +-30%'), C2UF_0603_30P),
+                   (('10uF 0402',
+                     '10 micro Farad 0402',
+                     '10 \u03BC''F 0402',
+                     '10 \u00B5''F 0402',
+                     '10𝛍F 0402',
+                     '10𝜇F 0402',
+                     '10𝝁 F 0402',
+                     '10    𝝻F 0402',
+                     '10𝞵F 0402'), C10UF_0402),
+                   (('100nF 0603 kajdlkja alkdjlkajd',
+                     'adjalkjd 100nF akjdlkjda 0603 kajdlkja alkdjlkajd',
+                     'capacitor 100nF 0603, warehouse 5',
+                     'adjalkjd 0603 akjdlkjda 100nF kajdlkja alkdjlkajd',
+                     'C 100n 0603',
+                     'Capacitor 100n 0603',
+                     'cap 100n 0603'), C100NF_0603),
+                   (('1n5F 0603 X7R',), C1N5_0603_X7R),
+                   (('100NF 0603 X7R', '100nF 0603 X7R', '100nF 0603 x7r'), C100NF_0603_X7R),
+                   (('100UF 0603 X7R',), C100UF_0603_X7R),
+                   (('100nF 0603 Z5U',), C100NF_0603_Z5U),
+                   (('100nF 0603 Y5V',), C100NF_0603_Y5V),
+                   (('100nF 0603 C0G',
+                     '100nF 0603 NP0',
+                     '100nF 0603 np0',
+                     '100nF 0603 c0g',
+                     '100nF 0603 cog',
+                     '100nF 0603 npO',
+                     '100nF 0603 COG',
+                     '100nF 0603 C0G/NP0'), C100NF_0603_C0G),
+                   (('1F 0603 25V', '1f 0603 25V', '1 Farad 0603 25V'), C1F_0603_25V),
+                   (('100nF 0603 25V', '100nF 0603 25 v'), C100NF_0603_25V),
+                   (('100nF 0603 6v3', '100nF 0603 6V3', '100nF 0603 6.3V', '100nF 0603 6.3v'), C100NF_0603_6V3),
+                   (('0603 0.0001F', '0603 0.0001 F', '0603 0.1mF'), C100UF_0603),
+                   (('capacitor 01005',), C_01005),
+                   (('capacitor 0201',), C_0201),
+                   (('capacitor 0402',), C_0402),
+                   (('capacitor 0603',), C_0603),
+                   (('capacitor 0805',), C_0805),
+                   (('capacitor 1206',), C_1206))
+        R1K_0603 = {'type': 'resistor', 'size': '0603', 'resistance': 1000}
+        R1K_0805_5P = {'type': 'resistor', 'size': '0805', 'resistance': 1000, 'tolerance': 5}
+        R1K_0805_5P_100MW = {'type': 'resistor', 'size': '0805', 'resistance': 1000, 'tolerance': 5, 'power_rating': 0.1}
+        R1K_0201_500MW = {'type': 'resistor', 'size': '0201', 'resistance': 1000, 'power_rating': 0.5}
+        R0_0201_125MW = {'type': 'resistor', 'size': '0201', 'resistance': 0, 'power_rating': 0.125}
+        R1M_0603 = {'type': 'resistor', 'size': '0603', 'resistance': 1e6}
+        R1M = {'type': 'resistor', 'resistance': 1e6}
+        R1M1_0603 = {'type': 'resistor', 'size': '0603', 'resistance': 1.1e6}
+        R100 = {'type': 'resistor', 'resistance': 100}
+        R10K_0805 = {'type': 'resistor', 'size': '0805', 'resistance': 10000}
+        R1 = {'type': 'resistor', 'resistance': 1}
+        R1_0402 = {'type': 'resistor', 'resistance': 1, 'size': '0402'}
+        R1_0805 = {'type': 'resistor', 'resistance': 1, 'size': '0805'}
+        R1K5_0402 = {'type': 'resistor', 'resistance': 1500, 'size': '0402'}
+        R2_7_0402 = {'type': 'resistor', 'resistance': 2.7, 'size': '0402'}
+        R1MILI = {'type': 'resistor', 'resistance': 0.001}
+        R100U = {'type': 'resistor', 'resistance': 0.0001}
+        R_01005 = {'type': 'resistor', 'size': '01005'}
+        R_0201 = {'type': 'resistor', 'size': '0201'}
+        R_0402 = {'type': 'resistor', 'size': '0402'}
+        R_0603 = {'type': 'resistor', 'size': '0603'}
+        R_0805 = {'type': 'resistor', 'size': '0805'}
+        R_1206 = {'type': 'resistor', 'size': '1206'}
+        R_TESTS = ((('R 0.01 1%',), {'type': 'resistor', 'resistance': 0.01, 'tolerance': 1}),
+                   (('1k 0603', '1k ohm 0603', '1K ohms 0603'), R1K_0603),
+                   (('resistor 100', '100R', '100 R'), R100),
+                   (('r 10000 0805',), R10K_0805),
+                   (('res or whatever 1',), R1),
+                   (('1 ohm 0402',), R1_0402),
+                   (('1Ω 0805', '1Ω 0805'), R1_0805),
+                   (('1MEG 0603', '1M 0603'), R1M_0603),
+                   (('1M1 ohms 0603',), R1M1_0603),
+                   (('1k5 0402', '1.5k 0402'), R1K5_0402),
+                   (('2r7 0402', '2R7 0402'), R2_7_0402),
+                   (('1 mOhm',), R1MILI),
+                   (('1 MOhm',), R1M),
+                   (('100 uΩ',), R100U),
+                   (('1k 0805 5%',), R1K_0805_5P),
+                   (('1k 0805 5% 100mW',), R1K_0805_5P_100MW),
+                   (('0 ohm 0201 0.125W', '0 ohm 0201 1/8W'), R0_0201_125MW),
+                   (('resistor 1k 0201 1/2 watts',), R1K_0201_500MW),
+                   (('resistor 01005',), R_01005),
+                   (('resistor 0201',), R_0201),
+                   (('resistor 0402',), R_0402),
+                   (('resistor 0603',), R_0603),
+                   (('resistor 0805',), R_0805),
+                   (('resistor 1206',), R_1206))
+        LED_TEST = ((('led red 0603',), {'type': 'led', 'size': '0603', 'color': 'red'}),
+                    (('SMD LED GREEN 0805', 'GREEN 0805 LED'), {'type': 'led', 'size': '0805', 'color': 'green'}))
+        L_TEST = ((('L 100 0805', 'IND 100 0805', 'Inductor 100 0805'), {'type': 'inductor', 'inductance': 100,
+                                                                         'size': '0805'}),
+                  (('3n3 H', '3n3H', '3.3 nH', '3300pH', '3.3 nano Henry',
+                    'This is a 3.3 nH inductor'), {'type': 'inductor', 'inductance': 3.3e-9}))
+        TESTS = C_TESTS+R_TESTS+L_TEST+LED_TEST
+        for test in TESTS:
+            ref = test[1]
+            for c in test[0]:
+                res = parse(c)
+                assert res == ref, "For `{}` got:\n{}\nExpected:\n{}".format(c, res, ref)
+                logging.debug(c+" Ok")

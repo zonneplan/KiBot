@@ -938,21 +938,20 @@ class PlotComponents(PlotInterface):
             return
 
     def _get_resistance_from_value(self, value: str) -> Tuple[Decimal, str]:
-        res, tolerance = None, str(GS.global_default_resistor_tolerance)+"%"
-        value_l = value.split(" ", maxsplit=1)
+        res, tolerance = None, None
         try:
-            res = read_resistance(value_l[0])
+            res, tolerance = read_resistance(value)
         except ValueError:
-            raise UserWarning(f"Invalid resistor value {value_l[0]}")
-        if len(value_l) > 1:
-            t_string = value_l[1].strip().replace(" ", "")
-            if "%" in t_string:
-                s = self._plotter.get_style("tht-resistor-band-colors")
-                if not isinstance(s, dict):
-                    raise RuntimeError(f"Invalid style specified, tht-resistor-band-colors should be dictionary, got {type(s)}")
-                if t_string.strip() not in s:
-                    raise UserWarning(f"Invalid resistor tolerance {value_l[1]}")
-                tolerance = t_string
+            raise UserWarning(f"Invalid resistor value {value}")
+        if tolerance is None:
+            tolerance = GS.global_default_resistor_tolerance
+        tolerance = str(tolerance)+"%"
+        s = self._plotter.get_style("tht-resistor-band-colors")
+        if not isinstance(s, dict):
+            raise RuntimeError(f"Invalid style specified, tht-resistor-band-colors should be dictionary, got {type(s)}")
+        if tolerance not in s:
+            raise UserWarning(f"Invalid resistor tolerance {tolerance}")
+            tolerance = "5%"
         return res, tolerance
 
 
@@ -1113,7 +1112,7 @@ class PcbPlotter():
                 prop = footprint.GetProperties()
                 tol = next(filter(lambda x: x, map(prop.get, GS.global_field_tolerance)), None)
                 if tol:
-                    value = value+' '+tol
+                    value = value+' '+tol.strip()
             ref = footprint.GetReference().strip()
             center = footprint.GetPosition()
             orient = math.radians(footprint.GetOrientation().AsDegrees())

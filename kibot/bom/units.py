@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2016-2020 Oliver Henry Walters (@SchrodingersGat)
 # License: MIT
 # Project: KiBot (formerly KiPlot)
@@ -13,10 +13,13 @@ e.g.
 0R1 = 0.1Ohm (Unit replaces decimal, different units)
 Oriented to normalize and sort R, L and C values.
 """
+from decimal import Decimal
 import re
 import locale
+from math import log10
 from .. import log
-from ..misc import W_BADVAL1, W_BADVAL2, W_BADVAL3
+from ..misc import W_BADVAL1, W_BADVAL2, W_BADVAL3, W_BADVAL4
+from .electro_grammar import parse
 
 logger = log.get_logger()
 
@@ -30,25 +33,54 @@ PREFIX_GIGA = ["giga", "g"]
 
 # All prefixes
 PREFIX_ALL = PREFIX_PICO + PREFIX_NANO + PREFIX_MICRO + PREFIX_MILLI + PREFIX_KILO + PREFIX_MEGA + PREFIX_GIGA
+MAX_POW_PREFIX = 9
+MIN_POW_PREFIX = -12
+PREFIXES = {-15: 'f', -12: 'p', -9: 'n', -6: u"µ", -3: 'm', 0: '', 3: 'k', 6: 'M', 9: 'G'}
 
 # Common methods of expressing component units
 # Note: we match lowercase string, so both: Ω and Ω become the lowercase omega
 UNIT_R = ["r", "ohms", "ohm", u'\u03c9']
 UNIT_C = ["farad", "f"]
 UNIT_L = ["henry", "h"]
+OHMS = u"Ω"
 
 UNIT_ALL = UNIT_R + UNIT_C + UNIT_L
 
+GRAM_TYPES = {'inductor': 'L', 'capacitor': 'C', 'resistor': 'R', 'led': ''}
 # Compiled regex to match the values
 match = None
 # Current locale decimal point value
 decimal_point = None
-# Last warning
-last_warning = ''
+# Parser cache
+parser_cache = {}
 
 
-def get_last_warning():
-    return last_warning
+class ParsedValue(object):
+    def __init__(self, v, pow, unit, extra=None):
+        # From a value that matched the regex
+        ival = int(v)
+        self.norm_val = int(v) if v == ival else v
+        self.exp = pow
+        self.unit = unit
+        self.prefix = PREFIXES[pow]
+        self.extra = extra
+
+    def __str__(self):
+        return '{} {}{}'.format(self.norm_val, self.prefix, self.unit)
+
+    def get_sortable(self):
+        mult = pow(10, self.exp)
+        if self.unit in "FH":
+            # femto Farads
+            return "{0:15d}".format(int(self.norm_val * 1e15 * mult + 0.1))
+        # milli Ohms
+        return "{0:15d}".format(int(self.norm_val * 1000 * mult + 0.1))
+
+    def get_decimal(self):
+        return Decimal(str(self.norm_val))*pow(10, Decimal(self.exp))
+
+    def get_extra(self, property):
+        return self.extra.get(property) if self.extra else None
 
 
 def get_unit(unit, ref_prefix):
@@ -58,42 +90,54 @@ def get_unit(unit, ref_prefix):
             return "H"
         if ref_prefix == 'C':
             return "F"
-        return u"Ω"
+        return OHMS
     unit = unit.lower()
     if unit in UNIT_R:
-        return u"Ω"
+        return OHMS
     if unit in UNIT_C:
         return "F"
     if unit in UNIT_L:
         return "H"
 
 
-def get_prefix(prefix):
+def get_prefix_simple(prefix):
     """ Return the (numerical) value of a given prefix """
     if not prefix:
-        return 1, ''
+        return 0
     # 'M' is mega, 'm' is milli
     if prefix != 'M':
         prefix = prefix.lower()
     if prefix in PREFIX_PICO:
-        return 1.0e-12, 'p'
+        return -12
     if prefix in PREFIX_NANO:
-        return 1.0e-9, 'n'
+        return -9
     if prefix in PREFIX_MICRO:
-        return 1.0e-6, u"µ"
+        return -6
     if prefix in PREFIX_MILLI:
-        return 1.0e-3, 'm'
+        return -3
     if prefix in PREFIX_KILO:
-        return 1.0e3, 'k'
+        return 3
     if prefix in PREFIX_MEGA:
-        return 1.0e6, 'M'
+        return 6
     if prefix in PREFIX_GIGA:
-        return 1.0e9, 'G'
+        return 9
     # Unknown, we shouldn't get here because the regex matched
     # BUT: I found that sometimes unexpected things happen, like mu matching micro and then we reaching this code
     #      Now is fixed, but I can't be sure some bizarre case is overlooked
     logger.error('Unknown prefix, please report')
-    return 1, ''
+    return 0
+
+
+def get_prefix(val, prefix):
+    pow = get_prefix_simple(prefix)
+    # Try to normalize it
+    while val >= 1000.0 and pow < MAX_POW_PREFIX:
+        val /= 1000.0
+        pow += 3
+    while val < 1.0 and pow > MIN_POW_PREFIX:
+        val *= 1000.0
+        pow -= 3
+    return val, pow
 
 
 def group_string(group):  # Return a reg-ex string for a list of values
@@ -104,14 +148,27 @@ def match_string():
     return r"(\d*\.?\d*)\s*(" + group_string(PREFIX_ALL) + ")*(" + group_string(UNIT_ALL) + r")*(\d*)$"
 
 
+def value_from_grammar(r):
+    """ Convert a result parsed by the Lark grammar to a ParsedResult object """
+    val = r.get('val')
+    if not val:
+        return None
+    # Create an object with the result
+    val, pow = get_prefix(float(val), PREFIXES[int(log10(r['mult']))])
+    parsed = ParsedValue(val, pow, get_unit(GRAM_TYPES[r['type']], ''), r)
+    return parsed
+
+
 def comp_match(component, ref_prefix, ref=None):
     """
     Return a normalized value and units for a given component value string
-    e.g. comp_match('10R2') returns (10, R)
-    e.g. comp_match('3.3mOhm') returns (0.0033, R)
+    Also tries to separate extra data, i.e. tolerance, using a complex parser
     """
-    global last_warning
     original = component
+    global parser_cache
+    parsed = parser_cache.get(original+ref_prefix)
+    if parsed:
+        return parsed
     # Remove useless spaces
     component = component.strip()
     # ~ is the same as empty for KiCad
@@ -128,6 +185,7 @@ def comp_match(component, ref_prefix, ref=None):
     if decimal_point:
         component = component.replace(decimal_point, ".")
 
+    with_commas = component
     # Remove any commas
     component = component.strip().replace(",", "")
 
@@ -140,13 +198,22 @@ def comp_match(component, ref_prefix, ref=None):
     where = ' in {}'.format(ref) if ref is not None else ''
     result = match.match(component)
     if not result:
-        last_warning = W_BADVAL1
-        logger.warning(W_BADVAL1 + "Malformed value: `{}` (no match{})".format(original, where))
-        return None
+        # Failed with the regex, try with the parser
+        result = parse(ref_prefix[0]+' '+with_commas, with_extra=True)
+        if result:
+            result = value_from_grammar(result)
+            if result and result.get_extra('discarded'):
+                discarded = " ".join(list(map(lambda x: '`'+x+'`', result.get_extra('discarded'))))
+                logger.warning(W_BADVAL4 + "Malformed value: `{}` (discarded: {}{})".format(original, discarded, where))
+        if not result:
+            logger.warning(W_BADVAL1 + "Malformed value: `{}` (no match{})".format(original, where))
+            return None
+        # Cache the result
+        parser_cache[original+ref_prefix] = result
+        return result
 
     value, prefix, units, post = result.groups()
     if value == '.':
-        last_warning = W_BADVAL2
         logger.warning(W_BADVAL2 + "Malformed value: `{}` (reduced to decimal point{})".format(original, where))
         return None
     if value == '':
@@ -158,7 +225,6 @@ def comp_match(component, ref_prefix, ref=None):
     # We will also have a trailing number
     if post:
         if "." in value:
-            last_warning = W_BADVAL3
             logger.warning(W_BADVAL3 + "Malformed value: `{}` (unit split, but contains decimal point{})".
                            format(original, where))
             return None
@@ -168,35 +234,21 @@ def comp_match(component, ref_prefix, ref=None):
     else:
         val = float(value)
 
-    # Return all the data, let the caller join it
-    return (val, get_prefix(prefix), get_unit(units, ref_prefix))
+    # Create an object with the result
+    val, pow = get_prefix(val, prefix)
+    parsed = ParsedValue(val, pow, get_unit(units, ref_prefix))
+    # Cache the result
+    parser_cache[original+ref_prefix] = parsed
+    return parsed
 
 
 def compare_values(c1, c2):
     """ Compare two values """
-
     # These are the results from comp_match()
     r1 = c1.value_sort
     r2 = c2.value_sort
-
+    # If they can't be parsed use the value
     if not r1 or not r2:
-        return False
-
-    # Join the data to compare
-    (v1, (p1, ps1), u1) = r1
-    (v2, (p2, ps2), u2) = r2
-
-    v1 = "{0:.15f}".format(v1 * 1.0 * p1)
-    v2 = "{0:.15f}".format(v2 * 1.0 * p2)
-
-    if v1 == v2:
-        # Values match
-        if u1 == u2:
-            return True  # Units match
-        # No longer possible because now we use the prefix to determine absent units
-        # if not u1:
-        #     return True  # No units for component 1
-        # if not u2:
-        #     return True  # No units for component 2
-
-    return False
+        return c1.value.strip() == c2.value.strip()
+    # Compare the normalized representation, i.e. 3300 == 3k3 == 3.3 k
+    return str(r1) == str(r2)
