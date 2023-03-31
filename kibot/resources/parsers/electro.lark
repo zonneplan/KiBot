@@ -35,7 +35,7 @@ _SEP: _WS | /[,;]/
 //************************************
 
 // When we know this is a capacitor we don't need the units
-capacitor: _c_specs capacitance _c_specs
+capacitor: _CAP? _c_specs capacitance _c_specs
          | _CAP _c_specs (capacitance_no_farad | capacitance)? (_c_specs | c_spec)
 
 _c_specs: ((c_spec _SEP)+ | (_SEP c_spec)+ | _SEP)*
@@ -63,7 +63,7 @@ _c_metric_prefix: milli | micro | nano | pico
 //***********************************
 
 // When we know this is an inductor we don't need the units
-inductor: _l_specs inductance _l_specs
+inductor: _IND? _l_specs inductance _l_specs
         | _IND _l_specs (inductance_no_henry | inductance)? (_l_specs | l_spec)
 
 _l_specs: ((l_spec _SEP)+ | (_SEP l_spec)+ | _SEP)*
@@ -79,7 +79,7 @@ _l_metric_prefix: milli | micro | nano | pico
 //***********************************
 
 // When we know this is a resistor we don't need the units
-resistor: _r_specs resistance _r_specs
+resistor: _RES? _r_specs resistance _r_specs
         | _RES _r_specs (resistance_no_r | resistance)? (_r_specs | r_spec)
 
 _r_specs:  ((r_spec _SEP)+ | (_SEP r_spec)+ | _SEP)*
