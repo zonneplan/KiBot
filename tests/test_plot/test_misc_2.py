@@ -17,6 +17,7 @@ from kibot.registrable import RegOutput, RegFilter
 from kibot.misc import (WRONG_INSTALL, BOM_ERROR, DRC_ERROR, ERC_ERROR, PDF_PCB_PRINT, KICAD2STEP_ERR)
 from kibot.bom.columnlist import ColumnList
 from kibot.bom.units import get_prefix, comp_match
+import kibot.bom.units as units
 from kibot.bom.electro_grammar import parse
 from kibot.__main__ import detect_kicad
 from kibot.kicad.config import KiConf
@@ -349,6 +350,29 @@ def test_makefile_kibot_sys(test_dir):
 
 def test_units_1():
     with context.cover_it(cov):
+        # Test for ',' as decimal point
+        units.decimal_point = ','
+        assert str(comp_match("3,3 pF", 'C')) == "3.3 pF"
+        a = comp_match("0,1uf 10% 0402 50v x7r", 'C')
+        assert str(a) == "100 nF"
+        assert a.extra['tolerance'] == 10
+        assert a.extra['size'] == '0402'
+        assert a.extra['voltage_rating'] == 50
+        assert a.extra['characteristic'] == 'X7R'
+        a = comp_match("0.01uf, 50v, cog, 5%, 0603", 'C')
+        assert str(a) == "10 nF"
+        assert a.extra['tolerance'] == 5
+        assert a.extra['size'] == '0603'
+        assert a.extra['voltage_rating'] == 50
+        assert a.extra['characteristic'] == 'C0G'
+        a = comp_match("0,01uf; 50v; cog; 5%; 0603", 'C')
+        assert str(a) == "10 nF"
+        assert a.extra['tolerance'] == 5
+        assert a.extra['size'] == '0603'
+        assert a.extra['voltage_rating'] == 50
+        assert a.extra['characteristic'] == 'C0G'
+        units.decimal_point = ''
+
         assert str(comp_match("1", 'R')) == "1 Ω"
         assert str(comp_match("1000", 'R')) == "1 kΩ"
         assert str(comp_match("1000000", 'R')) == "1 MΩ"
