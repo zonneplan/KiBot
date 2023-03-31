@@ -183,7 +183,7 @@ def comp_match(component, ref_prefix, ref=None):
         if decimal_point == '.':
             decimal_point = ''
     if decimal_point:
-        component = component.replace(decimal_point, ".")
+        component = re.sub(r'(\d)'+decimal_point+r'(\d)', r'\1.\2', component)
 
     with_commas = component
     # Remove any commas
