@@ -192,7 +192,7 @@ def test_update_xml_1(test_dir):
 
 @pytest.mark.slow
 @pytest.mark.eeschema
-@pytest.mark.skipif(context.ki5(), reason="KiCad 6 implementation")
+@pytest.mark.skipif(context.ki5(), reason="KiCad 6+ implementation")
 def test_update_xml_2(test_dir):
     prj = 'pcb_parity'
     ctx = context.TestContext(test_dir, prj, 'update_xml_2', '')
@@ -208,8 +208,9 @@ def test_update_xml_2(test_dir):
                     "F1 found in PCB, but not in schematic",
                     "FID1 found in schematic, but not in PCB",
                     "Net count mismatch .PCB 3 vs schematic 4.",
-                    "PCB net code 2 name mismatch",
-                    "PCB net code 2 extra connection/s: C1 pin 1"])
+                    "Net .Net-.C1-Pad1.. not in schematic",
+                    "Net .Net-.R1-Pad2.. not in PCB",
+                    "Net .VCC. extra PCB connection/s: R2 pin 2"])
     ctx.clean_up()
 
 

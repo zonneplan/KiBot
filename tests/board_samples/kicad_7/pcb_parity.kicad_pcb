@@ -214,7 +214,7 @@
     (pad "1" smd roundrect (at -0.9375 0 180) (size 0.975 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
       (net 2 "Net-(C1-Pad1)") (tstamp 55440b89-8f8a-483a-9b2b-9ccc95708f75))
     (pad "2" smd roundrect (at 0.9375 0 180) (size 0.975 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
-      (net 1 "GND") (tstamp 3d8a4e48-dfd4-4c64-8dd3-885d6a7ed460))
+      (net 3 "VCC") (tstamp 3d8a4e48-dfd4-4c64-8dd3-885d6a7ed460))
     (model "${KICAD6_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0805_2012Metric.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
@@ -257,12 +257,14 @@
   (gr_line (start 144 84) (end 153 84)
     (stroke (width 0.05) (type solid)) (layer "Edge.Cuts") (tstamp ea655683-6135-4d3f-a322-1186e1a703b2))
 
-  (segment (start 147.2375 78.6) (end 149.7725 78.6) (width 0.25) (layer "F.Cu") (net 1) (tstamp 4ebf58f7-8428-4480-b240-bb7d3c895103))
   (segment (start 150.62249 77.57499) (end 151.161973 78.114473) (width 0.25) (layer "F.Cu") (net 2) (tstamp 4ed009e2-b8f5-47d8-ba45-e73cbf2524c2))
   (segment (start 145.3625 78.6) (end 145.3625 79.3) (width 0.25) (layer "F.Cu") (net 2) (tstamp 5505e502-12b2-42b0-9e88-71997ebbcbde))
   (segment (start 151.161973 78.114473) (end 151.6475 78.6) (width 0.25) (layer "F.Cu") (net 2) (tstamp 5e3899fa-1efc-49c7-bd03-0723e6564f66))
   (segment (start 145.3625 78.6) (end 146.38751 77.57499) (width 0.25) (layer "F.Cu") (net 2) (tstamp 88b2a9f5-ec07-44cc-be7d-6243af8d21a7))
   (segment (start 145.3625 79.3) (end 145.3625 81.55) (width 0.25) (layer "F.Cu") (net 2) (tstamp a49ce2ce-5d29-415b-a41f-07567cbabb0f))
   (segment (start 146.38751 77.57499) (end 150.62249 77.57499) (width 0.25) (layer "F.Cu") (net 2) (tstamp fd90cb38-571b-4f7c-8630-139c123989e3))
+  (segment (start 148.18 81.55) (end 149.7725 79.9575) (width 0.25) (layer "F.Cu") (net 3) (tstamp 0a037a7f-2d45-4c85-bd65-2e305244cf41))
+  (segment (start 149.7725 79.9575) (end 149.7725 78.6) (width 0.25) (layer "F.Cu") (net 3) (tstamp daa614be-d445-4c2e-bda9-1a0166355db7))
+  (segment (start 147.2375 81.55) (end 148.18 81.55) (width 0.25) (layer "F.Cu") (net 3) (tstamp e8cc7f86-2e2e-41c0-a72f-c3447a410832))
 
 )
