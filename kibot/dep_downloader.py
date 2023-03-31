@@ -95,6 +95,11 @@ Dependencies:
     url: https://www.blender.org/
     debian: blender
     arch: blender
+  - name: Lark
+    python_module: true
+    role: mandatory
+    debian: python3-lark
+    arch: python-lark
 """
 from copy import deepcopy
 import fnmatch

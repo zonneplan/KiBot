@@ -805,6 +805,40 @@ deps = '{\
         "url": null,\
         "url_down": null\
     },\
+    "Lark": {\
+        "arch": "python-lark",\
+        "command": "lark",\
+        "comments": [],\
+        "deb_package": "python3-lark",\
+        "downloader": null,\
+        "downloader_str": null,\
+        "extra_arch": null,\
+        "extra_deb": null,\
+        "help_option": "--version",\
+        "importance": 1000000,\
+        "in_debian": true,\
+        "is_kicad_plugin": false,\
+        "is_python": true,\
+        "module_name": "lark",\
+        "name": "Lark",\
+        "no_cmd_line_version": false,\
+        "no_cmd_line_version_old": false,\
+        "output": "global",\
+        "plugin_dirs": null,\
+        "pypi_name": "Lark",\
+        "roles": [\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "global",\
+                "version": null\
+            }\
+        ],\
+        "tests": [],\
+        "url": null,\
+        "url_down": null\
+    },\
     "OpenSCAD": {\
         "arch": "openscad",\
         "command": "openscad",\
