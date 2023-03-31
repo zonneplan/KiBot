@@ -10,6 +10,7 @@ Dependencies:
     command: eeschema_do
     version: 1.5.4
 """
+from collections import namedtuple
 import os
 from sys import exit
 import xml.etree.ElementTree as ET
@@ -23,6 +24,7 @@ from .optionable import Optionable
 import pcbnew
 
 logger = get_logger(__name__)
+Component = namedtuple("Component", "val fp props")
 
 
 class Update_XMLOptions(Optionable):
@@ -79,10 +81,27 @@ class Update_XML(BasePreFlight):  # noqa: F821
             if ref not in comps:
                 errors.append('{} found in PCB, but not in schematic'.format(ref))
                 continue
-            sch_fp = comps[ref]
+            sch_data = comps[ref]
             pcb_fp = m.GetFPIDAsString()
-            if sch_fp != pcb_fp:
-                errors.append('{} footprint mismatch (PCB: {} vs schematic: {})'.format(ref, pcb_fp, sch_fp))
+            if sch_data.fp != pcb_fp:
+                errors.append('{} footprint mismatch (PCB: `{}` vs schematic: `{}`)'.format(ref, pcb_fp, sch_data.fp))
+            pcb_val = m.GetValue()
+            if sch_data.val != pcb_val:
+                errors.append('{} value mismatch (PCB: `{}` vs schematic: `{}`)'.format(ref, pcb_val, sch_data.val))
+            # Properties
+            pcb_props = m.GetProperties()
+            found_props = set()
+            for p, v in sch_data.props.items():
+                v_pcb = pcb_props.get(p)
+                if v_pcb is None:
+                    errors.append('{} schematic property `{}` not in PCB'.format(ref, p))
+                    continue
+                found_props.add(p)
+                if v_pcb != v:
+                    errors.append('{} property mismatch (PCB: `{}` vs schematic: `{}`)'.format(ref, v_pcb, v))
+            # Missing properties
+            for p in set(pcb_props.keys()).difference(found_props):
+                errors.append('{} PCB property `{}` not in schematic'.format(ref, p))
         for ref in set(comps.keys()).difference(found_comps):
             errors.append('{} found in schematic, but not in PCB'.format(ref))
 
@@ -143,10 +162,13 @@ class Update_XML(BasePreFlight):  # noqa: F821
         if components is not None:
             for c in components.iter('comp'):
                 ref = c.attrib.get('ref')
+                val = c.find('value')
+                val = val.text if val is not None else ''
                 fp = c.find('footprint')
                 fp = fp.text if fp is not None else ''
-                logger.debugl(2, '- {}: {}'.format(ref, fp))
-                comps[ref] = fp
+                props = {p.get('name'): p.get('value') for p in c.iter('property')}
+                logger.debugl(2, '- {}: {} {} {}'.format(ref, val, fp, props))
+                comps[ref] = Component(val, fp, props)
         netlist = root.find('nets')
         net_nodes = {}
         if netlist is not None:

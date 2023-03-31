@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BoM:
   - Support for extra information in the *Value* field.
     Currently just parsed, not rejected.
+- PCB/SCH parity test:
+  - Check for value and fields/properties.
 
 ### Fixed
 - Makefile: don't skip all preflights on each run, just the ones we generate

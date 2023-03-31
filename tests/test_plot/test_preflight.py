@@ -198,13 +198,16 @@ def test_update_xml_2(test_dir):
     ctx = context.TestContext(test_dir, prj, 'update_xml_2', '')
     # The XML should be created where the schematic is located
     xml = os.path.abspath(os.path.join(ctx.get_board_dir(), prj+'.xml'))
-    ctx.run(ret_val=NETLIST_DIFF)
+    ctx.run(ret_val=NETLIST_DIFF, extra_debug=True)
     # Check all outputs are there
     # ctx.expect_out_file(prj+'.csv')
     assert os.path.isfile(xml)
     assert os.path.getsize(xml) > 0
     logging.debug(os.path.basename(xml)+' OK')
     ctx.search_err(["C1 footprint mismatch",
+                    "R1 value mismatch .PCB: .100. vs schematic: .120",
+                    "R1 schematic property .Sheetname. not in PCB",
+                    "R1 PCB property .Size. not in schematic ",
                     "F1 found in PCB, but not in schematic",
                     "FID1 found in schematic, but not in PCB",
                     "Net count mismatch .PCB 3 vs schematic 4.",
