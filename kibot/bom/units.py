@@ -155,7 +155,7 @@ def value_from_grammar(r):
         return None
     # Create an object with the result
     val, pow = get_prefix(float(val), PREFIXES[int(log10(r['mult']))])
-    parsed = ParsedValue(val, pow, get_unit(GRAM_TYPES[r['type']], ''), r)
+    parsed = ParsedValue(val, pow, get_unit(None, GRAM_TYPES[r['type']]), r)
     return parsed
 
 
