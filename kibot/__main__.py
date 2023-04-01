@@ -319,6 +319,8 @@ def main():
     if args.log:
         if os.path.isfile(args.log):
             os.remove(args.log)
+        else:
+            os.makedirs(os.path.dirname(os.path.abspath(args.log)), exist_ok=True)
         log.set_file_log(args.log)
         GS.debug_level = 10
     # The log setup finished, this is our first log message
