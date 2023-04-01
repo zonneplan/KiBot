@@ -196,17 +196,31 @@ function main {
 echo "*****************************************************************************************"
 echo "*****************************************************************************************"
 echo
+echo "KKKKKKKKK    KKKKKKK  iiii  BBBBBBBBBBBBBBBBB                             tttt"
+echo "K:::::::K    K:::::K i::::i B::::::::::::::::B                         ttt:::t"
+echo "K:::::::K    K:::::K  iiii  B::::::BBBBBB:::::B                        t:::::t"
+echo "K:::::::K   K::::::K        BB:::::B     B:::::B                       t:::::t"
+echo "KK::::::K  K:::::KKKiiiiiii   B::::B     B:::::B   ooooooooooo   ttttttt:::::ttttttt"
+echo "  K:::::K K:::::K   i:::::i   B::::B     B:::::B oo:::::::::::oo t:::::::::::::::::t"
+echo "  K::::::K:::::K     i::::i   B::::BBBBBB:::::B o:::::::::::::::ot:::::::::::::::::t"
+echo "  K:::::::::::K      i::::i   B:::::::::::::BB  o:::::ooooo:::::otttttt:::::::tttttt"
+echo "  K:::::::::::K      i::::i   B::::BBBBBB:::::B o::::o     o::::o      t:::::t"
+echo "  K::::::K:::::K     i::::i   B::::B     B:::::Bo::::o     o::::o      t:::::t"
+echo "  K:::::K K:::::K    i::::i   B::::B     B:::::Bo::::o     o::::o      t:::::t"
+echo "KK::::::K  K:::::KKK i::::i   B::::B     B:::::Bo::::o     o::::o      t:::::t    tttttt"
+echo "K:::::::K   K::::::Ki::::::iBB:::::BBBBBB::::::Bo:::::ooooo:::::o      t::::::tttt:::::t"
+echo "K:::::::K    K:::::Ki::::::iB:::::::::::::::::B o:::::::::::::::o      tt::::::::::::::t"
+echo "K:::::::K    K:::::Ki::::::iB::::::::::::::::B   oo:::::::::::oo         tt:::::::::::tt"
+echo "KKKKKKKKK    KKKKKKKiiiiiiiiBBBBBBBBBBBBBBBBB      ooooooooooo             ttttttttttt"
 echo
-echo KiBot GitHub Action v2
+echo 🤖 KiBot GitHub Action v2 🚀
 echo
-echo
-kibot --version
-dpkg -l kicad | grep kicad
+kibot --version | awk '{ print $1 ": "  $2 }'
+echo KiCad: `dpkg --robot -l kicad | grep kicad | awk '{print $3}'`
 echo Debian: `cat /etc/debian_version`
-pcbnew_do --version
-kicost --version
-echo "iBoM:" `INTERACTIVE_HTML_BOM_NO_DISPLAY=True generate_interactive_bom.py --version 2> /dev/null | grep "^v"`
-echo
+pcbnew_do --version  | awk 'BEGIN{ done=0 } { if (done == 0) { print "KiAuto: " $2; done=1 } }'
+kicost --version | tr -d 'v'
+echo "iBoM:" `INTERACTIVE_HTML_BOM_NO_DISPLAY=True generate_interactive_bom.py --version 2> /dev/null | grep "^v" | tr -d 'v'`
 echo
 echo "*****************************************************************************************"
 echo "*****************************************************************************************"
