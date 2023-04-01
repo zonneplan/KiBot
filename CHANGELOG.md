@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.6.2] - UNRELEASED
 ### Added
 - Command line:
-  - Option to display a banner
+  - `--banner N` Option to display a banner
+  - `--log FILE` Option to log to a file, in addition to the stderr
 - Global options:
   - `colored_tht_resistors` to disable the 3D colored resistors.
   - `field_tolerance` field/s to look for resistor tolerance.

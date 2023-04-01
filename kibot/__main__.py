@@ -9,7 +9,7 @@
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
-         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
+         [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... --list
@@ -44,6 +44,8 @@ Options:
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
+  -L, --log LOGFILE                Log to LOGFILE using maximum debug level.
+                                   Is independent of what is logged to stderr
   -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
   -n, --no-priority                Don't sort targets by priority
   -p, --copy-options               Copy plot options from the PCB file
@@ -74,6 +76,7 @@ Help options:
   --help-variants                  List supported variants and details
 
 """
+from datetime import datetime
 from glob import glob
 import gzip
 import locale
@@ -312,7 +315,14 @@ def main():
     # Set the specified verbosity
     GS.debug_enabled = log.set_verbosity(logger, args.verbose, args.quiet)
     log.debug_level = GS.debug_level = args.verbose
-    logger.debug('KiBot {} verbose level: {}'.format(__version__, args.verbose))
+    # We can log all the debug info to a separated file
+    if args.log:
+        if os.path.isfile(args.log):
+            os.remove(args.log)
+        log.set_file_log(args.log)
+        GS.debug_level = 10
+    # The log setup finished, this is our first log message
+    logger.debug('KiBot {} verbose level: {} started on {}'.format(__version__, args.verbose, datetime.now()))
     apply_warning_filter(args)
     # Now we have the debug level set we can check (and optionally inform) KiCad info
     detect_kicad()
