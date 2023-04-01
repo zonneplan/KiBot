@@ -5402,11 +5402,12 @@ KiBot: KiCad automation tool for documents generation
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
          [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
-         [-E DEF] ... [-w LIST] [TARGET...]
-  kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [-E DEF] ... --list
-  kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
-  kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
-         --quick-start
+         [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
+  kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
+         [-E DEF] ... --list
+  kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
+  kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
+         [-t, --type TYPE]... --quick-start
   kibot [-v...] --help-filters
   kibot [-v...] [--markdown|--json] --help-dependencies
   kibot [-v...] --help-global-options
@@ -5415,6 +5416,7 @@ Usage:
   kibot [-v...] --help-outputs
   kibot [-v...] --help-preflights
   kibot [-v...] --help-variants
+  kibot [-v...] --help-banners
   kibot -h | --help
   kibot --version
 
@@ -5424,6 +5426,7 @@ Arguments:
 Options:
   -A, --no-auto-download           Disable dependencies auto-download
   -b BOARD, --board-file BOARD     The PCB .kicad-pcb board file
+  --banner N                       Display banner number N (-1 == random)
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -C, --cli-order                  Generate outputs using the indicated order
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
@@ -5452,6 +5455,7 @@ Quick start options:
 
 Help options:
   -h, --help                       Show this help message and exit
+  --help-banners                   Show all available banners
   --help-dependencies              List dependencies in human readable format
   --help-filters                   List supported filters and details
   --help-global-options            List supported global variables
@@ -6112,3 +6116,4 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
   - **Battery charger example**: [RB0002-BatteryPack](https://cadlab.io/project/22740/master/files)
   - **IT-1187A 3D Model**: Anton Pavlov ([GrabCad](https://grabcad.com/anton.pavlov-2))
   - **105017-0001 3D Model**: M.B.I. ([GrabCad](https://grabcad.com/m.b.i-1))
+  - **ASCII Art generated**: [patorjk](https://patorjk.com/)
