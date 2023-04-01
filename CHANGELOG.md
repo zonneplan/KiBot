@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PCB Print:
   - Interference between the visible layers in the PRL file and the results
     when scaling. (#407)
+  - Problems with images in the WKS (KiCad 5/6)
 - Diff:
   - Problems when using an output and no variant specified.
 - PCB/SCH parity test:

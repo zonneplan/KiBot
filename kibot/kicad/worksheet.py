@@ -417,6 +417,7 @@ class WksBitmap(WksDrawing):
         p.images.append(e)
 
     def add_to_svg(e, svg, p, svg_precision):
+        # Note: we compute all in KiCad IUs, and then apply a scale for the SVG
         s = e.data
         w, h = unpack('>LL', s[16:24])
         # For KiCad 300 dpi is 1:1 scale
@@ -429,7 +430,7 @@ class WksBitmap(WksDrawing):
         # KiCad 6 can adjust the precision
         # The default is 6 and makes 1 KiCad unit == 1 SVG unit
         # But this isn't supported by browsers (Chrome and Firefox)
-        scale = GS.iu_to_svg(1.0, svg_precision)[0]
+        scale = GS.iu_to_svg(1.0, svg_precision)
         for _ in range(e.repeat):
             img = ImageElement(io.BytesIO(s), w, h)
             x = pos.x-round(w/2)
