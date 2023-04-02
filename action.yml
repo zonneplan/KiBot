@@ -1,5 +1,5 @@
 name: 'KiBot GitHub action'
-description: 'auto generate documentatio, fabrication, etc. files for any KiCad project.'
+description: 'automatically generates documentation, fabrication, etc. files for any KiCad project.'
 author: 'Salvador E. Tropea'
 inputs:
   config:
