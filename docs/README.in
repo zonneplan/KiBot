@@ -11,6 +11,7 @@
 
 **Important for CI/CD**:
 - The GitHub actions now use the full/test docker images. So now they include PanDoc and also Blender.
+- If you are looking for the GitHub Actions documentation, and you already know how to use KiBot, or want a quick start, read: [GitHub Actions](#usage-of-github-actions)
 
 **New on v1.6.1**
 - KiCad 7.0.1 support
@@ -1613,7 +1614,9 @@ For more information about the docker images visit [kicad_debian](https://github
 
 ### Usage of GitHub Actions
 
-Note: You can also use --quick-start functionality with GitHub actions, and example is this [workflow](https://github.com/INTI-CMNB/kibot_variants_arduprog/blob/master/.github/workflows/kibot_action_quick_start.yml)
+Note: You can also use --quick-start functionality with GitHub actions, an example is this
+[workflow](https://github.com/INTI-CMNB/kibot_variants_arduprog/blob/master/.github/workflows/kibot_action_quick_start.yml).
+This is the fastest way to test KiBot functionality.
 
 You need to put a [config.kibot.yaml](#configuration) file into the KiCad project folder.
 
