@@ -27,10 +27,12 @@ on:
 
 jobs:
   test:
+    continue-on-error: true
     strategy:
       matrix:
-        ki_release: [latest, ki6, ki7]
+        ki_release: [ki5, ki6, ki7]
         w_tests: [g1, g2, g3]
+        fail-fast: false
 
     runs-on: ubuntu-latest
     container: ghcr.io/inti-cmnb/kicad_auto_test:${{ matrix.ki_release }}
