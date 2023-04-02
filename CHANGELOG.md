@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.2] - UNRELEASED
 ### Added
+- General:
+  - Support for time stamp in the date (i.e. 2023-04-02T09:22-03:00)
 - Command line:
   - `--banner N` Option to display a banner
   - `--log FILE` Option to log to a file, in addition to the stderr

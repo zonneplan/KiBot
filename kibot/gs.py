@@ -13,7 +13,7 @@ except ImportError:
     class pcbnew(object):
         IU_PER_MM = 1
         IU_PER_MILS = 1
-from datetime import datetime, date
+from datetime import datetime
 from sys import exit
 from shutil import copy2
 from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL
@@ -247,7 +247,7 @@ class GS(object):
             return datetime.fromtimestamp(os.path.getmtime(fname)).strftime(GS.global_date_time_format)
         elif GS.global_time_reformat:
             try:
-                dt = date.fromisoformat(d)
+                dt = datetime.fromisoformat(d)
             except ValueError as e:
                 logger.warning(W_DATEFORMAT+"Trying to reformat {} time, but not in ISO format ({})".format(what, d))
                 logger.warning(W_DATEFORMAT+"Problem: {}".format(e))
