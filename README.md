@@ -2277,6 +2277,8 @@ Notes:
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output DXF (%i=schematic, %x=dxf). Affected by global options.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -2596,6 +2598,8 @@ Notes:
         - `pen_size`: [number=0.4826] Pen size (diameter) [mm].
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -3894,6 +3898,8 @@ Notes:
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -4133,6 +4139,8 @@ Notes:
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output postscript (%i=schematic, %x=ps). Affected by global options.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -4681,6 +4689,8 @@ Notes:
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -5401,7 +5411,7 @@ KiBot: KiCad automation tool for documents generation
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
-         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
+         [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... --list
@@ -5436,6 +5446,8 @@ Options:
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
+  -L, --log LOGFILE                Log to LOGFILE using maximum debug level.
+                                   Is independent of what is logged to stderr
   -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
   -n, --no-priority                Don't sort targets by priority
   -p, --copy-options               Copy plot options from the PCB file
