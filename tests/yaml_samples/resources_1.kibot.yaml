@@ -1,0 +1,23 @@
+kiplot:
+  version: 1
+
+globals:
+  resources_dir: tests/data/kibot_resources_1
+
+outputs:
+  - name: PcbDraw
+    comment: "PcbDraw font test"
+    type: pcbdraw
+    options:
+      format: png
+
+  - name: 'print_front'
+    comment: "Font and colors"
+    type: pcb_print
+    options:
+      plot_sheet_reference: false
+      scaling: 3
+      format: PNG
+      color_theme: test_color
+      pages:
+        - layers: [F.Cu, Edge.Cuts]

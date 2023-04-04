@@ -832,6 +832,11 @@ global:
                       Currently known are FR1 to FR5.
     - `remove_adhesive_for_dnp`: [boolean=true] When applying filters and variants remove the adhesive (glue) for components that won't be included.
     - `remove_solder_paste_for_dnp`: [boolean=true] When applying filters and variants remove the solder paste for components that won't be included.
+    - `resources_dir`: [string='kibot_resources'] Directory where various resources are stored. Currently we support colors and fonts.
+                       They must be stored in sub-dirs. I.e. kibot_resources/fonts/MyFont.ttf
+                       Note this is mainly useful for CI/CD, so you can store fonts and colors in your repo.
+                       Also note that the fonts are installed using a mechanism known to work on Debian,
+                       which is used by the KiBot docker images, on other OSs *your mileage may vary*.
     - `restore_project`: [boolean=false] Restore the KiCad project after execution.
                          Note that this option will undo operations like `set_text_variables`.
     - `set_text_variables_before_output`: [boolean=false] Run the `set_text_variables` preflight before running each output that involves variants.

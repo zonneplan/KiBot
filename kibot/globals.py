@@ -277,6 +277,12 @@ class Globals(FiltersOptions):
             self.cache_3d_resistors = False
             """ Use a cache for the generated 3D models of colored resistors.
                 Will save time, but you could need to remove the cache if you need to regenerate them """
+            self.resources_dir = 'kibot_resources'
+            """ Directory where various resources are stored. Currently we support colors and fonts.
+                They must be stored in sub-dirs. I.e. kibot_resources/fonts/MyFont.ttf
+                Note this is mainly useful for CI/CD, so you can store fonts and colors in your repo.
+                Also note that the fonts are installed using a mechanism known to work on Debian,
+                which is used by the KiBot docker images, on other OSs *your mileage may vary* """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

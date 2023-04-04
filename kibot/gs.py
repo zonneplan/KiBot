@@ -154,6 +154,7 @@ class GS(object):
     global_pcb_material = None
     global_remove_solder_paste_for_dnp = None
     global_remove_adhesive_for_dnp = None
+    global_resources_dir = None
     global_restore_project = None
     global_set_text_variables_before_output = None
     global_silk_screen_color = None

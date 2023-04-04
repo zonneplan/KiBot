@@ -1626,3 +1626,13 @@ def test_panelize_1(test_dir):
     ctx.run(extra=[])
     ctx.compare_image(prj+'-panel.png')
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Uses fonts")
+def test_font_and_colors_1(test_dir):
+    prj = 'font_and_colors'
+    ctx = context.TestContext(test_dir, prj, 'resources_1')
+    ctx.run()
+    ctx.compare_image(prj+'-top.png')
+    ctx.compare_image(prj+'-assembly_page_01.png')
+    ctx.clean_up()

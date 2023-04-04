@@ -66,7 +66,8 @@ def load_color_theme(name):
         fn = os.path.join(GS.get_resource_path('kicad_colors'), name+'.json')
     else:
         KiConf.init(GS.pcb_file)
-        fn = os.path.join(KiConf.config_dir, 'colors', name+'.json')
+        cfg_dir = KiConf.config_dir or GS.kicad_conf_path or ''
+        fn = os.path.join(cfg_dir, 'colors', name+'.json')
     fn = os.path.abspath(fn)
     global CACHE
     if fn in CACHE:

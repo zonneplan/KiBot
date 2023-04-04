@@ -106,6 +106,8 @@ test_docker_local_1_ki7:
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:ki7 \
 		/bin/bash -c "python3-coverage run src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/"
 
+t1k7: test_docker_local_1_ki7
+
 test_docker_local:
 	rm -rf output
 	rm -f tests/.local
