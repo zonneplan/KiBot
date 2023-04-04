@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.2] - UNRELEASED
 ### Added
+- General:
+  - Support for time stamp in the date (i.e. 2023-04-02T09:22-03:00)
+- Command line:
+  - `--banner N` Option to display a banner
+  - `--log FILE` Option to log to a file, in addition to the stderr
 - Global options:
   - `colored_tht_resistors` to disable the 3D colored resistors.
   - `field_tolerance` field/s to look for resistor tolerance.
@@ -24,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Currently just parsed, not rejected.
 - PCB/SCH parity test:
   - Check for value and fields/properties.
+- SCH print:
+  - Support for title change
 
 ### Fixed
 - Makefile: don't skip all preflights on each run, just the ones we generate
@@ -36,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PCB Print:
   - Interference between the visible layers in the PRL file and the results
     when scaling. (#407)
+  - Problems with images in the WKS (KiCad 5/6)
 - Diff:
   - Problems when using an output and no variant specified.
 - PCB/SCH parity test:

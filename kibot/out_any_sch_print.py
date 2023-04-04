@@ -42,6 +42,9 @@ class Any_SCH_PrintOptions(VariantOptions):
             """ Color theme used, this must exist in the KiCad config (KiCad 6) """
             self.background_color = False
             """ Use the background color from the `color_theme` (KiCad 6) """
+            self.title = ''
+            """ Text used to replace the sheet title. %VALUE expansions are allowed.
+                If it starts with `+` the text is concatenated """
         super().__init__()
         self.add_to_doc('variant', "Not fitted components are crossed")
         self._expand_id = 'schematic'
@@ -54,7 +57,9 @@ class Any_SCH_PrintOptions(VariantOptions):
     def run(self, name):
         super().run(name)
         command = self.ensure_tool('KiAuto')
-        if self._comps:
+        if self.title:
+            self.set_title(self.title, sch=True)
+        if self._comps or self.title:
             # Save it to a temporal dir
             sch_dir = mkdtemp(prefix='tmp-kibot-'+self._expand_ext+'_sch_print-')
             copy_project(sch_dir)
@@ -81,3 +86,5 @@ class Any_SCH_PrintOptions(VariantOptions):
             cmd.extend(['--hpgl_pen_size', str(self.pen_size)])
         cmd.extend([sch_file, os.path.dirname(name)])
         self.exec_with_retry(self.add_extra_options(cmd), self._exit_error)
+        if self.title:
+            self.restore_title(sch=True)

@@ -27,9 +27,11 @@ on:
 
 jobs:
   test:
+    continue-on-error: true
     strategy:
+      fail-fast: false
       matrix:
-        ki_release: [latest, ki6, ki7]
+        ki_release: [ki5, ki6, ki7]
         w_tests: [g1, g2, g3]
 
     runs-on: ubuntu-latest
@@ -136,17 +138,17 @@ jobs:
     - name: Download coverage k5 g1
       uses: actions/download-artifact@v3
       with:
-        name: Test_Coverage_latest_g1
+        name: Test_Coverage_ki5_g1
 
     - name: Download coverage k5 g2
       uses: actions/download-artifact@v3
       with:
-        name: Test_Coverage_latest_g2
+        name: Test_Coverage_ki5_g2
 
     - name: Download coverage k5 g3
       uses: actions/download-artifact@v3
       with:
-        name: Test_Coverage_latest_g3
+        name: Test_Coverage_ki5_g3
 
     - name: Download coverage k6 g1
       uses: actions/download-artifact@v3

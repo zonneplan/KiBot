@@ -13,7 +13,7 @@ except ImportError:
     class pcbnew(object):
         IU_PER_MM = 1
         IU_PER_MILS = 1
-from datetime import datetime, date
+from datetime import datetime
 from sys import exit
 from shutil import copy2
 from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL
@@ -248,7 +248,7 @@ class GS(object):
             return datetime.fromtimestamp(os.path.getmtime(fname)).strftime(GS.global_date_time_format)
         elif GS.global_time_reformat:
             try:
-                dt = date.fromisoformat(d)
+                dt = datetime.fromisoformat(d)
             except ValueError as e:
                 logger.warning(W_DATEFORMAT+"Trying to reformat {} time, but not in ISO format ({})".format(what, d))
                 logger.warning(W_DATEFORMAT+"Problem: {}".format(e))
@@ -528,16 +528,21 @@ class GS(object):
 
     @staticmethod
     def iu_to_svg(values, svg_precision):
-        """ Converts 1 or more values from KiCad internal IUs to the units used for SVGs """
-        if not isinstance(values, tuple):
-            values = [values]
+        """ Converts 1 or more values from KiCad internal IUs to the units used for SVGs.
+            For tuples we assume the result is SVG coordinates, for 1 value a scale """
         if GS.ki5:
-            return tuple(map(lambda x: int(round(x*KICAD5_SVG_SCALE)), values))
+            if isinstance(values, tuple):
+                return tuple(map(lambda x: int(round(x*KICAD5_SVG_SCALE)), values))
+            return values*KICAD5_SVG_SCALE
         if GS.ki7:
-            return tuple(map(GS.to_mm, values))
+            if isinstance(values, tuple):
+                return tuple(map(GS.to_mm, values))
+            return GS.to_mm(values)
         # KiCad 6
         mult = 10.0 ** (svg_precision - 6)
-        return tuple(map(lambda x: int(round(x*mult)), values))
+        if isinstance(values, tuple):
+            return tuple(map(lambda x: int(round(x*mult)), values))
+        return values*mult
 
     @staticmethod
     def svg_round(val):
