@@ -205,6 +205,7 @@ def detect_kicad():
     GS.ki6 = GS.kicad_version_major >= 6
     GS.ki6_only = GS.kicad_version_major == 6
     GS.ki7 = GS.kicad_version_major >= 7
+    GS.ki8 = (GS.kicad_version_major == 7 and GS.kicad_version_minor >= 99) or GS.kicad_version_major >= 8
     logger.debug('Detected KiCad v{}.{}.{} ({} {})'.format(GS.kicad_version_major, GS.kicad_version_minor,
                  GS.kicad_version_patch, GS.kicad_version, GS.kicad_version_n))
     # Used to look for plug-ins.
