@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -15,6 +15,7 @@ from .out_any_pcb_print import Any_PCB_PrintOptions
 from .error import KiPlotConfigurationError
 from .kicad.patch_svg import patch_svg_file
 from .kicad.pcb import PCB
+from .misc import FONT_HELP_TEXT
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
 from . import log
@@ -51,6 +52,8 @@ class SVG_PCB_Print(BaseOutput):  # noqa: F821
         Exports the PCB to the scalable vector graphics format.
         This output is what you get from the 'File/Print' menu in pcbnew.
         The `pcb_print` is usually a better alternative. """
+    __doc__ += FONT_HELP_TEXT
+
     def __init__(self):
         super().__init__()
         with document:

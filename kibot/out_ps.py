@@ -2,12 +2,13 @@
 # Copyright (c) 2020-2023 Salvador E. Tropea
 # Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
-# License: GPL-3.0
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 from pcbnew import PLOT_FORMAT_POST, FromMM, ToMM, SKETCH, FILLED
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
+from .misc import FONT_HELP_TEXT
 from .gs import GS
 from .macros import macros, document, output_class  # noqa: F401
 
@@ -66,6 +67,8 @@ class PS(AnyLayer):
         Exports the PCB to a format suitable for printing.
         This output is what you get from the File/Plot menu in pcbnew.
         The `pcb_print` is usually a better alternative. """
+    __doc__ += FONT_HELP_TEXT
+
     def __init__(self):
         super().__init__()
         with document:

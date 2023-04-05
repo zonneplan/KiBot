@@ -47,7 +47,7 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (PDF_PCB_PRINT, W_PDMASKFAIL, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED,
-                   VIATYPE_MICROVIA)
+                   VIATYPE_MICROVIA, FONT_HELP_TEXT)
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -1212,9 +1212,9 @@ class PCB_PrintOptions(VariantOptions):
 class PCB_Print(BaseOutput):  # noqa: F821
     """ PCB Print
         Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
-        Supports PDF, SVG, PNG, EPS and PS formats.
-        KiCad 5: including the frame is slow.
-        KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow. """
+        Supports PDF, SVG, PNG, EPS and PS formats. """
+    __doc__ += FONT_HELP_TEXT
+
     def __init__(self):
         super().__init__()
         with document:

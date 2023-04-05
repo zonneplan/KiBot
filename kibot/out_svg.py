@@ -2,7 +2,7 @@
 # Copyright (c) 2020-2023 Salvador E. Tropea
 # Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
-# License: GPL-3.0
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 import os
@@ -10,7 +10,7 @@ from pcbnew import PLOT_FORMAT_SVG, FromMM, ToMM
 from .drill_marks import DrillMarks
 from .gs import GS
 from .kicad.patch_svg import change_svg_viewbox
-from .misc import W_ESCINV
+from .misc import W_ESCINV, FONT_HELP_TEXT
 from .out_base import PcbMargin
 from .out_any_layer import AnyLayer
 from .macros import macros, document, output_class  # noqa: F401
@@ -100,6 +100,8 @@ class SVG(AnyLayer):
         Unlike bitmaps SVG drawings can be scaled without losing resolution.
         This output is what you get from the File/Plot menu in pcbnew.
         The `pcb_print` is usually a better alternative. """
+    __doc__ += FONT_HELP_TEXT
+
     def __init__(self):
         super().__init__()
         with document:

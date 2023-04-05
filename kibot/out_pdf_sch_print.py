@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2020-2023 Salvador E. Tropea
 # Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -12,7 +12,7 @@ Dependencies:
 """
 from .gs import GS
 from .out_any_sch_print import Any_SCH_PrintOptions
-from .misc import PDF_SCH_PRINT
+from .misc import PDF_SCH_PRINT, FONT_HELP_TEXT
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -35,6 +35,8 @@ class PDF_SCH_Print(BaseOutput):  # noqa: F821
         Exports the schematic to the most common exchange format. Suitable for printing.
         This is the main format to document your schematic.
         This output is what you get from the 'File/Plot' menu in eeschema. """
+    __doc__ += FONT_HELP_TEXT
+
     def __init__(self):
         super().__init__()
         with document:

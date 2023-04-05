@@ -2194,6 +2194,7 @@ Notes:
   * Type: `dxf`
   * Description: Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
                  This output is what you get from the File/Plot menu in pcbnew.
+                     If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -2265,6 +2266,7 @@ Notes:
   * Type: `dxf_sch_print`
   * Description: Exports the schematic to a format commonly used for CAD software.
                  This output is what you get from the 'File/Plot' menu in eeschema.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -2440,6 +2442,7 @@ Notes:
   * Type: `gerber`
   * Description: This is the main fabrication format for the PCB.
                  This output is what you get from the File/Plot menu in pcbnew.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -2513,6 +2516,7 @@ Notes:
   * Type: `hpgl`
   * Description: Exports the PCB for plotters and laser printers.
                  This output is what you get from the File/Plot menu in pcbnew.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -2584,6 +2588,7 @@ Notes:
   * Type: `hpgl_sch_print`
   * Description: Exports the schematic to the most common plotter format.
                  This output is what you get from the 'File/Plot' menu in eeschema.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -3440,8 +3445,7 @@ Notes:
   * Type: `pcb_print`
   * Description: Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
                  Supports PDF, SVG, PNG, EPS and PS formats.
-                 KiCad 5: including the frame is slow.
-                 KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -3725,6 +3729,7 @@ Notes:
                  Note that this output isn't the best for documating your project.
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -3831,6 +3836,7 @@ Notes:
                  This is the main format to document your PCB.
                  This output is what you get from the 'File/Print' menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -3886,6 +3892,7 @@ Notes:
   * Description: Exports the schematic to the most common exchange format. Suitable for printing.
                  This is the main format to document your schematic.
                  This output is what you get from the 'File/Plot' menu in eeschema.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -4052,6 +4059,7 @@ Notes:
   * Description: Exports the PCB to a format suitable for printing.
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -4127,6 +4135,7 @@ Notes:
   * Type: `ps_sch_print`
   * Description: Exports the schematic in postscript. Suitable for printing.
                  This output is what you get from the 'File/Plot' menu in eeschema.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -4531,6 +4540,7 @@ Notes:
                  Unlike bitmaps SVG drawings can be scaled without losing resolution.
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -4620,6 +4630,7 @@ Notes:
   * Description: Exports the PCB to the scalable vector graphics format.
                  This output is what you get from the 'File/Print' menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -4677,6 +4688,7 @@ Notes:
   * Description: Exports the schematic in a vectorized graphics format.
                  This is a format to document your schematic.
                  This output is what you get from the 'File/Plot' menu in eeschema.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
