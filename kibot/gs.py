@@ -599,6 +599,8 @@ class GS(object):
 
     @staticmethod
     def create_module_element(m):
+        if GS.ki8:
+            return pcbnew.PCB_SHAPE(m)
         if GS.ki6:
             return pcbnew.FP_SHAPE(m)
         return pcbnew.EDGE_MODULE(m)
