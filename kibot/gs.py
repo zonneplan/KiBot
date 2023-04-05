@@ -276,7 +276,11 @@ class GS(object):
     def p2v_k7(point):
         """ KiCad v7 changed various wxPoint args to VECTOR2I.
             This helper changes the types accordingly """
-        return pcbnew.VECTOR2I(point) if GS.ki7 else point
+        if GS.ki8:
+            return pcbnew.VECTOR2I(point.x, point.y)
+        elif GS.ki7:
+            return pcbnew.VECTOR2I(point)
+        return point
 
     @staticmethod
     def get_modules():
