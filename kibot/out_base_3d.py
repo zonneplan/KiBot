@@ -176,7 +176,7 @@ class Base3DOptions(VariantOptions):
         return name
 
     def try_download_kicad(self, model, full_name, downloaded, rel_dirs, force_wrl):
-        if not (model.startswith('${KISYS3DMOD}/') or model.startswith('${KICAD6_3DMODEL_DIR}/')):
+        if not (model.startswith('${KISYS3DMOD}/') or re.search(r"^\$\{KICAD\d+_3DMODEL_DIR\}\/", model)):
             return None
         # This is a model from KiCad, try to download it
         fname = model[model.find('/')+1:]
@@ -504,7 +504,7 @@ class Base3DOptions(VariantOptions):
             for model in reversed(models_l):
                 models.append(model)
         if downloaded:
-            logger.warning(W_DOWN3D+' {} 3D models downloaded'.format(len(downloaded)))
+            logger.warning(W_DOWN3D+' {} 3D models downloaded or cached'.format(len(downloaded)))
         return self.models_replaced if not is_copy_mode else list(self.source_models)
 
     def list_models(self, even_missing=False):
