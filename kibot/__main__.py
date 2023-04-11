@@ -206,6 +206,8 @@ def detect_kicad():
     GS.ki6_only = GS.kicad_version_major == 6
     GS.ki7 = GS.kicad_version_major >= 7
     GS.ki8 = (GS.kicad_version_major == 7 and GS.kicad_version_minor >= 99) or GS.kicad_version_major >= 8
+    GS.footprint_gr_type = 'MGRAPHIC' if not GS.ki8 else 'PCB_SHAPE'
+    GS.board_gr_type = 'DRAWSEGMENT' if GS.ki5 else 'PCB_SHAPE'
     logger.debug('Detected KiCad v{}.{}.{} ({} {})'.format(GS.kicad_version_major, GS.kicad_version_minor,
                  GS.kicad_version_patch, GS.kicad_version, GS.kicad_version_n))
     # Used to look for plug-ins.

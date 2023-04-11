@@ -317,7 +317,7 @@ class VariantOptions(BaseOptions):
             if c and c.included and not c.fitted:
                 # Meassure the component BBox (only graphics)
                 for gi in m.GraphicalItems():
-                    if gi.GetClass() == 'MGRAPHIC':
+                    if gi.GetClass() == GS.footprint_gr_type:
                         l_gi = gi.GetLayer()
                         if l_gi == ffab:
                             frect.Union(GS.get_rect_for(gi.GetBoundingBox()))
@@ -667,7 +667,7 @@ class VariantOptions(BaseOptions):
         bcrtyd = board.GetLayerID('B.CrtYd')
         bbox = Rect()
         for gi in m.GraphicalItems():
-            if gi.GetClass() == 'MGRAPHIC':
+            if gi.GetClass() == GS.footprint_gr_type:
                 l_gi = gi.GetLayer()
                 if l_gi == fcrtyd or l_gi == bcrtyd:
                     bbox.Union(GS.get_rect_for(gi.GetBoundingBox()))

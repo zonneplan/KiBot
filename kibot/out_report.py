@@ -448,9 +448,8 @@ class ReportOptions(BaseOptions):
     def measure_pcb(self, board):
         edge_layer = board.GetLayerID('Edge.Cuts')
         x1 = y1 = x2 = y2 = None
-        draw_type = 'DRAWSEGMENT' if GS.ki5 else 'PCB_SHAPE'
         for d in board.GetDrawings():
-            if d.GetClass() == draw_type and d.GetLayer() == edge_layer:
+            if d.GetClass() == GS.board_gr_type and d.GetLayer() == edge_layer:
                 bb = GS.get_shape_bbox(d)
                 start = bb.GetOrigin()
                 end = bb.GetEnd()
@@ -465,7 +464,7 @@ class ReportOptions(BaseOptions):
         # This is a special case: the PCB edges are in a footprint
         for m in GS.get_modules():
             for gi in m.GraphicalItems():
-                if gi.GetClass() == 'MGRAPHIC' and gi.GetLayer() == edge_layer:
+                if gi.GetClass() == GS.footprint_gr_type and gi.GetLayer() == edge_layer:
                     bb = GS.get_shape_bbox(gi)
                     start = bb.GetOrigin()
                     end = bb.GetEnd()
