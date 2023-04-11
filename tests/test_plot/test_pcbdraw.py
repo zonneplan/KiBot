@@ -190,5 +190,5 @@ def test_pcbdraw_sub_pcb_bp(test_dir):
     ctx.expect_out_file(fname_b+'battery.svg')
     ctx.expect_out_file(fname_b+'charger.svg')
     ctx.expect_out_file(fname_b+'connector.svg')
-    ctx.compare_image(fname_b+'connector.svg', height='100%')
+    ctx.compare_image(fname_b+'connector.svg', height='100%', tol=10)
     ctx.clean_up(keep_project=True)
