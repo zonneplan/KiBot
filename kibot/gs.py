@@ -365,6 +365,14 @@ class GS(object):
         return e.GetFirstLayer() if GS.ki7 else e.GetLayer()
 
     @staticmethod
+    def footprint_update_local_coords_ki7(fp):
+        fp.SetLocalCoord()  # Update the local coordinates
+
+    @staticmethod
+    def dummy1(fp):
+        """ KiCad 8 doesn't need footprint_update_local_coords """
+
+    @staticmethod
     def expand_text_variables(text, extra_vars=None):
         vars = GS.load_pro_variables()
         new_text = ''

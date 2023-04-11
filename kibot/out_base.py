@@ -288,14 +288,14 @@ class VariantOptions(BaseOptions):
         seg1.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y1)))
         seg1.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y2)))
         seg1.SetLayer(layer)
-        seg1.SetLocalCoord()  # Update the local coordinates
+        GS.footprint_update_local_coords(seg1)
         m.Add(seg1)
         seg2 = GS.create_module_element(m)
         seg2.SetWidth(120000)
         seg2.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y2)))
         seg2.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y1)))
         seg2.SetLayer(layer)
-        seg2.SetLocalCoord()  # Update the local coordinates
+        GS.footprint_update_local_coords(seg2)
         m.Add(seg2)
         return [seg1, seg2]
 
