@@ -194,7 +194,16 @@ class KiConf(object):
 
     def _guess_kicad_data_dir(data_dir):
         """ Tries to figure out where libraries are.
-            Only used if we failed to find the kicad_common file. """
+            Only used if we failed to find the kicad_common file.
+            On modern KiCad (6+) this is always used because KiCad doesn't store the path in kicad_common,
+            unless modified by the user. """
+        # Give priority to the KICAD_PATH environment variable
+        kpath = os.environ.get('KICAD_PATH')
+        if kpath and os.path.isdir(kpath):
+            dir = os.path.join(kpath, data_dir)
+            if os.path.isdir(dir):
+                return dir
+        # Try to guess according to the OS
         system = platform.system()
         share = os.path.join('share', GS.kicad_dir, data_dir)
         if system == 'Linux':
