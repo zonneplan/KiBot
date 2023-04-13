@@ -47,7 +47,7 @@ kicad_minor = int(m.group(2))
 kicad_patch = int(m.group(3))
 kicad_version = kicad_major*1000000+kicad_minor*1000+kicad_patch
 if kicad_version >= KICAD_VERSION_5_99:
-    BOARDS_DIR = '../board_samples/kicad_'+str(kicad_major)
+    BOARDS_DIR = '../board_samples/kicad_'+str(kicad_major+(0 if kicad_minor < 99 else 1))
     if kicad_version >= KICAD_VERSION_8_0_0:
         REF_DIR = 'tests/reference/8_0_0'
     elif kicad_version >= KICAD_VERSION_7_0_0:
@@ -82,6 +82,10 @@ else:
         REF_DIR = 'tests/reference/5_1_6'
     PRO_EXT = '.pro'
 logging.debug('Detected KiCad v{}.{}.{} ({})'.format(kicad_major, kicad_minor, kicad_patch, kicad_version))
+
+
+def ki8():
+    return kicad_version >= KICAD_VERSION_8_0_0
 
 
 def ki7():
