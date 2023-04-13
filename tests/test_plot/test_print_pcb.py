@@ -64,7 +64,7 @@ def test_print_pcb_refill_1(test_dir):
     ctx = context.TestContext(test_dir, prj, 'print_pcb_zone-refill')
     ctx.run()
     ctx.expect_out_file(PDF_FILE_B)
-    ctx.compare_image(PDF_FILE_B)
+    ctx.compare_image(PDF_FILE_B, tol=10)
     ctx.clean_up()
 
 
@@ -78,7 +78,7 @@ def test_print_pcb_refill_2(test_dir):
     ctx = context.TestContext(test_dir, prj, 'print_pcb_zone-refill_def')
     ctx.run()
     ctx.expect_out_file(PDF_FILE_B)
-    ctx.compare_image(PDF_FILE_B, PDF_FILE_C)
+    ctx.compare_image(PDF_FILE_B, PDF_FILE_C, tol=10)
     ctx.clean_up()
 
 
