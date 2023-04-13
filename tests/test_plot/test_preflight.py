@@ -64,7 +64,7 @@ def test_erc_warning_1(test_dir):
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt')
     ctx.search_err(r"WARNING:\(W058\) 1 ERC warnings detected")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=context.ki8())
 
 
 @pytest.mark.slow
@@ -77,7 +77,7 @@ def test_erc_warning_2(test_dir):
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt', sub=True)
     ctx.search_err(r"ERROR:1 ERC errors detected")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=context.ki8())
 
 
 @pytest.mark.slow
