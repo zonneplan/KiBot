@@ -8,6 +8,7 @@ from fnmatch import fnmatch
 import os
 import re
 import requests
+import urllib
 from shutil import copy2
 from .bom.units import comp_match
 from .EasyEDA.easyeda_3d import download_easyeda_3d_model
@@ -134,6 +135,9 @@ class Base3DOptions(VariantOptions):
                 KIBOT_3D_MODELS environment variable """
             self.kicad_3d_url = 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
             """ Base URL for the KiCad 3D models """
+            self.kicad_3d_url_suffix = ''
+            """ Text added to the end of the download URL.
+                Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2 """
         # Temporal dir used to store the downloaded files
         self._tmp_dir = None
         super().__init__()
@@ -144,6 +148,7 @@ class Base3DOptions(VariantOptions):
         self.no_virtual = ref.no_virtual
         self.download = ref.download
         self.kicad_3d_url = ref.kicad_3d_url
+        self.kicad_3d_url_suffix = ref.kicad_3d_url_suffix
 
     def download_model(self, url, fname, rel_dirs):
         """ Download the 3D model from the provided URL """
@@ -189,7 +194,7 @@ class Base3DOptions(VariantOptions):
             # Already downloaded
             return os.path.join(self._tmp_dir, fname)
         # Download the model
-        url = self.kicad_3d_url+fname
+        url = self.kicad_3d_url+urllib.parse.quote_plus(fname)+self.kicad_3d_url_suffix
         replace = self.download_model(url, fname, rel_dirs)
         if not replace:
             return None

@@ -1623,6 +1623,8 @@ Notes:
             - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
             - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
             - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+            - `kicad_3d_url_suffix`: [string=''] Text added to the end of the download URL.
+                                     Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
             - `output`: [string='%f-%i%I%v.%x'] Name for the generated PCB3D file (%i='blender_export' %x='pcb3d'). Affected by global options.
             - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                                A short-cut to use for simple cases where a variant is an overkill.
@@ -2057,6 +2059,8 @@ Notes:
                         A short-cut to use for simple cases where a variant is an overkill.
         - `follow_links`: [boolean=true] Store the file pointed by symlinks, not the symlink.
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `kicad_3d_url_suffix`: [string=''] Text added to the end of the download URL.
+                                 Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
         - `link_no_copy`: [boolean=false] Create symlinks instead of copying files.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
@@ -4263,6 +4267,8 @@ Notes:
         - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
         - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `kicad_3d_url_suffix`: [string=''] Text added to the end of the download URL.
+                                 Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
         - `no_smd`: [boolean=false] Used to exclude 3D models for surface mount components.
         - `no_tht`: [boolean=false] Used to exclude 3D models for through hole components.
         - `orthographic`: [boolean=false] Enable the orthographic projection mode (top view looks flat).
@@ -4515,6 +4521,8 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `kicad_3d_url_suffix`: [string=''] Text added to the end of the download URL.
+                                 Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
         - `metric_units`: [boolean=true] Use metric units instead of inches.
         - `min_distance`: [number=-1] The minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
@@ -4755,6 +4763,8 @@ Notes:
         - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
         - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `kicad_3d_url_suffix`: [string=''] Text added to the end of the download URL.
+                                 Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
         - `model_units`: [string='millimeters'] [millimeters,meters,deciinches,inches] Units used for the VRML (1 deciinch = 0.1 inches).
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
