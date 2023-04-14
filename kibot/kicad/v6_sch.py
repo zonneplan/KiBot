@@ -1280,7 +1280,6 @@ class Text(object):
         for c, i in enumerate(items[2:]):
             i_type = _check_is_symbol_list(i)
             if i_type == 'at':
-                logger.error(i)
                 text.pos_x, text.pos_y, text.ang = _get_at(items, c+2, name)
             elif i_type == 'effects':
                 text.effects = _get_effects(items, c+2, name)
@@ -1338,6 +1337,7 @@ class GlobalLabel(object):
         self.uuid = None
         self.properties = []
         self.name = 'global_label'
+        self.length = None   # For netclass_flag
 
     @classmethod
     def parse(cls, items):
@@ -1348,6 +1348,8 @@ class GlobalLabel(object):
             i_type = _check_is_symbol_list(i)
             if i_type == 'shape':
                 label.shape = _check_symbol(i, 1, label.name+' '+i_type)
+            elif i_type == 'length':
+                label.length = _check_float(i, 1, label.name+' '+i_type)
             elif i_type == 'fields_autoplaced':
                 label.fields_autoplaced = True
             elif i_type == 'at':
@@ -1365,6 +1367,8 @@ class GlobalLabel(object):
 
     def write(self):
         data = [self.text]
+        if self.length is not None:
+            data.append(_symbol('length', [self.length]))
         if self.shape is not None:
             data.append(_symbol('shape', [Symbol(self.shape)]))
         data.append(_symbol('at', [self.pos_x, self.pos_y, self.ang]))
@@ -1388,6 +1392,12 @@ class HierarchicalLabel(GlobalLabel):
     def __init__(self):
         super().__init__()
         self.name = 'hierarchical_label'
+
+
+class NetClassFlag(GlobalLabel):
+    def __init__(self):
+        super().__init__()
+        self.name = 'netclass_flag'
 
 
 class HSPin(object):
@@ -1906,6 +1916,7 @@ class SchematicV6(Schematic):
         self.labels = []
         self.glabels = []
         self.hlabels = []
+        self.net_class_flags = []
         self.sheets = []
         self.sheet_instances = []
         self.bus_alias = []
@@ -1984,6 +1995,8 @@ class SchematicV6(Schematic):
                 self.glabels.append(GlobalLabel.parse(e))
             elif e_type == 'hierarchical_label':
                 self.hlabels.append(HierarchicalLabel.parse(e))
+            elif e_type == 'netclass_flag':
+                self.net_class_flags.append(NetClassFlag.parse(e))
             elif e_type == 'symbol':
                 obj = SchematicComponentV6.load(e, self.project, self)
                 self.symbols.append(obj)
