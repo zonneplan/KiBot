@@ -17,6 +17,7 @@ PDF_FILE = 'bom-F_Cu+F_SilkS.pdf'
 PDF_FILE_B = 'PCB_Bot.pdf'
 PDF_FILE_C = 'PCB_Bot_def.pdf'
 DIFF_TOL = 10 if os.path.isfile('/etc/debian_version') else 5000
+DIFF_TOL2 = 100 if os.path.isfile('/etc/debian_version') else 5000
 
 
 @pytest.mark.slow
@@ -160,5 +161,6 @@ def test_pcb_print_multizone_1(test_dir):
     ctx = context.TestContext(test_dir, prj, 'print_multizone')
     ctx.run()
     ctx.compare_image(prj+'-assembly_page_01.png', tol=DIFF_TOL)
-    ctx.compare_image(prj+'-assembly_page_02.png', tol=DIFF_TOL)
+    # 7.0.1+f1f69c6 generates 48 diff compared to 7.0.1 release
+    ctx.compare_image(prj+'-assembly_page_02.png', tol=DIFF_TOL2)
     ctx.clean_up()
