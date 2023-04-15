@@ -3418,13 +3418,16 @@ outputs:
       pre_transform: '_none'
       # [string='millimeters'] [millimeters,inches'] Units for `ref_x` and `ref_y`
       ref_units: 'millimeters'
-      # [number=0] X coordinate to use as reference when `use_pcb_center_as_ref` is disabled
+      # [number=0] X coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled
       ref_x: 0
-      # [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` is disabled
+      # [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled
       ref_y: 0
       # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
       # Unlike the `pcbdraw` output, the default is `all`
       show_components: all
+      # [boolean=false] Use the auxiliary axis as origin for coordinates.
+      # Has more precedence than `use_pcb_center_as_ref`
+      use_aux_axis_as_origin: false
       # [boolean=true] The center of the PCB will be used as reference point.
       # When disabled the `ref_x`, `ref_y` and `ref_units` will be used
       use_pcb_center_as_ref: true

@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Check for value and fields/properties.
 - SCH print:
   - Support for title change
+- VRML:
+  - Option to use the auxiliary origin as reference. (#420)
 
 ### Fixed
 - Makefile: don't skip all preflights on each run, just the ones we generate

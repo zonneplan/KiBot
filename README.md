@@ -4770,8 +4770,10 @@ Notes:
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
         - `ref_units`: [string='millimeters'] [millimeters,inches'] Units for `ref_x` and `ref_y`.
-        - `ref_x`: [number=0] X coordinate to use as reference when `use_pcb_center_as_ref` is disabled.
-        - `ref_y`: [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` is disabled.
+        - `ref_x`: [number=0] X coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled.
+        - `ref_y`: [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled.
+        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
+                                    Has more precedence than `use_pcb_center_as_ref`.
         - `use_pcb_center_as_ref`: [boolean=true] The center of the PCB will be used as reference point.
                                    When disabled the `ref_x`, `ref_y` and `ref_units` will be used.
         - `variant`: [string=''] Board variant to apply.
