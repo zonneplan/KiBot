@@ -17,7 +17,7 @@ from . import log
 logger = log.get_logger()
 HEX_DIGIT = '[A-Fa-f0-9]{2}'
 INVALID_CHARS = r'[?%*:|"<>]'
-PATTERNS_DEP = ['%c', '%d', '%F', '%f', '%p', '%r']
+PATTERNS_DEP = ['%c', '%d', '%F', '%f', '%M', '%p', '%r']
 for n in range(1, 10):
     PATTERNS_DEP.append('%C'+str(n))
 
@@ -370,6 +370,7 @@ class Optionable(object):
             name = name.replace('%d', _cl(GS.pcb_date))
             name = name.replace('%F', GS.pcb_no_ext)
             name = name.replace('%f', GS.pcb_basename)
+            name = name.replace('%M', GS.pcb_last_dir)
             name = name.replace('%p', _cl(GS.pcb_title))
             name = name.replace('%r', _cl(GS.pcb_rev))
             for num, val in enumerate(GS.pcb_com):
@@ -379,6 +380,7 @@ class Optionable(object):
             name = name.replace('%d', _cl(GS.sch_date))
             name = name.replace('%F', GS.sch_no_ext)
             name = name.replace('%f', GS.sch_basename)
+            name = name.replace('%M', GS.sch_last_dir)
             name = name.replace('%p', _cl(GS.sch_title))
             name = name.replace('%r', _cl(GS.sch_rev))
             for num, val in enumerate(GS.sch_com):

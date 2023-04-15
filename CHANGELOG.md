@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Support for time stamp in the date (i.e. 2023-04-02T09:22-03:00)
   - Support to pass variables to the 3D models download URL (#414)
   - Support for netclass flags (#418)
+- Expansion patterns:
+  - **%M** directory where the pcb/sch resides. Only the last component
+    i.e. /a/b/c/name.kicad_pcb -> c  (#421)
 - Command line:
   - `--banner N` Option to display a banner
   - `--log FILE` Option to log to a file, in addition to the stderr

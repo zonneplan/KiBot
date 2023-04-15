@@ -50,15 +50,18 @@ class GS(object):
     pcb_no_ext = None    # /.../dir/pcb
     pcb_dir = None       # /.../dir
     pcb_basename = None  # pcb
+    pcb_last_dir = None  # dir
     # SCH name and useful parts
     sch_file = None      # /.../dir/file.sch
     sch_no_ext = None    # /.../dir/file
     sch_dir = None       # /.../dir
+    sch_last_dir = None  # dir
     sch_basename = None  # file
     # Project and useful parts
     pro_file = None      # /.../dir/file.kicad_pro (or .pro)
     pro_no_ext = None    # /.../dir/file
     pro_dir = None       # /.../dir
+    pro_last_dir = None  # dir
     pro_basename = None  # file
     pro_ext = '.pro'
     pro_variables = None  # KiCad 6 text variables defined in the project
@@ -184,6 +187,7 @@ class GS(object):
             GS.sch_basename = os.path.splitext(os.path.basename(name))[0]
             GS.sch_no_ext = os.path.splitext(name)[0]
             GS.sch_dir = os.path.dirname(name)
+            GS.sch_last_dir = os.path.basename(GS.sch_dir)
 
     @staticmethod
     def set_pcb(name):
@@ -193,6 +197,7 @@ class GS(object):
             GS.pcb_basename = os.path.splitext(os.path.basename(name))[0]
             GS.pcb_no_ext = os.path.splitext(name)[0]
             GS.pcb_dir = os.path.dirname(name)
+            GS.pcb_last_dir = os.path.basename(GS.pcb_dir)
 
     @staticmethod
     def set_pro(name):
@@ -202,6 +207,7 @@ class GS(object):
             GS.pro_basename = os.path.splitext(os.path.basename(name))[0]
             GS.pro_no_ext = os.path.splitext(name)[0]
             GS.pro_dir = os.path.dirname(name)
+            GS.pro_last_dir = os.path.basename(GS.pro_dir)
 
     @staticmethod
     def load_pro_variables():

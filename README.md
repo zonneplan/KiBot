@@ -619,7 +619,8 @@ The pattern uses the following expansions:
 - **%G** the `name` of the global variant.
 - **%i** a contextual ID, depends on the output type.
 - **%I** an ID defined by the user for this output.
-- **%p** pcb/sch title from pcb metadata.
+- **%M** directory where the pcb/sch resides. Only the last component i.e. /a/b/c/name.kicad_pcb -> c
+- **%p** title from pcb/sch metadata.
 - **%r** revision from pcb/sch metadata.
 - **%S** sub-PCB name (related to multiboards).
 - **%T** time the script was started.
