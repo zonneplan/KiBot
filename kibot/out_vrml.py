@@ -82,9 +82,9 @@ class VRMLOptions(Base3DOptionsWithHL):
                 units = 'millimeters'
             else:
                 x = self.ref_x
-                self.ref_y
+                y = self.ref_y
                 units = self.ref_units
-            cmd.extend(['-x', str(x), '-y', str(x), '-u', units])
+            cmd.extend(['-x', str(x), '-y', str(y), '-u', units])
         cmd.extend([board_name, os.path.dirname(name)])
         # Execute it
         self.exec_with_retry(self.add_extra_options(cmd), FAILED_EXECUTE)

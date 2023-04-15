@@ -57,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems to download KiCad 7 models (#417)
   - Added workaround for KiCad 7 failing to export VRMLs for PCBs using paths
     relative to the footprint. (See #417)
+- VRML:
+  - ref_y coordinate not used. (#419)
 
 ### Changed:
 - Some R, L and C values that were rejected are accepted now. You just get a
