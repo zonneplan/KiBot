@@ -1636,3 +1636,12 @@ def test_font_and_colors_1(test_dir):
     ctx.compare_image(prj+'-top.png')
     ctx.compare_image(prj+'-assembly_page_01.png')
     ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Netclass flags")
+def test_netclass_flag_1(test_dir):
+    prj = 'netclass_flag'
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_csv_no_info', 'BoM')
+    ctx.run()
+    ctx.expect_out_file_d(prj+'-bom.csv')
+    ctx.clean_up()
