@@ -713,7 +713,11 @@ class PanelizeOptions(VariantOptions):
             run_command(cmd)
             self.create_preview_file(output)
         finally:
-            self.remove_temporals()
+            if GS.debug_enabled:
+                if self._files_to_remove:
+                    logger.error('Keeping temporal files: '+str(self._files_to_remove))
+            else:
+                self.remove_temporals()
 
     def get_targets(self, out_dir):
         pcb_name = self._parent.expand_filename(out_dir, self.output)
