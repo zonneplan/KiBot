@@ -174,10 +174,12 @@ class BasePreFlight(Registrable):
         return cmd
 
     def exec_with_retry(self, cmd, exit_with=None):
+        remove_tmps = False
         try:
             ret = GS.exec_with_retry(cmd, exit_with)
+            remove_tmps = True
         finally:
-            if GS.debug_enabled:
+            if GS.debug_enabled and not remove_tmps:
                 if self._files_to_remove:
                     logger.error('Keeping temporal files: '+str(self._files_to_remove))
             else:
