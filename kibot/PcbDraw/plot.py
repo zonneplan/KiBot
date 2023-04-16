@@ -1174,8 +1174,10 @@ class PcbPlotter():
         """
         path = self._find_data_file(name, ".json", "styles")
         if path is None:
-            raise RuntimeError(f"Cannot locate resource {name}; explored paths:\n"
-                + "\n".join([f"- {x}" for x in self.data_path]))
+            err_msg = "Cannot locate resource "+name
+            if not os.path.isabs(name):
+                err_msg += "; explored paths:\n"+"\n".join([f"- {x}" for x in self.data_path])
+            raise RuntimeError(err_msg)
         self.style = load_style(path)
 
     def unique_prefix(self) -> str:
