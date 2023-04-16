@@ -709,11 +709,13 @@ class PanelizeOptions(VariantOptions):
         # Add the PCB and output
         cmd.append(fname)
         cmd.append(output)
+        remove_tmps = False
         try:
             run_command(cmd)
             self.create_preview_file(output)
+            remove_tmps = True
         finally:
-            if GS.debug_enabled:
+            if GS.debug_enabled and not remove_tmps:
                 if self._files_to_remove:
                     logger.error('Keeping temporal files: '+str(self._files_to_remove))
             else:
