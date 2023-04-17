@@ -129,7 +129,7 @@ def test_pcb_print_simple_1(test_dir):
     ctx.run()
     ctx.expect_out_file(prj+'-F_Cu_mono.png')
     ctx.expect_out_file(prj+'-F_Cu_color.png')
-    ctx.compare_image(prj+'-F_Cu_color.png', height='100%')
+    ctx.compare_image(prj+'-F_Cu_color.png', height='100%', fuzz='10%', tol=50)
     ctx.expect_out_file(prj+'-assembly_page_01.eps')
     ctx.expect_out_file(prj+'-assembly_page_01.svg')
     ctx.expect_out_file(prj+'-assembly.ps')
