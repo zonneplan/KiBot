@@ -1,8 +1,7 @@
 name: Nightly regression tests
 
 on:
-  repository_dispatch:
-    types: [run_tests_nightly]
+  workflow_dispatch
 
 jobs:
   test:
