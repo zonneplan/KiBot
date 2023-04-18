@@ -92,7 +92,8 @@ def test_kicad_conf_guess_libs(monkeypatch):
         name = "KICAD6_SYMBOL_DIR"
     else:
         name = "KICAD_SYMBOL_DIR"
-    assert 'Using {}="/usr/share/kicad/'.format(name) in res, res
+    assert ('Using {}="/usr/share/kicad/'.format(name) in res or
+            'Using {}="/usr/share/kicad-nightly/'.format(name) in res), res
 
 
 def test_kicad_conf_lib_env(monkeypatch):
