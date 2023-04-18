@@ -502,7 +502,6 @@ class KiConf(object):
             logger.warning(W_NODEFSYMLIB + 'Missing default symbol library table')
             # No default symbol libs table, try to create one
             if KiConf.sym_lib_dir:
-                logger.error(os.path.join(sys_dir, pattern))
                 for f in glob(os.path.join(sys_dir, pattern)):
                     alias = LibAlias()
                     alias.name = os.path.splitext(os.path.basename(f))[0]
