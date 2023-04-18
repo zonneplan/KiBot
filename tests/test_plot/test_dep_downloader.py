@@ -81,6 +81,7 @@ def try_dependency_module(ctx, caplog, monkeypatch, docstring, name_dep, downloa
         assert res.__file__ is not None
 
 
+@pytest.mark.indep
 def test_dep_rar(test_dir, caplog, monkeypatch):
     """ Check the rar_downloader """
     # Create a context to get an output directory
@@ -89,6 +90,7 @@ def test_dep_rar(test_dir, caplog, monkeypatch):
 
 
 @pytest.mark.slow
+@pytest.mark.indep
 def test_dep_pytool(test_dir, caplog, monkeypatch):
     """ Check the pytool_downloader """
     # Create a context to get an output directory
@@ -98,6 +100,7 @@ def test_dep_pytool(test_dir, caplog, monkeypatch):
 
 
 @pytest.mark.slow
+@pytest.mark.indep
 def test_dep_rsvg(test_dir, caplog, monkeypatch):
     """ Check the rsvg_downloader """
     # Create a context to get an output directory
@@ -107,6 +110,7 @@ def test_dep_rsvg(test_dir, caplog, monkeypatch):
     try_dependency(ctx, caplog, monkeypatch, downloader.__doc__+dep, 'rsvg', 'rsvg', bin_dir)
 
 
+@pytest.mark.indep
 def test_dep_git(test_dir, caplog, monkeypatch):
     """ Check the git_downloader """
     # Create a context to get an output directory
@@ -117,6 +121,7 @@ def test_dep_git(test_dir, caplog, monkeypatch):
 
 
 @pytest.mark.slow
+@pytest.mark.indep
 def test_dep_gs(test_dir, caplog, monkeypatch):
     """ Check the git_downloader """
     # Create a context to get an output directory
@@ -130,6 +135,7 @@ def test_dep_gs(test_dir, caplog, monkeypatch):
 # @pytest.mark.xfail(True, reason="URL down", run=True, raises=AssertionError)
 # https://imagemagick.org/archive/binaries/magick
 @pytest.mark.slow
+@pytest.mark.indep
 def test_dep_convert(test_dir, caplog, monkeypatch):
     """ Check the convert_downloader """
     # Create a context to get an output directory
@@ -139,6 +145,7 @@ def test_dep_convert(test_dir, caplog, monkeypatch):
     try_dependency(ctx, caplog, monkeypatch, downloader.__doc__+dep, 'imagemagick', 'convert', bin_dir)
 
 
+@pytest.mark.indep
 def test_dep_python(test_dir, caplog, monkeypatch):
     """ Check the python_downloader """
     # Create a context to get an output directory

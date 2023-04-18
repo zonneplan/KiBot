@@ -107,6 +107,7 @@ def run_compress(ctx, test_import_fail=False):
 #     assert "Missing `rar` command" in caplog.text
 
 
+@pytest.mark.indep
 def test_rar_fail(test_dir, caplog, monkeypatch):
     global mocked_check_output_FNF
     mocked_check_output_FNF = False
@@ -146,6 +147,7 @@ class DummyPre(BasePreFlight):
         self._sch_related = True
 
 
+@pytest.mark.indep
 def test_no_get_targets(caplog):
     test = NoGetTargets()
     test_pre = DummyPre()
@@ -161,6 +163,7 @@ def test_no_get_targets(caplog):
     assert files_pre == [GS.sch_file]
 
 
+@pytest.mark.indep
 def test_ibom_parse_fail(test_dir, caplog, monkeypatch):
     global mocked_check_output_FNF
     mocked_check_output_FNF = False
@@ -189,6 +192,7 @@ def test_ibom_parse_fail(test_dir, caplog, monkeypatch):
     mocked_check_output_retOK = ''
 
 
+@pytest.mark.indep
 def test_var_rename_no_variant():
     with context.cover_it(cov):
         # Load the plug-ins
@@ -200,6 +204,7 @@ def test_var_rename_no_variant():
         filter.filter(None)
 
 
+@pytest.mark.indep
 def test_bom_no_sch():
     with context.cover_it(cov):
         # Load the plug-ins
@@ -215,6 +220,7 @@ def test_bom_no_sch():
         assert columns == ColumnList.COLUMNS_DEFAULT
 
 
+@pytest.mark.indep
 def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
     ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
     global mocked_call_enabled
@@ -251,6 +257,7 @@ def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
     mocked_call_enabled = False
 
 
+@pytest.mark.indep
 def test_unimplemented_layer(caplog):
     with context.cover_it(cov):
         with pytest.raises(AssertionError) as e:
@@ -259,6 +266,7 @@ def test_unimplemented_layer(caplog):
     assert e.value.args[0] == "Unimplemented layer type <class 'int'>"
 
 
+@pytest.mark.indep
 def test_step_fail(test_dir, caplog, monkeypatch):
     global mocked_check_output_FNF
     mocked_check_output_FNF = False
@@ -291,6 +299,7 @@ def test_step_fail(test_dir, caplog, monkeypatch):
     mocked_call_enabled = False
 
 
+@pytest.mark.indep
 def test_unknown_prefix(caplog):
     with context.cover_it(cov):
         get_prefix(1, 'y')
@@ -328,6 +337,7 @@ def test_search_as_plugin_fail(test_dir, caplog):
         assert fname is None
 
 
+@pytest.mark.indep
 def test_layer_no_id():
     with context.cover_it(cov):
         la = Layer()
@@ -337,6 +347,7 @@ def test_layer_no_id():
         assert str(la) == "F.Cu ('Top' F_Cu)"
 
 
+@pytest.mark.indep
 def test_makefile_kibot_sys(test_dir):
     ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
     GS.sch_file = 'foo.sch'
@@ -348,6 +359,7 @@ def test_makefile_kibot_sys(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_units_1():
     with context.cover_it(cov):
         # Test for ',' as decimal point
@@ -389,6 +401,7 @@ def test_units_1():
         assert a.extra['tolerance'] == 1
 
 
+@pytest.mark.indep
 def test_read_resistance():
     with context.cover_it(cov):
         assert read_resistance("4k7")[0] == D("4700")
@@ -410,6 +423,7 @@ def test_read_resistance():
         assert read_resistance("4k7000")[0] == D("4700")
 
 
+@pytest.mark.indep
 def test_electro_grammar_1():
     with context.cover_it(cov):
         C2UF_0603_30P = {'type': 'capacitor', 'capacitance': 2e-6, 'size': '0603', 'tolerance': 30}
