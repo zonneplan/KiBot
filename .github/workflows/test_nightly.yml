@@ -1,0 +1,42 @@
+name: Nightly regression tests
+
+on:
+  repository_dispatch:
+    types: [run_tests_nightly]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        ki_release: [nightly]
+        w_tests: [g1, g2, g3]
+
+    runs-on: ubuntu-latest
+    container: ghcr.io/inti-cmnb/kicad_auto_test:${{ matrix.ki_release }}
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    - name: Test ${{ matrix.ki_release }}
+      env:
+        KI_RELEASE: ${{ matrix.ki_release }}
+      run: |
+        rm -rf output
+        rm -f tests/.local
+        # Ensure we start a fresh coverage meassurement
+        python3-coverage erase
+        # Create the caches with macros
+        python3-coverage run src/kibot --help-outputs > /dev/null
+        # Run the 90% faster tests (under 3 s) together
+        # Do it in parallel
+        ./${{ matrix.w_tests }}.sh
+    - name: Store results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: Test_Output_${{ matrix.ki_release }}_${{ matrix.w_tests }}
+        # Important! empty directories are skipped!!!!
+        path: output
+
