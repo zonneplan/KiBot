@@ -448,10 +448,20 @@ class KiConf(object):
         KiConf._solve_var('3DMODEL', 'models_3d_dir', '3D models', KiConf.guess_3d_dir, old='KISYS3DMOD', only_old=True)
         KiConf._solve_var('3RD_PARTY', 'party_3rd_dir', '3rd party', KiConf.guess_3rd_dir, only_k6=True, no_dir=True)
         # Export the rest. KiCad2Step needs them
+        to_add = {}
         for k, v in KiConf.kicad_env.items():
             if k not in os.environ:
                 os.environ[k] = v
                 logger.debug('Exporting {}="{}"'.format(k, v))
+            m = re.match(r'KICAD(\d+)_(.*)', k)
+            if m:
+                for n in range(6, GS.kicad_version_major+1):
+                    kv = 'KICAD'+str(n)+'_'+m.group(2)
+                    if kv not in os.environ and kv not in KiConf.kicad_env and kv not in to_add:
+                        os.environ[kv] = v
+                        to_add[kv] = v
+                        logger.debug('Also exporting {}="{}"'.format(kv, v))
+        KiConf.kicad_env.update(to_add)
 
     def load_lib_aliases(fname, lib_aliases):
         if not os.path.isfile(fname):
