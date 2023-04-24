@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.2] - UNRELEASED
+## [1.6.2] - 2023-04-24
 ### Added
 - General:
   - Support for time stamp in the date (i.e. 2023-04-02T09:22-03:00)

@@ -13,8 +13,9 @@
 - The GitHub actions now use the full/test docker images. So now they include PanDoc and also Blender.
 - If you are looking for the GitHub Actions documentation, and you already know how to use KiBot, or want a quick start, read: [GitHub Actions](#usage-of-github-actions)
 
-**New on v1.6.1**
-- KiCad 7.0.1 support
+**New on v1.6.2**
+- KiCad 7.0.2 support
+- Colored 3D THT resistors
 
 ## Index
 
