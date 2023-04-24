@@ -260,8 +260,13 @@ def apply_scene(file, n_view=0):
             for light in lights:
                 name = light.get('name', 'unknown')
                 pos = light.get('position', (0.0, 0.0, 0.0))
-                print(f"- Creating light {name} at {pos}")
-                light_data = bpy.data.lights.new(name, 'POINT')
+                typ = light.get('type', 'SUN')
+                energy = light.get('energy', 0.0)
+                print(f"- Creating light {name} at {pos}, type: {typ} energy: {energy}")
+                light_data = bpy.data.lights.new(name, typ)
+                print(f"- Default energy: {light_data.energy}")
+                if energy:
+                    light_data.energy = energy
                 light_ob = bpy.data.objects.new(name=name, object_data=light_data)
                 scene.collection.objects.link(light_ob)
                 light_ob.location = pos
