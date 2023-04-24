@@ -1661,17 +1661,19 @@ Notes:
                     If none specified KiBot will create a suitable camera.
                     If no position is specified for the camera KiBot will look for a suitable position.
           * Valid keys:
-            - `name`: [string=''] Name for the light.
+            - `name`: [string=''] Name for the camera.
             - `pos_x`: [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_y`: [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_z`: [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `type`: [string='perspective'] [perspective,orthographic,panoramic] Type of camera.
         - `light`: [dict|list(dict)] Options for the light/s.
           * Valid keys:
+            - `energy`: [number=0] How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful.
             - `name`: [string=''] Name for the light.
             - `pos_x`: [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_y`: [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_z`: [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            - `type`: [string='POINT'] [POINT, SUN, SPOT, HEMI, AREA] Type of light. SUN lights will illuminate more evenly.
         - `outputs`: [dict|list(dict)] Outputs to generate in the same run.
           * Valid keys:
             - **`type`**: [string='render'] [fbx,obj,x3d,gltf,stl,ply,blender,render] The format for the output.

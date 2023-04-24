@@ -113,7 +113,7 @@ outputs:
       # If none specified KiBot will create a suitable camera.
       # If no position is specified for the camera KiBot will look for a suitable position
       camera:
-        # [string=''] Name for the light
+        # [string=''] Name for the camera
         name: ''
         # [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions
         pos_x: 0
@@ -125,14 +125,18 @@ outputs:
         type: 'perspective'
       # [dict|list(dict)] Options for the light/s
       light:
-        # [string=''] Name for the light
-        - name: ''
+        # [number=0] How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful
+        - energy: 0
+          # [string=''] Name for the light
+          name: ''
           # [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions
           pos_x: 0
           # [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions
           pos_y: 0
           # [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
           pos_z: 0
+          # [string='POINT'] [POINT, SUN, SPOT, HEMI, AREA] Type of light. SUN lights will illuminate more evenly
+          type: 'POINT'
       # [dict|list(dict)] Outputs to generate in the same run
       outputs:
         # [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).

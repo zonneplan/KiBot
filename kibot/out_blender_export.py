@@ -82,13 +82,13 @@ class BlenderOutputOptions(Optionable):
         self._unknown_is_error = True
 
 
-class BlenderLightOptions(Optionable):
-    """ A light in the scene. Currently also for the camera """
+class BlenderObjOptions(Optionable):
+    """ A light/camera in the scene. """
     def __init__(self):
         super().__init__()
         with document:
             self.name = ""
-            """ Name for the light """
+            """ Name for the """
             self.pos_x = 0
             """ [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions """
             self.pos_y = 0
@@ -115,7 +115,38 @@ class BlenderLightOptions(Optionable):
         self.pos_z = self.solve('pos_z')
 
 
-class BlenderCameraOptions(BlenderLightOptions):
+class BlenderLightOptions(BlenderObjOptions):
+    """ A light in the scene. """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.type = "POINT"
+            """ [POINT, SUN, SPOT, HEMI, AREA] Type of light. SUN lights will illuminate more evenly """
+            self.energy = 0
+            """ How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful """
+        self.add_to_doc('name', ' light', with_nl=False)
+
+    def adjust(self):
+        self._width, self._height, self._size = get_board_size()
+        if not self.get_user_defined('pos_x') and not self.get_user_defined('pos_y') and not self.get_user_defined('pos_z'):
+            self.pos_x = -self._size*3.33
+            self.pos_y = self._size*3.33
+            self.pos_z = self._size*5.0
+        if self.energy == 0:
+            if self.type == "POINT":
+                # 10 W is the default, works for 5 cm board, we make it grow cudratically
+                self.energy = 10.0*((self._size/0.05)**2)
+            elif self.type == "SUN":
+                # This is power by area
+                self.energy = 2
+
+    def config(self, parent):
+        super().config(parent)
+        self.adjust()
+
+
+class BlenderCameraOptions(BlenderObjOptions):
+    """ A camera in the scene. """
     CAM_TYPE = {'perspective': 'PERSP', 'orthographic': 'ORTHO', 'panoramic': 'PANO'}
 
     def __init__(self):
@@ -123,6 +154,7 @@ class BlenderCameraOptions(BlenderLightOptions):
         with document:
             self.type = "perspective"
             """ [perspective,orthographic,panoramic] Type of camera """
+        self.add_to_doc('name', ' camera', with_nl=False)
 
     def config(self, parent):
         super().config(parent)
@@ -305,10 +337,7 @@ class Blender_ExportOptions(BaseOptions):
                 # Create one
                 light = BlenderLightOptions()
                 light.name = 'kibot_light'
-                _, _, size = get_board_size()
-                light.pos_x = -size*3.33
-                light.pos_y = size*3.33
-                light.pos_z = size*5.0
+                light.adjust()
                 self.light = [light]
             else:
                 # The dark ...
@@ -489,7 +518,10 @@ class Blender_ExportOptions(BaseOptions):
         with NamedTemporaryFile(mode='w', suffix='.json') as f:
             scene = {}
             if self.light:
-                lights = [{'name': light.name, 'position': (light.pos_x, light.pos_y, light.pos_z)} for light in self.light]
+                lights = [{'name': light.name,
+                           'position': (light.pos_x, light.pos_y, light.pos_z),
+                           'type': light.type,
+                           'energy': light.energy} for light in self.light]
                 scene['lights'] = lights
             if self.camera:
                 ca = self.camera

@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `cache_3d_resistors` to avoid generating them all the time.
   - `resources_dir` to specify fonts and colors to install (CI/CD)
 - 3D: colored 3D models for THT resistors
+- Blender export:
+  - Better default light
+  - More light options
 - Datasheet download: now the warnings mention which reference failed.
 - Plot related outputs and PCB_Print:
   - `individual_page_scaling`: to control if the center of the page is computed

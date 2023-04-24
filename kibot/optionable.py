@@ -107,9 +107,9 @@ class Optionable(object):
         help, _, _ = self.get_doc(name)
         return help and help[0] == '*'
 
-    def add_to_doc(self, name, text):
+    def add_to_doc(self, name, text, with_nl=True):
         doc = getattr(self, '_help_'+name).strip()
-        setattr(self, '_help_'+name, doc+'.\n'+text)
+        setattr(self, '_help_'+name, doc+('.\n' if with_nl else '')+text)
 
     def set_doc(self, name, text):
         setattr(self, '_help_'+name, text)
