@@ -486,13 +486,13 @@ def int_bom_sort(test_dir, locale, dp):
     ref_column = header.index(REF_COLUMN_NAME)
     exp = ['C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C1', 'C2', 'C3', 'C4', 'C11', 'C12',
            'L2', 'L1', 'L3',
-           'R5', 'R16', 'R12', 'R4', 'R9', 'R10', 'R3']
+           'R5', 'R16', 'R12', 'R4', 'R13', 'R9', 'R10', 'R3']
     if dp == ',':
         exp += ['R2', 'R1', 'R8']
     else:
         # 8,2 k is interpreted as 82 k
         exp += ['R1', 'R2', 'R8']
-    exp += ['R7', 'R11', 'R14', 'R13', 'R15']
+    exp += ['R7', 'R11', 'R14', 'R15']
     check_kibom_test_netlist(rows, ref_column, 23, None, exp)
     # Check the sorting
     assert get_column(rows, ref_column) == exp

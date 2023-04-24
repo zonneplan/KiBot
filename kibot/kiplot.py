@@ -14,7 +14,7 @@ import re
 from sys import exit
 from sys import path as sys_path
 import shlex
-from shutil import which
+from shutil import which, copy2
 from subprocess import run, PIPE, STDOUT, Popen, CalledProcessError
 from glob import glob
 from importlib.util import spec_from_file_location, module_from_spec
@@ -513,6 +513,7 @@ def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority
 
 
 def generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop=False):
+    setup_resources()
     prj = None
     if GS.global_restore_project:
         # Memorize the project content to restore it at exit
@@ -657,6 +658,7 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
         else:
             kibot_cmd = '\t@$(KIBOT_CMD)'
             log_action = ' 2>> $(LOGFILE)'
+        skip_all = ','.join(is_pre)
         for name, dep in dependencies.items():
             if name in comments:
                 f.write('# '+comments[name]+'\n')
@@ -666,7 +668,7 @@ def generate_makefile(makefile, cfg_file, outputs, kibot_sys=False):
                 skip = filter(lambda n: n != name, is_pre)
                 f.write('{} -s {} -i{}\n\n'.format(kibot_cmd, ','.join(skip), log_action))
             else:
-                f.write('{} -s all "{}"{}\n\n'.format(kibot_cmd, ori_names[name], log_action))
+                f.write('{} -s {} "{}"{}\n\n'.format(kibot_cmd, skip_all, ori_names[name], log_action))
         # Mark all outputs as PHONY
         f.write('.PHONY: '+' '.join(extra_targets+list(targets.keys()))+'\n')
 
@@ -975,6 +977,54 @@ def _walk(path, depth):
                 yield from _walk(entry.path, depth)
 
 
+def setup_fonts(source):
+    if not os.path.isdir(source):
+        logger.debug('No font resources dir')
+        return
+    dest = os.path.expanduser('~/.fonts/')
+    installed = False
+    for f in glob(os.path.join(source, '*.ttf')):
+        fname = os.path.basename(f)
+        fdest = os.path.join(dest, fname)
+        if os.path.isfile(fdest):
+            logger.debug('Font {} already installed'.format(fname))
+            continue
+        logger.info('Installing font {}'.format(fname))
+        if not os.path.isdir(dest):
+            os.makedirs(dest)
+        copy2(f, fdest)
+        installed = True
+    if installed:
+        run_command(['fc-cache'])
+
+
+def setup_colors(source):
+    if not os.path.isdir(source):
+        logger.debug('No color resources dir')
+        return
+    if not GS.kicad_conf_path:
+        return
+    dest = os.path.join(GS.kicad_conf_path, 'colors')
+    for f in glob(os.path.join(source, '*.json')):
+        fname = os.path.basename(f)
+        fdest = os.path.join(dest, fname)
+        if os.path.isfile(fdest):
+            logger.debug('Color {} already installed'.format(fname))
+            continue
+        logger.info('Installing color {}'.format(fname))
+        if not os.path.isdir(dest):
+            os.makedirs(dest)
+        copy2(f, fdest)
+
+
+def setup_resources():
+    if not GS.global_resources_dir:
+        logger.debug('No resources dir')
+        return
+    setup_fonts(os.path.join(GS.global_resources_dir, 'fonts'))
+    setup_colors(os.path.join(GS.global_resources_dir, 'colors'))
+
+
 def generate_examples(start_dir, dry, types):
     if not start_dir:
         start_dir = '.'
@@ -986,6 +1036,8 @@ def generate_examples(start_dir, dry, types):
     glb = GS.class_for_global_opts()
     glb.set_tree({})
     glb.config(None)
+    # Install the resources
+    setup_resources()
     # Look for candidate dirs
     k_files_regex = re.compile(r'([^/]+)\.(kicad_pcb|kicad_sch|sch)$')
     candidates = set()

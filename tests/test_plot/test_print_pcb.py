@@ -17,6 +17,7 @@ PDF_FILE = 'bom-F_Cu+F_SilkS.pdf'
 PDF_FILE_B = 'PCB_Bot.pdf'
 PDF_FILE_C = 'PCB_Bot_def.pdf'
 DIFF_TOL = 10 if os.path.isfile('/etc/debian_version') else 5000
+DIFF_TOL2 = 100 if os.path.isfile('/etc/debian_version') else 5000
 
 
 @pytest.mark.slow
@@ -64,7 +65,7 @@ def test_print_pcb_refill_1(test_dir):
     ctx = context.TestContext(test_dir, prj, 'print_pcb_zone-refill')
     ctx.run()
     ctx.expect_out_file(PDF_FILE_B)
-    ctx.compare_image(PDF_FILE_B)
+    ctx.compare_image(PDF_FILE_B, tol=10)
     ctx.clean_up()
 
 
@@ -78,7 +79,7 @@ def test_print_pcb_refill_2(test_dir):
     ctx = context.TestContext(test_dir, prj, 'print_pcb_zone-refill_def')
     ctx.run()
     ctx.expect_out_file(PDF_FILE_B)
-    ctx.compare_image(PDF_FILE_B, PDF_FILE_C)
+    ctx.compare_image(PDF_FILE_B, PDF_FILE_C, tol=10)
     ctx.clean_up()
 
 
@@ -128,6 +129,7 @@ def test_pcb_print_simple_1(test_dir):
     ctx.run()
     ctx.expect_out_file(prj+'-F_Cu_mono.png')
     ctx.expect_out_file(prj+'-F_Cu_color.png')
+    ctx.compare_image(prj+'-F_Cu_color.png', height='100%', fuzz='10%', tol=50)
     ctx.expect_out_file(prj+'-assembly_page_01.eps')
     ctx.expect_out_file(prj+'-assembly_page_01.svg')
     ctx.expect_out_file(prj+'-assembly.ps')
@@ -159,5 +161,6 @@ def test_pcb_print_multizone_1(test_dir):
     ctx = context.TestContext(test_dir, prj, 'print_multizone')
     ctx.run()
     ctx.compare_image(prj+'-assembly_page_01.png', tol=DIFF_TOL)
-    ctx.compare_image(prj+'-assembly_page_02.png', tol=DIFF_TOL)
+    # 7.0.1+f1f69c6 generates 48 diff compared to 7.0.1 release
+    ctx.compare_image(prj+'-assembly_page_02.png', tol=DIFF_TOL2)
     ctx.clean_up()

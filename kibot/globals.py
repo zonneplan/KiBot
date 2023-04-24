@@ -21,7 +21,7 @@ class Environment(Optionable):
     """ Used to define the KiCad environment vars """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.symbols = ''
             """ System level symbols dir. KiCad 5: KICAD_SYMBOL_DIR. KiCad 6: KICAD6_SYMBOL_DIR """
@@ -95,7 +95,7 @@ class KiCadAlias(Optionable):
     """ KiCad alias (for 3D models) """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.name = ''
             """ Name of the alias """
@@ -264,10 +264,29 @@ class Globals(FiltersOptions):
             """ The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag for 3D models,
                 even when no filter/variant is specified. Disabling `kicad_dnp_applied` also disables
                 this flag """
+            self.colored_tht_resistors = True
+            """ Try to add color bands to the 3D models of KiCad THT resistors """
+            self.field_tolerance = Optionable
+            """ [string|list(string)] Name/s of the field/s used for the tolerance.
+                Used while creating colored resistors.
+                The default is ['tol', 'tolerance'] """
+            self.default_resistor_tolerance = 20
+            """ When no tolerance is specified we use this value.
+                Note that I know 5% is a common default, but technically speaking 20% is the default.
+                Used while creating colored resistors """
+            self.cache_3d_resistors = False
+            """ Use a cache for the generated 3D models of colored resistors.
+                Will save time, but you could need to remove the cache if you need to regenerate them """
+            self.resources_dir = 'kibot_resources'
+            """ Directory where various resources are stored. Currently we support colors and fonts.
+                They must be stored in sub-dirs. I.e. kibot_resources/fonts/MyFont.ttf
+                Note this is mainly useful for CI/CD, so you can store fonts and colors in your repo.
+                Also note that the fonts are installed using a mechanism known to work on Debian,
+                which is used by the KiBot docker images, on other OSs *your mileage may vary* """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         self._error_context = 'global '
 
     def set_global(self, opt):
@@ -372,6 +391,7 @@ class Globals(FiltersOptions):
         if GS.ki6 and GS.pcb_file and os.path.isfile(GS.pcb_file):
             self.get_stack_up()
         super().config(parent)
+        self.field_tolerance = Optionable.force_list(self.field_tolerance, default=['tol', 'tolerance'])
         # Transfer options to the GS globals
         for option in filter(lambda x: x[0] != '_', self.__dict__.keys()):
             gl = 'global_'+option

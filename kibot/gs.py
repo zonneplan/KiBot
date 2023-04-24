@@ -13,7 +13,7 @@ except ImportError:
     class pcbnew(object):
         IU_PER_MM = 1
         IU_PER_MILS = 1
-from datetime import datetime, date
+from datetime import datetime
 from sys import exit
 from shutil import copy2
 from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL
@@ -50,15 +50,18 @@ class GS(object):
     pcb_no_ext = None    # /.../dir/pcb
     pcb_dir = None       # /.../dir
     pcb_basename = None  # pcb
+    pcb_last_dir = None  # dir
     # SCH name and useful parts
     sch_file = None      # /.../dir/file.sch
     sch_no_ext = None    # /.../dir/file
     sch_dir = None       # /.../dir
+    sch_last_dir = None  # dir
     sch_basename = None  # file
     # Project and useful parts
     pro_file = None      # /.../dir/file.kicad_pro (or .pro)
     pro_no_ext = None    # /.../dir/file
     pro_dir = None       # /.../dir
+    pro_last_dir = None  # dir
     pro_basename = None  # file
     pro_ext = '.pro'
     pro_variables = None  # KiCad 6 text variables defined in the project
@@ -122,13 +125,16 @@ class GS(object):
     def_global_output = '%f-%i%I%v.%x'
     # The class that controls the global options
     class_for_global_opts = None
+    global_cache_3d_resistors = None
     global_castellated_pads = None
+    global_colored_tht_resistors = None
     global_copper_thickness = None
     global_cross_footprints_for_dnp = None
     global_cross_no_body = None
     global_csv_accept_no_ref = None
     global_date_format = None
     global_date_time_format = None
+    global_default_resistor_tolerance = None
     global_drc_exclusions_workaround = None
     global_dir = None
     global_disable_3d_alias_as_env = None
@@ -138,6 +144,7 @@ class GS(object):
     global_extra_pth_drill = None
     global_field_3D_model = None
     global_field_lcsc_part = None
+    global_field_tolerance = None
     global_hide_excluded = None
     global_impedance_controlled = None
     global_kiauto_time_out_scale = None
@@ -150,6 +157,7 @@ class GS(object):
     global_pcb_material = None
     global_remove_solder_paste_for_dnp = None
     global_remove_adhesive_for_dnp = None
+    global_resources_dir = None
     global_restore_project = None
     global_set_text_variables_before_output = None
     global_silk_screen_color = None
@@ -179,6 +187,7 @@ class GS(object):
             GS.sch_basename = os.path.splitext(os.path.basename(name))[0]
             GS.sch_no_ext = os.path.splitext(name)[0]
             GS.sch_dir = os.path.dirname(name)
+            GS.sch_last_dir = os.path.basename(GS.sch_dir)
 
     @staticmethod
     def set_pcb(name):
@@ -188,6 +197,7 @@ class GS(object):
             GS.pcb_basename = os.path.splitext(os.path.basename(name))[0]
             GS.pcb_no_ext = os.path.splitext(name)[0]
             GS.pcb_dir = os.path.dirname(name)
+            GS.pcb_last_dir = os.path.basename(GS.pcb_dir)
 
     @staticmethod
     def set_pro(name):
@@ -197,6 +207,7 @@ class GS(object):
             GS.pro_basename = os.path.splitext(os.path.basename(name))[0]
             GS.pro_no_ext = os.path.splitext(name)[0]
             GS.pro_dir = os.path.dirname(name)
+            GS.pro_last_dir = os.path.basename(GS.pro_dir)
 
     @staticmethod
     def load_pro_variables():
@@ -243,7 +254,7 @@ class GS(object):
             return datetime.fromtimestamp(os.path.getmtime(fname)).strftime(GS.global_date_time_format)
         elif GS.global_time_reformat:
             try:
-                dt = date.fromisoformat(d)
+                dt = datetime.fromisoformat(d)
             except ValueError as e:
                 logger.warning(W_DATEFORMAT+"Trying to reformat {} time, but not in ISO format ({})".format(what, d))
                 logger.warning(W_DATEFORMAT+"Problem: {}".format(e))
@@ -271,7 +282,11 @@ class GS(object):
     def p2v_k7(point):
         """ KiCad v7 changed various wxPoint args to VECTOR2I.
             This helper changes the types accordingly """
-        return pcbnew.VECTOR2I(point) if GS.ki7 else point
+        if GS.ki8:
+            return pcbnew.VECTOR2I(point.x, point.y)
+        elif GS.ki7:
+            return pcbnew.VECTOR2I(point)
+        return point
 
     @staticmethod
     def get_modules():
@@ -354,6 +369,14 @@ class GS(object):
     @staticmethod
     def zone_get_first_layer(e):
         return e.GetFirstLayer() if GS.ki7 else e.GetLayer()
+
+    @staticmethod
+    def footprint_update_local_coords_ki7(fp):
+        fp.SetLocalCoord()  # Update the local coordinates
+
+    @staticmethod
+    def dummy1(fp):
+        """ KiCad 8 doesn't need footprint_update_local_coords """
 
     @staticmethod
     def expand_text_variables(text, extra_vars=None):
@@ -523,16 +546,21 @@ class GS(object):
 
     @staticmethod
     def iu_to_svg(values, svg_precision):
-        """ Converts 1 or more values from KiCad internal IUs to the units used for SVGs """
-        if not isinstance(values, tuple):
-            values = [values]
+        """ Converts 1 or more values from KiCad internal IUs to the units used for SVGs.
+            For tuples we assume the result is SVG coordinates, for 1 value a scale """
         if GS.ki5:
-            return tuple(map(lambda x: int(round(x*KICAD5_SVG_SCALE)), values))
+            if isinstance(values, tuple):
+                return tuple(map(lambda x: int(round(x*KICAD5_SVG_SCALE)), values))
+            return values*KICAD5_SVG_SCALE
         if GS.ki7:
-            return tuple(map(GS.to_mm, values))
+            if isinstance(values, tuple):
+                return tuple(map(GS.to_mm, values))
+            return GS.to_mm(values)
         # KiCad 6
         mult = 10.0 ** (svg_precision - 6)
-        return tuple(map(lambda x: int(round(x*mult)), values))
+        if isinstance(values, tuple):
+            return tuple(map(lambda x: int(round(x*mult)), values))
+        return values*mult
 
     @staticmethod
     def svg_round(val):
@@ -586,6 +614,30 @@ class GS(object):
         bbox = s.GetBoundingBox()
         s.SetWidth(width)
         return bbox
+
+    @staticmethod
+    def create_module_element(m):
+        if GS.ki8:
+            return pcbnew.PCB_SHAPE(m)
+        if GS.ki6:
+            return pcbnew.FP_SHAPE(m)
+        return pcbnew.EDGE_MODULE(m)
+
+    @staticmethod
+    def create_track(parent):
+        if GS.ki6:
+            return pcbnew.PCB_TRACK(parent)
+        return pcbnew.TRACK(parent)
+
+    @staticmethod
+    def create_puntual_track(parent, position, layer):
+        track = GS.create_track(parent)
+        track.SetStart(position)
+        track.SetEnd(position)
+        track.SetLayer(layer)
+        track.SetWidth(0)
+        parent.Add(track)
+        return track
 
     @staticmethod
     def fill_zones(board, zones=None):

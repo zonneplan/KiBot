@@ -33,7 +33,7 @@ import re
 import os
 import subprocess
 import importlib
-from pcbnew import B_Cu, F_Cu, FromMM, IsCopperLayer, PLOT_CONTROLLER, PLOT_FORMAT_SVG, F_Mask, B_Mask
+from pcbnew import B_Cu, B_Mask, F_Cu, F_Mask, FromMM, IsCopperLayer, LSET, PLOT_CONTROLLER, PLOT_FORMAT_SVG
 import shlex
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
@@ -47,7 +47,7 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (PDF_PCB_PRINT, W_PDMASKFAIL, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED,
-                   VIATYPE_MICROVIA)
+                   VIATYPE_MICROVIA, FONT_HELP_TEXT)
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -135,7 +135,7 @@ class LayerOptions(Layer):
     """ Data for a layer """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.color = ""
             """ Color used for this layer """
@@ -163,7 +163,7 @@ class PagesOptions(Optionable):
     """ One page of the output document """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.mirror = False
             """ Print mirrored (X axis inverted) """
@@ -337,6 +337,9 @@ class PCB_PrintOptions(VariantOptions):
             """ Color used for the `force_edge_cuts` option """
             self.scaling = 1.0
             """ *Default scale factor (0 means autoscaling)"""
+            self.individual_page_scaling = True
+            """ Tell KiCad to apply the scaling for each page as a separated entity.
+                Disabling it the pages are coherent and can be superposed """
             self.autoscale_margin_x = 0
             """ Default horizontal margin used for the autoscaling mode [mm] """
             self.autoscale_margin_y = 0
@@ -584,8 +587,9 @@ class PCB_PrintOptions(VariantOptions):
                 e.SetDrill(0)
                 e.SetWidth(self.min_w)
             elif e.GetLayer() == id:
-                e.SetLayer(tmp_layer)
-                moved.append(e)
+                if e.GetWidth():
+                    e.SetLayer(tmp_layer)
+                    moved.append(e)
         # Plot the layer
         # pc.SetLayer(id) already selected
         suffix = la.suffix+'_pads'
@@ -662,8 +666,9 @@ class PCB_PrintOptions(VariantOptions):
                     vias.append((e, d, w, top, bottom))
                     e.SetWidth(self.min_w)
             elif e.GetLayer() == id:
-                e.SetLayer(tmp_layer)
-                moved.append(e)
+                if e.GetWidth():
+                    e.SetLayer(tmp_layer)
+                    moved.append(e)
         # Plot the layer
         suffix = la.suffix+'_vias_'+str(via_t)
         pc.OpenPlotfile(suffix, PLOT_FORMAT_SVG, p.sheet)
@@ -842,12 +847,22 @@ class PCB_PrintOptions(VariantOptions):
     def plot_extra_cu(self, id, la, pc, p, filelist):
         """ Plot pads and vias to make them different """
         if id >= F_Cu and id <= B_Cu:
+            # Here we force the same bounding box
+            # Problem: we will remove items, so the bbox can be affected
+            # Solution: we add a couple of points at the edges of the bbox
+            bbox = GS.board.GetBoundingBox()
+            track1 = GS.create_puntual_track(GS.board, bbox.GetOrigin(), id)
+            track2 = GS.create_puntual_track(GS.board, bbox.GetEnd(), id)
+
             if self.colored_pads:
                 self.plot_pads(la, pc, p, filelist)
             if self.colored_vias:
                 self.plot_vias(la, pc, p, filelist, VIATYPE_THROUGH, self.via_color)
                 self.plot_vias(la, pc, p, filelist, VIATYPE_BLIND_BURIED, self.blind_via_color)
                 self.plot_vias(la, pc, p, filelist, VIATYPE_MICROVIA, self.micro_via_color)
+
+            GS.board.Remove(track1)
+            GS.board.Remove(track2)
 
     def pcbdraw_by_module(self, pcbdraw_file, back):
         self.ensure_tool('LXML')
@@ -1051,6 +1066,8 @@ class PCB_PrintOptions(VariantOptions):
             layout = os.path.abspath(os.path.join(GS.get_resource_path('kicad_layouts'), 'default.kicad_wks'))
         logger.debug('- Using layout: '+layout)
         self.layout = layout
+        # Memorize the list of visible layers
+        old_visible = GS.board.GetVisibleLayers()
         # Plot options
         pc = PLOT_CONTROLLER(GS.board)
         po = pc.GetPlotOptions()
@@ -1071,9 +1088,24 @@ class PCB_PrintOptions(VariantOptions):
                     edge_layer.color = layer_id2color[edge_id]
                 else:
                     edge_layer.color = "#000000"
+        # Make visible only the layers we need
+        # This is very important when scaling, otherwise the results are controlled by the .kicad_prl (See #407)
+        if not self.individual_page_scaling:
+            vis_layers = LSET()
+            for p in self.pages:
+                for la in p.layers:
+                    vis_layers.addLayer(la._id)
+            GS.board.SetVisibleLayers(vis_layers)
         # Generate the output, page by page
         pages = []
         for n, p in enumerate(self.pages):
+            # Make visible only the layers we need
+            # This is very important when scaling, otherwise the results are controlled by the .kicad_prl (See #407)
+            if self.individual_page_scaling:
+                vis_layers = LSET()
+                for la in p.layers:
+                    vis_layers.addLayer(la._id)
+                GS.board.SetVisibleLayers(vis_layers)
             # Use a dir for each page, avoid overwriting files, just for debug purposes
             page_str = "%02d" % (n+1)
             temp_dir = os.path.join(temp_dir_base, page_str)
@@ -1160,6 +1192,8 @@ class PCB_PrintOptions(VariantOptions):
         # Remove the temporal files
         if not self.keep_temporal_files:
             rmtree(temp_dir_base)
+        # Restore the list of visible layers
+        GS.board.SetVisibleLayers(old_visible)
         logger.debug('Finished generating `{}`'.format(output))
 
     def run(self, output):
@@ -1178,9 +1212,9 @@ class PCB_PrintOptions(VariantOptions):
 class PCB_Print(BaseOutput):  # noqa: F821
     """ PCB Print
         Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
-        Supports PDF, SVG, PNG, EPS and PS formats.
-        KiCad 5: including the frame is slow.
-        KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow. """
+        Supports PDF, SVG, PNG, EPS and PS formats. """
+    __doc__ += FONT_HELP_TEXT
+
     def __init__(self):
         super().__init__()
         with document:

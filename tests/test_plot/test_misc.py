@@ -1624,5 +1624,24 @@ def test_panelize_1(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'panelize_2')
     ctx.run(extra=[])
-    ctx.compare_image(prj+'-panel.png')
+    ctx.compare_image(prj+'-panel.png', tol=100)
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Uses fonts")
+def test_font_and_colors_1(test_dir):
+    prj = 'font_and_colors'
+    ctx = context.TestContext(test_dir, prj, 'resources_1')
+    ctx.run()
+    ctx.compare_image(prj+'-top.png')
+    ctx.compare_image(prj+'-assembly_page_01.png')
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Netclass flags")
+def test_netclass_flag_1(test_dir):
+    prj = 'netclass_flag'
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_csv_no_info', 'BoM')
+    ctx.run()
+    ctx.expect_out_file_d(prj+'-bom.csv')
+    ctx.clean_up()

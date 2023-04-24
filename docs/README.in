@@ -13,8 +13,9 @@
 - The GitHub actions now use the full/test docker images. So now they include PanDoc and also Blender.
 - If you are looking for the GitHub Actions documentation, and you already know how to use KiBot, or want a quick start, read: [GitHub Actions](#usage-of-github-actions)
 
-**New on v1.6.1**
-- KiCad 7.0.1 support
+**New on v1.6.2**
+- KiCad 7.0.2 support
+- Colored 3D THT resistors
 
 ## Index
 
@@ -387,7 +388,8 @@ The pattern uses the following expansions:
 - **%G** the `name` of the global variant.
 - **%i** a contextual ID, depends on the output type.
 - **%I** an ID defined by the user for this output.
-- **%p** pcb/sch title from pcb metadata.
+- **%M** directory where the pcb/sch resides. Only the last component i.e. /a/b/c/name.kicad_pcb -> c
+- **%p** title from pcb/sch metadata.
 - **%r** revision from pcb/sch metadata.
 - **%S** sub-PCB name (related to multiboards).
 - **%T** time the script was started.
@@ -2199,3 +2201,4 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
   - **Battery charger example**: [RB0002-BatteryPack](https://cadlab.io/project/22740/master/files)
   - **IT-1187A 3D Model**: Anton Pavlov ([GrabCad](https://grabcad.com/anton.pavlov-2))
   - **105017-0001 3D Model**: M.B.I. ([GrabCad](https://grabcad.com/m.b.i-1))
+  - **ASCII Art generated**: [patorjk](https://patorjk.com/)

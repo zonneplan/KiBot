@@ -25,7 +25,7 @@ class DrillMap(Optionable):
             self.type = 'pdf'
             """ [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map """
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
 
 
 class DrillReport(Optionable):
@@ -35,7 +35,7 @@ class DrillReport(Optionable):
             self.filename = ''
             """ Name of the drill report. Not generated unless a name is specified.
                 (%i='drill_report' %x='txt') """
-        self._unkown_is_error = True
+        self._unknown_is_error = True
 
 
 class AnyDrill(VariantOptions):
@@ -142,15 +142,18 @@ class AnyDrill(VariantOptions):
         for d in files:
             kicad_id = '-'+d if d else d
             kibot_id = self.solve_id(d)
+            kicad_id_main = kicad_id_map = kicad_id
             if self._ext == 'gbr':
-                kicad_id += '-drl'
-            k_file = self.expand_filename(output_dir, '%f'+kicad_id+'.%x', '', self._ext)
+                kicad_id_main += '-drl'
+                if not GS.ki8:
+                    kicad_id_map = kicad_id_main
+            k_file = self.expand_filename(output_dir, '%f'+kicad_id_main+'.%x', '', self._ext)
             file = ''
             if self.output:
                 file = self.expand_filename(output_dir, self.output, kibot_id, self._ext)
             filenames[k_file] = file
             if self.map is not None:
-                k_file = self.expand_filename(output_dir, '%f'+kicad_id+'-drl_map.%x', '', self.map_ext)
+                k_file = self.expand_filename(output_dir, '%f'+kicad_id_map+'-drl_map.%x', '', self.map_ext)
                 file = ''
                 if self.map_output:
                     file = self.expand_filename(output_dir, self.map_output, kibot_id+'_map', self.map_ext)

@@ -14,8 +14,9 @@
 - The GitHub actions now use the full/test docker images. So now they include PanDoc and also Blender.
 - If you are looking for the GitHub Actions documentation, and you already know how to use KiBot, or want a quick start, read: [GitHub Actions](#usage-of-github-actions)
 
-**New on v1.6.1**
-- KiCad 7.0.1 support
+**New on v1.6.2**
+- KiCad 7.0.2 support
+- Colored 3D THT resistors
 
 ## Index
 
@@ -126,6 +127,9 @@ Notes:
 - ![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png) Link to Debian stable package.
 - ![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png) This is a Python module, not a separated tool.
 - ![Tool](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png) This is an independent tool, can be a binary or a Python script.
+
+[**Lark**](https://pypi.org/project/Lark/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/Lark/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/Lark/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-lark)
+- Mandatory
 
 [**PyYAML**](https://pypi.org/project/PyYAML/) [![Python module](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png)](https://pypi.org/project/PyYAML/) [![PyPi dependency](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png)](https://pypi.org/project/PyYAML/) [![Debian](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png)](https://packages.debian.org/bullseye/python3-yaml)
 - Mandatory
@@ -616,7 +620,8 @@ The pattern uses the following expansions:
 - **%G** the `name` of the global variant.
 - **%i** a contextual ID, depends on the output type.
 - **%I** an ID defined by the user for this output.
-- **%p** pcb/sch title from pcb metadata.
+- **%M** directory where the pcb/sch resides. Only the last component i.e. /a/b/c/name.kicad_pcb -> c
+- **%p** title from pcb/sch metadata.
 - **%r** revision from pcb/sch metadata.
 - **%S** sub-PCB name (related to multiboards).
 - **%T** time the script was started.
@@ -742,8 +747,11 @@ global:
                                  For KiCad 5 and 6 use the design rules settings, stored in the project.
     - `allow_microvias`: [boolean=true] Allow the use of micro vias. This value is only used for KiCad 7+.
                          For KiCad 5 and 6 use the design rules settings, stored in the project.
+    - `cache_3d_resistors`: [boolean=false] Use a cache for the generated 3D models of colored resistors.
+                            Will save time, but you could need to remove the cache if you need to regenerate them.
     - `castellated_pads`: [boolean=false] Has the PCB castellated pads?
                           KiCad 6: you should set this in the Board Setup -> Board Finish -> Has castellated pads.
+    - `colored_tht_resistors`: [boolean=true] Try to add color bands to the 3D models of KiCad THT resistors.
     - *copper_finish*: Alias for pcb_finish.
     - `copper_thickness`: [number|string] Copper thickness in micrometers (1 Oz is 35 micrometers).
                           KiCad 6: you should set this in the Board Setup -> Physical Stackup.
@@ -755,6 +763,9 @@ global:
                      Is also used for the PCB/SCH date formatting when `time_reformat` is enabled (default behavior).
                      Uses the `strftime` format.
     - `date_time_format`: [string='%Y-%m-%d_%H-%M-%S'] Format used for the PCB and schematic date when using the file timestamp. Uses the `strftime` format.
+    - `default_resistor_tolerance`: [number=20] When no tolerance is specified we use this value.
+                                    Note that I know 5% is a common default, but technically speaking 20% is the default.
+                                    Used while creating colored resistors.
     - `dir`: [string=''] Default pattern for the output directories. It also applies to the preflights, unless
              `use_dir_for_preflights` is disabled.
     - `disable_3d_alias_as_env`: [boolean=false] Disable the use of environment and text variables as 3D models aliases.
@@ -793,6 +804,9 @@ global:
     - `field_3D_model`: [string='_3D_model'] Name for the field controlling the 3D models used for a component.
     - `field_lcsc_part`: [string=''] The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
                          When empty KiBot will try to discover it.
+    - `field_tolerance`: [string|list(string)] Name/s of the field/s used for the tolerance.
+                         Used while creating colored resistors.
+                         The default is ['tol', 'tolerance'].
     - `filters`: [list(dict)] KiBot warnings to be ignored.
       * Valid keys:
         - `error`: [string=''] Error id we want to exclude.
@@ -821,6 +835,11 @@ global:
                       Currently known are FR1 to FR5.
     - `remove_adhesive_for_dnp`: [boolean=true] When applying filters and variants remove the adhesive (glue) for components that won't be included.
     - `remove_solder_paste_for_dnp`: [boolean=true] When applying filters and variants remove the solder paste for components that won't be included.
+    - `resources_dir`: [string='kibot_resources'] Directory where various resources are stored. Currently we support colors and fonts.
+                       They must be stored in sub-dirs. I.e. kibot_resources/fonts/MyFont.ttf
+                       Note this is mainly useful for CI/CD, so you can store fonts and colors in your repo.
+                       Also note that the fonts are installed using a mechanism known to work on Debian,
+                       which is used by the KiBot docker images, on other OSs *your mileage may vary*.
     - `restore_project`: [boolean=false] Restore the KiCad project after execution.
                          Note that this option will undo operations like `set_text_variables`.
     - `set_text_variables_before_output`: [boolean=false] Run the `set_text_variables` preflight before running each output that involves variants.
@@ -1606,6 +1625,8 @@ Notes:
             - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
             - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
             - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+            - `kicad_3d_url_suffix`: [string=''] Text added to the end of the download URL.
+                                     Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
             - `output`: [string='%f-%i%I%v.%x'] Name for the generated PCB3D file (%i='blender_export' %x='pcb3d'). Affected by global options.
             - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                                A short-cut to use for simple cases where a variant is an overkill.
@@ -1641,17 +1662,19 @@ Notes:
                     If none specified KiBot will create a suitable camera.
                     If no position is specified for the camera KiBot will look for a suitable position.
           * Valid keys:
-            - `name`: [string=''] Name for the light.
+            - `name`: [string=''] Name for the camera.
             - `pos_x`: [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_y`: [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_z`: [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `type`: [string='perspective'] [perspective,orthographic,panoramic] Type of camera.
         - `light`: [dict|list(dict)] Options for the light/s.
           * Valid keys:
+            - `energy`: [number=0] How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful.
             - `name`: [string=''] Name for the light.
             - `pos_x`: [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_y`: [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_z`: [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            - `type`: [string='POINT'] [POINT, SUN, SPOT, HEMI, AREA] Type of light. SUN lights will illuminate more evenly.
         - `outputs`: [dict|list(dict)] Outputs to generate in the same run.
           * Valid keys:
             - **`type`**: [string='render'] [fbx,obj,x3d,gltf,stl,ply,blender,render] The format for the output.
@@ -2040,6 +2063,8 @@ Notes:
                         A short-cut to use for simple cases where a variant is an overkill.
         - `follow_links`: [boolean=true] Store the file pointed by symlinks, not the symlink.
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `kicad_3d_url_suffix`: [string=''] Text added to the end of the download URL.
+                                 Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
         - `link_no_copy`: [boolean=false] Create symlinks instead of copying files.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
@@ -2177,6 +2202,7 @@ Notes:
   * Type: `dxf`
   * Description: Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
                  This output is what you get from the File/Plot menu in pcbnew.
+                     If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -2198,6 +2224,7 @@ Notes:
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+        - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -2210,6 +2237,8 @@ Notes:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
@@ -2245,6 +2274,7 @@ Notes:
   * Type: `dxf_sch_print`
   * Description: Exports the schematic to a format commonly used for CAD software.
                  This output is what you get from the 'File/Plot' menu in eeschema.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -2263,6 +2293,8 @@ Notes:
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output DXF (%i=schematic, %x=dxf). Affected by global options.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -2418,6 +2450,7 @@ Notes:
   * Type: `gerber`
   * Description: This is the main fabrication format for the PCB.
                  This output is what you get from the File/Plot menu in pcbnew.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -2491,6 +2524,7 @@ Notes:
   * Type: `hpgl`
   * Description: Exports the PCB for plotters and laser printers.
                  This output is what you get from the File/Plot menu in pcbnew.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -2524,6 +2558,8 @@ Notes:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
@@ -2560,6 +2596,7 @@ Notes:
   * Type: `hpgl_sch_print`
   * Description: Exports the schematic to the most common plotter format.
                  This output is what you get from the 'File/Plot' menu in eeschema.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -2580,6 +2617,8 @@ Notes:
         - `pen_size`: [number=0.4826] Pen size (diameter) [mm].
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -3414,8 +3453,7 @@ Notes:
   * Type: `pcb_print`
   * Description: Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
                  Supports PDF, SVG, PNG, EPS and PS formats.
-                 KiCad 5: including the frame is slow.
-                 KiCad 6: for custom frames use the `enable_ki6_frame_fix`, is slow.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -3512,6 +3550,8 @@ Notes:
                                   You get the default frame and some substitutions doesn't work.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
                            Affected by global options.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each page as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `keep_temporal_files`: [boolean=false] Store the temporal page and layer files in the output dir and don't delete them.
         - `micro_via_color`: [string=''] Color used for micro `colored_vias`.
         - `pad_color`: [string=''] Color used for `colored_pads`.
@@ -3697,6 +3737,7 @@ Notes:
                  Note that this output isn't the best for documating your project.
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -3718,6 +3759,7 @@ Notes:
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+        - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -3730,6 +3772,8 @@ Notes:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
@@ -3753,6 +3797,7 @@ Notes:
     - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                   (i.e. always the default worksheet style, also problems expanding text variables).
                                   The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+    - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                   The categories are currently used for `navigate_results`.
@@ -3773,6 +3818,8 @@ Notes:
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
     - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+    - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                 Disabling it the pages are coherent and can be superposed.
     - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                  The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                  Example '.g%n'.
@@ -3797,6 +3844,7 @@ Notes:
                  This is the main format to document your PCB.
                  This output is what you get from the 'File/Print' menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -3852,6 +3900,7 @@ Notes:
   * Description: Exports the schematic to the most common exchange format. Suitable for printing.
                  This is the main format to document your schematic.
                  This output is what you get from the 'File/Plot' menu in eeschema.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -3870,6 +3919,8 @@ Notes:
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=schematic, %x=pdf). Affected by global options.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -4016,6 +4067,7 @@ Notes:
   * Description: Exports the PCB to a format suitable for printing.
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -4051,6 +4103,8 @@ Notes:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
@@ -4089,6 +4143,7 @@ Notes:
   * Type: `ps_sch_print`
   * Description: Exports the schematic in postscript. Suitable for printing.
                  This output is what you get from the 'File/Plot' menu in eeschema.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -4107,6 +4162,8 @@ Notes:
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output postscript (%i=schematic, %x=ps). Affected by global options.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -4214,6 +4271,8 @@ Notes:
         - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
         - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `kicad_3d_url_suffix`: [string=''] Text added to the end of the download URL.
+                                 Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
         - `no_smd`: [boolean=false] Used to exclude 3D models for surface mount components.
         - `no_tht`: [boolean=false] Used to exclude 3D models for through hole components.
         - `orthographic`: [boolean=false] Enable the orthographic projection mode (top view looks flat).
@@ -4466,6 +4525,8 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `kicad_3d_url_suffix`: [string=''] Text added to the end of the download URL.
+                                 Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
         - `metric_units`: [boolean=true] Use metric units instead of inches.
         - `min_distance`: [number=-1] The minimum distance between points to treat them as separate ones (-1 is KiCad default: 0.01 mm).
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
@@ -4491,6 +4552,7 @@ Notes:
                  Unlike bitmaps SVG drawings can be scaled without losing resolution.
                  This output is what you get from the File/Plot menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -4512,6 +4574,7 @@ Notes:
         - **`plot_sheet_reference`**: [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
                                       (i.e. always the default worksheet style, also problems expanding text variables).
                                       The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
+        - **`scaling`**: [number=1] Scale factor (0 means autoscaling).
         - `custom_reports`: [list(dict)] A list of customized reports for the manufacturer.
           * Valid keys:
             - `content`: [string=''] Content for the report. Use ${basename} for the project name without extension.
@@ -4524,10 +4587,13 @@ Notes:
         - `exclude_edge_layer`: [boolean=true] Do not include the PCB edge layer.
         - `exclude_pads_from_silkscreen`: [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
         - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+        - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
+                                     Disabling it the pages are coherent and can be superposed.
         - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
                                      The replacement pattern can contain %n for the inner layer number and %N for the layer number.
                                      Example '.g%n'.
         - `limit_viewbox`: [boolean=false] When enabled the view box is limited to a selected area.
+                           This option can't be enabled when using a scale.
         - `line_width`: [number=0.25] [0.02,2] For objects without width [mm] (KiCad 5).
         - `margin`: [number|dict] Margin around the view box [mm].
                     Using a number the margin is the same in the four directions.
@@ -4576,6 +4642,7 @@ Notes:
   * Description: Exports the PCB to the scalable vector graphics format.
                  This output is what you get from the 'File/Print' menu in pcbnew.
                  The `pcb_print` is usually a better alternative.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -4633,6 +4700,7 @@ Notes:
   * Description: Exports the schematic in a vectorized graphics format.
                  This is a format to document your schematic.
                  This output is what you get from the 'File/Plot' menu in eeschema.
+                 If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   * Valid keys:
     - **`comment`**: [string=''] A comment for documentation purposes. It helps to identify the output.
     - **`dir`**: [string='./'] Output directory for the generated files.
@@ -4651,6 +4719,8 @@ Notes:
         - `output`: [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `title`: [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+                   If it starts with `+` the text is concatenated.
         - `variant`: [string=''] Board variant to apply.
                      Not fitted components are crossed.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
@@ -4697,12 +4767,16 @@ Notes:
         - `highlight_on_top`: [boolean=false] Highlight over the component (not under).
         - `highlight_padding`: [number=1.5] [0,1000] How much the highlight extends around the component [mm].
         - `kicad_3d_url`: [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
+        - `kicad_3d_url_suffix`: [string=''] Text added to the end of the download URL.
+                                 Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
         - `model_units`: [string='millimeters'] [millimeters,meters,deciinches,inches] Units used for the VRML (1 deciinch = 0.1 inches).
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
         - `ref_units`: [string='millimeters'] [millimeters,inches'] Units for `ref_x` and `ref_y`.
-        - `ref_x`: [number=0] X coordinate to use as reference when `use_pcb_center_as_ref` is disabled.
-        - `ref_y`: [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` is disabled.
+        - `ref_x`: [number=0] X coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled.
+        - `ref_y`: [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled.
+        - `use_aux_axis_as_origin`: [boolean=false] Use the auxiliary axis as origin for coordinates.
+                                    Has more precedence than `use_pcb_center_as_ref`.
         - `use_pcb_center_as_ref`: [boolean=true] The center of the PCB will be used as reference point.
                                    When disabled the `ref_x`, `ref_y` and `ref_units` will be used.
         - `variant`: [string=''] Board variant to apply.
@@ -5371,12 +5445,13 @@ KiBot: KiCad automation tool for documents generation
 
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
-         [-q | -v...] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
-         [-E DEF] ... [-w LIST] [TARGET...]
-  kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [-E DEF] ... --list
-  kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] --example
-  kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [-t, --type TYPE]...
-         --quick-start
+         [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
+         [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
+  kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
+         [-E DEF] ... --list
+  kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
+  kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
+         [-t, --type TYPE]... --quick-start
   kibot [-v...] --help-filters
   kibot [-v...] [--markdown|--json] --help-dependencies
   kibot [-v...] --help-global-options
@@ -5385,6 +5460,7 @@ Usage:
   kibot [-v...] --help-outputs
   kibot [-v...] --help-preflights
   kibot [-v...] --help-variants
+  kibot [-v...] --help-banners
   kibot -h | --help
   kibot --version
 
@@ -5394,6 +5470,7 @@ Arguments:
 Options:
   -A, --no-auto-download           Disable dependencies auto-download
   -b BOARD, --board-file BOARD     The PCB .kicad-pcb board file
+  --banner N                       Display banner number N (-1 == random)
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -C, --cli-order                  Generate outputs using the indicated order
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
@@ -5403,6 +5480,8 @@ Options:
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs (in the config file)
+  -L, --log LOGFILE                Log to LOGFILE using maximum debug level.
+                                   Is independent of what is logged to stderr
   -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
   -n, --no-priority                Don't sort targets by priority
   -p, --copy-options               Copy plot options from the PCB file
@@ -5422,6 +5501,7 @@ Quick start options:
 
 Help options:
   -h, --help                       Show this help message and exit
+  --help-banners                   Show all available banners
   --help-dependencies              List dependencies in human readable format
   --help-filters                   List supported filters and details
   --help-global-options            List supported global variables
@@ -6084,3 +6164,4 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
   - **Battery charger example**: [RB0002-BatteryPack](https://cadlab.io/project/22740/master/files)
   - **IT-1187A 3D Model**: Anton Pavlov ([GrabCad](https://grabcad.com/anton.pavlov-2))
   - **105017-0001 3D Model**: M.B.I. ([GrabCad](https://grabcad.com/m.b.i-1))
+  - **ASCII Art generated**: [patorjk](https://patorjk.com/)

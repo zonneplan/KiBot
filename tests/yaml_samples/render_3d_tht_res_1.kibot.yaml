@@ -1,0 +1,23 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+# globals:
+#   default_resistor_tolerance: 5
+
+outputs:
+  - name: '3d_default'
+    comment: "3D view"
+    type: render_3d
+    options:
+      ray_tracing: true
+      zoom: 8
+      rotate_x: 5
+
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDraw
+    options:
+      format: png
+      show_components: all

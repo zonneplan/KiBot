@@ -390,7 +390,11 @@ class DiffOptions(BaseOptions):
         if not out._done:
             run_output(out)
         res = self.cache_file(fname)
-        self.git_hash = out.options.variant.file_id if self.use_file_id else out.options.variant.name+'_variant'
+        variant = out.options.variant
+        if variant is None:
+            self.git_hash = 'no_variant'
+        else:
+            self.git_hash = variant.file_id if self.use_file_id else variant.name+'_variant'
         return res
 
     def cache_current(self):

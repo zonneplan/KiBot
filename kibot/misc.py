@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """ Miscellaneous definitions """
@@ -267,6 +267,12 @@ W_BLINDVIAS = '(W118) '
 W_LIBTVERSION = '(W119) '
 W_LIBTUNK = '(W120) '
 W_DRC7BUG = '(W121) '
+W_BADTOL = '(W122) '
+W_BADRES = '(W123) '
+W_RESVALISSUE = '(W124) '
+W_RES3DNAME = '(W125) '
+W_ESCINV = '(W126) '
+W_BADVAL4 = '(W127) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
@@ -289,6 +295,7 @@ DISABLE_3D_MODEL_TEXT = '_Disabled_by_KiBot'
 RENDERERS = ['pcbdraw', 'render_3d', 'blender_export']
 PCB_GENERATORS = ['pcb_variant', 'panelize']
 KIKIT_UNIT_ALIASES = {'millimeters': 'mm', 'inches': 'inch', 'mils': 'mil'}
+FONT_HELP_TEXT = '\n        If you use custom fonts and/or colors please consult the `resources_dir` global variable.'
 
 
 class Rect(object):

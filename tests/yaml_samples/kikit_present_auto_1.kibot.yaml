@@ -8,9 +8,6 @@ outputs:
     dir: Present/Auto
     options:
       description: 'tests/data/silly_project.md'
-      boards:
-        mode: local
-        comment: This is a comment
       repository: 'https://github.com/INTI-CMNB/KiBot/'
 
   - name: PcbDraw

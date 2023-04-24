@@ -48,12 +48,14 @@ For debug information use:
 pytest-3 --log-cli-level debug
 """
 
+import pytest
 import os
 from . import context
 from kibot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR, BOM_ERROR, WRONG_ARGUMENTS)
 PRJ = 'fail-project'
 
 
+@pytest.mark.indep
 def test_no_version(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_no_version')
     ctx.run(EXIT_BAD_CONFIG)
@@ -61,6 +63,7 @@ def test_no_version(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_version(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_version')
     ctx.run(EXIT_BAD_CONFIG)
@@ -68,6 +71,7 @@ def test_wrong_version(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_version_2(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_version_2')
     ctx.run(EXIT_BAD_CONFIG)
@@ -75,6 +79,7 @@ def test_wrong_version_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_version_3(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_version_3')
     ctx.run(EXIT_BAD_CONFIG)
@@ -82,6 +87,7 @@ def test_wrong_version_3(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_drill_map_no_type_1(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_drill_map_no_type')
     ctx.run(EXIT_BAD_CONFIG)
@@ -89,6 +95,7 @@ def test_drill_map_no_type_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_drill_map_no_type_2(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_drill_map_no_type_2')
     ctx.run(EXIT_BAD_CONFIG)
@@ -96,6 +103,7 @@ def test_drill_map_no_type_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_drill_map_wrong_type_1(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_drill_map_wrong_type')
     ctx.run(EXIT_BAD_CONFIG)
@@ -103,6 +111,7 @@ def test_drill_map_wrong_type_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_drill_map_wrong_type_2(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_drill_map_wrong_type_2')
     ctx.run(EXIT_BAD_CONFIG)
@@ -110,6 +119,7 @@ def test_drill_map_wrong_type_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_drill_map_wrong_type_3(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_drill_map_wrong_type_3')
     ctx.run(EXIT_BAD_CONFIG)
@@ -117,6 +127,7 @@ def test_drill_map_wrong_type_3(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_drill_report_no_type_1(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_drill_report_no_type')
     ctx.run(EXIT_BAD_CONFIG)
@@ -124,6 +135,7 @@ def test_drill_report_no_type_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_drill_report_no_type_2(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_drill_report_no_type_2')
     ctx.run(EXIT_BAD_CONFIG)
@@ -131,6 +143,7 @@ def test_drill_report_no_type_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_drill_report_wrong_type_2(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_drill_report_wrong_type_2')
     ctx.run(EXIT_BAD_CONFIG)
@@ -138,6 +151,7 @@ def test_drill_report_wrong_type_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_drill_report_wrong_type_3(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_drill_report_wrong_type_3')
     ctx.run(EXIT_BAD_CONFIG)
@@ -145,6 +159,7 @@ def test_drill_report_wrong_type_3(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_layer_1(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_layer_1')
     ctx.run(EXIT_BAD_CONFIG)
@@ -152,6 +167,7 @@ def test_wrong_layer_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_layer_2(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_layer_2')
     ctx.run(PLOT_ERROR)
@@ -159,6 +175,7 @@ def test_wrong_layer_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_layer_3(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_layer_3')
     ctx.run(EXIT_BAD_CONFIG)
@@ -166,6 +183,7 @@ def test_wrong_layer_3(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_layer_4(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_layer_4')
     ctx.run(EXIT_BAD_CONFIG)
@@ -173,6 +191,7 @@ def test_wrong_layer_4(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_layer_5(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_layer_5')
     ctx.run(EXIT_BAD_CONFIG)
@@ -180,6 +199,7 @@ def test_wrong_layer_5(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_layer_6(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_layer_6')
     ctx.run(EXIT_BAD_CONFIG)
@@ -187,6 +207,7 @@ def test_wrong_layer_6(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_layer_7(test_dir):
     """ List of numbers """
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_layer_7')
@@ -195,6 +216,7 @@ def test_wrong_layer_7(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_layer_9(test_dir):
     """ A bogus string """
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_layer_9')
@@ -203,6 +225,7 @@ def test_wrong_layer_9(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_layer_8(test_dir):
     """ List of strings, but number in middle """
     ctx = context.TestContext(test_dir, '3Rs', 'error_wrong_layer_8')
@@ -211,6 +234,7 @@ def test_wrong_layer_8(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_no_name(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_no_name')
     ctx.run(EXIT_BAD_CONFIG)
@@ -218,6 +242,7 @@ def test_no_name(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_empty_name(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_empty_name')
     ctx.run(EXIT_BAD_CONFIG)
@@ -225,6 +250,7 @@ def test_empty_name(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_no_type(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_no_type')
     ctx.run(EXIT_BAD_CONFIG)
@@ -232,6 +258,7 @@ def test_no_type(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_out_unknown_attr(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_unk_attr')
     ctx.run(EXIT_BAD_CONFIG)
@@ -239,6 +266,7 @@ def test_out_unknown_attr(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_out_needs_type(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_needs_type')
     ctx.run(EXIT_BAD_CONFIG)
@@ -247,6 +275,7 @@ def test_out_needs_type(test_dir):
 
 
 # Now is valid
+# @pytest.mark.indep
 # def test_no_options(test_dir):
 #     ctx = context.TestContext(test_dir, '3Rs', 'error_no_options')
 #     ctx.run(EXIT_BAD_CONFIG)
@@ -254,6 +283,7 @@ def test_out_needs_type(test_dir):
 #     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_no_layers(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_no_layers')
     ctx.run(EXIT_BAD_CONFIG)
@@ -261,6 +291,7 @@ def test_no_layers(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_step_origin(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_step_origin')
     ctx.run(EXIT_BAD_CONFIG)
@@ -268,6 +299,7 @@ def test_error_step_origin(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_step_min_distance(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_step_min_distance')
     ctx.run(EXIT_BAD_CONFIG)
@@ -275,6 +307,7 @@ def test_error_step_min_distance(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_filter_not_list(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_filter_not_list')
     ctx.run(EXIT_BAD_CONFIG)
@@ -282,6 +315,7 @@ def test_filter_not_list(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_filter_no_number_1(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_filter_no_number')
     ctx.run(EXIT_BAD_CONFIG)
@@ -289,6 +323,7 @@ def test_filter_no_number_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_filter_no_number_2(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_filter_no_number_2')
     ctx.run(EXIT_BAD_CONFIG)
@@ -296,6 +331,7 @@ def test_filter_no_number_2(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_filter_no_regex_1(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_filter_no_regex')
     ctx.run(EXIT_BAD_CONFIG)
@@ -303,6 +339,7 @@ def test_filter_no_regex_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_filter_wrong_entry(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_filter_wrong_entry')
     ctx.run(EXIT_BAD_CONFIG)
@@ -310,6 +347,7 @@ def test_filter_wrong_entry(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_pre_list(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_list')
     ctx.run(EXIT_BAD_CONFIG)
@@ -317,6 +355,7 @@ def test_error_pre_list(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_pre_unk(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_unk')
     ctx.run(EXIT_BAD_CONFIG)
@@ -324,6 +363,7 @@ def test_error_pre_unk(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_wrong_type_1(test_dir):
     """ run_drc = number """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_1')
@@ -332,6 +372,7 @@ def test_error_wrong_type_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_wrong_type_2(test_dir):
     """ ignore_unconnected = string """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_2')
@@ -340,6 +381,7 @@ def test_error_wrong_type_2(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_wrong_type_3(test_dir):
     """ run_erc = number """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_3')
@@ -348,6 +390,7 @@ def test_error_wrong_type_3(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_wrong_type_4(test_dir):
     """ update_xml = number """
     ctx = context.TestContextSCH(test_dir, 'bom', 'error_pre_wrong_type_4')
@@ -356,6 +399,7 @@ def test_error_wrong_type_4(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_wrong_type_5(test_dir):
     """ check_zone_fills = number """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_5')
@@ -364,6 +408,7 @@ def test_error_wrong_type_5(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_yaml(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_yaml')
     ctx.run(EXIT_BAD_CONFIG)
@@ -371,6 +416,7 @@ def test_error_yaml(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_out_not_list(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_out_not_list')
     ctx.run(EXIT_BAD_CONFIG)
@@ -378,6 +424,7 @@ def test_out_not_list(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_unk_section(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_unk_section')
     ctx.run(EXIT_BAD_CONFIG)
@@ -385,6 +432,7 @@ def test_unk_section(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_hpgl_pen_num(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_hpgl_pen_num')
     ctx.run(EXIT_BAD_CONFIG)
@@ -392,6 +440,7 @@ def test_error_hpgl_pen_num(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_bom_wrong_format(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_bom_wrong_format')
     ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom'+context.KICAD_SCH_EXT)])
@@ -399,6 +448,7 @@ def test_error_bom_wrong_format(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_bom_column(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_bom_column')
     ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom'+context.KICAD_SCH_EXT)])
@@ -406,6 +456,7 @@ def test_error_bom_column(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_bom_no_columns(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_bom_column')
     ctx.run(BOM_ERROR, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom_no_xml'+context.KICAD_SCH_EXT)])
@@ -413,6 +464,7 @@ def test_error_bom_no_columns(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_bom_no_field(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_bom_no_field')
     ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(),
@@ -421,6 +473,7 @@ def test_error_bom_no_field(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_wrong_boolean(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_wrong_boolean')
     ctx.run(EXIT_BAD_CONFIG)
@@ -428,6 +481,7 @@ def test_error_wrong_boolean(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_gerber_precision(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_gerber_precision')
     ctx.run(EXIT_BAD_CONFIG)
@@ -435,6 +489,7 @@ def test_error_gerber_precision(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_wrong_drill_marks_1(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_wrong_drill_marks')
     ctx.run(EXIT_BAD_CONFIG)
@@ -442,6 +497,7 @@ def test_error_wrong_drill_marks_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_print_pcb_no_layer(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'error_print_pcb_no_layer')
@@ -450,6 +506,7 @@ def test_error_print_pcb_no_layer(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_color(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_color')
     ctx.run(EXIT_BAD_CONFIG)
@@ -457,6 +514,7 @@ def test_error_color(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_wrong_global(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_wrong_global')
     ctx.run(EXIT_BAD_CONFIG)
@@ -464,6 +522,7 @@ def test_wrong_global(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_goutput_not_string(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_goutput_not_string')
     ctx.run(EXIT_BAD_CONFIG)
@@ -471,6 +530,7 @@ def test_goutput_not_string(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_unk_global(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_unk_global')
     ctx.run(EXIT_BAD_CONFIG)
@@ -478,6 +538,7 @@ def test_unk_global(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_int_bom_no_field(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_int_bom_no_field')
     ctx.run(EXIT_BAD_CONFIG)
@@ -485,6 +546,7 @@ def test_error_int_bom_no_field(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_int_bom_miss_logo(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_int_bom_miss_logo')
     ctx.run(EXIT_BAD_CONFIG)
@@ -492,6 +554,7 @@ def test_error_int_bom_miss_logo(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_int_bom_miss_style(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_int_bom_miss_style')
     ctx.run(EXIT_BAD_CONFIG)
@@ -499,6 +562,7 @@ def test_error_int_bom_miss_style(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_int_bom_unknown_style(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_int_bom_unknown_style')
     ctx.run(EXIT_BAD_CONFIG)
@@ -506,6 +570,7 @@ def test_error_int_bom_unknown_style(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_int_bom_invalid_col(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_int_bom_invalid_col')
     ctx.run()
@@ -513,6 +578,7 @@ def test_error_int_bom_invalid_col(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_int_bom_logo_format(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_int_bom_logo_format')
     ctx.run(EXIT_BAD_CONFIG)
@@ -520,6 +586,7 @@ def test_error_int_bom_logo_format(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_var_no_name(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_var_no_name')
     ctx.run(EXIT_BAD_CONFIG)
@@ -527,6 +594,7 @@ def test_error_var_no_name(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_var_empty_name(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_var_empty_name')
     ctx.run(EXIT_BAD_CONFIG)
@@ -534,6 +602,7 @@ def test_error_var_empty_name(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_var_wrong_type(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_var_wrong_type')
     ctx.run(EXIT_BAD_CONFIG)
@@ -541,6 +610,7 @@ def test_error_var_wrong_type(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_var_no_type(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_var_no_type')
     ctx.run(EXIT_BAD_CONFIG)
@@ -548,6 +618,7 @@ def test_error_var_no_type(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_var_empty_type(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_var_empty_type')
     ctx.run(EXIT_BAD_CONFIG)
@@ -555,6 +626,7 @@ def test_error_var_empty_type(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_var_no_list(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_var_no_list')
     ctx.run(EXIT_BAD_CONFIG)
@@ -562,6 +634,7 @@ def test_error_var_no_list(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_fil_no_list(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_fil_no_list')
     ctx.run(EXIT_BAD_CONFIG)
@@ -569,6 +642,7 @@ def test_error_fil_no_list(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_fil_unknown(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_fil_unknown')
     ctx.run(EXIT_BAD_CONFIG)
@@ -576,6 +650,7 @@ def test_error_fil_unknown(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_var_unknown(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_unk_variant')
     ctx.run(EXIT_BAD_CONFIG)
@@ -583,6 +658,7 @@ def test_error_var_unknown(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_wrong_fil_name(test_dir):
     ctx = context.TestContextSCH(test_dir, 'links', 'error_wrong_fil_name')
     ctx.run(EXIT_BAD_CONFIG)
@@ -590,6 +666,7 @@ def test_error_wrong_fil_name(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_pcbdraw_comp_key(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_pcbdraw_comp_key')
     ctx.run(EXIT_BAD_CONFIG)
@@ -597,6 +674,7 @@ def test_error_pcbdraw_comp_key(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_rot_not_two(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_rot_not_two')
     ctx.run(EXIT_BAD_CONFIG)
@@ -604,6 +682,7 @@ def test_error_rot_not_two(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_rot_not_number(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_rot_not_number')
     ctx.run(EXIT_BAD_CONFIG)
@@ -611,6 +690,7 @@ def test_error_rot_not_number(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_rot_no_rotations(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_rot_no_rotations')
     ctx.run(EXIT_BAD_CONFIG)
@@ -618,6 +698,7 @@ def test_error_rot_no_rotations(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_makefile_wrong_out(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_makefile_wrong_out')
     ctx.run(WRONG_ARGUMENTS)
@@ -625,6 +706,7 @@ def test_error_makefile_wrong_out(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_no_column_id(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_no_column_id')
     ctx.run(EXIT_BAD_CONFIG)
@@ -632,6 +714,7 @@ def test_error_no_column_id(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_aggregate_no_file(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_aggregate_no_file')
     ctx.run(EXIT_BAD_CONFIG)
@@ -639,6 +722,7 @@ def test_error_aggregate_no_file(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_aggregate_miss_file(test_dir):
     yaml = 'error_aggregate_miss_file'
     if context.ki6():
@@ -649,6 +733,7 @@ def test_error_aggregate_miss_file(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.indep
 def test_error_wrong_import_type(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_wrong_import_type')
     ctx.run(EXIT_BAD_CONFIG)
@@ -656,6 +741,7 @@ def test_error_wrong_import_type(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_import_not_str(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_import_not_str')
     ctx.run(EXIT_BAD_CONFIG)
@@ -663,6 +749,7 @@ def test_error_import_not_str(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_import_miss_file(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_import_miss_file')
     ctx.run(EXIT_BAD_CONFIG)
@@ -670,6 +757,7 @@ def test_error_import_miss_file(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_error_import_no_outputs(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_import_no_outputs')
     ctx.run()
@@ -677,6 +765,7 @@ def test_error_import_no_outputs(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_same_name_1(test_dir):
     """ 2 outputs with the same name in the same file """
     ctx = context.TestContext(test_dir, PRJ, 'error_same_name_1')
@@ -685,6 +774,7 @@ def test_same_name_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_same_name_2(test_dir):
     """ Using import, but the 2nd is in the main file """
     ctx = context.TestContext(test_dir, PRJ, 'error_same_name_2')
@@ -693,6 +783,7 @@ def test_same_name_2(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_same_name_3(test_dir):
     """ Using import and the 2nd is from the import """
     ctx = context.TestContext(test_dir, PRJ, 'error_same_name_3')
@@ -701,6 +792,7 @@ def test_same_name_3(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_extends_1(test_dir):
     """ Extend an undefined output """
     ctx = context.TestContext(test_dir, PRJ, 'error_extends_1')
@@ -709,6 +801,7 @@ def test_extends_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
 def test_pre_list_instead_of_dict(test_dir):
     """ Extend an undefined output """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_list_instead_of_dict_issue_360')

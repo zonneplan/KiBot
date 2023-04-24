@@ -1,0 +1,5 @@
+"#","Reference","Qty","Value","Footprint","DNP"
+"1","C1","1","1uF","Capacitor_SMD:C_0603_1608Metric",""
+"2","FID1","1","Fiducial","",""
+"3","R1","1","100","Resistor_SMD:R_0805_2012Metric",""
+"4","R2","1","200","Resistor_SMD:R_0805_2012Metric",""

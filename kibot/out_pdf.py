@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -9,6 +9,7 @@ from pcbnew import (PLOT_FORMAT_PDF, FromMM, ToMM)
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
 from .gs import GS
+from .misc import FONT_HELP_TEXT
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -49,6 +50,8 @@ class PDF(AnyLayer, DrillMarks):
         Note that this output isn't the best for documating your project.
         This output is what you get from the File/Plot menu in pcbnew.
         The `pcb_print` is usually a better alternative. """
+    __doc__ += FONT_HELP_TEXT
+
     def __init__(self):
         super().__init__()
         with document:

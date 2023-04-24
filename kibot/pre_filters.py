@@ -20,7 +20,7 @@ class FilterOptionsKiBot(Optionable):
     """ Valid options for a filter entry """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.filter = ''
             """ Name for the filter, for documentation purposes """

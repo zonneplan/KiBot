@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 from pcbnew import PLOT_FORMAT_DXF, SKETCH, FILLED
 from .out_any_layer import AnyLayer
 from .drill_marks import DrillMarks
 from .gs import GS
+from .misc import FONT_HELP_TEXT
 from .macros import macros, document, output_class  # noqa: F401
 if GS.ki6:
     from pcbnew import DXF_UNITS_MILLIMETERS, DXF_UNITS_INCHES
@@ -53,6 +54,8 @@ class DXF(AnyLayer):
     DXF (Drawing Exchange Format)
     Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
     This output is what you get from the File/Plot menu in pcbnew. """
+    __doc__ += FONT_HELP_TEXT
+
     def __init__(self):
         super().__init__()
         self._category = 'PCB/export'

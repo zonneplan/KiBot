@@ -73,8 +73,13 @@ def do_init():
 
 if args.patch_get_path:
     with context.cover_it(cov):
+        old = os.environ.get('KICAD_PATH')
+        if old:
+            del os.environ['KICAD_PATH']
         with patch("sysconfig.get_path", lambda a, b=None: ''):
             do_init()
+        if old:
+            os.environ['KICAD_PATH'] = old
 else:
     with context.cover_it(cov):
         do_init()

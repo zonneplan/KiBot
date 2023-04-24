@@ -10,6 +10,7 @@ Dependencies:
     command: eeschema_do
     version: 1.5.4
 """
+from collections import namedtuple
 import os
 from sys import exit
 import xml.etree.ElementTree as ET
@@ -23,6 +24,7 @@ from .optionable import Optionable
 import pcbnew
 
 logger = get_logger(__name__)
+Component = namedtuple("Component", "val fp props")
 
 
 class Update_XMLOptions(Optionable):
@@ -79,43 +81,63 @@ class Update_XML(BasePreFlight):  # noqa: F821
             if ref not in comps:
                 errors.append('{} found in PCB, but not in schematic'.format(ref))
                 continue
-            sch_fp = comps[ref]
+            sch_data = comps[ref]
             pcb_fp = m.GetFPIDAsString()
-            if sch_fp != pcb_fp:
-                errors.append('{} footprint mismatch (PCB: {} vs schematic: {})'.format(ref, pcb_fp, sch_fp))
+            if sch_data.fp != pcb_fp:
+                errors.append('{} footprint mismatch (PCB: `{}` vs schematic: `{}`)'.format(ref, pcb_fp, sch_data.fp))
+            pcb_val = m.GetValue()
+            if sch_data.val != pcb_val:
+                errors.append('{} value mismatch (PCB: `{}` vs schematic: `{}`)'.format(ref, pcb_val, sch_data.val))
+            # Properties
+            pcb_props = m.GetProperties()
+            found_props = set()
+            for p, v in sch_data.props.items():
+                v_pcb = pcb_props.get(p)
+                if v_pcb is None:
+                    errors.append('{} schematic property `{}` not in PCB'.format(ref, p))
+                    continue
+                found_props.add(p)
+                if v_pcb != v:
+                    errors.append('{} property mismatch (PCB: `{}` vs schematic: `{}`)'.format(ref, v_pcb, v))
+            # Missing properties
+            for p in set(pcb_props.keys()).difference(found_props):
+                errors.append('{} PCB property `{}` not in schematic'.format(ref, p))
         for ref in set(comps.keys()).difference(found_comps):
             errors.append('{} found in schematic, but not in PCB'.format(ref))
 
-    def check_nets(self, net_names, net_nodes, errors):
+    def check_nets(self, net_nodes, errors):
         # Total count
         con = GS.board.GetConnectivity()
         pcb_net_count = con.GetNetCount()-1  # Removing the bogus net 0
-        sch_net_count = len(net_names)
+        sch_net_count = len(net_nodes)
         if pcb_net_count != sch_net_count:
             errors.append('Net count mismatch (PCB {} vs schematic {})'.format(pcb_net_count, sch_net_count))
         net_info = GS.board.GetNetInfo()
         # Names and connection
+        pcb_net_names = set()
         for n in net_info.NetsByNetcode():
             if not n:
                 # Bogus net code 0
                 continue
-            if n not in net_names:
-                errors.append('PCB net code {} not in schematic'.format(n))
-                continue
             net = net_info.GetNetItem(n)
             net_name = net.GetNetname()
-            sch_name = net_names[n]
-            if net_name != sch_name:
-                errors.append('PCB net code {} name mismatch ({} vs {})'.format(n, net_name, sch_name))
-            sch_nodes = net_nodes[n]
+            if net_name not in net_nodes:
+                errors.append('Net `{}` not in schematic'.format(net_name))
+                continue
+            pcb_net_names.add(net_name)
+            sch_nodes = net_nodes[net_name]
             pcb_nodes = {pad.GetParent().GetReference()+' pin '+pad.GetNumber()
                          for pad in con.GetNetItems(n, pcbnew.PCB_PAD_T)}
             dif = pcb_nodes-sch_nodes
             if dif:
-                errors.append('PCB net code {} extra connection/s: {}'.format(n, ','.join(list(dif))))
+                errors.append('Net `{}` extra PCB connection/s: {}'.format(net_name, ','.join(list(dif))))
             dif = sch_nodes-pcb_nodes
             if dif:
-                errors.append('PCB net code {} missing connection/s: {}'.format(n, ','.join(list(dif))))
+                errors.append('Net `{}` missing PCB connection/s: {}'.format(net_name, ','.join(list(dif))))
+        # Now check if the schematic added nets
+        for name in net_nodes.keys():
+            if name not in pcb_net_names:
+                errors.append('Net `{}` not in PCB'.format(name))
 
     def check_pcb_parity(self):
         if GS.ki5:
@@ -140,25 +162,27 @@ class Update_XML(BasePreFlight):  # noqa: F821
         if components is not None:
             for c in components.iter('comp'):
                 ref = c.attrib.get('ref')
+                val = c.find('value')
+                val = val.text if val is not None else ''
                 fp = c.find('footprint')
                 fp = fp.text if fp is not None else ''
-                logger.debugl(2, '- {}: {}'.format(ref, fp))
-                comps[ref] = fp
+                props = {p.get('name'): p.get('value') for p in c.iter('property')}
+                logger.debugl(2, '- {}: {} {} {}'.format(ref, val, fp, props))
+                comps[ref] = Component(val, fp, props)
         netlist = root.find('nets')
-        net_names = {}
         net_nodes = {}
         if netlist is not None:
             for n in netlist.iter('net'):
-                code = int(n.get('code'))
-                net_names[code] = n.get('name')
-                net_nodes[code] = {node.get('ref')+' pin '+node.get('pin') for node in n.iter('node')}
+                # This is a useless number stored there just to use disk space and confuse people:
+                # code = int(n.get('code'))
+                net_nodes[n.get('name')] = {node.get('ref')+' pin '+node.get('pin') for node in n.iter('node')}
         # Check with the PCB
         errors = []
         load_board()
         # Check components
         self.check_components(comps, errors)
         # Check the nets
-        self.check_nets(net_names, net_nodes, errors)
+        self.check_nets(net_nodes, errors)
         # Report errors
         if errors:
             if self.options.as_warnings:

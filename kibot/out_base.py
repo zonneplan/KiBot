@@ -18,9 +18,9 @@ if not GS.kicad_version_n:
     detect_kicad()
 if GS.ki6:
     # New name, no alias ...
-    from pcbnew import FP_SHAPE, wxPoint, LSET, FP_3DMODEL, ToMM
+    from pcbnew import wxPoint, LSET, FP_3DMODEL, ToMM
 else:
-    from pcbnew import EDGE_MODULE, wxPoint, LSET, MODULE_3D_SETTINGS, ToMM
+    from pcbnew import wxPoint, LSET, MODULE_3D_SETTINGS, ToMM
     FP_3DMODEL = MODULE_3D_SETTINGS
 from .registrable import RegOutput
 from .optionable import Optionable, BaseOptions
@@ -90,7 +90,7 @@ class BaseOutput(RegOutput):
         self._sch_related = False
         self._both_related = False
         self._none_related = False
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         self._done = False
         self._category = None
 
@@ -196,7 +196,7 @@ class BoMRegex(Optionable):
     """ Implements the pair column/regex """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.column = ''
             """ Name of the column to apply the regular expression.
@@ -279,29 +279,23 @@ class VariantOptions(BaseOptions):
         return ToMM(val)
 
     @staticmethod
-    def create_module_element(m):
-        if GS.ki6:
-            return FP_SHAPE(m)
-        return EDGE_MODULE(m)
-
-    @staticmethod
     def cross_module(m, rect, layer):
         """ Draw a cross over a module.
             The rect is a Rect object with the size.
             The layer is which layer id will be used. """
-        seg1 = VariantOptions.create_module_element(m)
+        seg1 = GS.create_module_element(m)
         seg1.SetWidth(120000)
         seg1.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y1)))
         seg1.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y2)))
         seg1.SetLayer(layer)
-        seg1.SetLocalCoord()  # Update the local coordinates
+        GS.footprint_update_local_coords(seg1)
         m.Add(seg1)
-        seg2 = VariantOptions.create_module_element(m)
+        seg2 = GS.create_module_element(m)
         seg2.SetWidth(120000)
         seg2.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y2)))
         seg2.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y1)))
         seg2.SetLayer(layer)
-        seg2.SetLocalCoord()  # Update the local coordinates
+        GS.footprint_update_local_coords(seg2)
         m.Add(seg2)
         return [seg1, seg2]
 
@@ -323,7 +317,7 @@ class VariantOptions(BaseOptions):
             if c and c.included and not c.fitted:
                 # Meassure the component BBox (only graphics)
                 for gi in m.GraphicalItems():
-                    if gi.GetClass() == 'MGRAPHIC':
+                    if gi.GetClass() == GS.footprint_gr_type:
                         l_gi = gi.GetLayer()
                         if l_gi == ffab:
                             frect.Union(GS.get_rect_for(gi.GetBoundingBox()))
@@ -673,7 +667,7 @@ class VariantOptions(BaseOptions):
         bcrtyd = board.GetLayerID('B.CrtYd')
         bbox = Rect()
         for gi in m.GraphicalItems():
-            if gi.GetClass() == 'MGRAPHIC':
+            if gi.GetClass() == GS.footprint_gr_type:
                 l_gi = gi.GetLayer()
                 if l_gi == fcrtyd or l_gi == bcrtyd:
                     bbox.Union(GS.get_rect_for(gi.GetBoundingBox()))

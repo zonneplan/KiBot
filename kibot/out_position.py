@@ -41,7 +41,7 @@ class PosColumns(Optionable):
     """ Which columns we want and its names """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.id = ''
             """ *[Ref,Val,Package,PosX,PosY,Rot,Side] Internal name """

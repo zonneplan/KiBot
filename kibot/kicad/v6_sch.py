@@ -1275,18 +1275,30 @@ class Text(object):
     def parse(items, name):
         text = Text()
         text.name = name
+        text.exclude_from_sim = None
         text.text = _check_str(items, 1, name)
-        text.pos_x, text.pos_y, text.ang = _get_at(items, 2, name)
-
-        text.effects = _get_effects(items, 3, name)
-        text.uuid = _get_uuid(items, 4, name)
+        for c, i in enumerate(items[2:]):
+            i_type = _check_is_symbol_list(i)
+            if i_type == 'at':
+                text.pos_x, text.pos_y, text.ang = _get_at(items, c+2, name)
+            elif i_type == 'effects':
+                text.effects = _get_effects(items, c+2, name)
+            elif i_type == 'uuid':
+                text.uuid = _get_uuid(items, c+2, name)
+            elif i_type == 'exclude_from_sim':
+                # KiCad 7.99
+                text.exclude_from_sim = _get_yes_no(i, 1, i_type)
+            else:
+                raise SchError('Unknown symbol attribute `{}`'.format(i))
         return text
 
     def write(self):
-        data = [self.text,
-                _symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
-                self.effects.write(), Sep(),
-                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+        data = [self.text]
+        if self.exclude_from_sim is not None:
+            data.append(_symbol('exclude_from_sim', [Symbol(NO_YES[self.exclude_from_sim])]))
+        data.extend([_symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
+                     self.effects.write(), Sep(),
+                    _symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol(self.name, data)
 
 
@@ -1325,6 +1337,7 @@ class GlobalLabel(object):
         self.uuid = None
         self.properties = []
         self.name = 'global_label'
+        self.length = None   # For netclass_flag
 
     @classmethod
     def parse(cls, items):
@@ -1335,6 +1348,8 @@ class GlobalLabel(object):
             i_type = _check_is_symbol_list(i)
             if i_type == 'shape':
                 label.shape = _check_symbol(i, 1, label.name+' '+i_type)
+            elif i_type == 'length':
+                label.length = _check_float(i, 1, label.name+' '+i_type)
             elif i_type == 'fields_autoplaced':
                 label.fields_autoplaced = True
             elif i_type == 'at':
@@ -1352,6 +1367,8 @@ class GlobalLabel(object):
 
     def write(self):
         data = [self.text]
+        if self.length is not None:
+            data.append(_symbol('length', [self.length]))
         if self.shape is not None:
             data.append(_symbol('shape', [Symbol(self.shape)]))
         data.append(_symbol('at', [self.pos_x, self.pos_y, self.ang]))
@@ -1375,6 +1392,12 @@ class HierarchicalLabel(GlobalLabel):
     def __init__(self):
         super().__init__()
         self.name = 'hierarchical_label'
+
+
+class NetClassFlag(GlobalLabel):
+    def __init__(self):
+        super().__init__()
+        self.name = 'netclass_flag'
 
 
 class HSPin(object):
@@ -1893,6 +1916,7 @@ class SchematicV6(Schematic):
         self.labels = []
         self.glabels = []
         self.hlabels = []
+        self.net_class_flags = []
         self.sheets = []
         self.sheet_instances = []
         self.bus_alias = []
@@ -1971,6 +1995,8 @@ class SchematicV6(Schematic):
                 self.glabels.append(GlobalLabel.parse(e))
             elif e_type == 'hierarchical_label':
                 self.hlabels.append(HierarchicalLabel.parse(e))
+            elif e_type == 'netclass_flag':
+                self.net_class_flags.append(NetClassFlag.parse(e))
             elif e_type == 'symbol':
                 obj = SchematicComponentV6.load(e, self.project, self)
                 self.symbols.append(obj)

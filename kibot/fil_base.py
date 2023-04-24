@@ -211,7 +211,7 @@ def apply_fixed_filter(comps, filter):
 class BaseFilter(RegFilter):
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         self._internal = False
         # Two type of filters:
         # Transform: can change the component. Returns
@@ -381,7 +381,7 @@ class FieldRename(Optionable):
     """ Field translation """
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.field = ''
             """ Name of the field to rename """

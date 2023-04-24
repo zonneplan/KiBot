@@ -36,10 +36,13 @@ class VRMLOptions(Base3DOptionsWithHL):
             self.use_pcb_center_as_ref = True
             """ The center of the PCB will be used as reference point.
                 When disabled the `ref_x`, `ref_y` and `ref_units` will be used """
+            self.use_aux_axis_as_origin = False
+            """ Use the auxiliary axis as origin for coordinates.
+                Has more precedence than `use_pcb_center_as_ref` """
             self.ref_x = 0
-            """ X coordinate to use as reference when `use_pcb_center_as_ref` is disabled """
+            """ X coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled """
             self.ref_y = 0
-            """ Y coordinate to use as reference when `use_pcb_center_as_ref` is disabled """
+            """ Y coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled """
             self.ref_units = 'millimeters'
             """ [millimeters,inches'] Units for `ref_x` and `ref_y` """
             self.model_units = 'millimeters'
@@ -75,16 +78,21 @@ class VRMLOptions(Base3DOptionsWithHL):
         cmd = [command, 'export_vrml', '--output_name', os.path.basename(name), '-U', self.model_units]
         if self.dir_models:
             cmd.extend(['--dir_models', self.dir_models])
-        if not self.use_pcb_center_as_ref or GS.ki5:
+        if not self.use_pcb_center_as_ref or GS.ki5 or self.use_aux_axis_as_origin:
+            if self.use_aux_axis_as_origin:
+                offset = GS.get_aux_origin()
+                x = GS.to_mm(offset.x)
+                y = GS.to_mm(offset.y)
+                units = 'millimeters'
             # KiCad 5 doesn't support using the center, we emulate it
-            if self.use_pcb_center_as_ref and GS.ki5:
+            elif self.use_pcb_center_as_ref and GS.ki5:
                 x, y = self.get_pcb_center()
                 units = 'millimeters'
             else:
                 x = self.ref_x
-                self.ref_y
+                y = self.ref_y
                 units = self.ref_units
-            cmd.extend(['-x', str(x), '-y', str(x), '-u', units])
+            cmd.extend(['-x', str(x), '-y', str(y), '-u', units])
         cmd.extend([board_name, os.path.dirname(name)])
         # Execute it
         self.exec_with_retry(self.add_extra_options(cmd), FAILED_EXECUTE)

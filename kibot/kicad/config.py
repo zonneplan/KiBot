@@ -194,7 +194,16 @@ class KiConf(object):
 
     def _guess_kicad_data_dir(data_dir):
         """ Tries to figure out where libraries are.
-            Only used if we failed to find the kicad_common file. """
+            Only used if we failed to find the kicad_common file.
+            On modern KiCad (6+) this is always used because KiCad doesn't store the path in kicad_common,
+            unless modified by the user. """
+        # Give priority to the KICAD_PATH environment variable
+        kpath = os.environ.get('KICAD_PATH')
+        if kpath and os.path.isdir(kpath):
+            dir = os.path.join(kpath, data_dir)
+            if os.path.isdir(dir):
+                return dir
+        # Try to guess according to the OS
         system = platform.system()
         share = os.path.join('share', GS.kicad_dir, data_dir)
         if system == 'Linux':
@@ -439,10 +448,20 @@ class KiConf(object):
         KiConf._solve_var('3DMODEL', 'models_3d_dir', '3D models', KiConf.guess_3d_dir, old='KISYS3DMOD', only_old=True)
         KiConf._solve_var('3RD_PARTY', 'party_3rd_dir', '3rd party', KiConf.guess_3rd_dir, only_k6=True, no_dir=True)
         # Export the rest. KiCad2Step needs them
+        to_add = {}
         for k, v in KiConf.kicad_env.items():
             if k not in os.environ:
                 os.environ[k] = v
                 logger.debug('Exporting {}="{}"'.format(k, v))
+            m = re.match(r'KICAD(\d+)_(.*)', k)
+            if m:
+                for n in range(6, GS.kicad_version_major+1):
+                    kv = 'KICAD'+str(n)+'_'+m.group(2)
+                    if kv not in os.environ and kv not in KiConf.kicad_env and kv not in to_add:
+                        os.environ[kv] = v
+                        to_add[kv] = v
+                        logger.debug('Also exporting {}="{}"'.format(kv, v))
+        KiConf.kicad_env.update(to_add)
 
     def load_lib_aliases(fname, lib_aliases):
         if not os.path.isfile(fname):
@@ -493,7 +512,6 @@ class KiConf(object):
             logger.warning(W_NODEFSYMLIB + 'Missing default symbol library table')
             # No default symbol libs table, try to create one
             if KiConf.sym_lib_dir:
-                logger.error(os.path.join(sys_dir, pattern))
                 for f in glob(os.path.join(sys_dir, pattern)):
                     alias = LibAlias()
                     alias.name = os.path.splitext(os.path.basename(f))[0]

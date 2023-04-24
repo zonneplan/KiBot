@@ -63,7 +63,7 @@ class Edge(object):
 class SubPCBOptions(PanelOptions):
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.name = ''
             """ *Name for this sub-pcb """
@@ -352,7 +352,7 @@ class SubPCBOptions(PanelOptions):
 class BaseVariant(RegVariant):
     def __init__(self):
         super().__init__()
-        self._unkown_is_error = True
+        self._unknown_is_error = True
         with document:
             self.name = ''
             """ Used to identify this particular variant definition """

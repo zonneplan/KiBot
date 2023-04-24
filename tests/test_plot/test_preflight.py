@@ -64,7 +64,7 @@ def test_erc_warning_1(test_dir):
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt')
     ctx.search_err(r"WARNING:\(W058\) 1 ERC warnings detected")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=context.ki7())
 
 
 @pytest.mark.slow
@@ -77,7 +77,7 @@ def test_erc_warning_2(test_dir):
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt', sub=True)
     ctx.search_err(r"ERROR:1 ERC errors detected")
-    ctx.clean_up()
+    ctx.clean_up(keep_project=context.ki7())
 
 
 @pytest.mark.slow
@@ -192,24 +192,28 @@ def test_update_xml_1(test_dir):
 
 @pytest.mark.slow
 @pytest.mark.eeschema
-@pytest.mark.skipif(context.ki5(), reason="KiCad 6 implementation")
+@pytest.mark.skipif(context.ki5() or context.ki8(), reason="KiCad 6+ implementation")
 def test_update_xml_2(test_dir):
     prj = 'pcb_parity'
     ctx = context.TestContext(test_dir, prj, 'update_xml_2', '')
     # The XML should be created where the schematic is located
     xml = os.path.abspath(os.path.join(ctx.get_board_dir(), prj+'.xml'))
-    ctx.run(ret_val=NETLIST_DIFF)
+    ctx.run(ret_val=NETLIST_DIFF, extra_debug=True)
     # Check all outputs are there
     # ctx.expect_out_file(prj+'.csv')
     assert os.path.isfile(xml)
     assert os.path.getsize(xml) > 0
     logging.debug(os.path.basename(xml)+' OK')
     ctx.search_err(["C1 footprint mismatch",
+                    "R1 value mismatch .PCB: .100. vs schematic: .120",
+                    "R1 schematic property .Sheetname. not in PCB",
+                    "R1 PCB property .Size. not in schematic ",
                     "F1 found in PCB, but not in schematic",
                     "FID1 found in schematic, but not in PCB",
                     "Net count mismatch .PCB 3 vs schematic 4.",
-                    "PCB net code 2 name mismatch",
-                    "PCB net code 2 extra connection/s: C1 pin 1"])
+                    "Net .Net-.C1-Pad1.. not in schematic",
+                    "Net .Net-.R1-Pad2.. not in PCB",
+                    "Net .VCC. extra PCB connection/s: R2 pin 2"])
     ctx.clean_up()
 
 

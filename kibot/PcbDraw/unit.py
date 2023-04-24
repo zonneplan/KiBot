@@ -1,10 +1,9 @@
 # Author: Salvador E. Tropea
 # License: MIT
-from decimal import Decimal
 from ..bom.units import comp_match
 
 
-def read_resistance(value: str) -> Decimal:
+def read_resistance(value: str):
     """
     Given a string, try to parse resistance and return it as Ohms (Decimal)
 
@@ -13,5 +12,4 @@ def read_resistance(value: str) -> Decimal:
     res = comp_match(value, 'R')
     if res is None:
         raise ValueError(f"Cannot parse '{value}' to resistance")
-    v, mul, uni = res
-    return Decimal(str(v))*Decimal(str(mul[0]))
+    return res.get_decimal(), res.get_extra('tolerance')

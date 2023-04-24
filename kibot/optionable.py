@@ -17,7 +17,7 @@ from . import log
 logger = log.get_logger()
 HEX_DIGIT = '[A-Fa-f0-9]{2}'
 INVALID_CHARS = r'[?%*:|"<>]'
-PATTERNS_DEP = ['%c', '%d', '%F', '%f', '%p', '%r']
+PATTERNS_DEP = ['%c', '%d', '%F', '%f', '%M', '%p', '%r']
 for n in range(1, 10):
     PATTERNS_DEP.append('%C'+str(n))
 
@@ -43,7 +43,7 @@ class Optionable(object):
     _color_re_component = re.compile(HEX_DIGIT)
 
     def __init__(self):
-        self._unkown_is_error = False
+        self._unknown_is_error = False
         self._error_context = ''
         self._tree = {}
         self._configured = False
@@ -107,9 +107,9 @@ class Optionable(object):
         help, _, _ = self.get_doc(name)
         return help and help[0] == '*'
 
-    def add_to_doc(self, name, text):
+    def add_to_doc(self, name, text, with_nl=True):
         doc = getattr(self, '_help_'+name).strip()
-        setattr(self, '_help_'+name, doc+'.\n'+text)
+        setattr(self, '_help_'+name, doc+('.\n' if with_nl else '')+text)
 
     def set_doc(self, name, text):
         setattr(self, '_help_'+name, text)
@@ -138,7 +138,7 @@ class Optionable(object):
         for k, v in self._tree.items():
             # Map known attributes and avoid mapping private ones
             if (k[0] == '_') or (k not in attrs):
-                if self._unkown_is_error:
+                if self._unknown_is_error:
                     valid = list(filter(lambda x: x[0] != '_', attrs.keys()))
                     msg = "Unknown {}option `{}`.".format(self._error_context, k)
                     possible = difflib.get_close_matches(k, valid, n=1)
@@ -370,6 +370,7 @@ class Optionable(object):
             name = name.replace('%d', _cl(GS.pcb_date))
             name = name.replace('%F', GS.pcb_no_ext)
             name = name.replace('%f', GS.pcb_basename)
+            name = name.replace('%M', GS.pcb_last_dir)
             name = name.replace('%p', _cl(GS.pcb_title))
             name = name.replace('%r', _cl(GS.pcb_rev))
             for num, val in enumerate(GS.pcb_com):
@@ -379,6 +380,7 @@ class Optionable(object):
             name = name.replace('%d', _cl(GS.sch_date))
             name = name.replace('%F', GS.sch_no_ext)
             name = name.replace('%f', GS.sch_basename)
+            name = name.replace('%M', GS.sch_last_dir)
             name = name.replace('%p', _cl(GS.sch_title))
             name = name.replace('%r', _cl(GS.sch_rev))
             for num, val in enumerate(GS.sch_com):
@@ -414,12 +416,12 @@ class Optionable(object):
         return Optionable.expand_filename_both(self, name)
 
     @staticmethod
-    def force_list(val, comma_sep=True, lower_case=False):
+    def force_list(val, comma_sep=True, lower_case=False, default=None):
         """ Used for values that accept a string or a list of strings.
             The string can be a comma separated list """
         if isinstance(val, type):
             # Not used
-            val = []
+            val = [] if default is None else default
         elif isinstance(val, str):
             # A string
             if val:
