@@ -1983,7 +1983,7 @@ class SchematicV6(Schematic):
             elif e_type == 'image':
                 self.bitmaps.append(SchematicBitmapV6.parse(e))
             elif e_type == 'text_box':
-                self.texts.append(TextBox.parse(e, e_type))
+                self.text_boxes.append(TextBox.parse(e, e_type))
             elif e_type == 'text':
                 self.texts.append(Text.parse(e, e_type))
             elif e_type == 'label':
