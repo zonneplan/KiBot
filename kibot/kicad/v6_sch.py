@@ -314,14 +314,14 @@ class DrawArcV6(object):
         arc.box = Box([arc.start, arc.mid, arc.end])
         return arc
 
-    def write(self):
+    def write(self, cross):
         data = [_symbol('start', [self.start.x, self.start.y])]
         data.append(_symbol('mid', [self.mid.x, self.mid.y]))
         data.append(_symbol('end', [self.end.x, self.end.y]))
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
-        if self.uuid is not None:
+        if self.uuid is not None and not cross:
             data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('arc', data)
 
@@ -357,13 +357,13 @@ class DrawCircleV6(object):
         circle.box = Box([p1, p2])
         return circle
 
-    def write(self):
+    def write(self, cross):
         data = [_symbol('center', [self.center.x, self.center.y])]
         data.append(_symbol('radius', [self.radius]))
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
-        if self.uuid is not None:
+        if self.uuid is not None and not cross:
             data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('circle', data)
 
@@ -397,13 +397,13 @@ class DrawRectangleV6(object):
         rectangle.box = Box([rectangle.start, rectangle.end])
         return rectangle
 
-    def write(self):
+    def write(self, cross):
         data = [_symbol('start', [self.start.x, self.start.y])]
         data.append(_symbol('end', [self.end.x, self.end.y]))
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
-        if self.uuid is not None:
+        if self.uuid is not None and not cross:
             data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('rectangle', data)
 
@@ -432,7 +432,7 @@ class DrawCurve(object):
         curve.box = Box(curve.points)
         return curve
 
-    def write(self):
+    def write(self, _):
         points = [Sep()]
         for p in self.points:
             points.append(_symbol('xy', [p.x, p.y]))
@@ -466,7 +466,7 @@ class DrawPolyLine(object):
         line.box = Box(line.points)
         return line
 
-    def write(self):
+    def write(self, _):
         points = [Sep()]
         for p in self.points:
             points.append(_symbol('xy', [p.x, p.y]))
@@ -876,7 +876,7 @@ class LibComponent(object):
                 sdata.extend([fdata, Sep()])
         # Graphics
         for g in s.draw:
-            sdata.extend([g.write(), Sep()])
+            sdata.extend([g.write(cross), Sep()])
         s.write_cross(sdata)
         # Pins
         for p in s.pins:
@@ -1131,13 +1131,16 @@ class SchematicComponentV6(SchematicComponent):
         if self.fields_autoplaced:
             data.append(_symbol('fields_autoplaced'))
         data.append(Sep())
-        data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        if not cross:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         for f in self.fields:
             d = f.write()
             if d:
                 data.extend([d, Sep()])
         for k, v in self.pins.items():
-            pin_data = [k, _symbol('uuid', [Symbol(v)])]
+            pin_data = [k]
+            if not cross:
+                pin_data.extend([_symbol('uuid', [Symbol(v)])])
             alternate = self.pin_alternates.get(k, None)
             if alternate:
                 pin_data.append(_symbol('alternate', [alternate]))
@@ -1169,11 +1172,12 @@ class Junction(object):
         jun.uuid = _get_uuid(items, 4, 'junction')
         return jun
 
-    def write(self):
+    def write(self, cross):
         data = [_symbol('at', [self.pos_x, self.pos_y]),
                 _symbol('diameter', [self.diameter]),
-                self.color.write(), Sep(),
-                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+                self.color.write(), Sep()]
+        if not cross:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('junction', data)
 
 
@@ -1200,9 +1204,10 @@ class NoConnect(object):
         nocon.uuid = _get_uuid(items, 2, 'no connect')
         return nocon
 
-    def write(self):
-        data = [_symbol('at', [self.pos_x, self.pos_y]),
-                _symbol('uuid', [Symbol(self.uuid)])]
+    def write(self, cross):
+        data = [_symbol('at', [self.pos_x, self.pos_y])]
+        if not cross:
+            data.append(_symbol('uuid', [Symbol(self.uuid)]))
         return _symbol('no_connect', data)
 
 
@@ -1217,11 +1222,12 @@ class BusEntry(object):
         buse.uuid = _get_uuid(items, 4, 'bus entry')
         return buse
 
-    def write(self):
+    def write(self, cross):
         data = [_symbol('at', [self.pos_x, self.pos_y]),
                 _symbol('size', [self.size.x, self.size.y]), Sep(),
-                self.stroke.write(), Sep(),
-                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+                self.stroke.write(), Sep()]
+        if not cross:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('bus_entry', data)
 
 
@@ -1236,9 +1242,11 @@ class SchematicWireV6(object):
         wire.uuid = _get_uuid(items, 3, name)
         return wire
 
-    def write(self):
+    def write(self, cross):
         points = [_symbol('xy', [p.x, p.y]) for p in self.points]
-        data = [_symbol('pts', points), Sep(), self.stroke.write(), Sep(), _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+        data = [_symbol('pts', points), Sep(), self.stroke.write(), Sep()]
+        if not cross:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol(self.type, data)
 
 
@@ -1259,14 +1267,15 @@ class SchematicBitmapV6(object):
         bmp.data = [_check_symbol(values, i+1, 'image data') for i, d in enumerate(values[1:])]
         return bmp
 
-    def write(self):
+    def write(self, cross):
         d = []
         for v in self.data:
             d.append(Symbol(v))
             d.append(Sep())
-        data = [_symbol('at', [self.pos_x, self.pos_y]), Sep(),
-                _symbol('uuid', [Symbol(self.uuid)]), Sep(),
-                _symbol('data', [Sep()] + d), Sep()]
+        data = [_symbol('at', [self.pos_x, self.pos_y]), Sep()]
+        if not cross:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        data.extend([_symbol('data', [Sep()] + d), Sep()])
         return _symbol('image', data)
 
 
@@ -1292,13 +1301,14 @@ class Text(object):
                 raise SchError('Unknown symbol attribute `{}`'.format(i))
         return text
 
-    def write(self):
+    def write(self, cross):
         data = [self.text]
         if self.exclude_from_sim is not None:
             data.append(_symbol('exclude_from_sim', [Symbol(NO_YES[self.exclude_from_sim])]))
         data.extend([_symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
-                     self.effects.write(), Sep(),
-                    _symbol('uuid', [Symbol(self.uuid)]), Sep()])
+                     self.effects.write(), Sep()])
+        if not cross:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol(self.name, data)
 
 
@@ -1316,13 +1326,14 @@ class TextBox(object):
         text.uuid = _get_uuid(items, 7, name)
         return text
 
-    def write(self):
+    def write(self, cross):
         data = [self.text, Sep(),
                 _symbol('at', [self.pos_x, self.pos_y, self.ang]), _symbol('size', [self.size.x, self.size.y]), Sep(),
                 self.stroke.write(), Sep(),
                 self.fill.write(), Sep(),
-                self.effects.write(), Sep(),
-                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+                self.effects.write(), Sep()]
+        if not cross:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol(self.name, data)
 
 
@@ -1365,7 +1376,7 @@ class GlobalLabel(object):
                 raise SchError('Unknown {} attribute `{}`'.format(label.name, i))
         return label
 
-    def write(self):
+    def write(self, cross):
         data = [self.text]
         if self.length is not None:
             data.append(_symbol('length', [self.length]))
@@ -1376,7 +1387,9 @@ class GlobalLabel(object):
             data.append(_symbol('fields_autoplaced', []))
         if self.effects is not None:
             data.extend([Sep(), self.effects.write()])
-        data.extend([Sep(), _symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        data.append(Sep())
+        if not cross:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         for p in self.properties:
             data.extend([p.write(), Sep()])
         return _symbol(self.name, data)
@@ -1415,12 +1428,13 @@ class HSPin(object):
         pin.uuid = _get_uuid(items, 5, name)
         return pin
 
-    def write(self):
+    def write(self, cross):
         data = [self.name,
                 Symbol(self.type),
                 _symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
-                self.effects.write(), Sep(),
-                _symbol('uuid', [Symbol(self.uuid)]), Sep()]
+                self.effects.write(), Sep()]
+        if not cross:
+            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
         return _symbol('pin', data)
 
 
@@ -1546,7 +1560,7 @@ class Sheet(object):
             if change_file:
                 p.value = self.file
         for p in self.pins:
-            data.extend([p.write(), Sep()])
+            data.extend([p.write(cross), Sep()])
         if self.projects is not None:
             prj_data = [Sep()]
             for prj, ins in self.projects:
@@ -1613,13 +1627,13 @@ def _symbol(name, content=None):
     return [Symbol(name)] + content
 
 
-def _add_items(items, sch, sep=False, cross=False, pre_sep=True):
+def _add_items(items, sch, sep=False, cross=None, pre_sep=True):
     if len(items):
         if pre_sep:
             sch.append(Sep())
         for i in items:
-            if cross:
-                sch.append(i.write(cross=True))
+            if cross is not None:
+                sch.append(i.write(cross=cross))
             else:
                 sch.append(i.write())
             sch.append(Sep())
@@ -1777,47 +1791,52 @@ class SchematicV6(Schematic):
             sch.append(_symbol('generator', [Symbol(self.generator)]))
             sch.append(Sep())
             sch.append(Sep())
-            sch.append(_symbol('uuid', [Symbol(self.uuid)]))
+            if not cross or base_sheet == self:
+                # The "cross" (or variant) mode expands the hierarchy
+                # So we avoid using UUIDs to avoid repeating them
+                # The only UUIDs really needed are the ones used for the "path" for component instances
+                # This includes the first page UUID.
+                sch.append(_symbol('uuid', [Symbol(self.uuid)]))
             sch.extend(self.write_paper())
             sch.extend(self.write_title_block())
             sch.extend(self.write_lib_symbols(cross))
             # Bus aliases
             _add_items(self.bus_alias, sch)
             # Connections (aka Junctions)
-            _add_items(self.junctions, sch, pre_sep=(len(self.bus_alias) == 0))
+            _add_items(self.junctions, sch, pre_sep=(len(self.bus_alias) == 0), cross=cross)
             # No connect
-            _add_items(self.no_conn, sch)
+            _add_items(self.no_conn, sch, cross=cross)
             # Bus entry
-            _add_items(self.bus_entry, sch)
+            _add_items(self.bus_entry, sch, cross=cross)
             # Lines (wire, bus and polyline)
             if self.wires:
                 old_type = 'none'
                 for e in self.wires:
                     if e.type != old_type and old_type != 'wire':
                         sch.append(Sep())
-                    sch.append(e.write())
+                    sch.append(e.write(cross))
                     old_type = e.type
                     sch.append(Sep())
             # Arcs
-            _add_items(self.arcs, sch)
+            _add_items(self.arcs, sch, cross=cross)
             # Circles
-            _add_items(self.circles, sch)
+            _add_items(self.circles, sch, cross=cross)
             # Rectangles
-            _add_items(self.rectangles, sch)
+            _add_items(self.rectangles, sch, cross=cross)
             # Images
-            _add_items(self.bitmaps, sch)
+            _add_items(self.bitmaps, sch, cross=cross)
             # Text Boxes
-            _add_items(self.text_boxes, sch)
+            _add_items(self.text_boxes, sch, cross=cross)
             # Texts
-            _add_items(self.texts, sch)
+            _add_items(self.texts, sch, cross=cross)
             # Labels
-            _add_items(self.labels, sch)
+            _add_items(self.labels, sch, cross=cross)
             # Global Labels
-            _add_items(self.glabels, sch)
+            _add_items(self.glabels, sch, cross=cross)
             # Hierarchical Labels
-            _add_items(self.hlabels, sch)
+            _add_items(self.hlabels, sch, cross=cross)
             # Net Class Flags
-            _add_items(self.net_class_flags, sch)
+            _add_items(self.net_class_flags, sch, cross=cross)
             # Symbols
             _add_items(self.symbols, sch, sep=True, cross=cross)
             # Sheets
@@ -1923,10 +1942,6 @@ class SchematicV6(Schematic):
         self.sheet_instances = []
         self.bus_alias = []
         self.libs = {}  # Just for compatibility with v5 class
-        # TODO: this assumes we are expanding the schematic to allow variant.
-        # This is needed to overcome KiCad 6 limitations (symbol instances only differ in Reference)
-        # If we don't want to expand the schematic this member should be shared with the parent
-        # TODO: We must fix some UUIDs because now we expanded them.
         self.symbol_uuids = {}
         if not os.path.isfile(fname):
             raise SchError('Missing subsheet: '+fname)

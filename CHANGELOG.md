@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.3] - UNRELEASED
 ### Fixed
-- Net Class Flags not saved in variants or annotated schematics
+- KiCad v6/7 schematic:
+  - Net Class Flags not saved in variants or annotated schematics
+  - Repeated UUIDs saved in variants
 
 ## [1.6.2] - 2023-04-24
 ### Added
