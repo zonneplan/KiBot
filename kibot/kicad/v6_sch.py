@@ -1816,6 +1816,8 @@ class SchematicV6(Schematic):
             _add_items(self.glabels, sch)
             # Hierarchical Labels
             _add_items(self.hlabels, sch)
+            # Net Class Flags
+            _add_items(self.net_class_flags, sch)
             # Symbols
             _add_items(self.symbols, sch, sep=True, cross=cross)
             # Sheets
