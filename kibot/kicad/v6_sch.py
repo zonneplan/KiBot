@@ -30,6 +30,13 @@ version = None
 KICAD_7_VER = 20230121
 SHEET_FILE = {'Sheet file', 'Sheetfile'}
 SHEET_NAME = {'Sheet name', 'Sheetname'}
+UUID_fake = 0
+
+
+def get_global_uuid():
+    global UUID_fake
+    UUID_fake += 1
+    return str(UUID_fake)
 
 
 class PointXY(object):
@@ -397,7 +404,7 @@ class DrawRectangleV6(object):
         rectangle.box = Box([rectangle.start, rectangle.end])
         return rectangle
 
-    def write(self, cross):
+    def write(self, cross=False):
         data = [_symbol('start', [self.start.x, self.start.y])]
         data.append(_symbol('end', [self.end.x, self.end.y]))
         data.append(Sep())
@@ -432,7 +439,7 @@ class DrawCurve(object):
         curve.box = Box(curve.points)
         return curve
 
-    def write(self, _):
+    def write(self, _=False):
         points = [Sep()]
         for p in self.points:
             points.append(_symbol('xy', [p.x, p.y]))
@@ -466,7 +473,7 @@ class DrawPolyLine(object):
         line.box = Box(line.points)
         return line
 
-    def write(self, _):
+    def write(self, _=False):
         points = [Sep()]
         for p in self.points:
             points.append(_symbol('xy', [p.x, p.y]))
@@ -493,7 +500,7 @@ class DrawTextV6(object):
         text.effects = _get_effects(items, 3, 'text')
         return text
 
-    def write(self):
+    def write(self, _=False):
         data = [self.text, _symbol('at', [self.x, self.y, self.ang]), Sep()]
         data.extend([self.effects.write(), Sep()])
         return _symbol('text', data)
@@ -935,6 +942,7 @@ class SchematicComponentV6(SchematicComponent):
         self.mirror = None
         self.convert = None
         self.pin_alternates = {}
+        self.uuid = get_global_uuid()
         # KiCad v7:
         # Instances classified by project (v7)
         self.projects = None
@@ -1157,14 +1165,25 @@ class SchematicComponentV6(SchematicComponent):
 
 
 def _get_uuid(items, pos, where):
+    if len(items) < pos+1:
+        return None
     values = _check_symbol_value(items, pos, where + ' uuid', 'uuid')
     return _check_symbol(values, 1, where + ' uuid')
+
+
+def add_uuid(data, cross, uuid, no_sep=False):
+    if not cross and uuid:
+        if no_sep:
+            data.append(_symbol('uuid', [Symbol(uuid)]))
+        else:
+            data.extend([_symbol('uuid', [Symbol(uuid)]), Sep()])
 
 
 class Junction(object):
     @staticmethod
     def parse(items):
-        _check_len_total(items, 5, 'junction')
+        if len(items) != 5:
+            _check_len_total(items, 4, 'junction')
         jun = Junction()
         jun.pos_x, jun.pos_y, jun.ang = _get_at(items, 1, 'junction')
         jun.diameter = _check_symbol_float(items, 2, 'junction', 'diameter')
@@ -1172,12 +1191,11 @@ class Junction(object):
         jun.uuid = _get_uuid(items, 4, 'junction')
         return jun
 
-    def write(self, cross):
+    def write(self, cross=False):
         data = [_symbol('at', [self.pos_x, self.pos_y]),
                 _symbol('diameter', [self.diameter]),
                 self.color.write(), Sep()]
-        if not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, cross, self.uuid)
         return _symbol('junction', data)
 
 
@@ -1198,23 +1216,24 @@ class BusAlias(object):
 class NoConnect(object):
     @staticmethod
     def parse(items):
-        _check_len_total(items, 3, 'no_connect')
+        if len(items) != 3:
+            _check_len_total(items, 2, 'no_connect')
         nocon = NoConnect()
         nocon.pos_x, nocon.pos_y, nocon.ang = _get_at(items, 1, 'no connect')
         nocon.uuid = _get_uuid(items, 2, 'no connect')
         return nocon
 
-    def write(self, cross):
+    def write(self, cross=False):
         data = [_symbol('at', [self.pos_x, self.pos_y])]
-        if not cross:
-            data.append(_symbol('uuid', [Symbol(self.uuid)]))
+        add_uuid(data, cross, self.uuid, no_sep=True)
         return _symbol('no_connect', data)
 
 
 class BusEntry(object):
     @staticmethod
     def parse(items):
-        _check_len_total(items, 5, 'bus entry')
+        if len(items) != 5:
+            _check_len_total(items, 4, 'bus entry')
         buse = BusEntry()
         buse.pos_x, buse.pos_y, buse.ang = _get_at(items, 1, 'bus entry')
         buse.size = _get_size(items, 2, 'bus entry')
@@ -1222,19 +1241,19 @@ class BusEntry(object):
         buse.uuid = _get_uuid(items, 4, 'bus entry')
         return buse
 
-    def write(self, cross):
+    def write(self, cross=False):
         data = [_symbol('at', [self.pos_x, self.pos_y]),
                 _symbol('size', [self.size.x, self.size.y]), Sep(),
                 self.stroke.write(), Sep()]
-        if not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, cross, self.uuid)
         return _symbol('bus_entry', data)
 
 
 class SchematicWireV6(object):
     @staticmethod
     def parse(items, name):
-        _check_len_total(items, 4, name)
+        if len(items) != 4:
+            _check_len_total(items, 3, name)
         wire = SchematicWireV6()
         wire.type = name  # wire, bus, polyline
         wire.points = _get_points(items[1])
@@ -1242,11 +1261,10 @@ class SchematicWireV6(object):
         wire.uuid = _get_uuid(items, 3, name)
         return wire
 
-    def write(self, cross):
+    def write(self, cross=False):
         points = [_symbol('xy', [p.x, p.y]) for p in self.points]
         data = [_symbol('pts', points), Sep(), self.stroke.write(), Sep()]
-        if not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, cross, self.uuid)
         return _symbol(self.type, data)
 
 
@@ -1254,20 +1272,23 @@ class SchematicBitmapV6(object):
     @staticmethod
     def parse(items):
         bmp = SchematicBitmapV6()
-        if len(items) == 5:
-            bmp.scale = _check_symbol_float(items, 2, 'image', 'scale')
-            index = 3
-        else:
-            _check_len_total(items, 4, 'image')
-            bmp.scale = None
-            index = 2
         bmp.pos_x, bmp.pos_y, bmp.ang = _get_at(items, 1, 'image')
-        bmp.uuid = _get_uuid(items, index, 'image')
-        values = _check_symbol_value(items, index+1, 'image data', 'data')
-        bmp.data = [_check_symbol(values, i+1, 'image data') for i, d in enumerate(values[1:])]
+        bmp.scale = None
+        bmp.uuid = None
+        for c, i in enumerate(items[2:]):
+            i_type = _check_is_symbol_list(i)
+            if i_type == 'scale':
+                bmp.scale = _check_symbol_float(items, c+2, 'image', 'scale')
+            elif i_type == 'uuid':
+                bmp.uuid = _get_uuid(items, c+2, 'image')
+            elif i_type == 'data':
+                values = _check_symbol_value(items, c+2, 'image data', 'data')
+                bmp.data = [_check_symbol(values, i+1, 'image data') for i, d in enumerate(values[1:])]
+            else:
+                raise SchError('Unknown symbol attribute `{}`'.format(i))
         return bmp
 
-    def write(self, cross):
+    def write(self, cross=False):
         d = []
         for v in self.data:
             d.append(Symbol(v))
@@ -1301,7 +1322,7 @@ class Text(object):
                 raise SchError('Unknown symbol attribute `{}`'.format(i))
         return text
 
-    def write(self, cross):
+    def write(self, cross=False):
         data = [self.text]
         if self.exclude_from_sim is not None:
             data.append(_symbol('exclude_from_sim', [Symbol(NO_YES[self.exclude_from_sim])]))
@@ -1326,7 +1347,7 @@ class TextBox(object):
         text.uuid = _get_uuid(items, 7, name)
         return text
 
-    def write(self, cross):
+    def write(self, cross=False):
         data = [self.text, Sep(),
                 _symbol('at', [self.pos_x, self.pos_y, self.ang]), _symbol('size', [self.size.x, self.size.y]), Sep(),
                 self.stroke.write(), Sep(),
@@ -1376,7 +1397,7 @@ class GlobalLabel(object):
                 raise SchError('Unknown {} attribute `{}`'.format(label.name, i))
         return label
 
-    def write(self, cross):
+    def write(self, cross=False):
         data = [self.text]
         if self.length is not None:
             data.append(_symbol('length', [self.length]))
@@ -1419,7 +1440,8 @@ class HSPin(object):
     @staticmethod
     def parse(items):
         name = 'hierarchical sheet pin'
-        _check_len_total(items, 6, name)
+        if len(items) != 6:
+            _check_len_total(items, 5, name)
         pin = HSPin()
         pin.name = _check_str(items, 1, name+' name')
         pin.type = _check_symbol(items, 2, name+' type')
@@ -1428,7 +1450,7 @@ class HSPin(object):
         pin.uuid = _get_uuid(items, 5, name)
         return pin
 
-    def write(self, cross):
+    def write(self, cross=False):
         data = [self.name,
                 Symbol(self.type),
                 _symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
@@ -1831,7 +1853,7 @@ class SchematicV6(Schematic):
             # Text Boxes
             _add_items(self.text_boxes, sch, cross=cross)
             # Texts
-            _add_items(self.texts, sch, cross=cross)
+            _add_items(self.texts, sch, cross=cross, pre_sep=False)
             # Labels
             _add_items(self.labels, sch, cross=cross)
             # Global Labels
@@ -2056,7 +2078,12 @@ class SchematicV6(Schematic):
             path = os.path.dirname(s.path)
             sheet = self.sheet_paths[path]
             comp_uuid = os.path.basename(s.path)
-            comp = sheet.symbol_uuids[comp_uuid]
+            try:
+                comp = sheet.symbol_uuids[comp_uuid]
+            except KeyError:
+                logger.error(f"Error looking for {comp_uuid}")
+                logger.error(f"Available UUIDs {sheet.symbol_uuids}")
+                raise
             s.component = comp
             # Transfer the instance data
             comp.set_ref(s.reference)
