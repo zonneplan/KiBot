@@ -1758,6 +1758,9 @@ class SchematicV6(Schematic):
         return [Sep(), Sep(), _symbol('lib_symbols', data), Sep()]
 
     def save(self, fname=None, dest_dir=None, base_sheet=None, saved=None):
+        # Switch to the current version
+        global version
+        version = self.version
         cross = dest_dir is not None
         if base_sheet is None:
             # We are the base sheet
