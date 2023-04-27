@@ -574,7 +574,7 @@ class TestContext(object):
     def compare_txt(self, text, reference=None, diff='diff.txt'):
         if reference is None:
             reference = text
-        cmd = ['/bin/sh', '-c', 'diff -ub '+os.path.join(REF_DIR, reference)+' ' +
+        cmd = ['/bin/sh', '-c', 'diff -uBb '+os.path.join(REF_DIR, reference)+' ' +
                self.get_out_path(text)+' > '+self.get_out_path(diff)]
         logging.debug('Comparing texts with: '+usable_cmd(cmd))
         res = subprocess.call(cmd)
