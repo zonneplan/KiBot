@@ -1148,7 +1148,7 @@ class SchematicComponentV6(SchematicComponent):
         comp.path = parent.sheet_path
         return comp
 
-    def write(self, cross):
+    def write(self, exp_hierarchy, cross):
         lib_id = self.lib_id
         is_crossed = not(self.fitted or not self.included)
         native_cross = GS.ki7 and GS.global_cross_using_kicad
@@ -1190,14 +1190,14 @@ class SchematicComponentV6(SchematicComponent):
             data.extend([_symbol('pin', pin_data), Sep()])
         if self.projects is not None:
             prj_data = [Sep()]
-            prjname = find_our_project(self, self.project, cross)
+            prjname = find_our_project(self, self.project, exp_hierarchy)
             for prj, ins in self.projects:
-                if cross and prj != prjname:
+                if exp_hierarchy and prj != prjname:
                     # For the expanded hierarchy we save only this project
                     continue
                 ins_data = [prj, Sep()]
                 for i in ins:
-                    if cross:
+                    if exp_hierarchy:
                         if i.path == self.p_path_ori:
                             # Adjust the instance for the expanded hierarchy
                             i = deepcopy(i)
@@ -1620,7 +1620,7 @@ class Sheet(object):
             self.p_path = parent_obj.get_full_path(False)
         return sheet
 
-    def write(self, cross):
+    def write(self, exp_hierarchy):
         data = [_symbol('at', [self.pos_x, self.pos_y]),
                 _symbol('size', [self.w, self.h])]
         if self.fields_autoplaced:
@@ -1629,7 +1629,7 @@ class Sheet(object):
                     self.fill.write(), Sep()])
         add_uuid(data, self.uuid)
         for p in self.properties:
-            change_file = cross and p.name in SHEET_FILE
+            change_file = exp_hierarchy and p.name in SHEET_FILE
             if change_file:
                 p.value = self.flat_file
             data.extend([p.write(), Sep()])
@@ -1640,14 +1640,14 @@ class Sheet(object):
         if self.projects is not None:
             prj_data = [Sep()]
             sheet = self.sheet
-            prjname = find_our_project(self, sheet.project, cross)
+            prjname = find_our_project(self, sheet.project, exp_hierarchy)
             for prj, ins in self.projects:
-                if cross and prj != prjname:
+                if exp_hierarchy and prj != prjname:
                     # For the expanded hierarchy we save only this project
                     continue
                 ins_data = [prj, Sep()]
                 for i in ins:
-                    if cross:
+                    if exp_hierarchy:
                         if i.path == self.p_path_ori:
                             # Adjust the instance for the expanded hierarchy
                             i = deepcopy(i)
@@ -1716,15 +1716,17 @@ def _symbol(name, content=None):
     return [Symbol(name)] + content
 
 
-def _add_items(items, sch, sep=False, cross=None, pre_sep=True):
+def _add_items(items, sch, sep=False, cross=None, pre_sep=True, exp_hierarchy=None):
     if len(items):
         if pre_sep:
             sch.append(Sep())
+        args = {}
+        if exp_hierarchy is not None:
+            args['exp_hierarchy'] = exp_hierarchy
+        if cross is not None:
+            args['cross'] = cross
         for i in items:
-            if cross is not None:
-                sch.append(i.write(cross=cross))
-            else:
-                sch.append(i.write())
+            sch.append(i.write(**args))
             sch.append(Sep())
             if sep:
                 sch.append(Sep())
@@ -1926,9 +1928,9 @@ class SchematicV6(Schematic):
             # Net Class Flags
             _add_items(self.net_class_flags, sch)
             # Symbols
-            _add_items(self.symbols, sch, sep=True, cross=cross)
+            _add_items(self.symbols, sch, sep=True, cross=cross, exp_hierarchy=cross)
             # Sheets
-            _add_items(self.sheets, sch, sep=True, cross=cross)
+            _add_items(self.sheets, sch, sep=True, exp_hierarchy=cross)
             # Sheet instances
             instances = self.sheet_instances
             if cross:
