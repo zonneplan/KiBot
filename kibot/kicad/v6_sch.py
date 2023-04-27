@@ -59,6 +59,19 @@ class UUID_Validator(object):
         return uuid, no_collision
 
 
+def find_our_project(obj, default, exp_hierarchy):
+    """ Look for a project containing our instance """
+    if not exp_hierarchy:
+        return default
+    # The name of the project isn't really important, in fact is useless
+    # So we can't trust its value
+    for prj, ins in obj.projects:
+        for i in ins:
+            if i.path == obj.p_path_ori:
+                return prj
+    raise SchError('Missing project containing `{}`'.format(obj.p_path_ori))
+
+
 class PointXY(object):
     def __init__(self, x, y):
         super().__init__()
@@ -1177,8 +1190,9 @@ class SchematicComponentV6(SchematicComponent):
             data.extend([_symbol('pin', pin_data), Sep()])
         if self.projects is not None:
             prj_data = [Sep()]
+            prjname = find_our_project(self, self.project, cross)
             for prj, ins in self.projects:
-                if cross and prj != self.project:
+                if cross and prj != prjname:
                     # For the expanded hierarchy we save only this project
                     continue
                 ins_data = [prj, Sep()]
@@ -1626,8 +1640,9 @@ class Sheet(object):
         if self.projects is not None:
             prj_data = [Sep()]
             sheet = self.sheet
+            prjname = find_our_project(self, sheet.project, cross)
             for prj, ins in self.projects:
-                if cross and prj != sheet.project:
+                if cross and prj != prjname:
                     # For the expanded hierarchy we save only this project
                     continue
                 ins_data = [prj, Sep()]
