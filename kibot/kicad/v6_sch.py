@@ -1983,6 +1983,9 @@ class SchematicV6(Schematic):
 
     def debug_instances(self):
         """ Debug for the expanded hierarchy """
+        logger.debug("Collected sheet instances")
+        for s in self.sheet_instances:
+            logger.debug(f"- {s.path} -> {s.page}")
         logger.debug("Collected symbol instances")
         for s in sorted(self.symbol_instances, key=lambda x: x.path):
             logger.debug(f"- {s.path} -> {s.reference}")
@@ -2156,6 +2159,7 @@ class SchematicV6(Schematic):
         # Debug for the expanded hierarchy
         if extra_debug:
             self.debug_instances()
+            logger.debug("Assigning components to instances")
         # Create the components list
         for s in self.symbol_instances:
             # Get a copy of the original symbol
@@ -2199,7 +2203,7 @@ class SchematicV6(Schematic):
             # Now we have all the data
             comp._validate()
             if extra_debug:
-                logger.debug(f"{s.path} -> {s.reference} -> {id(comp)} {comp.uuid}")
+                logger.debug(f"- {s.path} -> {s.reference} -> {id(comp)} {comp.uuid}")
             # Add it to the list
             self.components.append(comp)
         self.comps_data = self.lib_symbol_names
