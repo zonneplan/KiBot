@@ -1757,24 +1757,31 @@ def test_int_bom_subparts_3(test_dir):
     ctx.clean_up()
 
 
-@pytest.mark.skipif(not context.ki7(), reason="Target is v7")
+@pytest.mark.skipif(not context.ki6(), reason="Target is v6+")
 def test_value_change_1(test_dir):
     prj = 'value_change'
-    ctx = context.TestContextSCH(test_dir, 'shared_page_value_change/'+prj, 'value_change_1', 'BoM')
+    ctx = context.TestContextSCH(test_dir, 'shared_page_value_change/'+prj, 'value_change_1', 'Modified')
     ctx.run()
-    rows, header, info = ctx.load_csv(prj+'-bom_different_filters.csv')
+    sch = ctx.expect_out_file_d(prj+'.kicad_sch')
+    ctx = context.TestContextSCH(test_dir, 'shared_page_value_change_complex/'+prj, 'int_bom_csv_no_info', 'BoM')
+    ctx.run(no_board_file=True, extra=['-e', sch])
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 4, None, ['C1', 'C2', 'J1', 'J2', 'R1', 'R2'],
                              vals={'C1': '150p', 'C2': '220p'}, val_column=header.index('Value'))
     ctx.clean_up()
 
 
-@pytest.mark.skipif(not context.ki7(), reason="Target is v7")
+@pytest.mark.skipif(not context.ki6(), reason="Target is v6+")
 def test_value_change_2(test_dir):
     prj = 'value_change'
-    ctx = context.TestContextSCH(test_dir, 'shared_page_value_change_complex/'+prj, 'value_change_2', 'BoM')
+    ctx = context.TestContextSCH(test_dir, 'shared_page_value_change_complex/'+prj, 'value_change_2', 'Modified')
     ctx.run()
-    rows, header, info = ctx.load_csv(prj+'-bom_different_filters.csv')
+    sch = ctx.expect_out_file_d(prj+'.kicad_sch')
+    # assert False
+    ctx = context.TestContextSCH(test_dir, 'shared_page_value_change_complex/'+prj, 'int_bom_csv_no_info', 'BoM')
+    ctx.run(no_board_file=True, extra=['-e', sch])
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
     check_kibom_test_netlist(rows, ref_column, 5, None,
                              ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'J1', 'J2', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6'],

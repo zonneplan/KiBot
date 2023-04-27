@@ -1029,10 +1029,10 @@ class SchematicComponent(object):
                 field.value = stripped_val
 
     def __str__(self):
-        ref = self.ref
+        ref = self.ref if self.ref is not None else '??'
         # Add the sub-part id
         # How to know if unit 1 is A?
-        if self.unit > 1:
+        if self.unit is not None and self.unit > 1:
             ref += chr(ord('A')+self.unit-1)
         if self.name == self.value:
             return '{} ({})'.format(ref, self.name)

@@ -10,9 +10,10 @@ Currently oriented to collect the components for the BoM and create a variant of
 Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-schematic/
 """
 # Encapsulate file/line
+from collections import OrderedDict
+from copy import deepcopy
 import os
 import re
-from collections import OrderedDict
 from ..gs import GS
 from .. import log
 from ..misc import W_NOLIB, W_UNKFLD, W_MISSCMP
@@ -30,13 +31,32 @@ version = None
 KICAD_7_VER = 20230121
 SHEET_FILE = {'Sheet file', 'Sheetfile'}
 SHEET_NAME = {'Sheet name', 'Sheetname'}
-UUID_fake = 0
 
 
-def get_global_uuid():
-    global UUID_fake
-    UUID_fake += 1
-    return str(UUID_fake)
+class UUID_Validator(object):
+    known_UUIDs = set()
+
+    def reset():
+        UUID_Validator.known_UUIDs = set()
+
+    # TODO: Accept "None"?
+    def validate(uuid):
+        no_collision = True
+        if uuid in UUID_Validator.known_UUIDs:
+            # logger.error(f"Collision {uuid}")
+            uuid_comps = uuid.split('-')
+            assert len(uuid_comps) == 5 and len(uuid_comps[0]) == 8
+            variable = int(uuid_comps[0], 16)+1
+            uuid = "{0:08x}".format(variable % 0x100000000)+'-'+'-'.join(uuid_comps[1:])
+            # Solve collision
+            while uuid in UUID_Validator.known_UUIDs:
+                variable = variable + 1
+                uuid = "{0:08x}".format(variable % 0x100000000)+'-'+'-'.join(uuid_comps[1:])
+            # logger.error(f"New UUID {uuid}")
+            no_collision = False
+        UUID_Validator.known_UUIDs.add(uuid)
+        # logger.warning(f"Adding {uuid}")
+        return uuid, no_collision
 
 
 class PointXY(object):
@@ -315,21 +335,20 @@ class DrawArcV6(object):
             elif i_type == 'fill':
                 arc.fill = Fill.parse(i)
             elif i_type == 'uuid':
-                arc.uuid = _get_uuid(items, c+1, 'arc')
+                arc.uuid = get_uuid(items, c+1, 'arc')
             else:
                 raise SchError('Unknown arc attribute `{}`'.format(i))
         arc.box = Box([arc.start, arc.mid, arc.end])
         return arc
 
-    def write(self, cross):
+    def write(self):
         data = [_symbol('start', [self.start.x, self.start.y])]
         data.append(_symbol('mid', [self.mid.x, self.mid.y]))
         data.append(_symbol('end', [self.end.x, self.end.y]))
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
-        if self.uuid is not None and not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, self.uuid)
         return _symbol('arc', data)
 
 
@@ -356,7 +375,7 @@ class DrawCircleV6(object):
             elif i_type == 'fill':
                 circle.fill = Fill.parse(i)
             elif i_type == 'uuid':
-                circle.uuid = _get_uuid(items, c+1, 'circle')
+                circle.uuid = get_uuid(items, c+1, 'circle')
             else:
                 raise SchError('Unknown circle attribute `{}`'.format(i))
         p1 = PointXY(circle.center.x-circle.radius, circle.center.x-circle.radius)
@@ -364,14 +383,13 @@ class DrawCircleV6(object):
         circle.box = Box([p1, p2])
         return circle
 
-    def write(self, cross):
+    def write(self):
         data = [_symbol('center', [self.center.x, self.center.y])]
         data.append(_symbol('radius', [self.radius]))
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
-        if self.uuid is not None and not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, self.uuid)
         return _symbol('circle', data)
 
 
@@ -398,20 +416,19 @@ class DrawRectangleV6(object):
             elif i_type == 'fill':
                 rectangle.fill = Fill.parse(i)
             elif i_type == 'uuid':
-                rectangle.uuid = _get_uuid(items, c+1, 'rectangle')
+                rectangle.uuid = get_uuid(items, c+1, 'rectangle')
             else:
                 raise SchError('Unknown rectangle attribute `{}`'.format(i))
         rectangle.box = Box([rectangle.start, rectangle.end])
         return rectangle
 
-    def write(self, cross=False):
+    def write(self):
         data = [_symbol('start', [self.start.x, self.start.y])]
         data.append(_symbol('end', [self.end.x, self.end.y]))
         data.append(Sep())
         data.extend([self.stroke.write(), Sep()])
         data.extend([self.fill.write(), Sep()])
-        if self.uuid is not None and not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, self.uuid)
         return _symbol('rectangle', data)
 
 
@@ -439,7 +456,7 @@ class DrawCurve(object):
         curve.box = Box(curve.points)
         return curve
 
-    def write(self, _=False):
+    def write(self):
         points = [Sep()]
         for p in self.points:
             points.append(_symbol('xy', [p.x, p.y]))
@@ -473,7 +490,7 @@ class DrawPolyLine(object):
         line.box = Box(line.points)
         return line
 
-    def write(self, _=False):
+    def write(self):
         points = [Sep()]
         for p in self.points:
             points.append(_symbol('xy', [p.x, p.y]))
@@ -500,7 +517,7 @@ class DrawTextV6(object):
         text.effects = _get_effects(items, 3, 'text')
         return text
 
-    def write(self, _=False):
+    def write(self):
         data = [self.text, _symbol('at', [self.x, self.y, self.ang]), Sep()]
         data.extend([self.effects.write(), Sep()])
         return _symbol('text', data)
@@ -852,7 +869,7 @@ class LibComponent(object):
             sdata.extend([o.write(), Sep()])
             s.cross_box = None
 
-    def write(s, cross=False):
+    def write(s, cross):
         lib_id = s.lib_id
         if cross:
             # Fill the cross_box of our sub/units
@@ -883,7 +900,7 @@ class LibComponent(object):
                 sdata.extend([fdata, Sep()])
         # Graphics
         for g in s.draw:
-            sdata.extend([g.write(cross), Sep()])
+            sdata.extend([g.write(), Sep()])
         s.write_cross(sdata)
         # Pins
         for p in s.pins:
@@ -942,7 +959,7 @@ class SchematicComponentV6(SchematicComponent):
         self.mirror = None
         self.convert = None
         self.pin_alternates = {}
-        self.uuid = get_global_uuid()
+        self.uuid = None
         # KiCad v7:
         # Instances classified by project (v7)
         self.projects = None
@@ -988,7 +1005,7 @@ class SchematicComponentV6(SchematicComponent):
 
     def load_pin(self, i, name):
         pin_name = _check_str(i, 1, name + 'pin name')
-        pin_uuid = _get_uuid(i, 2, name)
+        pin_uuid = get_uuid(i, 2, name)
         self.pins[pin_name] = pin_uuid
         if len(i) > 3:
             # Not documented
@@ -1065,7 +1082,9 @@ class SchematicComponentV6(SchematicComponent):
                 # Not documented
                 comp.fields_autoplaced = True
             elif i_type == 'uuid':
-                comp.uuid = _check_symbol(i, 1, name + ' uuid')
+                # Ensure we have a unique UUID
+                comp.uuid_ori = _check_symbol(i, 1, name + ' uuid')
+                comp.uuid, _ = UUID_Validator.validate(comp.uuid_ori)
             # SYMBOL_PROPERTIES...
             elif i_type == 'property':
                 field = SchematicFieldV6.parse(i, field_id)
@@ -1088,12 +1107,16 @@ class SchematicComponentV6(SchematicComponent):
             elif i_type == 'instances':
                 comp.load_instances(i)
                 # We should get an instance for us
-                ins = comp.all_instances.get(parent.get_full_path())
+                p_path = parent.get_full_path()
+                ins = comp.all_instances.get(p_path)
                 if ins is None:
-                    raise SchError('Missing {} symbol instance for `{}`'.format(comp.name, parent.get_full_path()))
+                    raise SchError('Missing {} symbol instance for `{}`'.format(comp.name, p_path))
+                # Memorize its path (v7 style, with parent)
+                comp.p_path_ori = p_path
+                comp.p_path = parent.get_full_path(False)
                 # Translate the instance to the v6 format (remove UUID for / and add the component UUID)
                 v6_ins = SymbolInstance()
-                v6_ins.path = os.path.join('/', '/'.join(ins.path.split('/')[2:]), comp.uuid)
+                v6_ins.path = os.path.join('/', '/'.join(ins.path.split('/')[2:]), comp.uuid_ori)
                 v6_ins.reference = ins.reference
                 v6_ins.unit = ins.unit
                 # Add to the root symbol_instances, so we reconstruct it
@@ -1102,16 +1125,17 @@ class SchematicComponentV6(SchematicComponent):
                 raise SchError('Unknown component attribute `{}`'.format(i))
         if not lib_id_found or not at_found:
             raise SchError("Component missing 'lib_id' and/or 'at'")
-
         # Fake 'Part' field
         field = SchematicFieldV6()
         field.name = 'part'
         field.value = comp.name
         field.number = -1
         comp.add_field(field)
+        # Memorize the current path, used for expanded hierarchy
+        comp.path = parent.sheet_path
         return comp
 
-    def write(self, cross=False):
+    def write(self, cross):
         lib_id = self.lib_id
         is_crossed = not(self.fitted or not self.included)
         native_cross = GS.ki7 and GS.global_cross_using_kicad
@@ -1139,16 +1163,14 @@ class SchematicComponentV6(SchematicComponent):
         if self.fields_autoplaced:
             data.append(_symbol('fields_autoplaced'))
         data.append(Sep())
-        if not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, self.uuid)
         for f in self.fields:
             d = f.write()
             if d:
                 data.extend([d, Sep()])
         for k, v in self.pins.items():
             pin_data = [k]
-            if not cross:
-                pin_data.extend([_symbol('uuid', [Symbol(v)])])
+            add_uuid(pin_data, v, no_sep=True)
             alternate = self.pin_alternates.get(k, None)
             if alternate:
                 pin_data.append(_symbol('alternate', [alternate]))
@@ -1156,8 +1178,19 @@ class SchematicComponentV6(SchematicComponent):
         if self.projects is not None:
             prj_data = [Sep()]
             for prj, ins in self.projects:
+                if cross and prj != self.project:
+                    # For the expanded hierarchy we save only this project
+                    continue
                 ins_data = [prj, Sep()]
                 for i in ins:
+                    if cross:
+                        if i.path == self.p_path_ori:
+                            # Adjust the instance for the expanded hierarchy
+                            i = deepcopy(i)
+                            i.path = self.p_path
+                        else:
+                            # Don't store bogus instances
+                            continue
                     ins_data.extend([i.write(), Sep()])
                 prj_data.extend([_symbol('project', ins_data), Sep()])
             data.extend([_symbol('instances', prj_data), Sep()])
@@ -1171,8 +1204,14 @@ def _get_uuid(items, pos, where):
     return _check_symbol(values, 1, where + ' uuid')
 
 
-def add_uuid(data, cross, uuid, no_sep=False):
-    if not cross and uuid:
+def get_uuid(items, pos, where):
+    uuid = _get_uuid(items, pos, where)
+    uuid, _ = UUID_Validator.validate(uuid)
+    return uuid
+
+
+def add_uuid(data, uuid, no_sep=False):
+    if uuid:
         if no_sep:
             data.append(_symbol('uuid', [Symbol(uuid)]))
         else:
@@ -1188,14 +1227,14 @@ class Junction(object):
         jun.pos_x, jun.pos_y, jun.ang = _get_at(items, 1, 'junction')
         jun.diameter = _check_symbol_float(items, 2, 'junction', 'diameter')
         jun.color = Color.parse(items[3])
-        jun.uuid = _get_uuid(items, 4, 'junction')
+        jun.uuid = get_uuid(items, 4, 'junction')
         return jun
 
-    def write(self, cross=False):
+    def write(self):
         data = [_symbol('at', [self.pos_x, self.pos_y]),
                 _symbol('diameter', [self.diameter]),
                 self.color.write(), Sep()]
-        add_uuid(data, cross, self.uuid)
+        add_uuid(data, self.uuid)
         return _symbol('junction', data)
 
 
@@ -1220,12 +1259,12 @@ class NoConnect(object):
             _check_len_total(items, 2, 'no_connect')
         nocon = NoConnect()
         nocon.pos_x, nocon.pos_y, nocon.ang = _get_at(items, 1, 'no connect')
-        nocon.uuid = _get_uuid(items, 2, 'no connect')
+        nocon.uuid = get_uuid(items, 2, 'no connect')
         return nocon
 
-    def write(self, cross=False):
+    def write(self):
         data = [_symbol('at', [self.pos_x, self.pos_y])]
-        add_uuid(data, cross, self.uuid, no_sep=True)
+        add_uuid(data, self.uuid, no_sep=True)
         return _symbol('no_connect', data)
 
 
@@ -1238,14 +1277,14 @@ class BusEntry(object):
         buse.pos_x, buse.pos_y, buse.ang = _get_at(items, 1, 'bus entry')
         buse.size = _get_size(items, 2, 'bus entry')
         buse.stroke = Stroke.parse(items[3])
-        buse.uuid = _get_uuid(items, 4, 'bus entry')
+        buse.uuid = get_uuid(items, 4, 'bus entry')
         return buse
 
-    def write(self, cross=False):
+    def write(self):
         data = [_symbol('at', [self.pos_x, self.pos_y]),
                 _symbol('size', [self.size.x, self.size.y]), Sep(),
                 self.stroke.write(), Sep()]
-        add_uuid(data, cross, self.uuid)
+        add_uuid(data, self.uuid)
         return _symbol('bus_entry', data)
 
 
@@ -1258,13 +1297,13 @@ class SchematicWireV6(object):
         wire.type = name  # wire, bus, polyline
         wire.points = _get_points(items[1])
         wire.stroke = Stroke.parse(items[2])
-        wire.uuid = _get_uuid(items, 3, name)
+        wire.uuid = get_uuid(items, 3, name)
         return wire
 
-    def write(self, cross=False):
+    def write(self):
         points = [_symbol('xy', [p.x, p.y]) for p in self.points]
         data = [_symbol('pts', points), Sep(), self.stroke.write(), Sep()]
-        add_uuid(data, cross, self.uuid)
+        add_uuid(data, self.uuid)
         return _symbol(self.type, data)
 
 
@@ -1280,7 +1319,7 @@ class SchematicBitmapV6(object):
             if i_type == 'scale':
                 bmp.scale = _check_symbol_float(items, c+2, 'image', 'scale')
             elif i_type == 'uuid':
-                bmp.uuid = _get_uuid(items, c+2, 'image')
+                bmp.uuid = get_uuid(items, c+2, 'image')
             elif i_type == 'data':
                 values = _check_symbol_value(items, c+2, 'image data', 'data')
                 bmp.data = [_check_symbol(values, i+1, 'image data') for i, d in enumerate(values[1:])]
@@ -1288,14 +1327,13 @@ class SchematicBitmapV6(object):
                 raise SchError('Unknown symbol attribute `{}`'.format(i))
         return bmp
 
-    def write(self, cross=False):
+    def write(self):
         d = []
         for v in self.data:
             d.append(Symbol(v))
             d.append(Sep())
         data = [_symbol('at', [self.pos_x, self.pos_y]), Sep()]
-        if not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, self.uuid)
         data.extend([_symbol('data', [Sep()] + d), Sep()])
         return _symbol('image', data)
 
@@ -1314,7 +1352,7 @@ class Text(object):
             elif i_type == 'effects':
                 text.effects = _get_effects(items, c+2, name)
             elif i_type == 'uuid':
-                text.uuid = _get_uuid(items, c+2, name)
+                text.uuid = get_uuid(items, c+2, name)
             elif i_type == 'exclude_from_sim':
                 # KiCad 7.99
                 text.exclude_from_sim = _get_yes_no(i, 1, i_type)
@@ -1322,14 +1360,13 @@ class Text(object):
                 raise SchError('Unknown symbol attribute `{}`'.format(i))
         return text
 
-    def write(self, cross=False):
+    def write(self):
         data = [self.text]
         if self.exclude_from_sim is not None:
             data.append(_symbol('exclude_from_sim', [Symbol(NO_YES[self.exclude_from_sim])]))
         data.extend([_symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
                      self.effects.write(), Sep()])
-        if not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, self.uuid)
         return _symbol(self.name, data)
 
 
@@ -1344,17 +1381,16 @@ class TextBox(object):
         text.stroke = Stroke.parse(items[4])
         text.fill = Fill.parse(items[5])
         text.effects = _get_effects(items, 6, name)
-        text.uuid = _get_uuid(items, 7, name)
+        text.uuid = get_uuid(items, 7, name)
         return text
 
-    def write(self, cross=False):
+    def write(self):
         data = [self.text, Sep(),
                 _symbol('at', [self.pos_x, self.pos_y, self.ang]), _symbol('size', [self.size.x, self.size.y]), Sep(),
                 self.stroke.write(), Sep(),
                 self.fill.write(), Sep(),
                 self.effects.write(), Sep()]
-        if not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, self.uuid)
         return _symbol(self.name, data)
 
 
@@ -1389,7 +1425,7 @@ class GlobalLabel(object):
             elif i_type == 'effects':
                 label.effects = FontEffects.parse(i)
             elif i_type == 'uuid':
-                label.uuid = _get_uuid(items, c+2, label.name)
+                label.uuid = get_uuid(items, c+2, label.name)
             elif i_type == 'property':
                 label.properties.append(SchematicFieldV6.parse(i, field_id))
                 field_id += 1
@@ -1397,7 +1433,7 @@ class GlobalLabel(object):
                 raise SchError('Unknown {} attribute `{}`'.format(label.name, i))
         return label
 
-    def write(self, cross=False):
+    def write(self):
         data = [self.text]
         if self.length is not None:
             data.append(_symbol('length', [self.length]))
@@ -1409,8 +1445,7 @@ class GlobalLabel(object):
         if self.effects is not None:
             data.extend([Sep(), self.effects.write()])
         data.append(Sep())
-        if not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, self.uuid)
         for p in self.properties:
             data.extend([p.write(), Sep()])
         return _symbol(self.name, data)
@@ -1447,16 +1482,15 @@ class HSPin(object):
         pin.type = _check_symbol(items, 2, name+' type')
         pin.pos_x, pin.pos_y, pin.ang = _get_at(items, 3, name)
         pin.effects = _get_effects(items, 4, name)
-        pin.uuid = _get_uuid(items, 5, name)
+        pin.uuid = get_uuid(items, 5, name)
         return pin
 
-    def write(self, cross=False):
+    def write(self):
         data = [self.name,
                 Symbol(self.type),
                 _symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
                 self.effects.write(), Sep()]
-        if not cross:
-            data.extend([_symbol('uuid', [Symbol(self.uuid)]), Sep()])
+        add_uuid(data, self.uuid)
         return _symbol('pin', data)
 
 
@@ -1527,7 +1561,8 @@ class Sheet(object):
             elif i_type == 'fill':
                 sheet.fill = Fill.parse(i)
             elif i_type == 'uuid':
-                sheet.uuid = _get_uuid(items, c+1, 'sheet')
+                sheet.uuid_ori = _get_uuid(items, c+1, 'sheet')
+                sheet.uuid, _ = UUID_Validator.validate(sheet.uuid_ori)
             elif i_type == 'property':
                 field = SchematicFieldV6.parse(i, field_id)
                 field_id += 1
@@ -1552,28 +1587,33 @@ class Sheet(object):
         self.sheet = sheet
         parent_dir = os.path.dirname(parent_file)
         sheet.sheet_path = os.path.join(parent_obj.sheet_path, self.uuid)
+        sheet.sheet_path_ori = os.path.join(parent_obj.sheet_path, self.uuid_ori)
         sheet.sheet_path_h = os.path.join(parent_obj.sheet_path_h, self.name)
-        parent_obj.sheet_paths[sheet.sheet_path] = sheet
+        parent_obj.sheet_paths[sheet.sheet_path_ori] = sheet
         sheet.load(os.path.join(parent_dir, self.file), project, parent_obj)
         # self.sheet_paths
         if self.projects is not None:
             # KiCad v7 sheet pages are here
-            page = self.all_instances.get(parent_obj.get_full_path())
+            p_path = parent_obj.get_full_path()
+            page = self.all_instances.get(p_path)
             if page is None:
-                raise SchError('Missing sheet instance for `{}`'.format(parent_obj.get_full_path()))
+                raise SchError('Missing sheet instance for `{}`'.format(p_path))
             else:
                 sheet.sheet = page
                 parent_obj.all_sheets.append(sheet)
+            # Memorize its path
+            self.p_path_ori = p_path
+            self.p_path = parent_obj.get_full_path(False)
         return sheet
 
-    def write(self, cross=False):
+    def write(self, cross):
         data = [_symbol('at', [self.pos_x, self.pos_y]),
                 _symbol('size', [self.w, self.h])]
         if self.fields_autoplaced:
             data.append(_symbol('fields_autoplaced', []))
         data.extend([Sep(), self.stroke.write(), Sep(),
-                    self.fill.write(), Sep(),
-                    _symbol('uuid', [Symbol(self.uuid)]), Sep()])
+                    self.fill.write(), Sep()])
+        add_uuid(data, self.uuid)
         for p in self.properties:
             change_file = cross and p.name in SHEET_FILE
             if change_file:
@@ -1582,12 +1622,24 @@ class Sheet(object):
             if change_file:
                 p.value = self.file
         for p in self.pins:
-            data.extend([p.write(cross), Sep()])
+            data.extend([p.write(), Sep()])
         if self.projects is not None:
             prj_data = [Sep()]
+            sheet = self.sheet
             for prj, ins in self.projects:
+                if cross and prj != sheet.project:
+                    # For the expanded hierarchy we save only this project
+                    continue
                 ins_data = [prj, Sep()]
                 for i in ins:
+                    if cross:
+                        if i.path == self.p_path_ori:
+                            # Adjust the instance for the expanded hierarchy
+                            i = deepcopy(i)
+                            i.path = self.p_path
+                        else:
+                            # Don't store bogus instances
+                            continue
                     ins_data.extend([i.write(), Sep()])
                 prj_data.extend([_symbol('project', ins_data), Sep()])
             data.extend([_symbol('instances', prj_data), Sep()])
@@ -1768,13 +1820,13 @@ class SchematicV6(Schematic):
             return data
         return [Sep(), Sep(), _symbol('title_block', [Sep()]+data)]
 
-    def write_lib_symbols(self, cross=False):
+    def write_lib_symbols(self, cross):
         if GS.ki7 and GS.global_cross_using_kicad:
             # KiCad 7 can cross it by itself
             cross = False
         data = [Sep()]
         for s in self.lib_symbols:
-            data.extend([s.write(), Sep()])
+            data.extend([s.write(cross), Sep()])
             if cross:
                 data.extend([s.write(cross), Sep()])
         return [Sep(), Sep(), _symbol('lib_symbols', data), Sep()]
@@ -1784,6 +1836,7 @@ class SchematicV6(Schematic):
         global version
         version = self.version
         cross = dest_dir is not None
+        # cross = False
         if base_sheet is None:
             # We are the base sheet
             base_sheet = self
@@ -1816,61 +1869,72 @@ class SchematicV6(Schematic):
             sch.append(_symbol('generator', [Symbol(self.generator)]))
             sch.append(Sep())
             sch.append(Sep())
-            if not cross or base_sheet == self:
-                # The "cross" (or variant) mode expands the hierarchy
-                # So we avoid using UUIDs to avoid repeating them
-                # The only UUIDs really needed are the ones used for the "path" for component instances
-                # This includes the first page UUID.
-                sch.append(_symbol('uuid', [Symbol(self.uuid)]))
+            add_uuid(sch, self.uuid, no_sep=True)
             sch.extend(self.write_paper())
             sch.extend(self.write_title_block())
             sch.extend(self.write_lib_symbols(cross))
             # Bus aliases
             _add_items(self.bus_alias, sch)
             # Connections (aka Junctions)
-            _add_items(self.junctions, sch, pre_sep=(len(self.bus_alias) == 0), cross=cross)
+            _add_items(self.junctions, sch, pre_sep=(len(self.bus_alias) == 0))
             # No connect
-            _add_items(self.no_conn, sch, cross=cross)
+            _add_items(self.no_conn, sch)
             # Bus entry
-            _add_items(self.bus_entry, sch, cross=cross)
+            _add_items(self.bus_entry, sch)
             # Lines (wire, bus and polyline)
             if self.wires:
                 old_type = 'none'
                 for e in self.wires:
                     if e.type != old_type and old_type != 'wire':
                         sch.append(Sep())
-                    sch.append(e.write(cross))
+                    sch.append(e.write())
                     old_type = e.type
                     sch.append(Sep())
             # Arcs
-            _add_items(self.arcs, sch, cross=cross)
+            _add_items(self.arcs, sch)
             # Circles
-            _add_items(self.circles, sch, cross=cross)
+            _add_items(self.circles, sch)
             # Rectangles
-            _add_items(self.rectangles, sch, cross=cross)
+            _add_items(self.rectangles, sch)
             # Images
-            _add_items(self.bitmaps, sch, cross=cross)
+            _add_items(self.bitmaps, sch)
             # Text Boxes
-            _add_items(self.text_boxes, sch, cross=cross)
+            _add_items(self.text_boxes, sch)
             # Texts
-            _add_items(self.texts, sch, cross=cross, pre_sep=False)
+            _add_items(self.texts, sch, pre_sep=False)
             # Labels
-            _add_items(self.labels, sch, cross=cross)
+            _add_items(self.labels, sch)
             # Global Labels
-            _add_items(self.glabels, sch, cross=cross)
+            _add_items(self.glabels, sch)
             # Hierarchical Labels
-            _add_items(self.hlabels, sch, cross=cross)
+            _add_items(self.hlabels, sch)
             # Net Class Flags
-            _add_items(self.net_class_flags, sch, cross=cross)
+            _add_items(self.net_class_flags, sch)
             # Symbols
             _add_items(self.symbols, sch, sep=True, cross=cross)
             # Sheets
             _add_items(self.sheets, sch, sep=True, cross=cross)
             # Sheet instances
-            _add_items_list('sheet_instances', self.sheet_instances, sch)
+            instances = self.sheet_instances
+            if cross:
+                # We are saving a expanded hierarchy, so we must fix the instances
+                instances = deepcopy(self.sheet_instances)
+                for ins in instances:
+                    ins.path = self.sheet_paths[ins.path].sheet_path
+            _add_items_list('sheet_instances', instances, sch)
             # Symbol instances
             if version < KICAD_7_VER and base_sheet == self:
-                _add_items_list('symbol_instances', self.symbol_instances, sch)
+                instances = self.symbol_instances
+                if cross:
+                    # We are saving a expanded hierarchy, so we must fix the instances
+                    instances = deepcopy(self.symbol_instances)
+                    for s in instances:
+                        c = s.component
+                        if c.uuid != c.uuid_ori:
+                            # UUID changed to make it different
+                            # s.path = os.path.join(os.path.dirname(s.path), c.uuid)
+                            s.path = os.path.join(c.path, c.uuid)
+                _add_items_list('symbol_instances', instances, sch)
             logger.debug('Saving schematic: `{}`'.format(fname))
             # Keep a back-up of existing files
             if os.path.isfile(fname):
@@ -1894,7 +1958,7 @@ class SchematicV6(Schematic):
             Is used to save a variant, where we avoid sharing instance data """
         # Store it in the UUID -> name
         # Used to create a human readable sheet path
-        self.sheet_names[os.path.join(self.sheet_path, sch.uuid)] = os.path.join(self.sheet_path_h, sch.name)
+        self.sheet_names[os.path.join(self.sheet_path_ori, sch.uuid_ori)] = os.path.join(self.sheet_path_h, sch.name)
         # Eliminate subdirs
         file = sch.file.replace('/', '_')
         fparts = os.path.splitext(file)
@@ -1909,30 +1973,43 @@ class SchematicV6(Schematic):
         self.title_ori = title
         return old_title
 
-    def get_full_path(self):
+    def get_full_path(self, ori=True):
         """ Path using the UUID of the root. Used by v7 """
         path = '/'+self.root_sheet.uuid
         # Avoid returning /UUID/
         if self.sheet_path != '/':
-            path += self.sheet_path
+            path += self.sheet_path_ori if ori else self.sheet_path
         return path
+
+    def debug_instances(self):
+        """ Debug for the expanded hierarchy """
+        logger.debug("Collected symbol instances")
+        for s in sorted(self.symbol_instances, key=lambda x: x.path):
+            logger.debug(f"- {s.path} -> {s.reference}")
+        logger.debug("Collected sheet paths")
+        for p, s in self.sheet_paths.items():
+            logger.debug(f"- {p}")
+            for sy, c in s.symbol_uuids.items():
+                logger.debug(f"  - {sy} -> {c}")
 
     def load(self, fname, project, parent=None):  # noqa: C901
         """ Load a v6.x KiCad Schematic.
             The caller must be sure the file exists.
             Only the schematics are loaded not the libs. """
         logger.debug("Loading sheet from "+fname)
+        extra_debug = GS.debug_level >= 3
         if parent is None:
             self.fields = ['part']
             self.fields_lc = set(self.fields)
             self.sheet_paths = {'/': self}
             self.lib_symbol_names = {}
-            self.sheet_path = '/'
+            self.sheet_path = self.sheet_path_ori = '/'
             self.sheet_path_h = '/'
             self.sheet_names = {}
             self.all_sheets = []
             self.root_sheet = self
             self.symbol_instances = []
+            UUID_Validator.reset()
         else:
             self.fields = parent.fields
             self.fields_lc = parent.fields_lc
@@ -1990,7 +2067,9 @@ class SchematicV6(Schematic):
             elif e_type == 'generator':
                 self.generator = _check_symbol(e, 1, e_type)
             elif e_type == 'uuid':
-                self.id = self.uuid = _check_symbol(e, 1, e_type)
+                self.uuid_ori = _check_symbol(e, 1, e_type)
+                uuid, _ = UUID_Validator.validate(self.uuid_ori)
+                self.id = self.uuid = uuid
             elif e_type == 'paper':
                 self.paper = _check_str(e, 1, e_type)
                 index = 2
@@ -2041,8 +2120,10 @@ class SchematicV6(Schematic):
                 self.net_class_flags.append(NetClassFlag.parse(e))
             elif e_type == 'symbol':
                 obj = SchematicComponentV6.load(e, self.project, self)
+                if extra_debug:
+                    logger.debug(f"- Loaded {obj} [id {id(obj)}]  UUID {obj.uuid} original UUID {obj.uuid_ori}")
                 self.symbols.append(obj)
-                self.symbol_uuids[obj.uuid] = obj
+                self.symbol_uuids[os.path.join(self.sheet_path_ori, obj.uuid_ori)] = obj
             elif e_type == 'sheet':
                 obj = Sheet.parse(e)
                 self.sheets.append(obj)
@@ -2072,16 +2153,23 @@ class SchematicV6(Schematic):
             if sheet:
                 sheet.sheet = i.page
                 self.all_sheets.append(sheet)
+        # Debug for the expanded hierarchy
+        if extra_debug:
+            self.debug_instances()
         # Create the components list
         for s in self.symbol_instances:
             # Get a copy of the original symbol
             path = os.path.dirname(s.path)
-            sheet = self.sheet_paths[path]
-            comp_uuid = os.path.basename(s.path)
             try:
-                comp = sheet.symbol_uuids[comp_uuid]
+                sheet = self.sheet_paths[path]
             except KeyError:
-                logger.error(f"Error looking for {comp_uuid}")
+                logger.error(f"Error looking for sheet {path}")
+                logger.error(f"Available UUIDs {sheet.sheet_paths}")
+                raise
+            try:
+                comp = sheet.symbol_uuids[s.path]
+            except KeyError:
+                logger.error(f"Error looking for component {s.path}")
                 logger.error(f"Available UUIDs {sheet.symbol_uuids}")
                 raise
             s.component = comp
@@ -2095,7 +2183,7 @@ class SchematicV6(Schematic):
                 comp.set_footprint(s.footprint)
             comp.sheet_path = path
             comp.sheet_path_h = self.path_to_human(path)
-            comp.id = comp_uuid
+            comp.id = comp.uuid
             if s.reference[-1] == '?':
                 comp.annotation_error = True
                 self.annotation_error = True
@@ -2110,6 +2198,8 @@ class SchematicV6(Schematic):
             comp.desc = lib_symbol.get_field_value('ki_description')
             # Now we have all the data
             comp._validate()
+            if extra_debug:
+                logger.debug(f"{s.path} -> {s.reference} -> {id(comp)} {comp.uuid}")
             # Add it to the list
             self.components.append(comp)
         self.comps_data = self.lib_symbol_names

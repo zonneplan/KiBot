@@ -48,11 +48,3 @@ outputs:
     dir: Modified
     options:
       copy_project: true
-
-  - name: bom_internal
-    comment: "Bill of Materials in CSV format"
-    type: bom
-    dir: BoM
-    options:
-      csv:
-        hide_stats_info: true
