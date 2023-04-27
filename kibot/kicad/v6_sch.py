@@ -1843,7 +1843,7 @@ class SchematicV6(Schematic):
             cross = False
         data = [Sep()]
         for s in self.lib_symbols:
-            data.extend([s.write(cross), Sep()])
+            data.extend([s.write(False), Sep()])
             if cross:
                 data.extend([s.write(cross), Sep()])
         return [Sep(), Sep(), _symbol('lib_symbols', data), Sep()]
