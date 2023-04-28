@@ -1132,8 +1132,8 @@ class SchematicComponentV6(SchematicComponent):
                 v6_ins.path = os.path.join('/', '/'.join(ins.path.split('/')[2:]), comp.uuid_ori)
                 v6_ins.reference = ins.reference
                 v6_ins.unit = ins.unit
-                # Add to the root symbol_instances, so we reconstruct it
-                parent.symbol_instances.append(v6_ins)
+                # Add to the root symbol_instances, so we reconstruct it (like in a v6 file)
+                parent.root_sheet.symbol_instances.append(v6_ins)
             else:
                 raise SchError('Unknown component attribute `{}`'.format(i))
         if not lib_id_found or not at_found:
@@ -1848,12 +1848,10 @@ class SchematicV6(Schematic):
                 data.extend([s.write(cross), Sep()])
         return [Sep(), Sep(), _symbol('lib_symbols', data), Sep()]
 
-    def save(self, fname=None, dest_dir=None, base_sheet=None, saved=None):
+    def save(self, fname=None, dest_dir=None, base_sheet=None, saved=None, cross=False, exp_hierarchy=False):
         # Switch to the current version
         global version
         version = self.version
-        cross = dest_dir is not None
-        # cross = False
         if base_sheet is None:
             # We are the base sheet
             base_sheet = self
@@ -1928,21 +1926,22 @@ class SchematicV6(Schematic):
             # Net Class Flags
             _add_items(self.net_class_flags, sch)
             # Symbols
-            _add_items(self.symbols, sch, sep=True, cross=cross, exp_hierarchy=cross)
+            _add_items(self.symbols, sch, sep=True, cross=cross, exp_hierarchy=exp_hierarchy)
             # Sheets
-            _add_items(self.sheets, sch, sep=True, exp_hierarchy=cross)
+            _add_items(self.sheets, sch, sep=True, exp_hierarchy=exp_hierarchy)
             # Sheet instances
             instances = self.sheet_instances
-            if cross:
-                # We are saving a expanded hierarchy, so we must fix the instances
+            if exp_hierarchy and base_sheet == self:
+                # We are saving a expanded hierarchy, so we must fix the root page instances
                 instances = deepcopy(self.sheet_instances)
                 for ins in instances:
                     ins.path = self.sheet_paths[ins.path].sheet_path
-            _add_items_list('sheet_instances', instances, sch)
+            if base_sheet == self or not exp_hierarchy:
+                _add_items_list('sheet_instances', instances, sch)
             # Symbol instances
-            if version < KICAD_7_VER and base_sheet == self:
+            if version < KICAD_7_VER:
                 instances = self.symbol_instances
-                if cross:
+                if exp_hierarchy and base_sheet == self:
                     # We are saving a expanded hierarchy, so we must fix the instances
                     instances = deepcopy(self.symbol_instances)
                     for s in instances:
@@ -1951,7 +1950,8 @@ class SchematicV6(Schematic):
                             # UUID changed to make it different
                             # s.path = os.path.join(os.path.dirname(s.path), c.uuid)
                             s.path = os.path.join(c.path, c.uuid)
-                _add_items_list('symbol_instances', instances, sch)
+                if base_sheet == self or not exp_hierarchy:
+                    _add_items_list('symbol_instances', instances, sch)
             logger.debug('Saving schematic: `{}`'.format(fname))
             # Keep a back-up of existing files
             if os.path.isfile(fname):
@@ -1963,12 +1963,18 @@ class SchematicV6(Schematic):
             saved.add(fname)
         for sch in self.sheets:
             if sch.sch:
-                sch.sch.save(sch.flat_file if cross else sch.file, dest_dir, base_sheet, saved)
+                sch.sch.save(sch.flat_file if exp_hierarchy else sch.file, dest_dir, base_sheet, saved, cross=cross,
+                             exp_hierarchy=exp_hierarchy)
 
     def save_variant(self, dest_dir):
         fname = os.path.basename(self.fname)
-        self.save(fname, dest_dir)
+        self.save(fname, dest_dir, cross=True, exp_hierarchy=self.check_exp_hierarchy())
         return fname
+
+    def check_exp_hierarchy(self):
+        """ Check if we really need to expand the hierarchy """
+        # KiCad v6: we can change the value and footprint, but won't work when imported by v7
+        return True
 
     def _create_flat_name(self, sch):
         """ Create a unique name that doesn't contain subdirs.
@@ -2028,7 +2034,6 @@ class SchematicV6(Schematic):
             self.sheet_names = {}
             self.all_sheets = []
             self.root_sheet = self
-            self.symbol_instances = []
             UUID_Validator.reset()
         else:
             self.fields = parent.fields
@@ -2039,7 +2044,7 @@ class SchematicV6(Schematic):
             self.sheet_names = parent.sheet_names
             self.all_sheets = parent.all_sheets
             self.root_sheet = parent.root_sheet
-            self.symbol_instances = parent.symbol_instances
+        self.symbol_instances = []
         self.parent = parent
         self.fname = fname
         self.project = project
