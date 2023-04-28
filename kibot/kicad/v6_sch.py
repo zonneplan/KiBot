@@ -972,7 +972,7 @@ class SchematicComponentV6(SchematicComponent):
         self.mirror = None
         self.convert = None
         self.pin_alternates = {}
-        self.uuid = None
+        self.uuid = self.uuid_ori = ''
         # KiCad v7:
         # Instances classified by project (v7)
         self.projects = None
@@ -1138,6 +1138,8 @@ class SchematicComponentV6(SchematicComponent):
                 raise SchError('Unknown component attribute `{}`'.format(i))
         if not lib_id_found or not at_found:
             raise SchError("Component missing 'lib_id' and/or 'at'")
+        if not comp.uuid:
+            raise SchError("No UUID for component `{}`, use KiCad to fix it".format(comp))
         # Fake 'Part' field
         field = SchematicFieldV6()
         field.name = 'part'
@@ -1536,6 +1538,7 @@ class Sheet(object):
         self.name = self.file = ''
         self.pins = []
         self.sch = None
+        self.uuid = None
         # KiCad v7:
         # Instances classified by project
         self.projects = None
@@ -1593,6 +1596,8 @@ class Sheet(object):
                 sheet.load_instances(i)
             else:
                 raise SchError('Unknown sheet attribute `{}`'.format(i))
+        if not sheet.uuid:
+            raise SchError("No UUID for sheet `{}`, use KiCad to fix it".format(sheet.name or sheet.file))
         return sheet
 
     def load_sheet(self, project, parent_file, parent_obj):
