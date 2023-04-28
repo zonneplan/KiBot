@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.6.3] - UNRELEASED
+### Added
+- General:
+  - OS environment expansion in ${VAR}
+- Global options:
+  - `use_os_env_for_expand` to disable OS environment expansion
+
 ### Changed
 - KiCad v6/7 schematic:
   - The hierarchy is expanded only if needed, i.e. value of an instance changed

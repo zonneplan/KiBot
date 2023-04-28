@@ -866,6 +866,7 @@ global:
     - `units`: [string=''] [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs.
                Also KiCad 6 dimensions.
     - `use_dir_for_preflights`: [boolean=true] Use the global `dir` as subdir for the preflights.
+    - `use_os_env_for_expand`: [boolean=true] In addition to KiCad text variables also use the OS environment variables when expanding ${VARIABLE}.
     - `variant`: [string=''] Default variant to apply to all outputs.
 
 

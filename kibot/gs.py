@@ -170,6 +170,7 @@ class GS(object):
     global_time_reformat = None
     global_units = None
     global_use_dir_for_preflights = None
+    global_use_os_env_for_expand = None
     global_variant = None
     # Only for v7+
     global_allow_blind_buried_vias = None
@@ -389,6 +390,8 @@ class GS(object):
             value = vars.get(vname, None)
             if value is None and extra_vars is not None:
                 value = extra_vars.get(vname, None)
+            if value is None and GS.global_use_os_env_for_expand:
+                value = os.environ.get(vname, None)
             if value is None:
                 value = '${'+vname+'}'
                 logger.warning(W_UNKVAR+"Unknown text variable `{}`".format(vname))

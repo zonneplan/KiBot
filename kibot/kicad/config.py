@@ -95,11 +95,16 @@ def expand_env(val, env, extra_env, used_extra=None):
             logger.warning(W_MAXDEPTH+'Too much nested variables replacements, possible loop ({})'.format(ori_val))
             success = False
         for var in re.findall(r'\$\{(\S+?)\}', val):
+            to_replace = '${'+var+'}'
             if var in env:
-                val = val.replace('${'+var+'}', env[var])
+                val = val.replace(to_replace, env[var])
                 replaced = True
             elif var in extra_env:
-                val = val.replace('${'+var+'}', extra_env[var])
+                val = val.replace(to_replace, extra_env[var])
+                used_extra[0] = True
+                replaced = True
+            elif GS.global_use_os_env_for_expand and var in os.environ:
+                val = val.replace(to_replace, os.environ[var])
                 used_extra[0] = True
                 replaced = True
             else:

@@ -283,6 +283,8 @@ class Globals(FiltersOptions):
                 Note this is mainly useful for CI/CD, so you can store fonts and colors in your repo.
                 Also note that the fonts are installed using a mechanism known to work on Debian,
                 which is used by the KiBot docker images, on other OSs *your mileage may vary* """
+            self.use_os_env_for_expand = True
+            """ In addition to KiCad text variables also use the OS environment variables when expanding ${VARIABLE} """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot
