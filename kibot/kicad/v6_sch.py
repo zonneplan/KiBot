@@ -2188,16 +2188,14 @@ class SchematicV6(Schematic):
             path = os.path.dirname(s.path)
             try:
                 sheet = self.sheet_paths[path]
-            except KeyError:
-                logger.error(f"Error looking for sheet {path}")
-                logger.error(f"Available UUIDs {sheet.sheet_paths}")
-                raise
+            except KeyError as e:
+                logger.debug("Available UUIDs {}".format(sheet.sheet_paths))
+                raise SchError("Error looking for sheet with UUID `{}`".format(path)) from e
             try:
                 comp = sheet.symbol_uuids[s.path]
-            except KeyError:
-                logger.error(f"Error looking for component {s.path}")
-                logger.error(f"Available UUIDs {sheet.symbol_uuids}")
-                raise
+            except KeyError as e:
+                logger.debug("Available UUIDs {}".format(sheet.symbol_uuids))
+                raise SchError("Error looking for component with UUID `{}`".format(s.path)) from e
             s.component = comp
             # Transfer the instance data
             comp.set_ref(s.reference)
