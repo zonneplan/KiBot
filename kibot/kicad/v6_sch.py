@@ -1974,7 +1974,60 @@ class SchematicV6(Schematic):
     def check_exp_hierarchy(self):
         """ Check if we really need to expand the hierarchy """
         # KiCad v6: we can change the value and footprint, but won't work when imported by v7
-        return True
+        # Collect component instances (UUID -> list of instances)
+        instances = {}
+        for s in self.symbol_instances:
+            c_uuid = os.path.basename(s.path)
+            instances.setdefault(c_uuid, []).append(s.component)
+        # Look for variants in the instances
+        for _, l_ins in instances.items():
+            if len(l_ins) < 2:
+                # 0 or 1 can't be different
+                continue
+            ref_c = l_ins[0]
+            if any(map(lambda c: self.compare_component(ref_c, c), l_ins[1:])):
+                return True
+        # No variant
+        return False
+
+    @staticmethod
+    def compare_component(r, c):
+        """ Returns True if the components need separated instances (are different) """
+        if len(r.dfields) != len(c.dfields):
+            SchematicV6.log_difference(r, c, 'list of field names {} vs {}'.format(len(r.dfields), len(c.dfields)))
+            return True
+        for name, field in r.dfields.items():
+            if name == 'reference':
+                continue
+            field2 = c.dfields.get(name)
+            if field2 is None:
+                SchematicV6.log_difference(r, c, 'field `{}` not in the second'.format(name))
+            if field.value != field2.value:
+                SchematicV6.log_difference(r, c, '`{}` fields (`{}` != `{}`)'.format(name, field.value, field2.value))
+                return True
+        if c.fitted != r.fitted:
+            SchematicV6.log_difference(r, c, 'fitted status')
+            return True
+        if c.included != r.included:
+            SchematicV6.log_difference(r, c, 'included status')
+            return True
+        if c.fixed != r.fixed:
+            SchematicV6.log_difference(r, c, 'fixed status')
+            return True
+        if c.fixed != r.fixed:
+            SchematicV6.log_difference(r, c, 'fixed status')
+            return True
+        if c.in_bom != r.in_bom:
+            SchematicV6.log_difference(r, c, 'in_bom status')
+            return True
+        if c.on_board != r.on_board:
+            SchematicV6.log_difference(r, c, 'on_board status')
+            return True
+        return False
+
+    @staticmethod
+    def log_difference(r, c, msg):
+        logger.debug('Expanding hierarchy because {} and {} has different {}'.format(r.ref, c.ref, msg))
 
     def _create_flat_name(self, sch):
         """ Create a unique name that doesn't contain subdirs.
