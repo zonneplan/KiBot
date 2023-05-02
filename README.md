@@ -644,6 +644,7 @@ If you need to force the origin of the data you can use **%bX** for the PCB and 
 **X** is the pattern to expand.
 
 You can also use text variables (introduced in KiCad 6). To expand a text variable use `${VARIABLE}`.
+In addition you can also use environment variables, defined in your OS shell or defined in the `global` section.
 
 #### Default *dir* option
 
@@ -680,6 +681,7 @@ Expansion patterns are applied to this value, but you should avoid using pattern
 The behavior of these patterns isn't fully defined in this case and the results may change in the future.
 
 You can also use text variables (introduced in KiCad 6). To expand a text variable use `${VARIABLE}`.
+In addition you can also use environment variables, defined in your OS shell or defined in the `global` section.
 
 #### Date format option
 
