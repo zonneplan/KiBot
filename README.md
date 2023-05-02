@@ -786,7 +786,12 @@ global:
                      The KIPRJMOD is also available for expansion.
       * Valid keys:
         - `define_old`: [boolean=false] Also define legacy versions of the variables.
-                        Useful when using KiCad 6 and some libs uses old KiCad 5 names.
+                        Useful when using KiCad 6+ and some libs uses old KiCad 5 names.
+        - `extra_os`: [list(dict)] Extra variables to export as OS environment variables.
+                      Note that you can also define them using `- NAME: VALUE`.
+          * Valid keys:
+            - **`name`**: [string=''] Name of the variable.
+            - **`value`**: [string=''] Value for the variable.
         - `footprints`: [string=''] System level footprints (aka modules) dir. KiCad 5: KICAD_FOOTPRINT_DIR and KISYSMOD.
                         KiCad 6: KICAD6_FOOTPRINT_DIR.
         - `models_3d`: [string=''] System level 3D models dir. KiCad 5: KISYS3DMOD. KiCad 6: KICAD6_3DMODEL_DIR.

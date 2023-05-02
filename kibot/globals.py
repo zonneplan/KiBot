@@ -11,10 +11,38 @@ from .kicad.config import expand_env
 from .macros import macros, document  # noqa: F401
 from .pre_filters import FiltersOptions, FilterOptionsKiBot
 from .log import get_logger, set_filters
-from .misc import W_MUSTBEINT
+from .misc import W_MUSTBEINT, W_ENVEXIST
 from .kicad.config import KiConf
 from .kicad.sexpdata import load, SExpData, sexp_iter, Symbol
 from .kicad.v6_sch import PCBLayer
+
+
+class OSVariables(Optionable):
+    """ Name/Value pairs """
+    def __init__(self):
+        super().__init__()
+        self._unknown_is_error = True
+        with document:
+            self.name = ''
+            """ *Name of the variable """
+            self.value = ''
+            """ *Value for the variable """
+        self._name_example = 'ROOT_DIR'
+        self._value_example = '/root'
+
+    def config(self, parent):
+        # Support for - NAME: VALUE
+        if len(self._tree) == 1:
+            v0 = tuple(self._tree.values())[0]
+            n0 = tuple(self._tree.keys())[0]
+            if n0 != 'name' and n0 != 'value' and isinstance(v0, str):
+                logger.error(self._tree)
+                self.name = n0
+                self.value = v0
+                return
+        super().config(parent)
+        if not self.name:
+            raise KiPlotConfigurationError("Missing or empty `name` in environment variable ({})".format(str(self._tree)))
 
 
 class Environment(Optionable):
@@ -38,7 +66,10 @@ class Environment(Optionable):
             """ 3rd party dir. KiCad 6: KICAD6_3RD_PARTY """
             self.define_old = False
             """ Also define legacy versions of the variables.
-                Useful when using KiCad 6 and some libs uses old KiCad 5 names """
+                Useful when using KiCad 6+ and some libs uses old KiCad 5 names """
+            self.extra_os = OSVariables
+            """ [list(dict)] Extra variables to export as OS environment variables.
+                Note that you can also define them using `- NAME: VALUE` """
 
     def define_k5_vars(self, defs):
         if self.symbols:
@@ -89,6 +120,12 @@ class Environment(Optionable):
                 v = expand_env(v, env, os.environ)
                 logger.debug('- {} = "{}"'.format(n, v))
                 os.environ[n] = v
+        if isinstance(self.extra_os, list):
+            for v in self.extra_os:
+                if v.name in os.environ:
+                    logger.warning(W_ENVEXIST+"Overwriting {} environment variable".format(v.name))
+                logger.debug('- {} = "{}"'.format(v.name, v.value))
+                os.environ[v.name] = v.value
 
 
 class KiCadAlias(Optionable):
