@@ -648,10 +648,28 @@ class SchematicFieldV6(object):
         self.x = x
         self.y = y
         self.ang = ang
-        self.effects = None
-        self.hide = False
+        self.effects = FontEffects()
         self.do_not_autoplace = False
         self.show_name = False
+
+    def visible(self, v):
+        self.effects.hide = not v
+
+    def is_visible(self):
+        return not self.effects.hide
+
+    def get_height(self):
+        """ Font height in mm """
+        return self.effects.h
+
+    def get_xy(self):
+        return self.x, self.y
+
+    def set_xy(self, x, y, hjustify=None):
+        self.x = x
+        self.y = y
+        if hjustify:
+            self.effects.hjustify = hjustify
 
     @staticmethod
     def parse(items, number):
@@ -1145,6 +1163,7 @@ class SchematicComponentV6(SchematicComponent):
         field.name = 'part'
         field.value = comp.name
         field.number = -1
+        field.effects.hide = True
         comp.add_field(field)
         # Memorize the current path, used for expanded hierarchy
         comp.path = parent.sheet_path

@@ -1,0 +1,21 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+variants:
+  - name: value_split
+    comment: 'Variant with separated value'
+    type: kibom
+    file_id: '_splitted'
+    pre_transform: _value_split_replace
+
+global:
+  variant: value_split
+
+outputs:
+  - name: create_sch
+    comment: "Apply the variant to the Schematic"
+    type: sch_variant
+    dir: Modified
+    options:
+      copy_project: true

@@ -305,8 +305,8 @@ class Globals(FiltersOptions):
             """ Try to add color bands to the 3D models of KiCad THT resistors """
             self.field_tolerance = Optionable
             """ [string|list(string)] Name/s of the field/s used for the tolerance.
-                Used while creating colored resistors.
-                The default is ['tol', 'tolerance'] """
+                Used while creating colored resistors and for the value split filter.
+                The default is ['tolerance', 'tol'] """
             self.default_resistor_tolerance = 20
             """ When no tolerance is specified we use this value.
                 Note that I know 5% is a common default, but technically speaking 20% is the default.
@@ -322,6 +322,22 @@ class Globals(FiltersOptions):
                 which is used by the KiBot docker images, on other OSs *your mileage may vary* """
             self.use_os_env_for_expand = True
             """ In addition to KiCad text variables also use the OS environment variables when expanding ${VARIABLE} """
+            self.field_voltage = Optionable
+            """ [string|list(string)] Name/s of the field/s used for the voltage raiting.
+                Used for the value split filter.
+                The default is ['voltage', 'v'] """
+            self.field_package = Optionable
+            """ [string|list(string)] Name/s of the field/s used for the package, not footprint.
+                I.e. 0805, SOT-23, etc. Used for the value split filter.
+                The default is ['package', 'pkg'] """
+            self.field_temp_coef = Optionable
+            """ [string|list(string)] Name/s of the field/s used for the temperature coefficient.
+                I.e. X7R, NP0, etc. Used for the value split filter.
+                The default is ['temp_coef', 'tmp_coef'] """
+            self.field_power = Optionable
+            """ [string|list(string)] Name/s of the field/s used for the power raiting.
+                Used for the value split filter.
+                The default is ['power', 'pow'] """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot
@@ -430,7 +446,11 @@ class Globals(FiltersOptions):
         if GS.ki6 and GS.pcb_file and os.path.isfile(GS.pcb_file):
             self.get_stack_up()
         super().config(parent)
-        self.field_tolerance = Optionable.force_list(self.field_tolerance, default=['tol', 'tolerance'])
+        self.field_tolerance = Optionable.force_list(self.field_tolerance, default=['tolerance', 'tol'])
+        self.field_voltage = Optionable.force_list(self.field_voltage, default=['voltage', 'v'])
+        self.field_package = Optionable.force_list(self.field_package, default=['package', 'pkg'])
+        self.field_temp_coef = Optionable.force_list(self.field_temp_coef, default=['temp_coef', 'tmp_coef'])
+        self.field_power = Optionable.force_list(self.field_power, default=['power', 'pow'])
         # Transfer options to the GS globals
         for option in filter(lambda x: x[0] != '_', self.__dict__.keys()):
             gl = 'global_'+option

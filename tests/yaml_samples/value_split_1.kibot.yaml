@@ -1,0 +1,26 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+  - name: value_split_filter
+    comment: 'Create fields from the value'
+    type: value_split
+
+variants:
+  - name: value_split
+    comment: 'Variant with separated value'
+    type: kibom
+    file_id: '_splitted'
+    pre_transform: value_split_filter
+
+global:
+  variant: value_split
+
+outputs:
+  - name: create_sch
+    comment: "Apply the variant to the Schematic"
+    type: sch_variant
+    dir: Modified
+    options:
+      copy_project: true

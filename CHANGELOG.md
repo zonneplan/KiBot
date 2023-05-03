@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Global options:
   - `use_os_env_for_expand` to disable OS environment expansion
   - `environment`.`extra_os` to define environment variables
+  - `field_voltage` Name/s of the field/s used for the voltage raiting
+  - `field_package` Name/s of the field/s used for the package, not footprint
+  - `field_temp_coef` Name/s of the field/s used for the temperature coefficient
+  - `field_power` Name/s of the field/s used for the power raiting
+- New filters:
+  - `value_split` to extract information from the Value field and put it in
+    separated fields. I.e. tolerance, voltage, etc.
+- New internal filters:
+  - `_value_split` splits the Value field but the field remains and the extra
+    data is not visible
+  - `_value_split_replace` splits the Value field and replaces it
 
 ### Changed
 - KiCad v6/7 schematic:

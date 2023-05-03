@@ -144,7 +144,11 @@ class GS(object):
     global_extra_pth_drill = None
     global_field_3D_model = None
     global_field_lcsc_part = None
+    global_field_package = None
+    global_field_power = None
+    global_field_temp_coef = None
     global_field_tolerance = None
+    global_field_voltage = None
     global_hide_excluded = None
     global_impedance_controlled = None
     global_kiauto_time_out_scale = None

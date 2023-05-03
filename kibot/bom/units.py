@@ -55,6 +55,10 @@ decimal_point = None
 parser_cache = {}
 
 
+def get_decima_point():
+    return decimal_point
+
+
 class ParsedValue(object):
     def __init__(self, v, pow, unit, extra=None):
         # From a value that matched the regex

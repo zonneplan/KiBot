@@ -1645,3 +1645,11 @@ def test_netclass_flag_1(test_dir):
     ctx.run()
     ctx.expect_out_file_d(prj+'-bom.csv')
     ctx.clean_up()
+
+
+def test_value_split_1(test_dir):
+    prj = 'value_split'
+    ctx = context.TestContextSCH(test_dir, prj, 'value_split_2', 'Modified')
+    ctx.run()
+    ctx.expect_out_file_d(prj+context.KICAD_SCH_EXT)
+    ctx.clean_up()

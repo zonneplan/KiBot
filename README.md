@@ -811,9 +811,21 @@ global:
     - `field_3D_model`: [string='_3D_model'] Name for the field controlling the 3D models used for a component.
     - `field_lcsc_part`: [string=''] The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
                          When empty KiBot will try to discover it.
+    - `field_package`: [string|list(string)] Name/s of the field/s used for the package, not footprint.
+                       I.e. 0805, SOT-23, etc. Used for the value split filter.
+                       The default is ['package', 'pkg'].
+    - `field_power`: [string|list(string)] Name/s of the field/s used for the power raiting.
+                     Used for the value split filter.
+                     The default is ['power', 'pow'].
+    - `field_temp_coef`: [string|list(string)] Name/s of the field/s used for the temperature coefficient.
+                         I.e. X7R, NP0, etc. Used for the value split filter.
+                         The default is ['temp_coef', 'tmp_coef'].
     - `field_tolerance`: [string|list(string)] Name/s of the field/s used for the tolerance.
-                         Used while creating colored resistors.
-                         The default is ['tol', 'tolerance'].
+                         Used while creating colored resistors and for the value split filter.
+                         The default is ['tolerance', 'tol'].
+    - `field_voltage`: [string|list(string)] Name/s of the field/s used for the voltage raiting.
+                       Used for the value split filter.
+                       The default is ['voltage', 'v'].
     - `filters`: [list(dict)] KiBot warnings to be ignored.
       * Valid keys:
         - `error`: [string=''] Error id we want to exclude.
@@ -1032,6 +1044,27 @@ filters:
     - `comment`: [string=''] A comment for documentation purposes.
     - `fields`: [string|list(string)='Datasheet'] Fields to convert.
     - `name`: [string=''] Used to identify this particular filter definition.
+- value_split: Value_Split
+        This filter extracts information from the value and fills other fields.
+        I.e. extracts the tolerance and puts it in the `tolerance` field.
+  * Valid keys:
+    - `autoplace`: [boolean=true] Try to figure out the position for the added fields.
+    - `autoplace_mechanism`: [string='bottom'] [bottom,top] Put the new field at the bottom/top of the last field.
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `name`: [string=''] Used to identify this particular filter definition.
+    - `package`: [string='yes'] [yes,no,soft] Policy for the package.
+                 yes = overwrite existing value, no = don't touch, soft = copy if not defined.
+    - `power`: [string='yes'] [yes,no,soft] Policy for the power rating.
+               yes = overwrite existing value, no = don't touch, soft = copy if not defined.
+    - `replace_source`: [boolean=true] Replace the content of the source field using a normalized representation of the interpreted value.
+    - `source`: [string='Value'] Name of the field to use as source of information.
+    - `temp_coef`: [string='yes'] [yes,no,soft] Policy for the temperature coefficient.
+                   yes = overwrite existing value, no = don't touch, soft = copy if not defined.
+    - `tolerance`: [string='yes'] [yes,no,soft] Policy for the tolerance.
+                   yes = overwrite existing value, no = don't touch, soft = copy if not defined.
+    - `visible`: [boolean=false] Make visible the modified fields.
+    - `voltage`: [string='yes'] [yes,no,soft] Policy for the voltage rating.
+                 yes = overwrite existing value, no = don't touch, soft = copy if not defined.
 - var_rename: Var_Rename
         This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
   * Valid keys:
@@ -1097,6 +1130,8 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
 - **_only_tht** is used to get only THT parts
 - **_only_virtual** is used to get only virtual parts
 - **_rot_footprint** is a default `rot_footprint` filter
+- **_value_split** splits the Value field but the field remains and the extra data is not visible
+- **_value_split_replace** splits the Value field and replaces it
 - **_var_rename** is a default `var_rename` filter
 - **_var_rename_kicost** is a default `var_rename_kicost` filter
 
