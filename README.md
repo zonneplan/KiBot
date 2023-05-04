@@ -1047,6 +1047,7 @@ filters:
 - value_split: Value_Split
         This filter extracts information from the value and fills other fields.
         I.e. extracts the tolerance and puts it in the `tolerance` field.
+        Usage [example](https://inti-cmnb.github.io/kibot-examples-1/value_split/).
   * Valid keys:
     - `autoplace`: [boolean=true] Try to figure out the position for the added fields.
     - `autoplace_mechanism`: [string='bottom'] [bottom,top] Put the new field at the bottom/top of the last field.

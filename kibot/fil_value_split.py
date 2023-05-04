@@ -17,7 +17,8 @@ logger = log.get_logger()
 class Value_Split(BaseFilter):  # noqa: F821
     """ Value_Split
         This filter extracts information from the value and fills other fields.
-        I.e. extracts the tolerance and puts it in the `tolerance` field """
+        I.e. extracts the tolerance and puts it in the `tolerance` field.
+        Usage [example](https://inti-cmnb.github.io/kibot-examples-1/value_split/) """
     def __init__(self):
         super().__init__()
         self._is_transform = True
