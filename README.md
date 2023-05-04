@@ -6196,6 +6196,7 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
   - **JLC Kicad Tools**: Matthew Lai (@matthewlai)
   - **KiCad Gerber Zipper**: @g200kg
   - **pimpmykicadbom**: Anton Savov (@antto)
+  - **electro-grammar**: Kaspar Emanuel (@kasbah)
 - **Others**:
   - **Robot in the logo**: Christian Plaza (from pixabay)
   - **Robot arm in assembly_simple.svg**: [Pixlok](https://pixlok.com/)
