@@ -31,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - KiCad v6/7 schematic:
   - Net Class Flags not saved in variants or annotated schematics
   - Repeated UUIDs saved in variants
+- Position:
+  - Components marked as "Exclude from position files" not excluded when only
+    SMD components are selected. (See #429)
 
 ## [1.6.2] - 2023-04-24
 ### Added

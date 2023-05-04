@@ -80,7 +80,9 @@ class PositionOptions(VariantOptions):
             self.use_aux_axis_as_origin = True
             """ Use the auxiliary axis as origin for coordinates (KiCad default) """
             self.include_virtual = False
-            """ Include virtual components. For special purposes, not pick & place """
+            """ Include virtual components. For special purposes, not pick & place.
+                Note that virtual components is a KiCad 5 concept.
+                For KiCad 6+ we replace this concept by the option to exclude from position file """
         super().__init__()
         self._expand_id = 'position'
 
@@ -197,7 +199,7 @@ class PositionOptions(VariantOptions):
 
     @staticmethod
     def is_pure_smd_6(m):
-        return m.GetAttributes() & (MOD_THROUGH_HOLE | MOD_SMD) == MOD_SMD
+        return m.GetAttributes() & (MOD_THROUGH_HOLE | MOD_SMD | MOD_EXCLUDE_FROM_POS_FILES) == MOD_SMD
 
     @staticmethod
     def is_not_virtual_5(m):
