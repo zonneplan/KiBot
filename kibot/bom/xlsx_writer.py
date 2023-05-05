@@ -574,7 +574,8 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
             for c in g.components:
                 logger.debug(pprint.pformat(c.__dict__))
     # Force KiCost to use our logger
-    init_all_loggers(log.get_logger('kicost'), log.get_logger('kicost.dist'), log.get_logger('kicost.eda'))
+    init_all_loggers(log.get_logger('kicost', indent=1), log.get_logger('kicost.dist', indent=1),
+                     log.get_logger('kicost.eda', indent=1))
     set_distributors_progress(ProgressConsole2)
     if GS.debug_enabled:
         logger.setLevel(logging.DEBUG+1-GS.debug_level)
