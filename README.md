@@ -1021,6 +1021,29 @@ filters:
                    Components matching the regular expression will be rotated the indicated angle.
     - `skip_bottom`: [boolean=false] Do not rotate components on the bottom.
     - `skip_top`: [boolean=false] Do not rotate components on the top.
+- spec_to_field: Spec_to_Field
+        This filter extracts information from the specs obtained from component distributors
+        and fills fields.
+        I.e. create a field with the RoHS status of a component.
+        In order to make it work you must be able to get prices using the KiCost options of
+        the `bom` output. Make sure you can do this before trying to use this filter.
+        Usage [example](https://inti-cmnb.github.io/kibot-examples-1/spec_to_field/).
+  * Valid keys:
+    - **`from_output`**: [string=''] Name of the output used to collect the specs.
+                         Currently this must be a `bom` output with KiCost enabled and a distributor that returns specs.
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `name`: [string=''] Used to identify this particular filter definition.
+    - `specs`: [list(dict)|dict] *One or more specs to be copied.
+      * Valid keys:
+        - **`field`**: [string=''] Name of the destination field.
+        - `collision`: [string='warning'] [warning,error,ignore] How to report a collision between the current value and the new value.
+        - `compare`: [string='plain'] [plain,smart] How we compare the current value to determine a collision.
+                     `plain` is a strict comparison. `smart` tries to extract any number and compare it.
+        - `policy`: [string='overwrite'] [overwrite,update,new] Controls the behavior of the copy mechanism.
+                    `overwrite` always copy the spec value,
+                    `update` copy only if the field already exist,
+                    `new` copy only if the field doesn't exist..
+        - `spec`: [string|list(string)=''] *Name/s of the source spec/s.
 - subparts: Subparts
         This filter implements the KiCost subparts mechanism.
   * Valid keys:

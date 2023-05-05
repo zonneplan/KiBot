@@ -447,6 +447,16 @@ def configure_and_run(tree, out_dir, msg):
     out.run(out_dir)
 
 
+def look_for_output(name, op_name, parent, valids):
+    out = RegOutput.get_output(name)
+    if out is None:
+        raise KiPlotConfigurationError('Unknown output `{}` selected in {}'.format(name, parent))
+    config_output(out)
+    if out.type not in valids:
+        raise KiPlotConfigurationError('`{}` must be {} type, not {}'.format(op_name, valids, out.type))
+    return out
+
+
 def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
     # Make a list of target outputs

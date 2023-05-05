@@ -19,8 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Filters:
   - New `value_split` to extract information from the Value field and put it in
     separated fields. I.e. tolerance, voltage, etc.
+  - New `spec_to_field` to extract information from the distributors specs and
+    put in fields. I.e. RoHS status.
   - New `generic` options `exclude_not_in_bom` and `exclude_not_on_board` to
-    use KiCad 6+ flags.
+    use KiCad 6+ flags. (See #429)
 - New internal filters:
   - `_value_split` splits the Value field but the field remains and the extra
     data is not visible

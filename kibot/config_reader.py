@@ -16,7 +16,7 @@ import json
 from sys import (exit, maxsize)
 from collections import OrderedDict
 
-from .error import KiPlotConfigurationError
+from .error import KiPlotConfigurationError, config_error
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
                    W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS)
 from .gs import GS
@@ -446,7 +446,11 @@ class CfgYamlReader(object):
         return sel_globals
 
     def configure_variant_or_filter(self, o_var):
-        o_var.config(None)
+        try:
+            o_var.config(None)
+        except KiPlotConfigurationError as e:
+            msg = "In filter/variant '"+o_var.name+"' ("+o_var.type+"): "+str(e)
+            config_error(msg)
 
     def configure_variants(self, variants):
         logger.debug('Configuring variants')

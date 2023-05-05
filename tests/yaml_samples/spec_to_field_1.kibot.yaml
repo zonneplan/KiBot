@@ -1,0 +1,49 @@
+kibot:
+  version: 1
+
+filters:
+  - name: spec_to_field
+    type: spec_to_field
+    comment: 'Copy the RoHS status'
+    from_output: 'bom_internal'
+    specs:
+      - spec: rohs_status
+        field: RoHS
+      - spec: [resistance_tolerance, capacitance_tolerance]
+        field: Tolerance
+        compare: smart
+
+outputs:
+  - name: create_sch
+    comment: "Apply the filter to the Schematic"
+    type: sch_variant
+    dir: Modified
+    options:
+      pre_transform: spec_to_field
+      copy_project: true
+
+  - name: 'bom_internal'
+    comment: "BoM with prices, here used to get the specs"
+    type: bom
+    dir: KiCost
+    options:
+      group_fields: ['digikey#']
+      columns:
+        - References
+        - Part
+        - Value
+        - Quantity Per PCB
+        - field: manf
+          name: Manufacturer
+        - field: manf#
+          name: Manufacturer P/N
+        - field: digikey#
+          level: 1
+          comment: 'Code used to buy the part at Digi-Key'
+      distributors:
+        - Mouser
+        - Digi-Key
+      xlsx:
+        kicost: true
+        specs: true
+        kicost_config: tests/data/kicost_default_config.yaml

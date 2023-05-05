@@ -561,6 +561,15 @@ def do_title(cfg, worksheet, col1, length, fmt_title, fmt_info):
         worksheet.merge_range(c+r_extra, col1, c+r_extra, length, text, fmt_info)
 
 
+def copy_specs_to_components(parts, groups):
+    """ Link the KiCost information in the components.
+        So we can access to the specs for the components.
+        This can be used by filters. """
+    for p in parts:
+        for c in p.kibot_group.components:
+            c.kicost_part = p
+
+
 def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg):
     if not KICOST_SUPPORT:
         logger.warning(W_NOKICOST+'KiCost sheet requested but failed to load KiCost support')
@@ -642,6 +651,8 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
             part.refs = [c.ref for c in g.components]
             part.fields = g.fields
             part.fields['manf#_qty'] = compute_qtys(cfg, g)
+            # Internally used to make copy_specs_to_components simpler
+            part.kibot_group = g
             parts.append(part)
             # Process any "join" request
             apply_join_requests(cfg.join_ce, part.fields, g.fields)
@@ -651,6 +662,8 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
         dist_list = solve_distributors(cfg)
         # Get the prices
         query_part_info(parts, dist_list)
+        # Put the specs in the components
+        copy_specs_to_components(parts, groups)
         # Distributors again. During `query_part_info` user defined distributors could be added
         solve_distributors(cfg, silent=False)
         # Create a class to hold the spreadsheet parameters

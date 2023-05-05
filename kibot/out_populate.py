@@ -17,10 +17,9 @@ from tempfile import NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .misc import W_PCBDRAW, RENDERERS
 from .gs import GS
-from .kiplot import config_output, run_output
+from .kiplot import run_output, look_for_output
 from .optionable import Optionable
 from .out_base import VariantOptions
-from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -122,13 +121,7 @@ class PopulateOptions(VariantOptions):
 
         is_html = self.format == 'html'
         # Check the renderer output is valid
-        out = RegOutput.get_output(self.renderer)
-        if out is None:
-            raise KiPlotConfigurationError('Unknown output `{}` selected in {}'.format(self.renderer, self._parent))
-        config_output(out)
-        if out.type not in RENDERERS:
-            raise KiPlotConfigurationError('The `renderer` must be {} type, not {}'.format(RENDERERS, out.type))
-        self._renderer = out
+        self._renderer = look_for_output(self.renderer, 'renderer', self._parent, RENDERERS)
         # Load the input content
         try:
             _, content = load_content(self.input)
