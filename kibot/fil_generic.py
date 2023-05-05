@@ -76,6 +76,10 @@ class Generic(BaseFilter):  # noqa: F821
             """ Exclude components on the top side of the PCB """
             self.exclude_bottom = False
             """ Exclude components on the bottom side of the PCB  """
+            self.exclude_not_in_bom = False
+            """ Exclude components marked *Exclude from bill of materials* (KiCad 6+) """
+            self.exclude_not_on_board = False
+            """ Exclude components marked *Exclude from board* (KiCad 6+)  """
         self.add_to_doc('keys', 'Use `dnf_list` for '+str(sorted(DNF)))
         self.add_to_doc('keys', 'Use `dnc_list` for '+str(sorted(DNC)))
 
@@ -189,6 +193,10 @@ class Generic(BaseFilter):  # noqa: F821
         if self.exclude_top and not comp.bottom:
             return exclude
         if self.exclude_bottom and comp.bottom:
+            return exclude
+        if self.exclude_not_in_bom and not (comp.in_bom and comp.in_bom_pcb):
+            return exclude
+        if self.exclude_not_on_board and not comp.on_board:
             return exclude
         # List of references to be excluded
         if self.exclude_refs and (comp.ref in self.exclude_refs or comp.ref_prefix+'*' in self.exclude_refs):

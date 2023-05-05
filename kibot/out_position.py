@@ -247,7 +247,7 @@ class PositionOptions(VariantOptions):
             if comps_hash:
                 c = comps_hash.get(ref, None)
                 if c:
-                    logger.debug('fit: {} include: {}'.format(c.fitted, c.included))
+                    logger.debug('- fit: {} include: {}'.format(c.fitted, c.included))
                     if not c.fitted or not c.included:
                         continue
                     value = c.value
@@ -294,6 +294,8 @@ class PositionOptions(VariantOptions):
                         row.append("bottom" if is_bottom else "top")
                 modules.append(row)
                 modules_side.append(is_bottom)
+            else:
+                logger.debug('- pure_smd: {} not_virtual {}'.format(is_pure_smd(m), is_not_virtual(m)))
         # Find max width for all columns
         maxlengths = []
         for col, name in enumerate(columns):

@@ -2712,7 +2712,9 @@ outputs:
       dnf_filter: '_none'
       # [string='ASCII'] [ASCII,CSV] Format for the position file
       format: 'ASCII'
-      # [boolean=false] Include virtual components. For special purposes, not pick & place
+      # [boolean=false] Include virtual components. For special purposes, not pick & place.
+      # Note that virtual components is a KiCad 5 concept.
+      # For KiCad 6+ we replace this concept by the option to exclude from position file
       include_virtual: false
       # [boolean=true] Only include the surface mount components
       only_smd: true

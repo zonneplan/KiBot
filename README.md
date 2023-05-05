@@ -976,6 +976,8 @@ filters:
                         Separators are applied.
     - `exclude_empty_val`: [boolean=false] Exclude components with empty 'Value'.
     - `exclude_field`: [boolean=false] Exclude components if a field is named as any of the keys.
+    - `exclude_not_in_bom`: [boolean=false] Exclude components marked *Exclude from bill of materials* (KiCad 6+).
+    - `exclude_not_on_board`: [boolean=false] Exclude components marked *Exclude from board* (KiCad 6+).
     - `exclude_refs`: [list(string)] List of references to be excluded.
                       Use R* for all references with R prefix.
     - `exclude_smd`: [boolean=false] Exclude components marked as smd in the PCB.
@@ -4088,6 +4090,8 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `include_virtual`: [boolean=false] Include virtual components. For special purposes, not pick & place.
+                             Note that virtual components is a KiCad 5 concept.
+                             For KiCad 6+ we replace this concept by the option to exclude from position file.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
         - `right_digits`: [number=4] number of digits for mantissa part of coordinates (0 is auto).

@@ -1,0 +1,19 @@
+# Example KiBot config file for a basic 2-layer board
+kibot:
+  version: 1
+
+filters:
+  - name: not_in_bom
+    comment: "Exclude components marked in_bom='no'"
+    type: generic
+    exclude_not_in_bom: true
+
+outputs:
+  - name: 'position'
+    comment: "Pick and place file"
+    type: position
+    dir: positiondir
+    options:
+      dnf_filter: not_in_bom
+      format: CSV
+      separate_files_for_front_and_back: false
