@@ -1031,19 +1031,24 @@ filters:
   * Valid keys:
     - **`from_output`**: [string=''] Name of the output used to collect the specs.
                          Currently this must be a `bom` output with KiCost enabled and a distributor that returns specs.
+    - `check_dist_coherence`: [boolean=true] Check that the data we got from different distributors is equivalent.
+    - `check_dist_fields`: [string|list(string)=''] List of fields to include in the check.
+                           For a full list of fields consult the `specs` option.
     - `comment`: [string=''] A comment for documentation purposes.
     - `name`: [string=''] Used to identify this particular filter definition.
     - `specs`: [list(dict)|dict] *One or more specs to be copied.
       * Valid keys:
         - **`field`**: [string=''] Name of the destination field.
         - `collision`: [string='warning'] [warning,error,ignore] How to report a collision between the current value and the new value.
-        - `compare`: [string='plain'] [plain,smart] How we compare the current value to determine a collision.
-                     `plain` is a strict comparison. `smart` tries to extract any number and compare it.
         - `policy`: [string='overwrite'] [overwrite,update,new] Controls the behavior of the copy mechanism.
                     `overwrite` always copy the spec value,
                     `update` copy only if the field already exist,
                     `new` copy only if the field doesn't exist..
         - `spec`: [string|list(string)=''] *Name/s of the source spec/s.
+                  The following names are uniform across distributors: '_desc', '_value', '_tolerance', '_footprint',
+                  '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf' and '_size'.
+        - `type`: [string='string'] [percent,voltage,power,current,value,string] How we compare the current value to determine a collision.
+                  `value` is the component value i.e. resistance for R*.
 - subparts: Subparts
         This filter implements the KiCost subparts mechanism.
   * Valid keys:
