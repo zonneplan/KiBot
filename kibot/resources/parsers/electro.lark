@@ -25,7 +25,7 @@
 ?main: capacitor | inductor | resistor | led
 
 // All we ignore
-crap: CNAME | NUMBER
+crap: CNAME | NUMBER | CNAME "/" CNAME
 // Whitespace and separators
 _WS: WS
 _SEP: _WS | /[,;]/
@@ -172,7 +172,7 @@ _FARAD: "F"i "arad"i?
 _OHM: "ohm"i "s"i? | "Ω" | "Ω"
 _HENRY: "h"i "enry"i?
 _VOLT: "Volt"i "s"i? | "V"i
-_WATTS: "W"i "atts"i?
+_WATTS: "W"i ("atts"i | "att"i)?
 // Used for percent
 _PLUSMINUS: "+/-" | "±" | "+-"
 // Size
