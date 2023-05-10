@@ -7,11 +7,11 @@ filters:
     comment: 'Copy the RoHS status'
     from_output: 'bom_internal'
     specs:
-      - spec: rohs_status
+      - spec: rohs
         field: RoHS
-      - spec: [resistance_tolerance, capacitance_tolerance]
+      - spec: [resistance_tolerance, capacitance_tolerance, _tolerance]
         field: Tolerance
-        compare: smart
+        type: percent
 
 outputs:
   - name: create_sch
@@ -46,4 +46,4 @@ outputs:
       xlsx:
         kicost: true
         specs: true
-        kicost_config: tests/data/kicost_default_config.yaml
+        kicost_config: tests/data/kicost_dk_mou_cache.yaml

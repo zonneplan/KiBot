@@ -134,7 +134,7 @@ def test_kicost_spec_to_field_1(test_dir):
     ctx.run(kicost=True, extra_debug=True)
     output = prj+'-bom.xlsx'
     ctx.expect_out_file_d(output)
-    ctx.search_err([r'WARNING:\(.*\) C1 field `Tolerance` collision, has `20%`, found `.10%`',
-                    r'WARNING:\(.*\) R1 field `Tolerance` collision, has `1%`, found `.5%`',
-                    'C1 RoHS: Compliant', 'R2 Tolerance: .5%'])
+    ctx.search_err([r'WARNING:\(.*\) C1 field `Tolerance` collision, has `20%`, found `10%`',
+                    r'WARNING:\(.*\) R1 field `Tolerance` collision, has `1%`, found `5%`',
+                    'C1 RoHS: ROHS3 Compliant'])
     ctx.clean_up()
