@@ -201,8 +201,11 @@ def initialize():
     parser = Lark(g, start='main')  # , debug=DEBUG)
 
 
-def parse(text, with_extra=False):
+def parse(text, with_extra=False, stronger=False):
     initialize()
+    if stronger:
+        text = text.replace('+/-', ' +/-')
+        text = text.replace(' - ', ' ')
     try:
         tree = parser.parse(text)
     except Exception as e:
