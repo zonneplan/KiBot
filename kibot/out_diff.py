@@ -251,6 +251,25 @@ class DiffOptions(BaseOptions):
             for sub in self.git_submodules():
                 self.stash_pop(sub)
 
+    def process_tags(self, num):
+        # Get a list of all tags ... and commits (how can I filter it?)
+        logger.debug('Looking for git tags')
+        res = self.run_git(['rev-list', '--tags', '--format=format:%D'])
+        if not res:
+            return res
+        res = res.split('\n')
+        commit = ''
+        skipped = 0
+        for v in res:
+            if v.startswith('tag: '):
+                tag = v.split(',')[0][4:]
+                logger.debugl(2, '- {}/{} tag: {} -> {}'.format(skipped, num, tag, commit))
+                if skipped == num:
+                    return commit
+                skipped += 1
+            elif v.startswith('commit '):
+                commit = v[7:]
+
     def solve_kibot_magic(self, name, tag):
         # The magic KIBOT_*
         ori = name
@@ -265,12 +284,11 @@ class DiffOptions(BaseOptions):
                 num = int(name[1:])
             except ValueError:
                 raise KiPlotConfigurationError(malformed)
-        num = str(num)
         # Return its hash
         if tag == 'KIBOT_LAST':
-            res = self.run_git(['log', '--pretty=format:%H', '--skip='+num, '-n', '1', '--', self.file])
+            res = self.run_git(['log', '--pretty=format:%H', '--skip='+str(num), '-n', '1', '--', self.file])
         else:  # KIBOT_TAG
-            res = self.run_git(['rev-list', '--tags', '--skip='+num, '--max-count=1'])
+            res = self.process_tags(num)
         if not res:
             raise KiPlotConfigurationError("The `{}` doesn't resolve to a valid hash".format(ori))
         logger.debug('- '+res)

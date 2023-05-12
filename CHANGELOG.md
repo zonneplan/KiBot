@@ -39,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Position:
   - Components marked as "Exclude from position files" not excluded when only
     SMD components are selected. (See #429)
+- Diff:
+  - KIBOT_TAG with n > 0 skipped n commits, not n tags (#430)
 
 ## [1.6.2] - 2023-04-24
 ### Added
