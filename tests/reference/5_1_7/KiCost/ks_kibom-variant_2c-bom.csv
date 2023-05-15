@@ -2,22 +2,21 @@
 ,,,kibom-variant_2c,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,, 2021-04-06,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,Schematic:,kibom-variant_2c,,,,,Board Qty:,50,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,Variant:,default,,,,,Unit Cost:,0.009,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,Revision:,A,,,,,Total Cost:,0.45,,,,,1.42,1 of 1 parts found,,,,,1.46,1 of 1 parts found,,,,,0.7705,1 of 1 parts found,,,,,0.45,1 of 1 parts found,,,,,1.5,1 of 1 parts found,,,,,6.8,1 of 1 parts found,,,,,0,0 of 1 parts found,,,,,1.5554,1 of 1 parts found,,,,,0,0 of 1 parts found
+,,,Variant:,default,,,,,Unit Cost:,0.002,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,Revision:,A,,,,,Total Cost:,0.1,,,,,0,0 of 1 parts found,,,,,0.61,1 of 1 parts found,,,,,0.7292,1 of 1 parts found,,,,,0,0 of 1 parts found,,,,,0.5,1 of 1 parts found,,,,,0.1,1 of 1 parts found,,,,,0,0 of 1 parts found,,,,,0,0 of 1 parts found,,,,,0,0 of 1 parts found
 ,,,Date:,2021-04-06,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,KiCad Version:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 Global Part Info,,,,,,,,,,,Arrow,,,,,,Digi-Key,,,,,,Farnell,,,,,,LCSC,,,,,,Mouser,,,,,,Newark,,,,,,RS Components,,,,,,TME,,,,,,test,,,,,
 References,Value,Real value,Tolerancia,Voltage,Footprint,Manufacturer,Manufacturer P/N,Build Quantity,Unit$,Ext$,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#
-C1 C2,1nF, 1000pF,20%,50 V 100 V,,Samsung,CL10B102KC8NNNC,100,0.0045,0.45,8870,,0.0142,1,1.42,CL10B102KC8NNNC,753814,,0.0146,1,1.46,1276-1131-2-ND,6,,0.007705,10,0.7705,3013404,34300,,0.0045,100,0.45,C153291,313811,,0.015,1,1.5,187-CL10B102KC8NNNC,4489,,0.068,1,6.8,82AC9311,,,,,,,34400,,0.015554,100,1.5554,CL10B102KC8NNNC,,,,,,
+R1 R2,1k,1000,1% 5%,,,Bourns,CR0603-JW-102ELF,100,0.001,0.1,,,,,,,51387,,0.0061,1,0.61,CR0603-JW-102ELFCT-ND,55000,,0.007292,10,0.7292,2333561,,,,,,,52251,,0.005,1,0.5,652CR0603JW102ELF,110000,,0.001,1,0.1,02J2284,,,,,,,,,,,,,,,,,,
 
 ,Used currency rates:,,,,,,,,Total Purchase:,0,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,,,,,0,
-,USD($)/EUR(€):,1.1873,,,,,,,Purchase description:,,,,,,,,,,,,,,,,,,,,,"Copy this header and order to a CSV
+,USD($)/GBP(£):,1.375941592305018,,,,,,,Purchase description:,,,,,,,,,,,,,,,,,,,,,"Copy this header and order to a CSV
 file and use it for JLCPCB 
 manufacturer PCB house.
 The multipart components that use
 ""#"" symbol are not allowed by JLCPCB.",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,USD($)/GBP(£):,1.375941592305018,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 Created:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 KiCost,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

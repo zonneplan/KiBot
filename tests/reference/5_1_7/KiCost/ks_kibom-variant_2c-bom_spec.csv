@@ -1,0 +1,2 @@
+References,case_package,case_package_si,packaging,pin_count,power_rating,reach_svhc_compliance,resistance,resistance_tolerance,rohs_status,size_length,size_thickness,size_width,temperature_coefficient,voltage_rating_dc
+R1 R2,0603,1608,"Cut Tape (CT), Tape & Reel (TR)",2,100 mW,No SVHC,1.00 kΩ,±5%,Compliant,1.60 mm,457 µm,787 µm,-200 ppm/°C to 200 ppm/°C,50.0 V

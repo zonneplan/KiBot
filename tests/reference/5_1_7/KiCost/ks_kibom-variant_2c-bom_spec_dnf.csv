@@ -1,0 +1,2 @@
+References,capacitance,capacitance_tolerance,case_package,dielectric_characteristic,lead_free_status,mounting_style,operating_temperature,rohs_status,voltage_rating_dc
+C1 C2,1.00 nF,±10%,0603,X7R,Lead Free,Surface Mount,-55.0 °C (min),Compliant,100 V

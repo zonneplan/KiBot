@@ -86,13 +86,13 @@ def test_kicost_bom_simple(test_dir):
     ctx.expect_out_file_d(output)
     convert2csv(ctx, output, sheet='Costs')
     csv = output[:-4]+'csv'
-    ctx.compare_txt_d2(csv)
+    ctx.compare_txt_d2(csv, 'ks_'+csv)
     convert2csv(ctx, output, sheet='Costs (DNF)')
-    ctx.compare_txt_d2(csv, output[:-5]+'_dnf.csv')
+    ctx.compare_txt_d2(csv, 'ks_'+output[:-5]+'_dnf.csv')
     convert2csv(ctx, output, sheet='Specs')
-    ctx.compare_txt_d2(csv, output[:-5]+'_spec.csv')
+    ctx.compare_txt_d2(csv, 'ks_'+output[:-5]+'_spec.csv')
     convert2csv(ctx, output, sheet='Specs (DNF)')
-    ctx.compare_txt_d2(csv, output[:-5]+'_spec_dnf.csv')
+    ctx.compare_txt_d2(csv, 'ks_'+output[:-5]+'_spec_dnf.csv')
     ctx.clean_up()
 
 
