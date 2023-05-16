@@ -847,6 +847,8 @@ def test_import_6(test_dir):
     ctx.clean_up()
 
 
+# Isn't really slow, just avoid to run it in parallel
+@pytest.mark.slow
 @pytest.mark.skipif(context.ki5(), reason="too slow on KiCad 5")
 def test_import_7(test_dir):
     """ Import a preflight """
