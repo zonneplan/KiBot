@@ -27,7 +27,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE,
                    MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr)
-from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
+from .error import PlotError, KiPlotConfigurationError, config_error
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
 from .dep_downloader import register_deps
@@ -74,11 +74,9 @@ def _import(name, path):
     try:
         spec.loader.exec_module(mod)
     except ImportError as e:
-        trace_dump()
-        logger.error('Unable to import plug-ins: '+str(e))
-        logger.error('Make sure you used `--no-compile` if you used pip for installation')
-        logger.error('Python path: '+str(sys_path))
-        exit(WRONG_INSTALL)
+        GS.exit_with_error(('Unable to import plug-ins: '+str(e),
+                            'Make sure you used `--no-compile` if you used pip for installation',
+                            'Python path: '+str(sys_path)), WRONG_INSTALL)
     try_register_deps(mod, name)
 
 
@@ -240,10 +238,8 @@ def load_board(pcb_file=None, forced=False):
 
 
 def ki_conf_error(e):
-    trace_dump()
-    logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
-    logger.error('Line content: `{}`'.format(e.code.rstrip()))
-    exit(EXIT_BAD_CONFIG)
+    GS.exit_with_error(('At line {} of `{}`: {}'.format(e.line, e.file, e.msg),
+                        'Line content: `{}`'.format(e.code.rstrip())), EXIT_BAD_CONFIG)
 
 
 def load_any_sch(file, project):
@@ -260,15 +256,10 @@ def load_any_sch(file, project):
         if GS.debug_level > 1:
             logger.debug('Schematic dependencies: '+str(sch.get_files()))
     except SchFileError as e:
-        trace_dump()
-        logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
-        logger.error('Line content: `{}`'.format(e.code))
-        exit(CORRUPTED_SCH)
+        GS.exit_with_error(('At line {} of `{}`: {}'.format(e.line, e.file, e.msg),
+                            'Line content: `{}`'.format(e.code)), CORRUPTED_SCH)
     except SchError as e:
-        trace_dump()
-        logger.error('While loading `{}`'.format(file))
-        logger.error(str(e))
-        exit(CORRUPTED_SCH)
+        GS.exit_with_error(('While loading `{}`'.format(file), str(e)), CORRUPTED_SCH)
     except KiConfError as e:
         ki_conf_error(e)
     return sch

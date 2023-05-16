@@ -14,8 +14,9 @@ except ImportError:
         IU_PER_MM = 1
         IU_PER_MILS = 1
 from datetime import datetime
-from sys import exit
 from shutil import copy2
+from sys import exit, exc_info
+from traceback import extract_stack, format_list, print_tb
 from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL
 from .log import get_logger
 
@@ -438,14 +439,12 @@ class GS(object):
     @staticmethod
     def check_pcb():
         if not GS.pcb_file:
-            logger.error('No PCB file found (*.kicad_pcb), use -b to specify one.')
-            exit(EXIT_BAD_ARGS)
+            GS.exit_with_error('No PCB file found (*.kicad_pcb), use -b to specify one.', EXIT_BAD_ARGS)
 
     @staticmethod
     def check_sch():
         if not GS.sch_file:
-            logger.error('No SCH file found (*.sch), use -e to specify one.')
-            exit(EXIT_BAD_ARGS)
+            GS.exit_with_error('No SCH file found (*.sch), use -e to specify one.', EXIT_BAD_ARGS)
 
     @staticmethod
     def copy_project(new_pcb_name):
@@ -531,8 +530,7 @@ class GS(object):
         dir_name = os.path.join(os.path.sep, 'usr', 'share', 'kibot', name)
         if os.path.isdir(dir_name):
             return dir_name
-        logger.error('Missing resource directory `{}`'.format(name))
-        exit(WRONG_INSTALL)
+        GS.exit_with_error('Missing resource directory `{}`'.format(name), WRONG_INSTALL)
 
     @staticmethod
     def create_eda_rect(tlx, tly, brx, bry):
@@ -693,3 +691,23 @@ class GS(object):
         elif GS.ki6:
             po.SetSvgPrecision(svg_precision, False)
         # No ki5 equivalent
+
+    @staticmethod
+    def trace_dump():
+        if GS.debug_enabled:
+            logger.error('Trace stack:')
+            (type, value, traceback) = exc_info()
+            if traceback is None:
+                print(''.join(format_list(extract_stack()[:-2])))
+            else:
+                print_tb(traceback)
+
+    @staticmethod
+    def exit_with_error(msg, level):
+        GS.trace_dump()
+        if isinstance(msg, tuple):
+            for m in msg:
+                logger.error(m)
+        else:
+            logger.error(msg)
+        exit(level)

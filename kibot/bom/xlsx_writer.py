@@ -20,7 +20,6 @@ from .columnlist import ColumnList
 from .kibot_logo import KIBOT_LOGO
 from .. import log
 from ..misc import W_NOKICOST, W_UNKDIST, KICOST_ERROR, W_BADFIELD
-from ..error import trace_dump
 from ..gs import GS
 from .. import __version__
 # Init the logger first
@@ -708,9 +707,7 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
     try:
         return _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg)
     except KiCostError as e:
-        trace_dump()
-        logger.error('KiCost error: `{}` ({})'.format(e.msg, e.id))
-        exit(KICOST_ERROR)
+        GS.exit_with_error('KiCost error: `{}` ({})'.format(e.msg, e.id), KICOST_ERROR)
 
 
 def write_xlsx(filename, groups, col_fields, head_names, cfg):
