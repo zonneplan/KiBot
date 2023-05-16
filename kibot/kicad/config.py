@@ -660,3 +660,7 @@ class KiConf(object):
         if ref_dir is None:
             ref_dir = os.getcwd()
         return expanded if expanded.startswith('${') else os.path.normpath(os.path.join(ref_dir, expanded))
+
+
+# Avoid circular inclusion
+GS.fix_page_layout = KiConf.fix_page_layout

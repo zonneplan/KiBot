@@ -423,6 +423,7 @@ class DiffOptions(BaseOptions):
             dir_name = mkdtemp()
             self.dirs_to_remove.append(dir_name)
             fname = GS.sch.save_variant(dir_name)
+            GS.copy_project_sch(dir_name)
         res = self.cache_file(os.path.join(dir_name, fname))
         self.git_hash = 'Current'
         return res

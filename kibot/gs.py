@@ -457,6 +457,20 @@ class GS(object):
         return pro_copy
 
     @staticmethod
+    def copy_project_sch(sch_dir):
+        """ Copy the project file to the temporal dir """
+        ext = GS.pro_ext
+        source = GS.pro_file
+        prj_file = os.path.join(sch_dir, GS.sch_basename+ext)
+        if source is not None and os.path.isfile(source):
+            copy2(source, prj_file)
+            GS.fix_page_layout(prj_file)  # Alias for KiConf.fix_page_layout
+        else:
+            # Create a dummy project file to avoid warnings
+            f = open(prj_file, 'wt')
+            f.close()
+
+    @staticmethod
     def get_pcb_and_pro_names(name):
         if GS.ki5:
             return [name, name.replace('kicad_pcb', 'pro')]

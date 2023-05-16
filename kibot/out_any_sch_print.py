@@ -5,28 +5,12 @@
 # Project: KiBot (formerly KiPlot)
 import os
 from tempfile import mkdtemp
-from shutil import copy2
 from .gs import GS
 from .out_base import VariantOptions
-from .kicad.config import KiConf
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-
-
-def copy_project(sch_dir):
-    """ Copy the project file to the temporal dir """
-    ext = GS.pro_ext
-    source = GS.pro_file
-    prj_file = os.path.join(sch_dir, GS.sch_basename+ext)
-    if source is not None and os.path.isfile(source):
-        copy2(source, prj_file)
-        KiConf.fix_page_layout(prj_file)
-    else:
-        # Create a dummy project file to avoid warnings
-        f = open(prj_file, 'wt')
-        f.close()
 
 
 class Any_SCH_PrintOptions(VariantOptions):
@@ -62,7 +46,7 @@ class Any_SCH_PrintOptions(VariantOptions):
         if self._comps or self.title:
             # Save it to a temporal dir
             sch_dir = mkdtemp(prefix='tmp-kibot-'+self._expand_ext+'_sch_print-')
-            copy_project(sch_dir)
+            GS.copy_project_sch(sch_dir)
             fname = GS.sch.save_variant(sch_dir)
             sch_file = os.path.join(sch_dir, fname)
             self._files_to_remove.append(sch_dir)
