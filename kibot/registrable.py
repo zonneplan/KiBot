@@ -99,6 +99,10 @@ class RegOutput(Optionable, Registrable):
         return RegOutput._def_variants[name]
 
     @staticmethod
+    def get_variants():
+        return RegOutput._def_variants
+
+    @staticmethod
     def add_filters(filters):
         RegOutput._def_filters.update(filters)
 

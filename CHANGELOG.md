@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - General:
   - OS environment expansion in ${VAR}
+- Command line:
+  - `--list-variants` List all available variants (See #434)
 - Global options:
   - `use_os_env_for_expand` to disable OS environment expansion
   - `environment`.`extra_os` to define environment variables
@@ -31,6 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - KiCad v6/7 schematic:
   - The hierarchy is expanded only if needed, i.e. value of an instance changed
+- List actions:
+  - Now you must explicitly ask to configure outputs. Otherwise isn't needed.
+    As a result you no longer need to have an SCH/PCB. Use `--config-outs` to
+    get the old behavior.
 
 ### Fixed
 - KiCad v6/7 schematic:
