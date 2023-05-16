@@ -145,7 +145,8 @@ def list_pre_and_outs(logger, outputs, do_config):
 def list_variants(logger, only_names):
     variants = RegOutput.get_variants()
     if not variants:
-        logger.info('No variants defined')
+        if not only_names:
+            logger.info('No variants defined')
         return
     if only_names:
         for name in sorted(variants.keys()):
@@ -156,13 +157,14 @@ def list_variants(logger, only_names):
         logger.info('- '+str(variants[name]))
 
 
-def solve_config(a_plot_config):
+def solve_config(a_plot_config, quiet=False):
     plot_config = a_plot_config
     if not plot_config:
         plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')+glob('*.kibot.yaml.gz')
         if len(plot_configs) == 1:
             plot_config = plot_configs[0]
-            logger.info('Using config file: '+os.path.relpath(plot_config))
+            if not quiet:
+                logger.info('Using config file: '+os.path.relpath(plot_config))
         elif len(plot_configs) > 1:
             plot_config = plot_configs[0]
             logger.warning(W_VARCFG + 'More than one config file found in current directory.\n'
@@ -421,7 +423,7 @@ def main():
         sys.exit(0)
 
     # Determine the YAML file
-    plot_config = solve_config(args.plot_config)
+    plot_config = solve_config(args.plot_config, args.only_names)
     if not (args.list or args.list_variants) or args.config_outs:
         # Determine the SCH file
         GS.set_sch(solve_schematic('.', args.schematic, args.board_file, plot_config))
