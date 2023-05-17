@@ -463,9 +463,11 @@ class GS(object):
         source = GS.pro_file
         prj_file = os.path.join(sch_dir, GS.sch_basename+ext)
         if source is not None and os.path.isfile(source):
+            logger.debug('Copying project `{}` to `{}`'.format(source, prj_file))
             copy2(source, prj_file)
             GS.fix_page_layout(prj_file)  # Alias for KiConf.fix_page_layout
         else:
+            logger.debug('Creating dummy project file `{}`'.format(prj_file))
             # Create a dummy project file to avoid warnings
             f = open(prj_file, 'wt')
             f.close()
