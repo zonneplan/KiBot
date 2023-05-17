@@ -5222,6 +5222,15 @@ Another important detail is that global options that are lists gets the values m
 The last set of values found is inserted at the beginning of the list.
 You can collect filters for all the imported global sections.
 
+Imports are processed recursively: An `import` section in an imported
+file is also processed (so importing `A.yaml` that imports `B.yaml`
+effectively imports both).
+
+If an import filename is a relative path, it is resolved relative to the
+config file that contains the import (so it works regardless of the
+working directory and, in case of recursive imports, of where top-level
+config lives).
+
 It's recommended to always use some file extension in the *FILE_CONTAINING_THE_YAML_DEFINITIONS* name.
 If you don't use any file extension and you use a relative path this name could be confused with an internal template.
 See [Importing internal templates](#importing-internal-templates).
