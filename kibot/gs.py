@@ -17,7 +17,7 @@ from datetime import datetime
 from shutil import copy2
 from sys import exit, exc_info
 from traceback import extract_stack, format_list, print_tb
-from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL
+from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL, CORRUPTED_PRO
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -224,7 +224,10 @@ class GS(object):
         # Get the text_variables
         with open(GS.pro_file, 'rt') as f:
             pro_text = f.read()
-        data = json.loads(pro_text)
+        try:
+            data = json.loads(pro_text)
+        except Exception:
+            GS.exit_with_error('Corrupted project {}'.format(GS.pro_file), CORRUPTED_PRO)
         GS.pro_variables = data.get('text_variables', {})
         logger.debug("Current text variables: {}".format(GS.pro_variables))
         return GS.pro_variables

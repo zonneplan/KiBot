@@ -44,6 +44,7 @@ NETLIST_DIFF = 30
 PS_SCH_PRINT = 31
 DXF_SCH_PRINT = 32
 HPGL_SCH_PRINT = 33
+CORRUPTED_PRO = 34
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
@@ -75,6 +76,10 @@ error_level_to_name = ['NONE',
                        'MISSING_FILES',
                        'DIFF_TOO_BIG',
                        'NETLIST_DIFF',
+                       'PS_SCH_PRINT',
+                       'DXF_SCH_PRINT',
+                       'HPGL_SCH_PRINT',
+                       'CORRUPTED_PRO'
                        ]
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 EXAMPLE_CFG = 'example_template.kibot.yaml'
