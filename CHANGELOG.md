@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Command line:
   - `--list-variants` List all available variants (See #434)
   - `--only-names` to make `--list` list only output names
+  - `--only-pre` to list only the preflights
 - Global options:
   - `use_os_env_for_expand` to disable OS environment expansion
   - `environment`.`extra_os` to define environment variables

@@ -12,7 +12,7 @@ Usage:
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
-         [-E DEF] [--config-outs] [--only-names] ... --list
+         [-E DEF] [--config-outs] [--only-pre] [--only-names] ... --list
   kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] [--only-names] ...
         --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
@@ -56,6 +56,8 @@ Options:
   -n, --no-priority                Don't sort targets by priority
   -p, --copy-options               Copy plot options from the PCB file
   --only-names                     Print only the names
+  --only-pre                       Print only the preflights. Note that
+                                   `--only-names` alone prints only the outputs
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
@@ -125,28 +127,45 @@ from .registrable import RegOutput
 GS.kibot_version = __version__
 
 
-def list_pre_and_outs(logger, outputs, do_config, only_names):
-    if not only_names:
-        logger.info('Available actions:\n')
+def list_pre_and_outs_names(logger, outputs, do_config, only_pre):
+    pf = BasePreFlight.get_in_use_names()
+    if len(pf) and only_pre:
+        for c in pf:
+            logger.info(c)
+        return
+    if len(outputs):
+        for o in outputs:
+            if do_config:
+                config_output(o, dry=False)
+            logger.info(o.name)
+
+
+def list_pre_and_outs(logger, outputs, do_config, only_names, only_pre):
+    if only_names:
+        return list_pre_and_outs_names(logger, outputs, do_config, only_pre)
     pf = BasePreFlight.get_in_use_objs()
-    if len(pf) and not only_names:
-        logger.info('Pre-flight:')
+    if len(pf):
+        logger.info('Available pre-flights:')
         for c in pf:
             logger.info('- '+str(c))
+        if len(outputs) and not only_pre:
+            logger.info("")
+    if len(outputs) and not only_pre:
+        logger.info("Available outputs: 'comment/description' (name) [type]")
+        for o in outputs:
+            # Note: we can't do a `dry` config because some layer and field names can be validated only if we
+            # load the schematic and the PCB.
+            if do_config:
+                config_output(o, dry=False)
+            logger.info('- '+str(o))
+    if len(pf):
+        logger.info("")
+        logger.info("You can use e.g. `kibot --skip-pre preflight_name1,preflight_name2` to")
+        logger.info("skip specific preflights (or pass `all` to skip them all).")
     if len(outputs):
-        if not only_names:
-            logger.info('Outputs:')
-            for o in outputs:
-                # Note: we can't do a `dry` config because some layer and field names can be validated only if we
-                # load the schematic and the PCB.
-                if do_config:
-                    config_output(o, dry=False)
-                logger.info('- '+str(o))
-        else:
-            for o in outputs:
-                if do_config:
-                    config_output(o, dry=False)
-                logger.info(o.name)
+        logger.info("")
+        logger.info("You can use e.g. `kibot output_name1 output_name1` to generate only")
+        logger.info("specific outputs by name.")
 
 
 def list_variants(logger, only_names):
@@ -463,7 +482,7 @@ def main():
 
     # Is just "list the available targets"?
     if args.list:
-        list_pre_and_outs(logger, outputs, args.config_outs, args.only_names)
+        list_pre_and_outs(logger, outputs, args.config_outs, args.only_names, args.only_pre)
         sys.exit(0)
 
     if args.list_variants:

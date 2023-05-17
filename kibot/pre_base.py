@@ -50,6 +50,10 @@ class BasePreFlight(Registrable):
         return BasePreFlight._in_use.values()
 
     @staticmethod
+    def get_in_use_names():
+        return BasePreFlight._in_use.keys()
+
+    @staticmethod
     def _set_option(name, value):
         BasePreFlight._options[name] = value
 

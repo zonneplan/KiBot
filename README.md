@@ -5533,7 +5533,7 @@ Usage:
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
-         [-E DEF] [--config-outs] ... --list
+         [-E DEF] [--config-outs] [--only-pre] [--only-names] ... --list
   kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] [--only-names] ...
         --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
@@ -5577,6 +5577,8 @@ Options:
   -n, --no-priority                Don't sort targets by priority
   -p, --copy-options               Copy plot options from the PCB file
   --only-names                     Print only the names
+  --only-pre                       Print only the preflights. Note that
+                                   `--only-names` alone prints only the outputs
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
