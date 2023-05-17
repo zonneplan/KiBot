@@ -12,7 +12,7 @@ Usage:
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
-         [-E DEF] [--config-outs] ... --list
+         [-E DEF] [--config-outs] [--only-names] ... --list
   kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] [--only-names] ...
         --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
@@ -125,21 +125,28 @@ from .registrable import RegOutput
 GS.kibot_version = __version__
 
 
-def list_pre_and_outs(logger, outputs, do_config):
-    logger.info('Available actions:\n')
+def list_pre_and_outs(logger, outputs, do_config, only_names):
+    if not only_names:
+        logger.info('Available actions:\n')
     pf = BasePreFlight.get_in_use_objs()
-    if len(pf):
+    if len(pf) and not only_names:
         logger.info('Pre-flight:')
         for c in pf:
             logger.info('- '+str(c))
     if len(outputs):
-        logger.info('Outputs:')
-        for o in outputs:
-            # Note: we can't do a `dry` config because some layer and field names can be validated only if we
-            # load the schematic and the PCB.
-            if do_config:
-                config_output(o, dry=False)
-            logger.info('- '+str(o))
+        if not only_names:
+            logger.info('Outputs:')
+            for o in outputs:
+                # Note: we can't do a `dry` config because some layer and field names can be validated only if we
+                # load the schematic and the PCB.
+                if do_config:
+                    config_output(o, dry=False)
+                logger.info('- '+str(o))
+        else:
+            for o in outputs:
+                if do_config:
+                    config_output(o, dry=False)
+                logger.info(o.name)
 
 
 def list_variants(logger, only_names):
@@ -456,7 +463,7 @@ def main():
 
     # Is just "list the available targets"?
     if args.list:
-        list_pre_and_outs(logger, outputs, args.config_outs)
+        list_pre_and_outs(logger, outputs, args.config_outs, args.only_names)
         sys.exit(0)
 
     if args.list_variants:
