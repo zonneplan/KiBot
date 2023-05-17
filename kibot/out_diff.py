@@ -254,21 +254,22 @@ class DiffOptions(BaseOptions):
     def process_tags(self, num):
         # Get a list of all tags ... and commits (how can I filter it?)
         logger.debug('Looking for git tags')
-        res = self.run_git(['rev-list', '--tags', '--format=format:%D'])
+        res = self.run_git(['rev-list', '--format=format:%D', 'HEAD'])
         if not res:
             return res
         res = res.split('\n')
         commit = ''
         skipped = 0
         for v in res:
-            if v.startswith('tag: '):
-                tag = v.split(',')[0][4:]
+            try:
+                tag = v[v.index('tag: '):].split(',')[0][4:]
                 logger.debugl(2, '- {}/{} tag: {} -> {}'.format(skipped, num, tag, commit))
                 if skipped == num:
                     return commit
                 skipped += 1
-            elif v.startswith('commit '):
-                commit = v[7:]
+            except ValueError:
+                if v.startswith('commit '):
+                    commit = v[7:]
 
     def solve_kibot_magic(self, name, tag):
         # The magic KIBOT_*
