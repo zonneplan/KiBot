@@ -478,7 +478,7 @@ class DiffOptions(BaseOptions):
             run_command(cmd, just_raise=True)
         except CalledProcessError as e:
             if e.returncode == 10:
-                logger.error('Diff above the thresold')
+                logger.error('Diff above the threshold')
                 exit(DIFF_TOO_BIG)
             logger.error('Running {} returned {}'.format(e.cmd, e.returncode))
             if e.stdout:
