@@ -3,10 +3,10 @@ kibot:
 
 outputs:
   - name: 'diff_sch'
-    comment: "Schematic difference with reference file (KiCad 6)"
+    comment: "Schematic difference with reference file (KiCad @KiVer@)"
     type: diff
     options:
-      old: tests/board_samples/kicad_6/light_control.kicad_sch
+      old: tests/board_samples/kicad_@KiVer@/light_control@SCHExt@
       pcb: false
       old_type: file
       add_link_id: true

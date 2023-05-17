@@ -1484,9 +1484,9 @@ def test_diff_git_4(test_dir):
 def test_diff_file_sch_1(test_dir):
     """ Difference between the current Schematic and a reference file """
     prj = 'light_control_diff'
-    yaml = 'diff_file_sch_'+('k5' if context.ki5() else 'k6')
+    yaml = 'diff_file_sch'
     ctx = context.TestContext(test_dir, prj, yaml)
-    ctx.run()
+    ctx.run(extra=['-E', 'KiVer='+str(context.kicad_major), '-E', 'SCHExt='+context.KICAD_SCH_EXT])
     ctx.expect_out_file(prj+'-diff_sch_FILE-Current.pdf')
     ctx.compare_pdf(prj+'-diff_sch.pdf')
     ctx.clean_up(keep_project=True)
