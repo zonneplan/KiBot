@@ -338,6 +338,11 @@ class Globals(FiltersOptions):
             """ [string|list(string)] Name/s of the field/s used for the power raiting.
                 Used for the value split filter.
                 The default is ['power', 'pow'] """
+            self.invalidate_pcb_text_cache = 'auto'
+            """ [auto,yes,no] Remove any cached text variable in the PCB. This is needed in order to force a text
+                variables update when using `set_text_variables`. You might want to disable it when applying some
+                changes to the PCB and create a new copy to send to somebody without changing the cached values.
+                The `auto` value will remove the cached values only when using `set_text_variables` """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

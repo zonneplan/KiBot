@@ -838,6 +838,10 @@ global:
     - `hide_excluded`: [boolean=false] Default value for the `hide_excluded` option of various PCB outputs.
     - `impedance_controlled`: [boolean=false] The PCB needs specific dielectric characteristics.
                               KiCad 6: you should set this in the Board Setup -> Physical Stackup.
+    - `invalidate_pcb_text_cache`: [string='auto'] [auto,yes,no] Remove any cached text variable in the PCB. This is needed in order to force a text
+                                   variables update when using `set_text_variables`. You might want to disable it when applying some
+                                   changes to the PCB and create a new copy to send to somebody without changing the cached values.
+                                   The `auto` value will remove the cached values only when using `set_text_variables`.
     - `kiauto_time_out_scale`: [number=0.0] Time-out multiplier for KiAuto operations.
     - `kiauto_wait_start`: [number=0] Time to wait for KiCad in KiAuto operations.
     - `kicad_dnp_applied`: [boolean=true] The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag before running any filter.

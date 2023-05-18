@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - General:
   - OS environment expansion in ${VAR}
   - Now outputs can request to be added to one or more groups (#435)
+  - PCB text variables cached in the PCB are now reset when the config
+    uses `set_text_variables`. This is a complex dilemma of KiCad 6/7
+    policy implementation. See
+    [KiCad issue 14360](https://gitlab.com/kicad/code/kicad/-/issues/14360).
+    (#441)
 - Command line:
   - `--list-variants` List all available variants (See #434)
   - `--only-names` to make `--list` list only output names
@@ -23,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `field_temp_coef` Name/s of the field/s used for the temperature
      coefficient
   - `field_power` Name/s of the field/s used for the power raiting
+  - `invalidate_pcb_text_cache` controls if we reset the text variables cached
+    in the PCB file.
 - Filters:
   - New `value_split` to extract information from the Value field and put it in
     separated fields. I.e. tolerance, voltage, etc.

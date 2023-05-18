@@ -212,6 +212,10 @@ def load_board(pcb_file=None, forced=False):
     try:
         with hide_stderr():
             board = pcbnew.LoadBoard(pcb_file)
+        if GS.global_invalidate_pcb_text_cache == 'yes' and GS.ki6:
+            logger.debug('Current PCB text variables cache: {}'.format(board.GetProperties().items()))
+            logger.debug('Removing cached text variables')
+            board.SetProperties(pcbnew.MAP_STRING_STRING())
         if BasePreFlight.get_option('check_zone_fills'):
             GS.fill_zones(board)
         if GS.global_units and GS.ki6:

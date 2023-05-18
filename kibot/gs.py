@@ -152,6 +152,7 @@ class GS(object):
     global_field_voltage = None
     global_hide_excluded = None
     global_impedance_controlled = None
+    global_invalidate_pcb_text_cache = None
     global_kiauto_time_out_scale = None
     global_kiauto_wait_start = None
     #  This value will overwrite GS.def_global_output if defined
