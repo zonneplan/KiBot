@@ -1780,6 +1780,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1813,6 +1816,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2047,6 +2053,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2091,6 +2100,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2151,6 +2163,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=11] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2231,6 +2246,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2267,6 +2285,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2339,6 +2360,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2379,6 +2403,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2432,6 +2459,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2470,6 +2500,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2515,6 +2548,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2589,6 +2625,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2661,6 +2700,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2703,6 +2745,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2789,6 +2834,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2819,6 +2867,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2931,6 +2982,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2990,6 +3044,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3074,6 +3131,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3100,6 +3160,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3136,6 +3199,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3467,6 +3533,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3518,6 +3587,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3653,6 +3725,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3690,6 +3765,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3800,6 +3878,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3892,6 +3973,9 @@ Notes:
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
     - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
                                  Disabling it the pages are coherent and can be superposed.
     - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
@@ -3964,6 +4048,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4005,6 +4092,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4041,6 +4131,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4087,6 +4180,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4133,6 +4229,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4210,6 +4309,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4250,6 +4352,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4294,6 +4399,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=90] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4381,6 +4489,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4426,6 +4537,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4461,6 +4575,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4515,6 +4632,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4570,6 +4690,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4617,6 +4740,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4708,6 +4834,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4766,6 +4895,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4807,6 +4939,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4864,6 +4999,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -5533,9 +5671,10 @@ Usage:
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
-         [-E DEF] [--config-outs] [--only-pre] [--only-names] ... --list
-  kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] [--only-names] ...
-        --list-variants
+         [-E DEF] ... [--config-outs] [--only-pre|--only-groups] [--only-names]
+         --list
+  kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
+         --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
          [-t, --type TYPE]... --quick-start
@@ -5567,7 +5706,8 @@ Options:
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
-  -l, --list                       List available outputs (in the config file).
+  -l, --list                       List available outputs, preflights and
+                                   groups (in the config file).
                                    You don't need to specify an SCH/PCB unless
                                    using --config-outs
   --list-variants                  List the available variants and exit
@@ -5576,9 +5716,11 @@ Options:
   -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
   -n, --no-priority                Don't sort targets by priority
   -p, --copy-options               Copy plot options from the PCB file
-  --only-names                     Print only the names
-  --only-pre                       Print only the preflights. Note that
-                                   `--only-names` alone prints only the outputs
+  --only-names                     Print only the names. Note that for --list
+                                   if no other --only-* option is provided it
+                                   also acts as a virtual --only-outputs
+  --only-groups                    Print only the groups.
+  --only-pre                       Print only the preflights
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`

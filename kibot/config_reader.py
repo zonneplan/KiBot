@@ -10,6 +10,7 @@ Class to read KiBot config files
 """
 
 import collections
+import difflib
 import io
 import os
 import json
@@ -18,7 +19,7 @@ from collections import OrderedDict
 
 from .error import KiPlotConfigurationError, config_error
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
-                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS)
+                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS, W_NEWGROUP)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
@@ -150,6 +151,10 @@ class CfgYamlReader(object):
                 self.no_run_by_default.append(o_out.extends)
         else:
             o_out.disable_run_by_default = ''
+        # Pre-parse the groups
+        o_out.groups = o_tree.get('groups', [])
+        if isinstance(o_out.groups, str):
+            o_out.groups = [o_out.groups]
         return o_out
 
     def _parse_outputs(self, v):
@@ -168,12 +173,7 @@ class CfgYamlReader(object):
                 raise KeyError
         except KeyError:
             raise KiPlotConfigurationError("Group needs a name in: "+str(tree))
-        try:
-            outs = tree['outputs']
-            if not outs:
-                raise KeyError
-        except KeyError:
-            raise KiPlotConfigurationError("Group `"+name+"` must contain outputs")
+        outs = tree.get('outputs', [])
         if not isinstance(outs, list):
             raise KiPlotConfigurationError("'outputs' in group `"+name+"` must be a list (not {})".format(type(outs)))
         for v in outs:
@@ -665,8 +665,20 @@ class CfgYamlReader(object):
             if o:
                 o.run_by_default = False
                 logger.debug("Disabling the default run for `{}`".format(o))
-
-        return RegOutput.get_outputs()
+        # Apply the groups selection from the outputs
+        outs = RegOutput.get_outputs()
+        for o in outs:
+            for g in o.groups:
+                if not RegOutput.add_to_group(o.name, g):
+                    grps = list(RegOutput.get_group_names())
+                    grps.remove(g)
+                    best_matches = difflib.get_close_matches(g, grps)
+                    logger.warning(W_NEWGROUP+'Added {} to a new group `{}`'.format(o, g))
+                    if best_matches:
+                        logger.warning(W_NEWGROUP+"Did you mean {}?".format(' or '.join(best_matches)))
+                    else:
+                        logger.warning(W_NEWGROUP+"Suggestion: declare it first so we know it isn't a typo")
+        return outs
 
 
 def trim(docstring):

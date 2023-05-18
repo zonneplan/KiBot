@@ -146,6 +146,23 @@ class RegOutput(Optionable, Registrable):
             RegOutput.add_group(n, lst, file)
 
     @staticmethod
+    def add_to_group(out, group):
+        items = RegOutput._def_groups.get(group)
+        if items is not None:
+            if out not in items:
+                items.append(out)
+            return True
+        RegOutput.add_group(group, [out])
+
+    @staticmethod
+    def get_groups():
+        return RegOutput._def_groups
+
+    @staticmethod
+    def get_group_names():
+        return RegOutput._def_groups.keys()
+
+    @staticmethod
     def get_outputs():
         return RegOutput._def_outputs.values()
 
