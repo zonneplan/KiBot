@@ -421,7 +421,8 @@ This section is used to specify tasks that will be executed before generating an
         This preflight modifies the schematic, use it only in revision control environments.
         Used to solve ERC problems when using filters that remove power reference numbers.
 - `check_zone_fills`: [boolean=false] Zones are filled before doing any operation involving PCB layers.
-        The original PCB remains unchanged.
+        The original PCB remains unchanged. If you need to abort when the zone fill
+        creates significant changes to a layer use the CheckZoneFill internal template.
 - `erc_warnings`: [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
 - `fill_zones`: [boolean=false] Fill all zones again and save the PCB.
 - `filters`: [list(dict)] A list of entries to filter out ERC/DRC messages.
@@ -5403,6 +5404,10 @@ Here is a list of currently defined templates:
 
 They include support for:
 
+- CheckZoneFill: enables the `check_zone_fills` preflight and checks the refilled PCB doesn't changed too much.
+  - _diff_cur_pcb_show: Makes a diff between the PCB in memory and the one on disk
+  - _diff_cur_pcb_check: Computes the difference between PCB in memory and the one on disk. Aborts if more than
+    100 pixels changed.
 - [Elecrow](https://www.elecrow.com/): contain fabrication outputs compatible with Elecrow
   - _Elecrow_gerbers: Gerbers
   - _Elecrow_drill: Drill files

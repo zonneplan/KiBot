@@ -1295,6 +1295,10 @@ Here is a list of currently defined templates:
 
 They include support for:
 
+- CheckZoneFill: enables the `check_zone_fills` preflight and checks the refilled PCB doesn't changed too much.
+  - _diff_cur_pcb_show: Makes a diff between the PCB in memory and the one on disk
+  - _diff_cur_pcb_check: Computes the difference between PCB in memory and the one on disk. Aborts if more than
+    100 pixels changed.
 - [Elecrow](https://www.elecrow.com/): contain fabrication outputs compatible with Elecrow
   - _Elecrow_gerbers: Gerbers
   - _Elecrow_drill: Drill files

@@ -26,7 +26,8 @@ preflight:
   # Used to solve ERC problems when using filters that remove power reference numbers.
   annotate_power: true
   # [boolean=false] Zones are filled before doing any operation involving PCB layers.
-  # The original PCB remains unchanged.
+  # The original PCB remains unchanged. If you need to abort when the zone fill
+  # creates significant changes to a layer use the CheckZoneFill internal template.
   check_zone_fills: true
   # [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
   erc_warnings: false

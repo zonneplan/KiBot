@@ -41,6 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `_value_split` splits the Value field but the field remains and the extra
     data is not visible
   - `_value_split_replace` splits the Value field and replaces it
+- Internal templates:
+  - CheckZoneFill: Used to check if a zone fill operation makes the PCB quite
+    different (#431)
 
 ### Changed
 - Command line:
