@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `--only-names` to make `--list` list only output names
   - `--only-pre` to list only the preflights
   - `--only-groups` to list only the groups
+  - `--output-name-first` to list outputs by name, no description (See #436)
 - Global options:
   - `use_os_env_for_expand` to disable OS environment expansion
   - `environment`.`extra_os` to define environment variables

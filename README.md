@@ -5672,7 +5672,7 @@ Usage:
          [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... [--config-outs] [--only-pre|--only-groups] [--only-names]
-         --list
+         [--output-name-first] --list
   kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
          --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
@@ -5721,6 +5721,7 @@ Options:
                                    also acts as a virtual --only-outputs
   --only-groups                    Print only the groups.
   --only-pre                       Print only the preflights
+  --output-name-first              Use the output name first when listing
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`

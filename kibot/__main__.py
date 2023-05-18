@@ -13,7 +13,7 @@ Usage:
          [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... [--config-outs] [--only-pre|--only-groups] [--only-names]
-         --list
+         [--output-name-first] --list
   kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
          --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
@@ -62,6 +62,7 @@ Options:
                                    also acts as a virtual --only-outputs
   --only-groups                    Print only the groups.
   --only-pre                       Print only the preflights
+  --output-name-first              Use the output name first when listing
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
@@ -148,7 +149,7 @@ def list_pre_and_outs_names(logger, outputs, do_config, only_pre, only_groups):
             logger.info(o.name)
 
 
-def list_pre_and_outs(logger, outputs, do_config, only_names, only_pre, only_groups):
+def list_pre_and_outs(logger, outputs, do_config, only_names, only_pre, only_groups, output_name_first):
     if only_names:
         return list_pre_and_outs_names(logger, outputs, do_config, only_pre, only_groups)
     pf = BasePreFlight.get_in_use_objs()
@@ -159,13 +160,17 @@ def list_pre_and_outs(logger, outputs, do_config, only_names, only_pre, only_gro
             logger.info('- '+str(c))
         logger.info("")
     if outputs and not only_pre and not only_groups:
-        logger.info("Available outputs: 'comment/description' (name) [type]")
+        fmt = "name: comment/description [type]" if output_name_first else "'comment/description' (name) [type]"
+        logger.info("Available outputs: format is: `{}`".format(fmt))
         for o in outputs:
             # Note: we can't do a `dry` config because some layer and field names can be validated only if we
             # load the schematic and the PCB.
             if do_config:
                 config_output(o, dry=False)
-            logger.info('- '+str(o))
+            if output_name_first:
+                logger.info('- {}: {} [{}]'.format(o.name, o.comment, o.type))
+            else:
+                logger.info('- '+str(o))
         logger.info("")
     if groups and not only_pre:
         logger.info("Available groups:")
@@ -499,7 +504,8 @@ def main():
 
     # Is just "list the available targets"?
     if args.list:
-        list_pre_and_outs(logger, outputs, args.config_outs, args.only_names, args.only_pre, args.only_groups)
+        list_pre_and_outs(logger, outputs, args.config_outs, args.only_names, args.only_pre, args.only_groups,
+                          args.output_name_first)
         sys.exit(0)
 
     if args.list_variants:
