@@ -133,12 +133,16 @@ GS.kibot_version = __version__
 
 def list_pre_and_outs_names(logger, outputs, do_config, only_pre, only_groups):
     pf = BasePreFlight.get_in_use_names()
-    if len(pf) and only_pre:
-        for c in pf:
+    if only_pre:
+        for c in sorted(pf):
             logger.info(c)
         return
-    if len(outputs):
-        for o in outputs:
+    if only_groups:
+        for g in sorted(RegOutput.get_group_names()):
+            logger.info(g)
+        return
+    if outputs:
+        for o in sorted(outputs, key=lambda x: x.name.lower()):
             if do_config:
                 config_output(o, dry=False)
             logger.info(o.name)
