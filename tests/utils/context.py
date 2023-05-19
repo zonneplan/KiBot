@@ -29,6 +29,7 @@ KICAD_VERSION_5_1_7 = 5001007
 KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_6_0_0 = 6000000
 KICAD_VERSION_7_0_0 = 7000000
+KICAD_VERSION_7_0_3 = 7000003
 KICAD_VERSION_8_0_0 = 7099000
 MODE_SCH = 1
 MODE_PCB = 0
@@ -50,6 +51,8 @@ if kicad_version >= KICAD_VERSION_5_99:
     BOARDS_DIR = '../board_samples/kicad_'+str(kicad_major+(0 if kicad_minor < 99 else 1))
     if kicad_version >= KICAD_VERSION_8_0_0:
         REF_DIR = 'tests/reference/8_0_0'
+    elif kicad_version >= KICAD_VERSION_7_0_3:
+        REF_DIR = 'tests/reference/7_0_3'
     elif kicad_version >= KICAD_VERSION_7_0_0:
         REF_DIR = 'tests/reference/7_0_0'
     else:
