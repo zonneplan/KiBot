@@ -66,6 +66,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - KIBOT_TAG with n > 0 skipped n commits, not n tags (#430)
   - Details related to the project not applied during a diff involving a
     variant (project not copied) (#438)
+- Copy files:
+  - PCB not loaded if the only action was to copy the 3D models
+  - Problems for STEP models when copying models
 
 ## [1.6.2] - 2023-04-24
 ### Added
