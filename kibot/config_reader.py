@@ -163,9 +163,9 @@ class CfgYamlReader(object):
         else:
             o_out.disable_run_by_default = ''
         # Pre-parse the groups
-        o_out.groups = o_tree.get('groups', [])
-        if isinstance(o_out.groups, str):
-            o_out.groups = [o_out.groups]
+        o_out._groups = o_tree.get('groups', [])
+        if isinstance(o_out._groups, str):
+            o_out._groups = [o_out._groups]
         return o_out
 
     def _parse_outputs(self, v):
@@ -728,7 +728,7 @@ class CfgYamlReader(object):
         # Apply the groups selection from the outputs
         outs = RegOutput.get_outputs()
         for o in outs:
-            for g in o.groups:
+            for g in o._groups:
                 if not RegOutput.add_to_group(o.name, g):
                     grps = list(RegOutput.get_group_names())
                     grps.remove(g)
