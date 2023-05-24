@@ -1712,7 +1712,7 @@ def test_definitions_1(test_dir):
     for la in ['B_Cu', 'F_Cu']:
         for copy in range(2):
             ctx.expect_out_file(f'{prj}-{la}_copper_{copy+1}.gbr')
-    for la in ['B_Silkscreen', 'F_Silkscreen']:
+    for la in ['B_SilkS', 'F_SilkS'] if context.ki5() else ['B_Silkscreen', 'F_Silkscreen']:
         for copy in range(2):
             ctx.expect_out_file(f'{prj}-{la}_silk_{copy+1}.gbr')
     ctx.clean_up()
