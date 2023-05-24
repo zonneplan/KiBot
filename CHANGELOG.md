@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     policy implementation. See
     [KiCad issue 14360](https://gitlab.com/kicad/code/kicad/-/issues/14360).
     (#441)
+  - Default values for @TAGS@
+  - Parametrizable imports
 - Command line:
   - `--list-variants` List all available variants (See #434)
   - `--only-names` to make `--list` list only output names

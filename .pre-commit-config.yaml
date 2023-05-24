@@ -4,7 +4,6 @@ files:
   .*/Makefile|
   .*\.sh|
   .*\.py|
-  .*\.yaml|
   .*\.md
   )$
 exclude:
@@ -14,6 +13,7 @@ exclude:
   submodules/.*|
   kibot/PyPDF2/.*|
   kibot/PcbDraw/.*|
+  tests/yaml_samples/definitions_*|
   tests/yaml_samples/simple_position_csv_pre.kibot.yaml
   )$
 repos:

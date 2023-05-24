@@ -59,10 +59,14 @@
     * [Consolidating BoMs](#consolidating-boms)
     * [Importing outputs from another file](#importing-outputs-from-another-file)
     * [Importing other stuff from another file](#importing-other-stuff-from-another-file)
+    * [Parametrizable imports](#parametrizable-imports)
     * [Importing internal templates](#importing-internal-templates)
     * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
     * [Grouping outputs](#grouping-outputs)
   * [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing)
+    * [Default definitions](#default-definitions)
+    * [Definitions during import](#definitions-during-import)
+    * [Recursive definitions expansion](#recursive-definitions-expansion)
 * [Usage](#usage)
 * [Usage for CI/CD](#usage-for-cicd)
   * [GitHub Actions](#usage-of-github-actions)
@@ -5385,6 +5389,10 @@ import:
     is_external: true
 ```
 
+#### Parametrizable imports
+
+You can create imports that are parametrizable. For this you must use the mechanism explained in
+the [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing) section.
 
 #### Importing internal templates
 
@@ -5573,6 +5581,73 @@ As an example: `-E UNITS=millimeters` will replace all `@UNITS@` markers by `mil
 This is applied to all YAML files loaded, so this propagates to all the imported YAML files.
 
 You can use `-E` as many times as you need.
+
+#### Default definitions
+
+A configuration file using the `@VARIABLE@` tags won't be usable unless you provide proper
+values for **all** de used variables. When using various tags this could be annoying.
+KiBot supports defining default values for the tags. Here is an example:
+
+```yaml
+kibot:
+  version: 1
+
+outputs:
+  - name: 'gerbers_@ID@'
+    comment: "Gerbers with definitions"
+    type: gerber
+    output_id: _@ID@
+    layers: @LAYERS@
+...
+definitions:
+  ID: def_id
+  LAYERS: F.Cu
+```
+
+Note that from the YAML point this is two documents in the same file. The second document
+is used to provide default values for the definitions. As defaults they have the lowest
+precedence.
+
+#### Definitions during import
+
+When importing a configuration you can specify values for the `@VARIABLE@` tags. This
+enables the creation of parametrizable imports. Using the example depicted in
+[Default definitions](#default-definitions) saved to a file named *simple.kibot.yaml*
+you can use:
+
+```yaml
+kibot:
+  version: 1
+
+import:
+  - file: simple.kibot.yaml
+    definitions:
+      ID: external_copper
+      LAYERS: "[F.Cu, B.Cu]"
+```
+
+This will import *simple.kibot.yaml* and use these particular values. Note that they
+have more precedence than the definitions found in *simple.kibot.yaml*, but less
+precedence than any value passed from the command line.
+
+#### Recursive definitions expansion
+
+When KiBot expands the `@VARIABLE@` tags it first applies all the replacements defined
+in the command line, and then all the values collected from the `definitions`. After
+doing a round of replacements KiBot tries to do another. This process is repeated until
+nothing is replaced or we reach 20 iterations. So you can define a tag that contains
+another tag.
+
+As an example, if the configuration shown in [Definitions during import](#definitions-during-import)
+is stored in a file named *top.kibot.yaml* you could use:
+
+```shell
+kibot -v -c top.kibot.yaml -E ID=@LAYERS@
+```
+
+This will generate gerbers for the front/top and bottom layers using *[F.Cu, B.Cu]* as
+output id. So you'll get *light_control-B_Cu_[F.Cu, B.Cu].gbr* and
+*light_control-F_Cu_[F.Cu, B.Cu].gbr*.
 
 ## Usage
 

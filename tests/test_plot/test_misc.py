@@ -1703,3 +1703,16 @@ def test_value_split_1(test_dir):
     ctx.run()
     ctx.expect_out_file_d(prj+context.KICAD_SCH_EXT)
     ctx.clean_up()
+
+
+def test_definitions_1(test_dir):
+    prj = 'simple_2layer'
+    ctx = context.TestContext(test_dir, prj, 'definitions_top', 'gerberdir')
+    ctx.run()
+    for la in ['B_Cu', 'F_Cu']:
+        for copy in range(2):
+            ctx.expect_out_file(f'{prj}-{la}_copper_{copy+1}.gbr')
+    for la in ['B_Silkscreen', 'F_Silkscreen']:
+        for copy in range(2):
+            ctx.expect_out_file(f'{prj}-{la}_silk_{copy+1}.gbr')
+    ctx.clean_up()

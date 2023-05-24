@@ -1,0 +1,14 @@
+kibot:
+  version: 1
+
+import:
+  # Generate gerbers for the top and bottom copper
+  - file: definitions_level_1.kibot.yaml
+    definitions:
+      LAYERS: "[F.Cu, B.Cu]"
+      ID: copper
+  # Generate gerbers for the top and bottom silk screen
+  - file: definitions_level_1.kibot.yaml
+    definitions:
+      LAYERS: "[F.SilkS, B.SilkS]"
+      ID: silk
