@@ -488,7 +488,7 @@ def main():
     outputs = None
     try:
         # The Python way ...
-        with gzip.open(plot_config) as cf_file:
+        with gzip.open(plot_config, mode='rt') as cf_file:
             try:
                 outputs = cr.read(cf_file)
             except KiPlotConfigurationError as e:
