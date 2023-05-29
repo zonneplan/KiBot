@@ -71,6 +71,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Copy files:
   - PCB not loaded if the only action was to copy the 3D models
   - Problems for STEP models when copying models
+- Gerber:
+  - Problems trying to compress gerbers for a board with inner layers when
+    using legacy file extensions (#446)
 
 ## [1.6.2] - 2023-04-24
 ### Added

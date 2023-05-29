@@ -30,3 +30,12 @@ outputs:
       output: '%f_%i.%x'
 
     layers: all
+
+  - name: result
+    comment: Test tarball compress
+    type: compress
+    options:
+      format: TAR
+      compression: deflated
+      files:
+        - from_output: gerbers
