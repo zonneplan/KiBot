@@ -69,7 +69,7 @@ class ComponentTransformer(Transformer):
     def value1(self, d, type):
         """ VALUE """
         v = float(d[0])
-        iv = int(d[0])
+        iv = round(v)
         if iv == v:
             v = iv
         self.parsed[type] = v

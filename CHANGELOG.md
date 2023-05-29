@@ -74,6 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Gerber:
   - Problems trying to compress gerbers for a board with inner layers when
     using legacy file extensions (#446)
+- Electro-grammar:
+  - Problems with floating point tolerances (i.e. 0.1%) (#447)
 
 ## [1.6.2] - 2023-04-24
 ### Added
