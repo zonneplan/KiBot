@@ -49,7 +49,7 @@ test:
 	rm -f tests/.local
 	$(PY_COV) erase
 	# python3-pytest-xdist
-	# $(PYTEST) -m "not slow" -n 4 --test_dir=output
+	$(PYTEST) -m "not slow" -n 4 --test_dir=output
 	$(PYTEST) -m "slow and (not indep)" --test_dir=output
 	$(PYTEST) -m "slow and indep" --test_dir=output
 	$(PY_COV) combine
