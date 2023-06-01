@@ -79,7 +79,7 @@ outputs:
       format: CSV
       units: millimeters
       separate_files_for_front_and_back: false
-      only_smd: true
+      only_smd: @ONLY_SMD@
       columns:
         - id: Ref
           name: Designator
@@ -129,3 +129,7 @@ outputs:
           dest: /
         - from_output: _JLCPCB_bom
           dest: /
+
+...
+definitions:
+  ONLY_SMD: true

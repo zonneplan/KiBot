@@ -39,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     put in fields. I.e. RoHS status.
   - New `generic` options `exclude_not_in_bom` and `exclude_not_on_board` to
     use KiCad 6+ flags. (See #429)
+- Internal templates:
+  - JLCPCB_with_THT and JLCPCB_stencil_with_THT: adding THT components.
 - New internal filters:
   - `_value_split` splits the Value field but the field remains and the extra
     data is not visible

@@ -5426,7 +5426,7 @@ They include support for:
   - _FusionPCB_drill: Drill files
   - _FusionPCB_compress: Gerbers and drill files compressed in a ZIP
   - _FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill
-- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB.
+- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB. Only SMD components.
   Use the `field_lcsc_part` global option to specify the LCSC part number field if KiBot fails to detect it.
   - _JLCPCB_gerbers: Gerbers.
   - _JLCPCB_drill: Drill files
@@ -5436,7 +5436,7 @@ They include support for:
   - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_drill
   - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
   - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
-- [JLCPCB_stencil](https://jlcpcb.com/): Derived from JLCPCB, adds solder paste gerbers for stencils
+- [JLCPCB_stencil](https://jlcpcb.com/): Derived from JLCPCB, adds solder paste gerbers for stencils. Only SMD components.
   - _JLCPCB_gerbers: Gerbers.
   - _JLCPCB_gerbers_stencil: Gerbers for the solder paste stencils. Disabled by default.
   - _JLCPCB_drill: Drill files
@@ -5446,6 +5446,8 @@ They include support for:
   - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_gerbers_stencil+_JLCPCB_drill
   - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
   - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
+- [JLCPCB_with_THT](https://jlcpcb.com/): same as **JLCPCB**, but also including THT components.
+- [JLCPCB_stencil_with_THT](https://jlcpcb.com/): same as **JLCPCB_stencil**, but also including THT components.
 - [MacroFab_XYRS](https://help.macrofab.com/knowledge/macrofab-required-design-files): XYRS position file in MacroFab format
   - _macrofab_xyrs: Position file in XYRS format compatible with MacroFab.
 - [P-Ban](https://www.p-ban.com/): contain fabrication outputs compatible with P-Ban

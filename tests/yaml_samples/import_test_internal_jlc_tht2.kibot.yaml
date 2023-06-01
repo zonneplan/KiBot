@@ -1,0 +1,6 @@
+kibot:
+  version: 1
+
+import:
+  - file: JLCPCB_with_THT
+

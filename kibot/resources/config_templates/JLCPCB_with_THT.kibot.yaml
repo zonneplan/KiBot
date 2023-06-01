@@ -1,0 +1,7 @@
+kibot:
+  version: 1
+
+import:
+  - file: JLCPCB
+    definitions:
+      ONLY_SMD: false
