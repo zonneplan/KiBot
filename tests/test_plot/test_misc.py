@@ -44,9 +44,11 @@ POS_DIR = 'positiondir'
 MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render',
               'print_front', 'svg_sch_def', 'svg_sch_int', 'pdf_sch_def', 'pdf_sch_int', 'fake_sch', 'update_xml',
               'run_drc']
+# Even the Ubuntu builds are slightly different
+is_debian = os.path.isfile('/etc/debian_version') and not os.path.isfile('/etc/lsb-release')
 # If we are not running on Debian skip the text part at the top of diff PDFs
-OFFSET_Y = '0' if os.path.isfile('/etc/debian_version') else '80'
-DIFF_TOL = 0 if os.path.isfile('/etc/debian_version') else 1200
+OFFSET_Y = '0' if is_debian else '80'
+DIFF_TOL = 0 if is_debian else 1200
 
 
 def test_skip_pre_and_outputs(test_dir):
@@ -1475,7 +1477,9 @@ def test_diff_git_4(test_dir):
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
     ctx.compare_pdf(prj+'-diff_pcb.pdf', prj+'-only_new.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
-    ctx.compare_pdf(prj+'-diff_sch.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
+    if is_debian:
+        # Impossible to compare the Ubuntu version
+        ctx.compare_pdf(prj+'-diff_sch.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
     ctx.clean_up(keep_project=True)
 
 
@@ -1536,7 +1540,8 @@ def test_diff_file_sch_1(test_dir):
     ctx = context.TestContext(test_dir, prj, yaml)
     ctx.run(extra=['-E', 'KiVer='+str(context.kicad_major), '-E', 'SCHExt='+context.KICAD_SCH_EXT])
     ctx.expect_out_file(prj+'-diff_sch_FILE-Current.pdf')
-    ctx.compare_pdf(prj+'-diff_sch.pdf')
+    if is_debian:
+        ctx.compare_pdf(prj+'-diff_sch.pdf')
     ctx.clean_up(keep_project=True)
 
 
@@ -1684,7 +1689,7 @@ def test_font_and_colors_1(test_dir):
     ctx = context.TestContext(test_dir, prj, 'resources_1')
     ctx.run()
     ctx.compare_image(prj+'-top.png')
-    ctx.compare_image(prj+'-assembly_page_01.png')
+    ctx.compare_image(prj+'-assembly_page_01.png', tol=DIFF_TOL*1.2)
     ctx.clean_up()
 
 
