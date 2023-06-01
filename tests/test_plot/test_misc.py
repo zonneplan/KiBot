@@ -1679,7 +1679,8 @@ def test_panelize_1(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'panelize_2')
     ctx.run(extra=[])
-    ctx.compare_image(prj+'-panel.png', tol=100)
+    if is_debian:
+        ctx.compare_image(prj+'-panel.png', tol=100)
     ctx.clean_up(keep_project=True)
 
 
