@@ -76,6 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     using legacy file extensions (#446)
 - Electro-grammar:
   - Problems with floating point tolerances (i.e. 0.1%) (#447)
+- KiCad user template directory autodetection for KiCad 7+
 
 ## [1.6.2] - 2023-04-24
 ### Added

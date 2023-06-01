@@ -287,7 +287,7 @@ class KiConf(object):
             if home is None:
                 return None
             if GS.ki6:
-                name = os.path.join(home, '.local', 'share', 'kicad', '6.0', 'template')
+                name = os.path.join(home, '.local', 'share', 'kicad', str(GS.kicad_version_major)+'.0', 'template')
                 if os.path.isdir(name):
                     return name
             name = os.path.join(home, 'kicad', 'template')
