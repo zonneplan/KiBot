@@ -840,6 +840,10 @@ global:
         - `number`: [number=0] Error number we want to exclude.
         - `regex`: [string=''] Regular expression to match the text for the error we want to exclude.
         - *regexp*: Alias for regex.
+    - `git_diff_strategy`: [string='worktree'] [worktree,stash] When computing a PCB/SCH diff it configures how do we preserve the current
+                           working state. The *worktree* mechanism creates a separated worktree, that then is just removed.
+                           The *stash* mechanism uses *git stash push/pop* to save the current changes. Using *worktree*
+                           is the preferred mechanism.
     - `hide_excluded`: [boolean=false] Default value for the `hide_excluded` option of various PCB outputs.
     - `impedance_controlled`: [boolean=false] The PCB needs specific dielectric characteristics.
                               KiCad 6: you should set this in the Board Setup -> Physical Stackup.

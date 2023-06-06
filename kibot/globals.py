@@ -343,6 +343,11 @@ class Globals(FiltersOptions):
                 variables update when using `set_text_variables`. You might want to disable it when applying some
                 changes to the PCB and create a new copy to send to somebody without changing the cached values.
                 The `auto` value will remove the cached values only when using `set_text_variables` """
+            self.git_diff_strategy = 'worktree'
+            """ [worktree,stash] When computing a PCB/SCH diff it configures how do we preserve the current
+                working state. The *worktree* mechanism creates a separated worktree, that then is just removed.
+                The *stash* mechanism uses *git stash push/pop* to save the current changes. Using *worktree*
+                is the preferred mechanism """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

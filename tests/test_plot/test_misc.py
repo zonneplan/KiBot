@@ -1400,7 +1400,8 @@ def test_diff_git_2(test_dir):
         msg = f.read()
     assert msg == 'Bye!\n'
     # Check the link
-    assert glob(os.path.join(ctx.output_dir, prj+'-diff_pcb_*(v1)-*(master[[]v1[]]).pdf'))
+    assert (glob(os.path.join(ctx.output_dir, prj+'-diff_pcb_*(v1)-*(master[[]v1[]]).pdf')) +
+            glob(os.path.join(ctx.output_dir, prj+'-diff_pcb_*(v1)-*(v1-2-*).pdf'))), "Can't find link"
     ctx.clean_up(keep_project=True)
 
 

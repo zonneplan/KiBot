@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `field_power` Name/s of the field/s used for the power raiting
   - `invalidate_pcb_text_cache` controls if we reset the text variables cached
     in the PCB file.
+  - `git_diff_strategy` selects how we preserve the current repo state.
+    (See #443)
 - Filters:
   - New `value_split` to extract information from the Value field and put it in
     separated fields. I.e. tolerance, voltage, etc.
@@ -53,11 +55,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Command line:
   - `--list` also lists groups
 - KiCad v6/7 schematic:
-  - The hierarchy is expanded only if needed, i.e. value of an instance changed
+  - When saving an schematic the hierarchy is expanded only if needed,
+    i.e. value of an instance changed
 - List actions:
   - Now you must explicitly ask to configure outputs. Otherwise isn't needed.
     As a result you no longer need to have an SCH/PCB. Use `--config-outs` to
     get the old behavior.
+- Git diff link file name:
+  - Now we default to using worktrees instead of stash push/pop. As a side
+    effect the names of the git points are chnaged. This is because main/master
+    only applies to the main worktree. So the names now refer to the closest
+    tag.
 
 ### Fixed
 - KiCad v6/7 schematic:

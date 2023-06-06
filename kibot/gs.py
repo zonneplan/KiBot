@@ -151,6 +151,7 @@ class GS(object):
     global_field_tolerance = None
     global_field_voltage = None
     global_hide_excluded = None
+    global_git_diff_strategy = None
     global_impedance_controlled = None
     global_invalidate_pcb_text_cache = None
     global_kiauto_time_out_scale = None
