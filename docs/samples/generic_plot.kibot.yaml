@@ -2903,7 +2903,7 @@ outputs:
       background2: '#CCCCE5'
       # [string='#332B16'] Color for the board without copper or solder mask
       board: '#332B16'
-      # [boolean=true] Clip silkscreen at via annuli (KiCad 6)
+      # [boolean=true] Clip silkscreen at via annuli (KiCad 6+)
       clip_silk_on_via_annulus: true
       # [string='#8b898c'] Color for the copper
       copper: '#8b898c'
@@ -2950,25 +2950,35 @@ outputs:
       pre_transform: '_none'
       # [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`
       ray_tracing: false
+      # [boolean=true] When disabled we use the colors of the layers used by the GUI. KiCad 6 or newer
+      realistic: true
       # [number=0] Steps to rotate around the X axis, positive is clockwise.
-      # Each step is currently 10 degrees. Only for KiCad 6
+      # Each step is currently 10 degrees. Only for KiCad 6 or newer
       rotate_x: 0
       # [number=0] Steps to rotate around the Y axis, positive is clockwise.
-      # Each step is currently 10 degrees. Only for KiCad 6
+      # Each step is currently 10 degrees. Only for KiCad 6 or newer
       rotate_y: 0
       # [number=0] Steps to rotate around the Z axis, positive is clockwise.
-      # Each step is currently 10 degrees. Only for KiCad 6
+      # Each step is currently 10 degrees. Only for KiCad 6 or newer
       rotate_z: 0
+      # [boolean=false] Show the content of F.Adhesive/B.Adhesive layers. KiCad 6 or newer
+      show_adhesive: false
+      # [boolean=true] Show the PCB core material. KiCad 6 or newer
+      show_board_body: true
+      # [boolean=false] Show the content of the User.Comments layer. KiCad 6 or newer and ray tracing disabled
+      show_comments: false
       # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
       # Unlike the `pcbdraw` output, the default is `all`
       show_components: all
-      # [boolean=true] Show the silkscreen layers (KiCad 6)
+      # [boolean=false] Show the content of the Eco1.User/Eco2.User layers. KiCad 6 or newer and ray tracing disabled
+      show_eco: false
+      # [boolean=true] Show the silkscreen layers (KiCad 6+)
       show_silkscreen: true
-      # [boolean=true] Show the solder mask layers (KiCad 6)
+      # [boolean=true] Show the solder mask layers (KiCad 6+)
       show_soldermask: true
-      # [boolean=true] Show the solder paste layers (KiCad 6)
+      # [boolean=true] Show the solder paste layers (KiCad 6+)
       show_solderpaste: true
-      # [boolean=true] Show filled areas in zones (KiCad 6)
+      # [boolean=true] Show filled areas in zones (KiCad 6+)
       show_zones: true
       # [string='#d5dce4'] Color for the silk screen
       silk: '#d5dce4'
@@ -2976,7 +2986,7 @@ outputs:
       solder_mask: '#208b47'
       # [string='#808080'] Color for the solder paste
       solder_paste: '#808080'
-      # [boolean=true] Clip silkscreen at solder mask edges (KiCad 6)
+      # [boolean=true] Clip silkscreen at solder mask edges (KiCad 6+)
       subtract_mask_from_silk: true
       # [boolean=false] When enabled the image will be post-processed to make the background transparent.
       # In this mode the `background1` and `background2` colors are ignored

@@ -50,6 +50,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal templates:
   - CheckZoneFill: Used to check if a zone fill operation makes the PCB quite
     different (#431)
+- Render_3D:
+  - realistic: can be used to disable the realistic colors and get the GUI ones
+  - show_board_body: can be used to make the PCB core transparent (see inner)
+  - show_comments: to see the content of the User.Comments layer.
+  - show_eco: to see the content of the Eco1.User/Eco2.User layers.
+  - show_adhesive : to see the content of the *.Adhesive layers.
 
 ### Changed
 - Command line:

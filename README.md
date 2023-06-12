@@ -4444,11 +4444,11 @@ Notes:
         - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated image file (%i='3D_$VIEW' %x='png'). Affected by global options.
         - **`ray_tracing`**: [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`.
         - **`rotate_x`**: [number=0] Steps to rotate around the X axis, positive is clockwise.
-                          Each step is currently 10 degrees. Only for KiCad 6.
+                          Each step is currently 10 degrees. Only for KiCad 6 or newer.
         - **`rotate_y`**: [number=0] Steps to rotate around the Y axis, positive is clockwise.
-                          Each step is currently 10 degrees. Only for KiCad 6.
+                          Each step is currently 10 degrees. Only for KiCad 6 or newer.
         - **`rotate_z`**: [number=0] Steps to rotate around the Z axis, positive is clockwise.
-                          Each step is currently 10 degrees. Only for KiCad 6.
+                          Each step is currently 10 degrees. Only for KiCad 6 or newer.
         - **`show_components`**: [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
                                  Unlike the `pcbdraw` output, the default is `all`.
         - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
@@ -4459,7 +4459,7 @@ Notes:
         - `background1`: [string='#66667F'] First color for the background gradient.
         - `background2`: [string='#CCCCE5'] Second color for the background gradient.
         - `board`: [string='#332B16'] Color for the board without copper or solder mask.
-        - `clip_silk_on_via_annulus`: [boolean=true] Clip silkscreen at via annuli (KiCad 6).
+        - `clip_silk_on_via_annulus`: [boolean=true] Clip silkscreen at via annuli (KiCad 6+).
         - `copper`: [string='#8b898c'] Color for the copper.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
@@ -4475,14 +4475,19 @@ Notes:
         - `orthographic`: [boolean=false] Enable the orthographic projection mode (top view looks flat).
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
-        - `show_silkscreen`: [boolean=true] Show the silkscreen layers (KiCad 6).
-        - `show_soldermask`: [boolean=true] Show the solder mask layers (KiCad 6).
-        - `show_solderpaste`: [boolean=true] Show the solder paste layers (KiCad 6).
-        - `show_zones`: [boolean=true] Show filled areas in zones (KiCad 6).
+        - `realistic`: [boolean=true] When disabled we use the colors of the layers used by the GUI. KiCad 6 or newer.
+        - `show_adhesive`: [boolean=false] Show the content of F.Adhesive/B.Adhesive layers. KiCad 6 or newer.
+        - `show_board_body`: [boolean=true] Show the PCB core material. KiCad 6 or newer.
+        - `show_comments`: [boolean=false] Show the content of the User.Comments layer. KiCad 6 or newer and ray tracing disabled.
+        - `show_eco`: [boolean=false] Show the content of the Eco1.User/Eco2.User layers. KiCad 6 or newer and ray tracing disabled.
+        - `show_silkscreen`: [boolean=true] Show the silkscreen layers (KiCad 6+).
+        - `show_soldermask`: [boolean=true] Show the solder mask layers (KiCad 6+).
+        - `show_solderpaste`: [boolean=true] Show the solder paste layers (KiCad 6+).
+        - `show_zones`: [boolean=true] Show filled areas in zones (KiCad 6+).
         - `silk`: [string='#d5dce4'] Color for the silk screen.
         - `solder_mask`: [string='#208b47'] Color for the solder mask.
         - `solder_paste`: [string='#808080'] Color for the solder paste.
-        - `subtract_mask_from_silk`: [boolean=true] Clip silkscreen at solder mask edges (KiCad 6).
+        - `subtract_mask_from_silk`: [boolean=true] Clip silkscreen at solder mask edges (KiCad 6+).
         - `transparent_background`: [boolean=false] When enabled the image will be post-processed to make the background transparent.
                                     In this mode the `background1` and `background2` colors are ignored.
         - `transparent_background_color`: [string='#00ff00'] Color used for the chroma key. Adjust it if some regions of the board becomes transparent.
