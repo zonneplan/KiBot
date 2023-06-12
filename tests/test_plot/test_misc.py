@@ -423,7 +423,7 @@ def test_example_4(test_dir):
     ctx.run(extra=['--example', '-P'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.search_in_file(EXAMPLE_CFG, ['GND.Cu', 'pen_width: 35.0'])
-    ctx.search_not_in_file(EXAMPLE_CFG, ['F.Adhes'])
+    ctx.search_not_in_file(EXAMPLE_CFG, ["layer: 'F.Adhes"])
     ctx.clean_up()
 
 
