@@ -26,7 +26,11 @@ outputs:
     options:
       cache_dir: .cache
       diff_mode: stats
-      threshold: 100
+      threshold: @THRESHOLD@
       old: ''
       old_type: file
       new_type: current
+
+...
+definitions:
+  THRESHOLD: 100

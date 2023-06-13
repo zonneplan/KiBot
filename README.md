@@ -5425,6 +5425,8 @@ They include support for:
   - _diff_cur_pcb_show: Makes a diff between the PCB in memory and the one on disk
   - _diff_cur_pcb_check: Computes the difference between PCB in memory and the one on disk. Aborts if more than
     100 pixels changed.
+  - Note: The *THRESHOLD* parameter can be used to adjust the number of changed pixels that we tolerate.
+    Consult the [Definitions during import](#definitions-during-import) section to know about parameters.
 - [Elecrow](https://www.elecrow.com/): contain fabrication outputs compatible with Elecrow
   - _Elecrow_gerbers: Gerbers
   - _Elecrow_drill: Drill files
