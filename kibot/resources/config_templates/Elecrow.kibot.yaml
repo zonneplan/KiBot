@@ -42,6 +42,8 @@ outputs:
       - F.Mask
       - B.Mask
       - Edge.Cuts
+      @F_PASTE@
+      @B_PASTE@
 
   - name: _Elecrow_drill
     comment: Drill files compatible with Elecrow
@@ -63,3 +65,8 @@ outputs:
           dest: /
         - from_output: _Elecrow_drill
           dest: /
+
+...
+definitions:
+  F_PASTE: ''
+  B_PASTE: ''

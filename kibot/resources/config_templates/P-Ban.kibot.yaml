@@ -50,6 +50,8 @@ outputs:
       - F.Mask
       - B.Mask
       - Edge.Cuts
+      @F_PASTE@
+      @B_PASTE@
 
   - name: _P-Ban_drill
     comment: Drill files compatible with P-Ban
@@ -76,3 +78,8 @@ outputs:
           dest: /
         - from_output: _P-Ban_drill
           dest: /
+
+...
+definitions:
+  F_PASTE: ''
+  B_PASTE: ''

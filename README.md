@@ -5432,11 +5432,13 @@ They include support for:
   - _Elecrow_drill: Drill files
   - _Elecrow_compress: Gerbers and drill files compressed in a ZIP
   - _Elecrow: _Elecrow_gerbers+_Elecrow_drill
+- Elecrow_stencil: same as Elecrow, but also generates gerbers for F.Paste and B.Paste layers.
 - [FusionPCB](https://www.seeedstudio.io/fusion.html): contain fabrication outputs compatible with FusionPCB
   - _FusionPCB_gerbers: Gerbers
   - _FusionPCB_drill: Drill files
   - _FusionPCB_compress: Gerbers and drill files compressed in a ZIP
   - _FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill
+- FusionPCB_stencil: same as FusionPCB, but also generates gerbers for F.Paste and B.Paste layers.
 - [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB. Only SMD components.
   Use the `field_lcsc_part` global option to specify the LCSC part number field if KiBot fails to detect it.
   - _JLCPCB_gerbers: Gerbers.
@@ -5465,6 +5467,7 @@ They include support for:
   - _P-Ban_gerbers: Gerbers. You need to define the layers for more than 8.
   - _P-Ban_drill: Drill files
   - _P-Ban: _P-Ban_gerbers+_P-Ban_drill
+- P-Ban_stencil: same as P-Ban, but also generates gerbers for F.Paste and B.Paste layers.
 - [PCB2Blender_2_1](https://github.com/30350n/pcb2blender)
   - _PCB2Blender_layers_2_1: The layers in SVG format. Disabled by default.
   - _PCB2Blender_vrml_2_1: The VRML for the board. Disabled by default.
@@ -5481,6 +5484,7 @@ They include support for:
   - _PCBWay_drill: Drill files
   - _PCBWay_compress: Gerbers and drill files compressed in a ZIP
   - _PCBWay: _PCBWay_gerbers+_PCBWay_drill
+- PCBWay_stencil: same as PCBWay, but also generates gerbers for F.Paste and B.Paste layers.
 
 
 #### Using other output as base for a new one

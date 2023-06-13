@@ -43,6 +43,8 @@ outputs:
       - F.Mask
       - B.Mask
       - Edge.Cuts
+      @F_PASTE@
+      @B_PASTE@
 
   - name: _FusionPCB_drill
     comment: Drill files compatible with FusionPCB
@@ -63,3 +65,8 @@ outputs:
           dest: /
         - from_output: _FusionPCB_drill
           dest: /
+
+...
+definitions:
+  F_PASTE: ''
+  B_PASTE: ''

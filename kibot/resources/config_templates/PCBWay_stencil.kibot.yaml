@@ -1,0 +1,8 @@
+kibot:
+  version: 1
+
+import:
+  - file: PCBWay
+    definitions:
+      F_PASTE: '- F.Paste'
+      B_PASTE: '- B.Paste'
