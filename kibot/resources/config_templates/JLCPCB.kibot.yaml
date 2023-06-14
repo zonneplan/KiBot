@@ -119,6 +119,8 @@ outputs:
     type: compress
     dir: @_KIBOT_MANF_DIR_COMP@
     options:
+      # Position and BoM can be disabled
+      skip_not_run: true
       files:
         - from_output: _JLCPCB_gerbers
           dest: /

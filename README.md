@@ -2105,6 +2105,7 @@ Notes:
         - `follow_links`: [boolean=true] Store the file pointed by symlinks, not the symlink.
         - `move_files`: [boolean=false] Move the files to the archive. In other words: remove the files after adding them to the archive.
         - *remove_files*: Alias for move_files.
+        - `skip_not_run`: [boolean=false] Skip outputs with `run_by_default: false`.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                   The categories are currently used for `navigate_results`.

@@ -59,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `show_adhesive`: to see the content of the *.Adhesive layers.
 - Navigate_Results:
   - `skip_not_run`: used to skip outputs not generated in default runs.
+- Compress:
+  - `skip_not_run`: used to skip outputs not generated in default runs.
 
 ### Changed
 - Command line:

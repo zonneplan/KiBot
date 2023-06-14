@@ -627,6 +627,8 @@ outputs:
       # [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options
       output: '%f-%i%I%v.%x'
       # `remove_files` is an alias for `move_files`
+      # [boolean=false] Skip outputs with `run_by_default: false`
+      skip_not_run: false
   # Files copier:
   # Useful when an external tool is used to compress the output directory.
   # Note that you can use the `compress` output to create archives
