@@ -641,6 +641,8 @@ class CfgYamlReader(object):
                     content, replaced = do_replace(k, v, content, replaced)
             if depth >= 20:
                 logger.error('Maximum depth of definition replacements reached, loop?')
+            if GS.debug_level > 3:
+                logger.debug('YAML after expanding definitions:\n'+content)
         # Create an stream from the string
         fstream = io.StringIO(content)
         try:

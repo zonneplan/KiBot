@@ -49,12 +49,9 @@ outputs:
       subtract_mask_from_silk: true
       inner_extension_pattern: '.g%n'
     layers:
-      - copper
-      - F.SilkS
-      - B.SilkS
-      - F.Mask
-      - B.Mask
-      - Edge.Cuts
+      @_KIBOT_GERBER_LAYERS@
+      @_KIBOT_F_PASTE@
+      @_KIBOT_B_PASTE@
 
   - name: _JLCPCB_drill
     comment: Drill files compatible with JLCPCB
@@ -133,3 +130,12 @@ outputs:
 ...
 definitions:
   _KIBOT_POS_ONLY_SMD: true
+  _KIBOT_F_PASTE: ''
+  _KIBOT_B_PASTE: ''
+  _KIBOT_GERBER_LAYERS: |
+      - copper
+            - F.SilkS
+            - B.SilkS
+            - F.Mask
+            - B.Mask
+            - Edge.Cuts

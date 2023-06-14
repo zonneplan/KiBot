@@ -1314,13 +1314,13 @@ They include support for:
   - _Elecrow_drill: Drill files
   - _Elecrow_compress: Gerbers and drill files compressed in a ZIP
   - _Elecrow: _Elecrow_gerbers+_Elecrow_drill
-- Elecrow_stencil: same as Elecrow, but also generates gerbers for F.Paste and B.Paste layers.
+- [Elecrow_stencil](https://www.elecrow.com/): same as **Elecrow**, but also generates gerbers for F.Paste and B.Paste layers.
 - [FusionPCB](https://www.seeedstudio.io/fusion.html): contain fabrication outputs compatible with FusionPCB
   - _FusionPCB_gerbers: Gerbers
   - _FusionPCB_drill: Drill files
   - _FusionPCB_compress: Gerbers and drill files compressed in a ZIP
   - _FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill
-- FusionPCB_stencil: same as FusionPCB, but also generates gerbers for F.Paste and B.Paste layers.
+- [FusionPCB_stencil](https://www.seeedstudio.io/fusion.html): same as **FusionPCB**, but also generates gerbers for F.Paste and B.Paste layers.
 - [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB. Only SMD components.
   Use the `field_lcsc_part` global option to specify the LCSC part number field if KiBot fails to detect it.
   - _JLCPCB_gerbers: Gerbers.
@@ -1331,16 +1331,7 @@ They include support for:
   - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_drill
   - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
   - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
-- [JLCPCB_stencil](https://jlcpcb.com/): Derived from JLCPCB, adds solder paste gerbers for stencils. Only SMD components.
-  - _JLCPCB_gerbers: Gerbers.
-  - _JLCPCB_gerbers_stencil: Gerbers for the solder paste stencils. Disabled by default.
-  - _JLCPCB_drill: Drill files
-  - _JLCPCB_position: Pick and place, applies the `_rot_footprint` filter. You can change this filter.
-  - _JLCPCB_bom: List of LCSC parts, assumes a field named `LCSC#` contains the LCSC codes. You can change this filter.
-  - _JLCPCB_compress: Gerbers, drill, position and BoM files compressed in a ZIP
-  - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_gerbers_stencil+_JLCPCB_drill
-  - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
-  - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
+- [JLCPCB_stencil](https://jlcpcb.com/): same as **JLCPCB**, but also generates gerbers for F.Paste and B.Paste layers.
 - [JLCPCB_with_THT](https://jlcpcb.com/): same as **JLCPCB**, but also including THT components.
 - [JLCPCB_stencil_with_THT](https://jlcpcb.com/): same as **JLCPCB_stencil**, but also including THT components.
 - [MacroFab_XYRS](https://help.macrofab.com/knowledge/macrofab-required-design-files): XYRS position file in MacroFab format
@@ -1349,7 +1340,7 @@ They include support for:
   - _P-Ban_gerbers: Gerbers. You need to define the layers for more than 8.
   - _P-Ban_drill: Drill files
   - _P-Ban: _P-Ban_gerbers+_P-Ban_drill
-- P-Ban_stencil: same as P-Ban, but also generates gerbers for F.Paste and B.Paste layers.
+- [P-Ban_stencil](https://www.p-ban.com/): same as **P-Ban**, but also generates gerbers for F.Paste and B.Paste layers.
 - [PCB2Blender_2_1](https://github.com/30350n/pcb2blender)
   - _PCB2Blender_layers_2_1: The layers in SVG format. Disabled by default.
   - _PCB2Blender_vrml_2_1: The VRML for the board. Disabled by default.
@@ -1366,7 +1357,7 @@ They include support for:
   - _PCBWay_drill: Drill files
   - _PCBWay_compress: Gerbers and drill files compressed in a ZIP
   - _PCBWay: _PCBWay_gerbers+_PCBWay_drill
-- PCBWay_stencil: same as PCBWay, but also generates gerbers for F.Paste and B.Paste layers.
+- [PCBWay_stencil](https://www.pcbway.com): same as **PCBWay**, but also generates gerbers for F.Paste and B.Paste layers.
 
 
 #### Using other output as base for a new one

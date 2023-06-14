@@ -36,12 +36,7 @@ outputs:
       inner_extension_pattern: '.g%n'
       edge_cut_extension: '.gml'
     layers:
-      - copper
-      - F.SilkS
-      - B.SilkS
-      - F.Mask
-      - B.Mask
-      - Edge.Cuts
+      @_KIBOT_GERBER_LAYERS@
       @_KIBOT_F_PASTE@
       @_KIBOT_B_PASTE@
 
@@ -70,3 +65,10 @@ outputs:
 definitions:
   _KIBOT_F_PASTE: ''
   _KIBOT_B_PASTE: ''
+  _KIBOT_GERBER_LAYERS: |
+      - copper
+            - F.SilkS
+            - B.SilkS
+            - F.Mask
+            - B.Mask
+            - Edge.Cuts

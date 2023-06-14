@@ -75,6 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     effect the names of the git points are chnaged. This is because main/master
     only applies to the main worktree. So the names now refer to the closest
     tag.
+- JLCPCB_stencil: Is now just like JLCPCB. The only difference is the added
+  layers.
 
 ### Fixed
 - KiCad v6/7 schematic:

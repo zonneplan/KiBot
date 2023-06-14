@@ -37,19 +37,7 @@ outputs:
     layers:
       # Note: a more generic approach is to use 'copper' but then the filenames
       # are slightly different.
-      - F.Cu
-      - B.Cu
-      - In1.Cu
-      - In2.Cu
-      - In3.Cu
-      - In4.Cu
-      - In5.Cu
-      - In6.Cu
-      - F.SilkS
-      - B.SilkS
-      - F.Mask
-      - B.Mask
-      - Edge.Cuts
+      @_KIBOT_GERBER_LAYERS@
       @_KIBOT_F_PASTE@
       @_KIBOT_B_PASTE@
 
@@ -83,3 +71,17 @@ outputs:
 definitions:
   _KIBOT_F_PASTE: ''
   _KIBOT_B_PASTE: ''
+  _KIBOT_GERBER_LAYERS: |
+      - F.Cu
+            - B.Cu
+            - In1.Cu
+            - In2.Cu
+            - In3.Cu
+            - In4.Cu
+            - In5.Cu
+            - In6.Cu
+            - F.SilkS
+            - B.SilkS
+            - F.Mask
+            - B.Mask
+            - Edge.Cuts
