@@ -560,7 +560,7 @@ class CfgYamlReader(object):
             cur_definitions.update(local_defs)
             collected_definitions.append(cur_definitions)
             # Now load the YAML
-            data = self.load_yaml(open(fn), collected_definitions)
+            data = self.load_yaml(open(fn), collected_definitions, file_name=fn)
             if 'import' in data:
                 # Do a recursive import
                 imported = self._parse_import(data['import'], fn, collected_definitions, apply=False, depth=depth)
@@ -594,7 +594,7 @@ class CfgYamlReader(object):
             RegOutput.add_groups(all_collected.groups, fn_rel)
         return all_collected
 
-    def load_yaml(self, fstream, collected_definitions):
+    def load_yaml(self, fstream, collected_definitions, file_name=None):
         # We support some sort of defaults for the -E definitions
         # To implement it we use a separated "document" inside the same file
         # Load the file to memory so we can preprocess it
@@ -613,7 +613,7 @@ class CfgYamlReader(object):
                 try:
                     data = yaml.safe_load(io.StringIO(definitions))
                 except yaml.YAMLError as e:
-                    raise KiPlotConfigurationError("Error loading YAML "+str(e))
+                    raise KiPlotConfigurationError("Error loading YAML ("+str(file_name)+") "+str(e))
                 local_defs = data.get('definitions')
                 if not local_defs:
                     raise KiPlotConfigurationError("Error loading default definitions from config")
