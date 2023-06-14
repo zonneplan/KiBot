@@ -79,7 +79,7 @@ outputs:
       format: CSV
       units: millimeters
       separate_files_for_front_and_back: false
-      only_smd: @ONLY_SMD@
+      only_smd: @_KIBOT_POS_ONLY_SMD@
       columns:
         - id: Ref
           name: Designator
@@ -132,4 +132,4 @@ outputs:
 
 ...
 definitions:
-  ONLY_SMD: true
+  _KIBOT_POS_ONLY_SMD: true

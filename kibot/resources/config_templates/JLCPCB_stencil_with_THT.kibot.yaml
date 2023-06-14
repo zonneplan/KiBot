@@ -4,4 +4,4 @@ kibot:
 import:
   - file: JLCPCB_stencil
     definitions:
-      ONLY_SMD: false
+      _KIBOT_POS_ONLY_SMD: false
