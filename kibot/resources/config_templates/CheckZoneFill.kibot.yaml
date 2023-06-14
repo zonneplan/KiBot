@@ -26,11 +26,11 @@ outputs:
     options:
       cache_dir: .cache
       diff_mode: stats
-      threshold: @THRESHOLD@
+      threshold: @_KIBOT_CHKZONE_THRESHOLD@
       old: ''
       old_type: file
       new_type: current
 
 ...
 definitions:
-  THRESHOLD: 100
+  _KIBOT_CHKZONE_THRESHOLD: 100
