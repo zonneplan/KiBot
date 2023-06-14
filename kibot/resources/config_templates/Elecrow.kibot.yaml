@@ -14,7 +14,7 @@ outputs:
   - name: _Elecrow_gerbers
     comment: Gerbers compatible with Elecrow
     type: gerber
-    dir: Elecrow
+    dir: @_KIBOT_MANF_DIR@
     options: &gerber_options
       exclude_edge_layer: true
       exclude_pads_from_silkscreen: true
@@ -43,7 +43,7 @@ outputs:
   - name: _Elecrow_drill
     comment: Drill files compatible with Elecrow
     type: excellon
-    dir: Elecrow
+    dir: @_KIBOT_MANF_DIR@
     options:
       pth_and_npth_single_file: false
       pth_id: ''
@@ -53,7 +53,7 @@ outputs:
   - name: _Elecrow_compress
     comment: ZIP file for Elecrow
     type: compress
-    dir: Elecrow
+    dir: @_KIBOT_MANF_DIR_COMP@
     options:
       files:
         - from_output: _Elecrow_gerbers
@@ -65,6 +65,8 @@ outputs:
 definitions:
   _KIBOT_F_PASTE: ''
   _KIBOT_B_PASTE: ''
+  _KIBOT_MANF_DIR: Elecrow
+  _KIBOT_MANF_DIR_COMP: Elecrow
   _KIBOT_GERBER_LAYERS: |
       - copper
             - F.SilkS

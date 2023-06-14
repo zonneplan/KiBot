@@ -14,7 +14,7 @@ outputs:
   - name: _P-Ban_gerbers
     comment: Gerbers compatible with P-Ban
     type: gerber
-    dir: P-Ban
+    dir: @_KIBOT_MANF_DIR@
     options: &gerber_options
       exclude_edge_layer: true
       exclude_pads_from_silkscreen: true
@@ -44,7 +44,7 @@ outputs:
   - name: _P-Ban_drill
     comment: Drill files compatible with P-Ban
     type: excellon
-    dir: P-Ban
+    dir: @_KIBOT_MANF_DIR@
     options:
       pth_and_npth_single_file: true
       map:
@@ -59,7 +59,7 @@ outputs:
   - name: _P-Ban_compress
     comment: ZIP file for P-Ban
     type: compress
-    dir: P-Ban
+    dir: @_KIBOT_MANF_DIR_COMP@
     options:
       files:
         - from_output: _P-Ban_gerbers
@@ -71,6 +71,8 @@ outputs:
 definitions:
   _KIBOT_F_PASTE: ''
   _KIBOT_B_PASTE: ''
+  _KIBOT_MANF_DIR: P-Ban
+  _KIBOT_MANF_DIR_COMP: P-Ban
   _KIBOT_GERBER_LAYERS: |
       - F.Cu
             - B.Cu

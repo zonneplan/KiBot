@@ -14,7 +14,7 @@ outputs:
   - name: _FusionPCB_gerbers
     comment: Gerbers compatible with FusionPCB
     type: gerber
-    dir: FusionPCB
+    dir: @_KIBOT_MANF_DIR@
     options: &gerber_options
       exclude_edge_layer: true
       exclude_pads_from_silkscreen: true
@@ -44,7 +44,7 @@ outputs:
   - name: _FusionPCB_drill
     comment: Drill files compatible with FusionPCB
     type: excellon
-    dir: FusionPCB
+    dir: @_KIBOT_MANF_DIR@
     options:
       pth_and_npth_single_file: true
       use_aux_axis_as_origin: true
@@ -53,7 +53,7 @@ outputs:
   - name: _FusionPCB_compress
     comment: ZIP file for FusionPCB
     type: compress
-    dir: FusionPCB
+    dir: @_KIBOT_MANF_DIR_COMP@
     options:
       files:
         - from_output: _FusionPCB_gerbers
@@ -65,6 +65,8 @@ outputs:
 definitions:
   _KIBOT_F_PASTE: ''
   _KIBOT_B_PASTE: ''
+  _KIBOT_MANF_DIR: FusionPCB
+  _KIBOT_MANF_DIR_COMP: FusionPCB
   _KIBOT_GERBER_LAYERS: |
       - copper
             - F.SilkS

@@ -14,7 +14,7 @@ outputs:
   - name: _PCBWay_gerbers
     comment: Gerbers compatible with PCBWay
     type: gerber
-    dir: PCBWay
+    dir: @_KIBOT_MANF_DIR@
     options: &gerber_options
       exclude_edge_layer: true
       exclude_pads_from_silkscreen: true
@@ -41,7 +41,7 @@ outputs:
   - name: _PCBWay_drill
     comment: Drill files compatible with PCBWay
     type: excellon
-    dir: PCBWay
+    dir: @_KIBOT_MANF_DIR@
     options:
       metric_units: false
       minimal_header: true
@@ -60,7 +60,7 @@ outputs:
   - name: _PCBWay_compress
     comment: ZIP file for PCBWay
     type: compress
-    dir: PCBWay
+    dir: @_KIBOT_MANF_DIR_COMP@
     options:
       format: ZIP
       files:
@@ -73,6 +73,8 @@ outputs:
 definitions:
   _KIBOT_F_PASTE: ''
   _KIBOT_B_PASTE: ''
+  _KIBOT_MANF_DIR: PCBWay
+  _KIBOT_MANF_DIR_COMP: PCBWay
   _KIBOT_GERBER_LAYERS: |
       - copper
             - F.SilkS
