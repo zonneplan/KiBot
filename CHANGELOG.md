@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CheckZoneFill: Used to check if a zone fill operation makes the PCB quite
     different (#431)
   - Versions with stencil for Elecrow, FusionPCB, P-Ban and PCBWay.
+  - PanelDemo_4x4: Demo for a 4x4 panel.
 - Render_3D:
   - `realistic`: can be used to disable the realistic colors and get the GUI ones
   - `show_board_body`: can be used to make the PCB core transparent (see inner)

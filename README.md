@@ -5456,6 +5456,8 @@ They include support for:
 - [JLCPCB_stencil_with_THT](https://jlcpcb.com/): same as **JLCPCB_stencil**, but also including THT components.
 - [MacroFab_XYRS](https://help.macrofab.com/knowledge/macrofab-required-design-files): XYRS position file in MacroFab format
   - _macrofab_xyrs: Position file in XYRS format compatible with MacroFab.
+- PanelDemo_4x4: creates a 4x4 panel of the board, showing some of the panelize options
+  - _PanelDemo_4x4: The panel
 - [P-Ban](https://www.p-ban.com/): contain fabrication outputs compatible with P-Ban
   - _P-Ban_gerbers: Gerbers. You need to define the layers for more than 8.
   - _P-Ban_drill: Drill files
