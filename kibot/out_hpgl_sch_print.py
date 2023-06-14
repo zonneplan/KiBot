@@ -53,5 +53,5 @@ class HPGL_SCH_Print(BaseOutput):  # noqa: F821
         self._category = 'Schematic/docs'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         return BaseOutput.simple_conf_examples(name, 'Schematic in HPGL format', 'Schematic')  # noqa: F821

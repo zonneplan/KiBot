@@ -558,7 +558,7 @@ class PcbDraw(BaseOutput):  # noqa: F821
         return self.options
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = []
         for la in layers:
             is_top = la.is_top()

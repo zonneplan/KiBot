@@ -310,7 +310,7 @@ class Render_3D(Base3D):  # noqa: F821
         return self.options
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = []
         has_top = False
         has_bottom = False

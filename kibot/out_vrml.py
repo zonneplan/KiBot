@@ -112,5 +112,5 @@ class VRML(BaseOutput):  # noqa: F821
             """ *[dict] Options for the `vrml` output """
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         return Base3D.simple_conf_examples(name, 'PCB in VRML format', '3D')

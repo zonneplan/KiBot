@@ -419,7 +419,7 @@ class KiKit_Present(BaseOutput):
         self._category = 'PCB/docs'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         if not GS.check_tool(name, 'markdown2'):
             return None
         outs = BaseOutput.simple_conf_examples(name, 'Simple project presentation', 'Presentation')

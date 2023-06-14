@@ -171,7 +171,7 @@ class Download_Datasheets(BaseOutput):  # noqa: F821
         self.options.run(output_dir)
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         has_urls = False
         for c in GS.sch.get_components():
             if c.datasheet and is_url(c.datasheet):

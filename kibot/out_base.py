@@ -175,7 +175,7 @@ class BaseOutput(RegOutput):
         return os.path.abspath(os.path.join(out_dir, name))
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         return None
 
     @staticmethod

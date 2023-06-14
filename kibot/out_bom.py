@@ -26,7 +26,7 @@ from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, W_NOPART, W_MISSREF, DIS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
-from .kiplot import get_board_comps_data, load_any_sch
+from .kiplot import get_board_comps_data, load_any_sch, register_xmp_import
 from .kicad.v5_sch import SchematicComponent, SchematicField
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
@@ -994,32 +994,18 @@ class BoM(BaseOutput):  # noqa: F821
         return gb
 
     @staticmethod
-    def process_templates(templates, outs, mpn_fields, dists):
-        for tpl in templates:
-            for out in tpl:
-                if out['type'] == 'bom':
-                    columns = out['options'].get('columns', None)
-                    if columns:
-                        # Rename MPN for something we have, or just remove it
-                        to_remove = None
-                        for c in columns:
-                            fld = c.get('field', '')
-                            if fld.lower() == 'mpn':
-                                if mpn_fields:
-                                    c['field'] = 'manf#'
-                                elif dists:
-                                    c['field'] = list(dists)[0]+'#'
-                                else:
-                                    to_remove = c
-                        if to_remove:
-                            columns.remove(to_remove)
-                # Currently we have a position example (XYRS)
-                out['dir'] = 'Position'
-                if not out['name'].endswith('_xyrs') or GS.pcb_file:
-                    outs.append(out)
+    def process_templates(mpn_fields, dists):
+        # Rename MPN for something we have, or just remove it
+        if mpn_fields:
+            defs = {'_KIBOT_MPN_FIELD': '- field: manf#'}
+        elif dists:
+            defs = {'_KIBOT_MPN_FIELD': '- field: '+list(dists)[0]+'#'}
+        else:
+            defs = {}
+        register_xmp_import('MacroFab_XYRS', defs)
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = []
         # Make a list of available fields
         fld_names, extra_names = BoMOptions._get_columns()
@@ -1092,5 +1078,5 @@ class BoM(BaseOutput):  # noqa: F821
             # gb['options']['distributors'] = list(dists)
             outs.append(gb)
         # Add the list of layers to the templates
-        BoM.process_templates(templates, outs, mpn_fields, dists)
+        BoM.process_templates(mpn_fields, dists)
         return outs

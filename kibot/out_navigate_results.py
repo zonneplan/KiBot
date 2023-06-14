@@ -532,7 +532,7 @@ class Navigate_Results(BaseOutput):  # noqa: F821
         self.fix_priority_help()
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = BaseOutput.simple_conf_examples(name, 'Web page to browse the results', 'Browse')  # noqa: F821
         outs[0]['options'] = {'link_from_root': 'index.html', 'skip_not_run': True}
         return outs

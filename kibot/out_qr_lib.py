@@ -568,7 +568,7 @@ class QR_Lib(BaseOutput):  # noqa: F821
         self.fix_priority_help()
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         gb = {}
         gb['name'] = 'basic_qr_lib_example'
         gb['comment'] = 'QR code symbol and footprint example'

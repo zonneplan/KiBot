@@ -101,5 +101,5 @@ class STEP(Base3D):
         self._category = 'PCB/3D'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         return Base3D.simple_conf_examples(name, '3D model in STEP format', '3D')

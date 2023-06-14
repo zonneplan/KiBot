@@ -8,6 +8,7 @@
 import os
 from pcbnew import PLOT_FORMAT_GERBER, FromMM, ToMM
 from .gs import GS
+from .kiplot import register_xmp_import
 from .misc import FONT_HELP_TEXT
 from .optionable import Optionable
 from .out_any_layer import AnyLayer, AnyLayerOptions
@@ -116,7 +117,7 @@ class Gerber(AnyLayer):
         self._category = 'PCB/fabrication/gerber'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         gb = {}
         outs = [gb]
         # Create a generic version
@@ -128,38 +129,24 @@ class Gerber(AnyLayer):
         # Process the templates
         # Filter the list of layers using the ones we are interested on
         useful = GS.get_useful_layers(USEFUL_LAYERS, layers, include_copper=True)
-        tpl_layers = [AnyLayer.layer2dict(la) for la in useful]
-        lcsc_field = Optionable.solve_field_name('_field_lcsc_part', empty_when_none=True)
+        tpl_layers = []
+        for la in useful:
+            tpl_layers.append("- layer: '{}'".format(la.layer))
+            tpl_layers.append("  suffix: '{}'".format(la.suffix))
+            tpl_layers.append("  description: '{}'".format(la.description))
+        tpl_layers = '\n      '.join(tpl_layers)
+        register_xmp_import('global', {'_KIBOT_MANF_DIR_COMP': 'Manufacturers',
+                                       '_KIBOT_GERBER_LAYERS': tpl_layers})
         # Add the list of layers to the templates
-        for tpl in templates:
-            outs_used = []
-            for out in tpl:
-                skip = False
-                if out['type'] == 'gerber':
-                    out['layers'] = tpl_layers
-                elif out['type'] == 'position':
-                    if not GS.sch:
-                        # We need the schematic for the variant
-                        skip = True
-                        out['run_by_default'] = False
-                    out['options'] = {'pre_transform': ['_kicost_rename', '_rot_footprint']}
-                if out['type'] == 'bom' and (not GS.sch_file or (out['name'].startswith('JLCPCB') and not lcsc_field)):
-                    skip = True
-                    out['run_by_default'] = False
-                if out['type'] == 'compress':
-                    out['dir'] = 'Manufacturers'
-                    # We must disable the template and create a new one
-                    # If we don't do it the parent is configured and, in the JLCPCB case, it needs an schematic
-                    out['disable_run_by_default'] = out['extends']
-                    out['extends'] = ''
-                    # Moving files makes the `navigate_results` less powerful
-                    # out['options']['move_files'] = True
-                    if outs_used:
-                        # Compress only the ones we didn't skip
-                        out['options'] = {'files': [{'from_output': f, 'dest': '/'} for f in outs_used]}
+        for tpl in ['Elecrow', 'FusionPCB', 'JLCPCB', 'PCBWay']:
+            defs = {'_KIBOT_MANF_DIR': os.path.join('Manufacturers', tpl)}
+            if tpl == 'JLCPCB':
+                if not GS.sch:
+                    # We need the schematic for the variant
+                    defs['_KIBOT_POS_ENABLED'] = 'false'
                 else:
-                    out['dir'] = os.path.join('Manufacturers', out['dir'])
-                outs.append(out)
-                if not skip:
-                    outs_used.append(out['name'])
+                    defs['_KIBOT_POS_PRE_TRANSFORM'] = "['_kicost_rename', '_rot_footprint']"
+                if not GS.sch_file or not Optionable.solve_field_name('_field_lcsc_part', empty_when_none=True):
+                    defs['_KIBOT_BOM_ENABLED'] = 'false'
+            register_xmp_import(tpl, defs)
         return outs

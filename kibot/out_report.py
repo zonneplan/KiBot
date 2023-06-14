@@ -934,7 +934,7 @@ class Report(BaseOutput):  # noqa: F821
         self._category = 'PCB/docs'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         pandoc = GS.check_tool(name, 'PanDoc')
         gb = {}
         outs = [gb]

@@ -134,7 +134,7 @@ class Stencil_For_Jig(BaseOutput):  # noqa: F821
         self._category = 'PCB/fabrication/assembly'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         if not GS.check_tool(name, 'KiKit') or not GS.check_tool(name, 'OpenSCAD'):
             return None
         res = BaseOutput.simple_conf_examples(name, 'Steel stencil for alignment jig', 'Assembly')  # noqa: F821

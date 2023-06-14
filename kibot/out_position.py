@@ -324,7 +324,7 @@ class Position(BaseOutput):  # noqa: F821
         self._category = 'PCB/fabrication/assembly'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = []
         has_top = False
         has_bottom = False

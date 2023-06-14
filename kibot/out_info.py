@@ -72,5 +72,5 @@ class Info(BaseOutput):  # noqa: F821
             """ *[dict] Options for the `info` output """
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         return BaseOutput.simple_conf_examples(name, 'Information about the run', '.')  # noqa: F821

@@ -41,7 +41,7 @@ logger = log.get_logger()
 # Cache to avoid running external many times to check their versions
 script_versions = {}
 actions_loaded = False
-needed_imports = set()
+needed_imports = {}
 
 try:
     import yaml
@@ -874,10 +874,11 @@ def yaml_dump(f, tree):
         f.write(yaml.dump(tree, sort_keys=False))
 
 
-def register_xmp_import(name):
+def register_xmp_import(name, definitions=None):
     """ Register an import we need for an example """
     global needed_imports
-    needed_imports.add(name)
+    assert name not in needed_imports
+    needed_imports[name] = definitions
 
 
 def generate_one_example(dest_dir, types):
@@ -914,7 +915,7 @@ def generate_one_example(dest_dir, types):
         f.write('\n')
         # A helper for the internal templates
         global needed_imports
-        needed_imports = set()
+        needed_imports = {}
         # All the outputs
         outputs = []
         for n, cls in OrderedDict(sorted(outs.items())).items():
@@ -926,34 +927,32 @@ def generate_one_example(dest_dir, types):
                ((o.is_pcb() and o.is_sch()) and (not GS.pcb_file or not GS.sch_file))):
                 logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
-            # Look for templates
-            tpls = glob(os.path.join(GS.get_resource_path('config_templates'), n, '*.kibot.yaml'))
-            if tpls:
-                # Load the templates
-                tpl_names = tpls
-                tpls = []
-                for t in tpl_names:
-                    tree = yaml.safe_load(open(t))
-                    tpls.append(tree['outputs'])
-                    imps = tree.get('import')
-                    if imps:
-                        needed_imports.update([imp['file'] for imp in imps])
-            tree = cls.get_conf_examples(n, layers, tpls)
+            tree = cls.get_conf_examples(n, layers)
             if tree:
                 logger.debug('- {}, generated'.format(n))
-                if tpls:
-                    logger.debug(' - Templates: {}'.format(tpl_names))
                 outputs.extend(tree)
             else:
                 logger.debug('- {}, nothing to do'.format(n))
+        global_defaults = None
         if needed_imports:
-            imports = [{'file': man} for man in sorted(needed_imports)]
+            imports = []
+            for n, d in sorted(needed_imports.items()):
+                if n == 'global':
+                    global_defaults = d
+                    continue
+                content = {'file': n}
+                if d:
+                    content['definitions'] = d
+                imports.append(content)
             yaml_dump(f, {'import': imports})
             f.write('\n')
         if outputs:
             yaml_dump(f, {'outputs': outputs})
         else:
             return None
+        if global_defaults:
+            f.write('\n...\n')
+            yaml_dump(f, {'definitions': global_defaults})
     return fname
 
 

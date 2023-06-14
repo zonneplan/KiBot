@@ -619,7 +619,7 @@ class Diff(BaseOutput):  # noqa: F821
         return True
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = []
         git_command = GS.check_tool(name, 'Git')
         if GS.pcb_file and Diff.has_repo(git_command, GS.pcb_file):
