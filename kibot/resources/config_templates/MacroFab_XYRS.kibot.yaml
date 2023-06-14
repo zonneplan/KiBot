@@ -44,4 +44,8 @@ outputs:
         - field: Footprint
         - field: Footprint Populate
           name: Populate
-        - field: MPN
+        @_KIBOT_MPN_FIELD@
+
+...
+definitions:
+  _KIBOT_MPN_FIELD: '- field: MPN'
