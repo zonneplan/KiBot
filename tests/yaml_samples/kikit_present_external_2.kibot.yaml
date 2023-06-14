@@ -51,6 +51,8 @@ outputs:
   - name: 'navigate'
     comment: "Browse the results"
     type: navigate_results
+    options:
+      skip_not_run: true
 
   - name: 'compress_page'
     comment: "Compressed presentation page"

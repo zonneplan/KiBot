@@ -3165,6 +3165,7 @@ Notes:
       * Valid keys:
         - **`link_from_root`**: [string=''] The name of a file to create at the main output directory linking to the home page.
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options.
+        - `skip_not_run`: [boolean=false] Skip outputs with `run_by_default: false`.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                   The categories are currently used for `navigate_results`.

@@ -52,11 +52,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     different (#431)
   - Versions with stencil for Elecrow, FusionPCB, P-Ban and PCBWay.
 - Render_3D:
-  - realistic: can be used to disable the realistic colors and get the GUI ones
-  - show_board_body: can be used to make the PCB core transparent (see inner)
-  - show_comments: to see the content of the User.Comments layer.
-  - show_eco: to see the content of the Eco1.User/Eco2.User layers.
-  - show_adhesive : to see the content of the *.Adhesive layers.
+  - `realistic`: can be used to disable the realistic colors and get the GUI ones
+  - `show_board_body`: can be used to make the PCB core transparent (see inner)
+  - `show_comments`: to see the content of the User.Comments layer.
+  - `show_eco`: to see the content of the Eco1.User/Eco2.User layers.
+  - `show_adhesive`: to see the content of the *.Adhesive layers.
+- Navigate_Results:
+  - `skip_not_run`: used to skip outputs not generated in default runs.
 
 ### Changed
 - Command line:
