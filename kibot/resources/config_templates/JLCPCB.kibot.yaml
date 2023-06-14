@@ -13,21 +13,21 @@ filters:
         regex: '^C\d+'
 
 groups:
-  - name: _JLCPCB_fab
+  - name: _JLCPCB_fab@_KIBOT_IMPORT_ID@
     outputs:
-      - _JLCPCB_gerbers
-      - _JLCPCB_drill
-  - name: _JLCPCB_assembly
+      - _JLCPCB_gerbers@_KIBOT_IMPORT_ID@
+      - _JLCPCB_drill@_KIBOT_IMPORT_ID@
+  - name: _JLCPCB_assembly@_KIBOT_IMPORT_ID@
     outputs:
-      - _JLCPCB_position
-      - _JLCPCB_bom
-  - name: _JLCPCB
+      - _JLCPCB_position@_KIBOT_IMPORT_ID@
+      - _JLCPCB_bom@_KIBOT_IMPORT_ID@
+  - name: _JLCPCB@_KIBOT_IMPORT_ID@
     outputs:
-      - _JLCPCB_fab
-      - _JLCPCB_assembly
+      - _JLCPCB_fab@_KIBOT_IMPORT_ID@
+      - _JLCPCB_assembly@_KIBOT_IMPORT_ID@
 
 outputs:
-  - name: _JLCPCB_gerbers
+  - name: _JLCPCB_gerbers@_KIBOT_IMPORT_ID@
     comment: Gerbers compatible with JLCPCB
     type: gerber
     dir: @_KIBOT_MANF_DIR@
@@ -53,7 +53,7 @@ outputs:
       @_KIBOT_F_PASTE@
       @_KIBOT_B_PASTE@
 
-  - name: _JLCPCB_drill
+  - name: _JLCPCB_drill@_KIBOT_IMPORT_ID@
     comment: Drill files compatible with JLCPCB
     type: excellon
     dir: @_KIBOT_MANF_DIR@
@@ -66,7 +66,7 @@ outputs:
       route_mode_for_oval_holes: false
       output: "%f%i.%x"
 
-  - name: _JLCPCB_position
+  - name: _JLCPCB_position@_KIBOT_IMPORT_ID@
     comment: "Pick and place file, JLCPCB style"
     type: position
     dir: @_KIBOT_MANF_DIR@
@@ -92,7 +92,7 @@ outputs:
         - id: Side
           name: Layer
 
-  - name: _JLCPCB_bom
+  - name: _JLCPCB_bom@_KIBOT_IMPORT_ID@
     comment: "BoM for JLCPCB"
     type: bom
     dir: @_KIBOT_MANF_DIR@
@@ -114,7 +114,7 @@ outputs:
         hide_stats_info: true
         quote_all: true
 
-  - name: _JLCPCB_compress
+  - name: _JLCPCB_compress@_KIBOT_IMPORT_ID@
     comment: ZIP file for JLCPCB
     type: compress
     dir: @_KIBOT_MANF_DIR_COMP@
@@ -122,13 +122,13 @@ outputs:
       # Position and BoM can be disabled
       skip_not_run: true
       files:
-        - from_output: _JLCPCB_gerbers
+        - from_output: _JLCPCB_gerbers@_KIBOT_IMPORT_ID@
           dest: /
-        - from_output: _JLCPCB_drill
+        - from_output: _JLCPCB_drill@_KIBOT_IMPORT_ID@
           dest: /
-        - from_output: _JLCPCB_position
+        - from_output: _JLCPCB_position@_KIBOT_IMPORT_ID@
           dest: /
-        - from_output: _JLCPCB_bom
+        - from_output: _JLCPCB_bom@_KIBOT_IMPORT_ID@
           dest: /
 
 ...

@@ -5,13 +5,13 @@ kibot:
   version: 1
 
 groups:
-  - name: _P-Ban
+  - name: _P-Ban@_KIBOT_IMPORT_ID@
     outputs:
-      - _P-Ban_gerbers
-      - _P-Ban_drill
+      - _P-Ban_gerbers@_KIBOT_IMPORT_ID@
+      - _P-Ban_drill@_KIBOT_IMPORT_ID@
 
 outputs:
-  - name: _P-Ban_gerbers
+  - name: _P-Ban_gerbers@_KIBOT_IMPORT_ID@
     comment: Gerbers compatible with P-Ban
     type: gerber
     dir: @_KIBOT_MANF_DIR@
@@ -41,7 +41,7 @@ outputs:
       @_KIBOT_F_PASTE@
       @_KIBOT_B_PASTE@
 
-  - name: _P-Ban_drill
+  - name: _P-Ban_drill@_KIBOT_IMPORT_ID@
     comment: Drill files compatible with P-Ban
     type: excellon
     dir: @_KIBOT_MANF_DIR@
@@ -56,23 +56,25 @@ outputs:
       right_digits: 3
       output: "%f.drl"
 
-  - name: _P-Ban_compress
+  - name: _P-Ban_compress@_KIBOT_IMPORT_ID@
     comment: ZIP file for P-Ban
     type: compress
     dir: @_KIBOT_MANF_DIR_COMP@
     options:
       files:
-        - from_output: _P-Ban_gerbers
+        - from_output: _P-Ban_gerbers@_KIBOT_IMPORT_ID@
           dest: /
-        - from_output: _P-Ban_drill
+        - from_output: _P-Ban_drill@_KIBOT_IMPORT_ID@
           dest: /
 
 ...
 definitions:
   _KIBOT_F_PASTE: ''
   _KIBOT_B_PASTE: ''
-  _KIBOT_MANF_DIR: P-Ban
-  _KIBOT_MANF_DIR_COMP: P-Ban
+  _KIBOT_IMPORT_ID: ''
+  _KIBOT_IMPORT_DIR: 'P-Ban'
+  _KIBOT_MANF_DIR: @_KIBOT_IMPORT_DIR@
+  _KIBOT_MANF_DIR_COMP: @_KIBOT_IMPORT_DIR@
   _KIBOT_GERBER_LAYERS: |
       - F.Cu
             - B.Cu
