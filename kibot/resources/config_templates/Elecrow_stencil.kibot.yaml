@@ -4,5 +4,5 @@ kibot:
 import:
   - file: Elecrow
     definitions:
-      F_PASTE: '- F.Paste'
-      B_PASTE: '- B.Paste'
+      _KIBOT_F_PASTE: '- F.Paste'
+      _KIBOT_B_PASTE: '- B.Paste'

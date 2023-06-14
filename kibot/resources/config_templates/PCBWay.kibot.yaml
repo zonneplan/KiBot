@@ -42,8 +42,8 @@ outputs:
       - F.Paste
       - B.Paste
       - Edge.Cuts
-      @F_PASTE@
-      @B_PASTE@
+      @_KIBOT_F_PASTE@
+      @_KIBOT_B_PASTE@
 
   - name: _PCBWay_drill
     comment: Drill files compatible with PCBWay
@@ -78,5 +78,5 @@ outputs:
 
 ...
 definitions:
-  F_PASTE: ''
-  B_PASTE: ''
+  _KIBOT_F_PASTE: ''
+  _KIBOT_B_PASTE: ''
