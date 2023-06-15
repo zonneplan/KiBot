@@ -1183,6 +1183,8 @@ class SchematicComponentV6(SchematicComponent):
                 lib_id = CROSSED_LIB+':'+(self.local_name if self.local_name else self.name)
         data = [_symbol('lib_id', [lib_id]),
                 _symbol('at', [self.x, self.y, self.ang])]
+        if self.local_name is not None:
+            data.insert(0, _symbol('lib_name', [self.local_name]))
         if self.mirror:
             data.append(_symbol('mirror', [Symbol(self.mirror)]))
         if self.unit_specified:
@@ -1367,7 +1369,10 @@ class SchematicBitmapV6(object):
         for v in self.data:
             d.append(Symbol(v))
             d.append(Sep())
-        data = [_symbol('at', [self.pos_x, self.pos_y]), Sep()]
+        data = [_symbol('at', [self.pos_x, self.pos_y])]
+        if self.scale is not None:
+            data.append(_symbol('scale', [self.scale]))
+        data.append(Sep())
         add_uuid(data, self.uuid)
         data.extend([_symbol('data', [Sep()] + d), Sep()])
         return _symbol('image', data)
