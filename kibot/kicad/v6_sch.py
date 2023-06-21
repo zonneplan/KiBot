@@ -33,6 +33,15 @@ SHEET_FILE = {'Sheet file', 'Sheetfile'}
 SHEET_NAME = {'Sheet name', 'Sheetname'}
 
 
+def path_join(*args):
+    # We use os.path.join because it can handle things like xxxx//yyyyy
+    res = os.path.join(*args)
+    if os.sep != '/':
+        # Avoid getting \ on Windows
+        res = res.replace(os.sep, '/')
+    return res
+
+
 class UUID_Validator(object):
     known_UUIDs = set()
 
@@ -1147,7 +1156,7 @@ class SchematicComponentV6(SchematicComponent):
                 comp.p_path = parent.get_full_path(False)
                 # Translate the instance to the v6 format (remove UUID for / and add the component UUID)
                 v6_ins = SymbolInstance()
-                v6_ins.path = os.path.join('/', '/'.join(ins.path.split('/')[2:]), comp.uuid_ori)
+                v6_ins.path = path_join('/', '/'.join(ins.path.split('/')[2:]), comp.uuid_ori)
                 v6_ins.reference = ins.reference
                 v6_ins.unit = ins.unit
                 # Add to the root symbol_instances, so we reconstruct it (like in a v6 file)
@@ -1629,9 +1638,9 @@ class Sheet(object):
         sheet = SchematicV6()
         self.sheet = sheet
         parent_dir = os.path.dirname(parent_file)
-        sheet.sheet_path = os.path.join(parent_obj.sheet_path, self.uuid)
-        sheet.sheet_path_ori = os.path.join(parent_obj.sheet_path, self.uuid_ori)
-        sheet.sheet_path_h = os.path.join(parent_obj.sheet_path_h, self.name)
+        sheet.sheet_path = path_join(parent_obj.sheet_path, self.uuid)
+        sheet.sheet_path_ori = path_join(parent_obj.sheet_path, self.uuid_ori)
+        sheet.sheet_path_h = path_join(parent_obj.sheet_path_h, self.name)
         parent_obj.sheet_paths[sheet.sheet_path_ori] = sheet
         sheet.load(os.path.join(parent_dir, self.file), project, parent_obj)
         # self.sheet_paths
@@ -1977,8 +1986,8 @@ class SchematicV6(Schematic):
                         c = s.component
                         if c.uuid != c.uuid_ori:
                             # UUID changed to make it different
-                            # s.path = os.path.join(os.path.dirname(s.path), c.uuid)
-                            s.path = os.path.join(c.path, c.uuid)
+                            # s.path = path_join(os.path.dirname(s.path), c.uuid)
+                            s.path = path_join(c.path, c.uuid)
                 if base_sheet == self or not exp_hierarchy:
                     _add_items_list('symbol_instances', instances, sch)
             logger.debug('Saving schematic: `{}`'.format(fname))
@@ -2063,7 +2072,7 @@ class SchematicV6(Schematic):
             Is used to save a variant, where we avoid sharing instance data """
         # Store it in the UUID -> name
         # Used to create a human readable sheet path
-        self.sheet_names[os.path.join(self.sheet_path_ori, sch.uuid_ori)] = os.path.join(self.sheet_path_h, sch.name)
+        self.sheet_names[path_join(self.sheet_path_ori, sch.uuid_ori)] = path_join(self.sheet_path_h, sch.name)
         # Eliminate subdirs
         file = sch.file.replace('/', '_')
         fparts = os.path.splitext(file)
@@ -2230,7 +2239,7 @@ class SchematicV6(Schematic):
                 if extra_debug:
                     logger.debug(f"- Loaded {obj} [id {id(obj)}]  UUID {obj.uuid} original UUID {obj.uuid_ori}")
                 self.symbols.append(obj)
-                self.symbol_uuids[os.path.join(self.sheet_path_ori, obj.uuid_ori)] = obj
+                self.symbol_uuids[path_join(self.sheet_path_ori, obj.uuid_ori)] = obj
             elif e_type == 'sheet':
                 obj = Sheet.parse(e)
                 self.sheets.append(obj)
