@@ -1838,7 +1838,7 @@ Of course donations are welcome ([donate](https://www.paypal.com/donate/?hosted_
     Just comment in the [discussions](https://github.com/INTI-CMNB/KiBot/discussions/categories/other-platforms)
     and I'll help you to run tests to adapt the code.
     Now that KiCad 6 uses Python 3 most of KiBot functionality should work on Windows and Mac OS X.
-    People is using WSL to run KiBot, but we don't have a tutorial about how to do it.
+    People are using WSL to run KiBot, but we don't have a tutorial about how to do it.
 - If you use a Linux that isn't derived from Debian:
   - Consider helping to add better support for it. Do you know the name of the packages for the dependencies?
     Do you know how to create a package for your distro?
