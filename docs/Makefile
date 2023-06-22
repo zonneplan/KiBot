@@ -1,14 +1,6 @@
 #!/usr/bin/make
 
-all: ../README.md  samples/generic_plot.kibot.yaml ../kibot/resources/report_templates/report_full_svg.txt ../kibot/resources/config_templates/bom/MacroFab_XYRS.kibot.yaml \
-	../kibot/resources/config_templates/gerber/Elecrow.kibot.yaml ../kibot/resources/config_templates/gerber/FusionPCB.kibot.yaml \
-	../kibot/resources/config_templates/gerber/JLCPCB.kibot.yaml ../kibot/resources/config_templates/gerber/PCBWay.kibot.yaml ../src/kibot-check
-
-../kibot/resources/config_templates/gerber/%.kibot.yaml: samples/%.kibot.yaml
-	cp $< $@
-
-../kibot/resources/config_templates/bom/%.kibot.yaml: samples/%.kibot.yaml
-	cp $< $@
+all: ../README.md  samples/generic_plot.kibot.yaml ../kibot/resources/report_templates/report_full_svg.txt ../src/kibot-check
 
 ../README.md: README.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/var_*.py ../kibot/fil_*.py ../kibot/__main__.py ../kibot/config_reader.py ../kibot/globals.py ../kibot/dep_downloader.py
 	cat README.in | perl replace_tags.pl > ../README.md
