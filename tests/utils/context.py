@@ -29,6 +29,8 @@ KICAD_VERSION_5_1_7 = 5001007
 KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_6_0_0 = 6000000
 KICAD_VERSION_7_0_0 = 7000000
+KICAD_VERSION_7_0_3 = 7000003
+KICAD_VERSION_7_0_5 = 7000005
 KICAD_VERSION_8_0_0 = 7099000
 MODE_SCH = 1
 MODE_PCB = 0
@@ -40,8 +42,9 @@ if ng_ver:
     # Path to the Python module
     sys.path.insert(0, '/usr/lib/kicad-nightly/lib/python3/dist-packages')
 import pcbnew
-m = re.search(r'(\d+)\.(\d+)\.(\d+)', pcbnew.GetBuildVersion())
-logging.debug(pcbnew.GetBuildVersion())
+build_version = pcbnew.GetBuildVersion()
+m = re.search(r'(\d+)\.(\d+)\.(\d+)', build_version)
+logging.debug(build_version)
 kicad_major = int(m.group(1))
 kicad_minor = int(m.group(2))
 kicad_patch = int(m.group(3))
@@ -50,10 +53,15 @@ if kicad_version >= KICAD_VERSION_5_99:
     BOARDS_DIR = '../board_samples/kicad_'+str(kicad_major+(0 if kicad_minor < 99 else 1))
     if kicad_version >= KICAD_VERSION_8_0_0:
         REF_DIR = 'tests/reference/8_0_0'
+    elif kicad_version >= KICAD_VERSION_7_0_5 and 'unknown' in build_version:
+        REF_DIR = 'tests/reference/stable_nightly'
+    elif kicad_version >= KICAD_VERSION_7_0_3:
+        REF_DIR = 'tests/reference/7_0_3'
     elif kicad_version >= KICAD_VERSION_7_0_0:
         REF_DIR = 'tests/reference/7_0_0'
     else:
         REF_DIR = 'tests/reference/6_0_8'
+    logging.debug('Reference dir: '+REF_DIR)
     KICAD_SCH_EXT = '.kicad_sch'
     # Now these layers can be renamed.
     # KiCad 6 takes the freedom to give them more descriptive names ...
@@ -493,7 +501,7 @@ class TestContext(object):
         return self.search_not_in_file(os.path.join(self.sub_dir, file), texts)
 
     def compare_image(self, image, reference=None, diff='diff.png', ref_out_dir=False, fuzz='5%', tol=0, height='87%',
-                      off_y='0', sub=False, trim=False):
+                      off_y='0', sub=False, trim=False, fix_here=True):
         """ For images and single page PDFs """
         if reference is None:
             reference = image
@@ -501,7 +509,9 @@ class TestContext(object):
             reference = self.get_out_path(reference)
         else:
             reference = os.path.join(REF_DIR, reference)
+        full_ref = reference
         image = self.get_out_path(image, sub)
+        full_img = image
         png_ref = None
         if reference[-3:] == 'svg':
             png_ref = reference[:-3]+'png'
@@ -527,7 +537,7 @@ class TestContext(object):
                '-colorspace', 'RGB',
                self.get_out_path(diff)]
         logging.debug('Comparing images with: '+usable_cmd(cmd))
-        res = subprocess.run(cmd, stderr=subprocess.STDOUT, check=(tol == 0), stdout=subprocess.PIPE).stdout
+        res = subprocess.run(cmd, stderr=subprocess.STDOUT, check=False, stdout=subprocess.PIPE).stdout
         # m = re.match(r'([\d\.e-]+) \(([\d\.e-]+)\)', res.decode())
         # assert m
         # logging.debug('MSE={} ({})'.format(m.group(1), m.group(2)))
@@ -542,6 +552,9 @@ class TestContext(object):
             os.remove(png_ref)
         if png_image:
             os.remove(png_image)
+        if ae > tol and fix_here and os.environ.get('KIBOT_COPY_REF') == '1':
+            logging.error(f'cp {full_img} {full_ref}')
+            shutil.copy2(full_img, full_ref)
         assert ae <= tol
 
     def compare_pdf(self, gen, reference=None, diff='diff-{}.png', height='87%', off_y='0', tol=0):
@@ -551,15 +564,13 @@ class TestContext(object):
         logging.debug('Comparing PDFs: '+gen+' vs '+reference)
         # Split the reference
         logging.debug('Splitting '+reference)
-        cmd = ['convert', '-density', '150',
-               os.path.join(REF_DIR, reference),
-               self.get_out_path('ref-%d.png')]
+        full_ref_name = os.path.join(REF_DIR, reference)
+        cmd = ['convert', '-density', '150', full_ref_name, self.get_out_path('ref-%d.png')]
         subprocess.check_call(cmd)
         # Split the generated
         logging.debug('Splitting '+gen)
-        cmd = ['convert', '-density', '150',
-               self.get_out_path(gen),
-               self.get_out_path('gen-%d.png')]
+        full_gen_name = self.get_out_path(gen)
+        cmd = ['convert', '-density', '150', full_gen_name, self.get_out_path('gen-%d.png')]
         subprocess.check_call(cmd)
         # Check number of pages
         ref_pages = glob(self.get_out_path('ref-*.png'))
@@ -567,17 +578,27 @@ class TestContext(object):
         logging.debug('Pages {} vs {}'.format(len(gen_pages), len(ref_pages)))
         assert len(ref_pages) == len(gen_pages)
         # Compare each page
-        for page in range(len(ref_pages)):
-            self.compare_image('gen-'+str(page)+'.png', 'ref-'+str(page)+'.png', diff.format(page), ref_out_dir=True,
-                               height=height, off_y=off_y, tol=tol)
+        try:
+            for page in range(len(ref_pages)):
+                self.compare_image('gen-'+str(page)+'.png', 'ref-'+str(page)+'.png', diff.format(page), ref_out_dir=True,
+                                   height=height, off_y=off_y, tol=tol, fix_here=False)
+        except AssertionError:
+            if os.environ.get('KIBOT_COPY_REF') == '1':
+                logging.error(f'cp {full_gen_name} {full_ref_name}')
+                shutil.copy2(full_gen_name, full_ref_name)
+            raise
 
     def compare_txt(self, text, reference=None, diff='diff.txt'):
         if reference is None:
             reference = text
-        cmd = ['/bin/sh', '-c', 'diff -ub '+os.path.join(REF_DIR, reference)+' ' +
-               self.get_out_path(text)+' > '+self.get_out_path(diff)]
+        full_ref_name = os.path.join(REF_DIR, reference)
+        full_text_name = self.get_out_path(text)
+        cmd = ['/bin/sh', '-c', 'diff -uBb '+full_ref_name+' '+full_text_name+' > '+self.get_out_path(diff)]
         logging.debug('Comparing texts with: '+usable_cmd(cmd))
         res = subprocess.call(cmd)
+        if res and os.environ.get('KIBOT_COPY_REF') == '1':
+            logging.error(f'cp {full_text_name} {full_ref_name}')
+            shutil.copy2(full_text_name, full_ref_name)
         assert res == 0, res
 
     def compare_txt_d(self, text, reference=None, diff='diff.txt'):

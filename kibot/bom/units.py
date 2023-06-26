@@ -55,6 +55,10 @@ decimal_point = None
 parser_cache = {}
 
 
+def get_decima_point():
+    return decimal_point
+
+
 class ParsedValue(object):
     def __init__(self, v, pow, unit, extra=None):
         # From a value that matched the regex
@@ -159,7 +163,7 @@ def value_from_grammar(r):
     return parsed
 
 
-def comp_match(component, ref_prefix, ref=None):
+def comp_match(component, ref_prefix, ref=None, relax_severity=False, stronger=False):
     """
     Return a normalized value and units for a given component value string
     Also tries to separate extra data, i.e. tolerance, using a complex parser
@@ -195,18 +199,29 @@ def comp_match(component, ref_prefix, ref=None):
         # Ignore case
         match = re.compile(match_string(), flags=re.IGNORECASE)
 
+    log_func_warn = logger.debug if relax_severity else logger.warning
     where = ' in {}'.format(ref) if ref is not None else ''
     result = match.match(component)
     if not result:
+        # This is used to parse things like "1/8 W", but we get "1/8" here
+        result = re.match(r'(\d+)\/(\d+)', component)
+        if result:
+            val = int(result.group(1))/int(result.group(2))
+            val, pow = get_prefix(val, '')
+            parsed = ParsedValue(val, pow, get_unit('', ref_prefix))
+            # Cache the result
+            parser_cache[original+ref_prefix] = parsed
+            return parsed
+    if not result:
         # Failed with the regex, try with the parser
-        result = parse(ref_prefix[0]+' '+with_commas, with_extra=True)
+        result = parse(ref_prefix[0]+' '+with_commas, with_extra=True, stronger=stronger)
         if result:
             result = value_from_grammar(result)
             if result and result.get_extra('discarded'):
                 discarded = " ".join(list(map(lambda x: '`'+x+'`', result.get_extra('discarded'))))
-                logger.warning(W_BADVAL4 + "Malformed value: `{}` (discarded: {}{})".format(original, discarded, where))
+                log_func_warn(W_BADVAL4+"Malformed value: `{}` (discarded: {}{})".format(original, discarded, where))
         if not result:
-            logger.warning(W_BADVAL1 + "Malformed value: `{}` (no match{})".format(original, where))
+            log_func_warn(W_BADVAL1+"Malformed value: `{}` (no match{})".format(original, where))
             return None
         # Cache the result
         parser_cache[original+ref_prefix] = result
@@ -214,7 +229,7 @@ def comp_match(component, ref_prefix, ref=None):
 
     value, prefix, units, post = result.groups()
     if value == '.':
-        logger.warning(W_BADVAL2 + "Malformed value: `{}` (reduced to decimal point{})".format(original, where))
+        log_func_warn(W_BADVAL2+"Malformed value: `{}` (reduced to decimal point{})".format(original, where))
         return None
     if value == '':
         value = '0'
@@ -225,12 +240,11 @@ def comp_match(component, ref_prefix, ref=None):
     # We will also have a trailing number
     if post:
         if "." in value:
-            logger.warning(W_BADVAL3 + "Malformed value: `{}` (unit split, but contains decimal point{})".
-                           format(original, where))
+            log_func_warn(W_BADVAL3+"Malformed value: `{}` (unit split, but contains decimal point{})".format(original, where))
             return None
         value = float(value)
-        postValue = float(post) / (10 ** len(post))
-        val = value * 1.0 + postValue
+        postValue = float(post)/(10**len(post))
+        val = value*1.0+postValue
     else:
         val = float(value)
 

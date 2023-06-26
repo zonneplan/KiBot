@@ -764,6 +764,26 @@ class SchematicField(object):
         self.italic = False
         self.bold = False
 
+    def visible(self, v):
+        v = 0 if v else 1
+        self.flags = "%04x" % ((int(self.flags) & 0xFFFE) | v)
+
+    def is_visible(self):
+        return not(int(self.flags, 16) and 1)
+
+    def get_height(self):
+        """ Font height in mm """
+        return self.size*0.0254
+
+    def get_xy(self):
+        return self.x*0.0254, -self.y*0.0254
+
+    def set_xy(self, x, y, hjustify=None):
+        self.x = int(x/0.0254)
+        self.y = -int(y/0.0254)
+        if hjustify:
+            self.hjustify = hjustify
+
     @staticmethod
     def parse(line, f):
         m = SchematicField.field_re.match(line)
@@ -918,8 +938,9 @@ class SchematicComponent(object):
                 max_num = f.number
         return max_num+1
 
-    def set_field(self, field, value):
-        """ Change the value for an existing field """
+    def set_field(self, field, value, visible=None):
+        """ Change the value for an existing field.
+            Or create a new one (returns True). """
         field_lc = field.lower()
         if field_lc in self.dfields:
             target = self.dfields[field_lc]
@@ -927,12 +948,21 @@ class SchematicComponent(object):
             # Adjust special fields
             if target.number < 4:
                 self._solve_fields(LineReader(None, '**Internal**'))
-        else:
-            f = type(self.fields[0])()
-            f.name = field
-            f.value = value
-            f.number = self.get_free_field_number()
-            self.add_field(f)
+            if visible is not None:
+                target.visible(visible)
+            return False, target
+        f = type(self.fields[0])()
+        f.name = field
+        f.value = value
+        f.number = self.get_free_field_number()
+        f.visible(bool(visible))
+        f.x = self.x
+        f.y = self.y
+        self.add_field(f)
+        return True, f
+
+    def get_visible_fields(self):
+        return [f for f in self.fields if f.is_visible()]
 
     def get_field_names(self):
         """ List of all the available field names for this component """
@@ -1029,10 +1059,10 @@ class SchematicComponent(object):
                 field.value = stripped_val
 
     def __str__(self):
-        ref = self.ref
+        ref = self.ref if self.ref is not None else '??'
         # Add the sub-part id
         # How to know if unit 1 is A?
-        if self.unit > 1:
+        if self.unit is not None and self.unit > 1:
             ref += chr(ord('A')+self.unit-1)
         if self.name == self.value:
             return '{} ({})'.format(ref, self.name)
@@ -1108,6 +1138,7 @@ class SchematicComponent(object):
         field.name = 'part'
         field.value = comp.name
         field.number = -1
+        field.visible(False)
         comp.add_field(field)
         # Redundant pos
         if not line.startswith('\t'+str(comp.unit)):

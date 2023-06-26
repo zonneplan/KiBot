@@ -59,10 +59,14 @@
     * [Consolidating BoMs](#consolidating-boms)
     * [Importing outputs from another file](#importing-outputs-from-another-file)
     * [Importing other stuff from another file](#importing-other-stuff-from-another-file)
+    * [Parametrizable imports](#parametrizable-imports)
     * [Importing internal templates](#importing-internal-templates)
     * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
     * [Grouping outputs](#grouping-outputs)
   * [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing)
+    * [Default definitions](#default-definitions)
+    * [Definitions during import](#definitions-during-import)
+    * [Recursive definitions expansion](#recursive-definitions-expansion)
 * [Usage](#usage)
 * [Usage for CI/CD](#usage-for-cicd)
   * [GitHub Actions](#usage-of-github-actions)
@@ -421,7 +425,8 @@ This section is used to specify tasks that will be executed before generating an
         This preflight modifies the schematic, use it only in revision control environments.
         Used to solve ERC problems when using filters that remove power reference numbers.
 - `check_zone_fills`: [boolean=false] Zones are filled before doing any operation involving PCB layers.
-        The original PCB remains unchanged.
+        The original PCB remains unchanged. If you need to abort when the zone fill
+        creates significant changes to a layer use the CheckZoneFill internal template.
 - `erc_warnings`: [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
 - `fill_zones`: [boolean=false] Fill all zones again and save the PCB.
 - `filters`: [list(dict)] A list of entries to filter out ERC/DRC messages.
@@ -644,6 +649,7 @@ If you need to force the origin of the data you can use **%bX** for the PCB and 
 **X** is the pattern to expand.
 
 You can also use text variables (introduced in KiCad 6). To expand a text variable use `${VARIABLE}`.
+In addition you can also use environment variables, defined in your OS shell or defined in the `global` section.
 
 #### Default *dir* option
 
@@ -680,6 +686,7 @@ Expansion patterns are applied to this value, but you should avoid using pattern
 The behavior of these patterns isn't fully defined in this case and the results may change in the future.
 
 You can also use text variables (introduced in KiCad 6). To expand a text variable use `${VARIABLE}`.
+In addition you can also use environment variables, defined in your OS shell or defined in the `global` section.
 
 #### Date format option
 
@@ -786,7 +793,12 @@ global:
                      The KIPRJMOD is also available for expansion.
       * Valid keys:
         - `define_old`: [boolean=false] Also define legacy versions of the variables.
-                        Useful when using KiCad 6 and some libs uses old KiCad 5 names.
+                        Useful when using KiCad 6+ and some libs uses old KiCad 5 names.
+        - `extra_os`: [list(dict)] Extra variables to export as OS environment variables.
+                      Note that you can also define them using `- NAME: VALUE`.
+          * Valid keys:
+            - **`name`**: [string=''] Name of the variable.
+            - **`value`**: [string=''] Value for the variable.
         - `footprints`: [string=''] System level footprints (aka modules) dir. KiCad 5: KICAD_FOOTPRINT_DIR and KISYSMOD.
                         KiCad 6: KICAD6_FOOTPRINT_DIR.
         - `models_3d`: [string=''] System level 3D models dir. KiCad 5: KISYS3DMOD. KiCad 6: KICAD6_3DMODEL_DIR.
@@ -804,9 +816,21 @@ global:
     - `field_3D_model`: [string='_3D_model'] Name for the field controlling the 3D models used for a component.
     - `field_lcsc_part`: [string=''] The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
                          When empty KiBot will try to discover it.
+    - `field_package`: [string|list(string)] Name/s of the field/s used for the package, not footprint.
+                       I.e. 0805, SOT-23, etc. Used for the value split filter.
+                       The default is ['package', 'pkg'].
+    - `field_power`: [string|list(string)] Name/s of the field/s used for the power raiting.
+                     Used for the value split filter.
+                     The default is ['power', 'pow'].
+    - `field_temp_coef`: [string|list(string)] Name/s of the field/s used for the temperature coefficient.
+                         I.e. X7R, NP0, etc. Used for the value split filter.
+                         The default is ['temp_coef', 'tmp_coef'].
     - `field_tolerance`: [string|list(string)] Name/s of the field/s used for the tolerance.
-                         Used while creating colored resistors.
-                         The default is ['tol', 'tolerance'].
+                         Used while creating colored resistors and for the value split filter.
+                         The default is ['tolerance', 'tol'].
+    - `field_voltage`: [string|list(string)] Name/s of the field/s used for the voltage raiting.
+                       Used for the value split filter.
+                       The default is ['voltage', 'v'].
     - `filters`: [list(dict)] KiBot warnings to be ignored.
       * Valid keys:
         - `error`: [string=''] Error id we want to exclude.
@@ -816,9 +840,17 @@ global:
         - `number`: [number=0] Error number we want to exclude.
         - `regex`: [string=''] Regular expression to match the text for the error we want to exclude.
         - *regexp*: Alias for regex.
+    - `git_diff_strategy`: [string='worktree'] [worktree,stash] When computing a PCB/SCH diff it configures how do we preserve the current
+                           working state. The *worktree* mechanism creates a separated worktree, that then is just removed.
+                           The *stash* mechanism uses *git stash push/pop* to save the current changes. Using *worktree*
+                           is the preferred mechanism.
     - `hide_excluded`: [boolean=false] Default value for the `hide_excluded` option of various PCB outputs.
     - `impedance_controlled`: [boolean=false] The PCB needs specific dielectric characteristics.
                               KiCad 6: you should set this in the Board Setup -> Physical Stackup.
+    - `invalidate_pcb_text_cache`: [string='auto'] [auto,yes,no] Remove any cached text variable in the PCB. This is needed in order to force a text
+                                   variables update when using `set_text_variables`. You might want to disable it when applying some
+                                   changes to the PCB and create a new copy to send to somebody without changing the cached values.
+                                   The `auto` value will remove the cached values only when using `set_text_variables`.
     - `kiauto_time_out_scale`: [number=0.0] Time-out multiplier for KiAuto operations.
     - `kiauto_wait_start`: [number=0] Time to wait for KiCad in KiAuto operations.
     - `kicad_dnp_applied`: [boolean=true] The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag before running any filter.
@@ -866,6 +898,7 @@ global:
     - `units`: [string=''] [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs.
                Also KiCad 6 dimensions.
     - `use_dir_for_preflights`: [boolean=true] Use the global `dir` as subdir for the preflights.
+    - `use_os_env_for_expand`: [boolean=true] In addition to KiCad text variables also use the OS environment variables when expanding ${VARIABLE}.
     - `variant`: [string=''] Default variant to apply to all outputs.
 
 
@@ -956,6 +989,8 @@ filters:
                         Separators are applied.
     - `exclude_empty_val`: [boolean=false] Exclude components with empty 'Value'.
     - `exclude_field`: [boolean=false] Exclude components if a field is named as any of the keys.
+    - `exclude_not_in_bom`: [boolean=false] Exclude components marked *Exclude from bill of materials* (KiCad 6+).
+    - `exclude_not_on_board`: [boolean=false] Exclude components marked *Exclude from board* (KiCad 6+).
     - `exclude_refs`: [list(string)] List of references to be excluded.
                       Use R* for all references with R prefix.
     - `exclude_smd`: [boolean=false] Exclude components marked as smd in the PCB.
@@ -999,6 +1034,34 @@ filters:
                    Components matching the regular expression will be rotated the indicated angle.
     - `skip_bottom`: [boolean=false] Do not rotate components on the bottom.
     - `skip_top`: [boolean=false] Do not rotate components on the top.
+- spec_to_field: Spec_to_Field
+        This filter extracts information from the specs obtained from component distributors
+        and fills fields.
+        I.e. create a field with the RoHS status of a component.
+        In order to make it work you must be able to get prices using the KiCost options of
+        the `bom` output. Make sure you can do this before trying to use this filter.
+        Usage [example](https://inti-cmnb.github.io/kibot-examples-1/spec_to_field/).
+  * Valid keys:
+    - **`from_output`**: [string=''] Name of the output used to collect the specs.
+                         Currently this must be a `bom` output with KiCost enabled and a distributor that returns specs.
+    - `check_dist_coherence`: [boolean=true] Check that the data we got from different distributors is equivalent.
+    - `check_dist_fields`: [string|list(string)=''] List of fields to include in the check.
+                           For a full list of fields consult the `specs` option.
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `name`: [string=''] Used to identify this particular filter definition.
+    - `specs`: [list(dict)|dict] *One or more specs to be copied.
+      * Valid keys:
+        - **`field`**: [string=''] Name of the destination field.
+        - `collision`: [string='warning'] [warning,error,ignore] How to report a collision between the current value and the new value.
+        - `policy`: [string='overwrite'] [overwrite,update,new] Controls the behavior of the copy mechanism.
+                    `overwrite` always copy the spec value,
+                    `update` copy only if the field already exist,
+                    `new` copy only if the field doesn't exist..
+        - `spec`: [string|list(string)=''] *Name/s of the source spec/s.
+                  The following names are uniform across distributors: '_desc', '_value', '_tolerance', '_footprint',
+                  '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf' and '_size'.
+        - `type`: [string='string'] [percent,voltage,power,current,value,string] How we compare the current value to determine a collision.
+                  `value` is the component value i.e. resistance for R*.
 - subparts: Subparts
         This filter implements the KiCost subparts mechanism.
   * Valid keys:
@@ -1024,6 +1087,28 @@ filters:
     - `comment`: [string=''] A comment for documentation purposes.
     - `fields`: [string|list(string)='Datasheet'] Fields to convert.
     - `name`: [string=''] Used to identify this particular filter definition.
+- value_split: Value_Split
+        This filter extracts information from the value and fills other fields.
+        I.e. extracts the tolerance and puts it in the `tolerance` field.
+        Usage [example](https://inti-cmnb.github.io/kibot-examples-1/value_split/).
+  * Valid keys:
+    - `autoplace`: [boolean=true] Try to figure out the position for the added fields.
+    - `autoplace_mechanism`: [string='bottom'] [bottom,top] Put the new field at the bottom/top of the last field.
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `name`: [string=''] Used to identify this particular filter definition.
+    - `package`: [string='yes'] [yes,no,soft] Policy for the package.
+                 yes = overwrite existing value, no = don't touch, soft = copy if not defined.
+    - `power`: [string='yes'] [yes,no,soft] Policy for the power rating.
+               yes = overwrite existing value, no = don't touch, soft = copy if not defined.
+    - `replace_source`: [boolean=true] Replace the content of the source field using a normalized representation of the interpreted value.
+    - `source`: [string='Value'] Name of the field to use as source of information.
+    - `temp_coef`: [string='yes'] [yes,no,soft] Policy for the temperature coefficient.
+                   yes = overwrite existing value, no = don't touch, soft = copy if not defined.
+    - `tolerance`: [string='yes'] [yes,no,soft] Policy for the tolerance.
+                   yes = overwrite existing value, no = don't touch, soft = copy if not defined.
+    - `visible`: [boolean=false] Make visible the modified fields.
+    - `voltage`: [string='yes'] [yes,no,soft] Policy for the voltage rating.
+                 yes = overwrite existing value, no = don't touch, soft = copy if not defined.
 - var_rename: Var_Rename
         This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
   * Valid keys:
@@ -1089,6 +1174,8 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
 - **_only_tht** is used to get only THT parts
 - **_only_virtual** is used to get only virtual parts
 - **_rot_footprint** is a default `rot_footprint` filter
+- **_value_split** splits the Value field but the field remains and the extra data is not visible
+- **_value_split_replace** splits the Value field and replaces it
 - **_var_rename** is a default `var_rename` filter
 - **_var_rename_kicost** is a default `var_rename_kicost` filter
 
@@ -1706,6 +1793,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1739,6 +1829,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -1973,6 +2066,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2009,6 +2105,7 @@ Notes:
         - `follow_links`: [boolean=true] Store the file pointed by symlinks, not the symlink.
         - `move_files`: [boolean=false] Move the files to the archive. In other words: remove the files after adding them to the archive.
         - *remove_files*: Alias for move_files.
+        - `skip_not_run`: [boolean=false] Skip outputs with `run_by_default: false`.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                   The categories are currently used for `navigate_results`.
@@ -2017,6 +2114,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2077,6 +2177,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=11] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2157,6 +2260,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2193,6 +2299,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2265,6 +2374,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2305,6 +2417,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2358,6 +2473,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2396,6 +2514,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2441,6 +2562,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2515,6 +2639,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2587,6 +2714,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2629,6 +2759,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2715,6 +2848,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2745,6 +2881,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2857,6 +2996,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -2916,6 +3058,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3000,6 +3145,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3018,6 +3166,7 @@ Notes:
       * Valid keys:
         - **`link_from_root`**: [string=''] The name of a file to create at the main output directory linking to the home page.
         - **`output`**: [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options.
+        - `skip_not_run`: [boolean=false] Skip outputs with `run_by_default: false`.
     - `category`: [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
                   Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                   The categories are currently used for `navigate_results`.
@@ -3026,6 +3175,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=10] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3062,6 +3214,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3393,6 +3548,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3444,6 +3602,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3579,6 +3740,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3616,6 +3780,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3726,6 +3893,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3818,6 +3988,9 @@ Notes:
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
     - `force_plot_invisible_refs_vals`: [boolean=false] Include references and values even when they are marked as invisible.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `individual_page_scaling`: [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
                                  Disabling it the pages are coherent and can be superposed.
     - `inner_extension_pattern`: [string=''] Used to change the Protel style extensions for inner layers.
@@ -3890,6 +4063,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3931,6 +4107,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -3967,6 +4146,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4013,6 +4195,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4044,8 +4229,11 @@ Notes:
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
         - `include_virtual`: [boolean=false] Include virtual components. For special purposes, not pick & place.
+                             Note that virtual components is a KiCad 5 concept.
+                             For KiCad 6+ we replace this concept by the option to exclude from position file.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `quote_all`: [boolean=false] When generating the CSV quote all values, even numbers.
         - `right_digits`: [number=4] number of digits for mantissa part of coordinates (0 is auto).
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
         - `variant`: [string=''] Board variant to apply.
@@ -4057,6 +4245,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4134,6 +4325,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4174,6 +4368,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4218,6 +4415,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=90] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4247,11 +4447,11 @@ Notes:
         - **`output`**: [string='%f-%i%I%v.%x'] Name for the generated image file (%i='3D_$VIEW' %x='png'). Affected by global options.
         - **`ray_tracing`**: [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`.
         - **`rotate_x`**: [number=0] Steps to rotate around the X axis, positive is clockwise.
-                          Each step is currently 10 degrees. Only for KiCad 6.
+                          Each step is currently 10 degrees. Only for KiCad 6 or newer.
         - **`rotate_y`**: [number=0] Steps to rotate around the Y axis, positive is clockwise.
-                          Each step is currently 10 degrees. Only for KiCad 6.
+                          Each step is currently 10 degrees. Only for KiCad 6 or newer.
         - **`rotate_z`**: [number=0] Steps to rotate around the Z axis, positive is clockwise.
-                          Each step is currently 10 degrees. Only for KiCad 6.
+                          Each step is currently 10 degrees. Only for KiCad 6 or newer.
         - **`show_components`**: [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
                                  Unlike the `pcbdraw` output, the default is `all`.
         - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
@@ -4262,7 +4462,7 @@ Notes:
         - `background1`: [string='#66667F'] First color for the background gradient.
         - `background2`: [string='#CCCCE5'] Second color for the background gradient.
         - `board`: [string='#332B16'] Color for the board without copper or solder mask.
-        - `clip_silk_on_via_annulus`: [boolean=true] Clip silkscreen at via annuli (KiCad 6).
+        - `clip_silk_on_via_annulus`: [boolean=true] Clip silkscreen at via annuli (KiCad 6+).
         - `copper`: [string='#8b898c'] Color for the copper.
         - `dnf_filter`: [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                         A short-cut to use for simple cases where a variant is an overkill.
@@ -4278,14 +4478,19 @@ Notes:
         - `orthographic`: [boolean=false] Enable the orthographic projection mode (top view looks flat).
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
-        - `show_silkscreen`: [boolean=true] Show the silkscreen layers (KiCad 6).
-        - `show_soldermask`: [boolean=true] Show the solder mask layers (KiCad 6).
-        - `show_solderpaste`: [boolean=true] Show the solder paste layers (KiCad 6).
-        - `show_zones`: [boolean=true] Show filled areas in zones (KiCad 6).
+        - `realistic`: [boolean=true] When disabled we use the colors of the layers used by the GUI. KiCad 6 or newer.
+        - `show_adhesive`: [boolean=false] Show the content of F.Adhesive/B.Adhesive layers. KiCad 6 or newer.
+        - `show_board_body`: [boolean=true] Show the PCB core material. KiCad 6 or newer.
+        - `show_comments`: [boolean=false] Show the content of the User.Comments layer. KiCad 6 or newer and ray tracing disabled.
+        - `show_eco`: [boolean=false] Show the content of the Eco1.User/Eco2.User layers. KiCad 6 or newer and ray tracing disabled.
+        - `show_silkscreen`: [boolean=true] Show the silkscreen layers (KiCad 6+).
+        - `show_soldermask`: [boolean=true] Show the solder mask layers (KiCad 6+).
+        - `show_solderpaste`: [boolean=true] Show the solder paste layers (KiCad 6+).
+        - `show_zones`: [boolean=true] Show filled areas in zones (KiCad 6+).
         - `silk`: [string='#d5dce4'] Color for the silk screen.
         - `solder_mask`: [string='#208b47'] Color for the solder mask.
         - `solder_paste`: [string='#808080'] Color for the solder paste.
-        - `subtract_mask_from_silk`: [boolean=true] Clip silkscreen at solder mask edges (KiCad 6).
+        - `subtract_mask_from_silk`: [boolean=true] Clip silkscreen at solder mask edges (KiCad 6+).
         - `transparent_background`: [boolean=false] When enabled the image will be post-processed to make the background transparent.
                                     In this mode the `background1` and `background2` colors are ignored.
         - `transparent_background_color`: [string='#00ff00'] Color used for the chroma key. Adjust it if some regions of the board becomes transparent.
@@ -4305,6 +4510,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4350,6 +4558,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4385,6 +4596,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4439,6 +4653,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4494,6 +4711,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4541,6 +4761,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4632,6 +4855,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4690,6 +4916,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4731,6 +4960,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -4788,6 +5020,9 @@ Notes:
                                 Use the boolean true value to disable the output you are extending.
     - `extends`: [string=''] Copy the `options` section from the indicated output.
                  Used to inherit options from another output of the same type.
+    - `groups`: [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed.
     - `output_id`: [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
     - `priority`: [number=50] [0,100] Priority for this output. High priority outputs are created first.
                   Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
@@ -5146,6 +5381,15 @@ Another important detail is that global options that are lists gets the values m
 The last set of values found is inserted at the beginning of the list.
 You can collect filters for all the imported global sections.
 
+Imports are processed recursively: An `import` section in an imported
+file is also processed (so importing `A.yaml` that imports `B.yaml`
+effectively imports both).
+
+If an import filename is a relative path, it is resolved relative to the
+config file that contains the import (so it works regardless of the
+working directory and, in case of recursive imports, of where top-level
+config lives).
+
 It's recommended to always use some file extension in the *FILE_CONTAINING_THE_YAML_DEFINITIONS* name.
 If you don't use any file extension and you use a relative path this name could be confused with an internal template.
 See [Importing internal templates](#importing-internal-templates).
@@ -5157,6 +5401,10 @@ import:
     is_external: true
 ```
 
+#### Parametrizable imports
+
+You can create imports that are parametrizable. For this you must use the mechanism explained in
+the [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing) section.
 
 #### Importing internal templates
 
@@ -5176,17 +5424,25 @@ Here is a list of currently defined templates:
 
 They include support for:
 
+- CheckZoneFill: enables the `check_zone_fills` preflight and checks the refilled PCB doesn't changed too much.
+  - _diff_cur_pcb_show: Makes a diff between the PCB in memory and the one on disk
+  - _diff_cur_pcb_check: Computes the difference between PCB in memory and the one on disk. Aborts if more than
+    100 pixels changed.
+  - Note: The *_KIBOT_CHKZONE_THRESHOLD* parameter can be used to adjust the number of changed pixels that we tolerate.
+    Consult the [Definitions during import](#definitions-during-import) section to know about parameters.
 - [Elecrow](https://www.elecrow.com/): contain fabrication outputs compatible with Elecrow
   - _Elecrow_gerbers: Gerbers
   - _Elecrow_drill: Drill files
   - _Elecrow_compress: Gerbers and drill files compressed in a ZIP
   - _Elecrow: _Elecrow_gerbers+_Elecrow_drill
+- [Elecrow_stencil](https://www.elecrow.com/): same as **Elecrow**, but also generates gerbers for F.Paste and B.Paste layers.
 - [FusionPCB](https://www.seeedstudio.io/fusion.html): contain fabrication outputs compatible with FusionPCB
   - _FusionPCB_gerbers: Gerbers
   - _FusionPCB_drill: Drill files
   - _FusionPCB_compress: Gerbers and drill files compressed in a ZIP
   - _FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill
-- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB.
+- [FusionPCB_stencil](https://www.seeedstudio.io/fusion.html): same as **FusionPCB**, but also generates gerbers for F.Paste and B.Paste layers.
+- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB. Only SMD components.
   Use the `field_lcsc_part` global option to specify the LCSC part number field if KiBot fails to detect it.
   - _JLCPCB_gerbers: Gerbers.
   - _JLCPCB_drill: Drill files
@@ -5196,22 +5452,18 @@ They include support for:
   - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_drill
   - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
   - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
-- [JLCPCB_stencil](https://jlcpcb.com/): Derived from JLCPCB, adds solder paste gerbers for stencils
-  - _JLCPCB_gerbers: Gerbers.
-  - _JLCPCB_gerbers_stencil: Gerbers for the solder paste stencils. Disabled by default.
-  - _JLCPCB_drill: Drill files
-  - _JLCPCB_position: Pick and place, applies the `_rot_footprint` filter. You can change this filter.
-  - _JLCPCB_bom: List of LCSC parts, assumes a field named `LCSC#` contains the LCSC codes. You can change this filter.
-  - _JLCPCB_compress: Gerbers, drill, position and BoM files compressed in a ZIP
-  - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_gerbers_stencil+_JLCPCB_drill
-  - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
-  - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
+- [JLCPCB_stencil](https://jlcpcb.com/): same as **JLCPCB**, but also generates gerbers for F.Paste and B.Paste layers.
+- [JLCPCB_with_THT](https://jlcpcb.com/): same as **JLCPCB**, but also including THT components.
+- [JLCPCB_stencil_with_THT](https://jlcpcb.com/): same as **JLCPCB_stencil**, but also including THT components.
 - [MacroFab_XYRS](https://help.macrofab.com/knowledge/macrofab-required-design-files): XYRS position file in MacroFab format
   - _macrofab_xyrs: Position file in XYRS format compatible with MacroFab.
+- PanelDemo_4x4: creates a 4x4 panel of the board, showing some of the panelize options
+  - _PanelDemo_4x4: The panel
 - [P-Ban](https://www.p-ban.com/): contain fabrication outputs compatible with P-Ban
   - _P-Ban_gerbers: Gerbers. You need to define the layers for more than 8.
   - _P-Ban_drill: Drill files
   - _P-Ban: _P-Ban_gerbers+_P-Ban_drill
+- [P-Ban_stencil](https://www.p-ban.com/): same as **P-Ban**, but also generates gerbers for F.Paste and B.Paste layers.
 - [PCB2Blender_2_1](https://github.com/30350n/pcb2blender)
   - _PCB2Blender_layers_2_1: The layers in SVG format. Disabled by default.
   - _PCB2Blender_vrml_2_1: The VRML for the board. Disabled by default.
@@ -5228,6 +5480,7 @@ They include support for:
   - _PCBWay_drill: Drill files
   - _PCBWay_compress: Gerbers and drill files compressed in a ZIP
   - _PCBWay: _PCBWay_gerbers+_PCBWay_drill
+- [PCBWay_stencil](https://www.pcbway.com): same as **PCBWay**, but also generates gerbers for F.Paste and B.Paste layers.
 
 
 #### Using other output as base for a new one
@@ -5342,6 +5595,73 @@ This is applied to all YAML files loaded, so this propagates to all the imported
 
 You can use `-E` as many times as you need.
 
+#### Default definitions
+
+A configuration file using the `@VARIABLE@` tags won't be usable unless you provide proper
+values for **all** de used variables. When using various tags this could be annoying.
+KiBot supports defining default values for the tags. Here is an example:
+
+```yaml
+kibot:
+  version: 1
+
+outputs:
+  - name: 'gerbers_@ID@'
+    comment: "Gerbers with definitions"
+    type: gerber
+    output_id: _@ID@
+    layers: @LAYERS@
+...
+definitions:
+  ID: def_id
+  LAYERS: F.Cu
+```
+
+Note that from the YAML point this is two documents in the same file. The second document
+is used to provide default values for the definitions. As defaults they have the lowest
+precedence.
+
+#### Definitions during import
+
+When importing a configuration you can specify values for the `@VARIABLE@` tags. This
+enables the creation of parametrizable imports. Using the example depicted in
+[Default definitions](#default-definitions) saved to a file named *simple.kibot.yaml*
+you can use:
+
+```yaml
+kibot:
+  version: 1
+
+import:
+  - file: simple.kibot.yaml
+    definitions:
+      ID: external_copper
+      LAYERS: "[F.Cu, B.Cu]"
+```
+
+This will import *simple.kibot.yaml* and use these particular values. Note that they
+have more precedence than the definitions found in *simple.kibot.yaml*, but less
+precedence than any value passed from the command line.
+
+#### Recursive definitions expansion
+
+When KiBot expands the `@VARIABLE@` tags it first applies all the replacements defined
+in the command line, and then all the values collected from the `definitions`. After
+doing a round of replacements KiBot tries to do another. This process is repeated until
+nothing is replaced or we reach 20 iterations. So you can define a tag that contains
+another tag.
+
+As an example, if the configuration shown in [Definitions during import](#definitions-during-import)
+is stored in a file named *top.kibot.yaml* you could use:
+
+```shell
+kibot -v -c top.kibot.yaml -E ID=@LAYERS@
+```
+
+This will generate gerbers for the front/top and bottom layers using *[F.Cu, B.Cu]* as
+output id. So you'll get *light_control-B_Cu_[F.Cu, B.Cu].gbr* and
+*light_control-F_Cu_[F.Cu, B.Cu].gbr*.
+
 ## Usage
 
 For a quick start just go to the project's dir and run:
@@ -5448,7 +5768,10 @@ Usage:
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
-         [-E DEF] ... --list
+         [-E DEF] ... [--config-outs] [--only-pre|--only-groups] [--only-names]
+         [--output-name-first] --list
+  kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
+         --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
          [-t, --type TYPE]... --quick-start
@@ -5473,18 +5796,29 @@ Options:
   --banner N                       Display banner number N (-1 == random)
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -C, --cli-order                  Generate outputs using the indicated order
+  --config-outs                    Configure all outputs before listing them
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -D, --dont-stop                  Try to continue if an output fails
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch/.kicad_sch)
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
-  -l, --list                       List available outputs (in the config file)
+  -l, --list                       List available outputs, preflights and
+                                   groups (in the config file).
+                                   You don't need to specify an SCH/PCB unless
+                                   using --config-outs
+  --list-variants                  List the available variants and exit
   -L, --log LOGFILE                Log to LOGFILE using maximum debug level.
                                    Is independent of what is logged to stderr
   -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
   -n, --no-priority                Don't sort targets by priority
   -p, --copy-options               Copy plot options from the PCB file
+  --only-names                     Print only the names. Note that for --list
+                                   if no other --only-* option is provided it
+                                   also acts as a virtual --only-outputs
+  --only-groups                    Print only the groups.
+  --only-pre                       Print only the preflights
+  --output-name-first              Use the output name first when listing
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
@@ -5708,7 +6042,7 @@ Of course donations are welcome ([donate](https://www.paypal.com/donate/?hosted_
     Just comment in the [discussions](https://github.com/INTI-CMNB/KiBot/discussions/categories/other-platforms)
     and I'll help you to run tests to adapt the code.
     Now that KiCad 6 uses Python 3 most of KiBot functionality should work on Windows and Mac OS X.
-    People is using WSL to run KiBot, but we don't have a tutorial about how to do it.
+    People are using WSL to run KiBot, but we don't have a tutorial about how to do it.
 - If you use a Linux that isn't derived from Debian:
   - Consider helping to add better support for it. Do you know the name of the packages for the dependencies?
     Do you know how to create a package for your distro?
@@ -6153,6 +6487,7 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
   - **JLC Kicad Tools**: Matthew Lai (@matthewlai)
   - **KiCad Gerber Zipper**: @g200kg
   - **pimpmykicadbom**: Anton Savov (@antto)
+  - **electro-grammar**: Kaspar Emanuel (@kasbah)
 - **Others**:
   - **Robot in the logo**: Christian Plaza (from pixabay)
   - **Robot arm in assembly_simple.svg**: [Pixlok](https://pixlok.com/)

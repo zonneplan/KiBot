@@ -1,0 +1,23 @@
+,,,KiBot Bill of Materials,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,kibom-variant_2c,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,, 2021-04-06,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,Schematic:,kibom-variant_2c,,,,,Board Qty:,50,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,Variant:,default,,,,,Unit Cost:,0.0098,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,Revision:,A,,,,,Total Cost:,0.49,,,,,0,0 of 1 parts found,,,,,1.66,1 of 1 parts found,,,,,2.0089,1 of 1 parts found,,,,,0.49,1 of 1 parts found,,,,,1.8,1 of 1 parts found,,,,,1.8,1 of 1 parts found,,,,,0,1 of 1 parts found,,,,,2.2725,1 of 1 parts found,,,,,0,0 of 1 parts found
+,,,Date:,2021-04-06,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,KiCad Version:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+Global Part Info,,,,,,,,,,,Arrow,,,,,,Digi-Key,,,,,,Farnell,,,,,,LCSC,,,,,,Mouser,,,,,,Newark,,,,,,RS Components,,,,,,TME,,,,,,test,,,,,
+References,Value,Real value,Tolerancia,Voltage,Footprint,Manufacturer,Manufacturer P/N,Build Quantity,Unit$,Ext$,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#
+C1 C2,1nF, 1000pF,20%,50 V 100 V,,Samsung,CL10B102KC8NNNC,100,0.0049,0.49,,,,,,,NonStk,,0.0166,1,1.66,1276-1131-1-ND,3860,,0.020089,10,2.0089,3013404,542250,,0.0049,50,0.49,C153291,NonStk,,0.018,1,1.8,187CL10B102KC8NNNC,19600,,0.018,1,1.8,82AC9311,NonStk,,,4000,,7665480,5789,,0.022725,100,2.2725,CL10B102KC8NNNC,,,,,,
+
+,Used currency rates:,,,,,,,,Total Purchase:,0,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,,,,,0,
+,USD($)/EUR(€):,1.1873,,,,,,,Purchase description:,,,,,,,,,,,,,,,,,,,,,"Copy this header and order to a CSV
+file and use it for JLCPCB 
+manufacturer PCB house.
+The multipart components that use
+""#"" symbol are not allowed by JLCPCB.",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,USD($)/GBP(£):,1.375941592305018,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Created:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+KiCost,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

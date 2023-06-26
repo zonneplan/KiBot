@@ -1,13 +1,13 @@
 ,,,KiBot Bill of Materials,,,,,,,,,,,,,,,,,,,
 ,,,Schematic:,kibom-variant_2c,,,,,Board Qty:,50,,,,,,,,,,,,
-,,,Variant:,default,,,,,Unit Cost:,0.0332,,,,,,,,,,,,
-,,,Revision:,A,,,,,Total Cost:,1.66,,,,,1.8,1 of 1 parts found,,,,,1.66,1 of 1 parts found
+,,,Variant:,default,,,,,Unit Cost:,0.0292,,,,,,,,,,,,
+,,,Revision:,A,,,,,Total Cost:,1.46,,,,,1.5,1 of 1 parts found,,,,,1.46,1 of 1 parts found
 ,,,Date:,2021-04-06,,,,,,,,,,,,,,,,,,
 ,,,KiCad Version:,,,,,,,,,,,,,,,,,,,
 
 Global Part Info,,,,,,,,,,,Mouser,,,,,,Digi-Key,,,,,
 References,Value,Real value,Tolerancia,Voltage,Footprint,Manufacturer,Manufacturer P/N,Build Quantity,Unit$,Ext$,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#
-C1 C2,1nF, 1000pF,20%,50 V 100 V,,Samsung,CL10B102KC8NNNC,100,0.0166,1.66,NonStk,,0.018,1,1.8,187CL10B102KC8NNNC,NonStk,,0.0166,1,1.66,1276-1131-1-ND
+C1 C2,1nF, 1000pF,20%,50 V 100 V,,Samsung,CL10B102KC8NNNC,100,0.0146,1.46,313811,,0.015,1,1.5,187-CL10B102KC8NNNC,753814,,0.0146,1,1.46,1276-1131-2-ND
 
 ,,,,,,,,,Total Purchase:,0,Buy here,,,,0,,Buy here,,,,0,
 Created:,,,,,,,,,Purchase description:,,,,,,,,,,,,,

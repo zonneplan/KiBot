@@ -490,6 +490,7 @@ def test_electro_grammar_1():
                    (('capacitor 1206',), C_1206))
         R1K_0603 = {'type': 'resistor', 'size': '0603', 'resistance': 1000}
         R1K_0805_5P = {'type': 'resistor', 'size': '0805', 'resistance': 1000, 'tolerance': 5}
+        R1K_0805_01P = {'type': 'resistor', 'size': '0805', 'resistance': 1000, 'tolerance': 0.1}
         R1K_0805_5P_100MW = {'type': 'resistor', 'size': '0805', 'resistance': 1000, 'tolerance': 5, 'power_rating': 0.1}
         R1K_0201_500MW = {'type': 'resistor', 'size': '0201', 'resistance': 1000, 'power_rating': 0.5}
         R0_0201_125MW = {'type': 'resistor', 'size': '0201', 'resistance': 0, 'power_rating': 0.125}
@@ -526,6 +527,7 @@ def test_electro_grammar_1():
                    (('1 MOhm',), R1M),
                    (('100 uΩ',), R100U),
                    (('1k 0805 5%',), R1K_0805_5P),
+                   (('1k 0805 0.1%',), R1K_0805_01P),
                    (('1k 0805 5% 100mW',), R1K_0805_5P_100MW),
                    (('0 ohm 0201 0.125W', '0 ohm 0201 1/8W'), R0_0201_125MW),
                    (('resistor 1k 0201 1/2 watts',), R1K_0201_500MW),

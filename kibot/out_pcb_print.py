@@ -1223,7 +1223,7 @@ class PCB_Print(BaseOutput):  # noqa: F821
         self._category = 'PCB/docs'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = []
         if len(DRAWING_LAYERS) < 10 and GS.ki6:
             DRAWING_LAYERS.extend(['User.'+str(c+1) for c in range(9)])

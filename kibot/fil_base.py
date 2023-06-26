@@ -81,6 +81,12 @@ SIMP_FIL = {'_only_smd': {'comment': 'Internal filter for only SMD parts',
                             'comment': 'Internal default variant field renamer filter'},
             '_var_rename_kicost': {'type': 'var_rename_kicost',
                                    'comment': 'Internal default variant field renamer filter (KiCost style)'},
+            '_value_split_replace': {'type': 'value_split',
+                                     'visible': True,
+                                     'comment': 'Internal value split filter oriented to replace the Value'},
+            '_value_split': {'type': 'value_split',
+                             'replace_source': False,
+                             'comment': 'Internal value split filter oriented to just add information'},
             }
 
 

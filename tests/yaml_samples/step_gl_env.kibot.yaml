@@ -10,6 +10,10 @@ globals:
     user_templates: '/test4'
     third_party: '/test5'
     define_old: true
+    extra_os:
+      - name: TEST1
+        value: Hello
+      - TEST2: Bye
 
 outputs:
   - name: Step

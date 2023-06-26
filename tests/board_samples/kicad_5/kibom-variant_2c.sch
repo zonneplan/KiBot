@@ -83,7 +83,8 @@ F 4 "-test" H 2500 1700 50  0001 C CNN "Config"
 F 5 "Bourns" H 1000 1700 50  0001 C CNN "manf"
 F 6 "CR0603-JW-102ELF" H 1000 1700 50  0001 C CNN "manf#"
 F 7 "CR0603-JW-102ELFCT-ND" H 1000 1700 50  0001 C CNN "digikey#"
-F 8 "1000" H 2500 1700 50  0001 C CNN "Resistance"
+F 8 "5%" H 1000 1700 50  0001 C CNN "tolerance"
+F 9 "1000" H 2500 1700 50  0001 C CNN "Resistance"
 	1    2500 1700
 	1    0    0    -1  
 $EndComp

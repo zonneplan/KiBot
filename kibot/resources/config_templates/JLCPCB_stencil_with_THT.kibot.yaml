@@ -1,0 +1,7 @@
+kibot:
+  version: 1
+
+import:
+  - file: JLCPCB_stencil
+    definitions:
+      _KIBOT_POS_ONLY_SMD: false

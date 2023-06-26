@@ -1,2 +1,2 @@
-References,case_package,case_package_si,packaging,pin_count,power_rating,reach_svhc_compliance,resistance,resistance_tolerance,rohs_status,size_length,size_thickness,size_width,temperature_coefficient,voltage_rating_dc
-R1 R2,0603,1608,"Cut Tape (CT), Tape & Reel (TR)",2,100 mW,No SVHC,1.00 kΩ,±5%,Compliant,1.60 mm,457 µm,787 µm,-200 ppm/°C to 200 ppm/°C,50.0 V
+References,Case Code (Imperial),Case Code (Metric),Case/Package,Composition,Contact Plating,Depth,Features,Height,Length,Max Operating Temperature,Max Power Dissipation,Military Standard,Min Operating Temperature,Mount,Number of Pins,Number of Terminations,Packaging,Power Rating,REACH SVHC,Radiation Hardening,Resistance,RoHS,Schedule B,Temperature Coefficient,Termination,Thickness,Tolerance,Voltage Rating,Voltage Rating (DC),Width
+R1 R2,,,,Thick Film,,800 µm,Moisture Resistant,550 µm,1.6 mm,,,,,Surface Mount,,,Cut Tape,,,,1 kΩ,Compliant,,,SMD/SMT,457 µm,5 %,,,800 µm

@@ -20,7 +20,6 @@ from .columnlist import ColumnList
 from .kibot_logo import KIBOT_LOGO
 from .. import log
 from ..misc import W_NOKICOST, W_UNKDIST, KICOST_ERROR, W_BADFIELD
-from ..error import trace_dump
 from ..gs import GS
 from .. import __version__
 # Init the logger first
@@ -561,6 +560,15 @@ def do_title(cfg, worksheet, col1, length, fmt_title, fmt_info):
         worksheet.merge_range(c+r_extra, col1, c+r_extra, length, text, fmt_info)
 
 
+def copy_specs_to_components(parts, groups):
+    """ Link the KiCost information in the components.
+        So we can access to the specs for the components.
+        This can be used by filters. """
+    for p in parts:
+        for c in p.kibot_group.components:
+            c.kicost_part = p
+
+
 def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg):
     if not KICOST_SUPPORT:
         logger.warning(W_NOKICOST+'KiCost sheet requested but failed to load KiCost support')
@@ -574,7 +582,8 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
             for c in g.components:
                 logger.debug(pprint.pformat(c.__dict__))
     # Force KiCost to use our logger
-    init_all_loggers(log.get_logger('kicost'), log.get_logger('kicost.dist'), log.get_logger('kicost.eda'))
+    init_all_loggers(log.get_logger('kicost', indent=1), log.get_logger('kicost.dist', indent=1),
+                     log.get_logger('kicost.eda', indent=1))
     set_distributors_progress(ProgressConsole2)
     if GS.debug_enabled:
         logger.setLevel(logging.DEBUG+1-GS.debug_level)
@@ -641,6 +650,8 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
             part.refs = [c.ref for c in g.components]
             part.fields = g.fields
             part.fields['manf#_qty'] = compute_qtys(cfg, g)
+            # Internally used to make copy_specs_to_components simpler
+            part.kibot_group = g
             parts.append(part)
             # Process any "join" request
             apply_join_requests(cfg.join_ce, part.fields, g.fields)
@@ -650,6 +661,8 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
         dist_list = solve_distributors(cfg)
         # Get the prices
         query_part_info(parts, dist_list)
+        # Put the specs in the components
+        copy_specs_to_components(parts, groups)
         # Distributors again. During `query_part_info` user defined distributors could be added
         solve_distributors(cfg, silent=False)
         # Create a class to hold the spreadsheet parameters
@@ -694,9 +707,7 @@ def create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_s
     try:
         return _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg)
     except KiCostError as e:
-        trace_dump()
-        logger.error('KiCost error: `{}` ({})'.format(e.msg, e.id))
-        exit(KICOST_ERROR)
+        GS.exit_with_error('KiCost error: `{}` ({})'.format(e.msg, e.id), KICOST_ERROR)
 
 
 def write_xlsx(filename, groups, col_fields, head_names, cfg):

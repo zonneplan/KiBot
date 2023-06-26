@@ -173,6 +173,8 @@ class Navigate_ResultsOptions(BaseOptions):
             """ *Filename for the output (%i=html, %x=navigate) """
             self.link_from_root = ''
             """ *The name of a file to create at the main output directory linking to the home page """
+            self.skip_not_run = False
+            """ Skip outputs with `run_by_default: false` """
         super().__init__()
         self._expand_id = 'navigate'
         self._expand_ext = 'html'
@@ -468,6 +470,9 @@ class Navigate_ResultsOptions(BaseOptions):
     def create_tree(self):
         o_tree = {}
         for o in RegOutput.get_outputs():
+            if not o.run_by_default and self.skip_not_run:
+                # Skip outputs that aren't generated in a regular run
+                continue
             config_output(o)
             cat = o.category
             if cat is None:
@@ -527,7 +532,7 @@ class Navigate_Results(BaseOutput):  # noqa: F821
         self.fix_priority_help()
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = BaseOutput.simple_conf_examples(name, 'Web page to browse the results', 'Browse')  # noqa: F821
-        outs[0]['options'] = {'link_from_root': 'index.html'}
+        outs[0]['options'] = {'link_from_root': 'index.html', 'skip_not_run': True}
         return outs

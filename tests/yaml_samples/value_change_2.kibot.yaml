@@ -1,0 +1,50 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+  - name: match_C2_4
+    comment: 'A filter to select C2 and C4'
+    type: generic
+    invert: true
+    exclude_refs: [C2, C4]
+
+  - name: match_C5
+    comment: 'A filter to select C5'
+    type: generic
+    invert: true
+    exclude_refs: [C5]
+
+  - name: change_C2_4
+    comment: 'Transform C2 and C4 values'
+    type: field_modify
+    fields: Value
+    include: match_C2_4
+    regex: 150p
+    replace: 220p
+
+  - name: change_C5
+    comment: 'Transform C5 value'
+    type: field_modify
+    fields: Value
+    include: match_C5
+    regex: 150p
+    replace: 330p
+
+variants:
+  - name: filter_change
+    comment: 'Changes C2 and C4 to 220 pF, C5 to 330 pF'
+    type: kibom
+    file_id: '_different_filters'
+    pre_transform: [change_C2_4, change_C5]
+
+global:
+  variant: filter_change
+
+outputs:
+  - name: create_sch
+    comment: "Apply the variant to the Schematic"
+    type: sch_variant
+    dir: Modified
+    options:
+      copy_project: true

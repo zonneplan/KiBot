@@ -4,7 +4,7 @@ kibot:
 
 outputs:
   - name: 'bom_internal'
-    comment: "Bill of Materials in HTML format"
+    comment: "Bill of Materials in XLSX format w/prices"
     type: bom
     dir: KiCost
     options:

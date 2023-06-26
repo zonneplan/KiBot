@@ -165,3 +165,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         if GS.board:
             # Force a project and PCB reload
             GS.reload_project(pro_name)
+        # Check if we need to force a PCB text variables reset
+        if GS.global_invalidate_pcb_text_cache == 'auto':
+            logger.debug('Forcing PCB text variables reset')
+            GS.global_invalidate_pcb_text_cache = 'yes'

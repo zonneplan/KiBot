@@ -69,7 +69,7 @@ class ComponentTransformer(Transformer):
     def value1(self, d, type):
         """ VALUE """
         v = float(d[0])
-        iv = int(d[0])
+        iv = round(v)
         if iv == v:
             v = iv
         self.parsed[type] = v
@@ -201,8 +201,11 @@ def initialize():
     parser = Lark(g, start='main')  # , debug=DEBUG)
 
 
-def parse(text, with_extra=False):
+def parse(text, with_extra=False, stronger=False):
     initialize()
+    if stronger:
+        text = text.replace('+/-', ' +/-')
+        text = text.replace(' - ', ' ')
     try:
         tree = parser.parse(text)
     except Exception as e:

@@ -185,5 +185,5 @@ class BoardView(BaseOutput):  # noqa: F821
             """ *[dict] Options for the `boardview` output """
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         return BaseOutput.simple_conf_examples(name, 'Board View export', 'Assembly')  # noqa: F821

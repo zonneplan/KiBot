@@ -27,7 +27,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE,
                    MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr)
-from .error import PlotError, KiPlotConfigurationError, config_error, trace_dump
+from .error import PlotError, KiPlotConfigurationError, config_error
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
 from .dep_downloader import register_deps
@@ -41,7 +41,7 @@ logger = log.get_logger()
 # Cache to avoid running external many times to check their versions
 script_versions = {}
 actions_loaded = False
-needed_imports = set()
+needed_imports = {}
 
 try:
     import yaml
@@ -74,11 +74,9 @@ def _import(name, path):
     try:
         spec.loader.exec_module(mod)
     except ImportError as e:
-        trace_dump()
-        logger.error('Unable to import plug-ins: '+str(e))
-        logger.error('Make sure you used `--no-compile` if you used pip for installation')
-        logger.error('Python path: '+str(sys_path))
-        exit(WRONG_INSTALL)
+        GS.exit_with_error(('Unable to import plug-ins: '+str(e),
+                            'Make sure you used `--no-compile` if you used pip for installation',
+                            'Python path: '+str(sys_path)), WRONG_INSTALL)
     try_register_deps(mod, name)
 
 
@@ -214,6 +212,10 @@ def load_board(pcb_file=None, forced=False):
     try:
         with hide_stderr():
             board = pcbnew.LoadBoard(pcb_file)
+        if GS.global_invalidate_pcb_text_cache == 'yes' and GS.ki6:
+            logger.debug('Current PCB text variables cache: {}'.format(board.GetProperties().items()))
+            logger.debug('Removing cached text variables')
+            board.SetProperties(pcbnew.MAP_STRING_STRING())
         if BasePreFlight.get_option('check_zone_fills'):
             GS.fill_zones(board)
         if GS.global_units and GS.ki6:
@@ -240,10 +242,8 @@ def load_board(pcb_file=None, forced=False):
 
 
 def ki_conf_error(e):
-    trace_dump()
-    logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
-    logger.error('Line content: `{}`'.format(e.code.rstrip()))
-    exit(EXIT_BAD_CONFIG)
+    GS.exit_with_error(('At line {} of `{}`: {}'.format(e.line, e.file, e.msg),
+                        'Line content: `{}`'.format(e.code.rstrip())), EXIT_BAD_CONFIG)
 
 
 def load_any_sch(file, project):
@@ -260,15 +260,10 @@ def load_any_sch(file, project):
         if GS.debug_level > 1:
             logger.debug('Schematic dependencies: '+str(sch.get_files()))
     except SchFileError as e:
-        trace_dump()
-        logger.error('At line {} of `{}`: {}'.format(e.line, e.file, e.msg))
-        logger.error('Line content: `{}`'.format(e.code))
-        exit(CORRUPTED_SCH)
+        GS.exit_with_error(('At line {} of `{}`: {}'.format(e.line, e.file, e.msg),
+                            'Line content: `{}`'.format(e.code)), CORRUPTED_SCH)
     except SchError as e:
-        trace_dump()
-        logger.error('While loading `{}`'.format(file))
-        logger.error(str(e))
-        exit(CORRUPTED_SCH)
+        GS.exit_with_error(('While loading `{}`'.format(file), str(e)), CORRUPTED_SCH)
     except KiConfError as e:
         ki_conf_error(e)
     return sch
@@ -445,6 +440,16 @@ def configure_and_run(tree, out_dir, msg):
     config_output(out)
     logger.debug(' - Creating the PCB3D ...')
     out.run(out_dir)
+
+
+def look_for_output(name, op_name, parent, valids):
+    out = RegOutput.get_output(name)
+    if out is None:
+        raise KiPlotConfigurationError('Unknown output `{}` selected in {}'.format(name, parent))
+    config_output(out)
+    if out.type not in valids:
+        raise KiPlotConfigurationError('`{}` must be {} type, not {}'.format(op_name, valids, out.type))
+    return out
 
 
 def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop):
@@ -869,10 +874,11 @@ def yaml_dump(f, tree):
         f.write(yaml.dump(tree, sort_keys=False))
 
 
-def register_xmp_import(name):
+def register_xmp_import(name, definitions=None):
     """ Register an import we need for an example """
     global needed_imports
-    needed_imports.add(name)
+    assert name not in needed_imports
+    needed_imports[name] = definitions
 
 
 def generate_one_example(dest_dir, types):
@@ -909,7 +915,7 @@ def generate_one_example(dest_dir, types):
         f.write('\n')
         # A helper for the internal templates
         global needed_imports
-        needed_imports = set()
+        needed_imports = {}
         # All the outputs
         outputs = []
         for n, cls in OrderedDict(sorted(outs.items())).items():
@@ -921,34 +927,32 @@ def generate_one_example(dest_dir, types):
                ((o.is_pcb() and o.is_sch()) and (not GS.pcb_file or not GS.sch_file))):
                 logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
-            # Look for templates
-            tpls = glob(os.path.join(GS.get_resource_path('config_templates'), n, '*.kibot.yaml'))
-            if tpls:
-                # Load the templates
-                tpl_names = tpls
-                tpls = []
-                for t in tpl_names:
-                    tree = yaml.safe_load(open(t))
-                    tpls.append(tree['outputs'])
-                    imps = tree.get('import')
-                    if imps:
-                        needed_imports.update([imp['file'] for imp in imps])
-            tree = cls.get_conf_examples(n, layers, tpls)
+            tree = cls.get_conf_examples(n, layers)
             if tree:
                 logger.debug('- {}, generated'.format(n))
-                if tpls:
-                    logger.debug(' - Templates: {}'.format(tpl_names))
                 outputs.extend(tree)
             else:
                 logger.debug('- {}, nothing to do'.format(n))
+        global_defaults = None
         if needed_imports:
-            imports = [{'file': man} for man in sorted(needed_imports)]
+            imports = []
+            for n, d in sorted(needed_imports.items()):
+                if n == 'global':
+                    global_defaults = d
+                    continue
+                content = {'file': n}
+                if d:
+                    content['definitions'] = d
+                imports.append(content)
             yaml_dump(f, {'import': imports})
             f.write('\n')
         if outputs:
             yaml_dump(f, {'outputs': outputs})
         else:
             return None
+        if global_defaults:
+            f.write('\n...\n')
+            yaml_dump(f, {'definitions': global_defaults})
     return fname
 
 

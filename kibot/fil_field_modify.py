@@ -62,5 +62,5 @@ class Field_Modify(BaseFilter):  # noqa: F821
                 continue
             new_value = self._regex.sub(self.replace, value)
             if new_value != value:
-                logger.debugl(2, '{}: {} -> {}'.format(fld, value, new_value))
+                logger.debugl(2, '{} {}: {} -> {}'.format(comp.ref, fld, value, new_value))
                 comp.set_field(fld, new_value)

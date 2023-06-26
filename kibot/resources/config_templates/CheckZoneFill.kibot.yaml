@@ -1,0 +1,36 @@
+# Run a diff between the current PCB on disk and the one loaded in memory after
+# refilling the zones.
+# Can be used to implement a check to detect if the committed file needs a
+# zone refill.
+kibot:
+  version: 1
+
+preflight:
+  check_zone_fills: true
+
+outputs:
+  - name: '_diff_cur_pcb_show'
+    comment: "Show differences for the zone fill"
+    type: diff
+    layers: copper
+    options:
+      cache_dir: .cache
+      old: ''
+      old_type: file
+      new_type: current
+
+  - name: '_diff_cur_pcb_check'
+    comment: "Check the zone fill doesn't generate important changes"
+    type: diff
+    layers: copper
+    options:
+      cache_dir: .cache
+      diff_mode: stats
+      threshold: @_KIBOT_CHKZONE_THRESHOLD@
+      old: ''
+      old_type: file
+      new_type: current
+
+...
+definitions:
+  _KIBOT_CHKZONE_THRESHOLD: 100

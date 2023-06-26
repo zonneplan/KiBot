@@ -85,6 +85,10 @@ class BaseOutput(RegOutput):
             self.priority = 50
             """ [0,100] Priority for this output. High priority outputs are created first.
                 Internally we use 10 for low priority, 90 for high priority and 50 for most outputs """
+            self.groups = Optionable
+            """ [string|list(string)=''] One or more groups to add this output. In order to catch typos
+                we recommend to add outputs only to existing groups. You can create an empty group if
+                needed """
         if GS.global_dir:
             self.dir = GS.global_dir
         self._sch_related = False
@@ -161,6 +165,7 @@ class BaseOutput(RegOutput):
         self.category = self.force_list(self.category)
         if not self.category:
             self.category = self._category
+        self.groups = self.force_list(self.groups, comma_sep=False)
 
     def expand_dirname(self, out_dir):
         return self.options.expand_filename_both(out_dir, is_sch=self._sch_related)
@@ -170,7 +175,7 @@ class BaseOutput(RegOutput):
         return os.path.abspath(os.path.join(out_dir, name))
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         return None
 
     @staticmethod

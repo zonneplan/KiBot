@@ -1,0 +1,77 @@
+(kicad_sch (version 20211123) (generator eeschema)
+
+  (uuid ae7590fe-62f7-489d-9e1a-af74b73a2b78)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (sheet (at 127 80.01) (size 24.13 7.62) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 1a520d7d-3ba5-4c74-a100-97625e355b42)
+    (property "Sheet name" "Low Pass Filter A1" (id 0) (at 127 79.2984 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "filter.kicad_sch" (id 1) (at 127 88.2146 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "IN" input (at 127 83.82 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid ddc93f51-ee50-4796-b46c-e1583ce07223)
+    )
+    (pin "OUT" output (at 151.13 83.82 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid 7a02ef50-ccf3-4d78-abef-831054f8dbdf)
+    )
+  )
+
+  (sheet (at 127 93.98) (size 24.13 7.62) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid ceaaef34-04ea-407a-8f1a-90d1b353a084)
+    (property "Sheet name" "Low Pass Filter B1" (id 0) (at 127 93.2684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "filter.kicad_sch" (id 1) (at 127 102.1846 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (pin "IN" input (at 127 97.79 180)
+      (effects (font (size 1.27 1.27)) (justify left))
+      (uuid 4f917a76-f7cb-487e-936e-1d52f4db60d5)
+    )
+    (pin "OUT" output (at 151.13 97.79 0)
+      (effects (font (size 1.27 1.27)) (justify right))
+      (uuid a3235e0d-ce4e-481b-a10d-8cd5307d4186)
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+    (path "/1a520d7d-3ba5-4c74-a100-97625e355b42" (page "2"))
+    (path "/ceaaef34-04ea-407a-8f1a-90d1b353a084" (page "3"))
+  )
+
+  (symbol_instances
+    (path "/1a520d7d-3ba5-4c74-a100-97625e355b42/2008b722-6f66-498d-8afb-79e172fe202d"
+      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/ceaaef34-04ea-407a-8f1a-90d1b353a084/2008b722-6f66-498d-8afb-79e172fe202d"
+      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/1a520d7d-3ba5-4c74-a100-97625e355b42/3316c32a-0fe0-447f-ad05-e8a774318855"
+      (reference "C10") (unit 1) (value "150p") (footprint "")
+    )
+    (path "/ceaaef34-04ea-407a-8f1a-90d1b353a084/3316c32a-0fe0-447f-ad05-e8a774318855"
+      (reference "C11") (unit 1) (value "150p") (footprint "")
+    )
+    (path "/1a520d7d-3ba5-4c74-a100-97625e355b42/6e279b82-cec2-44a1-9e20-451a25fb9868"
+      (reference "R10") (unit 1) (value "100k") (footprint "")
+    )
+    (path "/ceaaef34-04ea-407a-8f1a-90d1b353a084/6e279b82-cec2-44a1-9e20-451a25fb9868"
+      (reference "R11") (unit 1) (value "100k") (footprint "")
+    )
+  )
+)

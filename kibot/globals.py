@@ -11,10 +11,38 @@ from .kicad.config import expand_env
 from .macros import macros, document  # noqa: F401
 from .pre_filters import FiltersOptions, FilterOptionsKiBot
 from .log import get_logger, set_filters
-from .misc import W_MUSTBEINT
+from .misc import W_MUSTBEINT, W_ENVEXIST
 from .kicad.config import KiConf
 from .kicad.sexpdata import load, SExpData, sexp_iter, Symbol
 from .kicad.v6_sch import PCBLayer
+
+
+class OSVariables(Optionable):
+    """ Name/Value pairs """
+    def __init__(self):
+        super().__init__()
+        self._unknown_is_error = True
+        with document:
+            self.name = ''
+            """ *Name of the variable """
+            self.value = ''
+            """ *Value for the variable """
+        self._name_example = 'ROOT_DIR'
+        self._value_example = '/root'
+
+    def config(self, parent):
+        # Support for - NAME: VALUE
+        if len(self._tree) == 1:
+            v0 = tuple(self._tree.values())[0]
+            n0 = tuple(self._tree.keys())[0]
+            if n0 != 'name' and n0 != 'value' and isinstance(v0, str):
+                logger.error(self._tree)
+                self.name = n0
+                self.value = v0
+                return
+        super().config(parent)
+        if not self.name:
+            raise KiPlotConfigurationError("Missing or empty `name` in environment variable ({})".format(str(self._tree)))
 
 
 class Environment(Optionable):
@@ -38,7 +66,10 @@ class Environment(Optionable):
             """ 3rd party dir. KiCad 6: KICAD6_3RD_PARTY """
             self.define_old = False
             """ Also define legacy versions of the variables.
-                Useful when using KiCad 6 and some libs uses old KiCad 5 names """
+                Useful when using KiCad 6+ and some libs uses old KiCad 5 names """
+            self.extra_os = OSVariables
+            """ [list(dict)] Extra variables to export as OS environment variables.
+                Note that you can also define them using `- NAME: VALUE` """
 
     def define_k5_vars(self, defs):
         if self.symbols:
@@ -89,6 +120,12 @@ class Environment(Optionable):
                 v = expand_env(v, env, os.environ)
                 logger.debug('- {} = "{}"'.format(n, v))
                 os.environ[n] = v
+        if isinstance(self.extra_os, list):
+            for v in self.extra_os:
+                if v.name in os.environ:
+                    logger.warning(W_ENVEXIST+"Overwriting {} environment variable".format(v.name))
+                logger.debug('- {} = "{}"'.format(v.name, v.value))
+                os.environ[v.name] = v.value
 
 
 class KiCadAlias(Optionable):
@@ -268,8 +305,8 @@ class Globals(FiltersOptions):
             """ Try to add color bands to the 3D models of KiCad THT resistors """
             self.field_tolerance = Optionable
             """ [string|list(string)] Name/s of the field/s used for the tolerance.
-                Used while creating colored resistors.
-                The default is ['tol', 'tolerance'] """
+                Used while creating colored resistors and for the value split filter.
+                The default is ['tolerance', 'tol'] """
             self.default_resistor_tolerance = 20
             """ When no tolerance is specified we use this value.
                 Note that I know 5% is a common default, but technically speaking 20% is the default.
@@ -283,6 +320,34 @@ class Globals(FiltersOptions):
                 Note this is mainly useful for CI/CD, so you can store fonts and colors in your repo.
                 Also note that the fonts are installed using a mechanism known to work on Debian,
                 which is used by the KiBot docker images, on other OSs *your mileage may vary* """
+            self.use_os_env_for_expand = True
+            """ In addition to KiCad text variables also use the OS environment variables when expanding ${VARIABLE} """
+            self.field_voltage = Optionable
+            """ [string|list(string)] Name/s of the field/s used for the voltage raiting.
+                Used for the value split filter.
+                The default is ['voltage', 'v'] """
+            self.field_package = Optionable
+            """ [string|list(string)] Name/s of the field/s used for the package, not footprint.
+                I.e. 0805, SOT-23, etc. Used for the value split filter.
+                The default is ['package', 'pkg'] """
+            self.field_temp_coef = Optionable
+            """ [string|list(string)] Name/s of the field/s used for the temperature coefficient.
+                I.e. X7R, NP0, etc. Used for the value split filter.
+                The default is ['temp_coef', 'tmp_coef'] """
+            self.field_power = Optionable
+            """ [string|list(string)] Name/s of the field/s used for the power raiting.
+                Used for the value split filter.
+                The default is ['power', 'pow'] """
+            self.invalidate_pcb_text_cache = 'auto'
+            """ [auto,yes,no] Remove any cached text variable in the PCB. This is needed in order to force a text
+                variables update when using `set_text_variables`. You might want to disable it when applying some
+                changes to the PCB and create a new copy to send to somebody without changing the cached values.
+                The `auto` value will remove the cached values only when using `set_text_variables` """
+            self.git_diff_strategy = 'worktree'
+            """ [worktree,stash] When computing a PCB/SCH diff it configures how do we preserve the current
+                working state. The *worktree* mechanism creates a separated worktree, that then is just removed.
+                The *stash* mechanism uses *git stash push/pop* to save the current changes. Using *worktree*
+                is the preferred mechanism """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot
@@ -391,7 +456,11 @@ class Globals(FiltersOptions):
         if GS.ki6 and GS.pcb_file and os.path.isfile(GS.pcb_file):
             self.get_stack_up()
         super().config(parent)
-        self.field_tolerance = Optionable.force_list(self.field_tolerance, default=['tol', 'tolerance'])
+        self.field_tolerance = Optionable.force_list(self.field_tolerance, default=['tolerance', 'tol'])
+        self.field_voltage = Optionable.force_list(self.field_voltage, default=['voltage', 'v'])
+        self.field_package = Optionable.force_list(self.field_package, default=['package', 'pkg'])
+        self.field_temp_coef = Optionable.force_list(self.field_temp_coef, default=['temp_coef', 'tmp_coef'])
+        self.field_power = Optionable.force_list(self.field_power, default=['power', 'pow'])
         # Transfer options to the GS globals
         for option in filter(lambda x: x[0] != '_', self.__dict__.keys()):
             gl = 'global_'+option

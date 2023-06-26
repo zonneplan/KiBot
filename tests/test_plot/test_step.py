@@ -115,11 +115,12 @@ def test_step_alias_2(test_dir):
 def test_step_variant_1(test_dir):
     prj = 'kibom-variant_3'
     ctx = context.TestContext(test_dir, prj, 'step_variant_1')
+    tmps_before = glob(os.path.join(ctx.get_board_dir(), 'tmp*pro'))
     ctx.run(extra_debug=True)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-3D.step')
     tmps = glob(os.path.join(ctx.get_board_dir(), 'tmp*pro'))
-    assert len(tmps) == 0, tmps
+    assert len(tmps) == len(tmps_before), tmps
     ctx.clean_up(keep_project=True)
 
 

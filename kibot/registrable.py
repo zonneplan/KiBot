@@ -99,6 +99,10 @@ class RegOutput(Optionable, Registrable):
         return RegOutput._def_variants[name]
 
     @staticmethod
+    def get_variants():
+        return RegOutput._def_variants
+
+    @staticmethod
     def add_filters(filters):
         RegOutput._def_filters.update(filters)
 
@@ -140,6 +144,23 @@ class RegOutput(Optionable, Registrable):
         logger.debug('Adding groups: '+str(objs))
         for n, lst in objs.items():
             RegOutput.add_group(n, lst, file)
+
+    @staticmethod
+    def add_to_group(out, group):
+        items = RegOutput._def_groups.get(group)
+        if items is not None:
+            if out not in items:
+                items.append(out)
+            return True
+        RegOutput.add_group(group, [out])
+
+    @staticmethod
+    def get_groups():
+        return RegOutput._def_groups
+
+    @staticmethod
+    def get_group_names():
+        return RegOutput._def_groups.keys()
 
     @staticmethod
     def get_outputs():

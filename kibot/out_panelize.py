@@ -16,7 +16,7 @@ import json
 from tempfile import NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .kiplot import run_command, config_output
+from .kiplot import run_command, config_output, register_xmp_import
 from .layer import Layer
 from .misc import W_PANELEMPTY, KIKIT_UNIT_ALIASES
 from .optionable import PanelOptions
@@ -750,12 +750,9 @@ class Panelize(BaseOutput):  # noqa: F821
         self._category = 'PCB/fabrication'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         if not GS.check_tool(name, 'KiKit'):
             return None
         outs = []
-        for tpl in templates:
-            for out in tpl:
-                if out['type'] == 'panelize':
-                    outs.append(out)
+        register_xmp_import('PanelDemo_4x4')
         return outs

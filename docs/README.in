@@ -58,10 +58,14 @@
     * [Consolidating BoMs](#consolidating-boms)
     * [Importing outputs from another file](#importing-outputs-from-another-file)
     * [Importing other stuff from another file](#importing-other-stuff-from-another-file)
+    * [Parametrizable imports](#parametrizable-imports)
     * [Importing internal templates](#importing-internal-templates)
     * [Using other output as base for a new one](#using-other-output-as-base-for-a-new-one)
     * [Grouping outputs](#grouping-outputs)
   * [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing)
+    * [Default definitions](#default-definitions)
+    * [Definitions during import](#definitions-during-import)
+    * [Recursive definitions expansion](#recursive-definitions-expansion)
 * [Usage](#usage)
 * [Usage for CI/CD](#usage-for-cicd)
   * [GitHub Actions](#usage-of-github-actions)
@@ -412,6 +416,7 @@ If you need to force the origin of the data you can use **%bX** for the PCB and 
 **X** is the pattern to expand.
 
 You can also use text variables (introduced in KiCad 6). To expand a text variable use `${VARIABLE}`.
+In addition you can also use environment variables, defined in your OS shell or defined in the `global` section.
 
 #### Default *dir* option
 
@@ -448,6 +453,7 @@ Expansion patterns are applied to this value, but you should avoid using pattern
 The behavior of these patterns isn't fully defined in this case and the results may change in the future.
 
 You can also use text variables (introduced in KiCad 6). To expand a text variable use `${VARIABLE}`.
+In addition you can also use environment variables, defined in your OS shell or defined in the `global` section.
 
 #### Date format option
 
@@ -570,6 +576,8 @@ The [tests/yaml_samples](https://github.com/INTI-CMNB/KiBot/tree/master/tests/ya
 - **_only_tht** is used to get only THT parts
 - **_only_virtual** is used to get only virtual parts
 - **_rot_footprint** is a default `rot_footprint` filter
+- **_value_split** splits the Value field but the field remains and the extra data is not visible
+- **_value_split_replace** splits the Value field and replaces it
 - **_var_rename** is a default `var_rename` filter
 - **_var_rename_kicost** is a default `var_rename_kicost` filter
 
@@ -1252,6 +1260,15 @@ Another important detail is that global options that are lists gets the values m
 The last set of values found is inserted at the beginning of the list.
 You can collect filters for all the imported global sections.
 
+Imports are processed recursively: An `import` section in an imported
+file is also processed (so importing `A.yaml` that imports `B.yaml`
+effectively imports both).
+
+If an import filename is a relative path, it is resolved relative to the
+config file that contains the import (so it works regardless of the
+working directory and, in case of recursive imports, of where top-level
+config lives).
+
 It's recommended to always use some file extension in the *FILE_CONTAINING_THE_YAML_DEFINITIONS* name.
 If you don't use any file extension and you use a relative path this name could be confused with an internal template.
 See [Importing internal templates](#importing-internal-templates).
@@ -1263,6 +1280,10 @@ import:
     is_external: true
 ```
 
+#### Parametrizable imports
+
+You can create imports that are parametrizable. For this you must use the mechanism explained in
+the [Doing YAML substitution or preprocessing](#doing-yaml-substitution-or-preprocessing) section.
 
 #### Importing internal templates
 
@@ -1282,17 +1303,25 @@ Here is a list of currently defined templates:
 
 They include support for:
 
+- CheckZoneFill: enables the `check_zone_fills` preflight and checks the refilled PCB doesn't changed too much.
+  - _diff_cur_pcb_show: Makes a diff between the PCB in memory and the one on disk
+  - _diff_cur_pcb_check: Computes the difference between PCB in memory and the one on disk. Aborts if more than
+    100 pixels changed.
+  - Note: The *_KIBOT_CHKZONE_THRESHOLD* parameter can be used to adjust the number of changed pixels that we tolerate.
+    Consult the [Definitions during import](#definitions-during-import) section to know about parameters.
 - [Elecrow](https://www.elecrow.com/): contain fabrication outputs compatible with Elecrow
   - _Elecrow_gerbers: Gerbers
   - _Elecrow_drill: Drill files
   - _Elecrow_compress: Gerbers and drill files compressed in a ZIP
   - _Elecrow: _Elecrow_gerbers+_Elecrow_drill
+- [Elecrow_stencil](https://www.elecrow.com/): same as **Elecrow**, but also generates gerbers for F.Paste and B.Paste layers.
 - [FusionPCB](https://www.seeedstudio.io/fusion.html): contain fabrication outputs compatible with FusionPCB
   - _FusionPCB_gerbers: Gerbers
   - _FusionPCB_drill: Drill files
   - _FusionPCB_compress: Gerbers and drill files compressed in a ZIP
   - _FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill
-- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB.
+- [FusionPCB_stencil](https://www.seeedstudio.io/fusion.html): same as **FusionPCB**, but also generates gerbers for F.Paste and B.Paste layers.
+- [JLCPCB](https://jlcpcb.com/): contain fabrication outputs compatible with JLC PCB. Only SMD components.
   Use the `field_lcsc_part` global option to specify the LCSC part number field if KiBot fails to detect it.
   - _JLCPCB_gerbers: Gerbers.
   - _JLCPCB_drill: Drill files
@@ -1302,22 +1331,18 @@ They include support for:
   - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_drill
   - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
   - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
-- [JLCPCB_stencil](https://jlcpcb.com/): Derived from JLCPCB, adds solder paste gerbers for stencils
-  - _JLCPCB_gerbers: Gerbers.
-  - _JLCPCB_gerbers_stencil: Gerbers for the solder paste stencils. Disabled by default.
-  - _JLCPCB_drill: Drill files
-  - _JLCPCB_position: Pick and place, applies the `_rot_footprint` filter. You can change this filter.
-  - _JLCPCB_bom: List of LCSC parts, assumes a field named `LCSC#` contains the LCSC codes. You can change this filter.
-  - _JLCPCB_compress: Gerbers, drill, position and BoM files compressed in a ZIP
-  - _JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_gerbers_stencil+_JLCPCB_drill
-  - _JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom
-  - _JLCPCB: _JLCPCB_fab+_JLCPCB_assembly
+- [JLCPCB_stencil](https://jlcpcb.com/): same as **JLCPCB**, but also generates gerbers for F.Paste and B.Paste layers.
+- [JLCPCB_with_THT](https://jlcpcb.com/): same as **JLCPCB**, but also including THT components.
+- [JLCPCB_stencil_with_THT](https://jlcpcb.com/): same as **JLCPCB_stencil**, but also including THT components.
 - [MacroFab_XYRS](https://help.macrofab.com/knowledge/macrofab-required-design-files): XYRS position file in MacroFab format
   - _macrofab_xyrs: Position file in XYRS format compatible with MacroFab.
+- PanelDemo_4x4: creates a 4x4 panel of the board, showing some of the panelize options
+  - _PanelDemo_4x4: The panel
 - [P-Ban](https://www.p-ban.com/): contain fabrication outputs compatible with P-Ban
   - _P-Ban_gerbers: Gerbers. You need to define the layers for more than 8.
   - _P-Ban_drill: Drill files
   - _P-Ban: _P-Ban_gerbers+_P-Ban_drill
+- [P-Ban_stencil](https://www.p-ban.com/): same as **P-Ban**, but also generates gerbers for F.Paste and B.Paste layers.
 - [PCB2Blender_2_1](https://github.com/30350n/pcb2blender)
   - _PCB2Blender_layers_2_1: The layers in SVG format. Disabled by default.
   - _PCB2Blender_vrml_2_1: The VRML for the board. Disabled by default.
@@ -1334,6 +1359,7 @@ They include support for:
   - _PCBWay_drill: Drill files
   - _PCBWay_compress: Gerbers and drill files compressed in a ZIP
   - _PCBWay: _PCBWay_gerbers+_PCBWay_drill
+- [PCBWay_stencil](https://www.pcbway.com): same as **PCBWay**, but also generates gerbers for F.Paste and B.Paste layers.
 
 
 #### Using other output as base for a new one
@@ -1447,6 +1473,73 @@ As an example: `-E UNITS=millimeters` will replace all `@UNITS@` markers by `mil
 This is applied to all YAML files loaded, so this propagates to all the imported YAML files.
 
 You can use `-E` as many times as you need.
+
+#### Default definitions
+
+A configuration file using the `@VARIABLE@` tags won't be usable unless you provide proper
+values for **all** de used variables. When using various tags this could be annoying.
+KiBot supports defining default values for the tags. Here is an example:
+
+```yaml
+kibot:
+  version: 1
+
+outputs:
+  - name: 'gerbers_@ID@'
+    comment: "Gerbers with definitions"
+    type: gerber
+    output_id: _@ID@
+    layers: @LAYERS@
+...
+definitions:
+  ID: def_id
+  LAYERS: F.Cu
+```
+
+Note that from the YAML point this is two documents in the same file. The second document
+is used to provide default values for the definitions. As defaults they have the lowest
+precedence.
+
+#### Definitions during import
+
+When importing a configuration you can specify values for the `@VARIABLE@` tags. This
+enables the creation of parametrizable imports. Using the example depicted in
+[Default definitions](#default-definitions) saved to a file named *simple.kibot.yaml*
+you can use:
+
+```yaml
+kibot:
+  version: 1
+
+import:
+  - file: simple.kibot.yaml
+    definitions:
+      ID: external_copper
+      LAYERS: "[F.Cu, B.Cu]"
+```
+
+This will import *simple.kibot.yaml* and use these particular values. Note that they
+have more precedence than the definitions found in *simple.kibot.yaml*, but less
+precedence than any value passed from the command line.
+
+#### Recursive definitions expansion
+
+When KiBot expands the `@VARIABLE@` tags it first applies all the replacements defined
+in the command line, and then all the values collected from the `definitions`. After
+doing a round of replacements KiBot tries to do another. This process is repeated until
+nothing is replaced or we reach 20 iterations. So you can define a tag that contains
+another tag.
+
+As an example, if the configuration shown in [Definitions during import](#definitions-during-import)
+is stored in a file named *top.kibot.yaml* you could use:
+
+```shell
+kibot -v -c top.kibot.yaml -E ID=@LAYERS@
+```
+
+This will generate gerbers for the front/top and bottom layers using *[F.Cu, B.Cu]* as
+output id. So you'll get *light_control-B_Cu_[F.Cu, B.Cu].gbr* and
+*light_control-F_Cu_[F.Cu, B.Cu].gbr*.
 
 ## Usage
 
@@ -1745,7 +1838,7 @@ Of course donations are welcome ([donate](https://www.paypal.com/donate/?hosted_
     Just comment in the [discussions](https://github.com/INTI-CMNB/KiBot/discussions/categories/other-platforms)
     and I'll help you to run tests to adapt the code.
     Now that KiCad 6 uses Python 3 most of KiBot functionality should work on Windows and Mac OS X.
-    People is using WSL to run KiBot, but we don't have a tutorial about how to do it.
+    People are using WSL to run KiBot, but we don't have a tutorial about how to do it.
 - If you use a Linux that isn't derived from Debian:
   - Consider helping to add better support for it. Do you know the name of the packages for the dependencies?
     Do you know how to create a package for your distro?
@@ -2190,6 +2283,7 @@ This case is [discussed here](docs/1_SCH_2_part_PCBs)
   - **JLC Kicad Tools**: Matthew Lai (@matthewlai)
   - **KiCad Gerber Zipper**: @g200kg
   - **pimpmykicadbom**: Anton Savov (@antto)
+  - **electro-grammar**: Kaspar Emanuel (@kasbah)
 - **Others**:
   - **Robot in the logo**: Christian Plaza (from pixabay)
   - **Robot arm in assembly_simple.svg**: [Pixlok](https://pixlok.com/)

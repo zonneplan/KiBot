@@ -154,51 +154,51 @@ class DiffOptions(BaseOptions):
         self.name_used_for_cache = name
         run_command(cmd)
 
-    def cache_pcb(self, name):
+    def cache_pcb(self, name, force_exist):
         if name:
-            if not os.path.isfile(name):
+            if not os.path.isfile(name) and not force_exist:
                 raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
         else:
             GS.check_pcb()
             name = GS.pcb_file
-            if not os.path.isfile(name):
-                if self.always_fail_if_missing:
-                    raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
-                with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
-                    f.write("(kicad_pcb (version 20171130) (host pcbnew 5.1.5))\n")
-                    name = f.name
-                    self._to_remove.append(name)
+        if not os.path.isfile(name):
+            if self.always_fail_if_missing:
+                raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
+            with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
+                f.write("(kicad_pcb (version 20171130) (host pcbnew 5.1.5))\n")
+                name = f.name
+                self._to_remove.append(name)
         hash = self.get_digest(name)
         self.add_to_cache(name, hash)
         return hash
 
-    def cache_sch(self, name):
+    def cache_sch(self, name, force_exist):
         if name:
-            if not os.path.isfile(name):
+            if not os.path.isfile(name) and not force_exist:
                 raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
         else:
             GS.check_sch()
             name = GS.sch_file
+        if not os.path.isfile(name):
+            if self.always_fail_if_missing:
+                raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
             ext = os.path.splitext(name)[1]
-            if not os.path.isfile(name):
-                if self.always_fail_if_missing:
-                    raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
-                with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
-                    logger.debug('Creating empty schematic: '+f.name)
-                    if ext == '.kicad_sch':
-                        f.write("(kicad_sch (version 20211123) (generator eeschema))\n")
-                    else:
-                        f.write("EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n$Descr A4 11693 8268\n"
-                                "$EndDescr\n$EndSCHEMATC\n")
-                    name = f.name
-                    self._to_remove.append(name)
-                if ext != '.kicad_sch':
-                    lib_name = os.path.splitext(name)[0]+'-cache.lib'
-                    if not os.path.isfile(lib_name):
-                        logger.debug('Creating dummy cache lib: '+lib_name)
-                        with open(lib_name, 'w') as f:
-                            f.write("EESchema-LIBRARY Version 2.4\n#\n#End Library\n")
-                        self._to_remove.append(lib_name)
+            with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
+                logger.debug('Creating empty schematic: '+f.name)
+                if ext == '.kicad_sch':
+                    f.write("(kicad_sch (version 20211123) (generator eeschema))\n")
+                else:
+                    f.write("EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n$Descr A4 11693 8268\n"
+                            "$EndDescr\n$EndSCHEMATC\n")
+                name = f.name
+                self._to_remove.append(name)
+            if ext != '.kicad_sch':
+                lib_name = os.path.splitext(name)[0]+'-cache.lib'
+                if not os.path.isfile(lib_name):
+                    logger.debug('Creating dummy cache lib: '+lib_name)
+                    with open(lib_name, 'w') as f:
+                        f.write("EESchema-LIBRARY Version 2.4\n#\n#End Library\n")
+                    self._to_remove.append(lib_name)
         # Schematics can have sub-sheets
         sch = load_any_sch(name, os.path.splitext(os.path.basename(name))[0])
         files = sch.get_files()
@@ -210,9 +210,9 @@ class DiffOptions(BaseOptions):
         self.add_to_cache(name, hash)
         return hash
 
-    def cache_file(self, name=None):
+    def cache_file(self, name=None, force_exist=False):
         self.git_hash = 'Current' if not name else 'FILE'
-        return self.cache_pcb(name) if self.pcb else self.cache_sch(name)
+        return self.cache_pcb(name, force_exist) if self.pcb else self.cache_sch(name, force_exist)
 
     def run_git(self, cmd, cwd=None, just_raise=False):
         if cwd is None:
@@ -240,7 +240,7 @@ class DiffOptions(BaseOptions):
         logger.debug('Git submodules '+str(subs))
         return subs
 
-    def undo_git(self):
+    def undo_git_use_stash(self):
         if self.checkedout:
             logger.debug('Restoring point '+self.branch)
             self.run_git(['checkout', '--force', '--recurse-submodules', self.branch])
@@ -250,6 +250,26 @@ class DiffOptions(BaseOptions):
             # Do the same for each submodule
             for sub in self.git_submodules():
                 self.stash_pop(sub)
+
+    def process_tags(self, num):
+        # Get a list of all tags ... and commits (how can I filter it?)
+        logger.debug('Looking for git tags')
+        res = self.run_git(['rev-list', '--format=format:%D', 'HEAD'])
+        if not res:
+            return res
+        res = res.split('\n')
+        commit = ''
+        skipped = 0
+        for v in res:
+            try:
+                tag = v[v.index('tag: '):].split(',')[0][4:]
+                logger.debugl(2, '- {}/{} tag: {} -> {}'.format(skipped, num, tag, commit))
+                if skipped == num:
+                    return commit
+                skipped += 1
+            except ValueError:
+                if v.startswith('commit '):
+                    commit = v[7:]
 
     def solve_kibot_magic(self, name, tag):
         # The magic KIBOT_*
@@ -265,12 +285,11 @@ class DiffOptions(BaseOptions):
                 num = int(name[1:])
             except ValueError:
                 raise KiPlotConfigurationError(malformed)
-        num = str(num)
         # Return its hash
         if tag == 'KIBOT_LAST':
-            res = self.run_git(['log', '--pretty=format:%H', '--skip='+num, '-n', '1', '--', self.file])
+            res = self.run_git(['log', '--pretty=format:%H', '--skip='+str(num), '-n', '1', '--', self.file])
         else:  # KIBOT_TAG
-            res = self.run_git(['rev-list', '--tags', '--skip='+num, '--max-count=1'])
+            res = self.process_tags(num)
         if not res:
             raise KiPlotConfigurationError("The `{}` doesn't resolve to a valid hash".format(ori))
         logger.debug('- '+res)
@@ -284,23 +303,23 @@ class DiffOptions(BaseOptions):
             return self.solve_kibot_magic(name, 'KIBOT_TAG')
         return name
 
-    def get_git_point_desc(self, user_name):
+    def get_git_point_desc(self, user_name, cwd=None):
         # Are we at a tagged point?
         name = None
         try:
-            name = self.run_git(['describe', '--exact-match', '--tags', 'HEAD'], just_raise=True)
+            name = self.run_git(['describe', '--exact-match', '--tags', 'HEAD'], cwd=cwd, just_raise=True)
             if user_name == 'Dirty':
                 name += '-dirty'
         except CalledProcessError:
             logger.debug("Not at a tag point")
         if name is None:
             # Are we at the HEAD of a branch?
-            branch = self.run_git(['rev-parse', '--abbrev-ref', 'HEAD'])
+            branch = self.run_git(['rev-parse', '--abbrev-ref', 'HEAD'], cwd=cwd)
             if branch == 'HEAD':
                 # Detached state
                 # Try to find the name relative to a tag
                 try:
-                    name = self.run_git(['describe', '--tags', '--dirty'], just_raise=True)
+                    name = self.run_git(['describe', '--tags', '--dirty'], cwd=cwd, just_raise=True)
                 except CalledProcessError:
                     logger.debug("Can't find a tag name")
                 if not name:
@@ -312,19 +331,19 @@ class DiffOptions(BaseOptions):
                 # Do we have a tag in this branch
                 extra = None
                 try:
-                    extra = self.run_git(['describe', '--tags', '--abbrev=0', '--dirty'], just_raise=True)
+                    extra = self.run_git(['describe', '--tags', '--abbrev=0', '--dirty'], cwd=cwd, just_raise=True)
                 except CalledProcessError:
                     logger.debug("Can't find a tag name")
                 if extra:
                     name += '['+extra+']'
                 elif user_name == 'Dirty':
                     name += '-dirty'
-        return '{}({})'.format(self.run_git(['rev-parse', '--short', 'HEAD']), name)
+        return '{}({})'.format(self.run_git(['rev-parse', '--short', 'HEAD'], cwd=cwd), name)
 
     def git_dirty(self):
         return self.run_git(['status', '--porcelain', '-uno'])
 
-    def cache_git(self, name):
+    def cache_git_use_stash(self, name):
         self.stashed = False
         self.checkedout = False
         # Which file
@@ -366,8 +385,47 @@ class DiffOptions(BaseOptions):
             # A short version of the current hash
             self.git_hash = self.get_git_point_desc(name_ori)
         finally:
-            self.undo_git()
+            self.undo_git_use_stash()
         return hash
+
+    def cache_git(self, name):
+        self.stashed = False
+        self.checkedout = False
+        # Which file
+        if self.pcb:
+            GS.check_pcb()
+            self.file = GS.pcb_file
+        else:
+            GS.check_sch()
+            self.file = GS.sch_file
+        # Place where we know we have a repo
+        self.repo_dir = os.path.dirname(os.path.abspath(self.file))
+        if name:
+            # Checkout the target
+            name_ori = name
+            name = self.solve_git_name(name)
+            git_tmp_wd = mkdtemp()
+            logger.debug('Checking out '+name+' to '+git_tmp_wd)
+            self.run_git(['worktree', 'add', git_tmp_wd, name])
+            self._worktrees_to_remove.append(git_tmp_wd)
+            self.run_git(['submodule', 'update', '--init', '--recursive'], cwd=git_tmp_wd)
+            name_copy = self.run_git(['ls-files', '--full-name', self.file])
+            name_copy = os.path.join(git_tmp_wd, name_copy)
+            logger.debug('- Using temporal copy: '+name_copy)
+            hash = self.cache_file(name_copy, force_exist=True)
+            cwd = git_tmp_wd
+        else:
+            name_ori = 'Dirty' if self.git_dirty() else 'HEAD'
+            # Populate the cache
+            hash = self.cache_file()
+            cwd = self.repo_dir
+        # A short version of the current hash
+        self.git_hash = self.get_git_point_desc(name_ori, cwd)
+        return hash
+
+    def remove_git_worktree(self, name):
+        logger.debug('Removing temporal checkout at '+name)
+        self.run_git(['worktree', 'remove', '--force', name])
 
     @staticmethod
     def check_output_type(out, must_be):
@@ -403,15 +461,16 @@ class DiffOptions(BaseOptions):
             fname, dir_name = VariantOptions.save_tmp_dir_board('diff')
         else:
             dir_name = mkdtemp()
-            self.dirs_to_remove.append(dir_name)
             fname = GS.sch.save_variant(dir_name)
+            GS.copy_project_sch(dir_name)
+        self.dirs_to_remove.append(dir_name)
         res = self.cache_file(os.path.join(dir_name, fname))
         self.git_hash = 'Current'
         return res
 
     def cache_obj(self, name, type):
         if type == 'git':
-            return self.cache_git(name)
+            return self.cache_git(name) if GS.global_git_diff_strategy == 'worktree' else self.cache_git_use_stash(name)
         if type == 'file':
             return self.cache_file(name)
         if type == 'current':
@@ -459,7 +518,7 @@ class DiffOptions(BaseOptions):
             run_command(cmd, just_raise=True)
         except CalledProcessError as e:
             if e.returncode == 10:
-                logger.error('Diff above the thresold')
+                logger.error('Diff above the threshold')
                 exit(DIFF_TOO_BIG)
             logger.error('Running {} returned {}'.format(e.cmd, e.returncode))
             if e.stdout:
@@ -478,6 +537,7 @@ class DiffOptions(BaseOptions):
     def run(self, name):
         self.command = self.ensure_tool('KiDiff')
         self._to_remove = []
+        self._worktrees_to_remove = []
         if self.old_type == 'git' or self.new_type == 'git':
             self.git_command = self.ensure_tool('Git')
         if not self.pcb:
@@ -523,6 +583,9 @@ class DiffOptions(BaseOptions):
                 os.remove(self.incl_file)
             for f in self._to_remove:
                 os.remove(f)
+            # Remove any git worktree that we created
+            for w in self._worktrees_to_remove:
+                self.remove_git_worktree(w)
 
 
 @output_class
@@ -556,7 +619,7 @@ class Diff(BaseOutput):  # noqa: F821
         return True
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = []
         git_command = GS.check_tool(name, 'Git')
         if GS.pcb_file and Diff.has_repo(git_command, GS.pcb_file):

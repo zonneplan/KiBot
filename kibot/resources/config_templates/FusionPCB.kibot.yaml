@@ -5,16 +5,16 @@ kibot:
   version: 1
 
 groups:
-  - name: _FusionPCB
+  - name: _FusionPCB@_KIBOT_IMPORT_ID@
     outputs:
-      - _FusionPCB_gerbers
-      - _FusionPCB_drill
+      - _FusionPCB_gerbers@_KIBOT_IMPORT_ID@
+      - _FusionPCB_drill@_KIBOT_IMPORT_ID@
 
 outputs:
-  - name: _FusionPCB_gerbers
+  - name: _FusionPCB_gerbers@_KIBOT_IMPORT_ID@
     comment: Gerbers compatible with FusionPCB
     type: gerber
-    dir: FusionPCB
+    dir: @_KIBOT_MANF_DIR@
     options: &gerber_options
       exclude_edge_layer: true
       exclude_pads_from_silkscreen: true
@@ -37,29 +37,42 @@ outputs:
       inner_extension_pattern: '.gl%N'
       edge_cut_extension: '.gml'
     layers:
-      - copper
-      - F.SilkS
-      - B.SilkS
-      - F.Mask
-      - B.Mask
-      - Edge.Cuts
+      @_KIBOT_GERBER_LAYERS@
+      @_KIBOT_F_PASTE@
+      @_KIBOT_B_PASTE@
 
-  - name: _FusionPCB_drill
+  - name: _FusionPCB_drill@_KIBOT_IMPORT_ID@
     comment: Drill files compatible with FusionPCB
     type: excellon
-    dir: FusionPCB
+    dir: @_KIBOT_MANF_DIR@
     options:
       pth_and_npth_single_file: true
       use_aux_axis_as_origin: true
       output: "%f.TXT"
 
-  - name: _FusionPCB_compress
+  - name: _FusionPCB_compress@_KIBOT_IMPORT_ID@
     comment: ZIP file for FusionPCB
     type: compress
-    dir: FusionPCB
+    dir: @_KIBOT_MANF_DIR_COMP@
     options:
       files:
-        - from_output: _FusionPCB_gerbers
+        - from_output: _FusionPCB_gerbers@_KIBOT_IMPORT_ID@
           dest: /
-        - from_output: _FusionPCB_drill
+        - from_output: _FusionPCB_drill@_KIBOT_IMPORT_ID@
           dest: /
+
+...
+definitions:
+  _KIBOT_F_PASTE: ''
+  _KIBOT_B_PASTE: ''
+  _KIBOT_IMPORT_ID: ''
+  _KIBOT_IMPORT_DIR: 'FusionPCB'
+  _KIBOT_MANF_DIR: '@_KIBOT_IMPORT_DIR@'
+  _KIBOT_MANF_DIR_COMP: '@_KIBOT_IMPORT_DIR@'
+  _KIBOT_GERBER_LAYERS: |
+      - copper
+            - F.SilkS
+            - B.SilkS
+            - F.Mask
+            - B.Mask
+            - Edge.Cuts

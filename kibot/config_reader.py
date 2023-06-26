@@ -9,16 +9,19 @@
 Class to read KiBot config files
 """
 
+from copy import deepcopy
 import collections
-import io
-import os
-import json
-from sys import (exit, maxsize)
 from collections import OrderedDict
+import difflib
+import io
+import json
+import os
+import re
+from sys import (exit, maxsize)
 
-from .error import KiPlotConfigurationError
+from .error import KiPlotConfigurationError, config_error
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
-                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS)
+                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS, W_NEWGROUP)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
@@ -59,6 +62,15 @@ def update_dict(d, u):
         else:
             d[k] = v
     return d
+
+
+def do_replace(k, v, content, replaced):
+    key = '@'+k+'@'
+    if key in content:
+        logger.debugl(2, '- Replacing {} -> {}'.format(key, v))
+        content = content.replace(key, str(v))
+        replaced = True
+    return content, replaced
 
 
 class CollectedImports(object):
@@ -150,6 +162,10 @@ class CfgYamlReader(object):
                 self.no_run_by_default.append(o_out.extends)
         else:
             o_out.disable_run_by_default = ''
+        # Pre-parse the groups
+        o_out._groups = o_tree.get('groups', [])
+        if isinstance(o_out._groups, str):
+            o_out._groups = [o_out._groups]
         return o_out
 
     def _parse_outputs(self, v):
@@ -168,12 +184,7 @@ class CfgYamlReader(object):
                 raise KeyError
         except KeyError:
             raise KiPlotConfigurationError("Group needs a name in: "+str(tree))
-        try:
-            outs = tree['outputs']
-            if not outs:
-                raise KeyError
-        except KeyError:
-            raise KiPlotConfigurationError("Group `"+name+"` must contain outputs")
+        outs = tree.get('outputs', [])
         if not isinstance(outs, list):
             raise KiPlotConfigurationError("'outputs' in group `"+name+"` must be a list (not {})".format(type(outs)))
         for v in outs:
@@ -446,7 +457,11 @@ class CfgYamlReader(object):
         return sel_globals
 
     def configure_variant_or_filter(self, o_var):
-        o_var.config(None)
+        try:
+            o_var.config(None)
+        except KiPlotConfigurationError as e:
+            msg = "In filter/variant '"+o_var.name+"' ("+o_var.type+"): "+str(e)
+            config_error(msg)
 
     def configure_variants(self, variants):
         logger.debug('Configuring variants')
@@ -474,7 +489,7 @@ class CfgYamlReader(object):
                 raise KiPlotConfigurationError("Missing import file `{}`".format(fn))
         return fn, is_internal
 
-    def _parse_import(self, imp, name, apply=True, depth=0):
+    def _parse_import(self, imp, name, collected_definitions, apply=True, depth=0):
         """ Get imports """
         logger.debug("Parsing imports: {}".format(imp))
         depth += 1
@@ -487,6 +502,7 @@ class CfgYamlReader(object):
         all_collected = CollectedImports()
         for entry in imp:
             explicit_fils = explicit_vars = explicit_globals = explicit_pres = explicit_groups = False
+            local_defs = {}
             if isinstance(entry, str):
                 is_external = True
                 fn = entry
@@ -527,6 +543,10 @@ class CfgYamlReader(object):
                     elif k == 'groups':
                         groups = self._parse_import_items(k, fn, v)
                         explicit_groups = True
+                    elif k == 'definitions':
+                        if not isinstance(v, dict):
+                            CfgYamlReader._config_error_import(fn, 'definitions must be a dict')
+                        local_defs = v
                     else:
                         self._config_error_import(fn, "Unknown import entry `{}`".format(str(v)))
                 if fn is None:
@@ -535,13 +555,19 @@ class CfgYamlReader(object):
                 raise KiPlotConfigurationError("`import` items must be strings or dicts ({})".format(str(entry)))
             fn, is_internal = self.check_import_file_name(dir_name, fn, is_external)
             fn_rel = os.path.relpath(fn)
-            data = self.load_yaml(open(fn))
+            # Create a new dict for definitions applying the new ones and nake it the last
+            cur_definitions = deepcopy(collected_definitions[-1])
+            cur_definitions.update(local_defs)
+            collected_definitions.append(cur_definitions)
+            # Now load the YAML
+            data = self.load_yaml(open(fn), collected_definitions, file_name=fn)
             if 'import' in data:
                 # Do a recursive import
-                imported = self._parse_import(data['import'], fn, apply=False, depth=depth)
+                imported = self._parse_import(data['import'], fn, collected_definitions, apply=False, depth=depth)
             else:
                 # Nothing to import, start fresh
                 imported = CollectedImports()
+            collected_definitions.pop()
             # Parse and filter all stuff, add them to all_collected
             # Outputs
             all_collected.outputs.extend(self._parse_import_outputs(outs, explicit_outs, fn_rel, data, imported))
@@ -568,18 +594,57 @@ class CfgYamlReader(object):
             RegOutput.add_groups(all_collected.groups, fn_rel)
         return all_collected
 
-    def load_yaml(self, fstream):
-        if GS.cli_defines:
-            # Load the file to memory so we can preprocess it
-            content = fstream.read()
+    def load_yaml(self, fstream, collected_definitions, file_name=None):
+        # We support some sort of defaults for the -E definitions
+        # To implement it we use a separated "document" inside the same file
+        # Load the file to memory so we can preprocess it
+        content = fstream.read()
+        docs = re.split(r"^\.\.\.$", content, flags=re.M)
+        local_defs = None
+        if len(docs) > 1:
+            definitions = None
+            for doc in docs:
+                if re.search(r"^kibot:\s*$", doc, flags=re.M):
+                    content = doc
+                elif re.search(r"^definitions:\s*$", doc, flags=re.M):
+                    definitions = doc
+            if definitions:
+                logger.debug("Found local definitions")
+                try:
+                    data = yaml.safe_load(io.StringIO(definitions))
+                except yaml.YAMLError as e:
+                    raise KiPlotConfigurationError("Error loading YAML ("+str(file_name)+") "+str(e))
+                local_defs = data.get('definitions')
+                if not local_defs:
+                    raise KiPlotConfigurationError("Error loading default definitions from config")
+                if not isinstance(local_defs, dict):
+                    raise KiPlotConfigurationError("Error default definitions must be a dict")
+                logger.debug("- Local definitions: "+str(local_defs))
+                logger.debug("- Current definitions: "+str(collected_definitions[-1]))
+                local_defs.update(collected_definitions[-1])
+                collected_definitions[-1] = local_defs
+                logger.debug("- Updated definitions: "+str(collected_definitions[-1]))
+        # Apply the definitions
+        if GS.cli_defines or collected_definitions[-1]:
             logger.debug('Applying preprocessor definitions')
-            # Replace all
-            for k, v in GS.cli_defines.items():
-                key = '@'+k+'@'
-                logger.debugl(2, '- Replacing {} -> {}'.format(key, v))
-                content = content.replace(key, v)
-            # Create an stream from the string
-            fstream = io.StringIO(content)
+            replaced = True
+            depth = 0
+            while replaced and depth < 20:
+                replaced = False
+                depth += 1
+                # Replace all
+                logger.debug("- Applying CLI definitions: "+str(GS.cli_defines))
+                for k, v in GS.cli_defines.items():
+                    content, replaced = do_replace(k, v, content, replaced)
+                logger.debug("- Applying collected definitions: "+str(collected_definitions[-1]))
+                for k, v in collected_definitions[-1].items():
+                    content, replaced = do_replace(k, v, content, replaced)
+            if depth >= 20:
+                logger.error('Maximum depth of definition replacements reached, loop?')
+            if GS.debug_level > 3:
+                logger.debug('YAML after expanding definitions:\n'+content)
+        # Create an stream from the string
+        fstream = io.StringIO(content)
         try:
             data = yaml.safe_load(fstream)
         except yaml.YAMLError as e:
@@ -602,7 +667,8 @@ class CfgYamlReader(object):
 
         :param fstream: file stream of a config YAML file
         """
-        data = self.load_yaml(fstream)
+        collected_definitions = [{}]
+        data = self.load_yaml(fstream, collected_definitions)
         # Analyze the version
         # Currently just checks for v1
         v1 = data.get('kiplot', None)
@@ -618,7 +684,7 @@ class CfgYamlReader(object):
         # Look for imports
         v1 = data.get('import', None)
         if v1:
-            self._parse_import(v1, fstream.name)
+            self._parse_import(v1, fstream.name, collected_definitions)
         # Look for globals
         # If no globals defined initialize them with default values
         self._parse_global(data.get('global', {}))
@@ -661,8 +727,20 @@ class CfgYamlReader(object):
             if o:
                 o.run_by_default = False
                 logger.debug("Disabling the default run for `{}`".format(o))
-
-        return RegOutput.get_outputs()
+        # Apply the groups selection from the outputs
+        outs = RegOutput.get_outputs()
+        for o in outs:
+            for g in o._groups:
+                if not RegOutput.add_to_group(o.name, g):
+                    grps = list(RegOutput.get_group_names())
+                    grps.remove(g)
+                    best_matches = difflib.get_close_matches(g, grps)
+                    logger.warning(W_NEWGROUP+'Added {} to a new group `{}`'.format(o, g))
+                    if best_matches:
+                        logger.warning(W_NEWGROUP+"Did you mean {}?".format(' or '.join(best_matches)))
+                    else:
+                        logger.warning(W_NEWGROUP+"Suggestion: declare it first so we know it isn't a typo")
+        return outs
 
 
 def trim(docstring):

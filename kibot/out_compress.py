@@ -85,6 +85,8 @@ class CompressOptions(BaseOptions):
             """ {move_files} """
             self.follow_links = True
             """ Store the file pointed by symlinks, not the symlink """
+            self.skip_not_run = False
+            """ Skip outputs with `run_by_default: false` """
         super().__init__()
 
     def config(self, parent):
@@ -154,6 +156,8 @@ class CompressOptions(BaseOptions):
             if f.from_output:
                 logger.debugl(2, '- From output `{}`'.format(f.from_output))
                 files_list, out_dir, out = get_output_targets(f.from_output, self._parent)
+                if not out.run_by_default and self.skip_not_run:
+                    continue
                 output_out_dir = out_dir
                 logger.debugl(2, '- List of files: {}'.format(files_list))
                 if out_dir not in dirs_list:

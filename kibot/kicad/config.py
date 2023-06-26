@@ -95,11 +95,16 @@ def expand_env(val, env, extra_env, used_extra=None):
             logger.warning(W_MAXDEPTH+'Too much nested variables replacements, possible loop ({})'.format(ori_val))
             success = False
         for var in re.findall(r'\$\{(\S+?)\}', val):
+            to_replace = '${'+var+'}'
             if var in env:
-                val = val.replace('${'+var+'}', env[var])
+                val = val.replace(to_replace, env[var])
                 replaced = True
             elif var in extra_env:
-                val = val.replace('${'+var+'}', extra_env[var])
+                val = val.replace(to_replace, extra_env[var])
+                used_extra[0] = True
+                replaced = True
+            elif GS.global_use_os_env_for_expand and var in os.environ:
+                val = val.replace(to_replace, os.environ[var])
                 used_extra[0] = True
                 replaced = True
             else:
@@ -282,7 +287,7 @@ class KiConf(object):
             if home is None:
                 return None
             if GS.ki6:
-                name = os.path.join(home, '.local', 'share', 'kicad', '6.0', 'template')
+                name = os.path.join(home, '.local', 'share', 'kicad', str(GS.kicad_version_major)+'.0', 'template')
                 if os.path.isdir(name):
                     return name
             name = os.path.join(home, 'kicad', 'template')
@@ -655,3 +660,7 @@ class KiConf(object):
         if ref_dir is None:
             ref_dir = os.getcwd()
         return expanded if expanded.startswith('${') else os.path.normpath(os.path.join(ref_dir, expanded))
+
+
+# Avoid circular inclusion
+GS.fix_page_layout = KiConf.fix_page_layout

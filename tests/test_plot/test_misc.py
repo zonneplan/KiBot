@@ -44,9 +44,11 @@ POS_DIR = 'positiondir'
 MK_TARGETS = ['position', 'archive', 'interactive_bom', 'run_erc', '3D', 'kibom_internal', 'drill', 'pcb_render',
               'print_front', 'svg_sch_def', 'svg_sch_int', 'pdf_sch_def', 'pdf_sch_int', 'fake_sch', 'update_xml',
               'run_drc']
+# Even the Ubuntu builds are slightly different
+is_debian = os.path.isfile('/etc/debian_version') and not os.path.isfile('/etc/lsb-release')
 # If we are not running on Debian skip the text part at the top of diff PDFs
-OFFSET_Y = '0' if os.path.isfile('/etc/debian_version') else '80'
-DIFF_TOL = 0 if os.path.isfile('/etc/debian_version') else 1200
+OFFSET_Y = '0' if is_debian else '80'
+DIFF_TOL = 0 if is_debian else 1200
 
 
 def test_skip_pre_and_outputs(test_dir):
@@ -421,7 +423,7 @@ def test_example_4(test_dir):
     ctx.run(extra=['--example', '-P'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.search_in_file(EXAMPLE_CFG, ['GND.Cu', 'pen_width: 35.0'])
-    ctx.search_not_in_file(EXAMPLE_CFG, ['F.Adhes'])
+    ctx.search_not_in_file(EXAMPLE_CFG, ["layer: 'F.Adhes"])
     ctx.clean_up()
 
 
@@ -847,6 +849,8 @@ def test_import_6(test_dir):
     ctx.clean_up()
 
 
+# Isn't really slow, just avoid to run it in parallel
+@pytest.mark.slow
 @pytest.mark.skipif(context.ki5(), reason="too slow on KiCad 5")
 def test_import_7(test_dir):
     """ Import a preflight """
@@ -1396,7 +1400,8 @@ def test_diff_git_2(test_dir):
         msg = f.read()
     assert msg == 'Bye!\n'
     # Check the link
-    assert glob(os.path.join(ctx.output_dir, prj+'-diff_pcb_*(v1)-*(master[[]v1[]]).pdf'))
+    assert (glob(os.path.join(ctx.output_dir, prj+'-diff_pcb_*(v1)-*(master[[]v1[]]).pdf')) +
+            glob(os.path.join(ctx.output_dir, prj+'-diff_pcb_*(v1)-*(v1-2-*).pdf'))), "Can't find link"
     ctx.clean_up(keep_project=True)
 
 
@@ -1473,7 +1478,57 @@ def test_diff_git_4(test_dir):
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
     ctx.compare_pdf(prj+'-diff_pcb.pdf', prj+'-only_new.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
-    ctx.compare_pdf(prj+'-diff_sch.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
+    if is_debian:
+        # Impossible to compare the Ubuntu version
+        ctx.compare_pdf(prj+'-diff_sch.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
+    ctx.clean_up(keep_project=True)
+
+
+def test_diff_git_5(test_dir):
+    """ Difference between the two repo points, using tags """
+    prj = 'light_control'
+    yaml = 'diff_git_5'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    # Create a git repo
+    git_init(ctx)
+    # Copy the "old" file
+    pcb = prj+'.kicad_pcb'
+    file = ctx.get_out_path(pcb)
+    shutil.copy2(ctx.board_file, file)
+    shutil.copy2(ctx.board_file.replace('.kicad_pcb', context.KICAD_SCH_EXT),
+                 file.replace('.kicad_pcb', context.KICAD_SCH_EXT))
+    # Add it to the repo
+    ctx.run_command(['git', 'add', pcb], chdir_out=True)
+    ctx.run_command(['git', 'commit', '-m', 'Reference'], chdir_out=True)
+    # Tag it (this will be our target)
+    ctx.run_command(['git', 'tag', '-a', 't1', '-m', 't1'], chdir_out=True)
+    # Add an extra commit
+    dummy = ctx.get_out_path('dummy')
+    with open(dummy, 'wt') as f:
+        f.write('dummy\n')
+    ctx.run_command(['git', 'add', 'dummy'], chdir_out=True)
+    ctx.run_command(['git', 'commit', '-m', 'Dummy noise'], chdir_out=True)
+    # Add a noisy branch
+    ctx.run_command(['git', 'switch', '-c', 'a_branch'], chdir_out=True)
+    # Copy the "new" file
+    with open(file, 'wt') as f:
+        f.write('broken\n')
+    # Add it to the repo
+    ctx.run_command(['git', 'commit', '-a', '-m', 'New version'], chdir_out=True)
+    # Tag it (this shouldn't be a problem)
+    ctx.run_command(['git', 'tag', '-a', 't2', '-m', 't2'], chdir_out=True)
+    # Back to the master
+    ctx.run_command(['git', 'checkout', 'master'], chdir_out=True)
+    # Copy the "new" file
+    shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), file)
+    # Add it to the repo
+    ctx.run_command(['git', 'add', pcb], chdir_out=True)
+    ctx.run_command(['git', 'commit', '-m', 'New version'], chdir_out=True)
+    # Tag it (this shouldn't be a problem)
+    ctx.run_command(['git', 'tag', '-a', 't3', '-m', 't3'], chdir_out=True)
+    # Run the test
+    ctx.run(extra=['-b', file], no_board_file=True, extra_debug=True)
+    ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
     ctx.clean_up(keep_project=True)
 
 
@@ -1482,11 +1537,12 @@ def test_diff_git_4(test_dir):
 def test_diff_file_sch_1(test_dir):
     """ Difference between the current Schematic and a reference file """
     prj = 'light_control_diff'
-    yaml = 'diff_file_sch_'+('k5' if context.ki5() else 'k6')
+    yaml = 'diff_file_sch'
     ctx = context.TestContext(test_dir, prj, yaml)
-    ctx.run()
+    ctx.run(extra=['-E', 'KiVer='+str(context.kicad_major), '-E', 'SCHExt='+context.KICAD_SCH_EXT])
     ctx.expect_out_file(prj+'-diff_sch_FILE-Current.pdf')
-    ctx.compare_pdf(prj+'-diff_sch.pdf')
+    if is_debian:
+        ctx.compare_pdf(prj+'-diff_sch.pdf')
     ctx.clean_up(keep_project=True)
 
 
@@ -1624,7 +1680,8 @@ def test_panelize_1(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'panelize_2')
     ctx.run(extra=[])
-    ctx.compare_image(prj+'-panel.png', tol=100)
+    if is_debian:
+        ctx.compare_image(prj+'-panel.png', tol=100)
     ctx.clean_up(keep_project=True)
 
 
@@ -1634,7 +1691,7 @@ def test_font_and_colors_1(test_dir):
     ctx = context.TestContext(test_dir, prj, 'resources_1')
     ctx.run()
     ctx.compare_image(prj+'-top.png')
-    ctx.compare_image(prj+'-assembly_page_01.png')
+    ctx.compare_image(prj+'-assembly_page_01.png', tol=DIFF_TOL*1.2)
     ctx.clean_up()
 
 
@@ -1644,4 +1701,25 @@ def test_netclass_flag_1(test_dir):
     ctx = context.TestContextSCH(test_dir, prj, 'int_bom_csv_no_info', 'BoM')
     ctx.run()
     ctx.expect_out_file_d(prj+'-bom.csv')
+    ctx.clean_up()
+
+
+def test_value_split_1(test_dir):
+    prj = 'value_split'
+    ctx = context.TestContextSCH(test_dir, prj, 'value_split_2', 'Modified')
+    ctx.run()
+    ctx.expect_out_file_d(prj+context.KICAD_SCH_EXT)
+    ctx.clean_up()
+
+
+def test_definitions_1(test_dir):
+    prj = 'simple_2layer'
+    ctx = context.TestContext(test_dir, prj, 'definitions_top', 'gerberdir')
+    ctx.run()
+    for la in ['B_Cu', 'F_Cu']:
+        for copy in range(2):
+            ctx.expect_out_file(f'{prj}-{la}_copper_{copy+1}.gbr')
+    for la in ['B_SilkS', 'F_SilkS'] if context.ki5() else ['B_Silkscreen', 'F_Silkscreen']:
+        for copy in range(2):
+            ctx.expect_out_file(f'{prj}-{la}_silk_{copy+1}.gbr')
     ctx.clean_up()

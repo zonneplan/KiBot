@@ -4,6 +4,108 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.3] - UNRELEASED
+### Added
+- General:
+  - OS environment expansion in ${VAR}
+  - Now outputs can request to be added to one or more groups (#435)
+  - PCB text variables cached in the PCB are now reset when the config
+    uses `set_text_variables`. This is a complex dilemma of KiCad 6/7
+    policy implementation. See
+    [KiCad issue 14360](https://gitlab.com/kicad/code/kicad/-/issues/14360).
+    (#441)
+  - Default values for @TAGS@
+  - Parametrizable imports
+- Command line:
+  - `--list-variants` List all available variants (See #434)
+  - `--only-names` to make `--list` list only output names
+  - `--only-pre` to list only the preflights
+  - `--only-groups` to list only the groups
+  - `--output-name-first` to list outputs by name, no description (See #436)
+- Global options:
+  - `use_os_env_for_expand` to disable OS environment expansion
+  - `environment`.`extra_os` to define environment variables
+  - `field_voltage` Name/s of the field/s used for the voltage raiting
+  - `field_package` Name/s of the field/s used for the package, not footprint
+  - `field_temp_coef` Name/s of the field/s used for the temperature
+     coefficient
+  - `field_power` Name/s of the field/s used for the power raiting
+  - `invalidate_pcb_text_cache` controls if we reset the text variables cached
+    in the PCB file.
+  - `git_diff_strategy` selects how we preserve the current repo state.
+    (See #443)
+- Filters:
+  - New `value_split` to extract information from the Value field and put it in
+    separated fields. I.e. tolerance, voltage, etc.
+  - New `spec_to_field` to extract information from the distributors specs and
+    put in fields. I.e. RoHS status.
+  - New `generic` options `exclude_not_in_bom` and `exclude_not_on_board` to
+    use KiCad 6+ flags. (See #429)
+- Internal templates:
+  - JLCPCB_with_THT and JLCPCB_stencil_with_THT: adding THT components.
+- New internal filters:
+  - `_value_split` splits the Value field but the field remains and the extra
+    data is not visible
+  - `_value_split_replace` splits the Value field and replaces it
+- Internal templates:
+  - CheckZoneFill: Used to check if a zone fill operation makes the PCB quite
+    different (#431)
+  - Versions with stencil for Elecrow, FusionPCB, P-Ban and PCBWay.
+  - PanelDemo_4x4: Demo for a 4x4 panel.
+- Render_3D:
+  - `realistic`: can be used to disable the realistic colors and get the GUI ones
+  - `show_board_body`: can be used to make the PCB core transparent (see inner)
+  - `show_comments`: to see the content of the User.Comments layer.
+  - `show_eco`: to see the content of the Eco1.User/Eco2.User layers.
+  - `show_adhesive`: to see the content of the *.Adhesive layers.
+- Navigate_Results:
+  - `skip_not_run`: used to skip outputs not generated in default runs.
+- Compress:
+  - `skip_not_run`: used to skip outputs not generated in default runs.
+- Position:
+  - `quote_all`: forces quotes to all values in the CSV output. (See #456)
+
+### Changed
+- Command line:
+  - `--list` also lists groups
+- KiCad v6/7 schematic:
+  - When saving an schematic the hierarchy is expanded only if needed,
+    i.e. value of an instance changed
+- List actions:
+  - Now you must explicitly ask to configure outputs. Otherwise isn't needed.
+    As a result you no longer need to have an SCH/PCB. Use `--config-outs` to
+    get the old behavior.
+- Git diff link file name:
+  - Now we default to using worktrees instead of stash push/pop. As a side
+    effect the names of the git points are chnaged. This is because main/master
+    only applies to the main worktree. So the names now refer to the closest
+    tag.
+- JLCPCB_stencil: Is now just like JLCPCB. The only difference is the added
+  layers.
+
+### Fixed
+- KiCad v6/7 schematic:
+  - Net Class Flags not saved in variants or annotated schematics
+  - Repeated UUIDs saved in variants
+  - Bitmap scale not saved in variants or annotated schematics
+  - `lib_name` attribute not saved in variants or annotated schematics
+- Position:
+  - Components marked as "Exclude from position files" not excluded when only
+    SMD components are selected. (See #429)
+- Diff:
+  - KIBOT_TAG with n > 0 skipped n commits, not n tags (#430)
+  - Details related to the project not applied during a diff involving a
+    variant (project not copied) (#438)
+- Copy files:
+  - PCB not loaded if the only action was to copy the 3D models
+  - Problems for STEP models when copying models
+- Gerber:
+  - Problems trying to compress gerbers for a board with inner layers when
+    using legacy file extensions (#446)
+- Electro-grammar:
+  - Problems with floating point tolerances (i.e. 0.1%) (#447)
+- KiCad user template directory autodetection for KiCad 7+
+
 ## [1.6.2] - 2023-04-24
 ### Added
 - General:

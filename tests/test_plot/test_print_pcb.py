@@ -16,8 +16,10 @@ PDF_DIR = 'Layers'
 PDF_FILE = 'bom-F_Cu+F_SilkS.pdf'
 PDF_FILE_B = 'PCB_Bot.pdf'
 PDF_FILE_C = 'PCB_Bot_def.pdf'
-DIFF_TOL = 10 if os.path.isfile('/etc/debian_version') else 5000
-DIFF_TOL2 = 100 if os.path.isfile('/etc/debian_version') else 5000
+# Even the Ubuntu builds are slightly different
+is_debian = os.path.isfile('/etc/debian_version') and not os.path.isfile('/etc/lsb-release')
+DIFF_TOL = 10 if is_debian else 5000
+DIFF_TOL2 = 100 if is_debian else 5000
 
 
 @pytest.mark.slow
@@ -129,7 +131,8 @@ def test_pcb_print_simple_1(test_dir):
     ctx.run()
     ctx.expect_out_file(prj+'-F_Cu_mono.png')
     ctx.expect_out_file(prj+'-F_Cu_color.png')
-    ctx.compare_image(prj+'-F_Cu_color.png', height='100%', fuzz='10%', tol=50)
+    if is_debian:
+        ctx.compare_image(prj+'-F_Cu_color.png', height='100%', fuzz='10%', tol=50)
     ctx.expect_out_file(prj+'-assembly_page_01.eps')
     ctx.expect_out_file(prj+'-assembly_page_01.svg')
     ctx.expect_out_file(prj+'-assembly.ps')

@@ -1,0 +1,8 @@
+kibot:
+  version: 1
+
+import:
+  - file: P-Ban
+    definitions:
+      _KIBOT_F_PASTE: '- F.Paste'
+      _KIBOT_B_PASTE: '- B.Paste'

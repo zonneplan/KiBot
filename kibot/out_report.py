@@ -49,9 +49,7 @@ def do_round(v, dig):
 
 def to_mm(iu, dig=2):
     """ KiCad Internal Units to millimeters """
-    if isinstance(iu, pcbnew.wxPoint):
-        return (do_round(GS.to_mm(iu.x), dig), do_round(GS.to_mm(iu.y), dig))
-    if isinstance(iu, pcbnew.wxSize):
+    if hasattr(iu, 'x'):
         return (do_round(GS.to_mm(iu.x), dig), do_round(GS.to_mm(iu.y), dig))
     return do_round(GS.to_mm(iu), dig)
 
@@ -936,7 +934,7 @@ class Report(BaseOutput):  # noqa: F821
         self._category = 'PCB/docs'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         pandoc = GS.check_tool(name, 'PanDoc')
         gb = {}
         outs = [gb]

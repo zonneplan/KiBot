@@ -86,13 +86,13 @@ def test_kicost_bom_simple(test_dir):
     ctx.expect_out_file_d(output)
     convert2csv(ctx, output, sheet='Costs')
     csv = output[:-4]+'csv'
-    ctx.compare_txt_d2(csv)
+    ctx.compare_txt_d2(csv, 'ks_'+csv)
     convert2csv(ctx, output, sheet='Costs (DNF)')
-    ctx.compare_txt_d2(csv, output[:-5]+'_dnf.csv')
+    ctx.compare_txt_d2(csv, 'ks_'+output[:-5]+'_dnf.csv')
     convert2csv(ctx, output, sheet='Specs')
-    ctx.compare_txt_d2(csv, output[:-5]+'_spec.csv')
+    ctx.compare_txt_d2(csv, 'ks_'+output[:-5]+'_spec.csv')
     convert2csv(ctx, output, sheet='Specs (DNF)')
-    ctx.compare_txt_d2(csv, output[:-5]+'_spec_dnf.csv')
+    ctx.compare_txt_d2(csv, 'ks_'+output[:-5]+'_spec_dnf.csv')
     ctx.clean_up()
 
 
@@ -124,3 +124,17 @@ def test_kicost_bom_merge_1(test_dir):
     convert2csv(ctx, output, sheet='Costs')
     csv = output[:-4]+'csv'
     ctx.compare_txt_d2(csv)
+
+
+def test_kicost_spec_to_field_1(test_dir):
+    """ Internal BoM + KiCost, select distributors (Mouser+Digi-Key). With DNF sheet.
+        Then copy the RoHS spec to a variant schematic """
+    prj = 'kibom-variant_2c'
+    ctx = context.TestContextSCH(test_dir, prj, 'spec_to_field_1', OUT_DIR)
+    ctx.run(kicost=True, extra_debug=True)
+    output = prj+'-bom.xlsx'
+    ctx.expect_out_file_d(output)
+    ctx.search_err([r'WARNING:\(.*\) C1 field `Tolerance` collision, has `20%`, found `10%`',
+                    r'WARNING:\(.*\) R1 field `Tolerance` collision, has `1%`, found `5%`',
+                    'C1 RoHS: ROHS3 Compliant'])
+    ctx.clean_up()

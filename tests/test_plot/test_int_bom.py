@@ -99,7 +99,7 @@ MERGED_COMPS = ['A:R1-A:R3', 'A:C1', 'A:C2', 'B:R1', 'B:R2-B:R4', 'B:C1', 'B:C2'
 MERGED_R1_SRC = 'A:(3) B:(3) C:(1)'
 
 
-def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps, ref_sep=' '):
+def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps, ref_sep=' ', vals=None, val_column=None):
     """ Checks the kibom-test.sch expected results """
     # Groups
     assert len(rows) == groups, "Number of groups"
@@ -107,8 +107,11 @@ def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps, ref_sep='
     # Components
     if comps:
         components = []
+        comp_vals = {}
         for r in rows:
             components.extend(r[ref_column].split(ref_sep))
+            if val_column:
+                comp_vals[r[ref_column]] = r[val_column]
         assert len(components) == len(comps), "Number of components"
         logging.debug(str(len(comps)) + " components OK")
     # Excluded
@@ -121,6 +124,12 @@ def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps, ref_sep='
         for c in comps:
             assert c in components
         logging.debug("list of components OK")
+    # Check values
+    if vals:
+        for r, v in vals.items():
+            assert r in comp_vals
+            assert v == comp_vals[r]
+        logging.debug("component values OK")
 
 
 def check_dnc(rows, comp, ref, status, datasheet=None):
@@ -1745,4 +1754,37 @@ def test_int_bom_subparts_3(test_dir):
     output = prj+'-bom.csv'
     ctx.expect_out_file(output)
     ctx.compare_txt(output, 'subparts-bom.csv')
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki6(), reason="Target is v6+")
+def test_value_change_1(test_dir):
+    prj = 'value_change'
+    ctx = context.TestContextSCH(test_dir, 'shared_page_value_change/'+prj, 'value_change_1', 'Modified')
+    ctx.run()
+    sch = ctx.expect_out_file_d(prj+'.kicad_sch')
+    ctx = context.TestContextSCH(test_dir, 'shared_page_value_change_complex/'+prj, 'int_bom_csv_no_info', 'BoM')
+    ctx.run(no_board_file=True, extra=['-e', sch])
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 4, None, ['C1', 'C2', 'J1', 'J2', 'R1', 'R2'],
+                             vals={'C1': '150p', 'C2': '220p'}, val_column=header.index('Value'))
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki6(), reason="Target is v6+")
+def test_value_change_2(test_dir):
+    prj = 'value_change'
+    ctx = context.TestContextSCH(test_dir, 'shared_page_value_change_complex/'+prj, 'value_change_2', 'Modified')
+    ctx.run()
+    sch = ctx.expect_out_file_d(prj+'.kicad_sch')
+    # assert False
+    ctx = context.TestContextSCH(test_dir, 'shared_page_value_change_complex/'+prj, 'int_bom_csv_no_info', 'BoM')
+    ctx.run(no_board_file=True, extra=['-e', sch])
+    rows, header, info = ctx.load_csv(prj+'-bom.csv')
+    ref_column = header.index(REF_COLUMN_NAME)
+    check_kibom_test_netlist(rows, ref_column, 5, None,
+                             ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'J1', 'J2', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6'],
+                             vals={'C1 C3 C6': '150p', 'C2 C4': '220p', 'C5': '330p'},
+                             val_column=header.index('Value'))
     ctx.clean_up()

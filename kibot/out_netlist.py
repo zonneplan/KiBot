@@ -75,7 +75,7 @@ class Netlist(BaseOutput):  # noqa: F821
             """ *[dict] Options for the `netlist` output """
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         gb1 = {}
         gb1['name'] = 'classic_'+name
         gb1['comment'] = 'Schematic netlist in KiCad format'

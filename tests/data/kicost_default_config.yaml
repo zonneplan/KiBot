@@ -3,7 +3,7 @@ kicost:
   version: 1
   # Cache Time To Live in days, -1 is forever
   # Default is 7
-  cache_ttl: 0
+  cache_ttl: -1
   # Base directory for the APIs caches
   # cache_path: ~/.cache/kicost
 
@@ -45,22 +45,17 @@ APIs:
     # cpc_country: UK
     # Directory for the APIs caches
     # cache_path: ~/.cache/kicost/Element14
-  Octopart:
-    # Octopart API Key
-    # key: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    # API level: 3 or 4
-    # level: 4
-    # The extended API is for the Pro plan
-    # extended: false
-    # Only enabled if the key is defined
+  Nexar:
+    # Nexar client ID
+    client_id: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+    # Nexar client secret
+    client_secret: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+    # Only enabled if the client_id and client_secret are defined
     # enable: false
+    # Country where we are buying
+    # country: US
     # Directory for the APIs caches
-    # cache_path: ~/.cache/kicost/Octopart
-  KitSpace:
-    # Normally enabled
-    # enable: true
-    # Directory for the APIs caches
-    cache_path: ./discard
+    cache_path: ./nexar
   TME:
     # TME token (anonymous or private)
     # token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

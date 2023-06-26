@@ -22,6 +22,7 @@ LAYER_ORDER = ['F.Cu', 'F.Mask', 'F.SilkS', 'F.Paste', 'F.Adhes', 'F.CrtYd', 'F.
                'In20.Cu', 'In21.Cu', 'In22.Cu', 'In23.Cu', 'In24.Cu', 'In25.Cu', 'In26.Cu', 'In27.Cu', 'In28.Cu', 'In29.Cu',
                'In30.Cu', 'B.Cu', 'B.Mask', 'B.SilkS', 'B.Paste', 'B.Adhes', 'B.CrtYd', 'B.Fab']
 LAYER_PRIORITY = {}
+DEFAULT_INNER_LAYER_NAMES = set()
 
 
 def create_print_priority(board):
@@ -305,7 +306,7 @@ class Layer(Optionable):
         # 1) Internal list
         if self.layer in Layer.DEFAULT_LAYER_NAMES:
             self._id = Layer.DEFAULT_LAYER_NAMES[self.layer]
-            self._is_inner = False
+            self._is_inner = self.layer in DEFAULT_INNER_LAYER_NAMES
         else:
             id = Layer._pcb_layers.get(self.layer)
             if id is not None:
@@ -347,6 +348,7 @@ class Layer(Optionable):
 # Add all the Inner layers
 for i in range(1, 30):
     name = 'In'+str(i)+'.Cu'
+    DEFAULT_INNER_LAYER_NAMES.add(name)
     Layer.DEFAULT_LAYER_NAMES[name] = pcbnew.In1_Cu+i-1
     Layer.DEFAULT_LAYER_DESC[name] = 'Inner layer '+str(i)
 if GS.ki6:

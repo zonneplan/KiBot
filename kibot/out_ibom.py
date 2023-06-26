@@ -259,7 +259,7 @@ class IBoM(BaseOutput):  # noqa: F821
         return self.options.get_dependencies()
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         tool = GS.check_tool(name, 'ibom')
         if tool is None:
             return None

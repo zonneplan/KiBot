@@ -26,7 +26,8 @@ preflight:
   # Used to solve ERC problems when using filters that remove power reference numbers.
   annotate_power: true
   # [boolean=false] Zones are filled before doing any operation involving PCB layers.
-  # The original PCB remains unchanged.
+  # The original PCB remains unchanged. If you need to abort when the zone fill
+  # creates significant changes to a layer use the CheckZoneFill internal template.
   check_zone_fills: true
   # [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
   erc_warnings: false
@@ -626,6 +627,8 @@ outputs:
       # [string='%f-%i%I%v.%x'] Name for the generated archive (%i=name of the output %x=according to format). Affected by global options
       output: '%f-%i%I%v.%x'
       # `remove_files` is an alias for `move_files`
+      # [boolean=false] Skip outputs with `run_by_default: false`
+      skip_not_run: false
   # Files copier:
   # Useful when an external tool is used to compress the output directory.
   # Note that you can use the `compress` output to create archives
@@ -1585,6 +1588,8 @@ outputs:
       link_from_root: ''
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [boolean=false] Skip outputs with `run_by_default: false`
+      skip_not_run: false
   # Netlist:
   # The netlist can be generated in the classic format and in IPC-D-356 format,
   # useful for board testing
@@ -2712,7 +2717,9 @@ outputs:
       dnf_filter: '_none'
       # [string='ASCII'] [ASCII,CSV] Format for the position file
       format: 'ASCII'
-      # [boolean=false] Include virtual components. For special purposes, not pick & place
+      # [boolean=false] Include virtual components. For special purposes, not pick & place.
+      # Note that virtual components is a KiCad 5 concept.
+      # For KiCad 6+ we replace this concept by the option to exclude from position file
       include_virtual: false
       # [boolean=true] Only include the surface mount components
       only_smd: true
@@ -2722,6 +2729,8 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [boolean=false] When generating the CSV quote all values, even numbers
+      quote_all: false
       # [number=4] number of digits for mantissa part of coordinates (0 is auto)
       right_digits: 4
       # [boolean=true] Generate two separated files, one for the top and another for the bottom
@@ -2900,7 +2909,7 @@ outputs:
       background2: '#CCCCE5'
       # [string='#332B16'] Color for the board without copper or solder mask
       board: '#332B16'
-      # [boolean=true] Clip silkscreen at via annuli (KiCad 6)
+      # [boolean=true] Clip silkscreen at via annuli (KiCad 6+)
       clip_silk_on_via_annulus: true
       # [string='#8b898c'] Color for the copper
       copper: '#8b898c'
@@ -2947,25 +2956,35 @@ outputs:
       pre_transform: '_none'
       # [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`
       ray_tracing: false
+      # [boolean=true] When disabled we use the colors of the layers used by the GUI. KiCad 6 or newer
+      realistic: true
       # [number=0] Steps to rotate around the X axis, positive is clockwise.
-      # Each step is currently 10 degrees. Only for KiCad 6
+      # Each step is currently 10 degrees. Only for KiCad 6 or newer
       rotate_x: 0
       # [number=0] Steps to rotate around the Y axis, positive is clockwise.
-      # Each step is currently 10 degrees. Only for KiCad 6
+      # Each step is currently 10 degrees. Only for KiCad 6 or newer
       rotate_y: 0
       # [number=0] Steps to rotate around the Z axis, positive is clockwise.
-      # Each step is currently 10 degrees. Only for KiCad 6
+      # Each step is currently 10 degrees. Only for KiCad 6 or newer
       rotate_z: 0
+      # [boolean=false] Show the content of F.Adhesive/B.Adhesive layers. KiCad 6 or newer
+      show_adhesive: false
+      # [boolean=true] Show the PCB core material. KiCad 6 or newer
+      show_board_body: true
+      # [boolean=false] Show the content of the User.Comments layer. KiCad 6 or newer and ray tracing disabled
+      show_comments: false
       # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
       # Unlike the `pcbdraw` output, the default is `all`
       show_components: all
-      # [boolean=true] Show the silkscreen layers (KiCad 6)
+      # [boolean=false] Show the content of the Eco1.User/Eco2.User layers. KiCad 6 or newer and ray tracing disabled
+      show_eco: false
+      # [boolean=true] Show the silkscreen layers (KiCad 6+)
       show_silkscreen: true
-      # [boolean=true] Show the solder mask layers (KiCad 6)
+      # [boolean=true] Show the solder mask layers (KiCad 6+)
       show_soldermask: true
-      # [boolean=true] Show the solder paste layers (KiCad 6)
+      # [boolean=true] Show the solder paste layers (KiCad 6+)
       show_solderpaste: true
-      # [boolean=true] Show filled areas in zones (KiCad 6)
+      # [boolean=true] Show filled areas in zones (KiCad 6+)
       show_zones: true
       # [string='#d5dce4'] Color for the silk screen
       silk: '#d5dce4'
@@ -2973,7 +2992,7 @@ outputs:
       solder_mask: '#208b47'
       # [string='#808080'] Color for the solder paste
       solder_paste: '#808080'
-      # [boolean=true] Clip silkscreen at solder mask edges (KiCad 6)
+      # [boolean=true] Clip silkscreen at solder mask edges (KiCad 6+)
       subtract_mask_from_silk: true
       # [boolean=false] When enabled the image will be post-processed to make the background transparent.
       # In this mode the `background1` and `background2` colors are ignored

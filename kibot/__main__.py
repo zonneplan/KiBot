@@ -12,7 +12,10 @@ Usage:
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
-         [-E DEF] ... --list
+         [-E DEF] ... [--config-outs] [--only-pre|--only-groups] [--only-names]
+         [--output-name-first] --list
+  kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
+         --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
          [-t, --type TYPE]... --quick-start
@@ -37,18 +40,29 @@ Options:
   --banner N                       Display banner number N (-1 == random)
   -c CONFIG, --plot-config CONFIG  The plotting config file to use
   -C, --cli-order                  Generate outputs using the indicated order
+  --config-outs                    Configure all outputs before listing them
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -D, --dont-stop                  Try to continue if an output fails
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch/.kicad_sch)
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   -i, --invert-sel                 Generate the outputs not listed as targets
-  -l, --list                       List available outputs (in the config file)
+  -l, --list                       List available outputs, preflights and
+                                   groups (in the config file).
+                                   You don't need to specify an SCH/PCB unless
+                                   using --config-outs
+  --list-variants                  List the available variants and exit
   -L, --log LOGFILE                Log to LOGFILE using maximum debug level.
                                    Is independent of what is logged to stderr
   -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
   -n, --no-priority                Don't sort targets by priority
   -p, --copy-options               Copy plot options from the PCB file
+  --only-names                     Print only the names. Note that for --list
+                                   if no other --only-* option is provided it
+                                   also acts as a virtual --only-outputs
+  --only-groups                    Print only the groups.
+  --only-pre                       Print only the preflights
+  --output-name-first              Use the output name first when listing
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
@@ -114,32 +128,91 @@ from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help
                             print_filters_help, print_global_options_help, print_dependencies, print_variants_help)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
                      solve_board_file, solve_project_file, check_board_file)
+from .registrable import RegOutput
 GS.kibot_version = __version__
 
 
-def list_pre_and_outs(logger, outputs):
-    logger.info('Available actions:\n')
+def list_pre_and_outs_names(logger, outputs, do_config, only_pre, only_groups):
+    pf = BasePreFlight.get_in_use_names()
+    if only_pre:
+        for c in sorted(pf):
+            logger.info(c)
+        return
+    if only_groups:
+        for g in sorted(RegOutput.get_group_names()):
+            logger.info(g)
+        return
+    if outputs:
+        for o in sorted(outputs, key=lambda x: x.name.lower()):
+            if do_config:
+                config_output(o, dry=False)
+            logger.info(o.name)
+
+
+def list_pre_and_outs(logger, outputs, do_config, only_names, only_pre, only_groups, output_name_first):
+    if only_names:
+        return list_pre_and_outs_names(logger, outputs, do_config, only_pre, only_groups)
     pf = BasePreFlight.get_in_use_objs()
-    if len(pf):
-        logger.info('Pre-flight:')
+    groups = RegOutput.get_groups()
+    if pf and not only_groups:
+        logger.info('Available pre-flights:')
         for c in pf:
             logger.info('- '+str(c))
-    if len(outputs):
-        logger.info('Outputs:')
+        logger.info("")
+    if outputs and not only_pre and not only_groups:
+        fmt = "name: comment/description [type]" if output_name_first else "'comment/description' (name) [type]"
+        logger.info("Available outputs: format is: `{}`".format(fmt))
         for o in outputs:
             # Note: we can't do a `dry` config because some layer and field names can be validated only if we
             # load the schematic and the PCB.
-            config_output(o, dry=False)
-            logger.info('- '+str(o))
+            if do_config:
+                config_output(o, dry=False)
+            if output_name_first:
+                logger.info('- {}: {} [{}]'.format(o.name, o.comment, o.type))
+            else:
+                logger.info('- '+str(o))
+        logger.info("")
+    if groups and not only_pre:
+        logger.info("Available groups:")
+        for g, items in groups.items():
+            logger.info('- '+g+': '+', '.join(items))
+        logger.info("")
+    if pf:
+        logger.info("You can use e.g. `kibot --skip-pre preflight_name1,preflight_name2` to")
+        logger.info("skip specific preflights (or pass `all` to skip them all).")
+        logger.info("")
+    if outputs:
+        logger.info("You can use e.g. `kibot output_name1 output_name2` to generate only")
+        logger.info("specific outputs by name.")
+        logger.info("")
+    if groups:
+        logger.info("You can use the name of a group instead of an output name.")
+        logger.info("")
 
 
-def solve_config(a_plot_config):
+def list_variants(logger, only_names):
+    variants = RegOutput.get_variants()
+    if not variants:
+        if not only_names:
+            logger.info('No variants defined')
+        return
+    if only_names:
+        for name in sorted(variants.keys()):
+            logger.info(name)
+        return
+    logger.info("Available variants: 'comment/description' (name) [type]")
+    for name in sorted(variants.keys()):
+        logger.info('- '+str(variants[name]))
+
+
+def solve_config(a_plot_config, quiet=False):
     plot_config = a_plot_config
     if not plot_config:
         plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')+glob('*.kibot.yaml.gz')
         if len(plot_configs) == 1:
             plot_config = plot_configs[0]
-            logger.info('Using config file: '+os.path.relpath(plot_config))
+            if not quiet:
+                logger.info('Using config file: '+os.path.relpath(plot_config))
         elif len(plot_configs) > 1:
             plot_config = plot_configs[0]
             logger.warning(W_VARCFG + 'More than one config file found in current directory.\n'
@@ -398,13 +471,14 @@ def main():
         sys.exit(0)
 
     # Determine the YAML file
-    plot_config = solve_config(args.plot_config)
-    # Determine the SCH file
-    GS.set_sch(solve_schematic('.', args.schematic, args.board_file, plot_config))
-    # Determine the PCB file
-    GS.set_pcb(solve_board_file('.', args.board_file))
-    # Determine the project file
-    GS.set_pro(solve_project_file())
+    plot_config = solve_config(args.plot_config, args.only_names)
+    if not (args.list or args.list_variants) or args.config_outs:
+        # Determine the SCH file
+        GS.set_sch(solve_schematic('.', args.schematic, args.board_file, plot_config))
+        # Determine the PCB file
+        GS.set_pcb(solve_board_file('.', args.board_file))
+        # Determine the project file
+        GS.set_pro(solve_project_file())
 
     # Parse preprocessor defines
     parse_defines(args)
@@ -414,7 +488,7 @@ def main():
     outputs = None
     try:
         # The Python way ...
-        with gzip.open(plot_config) as cf_file:
+        with gzip.open(plot_config, mode='rt') as cf_file:
             try:
                 outputs = cr.read(cf_file)
             except KiPlotConfigurationError as e:
@@ -430,7 +504,12 @@ def main():
 
     # Is just "list the available targets"?
     if args.list:
-        list_pre_and_outs(logger, outputs)
+        list_pre_and_outs(logger, outputs, args.config_outs, args.only_names, args.only_pre, args.only_groups,
+                          args.output_name_first)
+        sys.exit(0)
+
+    if args.list_variants:
+        list_variants(logger, args.only_names)
         sys.exit(0)
 
     if args.makefile:

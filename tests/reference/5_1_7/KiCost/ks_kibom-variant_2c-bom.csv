@@ -1,0 +1,22 @@
+,,,KiBot Bill of Materials,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,kibom-variant_2c,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,, 2021-04-06,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,Schematic:,kibom-variant_2c,,,,,Board Qty:,50,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,Variant:,default,,,,,Unit Cost:,0.002,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,Revision:,A,,,,,Total Cost:,0.1,,,,,0,0 of 1 parts found,,,,,0.61,1 of 1 parts found,,,,,0.7292,1 of 1 parts found,,,,,0,0 of 1 parts found,,,,,0.5,1 of 1 parts found,,,,,0.1,1 of 1 parts found,,,,,0,0 of 1 parts found,,,,,0,0 of 1 parts found,,,,,0,0 of 1 parts found
+,,,Date:,2021-04-06,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,KiCad Version:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+Global Part Info,,,,,,,,,,,Arrow,,,,,,Digi-Key,,,,,,Farnell,,,,,,LCSC,,,,,,Mouser,,,,,,Newark,,,,,,RS Components,,,,,,TME,,,,,,test,,,,,
+References,Value,Real value,Tolerancia,Voltage,Footprint,Manufacturer,Manufacturer P/N,Build Quantity,Unit$,Ext$,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#
+R1 R2,1k,1000,1% 5%,,,Bourns,CR0603-JW-102ELF,100,0.001,0.1,,,,,,,51387,,0.0061,1,0.61,CR0603-JW-102ELFCT-ND,55000,,0.007292,10,0.7292,2333561,,,,,,,52251,,0.005,1,0.5,652CR0603JW102ELF,110000,,0.001,1,0.1,02J2284,,,,,,,,,,,,,,,,,,
+
+,Used currency rates:,,,,,,,,Total Purchase:,0,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,,,,,0,
+,USD($)/GBP(£):,1.375941592305018,,,,,,,Purchase description:,,,,,,,,,,,,,,,,,,,,,"Copy this header and order to a CSV
+file and use it for JLCPCB 
+manufacturer PCB house.
+The multipart components that use
+""#"" symbol are not allowed by JLCPCB.",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+Created:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+KiCost,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

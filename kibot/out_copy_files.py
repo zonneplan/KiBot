@@ -121,6 +121,7 @@ class Copy_FilesOptions(Base3DOptions):
     def get_3d_models(self, f):
         """ Look for the 3D models and make a list, optionally download them """
         GS.check_pcb()
+        GS.load_board()
         dest_dir = f.dest
         if dest_dir and dest_dir[-1] == '+':
             dest_dir = dest_dir[:-1]
@@ -148,7 +149,7 @@ class Copy_FilesOptions(Base3DOptions):
                 if os.path.isfile(fn):
                     new_list.append(fn)
             elif fn.endswith('.step'):
-                fn = f[:-5]+'.wrl'
+                fn = fn[:-5]+'.wrl'
                 if os.path.isfile(fn):
                     new_list.append(fn)
         return files_list+fnmatch.filter(new_list, f.source)

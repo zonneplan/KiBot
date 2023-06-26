@@ -641,7 +641,7 @@ class Blender_Export(Base3D):
         return 'png'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         if not GS.check_tool(name, 'Blender') or GS.ki5:
             return None
         has_top = False

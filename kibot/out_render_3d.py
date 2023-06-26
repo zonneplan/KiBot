@@ -79,13 +79,13 @@ class Render3DOptions(Base3DOptionsWithHL):
                 Just like pressing the up arrow in the 3D viewer """
             self.rotate_x = 0
             """ *Steps to rotate around the X axis, positive is clockwise.
-                Each step is currently 10 degrees. Only for KiCad 6 """
+                Each step is currently 10 degrees. Only for KiCad 6 or newer """
             self.rotate_y = 0
             """ *Steps to rotate around the Y axis, positive is clockwise.
-                Each step is currently 10 degrees. Only for KiCad 6 """
+                Each step is currently 10 degrees. Only for KiCad 6 or newer """
             self.rotate_z = 0
             """ *Steps to rotate around the Z axis, positive is clockwise.
-                Each step is currently 10 degrees. Only for KiCad 6 """
+                Each step is currently 10 degrees. Only for KiCad 6 or newer """
             self.ray_tracing = False
             """ *Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt` """
             self.wait_render = -600
@@ -107,17 +107,17 @@ class Render3DOptions(Base3DOptionsWithHL):
             self.orthographic = False
             """ Enable the orthographic projection mode (top view looks flat) """
             self.show_silkscreen = True
-            """ Show the silkscreen layers (KiCad 6) """
+            """ Show the silkscreen layers (KiCad 6+) """
             self.show_soldermask = True
-            """ Show the solder mask layers (KiCad 6) """
+            """ Show the solder mask layers (KiCad 6+) """
             self.show_solderpaste = True
-            """ Show the solder paste layers (KiCad 6) """
+            """ Show the solder paste layers (KiCad 6+) """
             self.show_zones = True
-            """ Show filled areas in zones (KiCad 6) """
+            """ Show filled areas in zones (KiCad 6+) """
             self.clip_silk_on_via_annulus = True
-            """ Clip silkscreen at via annuli (KiCad 6) """
+            """ Clip silkscreen at via annuli (KiCad 6+) """
             self.subtract_mask_from_silk = True
-            """ Clip silkscreen at solder mask edges (KiCad 6) """
+            """ Clip silkscreen at solder mask edges (KiCad 6+) """
             self.auto_crop = False
             """ When enabled the image will be post-processed to remove the empty space around the image.
                 In this mode the `background2` is changed to be the same as `background1` """
@@ -128,6 +128,16 @@ class Render3DOptions(Base3DOptionsWithHL):
             """ Color used for the chroma key. Adjust it if some regions of the board becomes transparent """
             self.transparent_background_fuzz = 15
             """ [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels """
+            self.realistic = True
+            """ When disabled we use the colors of the layers used by the GUI. KiCad 6 or newer """
+            self.show_board_body = True
+            """ Show the PCB core material. KiCad 6 or newer """
+            self.show_comments = False
+            """ Show the content of the User.Comments layer. KiCad 6 or newer and ray tracing disabled """
+            self.show_eco = False
+            """ Show the content of the Eco1.User/Eco2.User layers. KiCad 6 or newer and ray tracing disabled """
+            self.show_adhesive = False
+            """ Show the content of F.Adhesive/B.Adhesive layers. KiCad 6 or newer """
         super().__init__()
         self._expand_ext = 'png'
 
@@ -240,6 +250,16 @@ class Render3DOptions(Base3DOptionsWithHL):
             cmd.append('--dont_clip_silk_on_via_annulus')
         if not self.subtract_mask_from_silk:
             cmd.append('--dont_substrack_mask_from_silk')
+        if not self.realistic:
+            cmd.append('--use_layer_colors')
+        if not self.show_board_body:
+            cmd.append('--hide_board_body')
+        if self.show_comments:
+            cmd.append('--show_comments')
+        if self.show_eco:
+            cmd.append('--show_eco')
+        if self.show_adhesive:
+            cmd.append('--show_adhesive')
 
     def run(self, output):
         super().run(output)
@@ -290,7 +310,7 @@ class Render_3D(Base3D):  # noqa: F821
         return self.options
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = []
         has_top = False
         has_bottom = False

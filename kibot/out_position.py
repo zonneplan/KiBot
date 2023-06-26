@@ -80,7 +80,11 @@ class PositionOptions(VariantOptions):
             self.use_aux_axis_as_origin = True
             """ Use the auxiliary axis as origin for coordinates (KiCad default) """
             self.include_virtual = False
-            """ Include virtual components. For special purposes, not pick & place """
+            """ Include virtual components. For special purposes, not pick & place.
+                Note that virtual components is a KiCad 5 concept.
+                For KiCad 6+ we replace this concept by the option to exclude from position file """
+            self.quote_all = False
+            """ When generating the CSV quote all values, even numbers """
         super().__init__()
         self._expand_id = 'position'
 
@@ -197,7 +201,7 @@ class PositionOptions(VariantOptions):
 
     @staticmethod
     def is_pure_smd_6(m):
-        return m.GetAttributes() & (MOD_THROUGH_HOLE | MOD_SMD) == MOD_SMD
+        return m.GetAttributes() & (MOD_THROUGH_HOLE | MOD_SMD | MOD_EXCLUDE_FROM_POS_FILES) == MOD_SMD
 
     @staticmethod
     def is_not_virtual_5(m):
@@ -232,6 +236,7 @@ class PositionOptions(VariantOptions):
         modules_side = []
         is_pure_smd, is_not_virtual = self.get_attr_tests()
         quote_char = '"' if self.format == 'CSV' else ''
+        quote_char_extra = quote_char if self.quote_all else ''
         x_origin = 0.0
         y_origin = 0.0
         if self.use_aux_axis_as_origin:
@@ -245,7 +250,7 @@ class PositionOptions(VariantOptions):
             if comps_hash:
                 c = comps_hash.get(ref, None)
                 if c:
-                    logger.debug('fit: {} include: {}'.format(c.fitted, c.included))
+                    logger.debug('- fit: {} include: {}'.format(c.fitted, c.included))
                     if not c.fitted or not c.included:
                         continue
                     value = c.value
@@ -283,15 +288,18 @@ class PositionOptions(VariantOptions):
                         pos_x = (center_x - x_origin) * conv
                         if self.bottom_negative_x and is_bottom:
                             pos_x = -pos_x
-                        row.append(float_format.format(pos_x, rd=self.right_digits))
+                        row.append(quote_char_extra+float_format.format(pos_x, rd=self.right_digits)+quote_char_extra)
                     elif k == 'PosY':
-                        row.append(float_format.format(-(center_y - y_origin) * conv, rd=self.right_digits))
+                        row.append(quote_char_extra+float_format.format(-(center_y - y_origin) * conv, rd=self.right_digits) +
+                                   quote_char_extra)
                     elif k == 'Rot':
-                        row.append(float_format.format(rotation, rd=self.right_digits))
+                        row.append(quote_char_extra+float_format.format(rotation, rd=self.right_digits)+quote_char_extra)
                     elif k == 'Side':
-                        row.append("bottom" if is_bottom else "top")
+                        row.append(quote_char_extra+("bottom" if is_bottom else "top")+quote_char_extra)
                 modules.append(row)
                 modules_side.append(is_bottom)
+            else:
+                logger.debug('- pure_smd: {} not_virtual {}'.format(is_pure_smd(m), is_not_virtual(m)))
         # Find max width for all columns
         maxlengths = []
         for col, name in enumerate(columns):
@@ -320,7 +328,7 @@ class Position(BaseOutput):  # noqa: F821
         self._category = 'PCB/fabrication/assembly'
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         outs = []
         has_top = False
         has_bottom = False

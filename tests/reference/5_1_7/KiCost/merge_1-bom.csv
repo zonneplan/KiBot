@@ -3,46 +3,46 @@
 ,,,KiCad Version:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 ,,,merge_1,,,,,Board Qty0:,50,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,Schematic:,merge_1,,,,Unit Cost0:,0.0452,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,Revision:,,,,,Total Cost0:,2.26,,,,,0,0 of 3 parts found,,,,,3.905,3 of 3 parts found,,,,,5828.8395,3 of 3 parts found,,,,,0.505,2 of 3 parts found,,,,,3.2,3 of 3 parts found,,,,,3.6,3 of 3 parts found,,,,,5.3662,2 of 3 parts found,,,,,9.1617,3 of 3 parts found
+,,,Schematic:,merge_1,,,,Unit Cost0:,0.0712,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,Revision:,,,,,Total Cost0:,3.56,,,,,2.94,3 of 3 parts found,,,,,3.65,3 of 3 parts found,,,,,4.6438,3 of 3 parts found,,,,,0.395,2 of 3 parts found,,,,,3.7,3 of 3 parts found,,,,,5.95,3 of 3 parts found,,,,,0,0 of 3 parts found,,,,,10.2072,3 of 3 parts found
 ,,,Date:,2021-05-11_13-08-20,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,Company:,Test company,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,ID:,prj0:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,merge_2,,,,,Board Qty1:,20,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,Schematic:,2nd project,,,,Unit Cost1:,0.0542,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,Revision:,,,,,Total Cost1:,1.084,,,,,0,0 of 4 parts found,,,,,1.852,4 of 4 parts found,,,,,2332.1467,4 of 4 parts found,,,,,0.202,2 of 4 parts found,,,,,1.48,4 of 4 parts found,,,,,1.62,4 of 4 parts found,,,,,2.229,3 of 4 parts found,,,,,4.22,4 of 4 parts found
+,,,Schematic:,2nd project,,,,Unit Cost1:,0.083,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,Revision:,,,,,Total Cost1:,1.66,,,,,1.412,4 of 4 parts found,,,,,1.7,4 of 4 parts found,,,,,2.141,4 of 4 parts found,,,,,0.158,2 of 4 parts found,,,,,1.72,4 of 4 parts found,,,,,2.68,4 of 4 parts found,,,,,0,0 of 4 parts found,,,,,4.4198,4 of 4 parts found
 ,,,Date:,2021-05-11_13-10-07,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,ID:,prj1:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 ,,,merge_3,,,,,Board Qty2:,30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,Schematic:,merge_3,,,,Unit Cost2:,0.045,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,Revision:,,,,,Total Cost2:,1.35,,,,,0,0 of 2 parts found,,,,,2.175,2 of 2 parts found,,,,,4.1072,2 of 2 parts found,,,,,0,0 of 2 parts found,,,,,1.47,2 of 2 parts found,,,,,1.35,2 of 2 parts found,,,,,0.6192,2 of 2 parts found,,,,,4.43,2 of 2 parts found
+,,,Schematic:,merge_3,,,,Unit Cost2:,0.0586,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,Revision:,,,,,Total Cost2:,1.758,,,,,1.758,2 of 2 parts found,,,,,1.8,2 of 2 parts found,,,,,2.2043,2 of 2 parts found,,,,,0,0 of 2 parts found,,,,,1.8,2 of 2 parts found,,,,,2.61,2 of 2 parts found,,,,,0,0 of 2 parts found,,,,,3.2157,2 of 2 parts found
 ,,,Date:,2021-05-11_13-10-48,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,ID:,prj2:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
-,,,,,,,,Total Prjs Cost:,4.694,,,,,0,0 of 4 parts found,,,,,7.932,4 of 4 parts found,,,,,8165.0933,4 of 4 parts found,,,,,0.546,2 of 4 parts found,,,,,6.15,4 of 4 parts found,,,,,6.57,4 of 4 parts found,,,,,6.6458,3 of 4 parts found,,,,,16.7599,4 of 4 parts found
+,,,,,,,,Total Prjs Cost:,6.978,,,,,5.858,4 of 4 parts found,,,,,7.15,4 of 4 parts found,,,,,8.989,4 of 4 parts found,,,,,0,2 of 4 parts found,,,,,7.22,4 of 4 parts found,,,,,10.47,4 of 4 parts found,,,,,0,0 of 4 parts found,,,,,16.3551,4 of 4 parts found
 Global Part Info,,,,,,,,,,Arrow,,,,,,Digi-Key,,,,,,Farnell,,,,,,LCSC,,,,,,Mouser,,,,,,Newark,,,,,,RS Components,,,,,,TME,,,,,
 References,Value,Footprint,Manufacturer P/N,Qty.Prj0,Qty.Prj1,Qty.Prj2,Build Quantity,Unit$,Ext$,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#,Avail,Purch,Unit$,MOQ,Ext$,Cat#
 "prj0:C1
-prj1:C2",1nF,,GRM1555C1H102JA01D,50,20,0,70,0.0078,0.546,,,,,,,3602377,,0.0242,1,1.694,490-3244-1-ND,NonStk,,116.514734,1,8156.0314,1118130,13600,,0.0078,50,0.546,C76947,NonStk,,0.026,1,1.82,81GRM1555C1H102JA1D,NonStk,,0.034,10,2.38,38K1651,2000,,0.09494,50,6.6458,6242913,100700,,0.058409,50,4.0886,GRM1555C1H102JA01D
+prj1:C2",1nF,,GRM1555C1H102JA01D,50,20,0,70,0.0206,1.442,3190000,,0.021,1,1.47,GRM1555C1H102JA01D,25106085,,0.0206,1,1.442,490-3244-2-ND,90000,,0.024629,10,1.7241,8819556,625044,,,100,,C76947,1886448,,0.021,1,1.47,81-GRM1555C1H102JA1D,90000,,0.027,1,1.89,38K1651,,,,,,,85580,,0.063497,50,4.4448,GRM1555C1H102JA01D
 "prj1:C1
-prj0:C2",10nF,,GRM155R71E103KA01D,50,20,0,70,0.0104,0.728,,,,,,,2329523,,0.0104,1,0.728,490-1312-1-ND,10000,,0.017887,1,1.2521,1118150,133200,,,100,,C77013,42743,,0.011,1,0.77,81GRM36X103K25,10000,,0.011,1,0.77,37K6460,,,,,,,124600,,,100,,GRM155R71E103KA01D
+prj0:C2",10nF,,GRM155R71E103KA01D,50,20,0,70,0.0164,1.148,590000,,,10000,,GRM155R71E103KA01D,12826631,,0.0164,1,1.148,490-1312-2-ND,NonStk,,0.017887,1,1.2521,1118150,383000,,,100,,C77013,3459853,,0.017,1,1.19,81-GRM36X103K25,NonStk,,,10000,,37K6460,,,,,,,35800,,,100,,GRM155R71E103KA01D
 "prj0:R1-R3
 prj1:R2-R4
-prj2:R5",1k,,RC0805JR-071KL,150,60,30,240,0.009,2.16,,,,,,,512,,0.0145,1,3.48,311-1.0KARCT-ND,47623,,0.014723,1,3.5334,1799479,,,,,,,192935,,0.009,1,2.16,603RC0805JR071KL,1498,,0.009,1,2.16,68R0253,2100,,,5000,,1995761,17400,,0.0366,100,8.784,RC0805JR071K
+prj2:R5",1k,,RC0805JR-071KL,150,60,30,240,0.0114,2.736,120000,,0.0114,1,2.736,RC0805JR-071KL,1634060,,0.012,1,2.88,311-1.0KARTR-ND,566830,,0.016786,10,4.0288,9234004,,,,,,,796409,,0.012,1,2.88,603-RC0805JR-071KL,566830,,0.027,1,6.48,68R0253,,,,,,,92400,,0.039798,100,9.5516,RC0805JR-071K
 "prj1:R1
-prj2:R1-R4",10k,,RC0805JR-0710KL,0,20,120,140,0.009,1.26,,,,,,,5497493,,0.0145,1,2.03,311-10KARCT-ND,22848,,0.030546,1,4.2764,2131807,,,,,,,2294842,,0.01,1,1.4,603RC0805JR0710KL,10000,,0.009,1,1.26,80K7383,3800,,,5000,,1995759,240800,,0.027767,100,3.8873,RC0805JR0710K
+prj2:R1-R4",10k,,RC0805JR-0710KL,0,20,120,140,0.0118,1.652,230000,,0.0118,1,1.652,RC0805JR-0710KL,1298629,,0.012,1,1.68,311-10KARTR-ND,949261,,0.014172,10,1.9841,9234136,,,,,,,1921502,,0.012,1,1.68,603-RC0805JR-0710KL,1967,,0.015,1,2.1,80K7383,,,,,,,146100,,0.016848,100,2.3587,RC0805JR-0710K
 
 ,Used currency rates:,,,,,,,Total Purchase:,0,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,,Buy here,,,,0,
-,USD($)/GBP(£):,1.375941592305018,,,,,,Purchase description:,,,,,,,,,,,,,,,,,,,,,"Copy this header and order to a CSV
+,USD($)/EUR(€):,1.1873,,,,,,Purchase description:,,,,,,,,,,,,,,,,,,,,,"Copy this header and order to a CSV
 file and use it for JLCPCB 
 manufacturer PCB house.
 The multipart components that use
 ""#"" symbol are not allowed by JLCPCB.",,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,USD($)/GBP(£):,1.375941592305018,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 Created:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 KiCost,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,0,,,,,,0,,,,,,0,,,,,,0,,,,,,0,,,,,,0,,,,,,0,,,,,,0,,,,
 ,,,,,,,,,,,0,,,,,,0,,,,,,0,,,,,,0,,,,,,0,,,,,,0,,,,,,0,,,,,,0,,,,

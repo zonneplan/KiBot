@@ -32,7 +32,7 @@ visual_level = None
 debug_level = 0
 
 
-def get_logger(name=None):
+def get_logger(name=None, indent=None):
     """Get a module for a submodule or the root logger if no name is
        provided"""
     # print('get_logger '+str(name))
@@ -41,9 +41,13 @@ def get_logger(name=None):
         init()
     if name:
         if name.startswith(domain):
-            return logging.getLogger(name)
-        return logging.getLogger(domain+'.'+name)
-    return logging.getLogger(domain)
+            lg = logging.getLogger(name)
+        else:
+            lg = logging.getLogger(domain+'.'+name)
+    else:
+        lg = logging.getLogger(domain)
+    lg.indent = indent
+    return lg
 
 
 def set_domain(name):
@@ -112,6 +116,13 @@ class MyLogger(logging.Logger):
             super(self.__class__, self).debug(msg, stacklevel=2, *args, **kwargs)  # pragma: no cover (Py38)
         else:
             super(self.__class__, self).debug(msg, *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        if isinstance(msg, tuple):
+            msg = ' '.join(map(str, msg))
+        if self.indent:
+            msg = ' '*self.indent+msg
+        super(self.__class__, self).info(msg, *args, **kwargs)
 
     def debugl(self, level, msg, *args, **kwargs):
         # Similar to log() but using the debug_level (-vvvv) instead of the Python level

@@ -316,7 +316,7 @@ class AnyLayer(BaseOutput):
         return {'layer': la.layer, 'suffix': la.suffix, 'description': la.description}
 
     @staticmethod
-    def get_conf_examples(name, layers, templates):
+    def get_conf_examples(name, layers):
         gb = {}
         outs = [gb]
         name_u = name.upper()

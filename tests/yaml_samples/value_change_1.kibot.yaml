@@ -1,0 +1,36 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+  - name: match_C2
+    comment: 'A filter to select C2'
+    type: generic
+    invert: true
+    exclude_refs: [C2]
+
+  - name: change_C2
+    comment: 'Transform C2 value'
+    type: field_modify
+    fields: Value
+    include: match_C2
+    regex: 150p
+    replace: 220p
+
+variants:
+  - name: filter_change
+    comment: 'Changes C2 to 220 pF'
+    type: kibom
+    file_id: '_different_filters'
+    pre_transform: change_C2
+
+global:
+  variant: filter_change
+
+outputs:
+  - name: create_sch
+    comment: "Apply the variant to the Schematic"
+    type: sch_variant
+    dir: Modified
+    options:
+      copy_project: true

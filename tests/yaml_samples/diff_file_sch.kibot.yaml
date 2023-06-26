@@ -1,0 +1,14 @@
+kibot:
+  version: 1
+
+outputs:
+  - name: 'diff_sch'
+    comment: "Schematic difference with reference file (KiCad @KiVer@)"
+    type: diff
+    options:
+      old: tests/board_samples/kicad_@KiVer@/light_control@SCHExt@
+      pcb: false
+      old_type: file
+      add_link_id: true
+      copy_instead_of_link: true
+      cache_dir: .cache

@@ -36,6 +36,6 @@ outputs:
         - 'Voltage'
       xlsx:
         kicost: true
-        kicost_config: tests/data/kicost_default_config.yaml
+        kicost_config: tests/data/kicost_kitspace_config.yaml
         specs: true
         extra_info: ['%f', ' %d']

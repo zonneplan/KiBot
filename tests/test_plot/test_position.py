@@ -19,6 +19,7 @@ pytest-3 --log-cli-level debug
 """
 import os
 import logging
+import pytest
 from kibot.misc import EXIT_BAD_CONFIG
 from . import context
 
@@ -303,4 +304,38 @@ def test_position_error_same_name(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'error_position_same_name', POS_DIR)
     ctx.run(EXIT_BAD_CONFIG)
     ctx.search_err(r"(.*)but both with the same name")
+    ctx.clean_up()
+
+
+def check_comp_list(rows, comps):
+    cs = set()
+    for r in rows:
+        cs.add(r[0])
+    assert cs == comps
+
+
+@pytest.mark.skipif(not context.ki6(), reason="in_bom/on_board flags")
+def test_position_flags_1(test_dir):
+    prj = 'filter_not_in_bom'
+    ctx = context.TestContext(test_dir, prj, 'simple_position_unified_csv', POS_DIR)
+    ctx.run()
+    check_comp_list(ctx.load_csv(prj+'-both_pos.csv')[0], {'R1', 'R2', 'R3', 'R4'})
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki6(), reason="in_bom/on_board flags")
+def test_position_flags_2(test_dir):
+    prj = 'filter_not_in_bom'
+    ctx = context.TestContext(test_dir, prj, 'fil_no_bom', POS_DIR)
+    ctx.run()
+    check_comp_list(ctx.load_csv(prj+'-both_pos.csv')[0], {'R1', 'R4'})
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki6(), reason="in_bom/on_board flags")
+def test_position_flags_3(test_dir):
+    prj = 'filter_not_in_bom'
+    ctx = context.TestContext(test_dir, prj, 'fil_no_board', POS_DIR)
+    ctx.run()
+    check_comp_list(ctx.load_csv(prj+'-both_pos.csv')[0], {'R1', 'R2', 'R3'})
     ctx.clean_up()
