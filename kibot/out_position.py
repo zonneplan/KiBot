@@ -83,6 +83,8 @@ class PositionOptions(VariantOptions):
             """ Include virtual components. For special purposes, not pick & place.
                 Note that virtual components is a KiCad 5 concept.
                 For KiCad 6+ we replace this concept by the option to exclude from position file """
+            self.quote_all = False
+            """ When generating the CSV quote all values, even numbers """
         super().__init__()
         self._expand_id = 'position'
 
@@ -234,6 +236,7 @@ class PositionOptions(VariantOptions):
         modules_side = []
         is_pure_smd, is_not_virtual = self.get_attr_tests()
         quote_char = '"' if self.format == 'CSV' else ''
+        quote_char_extra = quote_char if self.quote_all else ''
         x_origin = 0.0
         y_origin = 0.0
         if self.use_aux_axis_as_origin:
@@ -285,13 +288,14 @@ class PositionOptions(VariantOptions):
                         pos_x = (center_x - x_origin) * conv
                         if self.bottom_negative_x and is_bottom:
                             pos_x = -pos_x
-                        row.append(float_format.format(pos_x, rd=self.right_digits))
+                        row.append(quote_char_extra+float_format.format(pos_x, rd=self.right_digits)+quote_char_extra)
                     elif k == 'PosY':
-                        row.append(float_format.format(-(center_y - y_origin) * conv, rd=self.right_digits))
+                        row.append(quote_char_extra+float_format.format(-(center_y - y_origin) * conv, rd=self.right_digits) +
+                                   quote_char_extra)
                     elif k == 'Rot':
-                        row.append(float_format.format(rotation, rd=self.right_digits))
+                        row.append(quote_char_extra+float_format.format(rotation, rd=self.right_digits)+quote_char_extra)
                     elif k == 'Side':
-                        row.append("bottom" if is_bottom else "top")
+                        row.append(quote_char_extra+("bottom" if is_bottom else "top")+quote_char_extra)
                 modules.append(row)
                 modules_side.append(is_bottom)
             else:

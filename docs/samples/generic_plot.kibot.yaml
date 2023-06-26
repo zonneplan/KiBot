@@ -2729,6 +2729,8 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [boolean=false] When generating the CSV quote all values, even numbers
+      quote_all: false
       # [number=4] number of digits for mantissa part of coordinates (0 is auto)
       right_digits: 4
       # [boolean=true] Generate two separated files, one for the top and another for the bottom

@@ -4233,6 +4233,7 @@ Notes:
                              For KiCad 6+ we replace this concept by the option to exclude from position file.
         - `pre_transform`: [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
                            A short-cut to use for simple cases where a variant is an overkill.
+        - `quote_all`: [boolean=false] When generating the CSV quote all values, even numbers.
         - `right_digits`: [number=4] number of digits for mantissa part of coordinates (0 is auto).
         - `use_aux_axis_as_origin`: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
         - `variant`: [string=''] Board variant to apply.

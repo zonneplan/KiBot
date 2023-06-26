@@ -62,6 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `skip_not_run`: used to skip outputs not generated in default runs.
 - Compress:
   - `skip_not_run`: used to skip outputs not generated in default runs.
+- Position:
+  - `quote_all`: forces quotes to all values in the CSV output. (See #456)
 
 ### Changed
 - Command line:
