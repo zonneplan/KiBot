@@ -7,16 +7,17 @@
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic)](https://pypi.org/project/kibot/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
 
-# **This is the documentation for KiBot v1.6.2 for the current development read [here](https://github.com/INTI-CMNB/KiBot/tree/dev).**
+# **This is the documentation for KiBot v1.6.3 for the current development read [here](https://github.com/INTI-CMNB/KiBot/tree/dev).**
 
 
 **Important for CI/CD**:
 - The GitHub actions now use the full/test docker images. So now they include PanDoc and also Blender.
 - If you are looking for the GitHub Actions documentation, and you already know how to use KiBot, or want a quick start, read: [GitHub Actions](#usage-of-github-actions)
 
-**New on v1.6.2**
-- KiCad 7.0.2 support
-- Colored 3D THT resistors
+**New on v1.6.3**
+- Parametrizable imports
+- `value_split` and `spec_to_field` filters
+
 
 ## Index
 
