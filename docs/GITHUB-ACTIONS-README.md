@@ -27,6 +27,11 @@ jobs:   # List of jobs to be run.  Can be used to better organize steps.
     - name: Run KiBot
       run: |
         kibot -e "project_name.kicad_sch"
+
+    # Post KiBot steps (Optional).  
+    - name: Optionally do other things
+      run: |
+        ECHO Run bash commands to do things like commiting the files or adding them as artifacts
 ```
 
 
