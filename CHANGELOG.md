@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.4] - UNRELEASED
 ### Fixed
-- Rotated polygons used in the worksheet (#466)
+- Rotated polygons and text used in the worksheet (#466)
 
 ## [1.6.3] - 2023-06-26
 ### Added

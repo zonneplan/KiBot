@@ -299,6 +299,12 @@ class GS(object):
             return pcbnew.VECTOR2I(point)
         return point
 
+    def angle(ang):
+        if hasattr(pcbnew, 'EDA_ANGLE'):
+            # Here we can't use KiCad version because the nasty pcb_transition can be patching it
+            return pcbnew.EDA_ANGLE(ang*10, pcbnew.TENTHS_OF_A_DEGREE_T)
+        return ang*10
+
     @staticmethod
     def get_modules():
         if GS.ki6:
