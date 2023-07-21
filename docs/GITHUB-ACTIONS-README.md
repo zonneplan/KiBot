@@ -1,21 +1,19 @@
 # Guide for using KiBot with Github Actions.
 
-This is a guide for getting started using KiBOT with Github Actions
+This is a guide for getting started using KiBOT with Github Actions.
 
 ## Basics
 
-[Github Actions](https://github.com/actions) is a CI system that runs on Github. It uses [YAML files](https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html) to define what actions it will take. Unfortunately, some of those actions are a bit cryptic.  This guide will try to shed light on those cyptic portions.
-
-
+[Github Actions](https://github.com/actions) is a CI system that runs on Github. It uses [YAML files](https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html) to define what actions it will take. Unfortunately, some of the links between YAML lines and their associated actions are a bit cryptic.  This guide will try to shed light on those cyptic portions.
 
 ### Basic github file
 
 Must be located at `{repo root}/.github/workflows/{meaningful_name}.yml
 ```yaml
-name: KiBot_GitHub_Actions  # Can be any name
-on: [push, pull_request]    # github triggers for running this.
+name: KiBot_GitHub_Actions  # This is a name. It can be anything you want.
+on: [push, pull_request]    # github triggers for running this.  In this example it will run when anything is pushed to github or a pull request is created.
 jobs:   # List of jobs to be run.  Can be used to better organize steps.
-  KiBot-Generation:  # Can be any name
+  KiBot-Generation:  # This is a name. It can be anything you want.
     runs-on: ubuntu-latest  # Don't change
     container: ghcr.io/inti-cmnb/kicad7_auto:latest  # Don't Change, except if needing older version of KiCAD.
 
@@ -35,7 +33,7 @@ jobs:   # List of jobs to be run.  Can be used to better organize steps.
 ```
 
 
-### Basic KiBOT file
+### Basic KiBot file
 This file will match the syntax and keywords described in the [readme](../README.md). 
 ```yaml
 kibot:
@@ -65,7 +63,7 @@ The `uses: actions/checkout` refers to a specific repo, [Github Actions](https:/
 
 ## Caveats, Gotchyas, and Pitfalls
 
-1. KiBot requires a `*.kibot.yaml` file name scheme.  While most places use `*.yml` and `*.yaml` interchangeably, it is specific here. This is especially odd since github uses `*.yml` and kibot uses `*.yaml`
+1. KiBot requires a `{meaningful_name}.kibot.yaml` file name scheme.  While most places use `*.yml` and `*.yaml` interchangeably, it is specific here that `*.kibot.yml` won't work. This is especially odd since github uses `*.yml` and kibot uses `*.yaml`. 
 
 ## Different ways of doing things
 
@@ -74,4 +72,3 @@ This section will try to describe some different options for doing things within
 TODO: Fill this out.
 TODO: (Topic) github artifacts vs exports commited.
 TODO: (Topic) When to run KiBOT??  ERC/DRC only vs full outputs.
-
