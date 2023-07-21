@@ -381,7 +381,7 @@ class WksPolygon(WksDrawing):
                 s.SetWidth(e.line_width)
                 s.SetLayer(p.layer)
                 if e.rotate:
-                    s.Rotate(pos, e.rotate*10)
+                    s.Rotate(GS.p2v_k7(pos), e.rotate*10)
                 p.board.Add(s)
                 p.pcb_items.append(s)
             pos += posi
