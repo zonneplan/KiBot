@@ -838,7 +838,7 @@ class BoMOptions(BaseOptions):
                     elif n == fp_index:
                         c.footprint = str(f)
                         number = 2
-                    elif ds_index:
+                    elif n == ds_index:
                         c.datasheet = str(f)
                         number = 3
                     elif n == pn_index:
