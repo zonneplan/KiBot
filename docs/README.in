@@ -24,6 +24,7 @@
 * [Installation](#installation)
   * [Dependencies](#dependencies)
   * [Installation on Ubuntu or Debian](#installation-on-ubuntu-or-debian)
+  * [Installation on Arch Linux](#installation-on-arch-linux)
   * [Installation using pip](#installation-using-pip)
   * [Notes about virtualenv](#notes-about-virtualenv)
   * [Installation on other targets](#installation-on-other-targets)
@@ -152,6 +153,14 @@ sudo apt install ./python3-mcpy_2.0.2-1_all.deb ./kibot_0.6.0-1_all.deb
 
 **Important note**: The [KiCad Automation Scripts](https://github.com/INTI-CMNB/kicad-automation-scripts/) packages are a mandatory dependency.
 The [KiBoM](https://github.com/INTI-CMNB/KiBoM), [InteractiveHtmlBom](https://github.com/INTI-CMNB/InteractiveHtmlBom) and [PcbDraw](https://github.com/INTI-CMNB/PcbDraw) are recommended.
+
+### Installation on Arch Linux
+
+AUR repository for [kibot](https://aur.archlinux.org/packages/kibot)
+
+```shell
+yay -S kibot
+```
 
 ### Installation using pip
 
