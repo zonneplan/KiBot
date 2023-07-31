@@ -6,8 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [1.6.4] - UNRELEASED
+### Added
+- iBoM:
+  - `forced_name` option to force the name displayed at the top left corner
+    (#470)
+
 ### Fixed
 - Rotated polygons and text used in the worksheet (#466)
+- BoM:
+  - Problems when trying to aggregate the datasheet field (#472)
+
 
 ## [1.6.3] - 2023-06-26
 ### Added

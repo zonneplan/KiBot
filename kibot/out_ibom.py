@@ -120,6 +120,9 @@ class IBoMOptions(VariantOptions):
             self.hide_excluded = False
             """ Hide components in the Fab layer that are marked as excluded by a variant.
                 Affected by global options """
+            self.forced_name = ''
+            """ Name to be used for the PCB/project (no file extension).
+                This will affect the name iBoM displays in the generated HTML """
         super().__init__()
         self.add_to_doc('variant', WARNING_MIX)
         self.add_to_doc('dnf_filter', WARNING_MIX)
@@ -177,15 +180,17 @@ class IBoMOptions(VariantOptions):
         pcb_name = GS.pcb_file
         if self.will_filter_pcb_components():
             # Write a custom netlist to a temporal dir
+            prj_name = os.path.basename(self.expand_filename('', self.forced_name, 'ibom', '')) if self.forced_name \
+                       else GS.pcb_basename
             net_dir = mkdtemp(prefix='tmp-kibot-ibom-')
-            netlist = os.path.join(net_dir, GS.pcb_basename+'.xml')
+            netlist = os.path.join(net_dir, prj_name+'.xml')
             self.extra_data_file = netlist
             logger.debug('Creating variant netlist `{}`'.format(netlist))
             with open(netlist, 'wb') as f:
                 GS.sch.save_netlist(f, self._comps)
             # Write a board with the filtered values applied
             self.filter_pcb_components()
-            pcb_name, _ = self.save_tmp_dir_board('ibom', force_dir=net_dir)
+            pcb_name, _ = self.save_tmp_dir_board('ibom', force_dir=net_dir, forced_name=prj_name)
             self.unfilter_pcb_components()
         else:
             # Check if the user wants extra_fields but there is no data about them (#68)
@@ -208,7 +213,7 @@ class IBoMOptions(VariantOptions):
         self.blacklist += to_remove
         # Convert attributes into options
         for k, v in self.get_attrs_gen():
-            if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform', 'hide_excluded']:
+            if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform', 'hide_excluded', 'forced_name']:
                 continue
             if k == 'offset_back_rotation' and version < (2, 5, 0, 2):
                 continue

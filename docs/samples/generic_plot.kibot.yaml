@@ -1235,6 +1235,9 @@ outputs:
       # [string=''] Comma separated list of extra fields to pull from netlist or xml file.
       # Using 'X,Y' is a shortcut for `show_fields` and `group_fields` with values 'Value,Footprint,X,Y'
       extra_fields: ''
+      # [string=''] Name to be used for the PCB/project (no file extension).
+      # This will affect the name iBoM displays in the generated HTML
+      forced_name: ''
       # [string=''] Comma separated list of fields that components will be grouped by.
       # Value and Footprint are used when nothing is specified
       group_fields: ''

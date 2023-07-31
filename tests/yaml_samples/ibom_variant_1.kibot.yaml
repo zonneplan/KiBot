@@ -47,6 +47,7 @@ outputs:
     dir: BoM
     options:
       variant: t1_v1
+      forced_name: '%f, %V'
 
   - name: 'bom_internal_v2'
     comment: "Bill of Materials in CSV format for variant t1_v2"

@@ -2805,6 +2805,8 @@ Notes:
                        IBoM option, avoid using in conjunction with KiBot variants/filters.
         - `extra_data_file`: [string=''] Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
                              Leave it blank for most uses, data will be extracted from the PCB.
+        - `forced_name`: [string=''] Name to be used for the PCB/project (no file extension).
+                         This will affect the name iBoM displays in the generated HTML.
         - `group_fields`: [string=''] Comma separated list of fields that components will be grouped by.
                           Value and Footprint are used when nothing is specified.
         - `hide_excluded`: [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
