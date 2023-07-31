@@ -43,7 +43,6 @@ logger = log.get_logger()
 SYM_LIB_TABLE = 'sym-lib-table'
 FP_LIB_TABLE = 'fp-lib-table'
 KICAD_COMMON = 'kicad_common'
-MAXDEPTH = 20
 SUP_VERSION = 7
 reported = set()
 
@@ -88,10 +87,10 @@ def expand_env(val, env, extra_env, used_extra=None):
     success = replaced = True
     depth = 0
     ori_val = val
-    while success and replaced and depth < MAXDEPTH:
+    while success and replaced and depth < GS.MAXDEPTH:
         replaced = False
         depth += 1
-        if depth == MAXDEPTH:
+        if depth == GS.MAXDEPTH:
             logger.warning(W_MAXDEPTH+'Too much nested variables replacements, possible loop ({})'.format(ori_val))
             success = False
         for var in re.findall(r'\$\{(\S+?)\}', val):

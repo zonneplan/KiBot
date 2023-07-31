@@ -26,7 +26,7 @@ from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, W_NOPART, W_MISSREF, DIS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
-from .kiplot import get_board_comps_data, load_any_sch, register_xmp_import
+from .kiplot import get_board_comps_data, load_any_sch, register_xmp_import, expand_fields
 from .kicad.v5_sch import SchematicComponent, SchematicField
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
@@ -867,7 +867,7 @@ class BoMOptions(BaseOptions):
                 prj.sch = load_any_sch(prj.file, prj.name)
             else:
                 prj.sch = self.load_csv(prj.file, prj.name, prj.delimiter)
-            new_comps = prj.sch.get_components()
+            new_comps = expand_fields(prj.sch.get_components(), dont_copy=True)
             for c in new_comps:
                 c.ref = prj.ref_id+c.ref
                 c.ref_id = prj.ref_id
@@ -889,7 +889,8 @@ class BoMOptions(BaseOptions):
         self.kicad_version = GS.kicad_version
         self.conv_units = GS.unit_name_to_scale_factor(self.units)
         # Get the components list from the schematic
-        comps = GS.sch.get_components()
+        # We use a copy because we could expand the field values using ${VAR}
+        comps = expand_fields(GS.sch.get_components())
         get_board_comps_data(comps)
         if self.count_smd_tht and not GS.pcb_file:
             logger.warning(W_NEEDSPCB+"`count_smd_tht` is enabled, but no PCB provided")

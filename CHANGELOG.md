@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.4] - UNRELEASED
 ### Added
+- BoM:
+  - Support for ${field} expansion. (#471)
 - iBoM:
   - `forced_name` option to force the name displayed at the top left corner
     (#470)

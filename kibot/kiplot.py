@@ -8,7 +8,8 @@
 """
 Main KiBot code
 """
-
+from copy import deepcopy
+from collections import OrderedDict
 import os
 import re
 from sys import exit
@@ -18,7 +19,6 @@ from shutil import which, copy2
 from subprocess import run, PIPE, STDOUT, Popen, CalledProcessError
 from glob import glob
 from importlib.util import spec_from_file_location, module_from_spec
-from collections import OrderedDict
 
 from .gs import GS
 from .registrable import RegOutput
@@ -26,7 +26,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE,
-                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr)
+                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH)
 from .error import PlotError, KiPlotConfigurationError, config_error
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -34,7 +34,7 @@ from .dep_downloader import register_deps
 import kibot.dep_downloader as dep_downloader
 from .kicad.v5_sch import Schematic, SchFileError, SchError
 from .kicad.v6_sch import SchematicV6
-from .kicad.config import KiConfError
+from .kicad.config import KiConfError, KiConf, expand_env
 from . import log
 
 logger = log.get_logger()
@@ -328,6 +328,33 @@ def get_board_comps_data(comps):
                     c.in_bom_pcb = False
                 if attrs & MOD_BOARD_ONLY:
                     c.in_pcb_only = True
+
+
+def expand_comp_fields(c, env):
+    extra_env = {f.name: f.value for f in c.fields}
+    for f in c.fields:
+        new_value = f.value
+        depth = 1
+        used_extra = [False]
+        while depth < GS.MAXDEPTH:
+            new_value = expand_env(new_value, env, extra_env, used_extra=used_extra)
+            if not used_extra[0]:
+                break
+            depth += 1
+            if depth == GS.MAXDEPTH:
+                logger.warning(W_MAXDEPTH+'Too much nested variables replacements, possible loop ({})'.format(f.value))
+        if new_value != f.value:
+            c.set_field(f.name, new_value)
+
+
+def expand_fields(comps, dont_copy=False):
+    if not dont_copy:
+        comps = deepcopy(comps)
+    env = KiConf.kicad_env
+    env.update(GS.load_pro_variables())
+    for c in comps:
+        expand_comp_fields(c, env)
+    return comps
 
 
 def preflight_checks(skip_pre, targets):
