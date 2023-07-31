@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rotated polygons and text used in the worksheet (#466)
 - BoM:
   - Problems when trying to aggregate the datasheet field (#472)
+- kibot-check:
+  - Show 7.x as supported (#469)
 
 
 ## [1.6.3] - 2023-06-26
