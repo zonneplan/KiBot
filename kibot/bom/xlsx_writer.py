@@ -567,6 +567,8 @@ def copy_specs_to_components(parts, groups):
     for p in parts:
         for c in p.kibot_group.components:
             c.kicost_part = p
+            if hasattr(c, 'original_copy'):
+                c.original_copy.kicost_part = p
 
 
 def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg):

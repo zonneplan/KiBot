@@ -176,7 +176,7 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
         ei[dattr] = pattern.format(value)
 
     def check_coherent(self, c):
-        if not self.check_dist_coherence:
+        if not self.check_dist_coherence or not hasattr(c, 'kicost_part'):
             return
         extra_info = {}
         for d, dd in c.kicost_part.dd.items():
