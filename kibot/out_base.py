@@ -481,6 +481,7 @@ class VariantOptions(BaseOptions):
                 gi.SetLayer(self._fadhes)
             for gi in self.old_badhes:
                 gi.SetLayer(self._badhes)
+        if GS.global_remove_solder_mask_for_dnp:
             for gi in self.old_fmask:
                 gi.SetLayer(self._fmask)
             for gi in self.old_bmask:
